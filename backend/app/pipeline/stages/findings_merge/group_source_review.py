@@ -78,7 +78,11 @@ def validate_group_review(document,proposal,md,graphic_dir,result,*,max_images=1
         response={'finding_id':prepared['synthetic']['id'],'finding_sha256':packet['finding_sha256'],
             'source_md_sha256':prepared['binding']['source_md_sha256'],'claims':[{'claim_id':'group-check','claim':'Cited group sources',
                 'status':'supported','reason':'Source binding only','evidence':evidence}]}
-        verified=validate_source_review(response,prepared['queue'],[prepared['synthetic']],md)
+        supplied_queue=deepcopy(prepared['queue'])
+        for queued in supplied_queue['packets']:
+            for receipt in queued.get('graphic_attachments',[]):
+                receipt['attached_to_model']=(receipt['block_id'],receipt['sha256']) in images
+        verified=validate_source_review(response,supplied_queue,[prepared['synthetic']],md)
         if verified['errors']:raise ValueError('invalid_group_source_evidence: '+','.join(verified['errors']))
     action=result.get('action')
     if action not in ('group','keep_separate','needs_context') or not isinstance(result.get('reason'),str) or not result['reason'].strip():

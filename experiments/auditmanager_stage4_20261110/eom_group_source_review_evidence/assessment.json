@@ -1,0 +1,34 @@
+{
+  "status": "needs_context_no_group_applied",
+  "original_rows": 51,
+  "output_rows": 51,
+  "all_findings_unchanged": true,
+  "model_calls": 1,
+  "model": "codex/gpt-6-astra",
+  "known_development_control": true,
+  "semantic_falsehood_proven": false,
+  "initial_failure": "Local validator omitted attached_to_model receipts; fixed and existing response revalidated without a new call.",
+  "model_reason": "Shared heading assumes common specification applicability despite an unresolved source-code discrepancy.",
+  "additional_source_found_after_review": {
+    "block_id": "blk_84e0cee1c8a145c482898b1c10b3a24b",
+    "quote": "| 2 | *Схема однолинейная принципиальная ВРУ-2* | на 2-х листах |",
+    "source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+    "was_in_review_packet": false,
+    "meaning": "The drawing index lists VRU-2 on two sheets under the EOM set. This is a candidate documentary link; it does not authorize correcting the literal ZOM stamp."
+  },
+  "next_action": "Review the same grouping with this retrieved authoritative index source; retain separate findings unless the relation and heading are justified.",
+  "independent_historical_negative_grouping_pair_proven": false,
+  "full_stage4_acceptance": false,
+  "files": {
+    "group_00/preparation.json": "c3a9fb306e8ae311cd8918af7da6cf2972742d2f06005349861fb7ef1cbff999",
+    "group_01/attempt.json": "02e332b3c1678bf057350af1642e6e17a1f8ac4ad1a492163d79f0b4495eec06",
+    "group_01/decision.json": "d8f6f0d4c1d547a9afa2abe58655bfc30a25f1e4621536b36e0ab81f821a9d27",
+    "group_01/output_preview.json": "a9b606a30c1274b3e48aa09070d09448713c7385ec6c9318dbeea182cf22e96d",
+    "group_01/preparation.json": "f60383ae740af7e41b968f64182cbdaf603906a3cb35c0d385e5643699f62d94",
+    "group_01/receipt.json": "1f12a15d1c637a024a419b6ada6fdb726fd96681b17711d30e7b66f3bd5e38fb",
+    "group_01/request.json": "26482bca83ae2b86b53ac84c73588a236122cc4aa407caf642630799dafe8dce",
+    "group_01/result.json": "8e631ecc4cbd6ebe5f05edd19632636beec15340d5891d4ad474e9c48666ac81",
+    "group_01/result_binding.json": "5797a167868a7731f03acb6b9cefd989c68e308f5ec5d24f1e7dcda7d94efeff",
+    "summary.json": "78c1a1936f6e46a6239d27006508b72c7cf634a3c84931f4e6cbcce12f438edd"
+  }
+}

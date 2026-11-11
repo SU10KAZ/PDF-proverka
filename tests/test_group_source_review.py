@@ -49,3 +49,18 @@ def test_keep_separate_never_authorizes_group(tmp_path):
     decision=validate_group_review(doc,proposal,md,tmp_path,result)
     after,receipt=apply_reviewed_group(doc,proposal,decision,md)
     assert after==doc and receipt['status']=='not_applied'
+
+
+def test_only_exact_attached_graphic_receipt_is_eligible(tmp_path):
+    from PIL import Image
+    doc,proposal,md,result=setup(tmp_path)
+    md+='\n### BLOCK #2 [GRAPHIC]: g\nDrawing navigation only\n'
+    for f in doc['findings'][:2]:f['evidence'].append({'type':'image','block_id':'g'})
+    Image.new('RGB',(12,12),'white').save(tmp_path/'block_g.png')
+    prepared=prepare_group_review(doc,proposal,md,tmp_path)
+    result['binding']=prepared['binding'];image=prepared['request']['image_bindings'][0]
+    result['checks'][0]['evidence']=[{'type':'image','block_id':'g','image_sha256':image['sha256'],
+        'bbox_norm_xyxy':[0,0,1,1],'observation':'Test image supplied; source binding only'}]
+    assert validate_group_review(doc,proposal,md,tmp_path,result)['action']=='group'
+    result['checks'][0]['evidence'][0]['image_sha256']='different-image'
+    with pytest.raises(ValueError,match='group_image_not_attached'):validate_group_review(doc,proposal,md,tmp_path,result)
