@@ -2490,7 +2490,11 @@ def combine_detector_results(
     paid_cached_output_tokens = 0
 
     _ref_offsets: dict[str, int] = {}
+    model_counts = {model: sum(m == model for m, _ in detector_results) for model, _ in detector_results}
+    model_occurrences: dict[str, int] = {}
     for detector_model, result in detector_results:
+        model_occurrences[detector_model] = model_occurrences.get(detector_model, 0) + 1
+        comparison_id = f"{detector_model}::leg:{model_occurrences[detector_model]}"
         _det_key = detector_for_model(detector_model)
         _ref_base = _ref_offsets.get(_det_key, 0)
         _last_ref_index = 0
@@ -2504,6 +2508,8 @@ def combine_detector_results(
                     continue
                 tagged = dict(raw)
                 tagged["_detector_model"] = detector_model
+                if model_counts[detector_model] > 1:
+                    tagged["_detector_comparison_id"] = comparison_id
                 tagged["_detector_run_id"] = f"{run_id}:{_det_key}"
                 tagged["_detector_ref"] = (
                     f"{_det_key}:{_ref_base + raw_index:03d}"

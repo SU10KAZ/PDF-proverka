@@ -112,10 +112,31 @@ def _side_list(spec: Any) -> list[str]:
 
 
 def _on_side(finding: dict, spec: Any) -> bool:
-    return str(finding.get("_detector_model") or "") in _side_list(spec)
+    return str(finding.get("_detector_comparison_id") or finding.get("_detector_model") or "") in _side_list(spec)
+
+
+def _comparison_sides(findings, comparison_models):
+    """Separate repeated model runs only when executor-owned leg IDs exist.
+
+    Labels are comparison identities, never provider model overrides. Legacy
+    same-model findings without leg provenance remain ambiguous and fail closed.
+    """
+    if (isinstance(comparison_models, list) and len(comparison_models) == 2
+            and all(isinstance(v, str) for v in comparison_models)
+            and comparison_models[0] == comparison_models[1]):
+        model = comparison_models[0]
+        sides = [f"{model}::leg:1", f"{model}::leg:2"]
+        if any(f.get('_detector_model') != model
+               or f.get('_detector_comparison_id') not in sides for f in findings):
+            raise ValueError('Repeated model comparison requires executor-owned leg identities')
+        return sides
+    return comparison_models
 
 
 def _model_label(model: str) -> str:
+    if '::leg:' in model:
+        base, leg = model.rsplit('::leg:', 1)
+        return f"{_model_label(base)} (ветвь {leg})"
     if model in _MODEL_LABELS:
         return _MODEL_LABELS[model]
     lowered = model.lower()
@@ -313,6 +334,7 @@ def normalize_review_payload(
 ) -> dict[str, Any]:
     """Validate reviewer JSON and derive complete per-finding annotations."""
     ensure_detector_refs(findings)
+    comparison_models = _comparison_sides(findings, comparison_models)
     payload = payload if isinstance(payload, dict) else {}
     by_ref = {
         str(item.get("_detector_ref")): item
@@ -567,6 +589,7 @@ async def review_single_findings(
     оставляет находки детектора как есть (fail-soft).
     """
     working = ensure_detector_refs([dict(item) for item in findings if isinstance(item, dict)])
+    comparison_models = _comparison_sides(working, comparison_models)
     try:
         max_context_chars = max(
             1000,
@@ -633,6 +656,7 @@ def fallback_dual_review(
 ) -> dict[str, Any]:
     """Return a complete fail-soft review result without another model call."""
     working = ensure_detector_refs([dict(item) for item in findings if isinstance(item, dict)])
+    comparison_models = _comparison_sides(working, comparison_models)
     normalized = normalize_review_payload(
         _fallback_payload(working, comparison_models),
         working,
@@ -688,6 +712,7 @@ async def review_dual_findings(
     from backend.app.services.llm.codex_runner import run_codex_json_messages
 
     working = ensure_detector_refs([dict(item) for item in findings if isinstance(item, dict)])
+    comparison_models = _comparison_sides(working, comparison_models)
     try:
         max_context_chars = max(
             1000,

@@ -5,5 +5,17 @@
   "source": "backend/app/pipeline/stages/block_analysis/dual_review.py:review_dual_findings",
   "cause": "Comparison membership uses _detector_model, and overlapping model sets are rejected. Unique finding refs alone do not distinguish two runs of the same model.",
   "required_behavior": "Assign independent detector-leg identities while retaining the real provider model. Compare legs by identity; preserve existing different-model behavior.",
-  "full_six_comparison_started": false
+  "full_six_comparison_started": false,
+  "resolution": {
+    "status": "fixed_and_verified_with_mocked_full_block_dispatch",
+    "real_provider_model_preserved": true,
+    "comparison_identity": "Executor-assigned model::leg:1 / model::leg:2 only for repeated models",
+    "checks": [
+      "63 tests passed across dual review, provenance, Claude leg, leg failure, and OpenRouter-disabled configurations.",
+      "6 focused tests passed, including full block dispatch with two independent Astra calls and one Astra judge; all transports mocked, network forbidden.",
+      "Ambiguous legacy same-model records fail before dispatch; same-leg matching rejected; empty first leg does not relabel the second."
+    ],
+    "new_model_calls": 0,
+    "paired_project_quality_proven": false
+  }
 }
