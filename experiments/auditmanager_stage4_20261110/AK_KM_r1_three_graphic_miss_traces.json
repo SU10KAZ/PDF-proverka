@@ -1,0 +1,791 @@
+{
+  "status": "bounded_three_target_graphic_routes_traced",
+  "repeat": 1,
+  "cases": [
+    {
+      "target": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+      "discipline": "AK",
+      "frozen_decision": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F039_served_rooms_conflict.json",
+        "sha256": "c5a07b351f4355a0bceeca4d625d01832f64782fd1432801547cbdf40ed24840"
+      },
+      "engineer_history": null,
+      "engineer_decision": null,
+      "coverage_ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_completed_coverage_ledger.json",
+        "sha256": "4445f88e02bfe4ffe796258af8bd512a1192ab73351cfe1029ea33384cde1477"
+      },
+      "routes": [
+        {
+          "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+          "raw_result": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_054120__ensemble_codex-only_high/block_blk_e3e39f8820d7474caa10ab626d2a2c91.json",
+            "sha256": "0be4994f64c35757df82bc2e71ec56d23072f81c7f02261ff5c0dde3d8ce3b35"
+          },
+          "detector_findings": [
+            [
+              {
+                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                "category": "signal_type",
+                "finding": "На функциональной схеме, лист 10, команда «Электр. воздухонагреватель пуск/стоп» системы П4.1.1 отнесена к дискретным входам DI. Назначение сигнала противоречит указанному типу канала: команда управления нагревателем требует выхода.",
+                "norm_quote": null,
+                "value_found": "Электр. воздухонагреватель пуск/стоп",
+                "recommendation": "Указать выходной канал управления электронагревателем и согласовать с ним таблицу сигналов и количество каналов.",
+                "claim_type": "contradiction",
+                "problem_class": "control_command_assigned_to_input",
+                "affected_entity": "П4.1.1, сигнал 6 управления электрическим воздухонагревателем",
+                "evidence_quote": "В столбце 6 «Электр. воздухонагреватель пуск/стоп» точка подключения расположена в строке DI; в строках DO и AO этого столбца точек нет.",
+                "evidence_kind": "block_image",
+                "context_status": "sufficient",
+                "confidence": 0.97,
+                "counterevidence_checked": true,
+                "required_context": []
+              },
+              {
+                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                "category": "equipment_consistency",
+                "finding": "Диапазоны реле перепада давления шкафа ШАУВ-4-К4ПЧ не согласованы между схемой, перечнем элементов и спецификацией. Для PDS4 таблица сигналов задаёт 20–200 Па, а перечень элементов — 50–500 Па. Перечень предусматривает одно устройство 20–200 Па и три 50–500 Па, тогда как спецификация предусматривает соответственно три и одно.",
+                "norm_quote": null,
+                "value_found": "PDS2 — 20-200 Па — 1; PDS1,PDS3, PDS4 — 50-500 Па — 3; поз. 4.4 — 20-200 Па — 3; поз. 4.5 — 50-500 Па — 1",
+                "recommendation": "Согласовать диапазоны PDS1–PDS4 в таблице сигналов, перечне элементов листа 10 и позициях 4.4–4.5 спецификации шкафа ШАУВ-4-К4ПЧ.",
+                "claim_type": "contradiction",
+                "problem_class": "pressure_switch_ranges_inconsistent",
+                "affected_entity": "PDS1–PDS4 шкафа ШАУВ-4-К4ПЧ",
+                "evidence_quote": "На схеме PDS4 связан с сигналом 18 «Перепад давления на вентиляторе системы (20…200 Па)»; в перечне элементов «PDS1,PDS3, PDS4 | Датчик давления дифференциальный 50-500 Па | 3». Спецификация, лист 2: «4.4 | Датчик давления дифференциальный 20-200 Па … 3» и «4.5 | Датчик давления дифференциальный 50-500 Па … 1».",
+                "evidence_kind": "document_retrieval",
+                "context_status": "sufficient",
+                "confidence": 0.99,
+                "counterevidence_checked": true,
+                "required_context": []
+              }
+            ],
+            [
+              {
+                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                "category": "equipment_mismatch",
+                "finding": "Для реле перепада давления шкафа ШАУВ-4-К4ПЧ расходятся диапазоны и количества. Матрица сигналов предусматривает два прибора 20–200 Па и два 50–500 Па, перечень элементов листа 10 — соответственно один и три, спецификация — три и один.",
+                "norm_quote": null,
+                "value_found": "PDS2: 20–200 Па — 1; PDS1,PDS3,PDS4: 50–500 Па — 3; спецификация, позиции 4.4/4.5: 20–200 Па — 3; 50–500 Па — 1",
+                "recommendation": "Согласовать диапазоны каждого прибора PDS1–PDS4 и их количества в матрице сигналов, перечне элементов и спецификации.",
+                "claim_type": "contradiction",
+                "problem_class": "pressure_switch_range_quantity_mismatch",
+                "affected_entity": "PDS1–PDS4, шкаф ШАУВ-4-К4ПЧ",
+                "evidence_quote": "На схеме линии 4 и 12: «Перепад давления на фильтре системы (50…500 Па)», линии 8 и 18: «Перепад давления на вентиляторе системы (20…200 Па)». В перечне элементов PDS4 включён в группу 50–500 Па. В спецификации на странице PDF 95 для шкафа ШАУВ-4-К4ПЧ указаны три прибора 20–200 Па и один 50–500 Па.",
+                "evidence_kind": "document_retrieval",
+                "context_status": "sufficient",
+                "confidence": 0.99,
+                "counterevidence_checked": true,
+                "required_context": []
+              },
+              {
+                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                "category": "signal_assignment",
+                "finding": "В функциональной схеме П4.1.1 на листе 10 сигнал «Электр. воздухонагреватель пуск/стоп» линии 6 отнесён к дискретным входам DI. Назначение команды пуска/останова не соответствует указанному направлению сигнала.",
+                "norm_quote": null,
+                "value_found": "Электр. воздухонагреватель пуск/стоп — DI, линия 6",
+                "recommendation": "Назначить команде пуска/останова электронагревателя выходной канал и скорректировать матрицу и итоговое количество сигналов.",
+                "claim_type": "contradiction",
+                "problem_class": "control_command_assigned_to_input",
+                "affected_entity": "Линия 6 управления электронагревателем П4.1.1",
+                "evidence_quote": "В столбце 6 «Электр. воздухонагреватель пуск/стоп» точка подключения расположена в строке DI; в строке DO этого столбца точки нет.",
+                "evidence_kind": "block_image",
+                "context_status": "sufficient",
+                "confidence": 0.93,
+                "counterevidence_checked": true,
+                "required_context": []
+              }
+            ]
+          ],
+          "merged_findings": [
+            {
+              "severity": "ЭКСПЛУАТАЦИОННОЕ",
+              "category": "equipment_consistency",
+              "finding": "Диапазоны реле перепада давления шкафа ШАУВ-4-К4ПЧ не согласованы между схемой, перечнем элементов и спецификацией. Для PDS4 таблица сигналов задаёт 20–200 Па, а перечень элементов — 50–500 Па. Перечень предусматривает одно устройство 20–200 Па и три 50–500 Па, тогда как спецификация предусматривает соответственно три и одно.",
+              "norm_quote": null,
+              "value_found": "PDS2 — 20-200 Па — 1; PDS1,PDS3, PDS4 — 50-500 Па — 3; поз. 4.4 — 20-200 Па — 3; поз. 4.5 — 50-500 Па — 1",
+              "recommendation": "Согласовать диапазоны PDS1–PDS4 в таблице сигналов, перечне элементов листа 10 и позициях 4.4–4.5 спецификации шкафа ШАУВ-4-К4ПЧ.",
+              "claim_type": "contradiction",
+              "problem_class": "pressure_switch_ranges_inconsistent",
+              "affected_entity": "PDS1–PDS4 шкафа ШАУВ-4-К4ПЧ",
+              "evidence_quote": "На схеме PDS4 связан с сигналом 18 «Перепад давления на вентиляторе системы (20…200 Па)»; в перечне элементов «PDS1,PDS3, PDS4 | Датчик давления дифференциальный 50-500 Па | 3». Спецификация, лист 2: «4.4 | Датчик давления дифференциальный 20-200 Па … 3» и «4.5 | Датчик давления дифференциальный 50-500 Па … 1».",
+              "evidence_kind": "document_retrieval",
+              "context_status": "sufficient",
+              "confidence": 0.99,
+              "counterevidence_checked": true,
+              "required_context": [],
+              "_detector_model": "codex/gpt-6-astra",
+              "_detector_comparison_id": "codex/gpt-6-astra::leg:1",
+              "_detector_run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "_detector_ref": "codex:002",
+              "_comparison": {
+                "schema_version": 1,
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:003"
+                ],
+                "confidence": 0.97,
+                "reason": "Оба замечания описывают одинаковое рассогласование диапазонов PDS1–PDS4: перечень содержит один прибор 20–200 Па и три 50–500 Па, спецификация — три и один. Указанное слева расхождение PDS4 эквивалентно приведённому справа итогу матрицы: два и два.",
+                "reviewer_model": "codex/gpt-6-astra",
+                "origin": "dual_comparison"
+              },
+              "_evidence_gate": {
+                "status": "published",
+                "reasons": []
+              }
+            },
+            {
+              "severity": "ЭКСПЛУАТАЦИОННОЕ",
+              "category": "equipment_mismatch",
+              "finding": "Для реле перепада давления шкафа ШАУВ-4-К4ПЧ расходятся диапазоны и количества. Матрица сигналов предусматривает два прибора 20–200 Па и два 50–500 Па, перечень элементов листа 10 — соответственно один и три, спецификация — три и один.",
+              "norm_quote": null,
+              "value_found": "PDS2: 20–200 Па — 1; PDS1,PDS3,PDS4: 50–500 Па — 3; спецификация, позиции 4.4/4.5: 20–200 Па — 3; 50–500 Па — 1",
+              "recommendation": "Согласовать диапазоны каждого прибора PDS1–PDS4 и их количества в матрице сигналов, перечне элементов и спецификации.",
+              "claim_type": "contradiction",
+              "problem_class": "pressure_switch_range_quantity_mismatch",
+              "affected_entity": "PDS1–PDS4, шкаф ШАУВ-4-К4ПЧ",
+              "evidence_quote": "На схеме линии 4 и 12: «Перепад давления на фильтре системы (50…500 Па)», линии 8 и 18: «Перепад давления на вентиляторе системы (20…200 Па)». В перечне элементов PDS4 включён в группу 50–500 Па. В спецификации на странице PDF 95 для шкафа ШАУВ-4-К4ПЧ указаны три прибора 20–200 Па и один 50–500 Па.",
+              "evidence_kind": "document_retrieval",
+              "context_status": "sufficient",
+              "confidence": 0.99,
+              "counterevidence_checked": true,
+              "required_context": [],
+              "_detector_model": "codex/gpt-6-astra",
+              "_detector_comparison_id": "codex/gpt-6-astra::leg:2",
+              "_detector_run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "_detector_ref": "codex:003",
+              "_comparison": {
+                "schema_version": 1,
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:002"
+                ],
+                "confidence": 0.97,
+                "reason": "Оба замечания описывают одинаковое рассогласование диапазонов PDS1–PDS4: перечень содержит один прибор 20–200 Па и три 50–500 Па, спецификация — три и один. Указанное слева расхождение PDS4 эквивалентно приведённому справа итогу матрицы: два и два.",
+                "reviewer_model": "codex/gpt-6-astra",
+                "origin": "dual_comparison"
+              },
+              "_evidence_gate": {
+                "status": "published",
+                "reasons": []
+              }
+            },
+            {
+              "severity": "ЭКСПЛУАТАЦИОННОЕ",
+              "category": "signal_type",
+              "finding": "На функциональной схеме, лист 10, команда «Электр. воздухонагреватель пуск/стоп» системы П4.1.1 отнесена к дискретным входам DI. Назначение сигнала противоречит указанному типу канала: команда управления нагревателем требует выхода.",
+              "norm_quote": null,
+              "value_found": "Электр. воздухонагреватель пуск/стоп",
+              "recommendation": "Указать выходной канал управления электронагревателем и согласовать с ним таблицу сигналов и количество каналов.",
+              "claim_type": "contradiction",
+              "problem_class": "control_command_assigned_to_input",
+              "affected_entity": "П4.1.1, сигнал 6 управления электрическим воздухонагревателем",
+              "evidence_quote": "В столбце 6 «Электр. воздухонагреватель пуск/стоп» точка подключения расположена в строке DI; в строках DO и AO этого столбца точек нет.",
+              "evidence_kind": "block_image",
+              "context_status": "sufficient",
+              "confidence": 0.97,
+              "counterevidence_checked": true,
+              "required_context": [],
+              "_detector_model": "codex/gpt-6-astra",
+              "_detector_comparison_id": "codex/gpt-6-astra::leg:1",
+              "_detector_run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "_detector_ref": "codex:001",
+              "_comparison": {
+                "schema_version": 1,
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:004"
+                ],
+                "confidence": 0.99,
+                "reason": "Оба замечания указывают на ошибочное назначение команды «Электр. воздухонагреватель пуск/стоп» системы П4.1.1 входу DI. Уточнение номера линии 6 не меняет содержание проблемы.",
+                "reviewer_model": "codex/gpt-6-astra",
+                "origin": "dual_comparison"
+              },
+              "_evidence_gate": {
+                "status": "published",
+                "reasons": []
+              }
+            },
+            {
+              "severity": "ЭКСПЛУАТАЦИОННОЕ",
+              "category": "signal_assignment",
+              "finding": "В функциональной схеме П4.1.1 на листе 10 сигнал «Электр. воздухонагреватель пуск/стоп» линии 6 отнесён к дискретным входам DI. Назначение команды пуска/останова не соответствует указанному направлению сигнала.",
+              "norm_quote": null,
+              "value_found": "Электр. воздухонагреватель пуск/стоп — DI, линия 6",
+              "recommendation": "Назначить команде пуска/останова электронагревателя выходной канал и скорректировать матрицу и итоговое количество сигналов.",
+              "claim_type": "contradiction",
+              "problem_class": "control_command_assigned_to_input",
+              "affected_entity": "Линия 6 управления электронагревателем П4.1.1",
+              "evidence_quote": "В столбце 6 «Электр. воздухонагреватель пуск/стоп» точка подключения расположена в строке DI; в строке DO этого столбца точки нет.",
+              "evidence_kind": "block_image",
+              "context_status": "sufficient",
+              "confidence": 0.93,
+              "counterevidence_checked": true,
+              "required_context": [],
+              "_detector_model": "codex/gpt-6-astra",
+              "_detector_comparison_id": "codex/gpt-6-astra::leg:2",
+              "_detector_run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "_detector_ref": "codex:004",
+              "_comparison": {
+                "schema_version": 1,
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:001"
+                ],
+                "confidence": 0.99,
+                "reason": "Оба замечания указывают на ошибочное назначение команды «Электр. воздухонагреватель пуск/стоп» системы П4.1.1 входу DI. Уточнение номера линии 6 не меняет содержание проблемы.",
+                "reviewer_model": "codex/gpt-6-astra",
+                "origin": "dual_comparison"
+              },
+              "_evidence_gate": {
+                "status": "published",
+                "reasons": []
+              }
+            }
+          ],
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "requests": [
+            {
+              "request": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794375858695712611/request.json",
+                "sha256": "6f1685a30f5f9d4f0695af094c732bc868ff17da38b4340b0c4e73a28d66641e"
+              },
+              "attempts": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794375858695712611/attempts.json",
+                "sha256": "7c28b840e2768769e03fcad8986d675fbe9bcfb8bb4eab949dff98bd9853c313"
+              },
+              "images": [
+                {
+                  "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e3e39f8820d7474caa10ab626d2a2c91.png",
+                  "sha256": "5c9cdf1f1635d706791f30152851a62ac7c2e0757c65ed25561084084bba4bc0"
+                }
+              ],
+              "message_representation_characters": 22559,
+              "successful_attempts": 1
+            },
+            {
+              "request": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794375858696784026/request.json",
+                "sha256": "6f1685a30f5f9d4f0695af094c732bc868ff17da38b4340b0c4e73a28d66641e"
+              },
+              "attempts": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794375858696784026/attempts.json",
+                "sha256": "f91e81259c455a0f8b2f3ecadc1f561eb03e1339ea7c373c12c6a13e3af5901c"
+              },
+              "images": [
+                {
+                  "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e3e39f8820d7474caa10ab626d2a2c91.png",
+                  "sha256": "5c9cdf1f1635d706791f30152851a62ac7c2e0757c65ed25561084084bba4bc0"
+                }
+              ],
+              "message_representation_characters": 22559,
+              "successful_attempts": 1
+            }
+          ]
+        },
+        {
+          "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "raw_result": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_054120__ensemble_codex-only_high/block_blk_28e6a3fa2bff45aabce4aed90feff741.json",
+            "sha256": "2cddb786923b8dfc1ede7c9bdae72d7676676fff8eb0fad9eaa95d6b9bcd56f5"
+          },
+          "detector_findings": [
+            [
+              {
+                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                "category": "pressure_range_mismatch",
+                "finding": "На функциональной схеме Пкр4.1, лист 9, для PDS3 указан диапазон 20–200 Па, а в перечне элементов для PDS1–PDS3 — 50–500 Па. Диапазон реле контроля перепада давления на вентиляторе задан противоречиво.",
+                "norm_quote": null,
+                "value_found": "Перепад давления на вентиляторе системы (20…200 Па); PDS1-PDS3 — Датчик давления дифференциальный 50-500 Па",
+                "recommendation": "Согласовать диапазон PDS3 в функциональной схеме и перечне элементов с выбранным реле давления.",
+                "claim_type": "contradiction",
+                "problem_class": "instrument_range_mismatch",
+                "affected_entity": "PDS3 системы Пкр4.1",
+                "evidence_quote": "В графе сигнала 12 указан диапазон «(20…200 Па)»; в перечне элементов строка «PDS1-PDS3» содержит «50-500 Па». Примечание об уточнении предельных рабочих значений при ПНР не определяет единый диапазон выбранного прибора.",
+                "evidence_kind": "same_page",
+                "context_status": "sufficient",
+                "confidence": 0.97,
+                "counterevidence_checked": true,
+                "required_context": []
+              }
+            ],
+            [
+              {
+                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                "category": "instrument_range",
+                "finding": "На функциональной схеме Пкр4.1, лист 9, для PDS3 указан диапазон 20–200 Па, а в перечне элементов для PDS1–PDS3 — 50–500 Па. Диапазон реле перепада давления на вентиляторе задан противоречиво.",
+                "norm_quote": null,
+                "value_found": "Перепад давления на вентиляторе системы (20…200 Па); PDS1-PDS3 — Датчик давления дифференциальный 50-500 Па",
+                "recommendation": "Согласовать диапазон PDS3 в функциональной схеме и перечне элементов.",
+                "claim_type": "contradiction",
+                "problem_class": "instrument_range_mismatch",
+                "affected_entity": "PDS3 системы Пкр4.1",
+                "evidence_quote": "В таблице сигналов для линии 12 указан диапазон «(20…200 Па)»; в перечне элементов строка «PDS1-PDS3» содержит «50-500 Па». Примечание об уточнении рабочих значений при ПНР не устанавливает единый диапазон прибора.",
+                "evidence_kind": "same_page",
+                "context_status": "sufficient",
+                "confidence": 0.98,
+                "counterevidence_checked": true,
+                "required_context": []
+              }
+            ]
+          ],
+          "merged_findings": [
+            {
+              "severity": "ЭКСПЛУАТАЦИОННОЕ",
+              "category": "instrument_range",
+              "finding": "На функциональной схеме Пкр4.1, лист 9, для PDS3 указан диапазон 20–200 Па, а в перечне элементов для PDS1–PDS3 — 50–500 Па. Диапазон реле перепада давления на вентиляторе задан противоречиво.",
+              "norm_quote": null,
+              "value_found": "Перепад давления на вентиляторе системы (20…200 Па); PDS1-PDS3 — Датчик давления дифференциальный 50-500 Па",
+              "recommendation": "Согласовать диапазон PDS3 в функциональной схеме и перечне элементов.",
+              "claim_type": "contradiction",
+              "problem_class": "instrument_range_mismatch",
+              "affected_entity": "PDS3 системы Пкр4.1",
+              "evidence_quote": "В таблице сигналов для линии 12 указан диапазон «(20…200 Па)»; в перечне элементов строка «PDS1-PDS3» содержит «50-500 Па». Примечание об уточнении рабочих значений при ПНР не устанавливает единый диапазон прибора.",
+              "evidence_kind": "same_page",
+              "context_status": "sufficient",
+              "confidence": 0.98,
+              "counterevidence_checked": true,
+              "required_context": [],
+              "_detector_model": "codex/gpt-6-astra",
+              "_detector_comparison_id": "codex/gpt-6-astra::leg:2",
+              "_detector_run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "_detector_ref": "codex:002",
+              "_comparison": {
+                "schema_version": 1,
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:001"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания указывают на одно противоречие: диапазон PDS3 на функциональной схеме 20–200 Па, а в перечне элементов для PDS1–PDS3 — 50–500 Па. Детализация эквивалентна.",
+                "reviewer_model": "codex/gpt-6-astra",
+                "origin": "dual_comparison"
+              },
+              "_evidence_gate": {
+                "status": "published",
+                "reasons": []
+              }
+            }
+          ],
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "requests": [
+            {
+              "request": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794375803473005305/request.json",
+                "sha256": "e7fceb9093f76fe1318fabe54f1609b07e8da343394ff369e5b6079a8f537f02"
+              },
+              "attempts": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794375803473005305/attempts.json",
+                "sha256": "ddd9eb4bc7fbba4b013bd49152937513176e29b9af65ae55c34281a7dfe11850"
+              },
+              "images": [
+                {
+                  "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+                  "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0"
+                }
+              ],
+              "message_representation_characters": 20794,
+              "successful_attempts": 1
+            },
+            {
+              "request": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794375803474036929/request.json",
+                "sha256": "e7fceb9093f76fe1318fabe54f1609b07e8da343394ff369e5b6079a8f537f02"
+              },
+              "attempts": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794375803474036929/attempts.json",
+                "sha256": "f1c703b928a52d00592119bcc51756c097a6f0dbb7f438283050cce750b9fb4e"
+              },
+              "images": [
+                {
+                  "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+                  "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0"
+                }
+              ],
+              "message_representation_characters": 20794,
+              "successful_attempts": 1
+            }
+          ]
+        }
+      ],
+      "semantic_review": "Обе ветви листа 10 находят DI/DO и диапазоны PDS; обе ветви листа 9 — диапазон PDS3. Конфликт обслуживаемых помещений П4.1.1 в этих ответах отсутствует.",
+      "next_frozen_arm_evaluation": "Связать назначение с маркой системы; сохранить конфликт П4.1.1, не создавать конфликт для согласованных Пкр4.1 и Пм4.1."
+    },
+    {
+      "target": "AK_F053_local_cable_balance:3ea87f3768012a815077",
+      "discipline": "AK",
+      "frozen_decision": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F053_local_cable_balance.json",
+        "sha256": "f0fe30025610ce7f3d413dec02072e1dd1a2937afe5cd720b3a8737b91bde092"
+      },
+      "engineer_history": null,
+      "engineer_decision": null,
+      "coverage_ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_completed_coverage_ledger.json",
+        "sha256": "4445f88e02bfe4ffe796258af8bd512a1192ab73351cfe1029ea33384cde1477"
+      },
+      "routes": [
+        {
+          "block_id": "blk_1c493988cdf14cee9ad351ef2e706470",
+          "raw_result": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_054120__ensemble_codex-only_high/block_blk_1c493988cdf14cee9ad351ef2e706470.json",
+            "sha256": "6923998388416e28c9d79eb2634600232ea1305509d58c4e72caed91e161cebf"
+          },
+          "detector_findings": [
+            [
+              {
+                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                "category": "reference_mismatch",
+                "finding": "На схеме внешних подключений ШАУВ-1-К4ПЧ, лист 25, для одного питающего кабеля указаны разные разделы: в заголовке ввода — 13АВ-РД-ЭМ2-ПА, у кабельной линии — 13АВ-РД-ЭМ-К4. Ссылки противоречат друг другу.",
+                "norm_quote": null,
+                "value_found": "13АВ-РД-ЭМ2-ПА; 13АВ-РД-ЭМ-К4",
+                "recommendation": "Указать в обеих ссылках согласованное обозначение раздела, в котором предусмотрен питающий кабель шкафа.",
+                "claim_type": "contradiction",
+                "problem_class": "conflicting_supply_project_references",
+                "affected_entity": "Питающий кабель ввода ШАУВ-1-К4ПЧ",
+                "evidence_quote": "В заголовке: «ввод кабеля по проекту 13АВ-РД-ЭМ2-ПА»; у той же линии: «Кабель учтен и показан в проекте \"13АВ-РД-ЭМ-К4\"». Общие данные также относят питание шкафов вентиляции к разделу ЭМ2-ПА.",
+                "evidence_kind": "block_image",
+                "context_status": "sufficient",
+                "confidence": 0.97,
+                "counterevidence_checked": true,
+                "required_context": []
+              }
+            ],
+            [
+              {
+                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                "category": "reference_conflict",
+                "finding": "На схеме внешних подключений ШАУВ-1-К4ПЧ, лист 25, указаны разные разделы для одного питающего кабеля: в заголовке ввода — «13АВ-РД-ЭМ2-ПА», возле кабельной линии — «13АВ-РД-ЭМ-К4». Ссылка на проект электроснабжения неоднозначна.",
+                "norm_quote": null,
+                "value_found": "13АВ-РД-ЭМ2-ПА; 13АВ-РД-ЭМ-К4",
+                "recommendation": "Указать единое корректное обозначение раздела, в котором учтён и показан питающий кабель шкафа.",
+                "claim_type": "contradiction",
+                "problem_class": "conflicting_power_supply_references",
+                "affected_entity": "Питающий кабель шкафа ШАУВ-1-К4ПЧ",
+                "evidence_quote": "В заголовке ввода: «ввод кабеля по проекту 13АВ-РД-ЭМ2-ПА»; возле той же линии: «Кабель учтен и показан в проекте \"13АВ-РД-ЭМ-К4\"». В общих данных также указан раздел ЭМ2-ПА для питания шкафов вентиляции.",
+                "evidence_kind": "block_image",
+                "context_status": "sufficient",
+                "confidence": 0.98,
+                "counterevidence_checked": true,
+                "required_context": []
+              }
+            ]
+          ],
+          "merged_findings": [
+            {
+              "severity": "ЭКСПЛУАТАЦИОННОЕ",
+              "category": "reference_conflict",
+              "finding": "На схеме внешних подключений ШАУВ-1-К4ПЧ, лист 25, указаны разные разделы для одного питающего кабеля: в заголовке ввода — «13АВ-РД-ЭМ2-ПА», возле кабельной линии — «13АВ-РД-ЭМ-К4». Ссылка на проект электроснабжения неоднозначна.",
+              "norm_quote": null,
+              "value_found": "13АВ-РД-ЭМ2-ПА; 13АВ-РД-ЭМ-К4",
+              "recommendation": "Указать единое корректное обозначение раздела, в котором учтён и показан питающий кабель шкафа.",
+              "claim_type": "contradiction",
+              "problem_class": "conflicting_power_supply_references",
+              "affected_entity": "Питающий кабель шкафа ШАУВ-1-К4ПЧ",
+              "evidence_quote": "В заголовке ввода: «ввод кабеля по проекту 13АВ-РД-ЭМ2-ПА»; возле той же линии: «Кабель учтен и показан в проекте \"13АВ-РД-ЭМ-К4\"». В общих данных также указан раздел ЭМ2-ПА для питания шкафов вентиляции.",
+              "evidence_kind": "block_image",
+              "context_status": "sufficient",
+              "confidence": 0.98,
+              "counterevidence_checked": true,
+              "required_context": [],
+              "_detector_model": "codex/gpt-6-astra",
+              "_detector_comparison_id": "codex/gpt-6-astra::leg:2",
+              "_detector_run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "_detector_ref": "codex:002",
+              "_comparison": {
+                "schema_version": 1,
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:001"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания указывают на одинаковое противоречие ссылок для питающего кабеля ШАУВ-1-К4ПЧ на листе 25: «13АВ-РД-ЭМ2-ПА» в заголовке ввода и «13АВ-РД-ЭМ-К4» у кабельной линии.",
+                "reviewer_model": "codex/gpt-6-astra",
+                "origin": "dual_comparison"
+              },
+              "_evidence_gate": {
+                "status": "published",
+                "reasons": []
+              }
+            },
+            {
+              "severity": "ЭКСПЛУАТАЦИОННОЕ",
+              "category": "reference_mismatch",
+              "finding": "На схеме внешних подключений ШАУВ-1-К4ПЧ, лист 25, для одного питающего кабеля указаны разные разделы: в заголовке ввода — 13АВ-РД-ЭМ2-ПА, у кабельной линии — 13АВ-РД-ЭМ-К4. Ссылки противоречат друг другу.",
+              "norm_quote": null,
+              "value_found": "13АВ-РД-ЭМ2-ПА; 13АВ-РД-ЭМ-К4",
+              "recommendation": "Указать в обеих ссылках согласованное обозначение раздела, в котором предусмотрен питающий кабель шкафа.",
+              "claim_type": "contradiction",
+              "problem_class": "conflicting_supply_project_references",
+              "affected_entity": "Питающий кабель ввода ШАУВ-1-К4ПЧ",
+              "evidence_quote": "В заголовке: «ввод кабеля по проекту 13АВ-РД-ЭМ2-ПА»; у той же линии: «Кабель учтен и показан в проекте \"13АВ-РД-ЭМ-К4\"». Общие данные также относят питание шкафов вентиляции к разделу ЭМ2-ПА.",
+              "evidence_kind": "block_image",
+              "context_status": "sufficient",
+              "confidence": 0.97,
+              "counterevidence_checked": true,
+              "required_context": [],
+              "_detector_model": "codex/gpt-6-astra",
+              "_detector_comparison_id": "codex/gpt-6-astra::leg:1",
+              "_detector_run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "_detector_ref": "codex:001",
+              "_comparison": {
+                "schema_version": 1,
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:002"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания указывают на одинаковое противоречие ссылок для питающего кабеля ШАУВ-1-К4ПЧ на листе 25: «13АВ-РД-ЭМ2-ПА» в заголовке ввода и «13АВ-РД-ЭМ-К4» у кабельной линии.",
+                "reviewer_model": "codex/gpt-6-astra",
+                "origin": "dual_comparison"
+              },
+              "_evidence_gate": {
+                "status": "published",
+                "reasons": []
+              }
+            }
+          ],
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "requests": [
+            {
+              "request": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794376429786821330/request.json",
+                "sha256": "626bf4d57cbfe8ef22bf407a4751e04b137c1a104cfad64fbb53b33fbd309733"
+              },
+              "attempts": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794376429786821330/attempts.json",
+                "sha256": "a44b191f1bfdfdc7790a57f09aa65541e36bedd67565355c42a195d6d298b154"
+              },
+              "images": [
+                {
+                  "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1c493988cdf14cee9ad351ef2e706470.png",
+                  "sha256": "fa028d82f0e5f818dd38743f9b5d6fb88006621d52993253769127266e375b24"
+                }
+              ],
+              "message_representation_characters": 21876,
+              "successful_attempts": 1
+            },
+            {
+              "request": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794376429787926294/request.json",
+                "sha256": "626bf4d57cbfe8ef22bf407a4751e04b137c1a104cfad64fbb53b33fbd309733"
+              },
+              "attempts": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794376429787926294/attempts.json",
+                "sha256": "96306434b12df101f6f5f06f51bf0950175f4464c522cc4e4fb14d4af20b3a45"
+              },
+              "images": [
+                {
+                  "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1c493988cdf14cee9ad351ef2e706470.png",
+                  "sha256": "fa028d82f0e5f818dd38743f9b5d6fb88006621d52993253769127266e375b24"
+                }
+              ],
+              "message_representation_characters": 21876,
+              "successful_attempts": 1
+            }
+          ]
+        }
+      ],
+      "semantic_review": "Обе ветви находят только конфликт ссылок на раздел электроснабжения. Пересчёт пяти моторных кабелей в замечаниях отсутствует.",
+      "next_frozen_arm_evaluation": "Проверить извлечение пяти отдельных длин и выполнение суммы по типу кабеля: 165 против 155 м для 4×2,5. Отдельная группа 3×1,5 имеет согласованную сумму 155 м; не переносить на неё расхождение."
+    },
+    {
+      "target": "KM9_LK5_landing_elevation:95ba2445f5ada28f5184",
+      "discipline": "KM",
+      "frozen_decision": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM9_LK5_landing_elevation.json",
+        "sha256": "258baafbac8c43c86e9a48ba228505f40cb9bd22ad945c8c03aa587ff06eb35b"
+      },
+      "engineer_history": {
+        "control_id": "KM:9",
+        "case_key": "ПД-00580716-КМ1.2_V1::UA-009",
+        "project": "ПД-00580716-КМ1.2_V1",
+        "finding_id": "UA-009",
+        "source": "Codex",
+        "original_claim": "Нижняя площадка короткого марша с ОГМ20 имеет отметку −2.350 на плане и −2.500 на разрезе.\n\nИсходные данные: План ЛК5 на −0.150 задаёт возле ОГМ20 площадки −2.350 и −1.800. Разрез 6-6 показывает для того же ОГМ20 −2.500 и −1.800. Перепад соответственно 550 и 700 мм, расхождение 150 мм. Отдельного пояснения о разных базах уровней в этом месте нет.",
+        "original_title": "Отметка площадки ОГМ20 ЛК5",
+        "engineer_decision": "Принято",
+        "engineer_reason": null,
+        "engineer_comment": "новое, в старом такого замечания нет.",
+        "later_learning": "Принята площадка−2,350/−2,500; правильную базу нельзя выбрать без данных.",
+        "later_label": "accepted",
+        "control_type": "положительный исторический",
+        "verification_status": "не перепроверено полностью",
+        "evidence_assessment": "Одна площадка ОГМ20: −2.350 на плане и −2.500 в разрезе, верх−1.800; требуется сверить базу, не выдумывать отделку.",
+        "evidence_ids": [],
+        "failure_stage": "Конфликт отметок одного объекта",
+        "workbook": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1 аудит/Unified_Engineering_Audit.xlsx",
+        "workbook_row": 10,
+        "location": "КМ1.2; л. 7; PDF 9; ЛК5, план на отм.−0.150; ОГМ20, площадка у осей В26₁–В27₁",
+        "rule_ids": [
+          "KM-008"
+        ]
+      },
+      "engineer_decision": null,
+      "coverage_ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_completed_coverage_ledger.json",
+        "sha256": "f87b1c95f76a84973bd52d831ed4b0df40f56acbdac9a432eca613008fc3b2a3"
+      },
+      "routes": [
+        {
+          "block_id": "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+          "raw_result": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_074052__ensemble_codex-only_high/block_blk_fe7bfb2c1c0b469ca1c3e2cb30686758.json",
+            "sha256": "7bd6dfc2f63b021dd2bcbdd3bdd04e0f248d4eb3851db3e6c832ca33d13923c5"
+          },
+          "detector_findings": [
+            [],
+            []
+          ],
+          "merged_findings": [],
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Оба списка замечаний пусты. Поиск новых проблем отключён.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "requests": [
+            {
+              "request": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383519839971911/request.json",
+                "sha256": "7c65eeeda4dd04deea8a08f5b184d69b9e576f092aefa21b2321a079ef4512b3"
+              },
+              "attempts": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383519839971911/attempts.json",
+                "sha256": "093c60a9062b4f485bb87a53660a81edaeb797dcf883b58eff994e0175006108"
+              },
+              "images": [
+                {
+                  "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fe7bfb2c1c0b469ca1c3e2cb30686758.png",
+                  "sha256": "dacc03a022080c2ab7c14f78e90ade3c013510bfc9a995fc847d5a17aadfccd2"
+                }
+              ],
+              "message_representation_characters": 23080,
+              "successful_attempts": 1
+            },
+            {
+              "request": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383519844042778/request.json",
+                "sha256": "7c65eeeda4dd04deea8a08f5b184d69b9e576f092aefa21b2321a079ef4512b3"
+              },
+              "attempts": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383519844042778/attempts.json",
+                "sha256": "8d7589ec538434b38e13ecdd68fdbd66a1e72ebec337173152b47361ad6467c4"
+              },
+              "images": [
+                {
+                  "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fe7bfb2c1c0b469ca1c3e2cb30686758.png",
+                  "sha256": "dacc03a022080c2ab7c14f78e90ade3c013510bfc9a995fc847d5a17aadfccd2"
+                }
+              ],
+              "message_representation_characters": 23080,
+              "successful_attempts": 1
+            }
+          ]
+        },
+        {
+          "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+          "raw_result": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_074052__ensemble_codex-only_high/block_blk_9e54c5e5fb6b4b28ae2304bd06c49949.json",
+            "sha256": "f217c6e9cb46994dd32081f3c8df47eebfbbcfd3d7433311b2ee8eb3b8e04a38"
+          },
+          "detector_findings": [
+            [],
+            []
+          ],
+          "merged_findings": [],
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Оба списка замечаний пусты. Дополнительный поиск отключён.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "requests": [
+            {
+              "request": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383447750647399/request.json",
+                "sha256": "bb47139d57a105b1deb060ae86fe3ecb7fdca541ec8382f2019fc5b27cdaa8a3"
+              },
+              "attempts": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383447750647399/attempts.json",
+                "sha256": "db6b8cbf7ba287c3b58cfa37bd6fc9367427b076f84f39d5911b7c90b7b24f38"
+              },
+              "images": [
+                {
+                  "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_9e54c5e5fb6b4b28ae2304bd06c49949.png",
+                  "sha256": "337026cb8604094fb374e3e777ccdac9d2e3013652099b49d2829dac397309a6"
+                }
+              ],
+              "message_representation_characters": 24171,
+              "successful_attempts": 1
+            },
+            {
+              "request": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383447752400359/request.json",
+                "sha256": "bb47139d57a105b1deb060ae86fe3ecb7fdca541ec8382f2019fc5b27cdaa8a3"
+              },
+              "attempts": {
+                "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383447752400359/attempts.json",
+                "sha256": "22fefea539c2368fb2d61492abbab130074c746bad7701918acb7184d7c330cd"
+              },
+              "images": [
+                {
+                  "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_9e54c5e5fb6b4b28ae2304bd06c49949.png",
+                  "sha256": "337026cb8604094fb374e3e777ccdac9d2e3013652099b49d2829dac397309a6"
+                }
+              ],
+              "message_representation_characters": 24171,
+              "successful_attempts": 1
+            }
+          ]
+        }
+      ],
+      "semantic_review": "Все четыре первичных ответа двух изображений пусты. Итоговое объединение этих блоков также пусто.",
+      "next_frozen_arm_evaluation": "Проверить связь плана и разреза по ЛК5, ОГМ20, направлению 6-6 и размерной цепочке; затем сравнение −2.350/−2.500. Не назначать правильную отметку и не придумывать отделку."
+    }
+  ],
+  "limits": [
+    "Это локализация отсутствия кандидата на указанных графических маршрутах, не полный аудит всех маршрутов документа.",
+    "Отсутствие замечания не раскрывает внутреннее рассуждение модели и не доказывает конкретную ошибку распознавания.",
+    "Правильность целевых тезисов взята из замороженного эталона; новой инженерной оценки здесь нет.",
+    "Код, входы независимых прогонов и эталон не изменены. Ожидаемые ответы остаются только у оценщика."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
