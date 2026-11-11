@@ -1,0 +1,719 @@
+{
+  "status": "three_ITP_valve_and_connection_rows_assessed",
+  "prior_review_correction": {
+    "repeat": 1,
+    "discipline": "ITP",
+    "finding_id": "F-018",
+    "claim": "Kvs40not_explicit",
+    "corrected_evidence": "blk_30789714316b48908c5addc9bfb135d2 continuation row",
+    "historical_queue_mutated": false,
+    "requires_final_metrics_erratum": true
+  },
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "2739354c9a47bc49ad6f61e69cd4d102d8da03f024841a8b5bc6af66ed87c23e",
+  "queue_after_sha256": "0276b42d0c0c016c4898464d3f0ddd9a8939cda6e214c876670ce064979a7d25",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Регулирующая арматура",
+        "sheet": "Листы 2.1, 3., 14, 15",
+        "page": [
+          9,
+          26,
+          52,
+          53
+        ],
+        "problem": "Марка, пропускная способность и давление клапанов ГВС не согласованы.",
+        "description": "Для второй зоны расчёт и экспликация задают VF-3R-50-40 с Kvs=40 м³/ч, спецификация — VFM-3R-50-40 с Kvs=4,0. При расходе 18,85 м³/ч Kvs=4 даёт около 22,21 бар вместо 0,222 бар при Kvs=40. Дополнительно для клапанов ГВС указаны PN25 в экспликации и PN16 в спецификации.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.85,
+            "reason": "Соответствие характеристик заказываемой арматуры расчётному режиму.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-018"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "До закупки согласовать марку, артикул, Kvs и допустимое давление каждого клапана ГВС.",
+        "risk": "Закупка неподходящего клапана, чрезмерное сопротивление и нарушение регулирования.",
+        "source_finding_ids": [
+          "T-018"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 67,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-014:38dacc087d3a36a03c14",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-015:ebc5f59f87e18c7525b5",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Поз33ГВС2вСО имеетKvs4,0,VFM-3R-50-40;ПЗвыбираетVF-3R-50-40,Kv40.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Экспликация поз33содержит самостоятельное полеKvs40.",
+          "verdict": "confirmed_authoritative_TEXT_correction_of_prior_review",
+          "limits": "В блоке16строка продолжения после маркиVF-3R-50-40 содержитKvs=40м3/ч,DN50,PN25. Прежний выводnot_explicit_in_checked_row ошибочно учитывал только первую строку позиции. Исправлена оценка второго повтора; историческая запись первого не переписана."
+        },
+        {
+          "claim": "При18,85расчёт(18,85/4)²≈22,21бар,а(18,85/40)²≈0,222бар.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "Это иллюстрация значения противоречия,не фактическая потеря установленного клапана."
+        },
+        {
+          "claim": "Обозначения и характеристики требуется согласовать с паспортом.",
+          "verdict": "supported_scoped_question",
+          "limits": "Каталог изделия065Z3360и фактическая поставка не проверены;не объявлять маркуVFM-3Rнесуществующей без источника."
+        },
+        {
+          "claim": "Клапан закуплен неверно либо потеря22,21бар фактически реализуется.",
+          "verdict": "not_established",
+          "limits": ""
+        },
+        {
+          "claim": "Позиции32/33/34ГВСимеютPN25вэкспликации иPN16вСО.",
+          "verdict": "confirmed_authoritative_TEXT_new_pressure_conflict",
+          "limits": "Сверены строки продолжения каждой позиции. Фактическое паспортное давление и заказное исполнение должны быть установлены по артикулам; совпадение марки не разрешает противоречие."
+        }
+      ],
+      "unsupported_additions": "Проверять строки продолжения таблиц; разные коды не доказывают конкретный несовместимый стык, а количество изделий не равно числу дефектов.",
+      "novel_useful_content": "Новые характеристики клапанов проверены поTEXT; прежняя ошибка чтения продолженияKvs40исправлена в текущей оценке.",
+      "duplicate_burden": "F018contains_two_distinct_valve_identities; F050third_zone_regime_distinct_from_F019arithmetic; shared_image_not_duplicate",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-014.json",
+          "sha256": "817028329da55c5233d5125a6095de379052f53a421de663b5fe777d4110921d",
+          "primary_adjudication": null,
+          "limits": "Расхождение в десять раз подтверждено по TEXT. Числа потерь ниже — условная проверка по формуле самого проекта, не доказательство фактически установленного клапана с Kvs 4,0 или неработоспособности системы. Правильность артикула по каталогу не проверена. PN25/PN16 относится к отдельному составному случаю B-ITP-F-015.",
+          "wording": "Согласовать характеристику клапана ГВС второй зоны, поз. 33: экспликация и расчёт задают VF-3R-50-40, Kvs/Kv 40 м³/ч; спецификация содержит VFM-3R-50-40, Kvs 4,0. Уточнить марку и пропускную способность в заказной строке."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-015.json",
+          "sha256": "3d68c70b29aa5dde6b5c09383bfd180c5304a2b38484cedb3cef205a780f25af",
+          "primary_adjudication": null,
+          "limits": "Подтверждены различия проектных записей. Каталожная эквивалентность марок, паспортные присоединения, допустимые режимы и фактическое рабочее давление в каждом узле здесь не проверены. Нельзя автоматически требовать замену всех клапановPN16 наPN25 или объявлять монтаж невозможным. У поз.36 DN15 пропускная способность4,0 совпадает; конфликт чисел для неё не заявлять. КириллическаяВ в TEXT сохранена, не исправлена по растру. Фактическая ошибочная закупка и отказ не доказаны.",
+          "wording": "Согласовать параметры клапанов: поз.30 отопления ДОО VFM-2R-20-6,3 имеетDN20 в расчёте и разрезе24-24, ноDN25 в экспликации; поз.32–34 ГВС имеютPN25 в экспликации иPN16 в спецификации; у соленоидного клапана поз.35 DN20 —Kv8,0 противKvs6,3. Уточнить также обозначения соленоидных клапанов поз.35/36:EV220WR противEV220В."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+          "sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137",
+          "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез24-24поз30DN20,Kv6,3;разрезы41-41и42-42поз29DN32,G10,7,Kv16,ΔP0,446."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-018",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-018_valve_or_connection_identity"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Арматура",
+        "sheet": "Лист 10",
+        "page": [
+          9,
+          17,
+          26,
+          54
+        ],
+        "problem": "Диаметр клапана ДОО и исполнения соленоидных клапанов не согласованы.",
+        "description": "Клапан поз. 30 VFM-2R-20-6,3 назван в экспликации DN25, тогда как расчёт и разрез 24-24, лист 10, задают DN20. Для соленоидных клапанов указаны марки EV220WR и EV220В; для DN20 пропускная способность различается: 8,0 и 6,3 м³/ч. Примечание о допустимости аналога не определяет согласованное исполнение.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Однозначность обозначений и характеристик изделий в рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-019",
+                "G-017",
+                "G-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-019",
+                  "G-017",
+                  "G-018"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить диаметр клапана ДОО и согласовать марки, присоединения и пропускную способность соленоидных клапанов.",
+        "risk": "Несовместимость присоединений и несоответствие гидравлических характеристик закупленной арматуры.",
+        "source_finding_ids": [
+          "T-019",
+          "G-017",
+          "G-018"
+        ],
+        "source_block_ids": [
+          "blk_b8c120f6cbc04397b8c5514a03fa3152"
+        ],
+        "related_block_ids": [
+          "blk_b8c120f6cbc04397b8c5514a03fa3152"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+            "page": 17
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение диаметра клапана поз. 30 VFM-2R-20-6,3: DN20 на разрезе 24-24 и в расчёте против DN25 в экспликации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение диаметра клапана поз. 30 VFM-2R-20-6,3: DN20 на разрезе 24-24 и в расчёте против DN25 в экспликации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 77,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-015:4a6a012e7c150e2d7f45",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-015:68e759d0e8be658b6916",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-015:5713c213c4eafe2032fb",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Поз30ДООVFM-2R-20-6,3вэкспликацииDN25,вПЗиразрезе24-24DN20.",
+          "verdict": "confirmed_prior_TEXT_GRAPHIC_identical_r2_bytes",
+          "limits": "Использована прежняя проверка разреза24–24при совпаденииSHA256."
+        },
+        {
+          "claim": "Обозначения и характеристики требуется согласовать с паспортом.",
+          "verdict": "supported_scoped_question",
+          "limits": "Каталог изделия065Z3360и фактическая поставка не проверены;не объявлять маркуVFM-3Rнесуществующей без источника."
+        },
+        {
+          "claim": "Соленоиды35/36имеютEV220WRвэкспликации иEV220ВвСО;DN20—Kv8,0против6,3.",
+          "verdict": "confirmed_authoritative_TEXT_new_equipment_conflict",
+          "limits": "Экспликация35встрокахпродолжениязадаётDN20Kv8,0;СО35—Ду20Kvs6,3. ДляDN15значение4,0согласуется. Не распространять расхождение пропускной способности на оба клапана."
+        },
+        {
+          "claim": "Допуск аналога разрешает любое различие марок и характеристик.",
+          "verdict": "not_established_equivalence",
+          "limits": "Требуется выбранное исполнение,тип уплотнения,присоединения и характеристика. Из разницы марки не следует ни доказанная взаимозаменяемость, ни невозможность монтажа."
+        }
+      ],
+      "unsupported_additions": "Проверять строки продолжения таблиц; разные коды не доказывают конкретный несовместимый стык, а количество изделий не равно числу дефектов.",
+      "novel_useful_content": "Новые характеристики клапанов проверены поTEXT; прежняя ошибка чтения продолженияKvs40исправлена в текущей оценке.",
+      "duplicate_burden": "F018contains_two_distinct_valve_identities; F050third_zone_regime_distinct_from_F019arithmetic; shared_image_not_duplicate",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-014.json",
+          "sha256": "817028329da55c5233d5125a6095de379052f53a421de663b5fe777d4110921d",
+          "primary_adjudication": null,
+          "limits": "Расхождение в десять раз подтверждено по TEXT. Числа потерь ниже — условная проверка по формуле самого проекта, не доказательство фактически установленного клапана с Kvs 4,0 или неработоспособности системы. Правильность артикула по каталогу не проверена. PN25/PN16 относится к отдельному составному случаю B-ITP-F-015.",
+          "wording": "Согласовать характеристику клапана ГВС второй зоны, поз. 33: экспликация и расчёт задают VF-3R-50-40, Kvs/Kv 40 м³/ч; спецификация содержит VFM-3R-50-40, Kvs 4,0. Уточнить марку и пропускную способность в заказной строке."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-015.json",
+          "sha256": "3d68c70b29aa5dde6b5c09383bfd180c5304a2b38484cedb3cef205a780f25af",
+          "primary_adjudication": null,
+          "limits": "Подтверждены различия проектных записей. Каталожная эквивалентность марок, паспортные присоединения, допустимые режимы и фактическое рабочее давление в каждом узле здесь не проверены. Нельзя автоматически требовать замену всех клапановPN16 наPN25 или объявлять монтаж невозможным. У поз.36 DN15 пропускная способность4,0 совпадает; конфликт чисел для неё не заявлять. КириллическаяВ в TEXT сохранена, не исправлена по растру. Фактическая ошибочная закупка и отказ не доказаны.",
+          "wording": "Согласовать параметры клапанов: поз.30 отопления ДОО VFM-2R-20-6,3 имеетDN20 в расчёте и разрезе24-24, ноDN25 в экспликации; поз.32–34 ГВС имеютPN25 в экспликации иPN16 в спецификации; у соленоидного клапана поз.35 DN20 —Kv8,0 противKvs6,3. Уточнить также обозначения соленоидных клапанов поз.35/36:EV220WR противEV220В."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+          "sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137",
+          "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез24-24поз30DN20,Kv6,3;разрезы41-41и42-42поз29DN32,G10,7,Kv16,ΔP0,446."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-018",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-019_valve_or_connection_identity"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-023",
+      "finding": {
+        "id": "F-023",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Соединительные детали трубопроводов",
+        "sheet": "Листы 6., 7., 8., 9.",
+        "page": [
+          29,
+          30,
+          31,
+          32
+        ],
+        "problem": "Не определены переходные решения между деталями с различными присоединительными диаметрами.",
+        "description": "Указаны труба 48×3,5 мм и детали с концом 45 мм, труба 108×4 мм и переход К-2-114×89, труба 159×4,5 мм и переход К-2-168×76. Для грувлочных деталей DN65 преобладают коды на 76 мм, но 289 муфт обозначены FC073E. Разные стандартные размеры сами по себе не доказывают дефект стыка, однако необходимые переходные исполнения не идентифицированы.",
+        "norm": "ГОСТ 17375-2001 (норматив-кандидат), пункт не подтверждён; ГОСТ 17378-2001 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 17375-2001",
+            "cited_designation": "ГОСТ 17375-2001",
+            "candidate_relevance": 0.9,
+            "reason": "Присоединительные размеры и исполнения отводов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 17378-2001",
+            "cited_designation": "ГОСТ 17378-2001",
+            "candidate_relevance": 0.95,
+            "reason": "Присоединительные размеры и исполнения переходов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить каждый тип стыка по наружному диаметру, стенке и исполнению; уточнить коды грувлочных муфт и необходимые переходы.",
+        "risk": "Невозможность сборки по спецификации и непредусмотренные переделки соединений.",
+        "source_finding_ids": [
+          "T-023"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 61,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "rework"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "ITP_F028_reducer_designations:fab751f2686c38838e0b",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "СО перечисляет электросварные трубы 30×2,5, 48×3,5, 108×4,0 и 159×4,5.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Отдельно присутствуют водогазопроводные трубы; их условные обозначения не приравниваются автоматически к наружным диаметрам."
+        },
+        {
+          "claim": "В перечне деталей есть обозначения 2-32, 2-45 и переходы К-2-114×89, К-2-168×76.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Последние позиции имеют количества 6 и 1. Это количество изделий, а не доказанных неисправных стыков."
+        },
+        {
+          "claim": "В отдельных обозначениях деталей, например отводах 90-2-32 и 90-2-45, толщина стенки явно не приведена.",
+          "verdict": "confirmed_bounded_designation_scope",
+          "limits": "Это вопрос полноты заказа; фактические толщины и комплектность поставки не установлены."
+        },
+        {
+          "claim": "Переход 114 непосредственно соединён с трубой 108, 168 с 159, детали 32/45 непосредственно с трубами 30/48.",
+          "verdict": "not_established_object_binding",
+          "limits": "Спецификация показывает разные размеры, но не доказывает конкретные сопряжения. Нужны узлы и принадлежность деталей."
+        },
+        {
+          "claim": "Следует сверить конкретные стыки по наружным диаметрам, стенкам и исполнению.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не назначать автоматическую замену изделий по совпадению условного прохода или близости чисел."
+        },
+        {
+          "claim": "Невозможность сборки, дефекты сварки и нарушение указанных ГОСТ доказаны.",
+          "verdict": "not_established",
+          "limits": "ГОСТ остаются нормативными кандидатами: norm_quote=null, resolver_pending. Текущие первичные таблицы стандарта в этой проверке не проверялись."
+        },
+        {
+          "claim": "Для муфты группы Ø65 указан Dinarm FC, код FC073E*, количество 289.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "В первичной строке знак Ø65, в итоговой формулировке DN65; это не доказанный наружный диаметр 65 мм."
+        },
+        {
+          "claim": "Заглушка и колена той же номинальной группы имеют EC076*, EL4500C076*, EL9000C076*; переходы GCR076R042*/R048*/R060*.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Числа 073 и 076 в кодах сами доказывают несовместимость.",
+          "verdict": "not_supported",
+          "limits": "Расшифровка каталожных кодов, допуски и фактические пары соединений не установлены."
+        },
+        {
+          "claim": "Нужно согласовать выбранные детали по наружному диаметру, пазу, давлению и исполнению.",
+          "verdict": "supported_scoped_question",
+          "limits": "Каталог и паспортные размеры здесь не проверены. Отдельно связывать типы труб с конкретными муфтами."
+        },
+        {
+          "claim": "Все 289 муфт несовместимы, требуется массовая замена или запрет грувлока для ВГП.",
+          "verdict": "not_established",
+          "limits": "Количество позиции не является числом дефектных соединений. Негерметичность фактически не наблюдалась."
+        },
+        {
+          "claim": "Коды076сами подтверждают присоединение76мм.",
+          "verdict": "catalog_decoding_not_verified",
+          "limits": "Числа в коде сохранены как данные маркировки; каталог и конкретная пара соединения не проверены. Оговорка второго повтора о недоказанном дефекте стыка корректна."
+        },
+        {
+          "claim": "Строка сохраняет часть о трубе30мм и детали32мм.",
+          "verdict": "not_explicitly_covered_in_this_row",
+          "limits": "Новый текст перечисляет48/45,108/114,159/168и грувлок. Прежний самостоятельный пример30/32не засчитывать по общему заголовку."
+        }
+      ],
+      "unsupported_additions": "Проверять строки продолжения таблиц; разные коды не доказывают конкретный несовместимый стык, а количество изделий не равно числу дефектов.",
+      "novel_useful_content": "Новые характеристики клапанов проверены поTEXT; прежняя ошибка чтения продолженияKvs40исправлена в текущей оценке.",
+      "duplicate_burden": "F-023 welded joints and F-024 grooved joints are distinct connection technologies; repeated nominal diameter alone is not duplicate evidence or a proven shared joint.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F028_reducer_designations.json",
+          "sha256": "948c401ded92dc7baf8da111f58e08619ee6485d56c8a1167192c2fd338a3e81",
+          "primary_adjudication": null,
+          "limits": "Подтверждены проектные обозначения и отличие от просмотренной таблицы исходного издания стандарта. Изменения стандарта и окончательная применимость редакции не проверены, поэтому нормативное нарушение не установлено. Не доказано, что переход114 непосредственно соединяется с трубой108, а168 с159: возможны другие присоединяемые элементы. Не предписывать автоматическую замену20на25 или114/168на108/159 без проверки узла. Грувлочную совместимость иOD75,5 не считать подтверждёнными: ограниченияH-ITP-17 сохраняются.",
+          "wording": "Проверить обозначения сварных переходов вСОл9: дляD40×20 иD50×20 записаныК-2-45×20 иК-2-57×20 (по4шт.). В просмотренной таблице2 ГОСТ17378-2001 для соответствующих больших концов указан малый диаметр25мм. Также проверить привязку переходов114×89 (6шт.) и168×76 (1шт.) к конкретным сопряжениям: в перечне труб присутствуют108×4,0 и159×4,5. Тему грувлочного рядаDN65 объединить сH-ITP-17, сохранив самостоятельную проверку сварных переходов."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-023",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP17_grooved_connection_identity.json",
+          "sha256": "86d4789b355603010fb36e5634f9f707854e9747a4637168699bba57a468ab33",
+          "primary_adjudication": null,
+          "limits": "Подтверждены конкретные коды и количество, не несовместимость всех289 соединений. Прямую таблицу FC из исторической ссылки получить не удалось; числовая расшифровка073/076 и ВГП75,5 не включены в доказанный тезис. Без привязки к узлам и паспортных допусков нельзя предписать массовую замену или универсальный запрет грувлоков для ВГП. Листы текущего MD: трубыСО6,муфтыСО7; исторические ссылки сохранены отдельно.",
+          "wording": "В группе Ø65 спецификации указаны 289 муфт FC073E*, а заглушки, колена, переходы и равносторонние тройники имеют коды EC076*, EL9000C076*, GCR076R048*/R060* и GT076*. Согласовать выбранные муфты и фитинги по наружному диаметру и пазу с фактическим типом трубы. ВГП65×4,0 и электросварную76×3,5 проверять раздельно."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-023_valve_or_connection_identity"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
