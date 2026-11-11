@@ -1,0 +1,53 @@
+{
+  "status": "code_path_and_request_context_trace",
+  "requests": [
+    {
+      "stage": "candidate_recovery_78b43efa7df28b57",
+      "request_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422980918405264/request.json",
+      "sha256": "8c719baf21a898415ac195ee0e21eb70ce0d66e2e20ff36da792f4e690da599e",
+      "existing_finding_ids": []
+    },
+    {
+      "stage": "candidate_recovery_8b38ddf3cba607c1",
+      "request_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423877473635963/request.json",
+      "sha256": "23d79ba84b20568d6694fe35bd00a7559ed5decddbeab32723dbb237c1e49c7b",
+      "existing_finding_ids": []
+    }
+  ],
+  "code_sources": [
+    {
+      "path": "backend/app/services/llm/claude_runner.py",
+      "sha256": "b338cc33dfbe95f7beea4503755cc4b33a3b56d2e48d44f043d0441b74c968c3"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/candidate_recovery.py",
+      "sha256": "0f199985f9cd22e851918c04946437773d387cb2661568be76fdff8686e47219"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+      "sha256": "1b0f25b9b0ee0d4d5852c01de5d337bce483de7d36c67b3f2f651288973b9f4a"
+    }
+  ],
+  "findings": [
+    "Recovery packets are built from payloads[2].findings before serial dispatch.",
+    "Codex targeted loop appends validated results to targeted_payloads; final combine runs after the loop.",
+    "No update of existing_findings before dispatch is present in this loop.",
+    "Exact canonical equality deliberately preserves differently worded or addressed claims; it cannot prove semantic duplication."
+  ],
+  "proposed_behavior": [
+    "Before each candidate recovery dispatch, provide an immutable snapshot of base plus already admitted results with stable final IDs.",
+    "Treat these existing findings as duplicate-navigation context, never independent factual evidence.",
+    "Require explicit duplicate target IDs and atom mapping; retain independent split claims even when candidate IDs overlap.",
+    "Bind duplicate receipts to snapshot signatures and keep mismatches pending.",
+    "Do not add historical benchmark or engineer answers to model input."
+  ],
+  "required_checks": [
+    "Earlier confirmed findings remain byte-equivalent except explicit lineage additions.",
+    "Same candidate can contain distinct defects: no deletion solely for source-ID overlap.",
+    "Repeated same claim may link to existing target without new output.",
+    "Changed target signature invalidates duplicate receipt.",
+    "A fresh frozen run is required; replaying old responses cannot predict new duplicate decisions."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
