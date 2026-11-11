@@ -1,0 +1,344 @@
+{
+  "status": "partial_dimension_review_not_quality_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "ffbab18c64cb8b863fe6b664c01bf81c3fcfb4d5d49ed0fc9a18b0a2d70b2680",
+  "queue_after_sha256": "e05322e23346a9e6d68f094a3d299058306c0fc83c258559a109a786844bc600",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-044",
+      "finding": {
+        "id": "F-044",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Мощности теплообменников",
+        "sheet": "Лист 7",
+        "page": [
+          8,
+          14,
+          48,
+          60,
+          64
+        ],
+        "problem": "Мощности теплообменников на разрезах не согласованы с экспликацией и подбором.",
+        "description": "Для ГВС первой зоны на разрезе 7-7 указано 0,403 Гкал/ч на аппарат при доле 50%, а в экспликации и расчёте №w203119579 — 0,419 Гкал/ч. Расширенное замечание также фиксирует на разрезе отопления второй зоны 1,005 вместо 1,012 Гкал/ч. Для ГВС расчёт с запасом 15% даёт 0,4186 Гкал/ч, что согласуется с округлённым значением 0,419.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к согласованности характеристик оборудования на чертежах и в расчётах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-007",
+                "G-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-007",
+                  "G-008"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать мощности по окончательным подборам и исправить разрезы, экспликацию и расчётные таблицы.",
+        "risk": "Неоднозначность заказа теплообменников и исходных данных наладки.",
+        "source_finding_ids": [
+          "G-007",
+          "G-008"
+        ],
+        "source_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea"
+        ],
+        "related_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 48
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 64
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-008",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют расхождение мощности ГВС I зоны: 0,403 против 0,419 Гкал/ч. Левое дополнительно охватывает расхождение мощности отопления II зоны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют расхождение мощности ГВС I зоны: 0,403 против 0,419 Гкал/ч. Левое дополнительно охватывает расхождение мощности отопления II зоны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 77,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "ITP_heat_exchanger_labels:92be8d7a03f9ca816e16",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "confirmed_shared_atom_F044_F045_not_whole_row_duplicate",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [
+        {
+          "source": "sealed_output_semantic_comparison",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "aa76592c061f7c75196ee2c35c606de32dd98c383243ddb22357d35dde54c89b",
+          "finding_ids": [
+            "F-044",
+            "F-045"
+          ],
+          "claim": "Мощность теплообменника отопления второй зоны 1,005 против 1,012 Гкал/ч повторена в обеих строках. F-045 уточняет разрез10-10 и подборw203119577; F-044 дополнительно содержит самостоятельную тему ГВСI 0,403/0,419.",
+          "recommendation": "Объединить повторённую часть, сохранив адресные сведения F-045 и отдельный тезис ГВСI F-044. Не удалять F-044 целиком.",
+          "limits": "Проверено повторение итогового тезиса, не измерены время инженера и ущерб; техническая истинность остальных частей строки ещё оценивается."
+        }
+      ],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-045",
+      "finding": {
+        "id": "F-045",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Мощности теплообменников",
+        "sheet": "Лист 7",
+        "page": [
+          8,
+          14,
+          60
+        ],
+        "problem": "Мощность теплообменника отопления второй зоны на разрезе отличается от экспликации.",
+        "description": "На разрезе 10-10 указано 1,005 Гкал/ч, в экспликации — 1,012 Гкал/ч. Разница составляет 0,007 Гкал/ч. Расчёт по нагрузке 0,880 Гкал/ч с запасом 15% даёт 1,012 Гкал/ч; требуется согласование с подбором №w203119577.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к согласованности параметров одной позиции оборудования в комплекте.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-009"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить окончательную мощность по подбору и исправить подпись разреза.",
+        "risk": "Использование устаревшей характеристики при комплектации и наладке.",
+        "source_finding_ids": [
+          "G-009"
+        ],
+        "source_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea"
+        ],
+        "related_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 60
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "confirmed_shared_atom_F044_F045_not_whole_row_duplicate",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [
+        {
+          "source": "sealed_output_semantic_comparison",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "aa76592c061f7c75196ee2c35c606de32dd98c383243ddb22357d35dde54c89b",
+          "finding_ids": [
+            "F-044",
+            "F-045"
+          ],
+          "claim": "Мощность теплообменника отопления второй зоны 1,005 против 1,012 Гкал/ч повторена в обеих строках. F-045 уточняет разрез10-10 и подборw203119577; F-044 дополнительно содержит самостоятельную тему ГВСI 0,403/0,419.",
+          "recommendation": "Объединить повторённую часть, сохранив адресные сведения F-045 и отдельный тезис ГВСI F-044. Не удалять F-044 целиком.",
+          "limits": "Проверено повторение итогового тезиса, не измерены время инженера и ущерб; техническая истинность остальных частей строки ещё оценивается."
+        }
+      ],
+      "disposition": "unchecked"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Duplicate burden only; all other output-quality dimensions remain pending."
+}
