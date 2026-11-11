@@ -1,0 +1,359 @@
+{
+  "status": "quantity_claim_review_with_explicit_pending_subtotals",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "844f43164bcfbfa9b4eb15f9c19828a5772a38e9e19b43389d9ffce7758d5443",
+  "queue_after_sha256": "28b57e2929ca7d502015405ebedb6a2620a948240a963c9354e0700efa3402fc",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификации",
+        "sheet": "Листы 2, 7, 9, 10",
+        "page": [
+          4,
+          9,
+          11,
+          12
+        ],
+        "problem": "Сводная спецификация ЛК6 не учитывает 40 анкеров относительно ведомостей с повторяемостью изделий.",
+        "description": "Для ЛК6 предусмотрено по два ОГМ22 и ОГМ25. С учётом повторяемости получается 57 опорных пластин и 228 анкеров, тогда как в технической спецификации указано 188 анкеров. Разница 40 шт. соответствует одному ОГМ22 и одному ОГМ25: 12 + 28. Эти изделия также содержат 10 пластин, 5,870 м круглой трубы, 11,920 м трубы 40×40×3 и 31,920 м трубы 25×25×3. Пропуск повторных экземпляров является вероятной причиной; распределение труб по сечениям требует проверки по оригиналу.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к комплектности спецификаций металлопроката и учёту количества элементов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить повторяемость ОГМ22 и ОГМ25 и пересчитать сводную спецификацию ЛК6 по согласованным ведомостям.",
+        "risk": "Недопоставка анкеров, пластин и труб, дополнительные закупки и задержка монтажа.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_b9096ac74f95416da66cc607a9828c3f",
+          "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+          "blk_1ab59db7d11b4521a1cd065b1ff8812b"
+        ],
+        "related_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_b9096ac74f95416da66cc607a9828c3f",
+          "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+          "blk_1ab59db7d11b4521a1cd065b1ff8812b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+            "page": 9
+          },
+          {
+            "type": "text",
+            "block_id": "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+            "page": 11
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1ab59db7d11b4521a1cd065b1ff8812b",
+            "page": 12
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 95,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM14_LK6_repetitions_conditional_totals:f37239acceec07686153",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "KM_F005_total_plate_balance:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ОГМ22/25 по2 и57 пластин",
+          "verdict": "supported_by_frozen_source_review"
+        },
+        {
+          "claim": "228 анкеров и недоучёт40",
+          "verdict": "conditional_total_overstated_as_confirmed",
+          "note": "В авторитетном TEXT смысл28 в строках ОГМ21/24 остаётся неустановленным; положение числа нельзя исправлять растром."
+        },
+        {
+          "claim": "10 пластин,5,870м круглой,11,920м40×40×3,31,920м25×25×3",
+          "verdict": "unchecked_new_subtotals_and_profile_mapping",
+          "note": "Совпадение с исторической темой не заменяет проверки каждого слагаемого и профиля."
+        },
+        {
+          "claim": "Пропуск повторных экземпляров — вероятная причина",
+          "verdict": "hypothesis_explicitly_qualified_not_proven_cause"
+        },
+        {
+          "claim": "Недопоставка анкеров, пластин и труб, дополнительные закупки и задержка монтажа.",
+          "verdict": "possible_consequence_not_observed"
+        }
+      ],
+      "unsupported_additions": "anchor_total_overstated_profile_subtotals_unchecked",
+      "novel_useful_content": "historical_positive_core_not_new_discovery",
+      "duplicate_burden": "distinct_sections_do_not_merge_S2_and_LK6_quantities",
+      "profile_and_section": "conditional_quantity_question_overstated_as_deficit",
+      "engineer_reuse": {
+        "historical": {
+          "control_id": "KM:14",
+          "finding_id": "UA-014",
+          "decision": "Принято",
+          "comment": "новое, в старом такого замечания нет.",
+          "later_learning": "Приняты вторые ОГМ22/25; количественный корень включает также все профили, не только анкеры."
+        },
+        "scope": "Use historical acceptance only for the original quantity/repetition issue; new exact subtotals and factual shortage claims are not independently accepted."
+      },
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM14_LK6_repetitions_conditional_totals.json",
+          "sha256": "ef42022ce9ccb4895b2cc4bb11aacc050a7d72636e26bd45375b95a0c663a3b4"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-004"
+        }
+      ],
+      "disposition": "partially_reviewed_profile_subtotals_pending"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-005",
+      "finding": {
+        "id": "F-005",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификации",
+        "sheet": "Листы 2, 4",
+        "page": [
+          4,
+          6
+        ],
+        "problem": "Для секции С2 занижено количество анкеров и не согласован расход опорных пластин.",
+        "description": "По ведомостям требуется 488 анкеров: 20 + 2×16 + 16 + 16 + 10×20 + 9×20 + 24. В сводной спецификации указано 448 шт., разница — 40 шт. Количество пластин составляет 122 шт.; их теоретическая масса без вычета отверстий — 0,137909 т против 0,127 т листа толщиной 10 мм в сводной спецификации. Массовое расхождение приблизительно соответствует десяти пластинам, но требует проверки с учётом отверстий.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к согласованности сводной спецификации с ведомостями элементов и повторяемостью изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-005"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать количество анкеров и опорных пластин секции С2, уточнить массу пластин и обновить сводные итоги.",
+        "risk": "Недостаточное количество крепежа и опорных деталей при закупке и монтаже.",
+        "source_finding_ids": [
+          "T-005"
+        ],
+        "source_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_ec977eb41e834dc8b7b332a66932a777",
+          "blk_addaa8965de54d218095d13652f30388",
+          "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+          "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+          "blk_7f0ce580e06f44f78c0b85f92efb82c7"
+        ],
+        "related_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_ec977eb41e834dc8b7b332a66932a777",
+          "blk_addaa8965de54d218095d13652f30388",
+          "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+          "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+          "blk_7f0ce580e06f44f78c0b85f92efb82c7"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "blk_addaa8965de54d218095d13652f30388",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7f0ce580e06f44f78c0b85f92efb82c7",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM13_F004_S2_anchor_multiplicity:59a9339a0f210f950692",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "KM_F005_total_plate_balance:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "488/448 анкеров и122 пластины С2",
+          "verdict": "supported_historical_positive_same_scope"
+        },
+        {
+          "claim": "137,909кг против127кг и соответствие десяти пластинам",
+          "verdict": "conditional_gross_blank_mass_not_proven_finished_part_shortage",
+          "note": "Выдача прямо оговаривает отсутствие вычета отверстий и необходимость проверки. Точный дефицит массы не засчитывается."
+        },
+        {
+          "claim": "Недостаточное количество крепежа и опорных деталей при закупке и монтаже.",
+          "verdict": "possible_consequence_not_observed"
+        }
+      ],
+      "unsupported_additions": "no_proven_finished_mass_deficit_or_procurement_outcome",
+      "novel_useful_content": "historical_positive_core_not_new_discovery",
+      "duplicate_burden": "distinct_sections_do_not_merge_S2_and_LK6_quantities",
+      "profile_and_section": "technical_anchor_conflict_with_separate_mass_uncertainty",
+      "engineer_reuse": {
+        "historical": {
+          "control_id": "KM:13",
+          "finding_id": "UA-013",
+          "decision": "Принято",
+          "comment": "новое, в старом такого замечания нет.",
+          "later_learning": "Приняты488/448 и122/112; контроль кратности и сопутствующей массы.",
+          "distinction": "Позднее122/112 не превращает112 в документированное число пластин."
+        },
+        "scope": "Use historical acceptance only for the original quantity/repetition issue; new exact subtotals and factual shortage claims are not independently accepted."
+      },
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM13_F004_S2_anchor_multiplicity.json",
+          "sha256": "b039e259c55746828a55fdad1fbb9afe04bc99d2498ae858403e14b33bf19631"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-005"
+        }
+      ],
+      "disposition": "source_supported_anchor_core_mass_question_retained"
+    }
+  ],
+  "limits": [
+    "F-004 review remains partial: new profile subtotals have not been validated.",
+    "Do not count a non-unchecked disposition as completed engineering review.",
+    "Historical acceptance, later source uncertainty and new model wording remain separate.",
+    "No frozen output or production changes."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
