@@ -17,10 +17,11 @@
     "question": {
       "counts": {
         "denominator": 52,
-        "availability_available": 2,
-        "full": 2,
-        "availability_unchecked": 50,
-        "unchecked": 50
+        "availability_available": 7,
+        "full": 6,
+        "partial": 1,
+        "availability_unchecked": 45,
+        "unchecked": 45
       },
       "review_complete": false,
       "full_match_rate": null,
@@ -38,7 +39,7 @@
     }
   },
   "section_accuracy_counts": {
-    "unchecked": 2,
+    "unchecked": 6,
     "held": 2
   },
   "filter_effectiveness": null,

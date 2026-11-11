@@ -50,47 +50,107 @@
     },
     {
       "target_id": "B-EOM-F-004:90fc50f60a8f39d5e2cb",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json",
+          "sha256": "6ec81943e3282643c6afdba57f11970e973a2a86b2afb5d28ca09687c5194b16"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-003"
+        }
+      ],
+      "reason": "Табличные6/cos0,80/S6,88 названы;5,5 выведено арифметически, но схема сдвумя5,5кВт не названа. Междокументный конфликт полностью не сохранён. Исправление единицыIp наА без основания оценивается отдельно.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-EOM-F-005:a26fcc71b65fb1e5cfa1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json",
+          "sha256": "9b98c505b2fdb2cbc3f9bff2b6489f30e19884381c8eec62cf2515fbd5ae81d8"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-004"
+        }
+      ],
+      "reason": "Ввод2ВРУ-3,компенсация:121,6/0,97→125,36 против123,2 и125,4ТТ явно сопоставлены. Добавленные выводы о максимальных токах и перегрузке требуют отдельной оценки.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-EOM-F-006:70a5bb3630cd86d67bdf",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-005"
+        }
+      ],
+      "reason": "Пять25 дают125,не100; оба ввода и послеаварийный режим явно названы в одной строке.125 не назначается окончательной нагрузкой.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-EOM-F-006:9b2481431ea0814f9774",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-005"
+        }
+      ],
+      "reason": "Оба ввода:125,1против100 иформула100/сумма125против83,2; послеаварийный итог также сохранён. Засчитывается согласование формул, не доказанный дефект оборудования.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-EOM-F-006:50e2ed9a377d8e0af479",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-005"
+        }
+      ],
+      "reason": "Послеаварийная формула225,1против183,2 явно названа вместе срасхождениями вводов; правильная окончательная нагрузка не установлена.",
       "section_assessment": "unchecked"
     },
     {
