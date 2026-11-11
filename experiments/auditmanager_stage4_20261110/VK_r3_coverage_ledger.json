@@ -1,0 +1,558 @@
+{
+  "schema_version": 1,
+  "discipline": "VK",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "findings_sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+  "reviewer": "Codex source-bound atomic coverage review; evaluator only",
+  "entire_output_reviewed": false,
+  "targets": [
+    {
+      "target_id": "B-VK-F-008:91aa2581cf81197e6fe8",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-008.json",
+          "sha256": "04017a8927d6b2f0a646bbcb162274eb2227858c8917d70c4a68455e32d8adc3"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-011",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Сохранены RapidDN100,4,70шт. и вопрос количества;470 явно не подтверждено. Предложение перепроверить OCR оценивается отдельно как нарушение границ авторитетного TEXT.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-VK-F-014:e9e5e1b148f844eb7d6d",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-017"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-014.json",
+          "sha256": "a9974e014f896ed662677424d1ee50e93b654ebb9878fe140dfb4315b895ff3e"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-017",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Обе ссылкиТУ22825ДП-В/ДП-К сопоставлены; оригинал требуется проверить, неверная нагрузка не утверждается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-VK-F-029:d083cf366c333ad81c4a",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK14:f8b1abbe9f89c7203c04",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-010"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK14.json",
+          "sha256": "570852e44331a5bb4b36806002728b354e19f8b7079a17ab6c5abf7f6d7d1619"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-010",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Строка50×0,5,2м спецификации определена как вопрос исполнения. Дополнительная плановая привязка и сомнение в OCR не считаются доказанными этим сопоставлением.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK32_drain_count_identity:7925cb948b0881a20c11",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK35_B-VK-F-010:3dfbbec7f05abd4276e4",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-013"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK35_B-VK-F-010.json",
+          "sha256": "b175eeb75cd23a55a2ea601623e65898bc8dd4756c4fe16cf2e8aa8ad3e83f72"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-013",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Определена существующая пустая строка крепленийК1.1DN100 при63,2м; требование посчитать по трассам, а не вывести число только из длины.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK50_specification_duplicates:f2c9bd72860a821601dd",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK50_specification_duplicates:f59ff2a504ccf24245d9",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F003_reinforcement_counts:7ad222ee93fc76cab7bc",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F003_reinforcement_counts.json",
+          "sha256": "e9e6f6cdb5f27558c3a138869ea0665a50d8d8baa273e180a4a9b9fcd9542f53"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-006",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Указано усиление всех соединенийК2 и7/33/26Rapid против4/18/26Kralle,разность3+15. DN200не объявлен дефицитным. Давление и фактическая поставка остаются отдельной проверкой.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F003_reinforcement_counts:e513233db1a750cd7427",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F004_insulation_scope:02bb3aef959f1c658194",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F004_insulation_scope.json",
+          "sha256": "1aee463c39c642ce1ee9ae8c8f9995e6a86275fba0dbfc86edd2668bb7cc0d39"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-007",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Сохранены9ммГ1дляК2,отсутствие соответствующей позицииСО,258,7м и разграничение100×40других систем; количество предлагается определить по диаметрам. Альтернатива отдельной поставки в выдаче не раскрыта; это предел рекомендации, не отсутствие найденного документального расхождения.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F006_test_criterion:cdce20857528642ffcee",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F011_technical_space_level:c654fd4efb33b8840ce7",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-015"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F011_technical_space_level.json",
+          "sha256": "9ce8af0902e7e64d2af46e6fe4a4b62030dd6ff186c03c5bfd021ee870e5aeac"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-015",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Четыре источника38,640/38,690 названы с вопросом поверхности отсчёта; ошибка физического положения трубы прямо не доказана.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:f37578f6de4df40d140e",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:9bace4bde2d823655edc",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:45990c01587ab3d1a583",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:990e18216eaec4a3bf2d",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F015_roof_title_level:2bb76a02a4eaf106a275",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-018"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F015_roof_title_level.json",
+          "sha256": "0c536b77f695dcdbc9642bc8b64731cbcd50a0012262a72bea4510cbb30e6eb0"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-018",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Заголовок лист15:41,280 против ведомости40,690; требуется определить поверхность поАР.41,290не подменяет отметку кровли; содержание штампа не утверждается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F015_roof_title_level:e6b91efad363f833fe38",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F016_incomplete_riser_label:dc77e2144b6ac1213962",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F017_F028_cross_references:e41c019d214dddc2adbd",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F024_riser_labels:f44954b8bdd41b2ea649",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F026_sheet_title_scope:66eff95c8c4f43ea81ac",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F026_sheet_title_scope:3066aa83db3239a42924",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F026_sheet_title_scope:462e37ddc2cb56579949",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F027_calculation_level_labels:7479fd101bd142ad9eec",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK20_sensor_count_identity:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK34_transition_assembly:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK51_apartment_scope:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F001_revision_interval:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F002_revision_compensator_inventory:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F002_revision_compensator_inventory:composite:2",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F005_fitting_pressure:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F006_test_criterion:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F009_pipe_125_inventory:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F009_pipe_125_inventory:composite:2",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:composite:2",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F021_revision_height:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    }
+  ],
+  "limits": [
+    "Full match requires all mandatory object, relationship and location context.",
+    "Score unsupported additions and novel findings separately.",
+    "Engineer confirmation is required; model suggestions alone are not final matches."
+  ]
+}
