@@ -1,0 +1,13 @@
+{
+  "status": "real_saved_packet_contract_verified",
+  "finding": "EOM F-050",
+  "legacy_queue_sha256": "deee6308f1e7b54b63162ea7f923dff1e0fe79e065baea0088860c6782c73d3f",
+  "legacy_pre_dispatch_error": "packet_graphic_metadata_changed",
+  "explicitly_rebuilt_queue_sha256": "630e8a784cd3afbce66e569ca003c9c59565de20b02e6bddc6e3107b40b148e0",
+  "rebuilt_request_unchanged": true,
+  "source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "model_calls": 0,
+  "historical_outputs_modified": false,
+  "technical_finding_resolved": false,
+  "boundary": "Prevents sending a legacy packet missing available prepared stamps. Does not resolve document applicability or claim that every drawing has a stamp. Rebuild context explicitly; never retroactively credit unsent metadata."
+}

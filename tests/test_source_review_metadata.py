@@ -51,3 +51,27 @@ def test_ambiguous_blocks_stamps_and_page_boundaries():
     assert graphic_stamp_metadata(MD.replace('Generated drawing claim', '> **Stamp:** Code: OTHER'), ['g']) == []
     assert graphic_stamp_metadata('### BLOCK #1 [GRAPHIC]: g\n## Page 2\n> **Stamp:** Code: OTHER', ['g']) == []
     assert graphic_stamp_metadata(MD, ['t']) == []
+
+
+@pytest.mark.parametrize('legacy_value', [None, []])
+def test_missing_prepared_stamp_stops_before_dispatch_even_without_metadata_claim(legacy_value):
+    f, q, request, response = inputs()
+    if legacy_value is None:
+        q['packets'][0].pop('graphic_metadata')
+    else:
+        q['packets'][0]['graphic_metadata'] = legacy_value
+    with pytest.raises(ValueError, match='packet_graphic_metadata_changed'):
+        prepare_source_review_request(q, f, MD)
+    # A model need not quote the omitted stamp for its absence to invalidate
+    # current admission. Historical response bytes remain untouched.
+    response['claims'][0].update(status='needs_data', evidence=[])
+    assert 'packet_graphic_metadata_mismatch' in validate_source_review(response, q, [f], MD)['errors']
+
+
+def test_graphic_without_prepared_stamp_remains_usable():
+    md = '### BLOCK #1 [GRAPHIC]: g\nDrawing without prepared stamp\n'
+    f = {'id': 'F1', 'source_evidence_review_status': 'pending', 'source_review_requests': [{'block_ids': ['g']}]}
+    q = build_source_review_queue([f], md)
+    q['packets'][0].pop('graphic_metadata')
+    request = prepare_source_review_request(q, f, md)
+    assert json.loads(request['messages'][1]['content'])['graphic_metadata'] == []

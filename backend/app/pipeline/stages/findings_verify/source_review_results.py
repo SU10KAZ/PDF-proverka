@@ -70,7 +70,7 @@ def validate_source_review(response, queue, findings, md):
                 allowed.add(bid)
     metadata = packet.get('graphic_metadata', [])
     expected_metadata = graphic_stamp_metadata(md, packet.get('required_graphic_block_ids', []))
-    if metadata and metadata != expected_metadata:
+    if metadata != expected_metadata:
         errors.append('packet_graphic_metadata_mismatch')
     metadata_allowed = {r['block_id']: r['stamp'] for r in expected_metadata if r in metadata}
     claims = response.get('claims')

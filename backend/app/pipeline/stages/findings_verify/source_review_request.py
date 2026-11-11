@@ -31,7 +31,7 @@ def prepare_source_review_request(queue, finding, md, *, max_images=8):
     graphic_ids = {bid for kind, bid in headers if kind.upper() in ('IMAGE', 'GRAPHIC') and counts[bid] == 1}
     metadata = packet.get('graphic_metadata', [])
     expected_metadata = graphic_stamp_metadata(md, packet.get('required_graphic_block_ids', []))
-    if metadata and metadata != expected_metadata:
+    if metadata != expected_metadata:
         raise ValueError('packet_graphic_metadata_changed')
     images, omitted = [], []
     receipts = packet.get('graphic_attachments', [])
