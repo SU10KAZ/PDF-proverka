@@ -1,8 +1,8 @@
 {
   "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
   "candidate_count": 147,
-  "disposition_reviewed_count": 65,
-  "remaining_disposition_review_count": 82,
+  "disposition_reviewed_count": 147,
+  "remaining_disposition_review_count": 0,
   "model_decision_counts": {
     "retained": 47,
     "missing_decision": 1,
@@ -477,8 +477,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -488,8 +488,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -499,8 +499,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -510,8 +510,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -521,8 +521,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -532,8 +532,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -543,8 +543,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -554,8 +554,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -565,8 +565,8 @@
       "input_deferred": true,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -576,8 +576,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -587,8 +587,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -630,8 +630,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -641,8 +641,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -652,8 +652,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -663,8 +663,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -674,8 +674,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -685,8 +685,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -696,8 +696,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -707,8 +707,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -718,8 +718,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -729,8 +729,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -756,8 +756,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -767,8 +767,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -778,8 +778,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -789,8 +789,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -811,8 +811,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -822,8 +822,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -833,8 +833,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -844,8 +844,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -855,8 +855,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -866,8 +866,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -877,8 +877,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -888,8 +888,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -899,8 +899,8 @@
       "input_deferred": true,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -910,8 +910,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -921,8 +921,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -948,8 +948,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -959,8 +959,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -981,8 +981,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -992,8 +992,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1003,8 +1003,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1014,8 +1014,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1073,8 +1073,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1100,8 +1100,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1111,8 +1111,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1122,8 +1122,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1133,8 +1133,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1144,8 +1144,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1155,8 +1155,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1166,8 +1166,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1231,8 +1231,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1242,8 +1242,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1253,8 +1253,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1264,8 +1264,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1339,8 +1339,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1350,8 +1350,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1409,8 +1409,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1420,8 +1420,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1431,8 +1431,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1442,8 +1442,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1453,8 +1453,8 @@
       "input_deferred": true,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1464,8 +1464,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1555,8 +1555,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1566,8 +1566,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1577,8 +1577,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1588,8 +1588,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1653,8 +1653,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1728,8 +1728,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1739,8 +1739,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1750,8 +1750,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1761,8 +1761,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1772,8 +1772,8 @@
       "input_deferred": true,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1783,8 +1783,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1794,8 +1794,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1805,8 +1805,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1816,8 +1816,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1827,8 +1827,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1838,8 +1838,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1876,8 +1876,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1887,8 +1887,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1898,8 +1898,8 @@
       "input_deferred": false,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     },
     {
@@ -1909,11 +1909,11 @@
       "input_deferred": true,
       "model_decision": "needs_data",
       "model_final_links": [],
-      "review_path": null,
-      "assessment": "pending_semantic_candidate_review",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
+      "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
       "all_original_claims_semantically_verified": false
     }
   ],
-  "note": "Output review and candidate semantic preservation are distinct. A reviewed partial disposition is not a verified original graphic claim.",
+  "note": "All disposition reasons reviewed. This is NOT completion of graphic checks or acceptance:82 deferrals remain factual not_checked; retained/duplicate graphic subclaims also remain pending.",
   "production_acceptance": false
 }
