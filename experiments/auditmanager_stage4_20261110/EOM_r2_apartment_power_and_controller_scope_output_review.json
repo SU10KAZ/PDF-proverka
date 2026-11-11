@@ -1,0 +1,371 @@
+{
+  "status": "two_graphic_findings_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "7987d87784a3bc7c674df9aceb9afc0e96c749bd7b2852d047ad305e05c178ac",
+  "queue_after_sha256": "2b070c545600a8d4b220beeefff7d54c801fb910cc4902b5cbee80466d6f8c86",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-040",
+      "finding": {
+        "id": "F-040",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчет нагрузок",
+        "sheet": "Листы 3, 10",
+        "page": [
+          6,
+          13
+        ],
+        "problem": "Мощности квартир 7–9 этажей не согласованы между этажной схемой и расчетом ВРУ-3.",
+        "description": "Семь квартир на этажной схеме имеют мощности 16, 18, 14, 14, 14, 18 и 18 кВт, суммарно 112 кВт на этаж и 336 кВт на три этажа. В таблице ВРУ-3 установленная мощность квартир 7–9 этажей равна 294 кВт, расчетная — 76,4 кВт. Различие исходной суммы составляет 42 кВт; применение одновременности отдельно не раскрывает это расхождение.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.3.2; СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить согласованность расчетных нагрузок питающей магистрали.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-033"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-033"
+                ],
+                "designation_source": "Подбор при объединении замечаний"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить методику определения квартирных нагрузок и применения коэффициентов спроса и одновременности.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-033"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-033"
+                ],
+                "designation_source": "Перечень нормативных ссылок входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать исходные мощности квартир и отдельно показать переход от суммы квартирных нагрузок к расчетной нагрузке магистрали с обоснованными коэффициентами.",
+        "risk": "Недостоверный расчет магистрали квартир и вводной нагрузки ВРУ-3.",
+        "source_finding_ids": [
+          "G-033"
+        ],
+        "source_block_ids": [
+          "blk_78ea210434524e3f9c120cb6dfe2d620"
+        ],
+        "related_block_ids": [
+          "blk_78ea210434524e3f9c120cb6dfe2d620",
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_78ea210434524e3f9c120cb6dfe2d620",
+            "page": 13
+          },
+          {
+            "type": "text",
+            "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-033",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Семь значений 16,18,14,14,14,18,18 дают 112 кВт; для трех одинаковых этажей 336 кВт.",
+          "verdict": "confirmed_graphic_and_conditional_sum",
+          "limits": "Подпись типового щита 7–9 этаж поддерживает повторение. Поименный состав каждого этажа не проверен."
+        },
+        {
+          "claim": "336 и 294 — сопоставимые исходные мощности, разница 42 доказывает расхождение.",
+          "verdict": "unsupported_quantity_semantics",
+          "limits": "На графике строка подписана Pр,кВт. В TEXT ВРУ-3 294 относится к Py, 76,4 к Pp. Численная разность 42 верна, но тождество величин не установлено."
+        },
+        {
+          "claim": "Согласовать квартирные нагрузки и переход к магистрали с коэффициентами.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не назначать 336 правильной Py, не прибавлять 42 к Pp и не утверждать занижение расчетной нагрузки без методики."
+        },
+        {
+          "claim": "Нормативные кандидаты и последствия для оборудования",
+          "verdict": "not_established",
+          "limits": "Применимость нормы, паспорт и фактический отказ не проверены."
+        }
+      ],
+      "unsupported_additions": "see_quantity_semantics_or_intermediate_device_boundary",
+      "novel_useful_content": "known_scoped_question_no_new_failure_proven",
+      "duplicate_burden": "Distinct objects and comparison operations; no count per apartment or phase.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; direct image review and current wording assessment.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_78ea210434524e3f9c120cb6dfe2d620.png",
+          "sha256": "680de3215ea80739ba4cff1a9de7bf3e48c503ac066a96a6cc01a352ce6e0667",
+          "block_id": "blk_78ea210434524e3f9c120cb6dfe2d620",
+          "route": "directly_viewed_GRAPHIC_current_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_5b30188592764230a7cd894838a60430",
+          "route": "authoritative_TEXT_reviewed_same_session"
+        }
+      ],
+      "disposition": "assessed_preserve_graphic_question_remove_unproven_parameter_equivalence"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-041",
+      "finding": {
+        "id": "F-041",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Питание электроприемников",
+        "sheet": "Лист 13",
+        "page": 16,
+        "problem": "Напряжение и токи двух групп 2ЩРОВ1 не соответствуют показанному однофазному подключению.",
+        "description": "Группы 2ЩРОВ1-4 и 2ЩРОВ1-5 подключены через однополюсные QF4 и QF5 к фазам A и B. В таблице для обеих указано 0,38 кВ. При показанном однофазном питании 220 В, мощностях 0,8 и 0,4 кВт и cos φ=0,85 токи составляют около 4,3 и 2,1 А вместо 1,3 и 0,7 А.",
+        "norm": "ПУЭ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие напряжения оборудования схеме питания и расчетных токов условиям выбора проводников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-036",
+                "G-037"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-036",
+                  "G-037"
+                ],
+                "designation_source": "Подбор при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подтвердить паспортное напряжение оборудования, согласовать фазность подключения, аппараты и кабели, затем исправить напряжение и токи в таблице.",
+        "risk": "Неработоспособность оборудования или выбор защиты по неверным параметрам.",
+        "source_finding_ids": [
+          "G-036",
+          "G-037"
+        ],
+        "source_block_ids": [
+          "blk_af9f7cd6dba549149cd7152de8b85c41"
+        ],
+        "related_block_ids": [
+          "blk_af9f7cd6dba549149cd7152de8b85c41"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_af9f7cd6dba549149cd7152de8b85c41",
+            "page": 16
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-036",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-037",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на противоречие между 0,38 кВ в таблице и однофазным подключением групп 2ЩРОВ1-4 и 2ЩРОВ1-5 через QF4/QF5. Левое дополнительно выявляет несоответствие токов 1,3/0,7 А и приводит расчёт 4,3/2,1 А при 220 В.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на противоречие между 0,38 кВ в таблице и однофазным подключением групп 2ЩРОВ1-4 и 2ЩРОВ1-5 через QF4/QF5. Левое дополнительно выявляет несоответствие токов 1,3/0,7 А и приводит расчёт 4,3/2,1 А при 220 В.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F021_F023_controller_voltage_scope:b197a84551461f1efaca",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Группы 4/5 подключены к A/B через QF4/QF5 1P, кабели 3×2,5; таблица 0,38 кВ, 0,8/0,4 кВт, cos0,85, 1,3/0,7 А.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": "Установлены подписи питающей стороны и таблицы, не паспортные данные двигателей."
+        },
+        {
+          "claim": "При однофазных 220 В токи около 4,3 и 2,1 А.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "800/(220×0,85)=4,278;400/(220×0,85)=2,139. Применимость к указанной в таблице стороне не установлена."
+        },
+        {
+          "claim": "Показанное однофазное подключение определяет питание конечного двигателя.",
+          "verdict": "unsupported_omitted_intermediate_device",
+          "limits": "На обеих линиях показан ЯЧ и далее кабель по проекту автоматики. Без схем ЯЧ нельзя автоматически исправить 0,38 на 0,22 или назначить новый ток."
+        },
+        {
+          "claim": "Подтвердить паспорт и согласовать фазность, кабели, аппарат и параметры.",
+          "verdict": "supported_scoped_question",
+          "limits": "Добавить проверку стороны ЯЧ, к которой относится Uн. Непригодность линии и отказ оборудования не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты и последствия для оборудования",
+          "verdict": "not_established",
+          "limits": "Применимость нормы, паспорт и фактический отказ не проверены."
+        }
+      ],
+      "unsupported_additions": "see_quantity_semantics_or_intermediate_device_boundary",
+      "novel_useful_content": "known_scoped_question_no_new_failure_proven",
+      "duplicate_burden": "Distinct objects and comparison operations; no count per apartment or phase.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; direct image review and current wording assessment.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_af9f7cd6dba549149cd7152de8b85c41.png",
+          "sha256": "c0818141c89611cddd3349315dbdd3350a7a9af64d5bcd5a09b0d36b74f425f8",
+          "block_id": "blk_af9f7cd6dba549149cd7152de8b85c41",
+          "route": "directly_viewed_GRAPHIC_current_review"
+        }
+      ],
+      "disposition": "assessed_preserve_graphic_question_remove_unproven_parameter_equivalence"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
