@@ -1,0 +1,79 @@
+{
+  "status": "bounded_runtime_trace_not_trial_acceptance",
+  "discipline": "AK",
+  "repeat": 1,
+  "theme": "AK100_F015_drive_cable_graph",
+  "block_id": "blk_397f9663589b40bfbde9b898e99e5117",
+  "sources": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_054120__ensemble_codex-only_high/block_blk_397f9663589b40bfbde9b898e99e5117.json",
+      "sha256": "9d49c78ec754969377b09208c51e520ac8d37310887dd3b51ce78248cd4aa711"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "e970de9c3b5e2930b38f251ef43fbbf92e917eb2639bdf76febdf668507d3fde"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/snapshots/AK/findings_merge.json",
+      "sha256": "def15d18318d659f91be562a5b80db24fb9e12aaed74804eaf642f133848f9ed"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/snapshots/AK/findings_verify.json",
+      "sha256": "b4677f5677783d1c81656b2249aefd4b739716c214f67b56101ef45913f5cdc9"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+      "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+    }
+  ],
+  "detector_findings_counts": [
+    0,
+    1
+  ],
+  "observations": [
+    {
+      "stage": "graphic_detector_2",
+      "evidence": "На схеме показаны четыре участка ППГнг(А)-HF 4x2,5 длиной 20, 330, 330 и 20 м, а также два участка от ШАУВ-1-К5АС.ПЧ к М2 и М3 по 15 м. В ведомости: «Кабель ППГнг(A)-HF 4x2,5мм² | 700 | м».",
+      "conclusion": "Модель явно распознала два участка ПЧ→М2/М3 по15м и использовала их в сумме730м. Утверждение «объект не найден» к этому ответу неприменимо."
+    },
+    {
+      "stage": "graphic_detector_1_and_2",
+      "conclusion": "Первый ответ пуст; второй формулирует только расхождение количества кабеля. Отсутствие индивидуальных марок самостоятельным тезисом ни в одном из этих двух ответов не сформулировано."
+    },
+    {
+      "stage": "block_comparison_and_gate",
+      "conclusion": "Единственный количественный кандидат опубликован; deferred_findings пуст. Поиск дополнительных проблем отключён. Доказательств подавления кандидата об отсутствии марок на этой стадии нет.",
+      "evidence_gate": {
+        "schema_version": 1,
+        "candidates": 1,
+        "published": 1,
+        "deferred": 0,
+        "min_confidence": 0.8,
+        "max_published_per_block": null,
+        "reason_counts": {}
+      },
+      "gap_search": {
+        "enabled": false,
+        "performed": false,
+        "status": "disabled",
+        "searched_categories": [],
+        "summary": "Поиск новых проблем отключён. Список left пуст; замечание codex:001 из right остаётся несопоставленным.",
+        "findings_added": 0,
+        "duplicates_rejected": 0
+      }
+    },
+    {
+      "stage": "G-080_to_F-059",
+      "conclusion": "Количество730/700 сохранено в объединённой и проверенной выдаче; добавлено сравнение с720м журнала. Безусловное исправление ведомости на730м заменено сверкой перед выбором окончательного объёма."
+    }
+  ],
+  "causal_assessment": "Для этого графического блока поддерживается причина «объекты распознаны, проверка их индивидуальной маркировки не отражена в выводе». Не подтверждается причина «сформулированное замечание о марках снято объединением». Это наблюдение ответа, не доказательство внутренних рассуждений модели.",
+  "limits": [
+    "Не устанавливает отсутствие данного тезиса во всех остальных блоках или всей выдаче.",
+    "Не засчитывает полное покрытие эталонной темы по одному арифметическому совпадению.",
+    "Не изменяет замороженные модели, промпты, эталон или экспериментальные ветви.",
+    "Причина текущего повтора не подменяет историческую причину пропуска."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
