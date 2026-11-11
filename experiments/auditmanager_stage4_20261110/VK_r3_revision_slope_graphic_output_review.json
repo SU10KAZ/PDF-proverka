@@ -1,0 +1,325 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/VK_output_review_queue.json",
+  "queue_before_sha256": "503ec9be76cb8927017407c6935356550097fc5170bce39b6e73d94c735fa7d1",
+  "queue_after_sha256": "1beeadff7177f117d81215f86b2e7535bf80b2fa8815f1c37a873f1c8cde1428",
+  "reviewed_rows": [
+    {
+      "discipline": "VK",
+      "repeat": 3,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Бытовая канализация",
+        "sheet": "Лист 20",
+        "page": 22,
+        "problem": "На схеме стояка К1-3.7 отсутствуют обозначения предусмотренных ревизий.",
+        "description": "По результату блочного анализа на стояке К1-3.7 не показаны ревизии на 2, 6 и 10-м этажах, хотя примечание 2 листа 20 предусматривает их установку. Это отдельное расхождение изображения с примечанием; оно сохраняется независимо от необходимости уточнить общую периодичность ревизий.",
+        "norm": "СП 30.13330.2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 30.13330.2020",
+            "cited_designation": "СП 30.13330.2020",
+            "candidate_relevance": 0.97,
+            "reason": "Проверить требования к установке ревизий на стояках и обеспечению доступа для прочистки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-015"
+                ],
+                "designation_source": "Экспертный подбор по документу из ведомости ссылочных документов"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить исходную схему стояка К1-3.7, нанести ревизии на требуемых этажах после согласования периодичности и учесть их в спецификации.",
+        "risk": "Монтаж стояка без необходимых ревизий и затруднение устранения засоров.",
+        "source_finding_ids": [
+          "G-015"
+        ],
+        "source_block_ids": [
+          "blk_bf9e42b43a6a45a8bab27fd03948ed37"
+        ],
+        "related_block_ids": [
+          "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+          "blk_5cbadcc65a5549348d33245b22ca8bd4"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+            "page": 22
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-015",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Примечание2листа20предусматривает ревизии2/6/10этажей.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Легенда определяетRкакревизию."
+        },
+        {
+          "claim": "НаК1-3.7нет ревизий на6и10этажах.",
+          "verdict": "refuted_direct_GRAPHIC",
+          "limits": "ВыноскиRø110видны у+21,220и+34,660 и связаны сК1-3.7. Проверены полный растр и вертикальный фрагмент без изменения данных."
+        },
+        {
+          "claim": "На нижнем участкеК1-3.7у2этажа не показана ревизия.",
+          "verdict": "supported_local_graphic_label_gap",
+          "limits": "У+7,270/уровня2этажа видны узлы,ППМ,Пб.к.,Кр.д.1,но нет выноскиRкак на других двух уровнях. Сохранить адресный вопрос2этажа;не утверждать отсутствие ревизии физически или во всём комплекте."
+        },
+        {
+          "claim": "Нанести ревизии на всехтрёх этажах и учесть их.",
+          "verdict": "overbroad_remedy",
+          "limits": "Не добавлять повторно6/10. Сначала проверить нижний узел,периодичность и заводское исполнение. Невозможность прочистки не доказана."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая несовместимость, отказ оборудования, нарушение проверенного нормативного пункта или неправильный монтаж.",
+      "novel_useful_content": "Сохранена адресная основа уточнения; новое инженерное принятие и прирост качества относительно классического метода не доказаны.",
+      "duplicate_burden": "F020:один локальный вопрос2этажа;ложное отсутствие на6/10снять. F022:одна высотная увязка нижнего участка,не смешивать с другими уклонными замечаниями поК1.1или верхнейК2.1.",
+      "profile_and_section": "Сохранить локальные вопросы по2этажу и высотной увязке;снять опровергнутые части об отсутствииRна6/10. Фактические разделы не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; оценка основана на текущих источниках.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_bf9e42b43a6a45a8bab27fd03948ed37.png",
+          "sha256": "5e6ae04d4ef30c48a89315f16da25cdfc5cbf2b1fa3e2413cf713bc66622f279",
+          "route": "directly_viewed_GRAPHIC",
+          "block_id": "blk_bf9e42b43a6a45a8bab27fd03948ed37"
+        },
+        {
+          "path": "/tmp/vk_r3_riser37_crop.png",
+          "sha256": "2fae09ac64e2d7f86eb5b266ba4c7365211937534958298f16959866229c131a",
+          "route": "directly_viewed_GRAPHIC_crop",
+          "source_fraction_xyxy": [
+            0.6,
+            0,
+            0.7,
+            0.96
+          ],
+          "transform": "integer pixel Pillow crop, no OCR"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_74e342545e414fabb6f8d2edcd21d591",
+          "route": "authoritative_TEXT_note_and_legend"
+        }
+      ],
+      "disposition": "assessed_direct_r3_VK_revision_and_slope"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 3,
+      "finding_id": "F-022",
+      "finding": {
+        "id": "F-022",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Самотечное водоотведение",
+        "sheet": "Лист 26",
+        "page": 28,
+        "problem": "Высотные отметки нижнего участка К2.1-3.1 указывают на обратный уклон.",
+        "description": "По результату блочного анализа отметка нижнего отводящего участка стояка К2.1-3.1 повышается по направлению к выпуску с +5,651 до +5,666, то есть на 15 мм, при указанном уклоне 0,010. Далее трасса снижается к +5,549. Перед исправлением необходимо проверить направление стока и принадлежность отметок одной линии отсчёта; приведённое сочетание данных не обеспечивает однозначного непрерывного понижения.",
+        "norm": "СП 30.13330.2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 30.13330.2020",
+            "cited_designation": "СП 30.13330.2020",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить требования к уклонам, гидравлическому расчёту и обеспечению самотечного отвода на горизонтальных участках канализации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-022"
+                ],
+                "designation_source": "Экспертный подбор по документу из ведомости ссылочных документов"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить направление стока, длины и высотные привязки участка. Исправить отметки либо трассировку, обеспечив согласованный расчётный уклон к выпуску.",
+        "risk": "Застой воды, накопление отложений, засоры и снижение надёжности аварийного водоотведения.",
+        "source_finding_ids": [
+          "G-022"
+        ],
+        "source_block_ids": [
+          "blk_1861896656bb467fb9787ee25605c340"
+        ],
+        "related_block_ids": [
+          "blk_1861896656bb467fb9787ee25605c340"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1861896656bb467fb9787ee25605c340",
+            "page": 28
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-022",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "schedule",
+            "rework",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Нижняя ветвьК2.1-3.1:5,651 у низа правогостояка,5,666 у промежуточного поворота,далее5,549 в левой сборке.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Труба графически прослежена к левому продолжениюВК0-2;на участке указаны0,010. Отметки связаны с одной ветвью,но точная поверхность измерения не установлена."
+        },
+        {
+          "claim": "5,666−5,651=0,015м;локально отметка возрастает по направлению к левому выпуску.",
+          "verdict": "supported_numeric_coordination_question",
+          "limits": "Сохранять проверку линии отсчёта,направления и длины. Разные стороны фитинга и выносок требуют уточнения перед признанием фактического обратного уклона."
+        },
+        {
+          "claim": "Далее трасса снижается к5,549.",
+          "verdict": "bounded_graphic_sequence",
+          "limits": "На левой сборке присутствуют также5,320и4,647;не превращать три выбранные отметки в полностью восстановленную пространственную модель."
+        },
+        {
+          "claim": "Исправить отметки либо трассу после сверки;застой и засоры.",
+          "verdict": "conditional_remedy_risk_not_observed",
+          "limits": "Схема даёт повод проверить высотную увязку,не доказывает фактический монтаж,гидравлический отказ или нарушение проверенной нормы."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая несовместимость, отказ оборудования, нарушение проверенного нормативного пункта или неправильный монтаж.",
+      "novel_useful_content": "Сохранена адресная основа уточнения; новое инженерное принятие и прирост качества относительно классического метода не доказаны.",
+      "duplicate_burden": "F020:один локальный вопрос2этажа;ложное отсутствие на6/10снять. F022:одна высотная увязка нижнего участка,не смешивать с другими уклонными замечаниями поК1.1или верхнейК2.1.",
+      "profile_and_section": "Сохранить локальные вопросы по2этажу и высотной увязке;снять опровергнутые части об отсутствииRна6/10. Фактические разделы не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; оценка основана на текущих источниках.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1861896656bb467fb9787ee25605c340.png",
+          "sha256": "f0ae28492692f0bfaa499b6c987f652355b93b6609a9ec4306dcdc33a6c97102",
+          "route": "directly_viewed_GRAPHIC",
+          "block_id": "blk_1861896656bb467fb9787ee25605c340"
+        }
+      ],
+      "disposition": "assessed_direct_r3_VK_revision_and_slope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Two current findings inspected directly on full GRAPHIC blocks; K1-3.7 additionally cropped and checked against TEXT note. No actual installation, full spatial survey or norm applicability verification."
+}

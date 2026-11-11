@@ -1,0 +1,524 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/VK_output_review_queue.json",
+  "queue_before_sha256": "1beeadff7177f117d81215f86b2e7535bf80b2fa8815f1c37a873f1c8cde1428",
+  "queue_after_sha256": "9f3fb8ac053521ed8eadf23b5d583c399d4dc84f08b841edec17384118d269ad",
+  "reviewed_rows": [
+    {
+      "discipline": "VK",
+      "repeat": 3,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Связность рабочих чертежей",
+        "sheet": "Листы 18, 19, 20, 21",
+        "page": [
+          3,
+          20,
+          21,
+          22,
+          23
+        ],
+        "problem": "Ссылки на продолжение схем К1 ведут на листы других секций и систем.",
+        "description": "На листе 18 продолжения стояков К1-3.3, К1-3.4 и К1-3.10 адресованы на лист 19 вместо листа 20, а К1-3.11 — на лист 19 вместо листа 21. На листе 19 продолжение ниже +7,370 адресовано на лист 16 вместо листа 17, выше +38,640 — на лист 22 вместо листа 23. На листах 20 и 21 нижнее продолжение секции С3 адресовано на лист 17 вместо листа 18, верхнее — на лист 22 вместо листа 23. По ведомости лист 16 содержит план кровли, лист 17 относится к нижней схеме секции С2, лист 19 — к стоякам секции С2, а лист 22 — к системе К1.1.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.97,
+            "reason": "Проверить требования к ссылкам на другие листы и однозначности взаимосвязанных изображений рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-007",
+                "G-008",
+                "G-009",
+                "G-010",
+                "G-013",
+                "G-014",
+                "G-016",
+                "G-017",
+                "G-018",
+                "G-019"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-007",
+                  "G-008",
+                  "G-009",
+                  "G-010",
+                  "G-013",
+                  "G-014",
+                  "G-016",
+                  "G-017",
+                  "G-018",
+                  "G-019"
+                ],
+                "designation_source": "Экспертный подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить ссылки на листе 18 на листы 20 и 21 по маркам стояков; на листе 19 — на листы 17 и 23; на листах 20 и 21 — на листы 18 и 23. Проверить взаимность ссылок с принимающими схемами.",
+        "risk": "Ошибочное сопоставление участков разных секций и систем при монтаже, проверке связности и эксплуатации.",
+        "source_finding_ids": [
+          "G-007",
+          "G-008",
+          "G-009",
+          "G-010",
+          "G-013",
+          "G-014",
+          "G-016",
+          "G-017",
+          "G-018",
+          "G-019"
+        ],
+        "source_block_ids": [
+          "blk_c5143b0e4651468d97318ae7d877d087",
+          "blk_dfae064f26494949a92afe3b0f6f9158",
+          "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+          "blk_11ab29134110467ba6ce9b0991b6ea82"
+        ],
+        "related_block_ids": [
+          "blk_c5143b0e4651468d97318ae7d877d087",
+          "blk_dfae064f26494949a92afe3b0f6f9158",
+          "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+          "blk_11ab29134110467ba6ce9b0991b6ea82",
+          "blk_02d4fb9a7c524289a73899512cd4f3d0",
+          "blk_ece9516e802e47a8baa35590355f2526",
+          "blk_7f11769cf1164f53aec644339cd35e97",
+          "blk_b5c6b2d82a0c49eeab068093582b6e3e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_c5143b0e4651468d97318ae7d877d087",
+            "page": 20
+          },
+          {
+            "type": "text",
+            "block_id": "blk_dfae064f26494949a92afe3b0f6f9158",
+            "page": 21
+          },
+          {
+            "type": "text",
+            "block_id": "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+            "page": 22
+          },
+          {
+            "type": "text",
+            "block_id": "blk_11ab29134110467ba6ce9b0991b6ea82",
+            "page": 23
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-008",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-013",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-014",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T162345Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:23:45.314147+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочную ссылку «далее см. Лист 19» для К1-3.3 и К1-3.4 вместо листа 20. Левое дополнительно охватывает К1-3.10 и К1-3.11 с исправлением ссылок на листы 20 и 21 соответственно.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочную ссылку «далее см. Лист 19» для К1-3.3 и К1-3.4 вместо листа 20. Левое дополнительно охватывает К1-3.10 и К1-3.11 с исправлением ссылок на листы 20 и 21 соответственно.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковые ошибочные ссылки: лист 16 ниже +7,370 и лист 22 выше +38,640 вместо листов 17 и 23. Детализация эквивалентна; различается только оценка серьёзности.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковые ошибочные ссылки: лист 16 ниже +7,370 и лист 22 выше +38,640 вместо листов 17 и 23. Детализация эквивалентна; различается только оценка серьёзности.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания выявляют одинаковые неверные ссылки листа 20: ниже +7,370 указан лист 17 вместо 18, выше +38,640 — лист 22 вместо 23. Разная оценка тяжести не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочную ссылку для продолжения К1 секции №3 ниже +7,370: лист 17 секции №2 вместо листа 18 секции №3; детализация и исправление эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 51,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "operations"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F017_F028_cross_references:e41c019d214dddc2adbd",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Лист18:К1-3.3/3.4/3.10ссылаются на19вместо20;К1-3.11на19вместо21.",
+          "verdict": "confirmed_current_direct_GRAPHIC_and_TEXT_register",
+          "limits": "Повторно просмотрен полный блок:групповые выноски к19 прослежены до указанных стояков. Ранее проверенные3.7/3.13не подменяют новые адреса3.4/3.10."
+        },
+        {
+          "claim": "Лист19:низ16→17,верх22→23;листы20/21:низ17→18,верх22→23.",
+          "verdict": "confirmed_prior_GRAPHIC_and_TEXT_register",
+          "limits": "Шесть мест подтверждены сохранёнными проверками и идентичными источниками. Лист20 дополнительно просмотрен в текущем проходе ревизий."
+        },
+        {
+          "claim": "Исправить ссылки и проверить взаимность продолжений.",
+          "verdict": "supported_scoped_reference_remedy",
+          "limits": "Это номера листов чертежей,неPDFстраницы. Не выполнять глобальную22→23для другой системыК1.1;поузловая связность всех продолжений не восстановлена."
+        },
+        {
+          "claim": "Ошибочное присоединение и монтаж.",
+          "verdict": "risk_not_observed",
+          "limits": "Неверные ссылки подтверждены;фактическая ошибка монтажа,повышенная серьёзность и нормативное нарушение не доказаны."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Неверная ссылка не доказывает неправильное присоединение при монтаже;полная взаимная стыковка продолжений не проверена.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Current F019 consolidates several prior reference rows. Prior F024 repeats lower link of F023 and earns no independent defect credit; upper and lower links retained separately within one finding.",
+      "profile_and_section": "Адресное согласование ссылок;фактическое распределение разделов выдачи не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_c5143b0e4651468d97318ae7d877d087.png",
+          "sha256": "97589fc63a0caa006e84af6d1f487a5cdc115de3bee5945c26cbd79f6bd65c0a",
+          "block_id": "blk_c5143b0e4651468d97318ae7d877d087",
+          "route": "current_direct_GRAPHIC_original_resolution",
+          "observation": "Ссылкилист19 возле3.3,3.4,3.7,3.11,группы3.13;неполнаяСт.К1- возле+5,447.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_c5143b0e4651468d97318ae7d877d087.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT_register_reused_with_identical_source_hash",
+          "limits": "Назначение листов сверено ранее;новый осмотр всех целевых листов не заявляется.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json",
+          "sha256": "3b9bdd5ae305bfa08f477c45706ea5b839ced2270c0aa0fa4477f7e919f84dbf",
+          "primary_adjudication": null,
+          "limits": "Подтверждена несогласованность шести адресов с авторитетной ведомостью и графикой трёх схем. Это не семь независимых дефектов. Лист16 по ведомости — кровля,22 — К1.1; номера не взяты из пагинации PDF. Полные штампы целевых листов16/18/22 отдельно не просмотрены; назначение этих листов установлено по TEXT ведомости. Поузловая стыковка всех стояков, обратные ссылки, смежные комплекты и последствия при монтаже не проверены. Не установлены фактические затраты, переделки или конкретное нарушение ГОСТ. Повторяемость обосновывает дальнейшую сверку, но не доказывает ошибки во всех ссылках комплекта.",
+          "wording": "Согласовать ссылки продолжения К1 с ведомостью листов. Для стояков К1-2.1–К1-2.10 (лист19 по ведомости) нижняя ссылка ведёт на16 вместо схемы секции2 на17, верхняя — на22 вместо верхней схемы К1 на23. Для К1-3.1–К1-3.10 и К1-3.11–К1-3.20 (листы20 и21) нижние ссылки ведут на17 вместо схемы секции3 на18, верхние — на22 вместо23. Сохранить все шесть мест в одном вопросе и проверить связанные обратные ссылки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_dfae064f26494949a92afe3b0f6f9158.png",
+          "sha256": "69e3cecdabaadd863bd889864419423a11c0742197f05f323b6aa66aac59ac40",
+          "block_id": "blk_dfae064f26494949a92afe3b0f6f9158",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "На схеме К1-2.1…2.10 листа 19 общая верхняя скобка выше +38,640 направляет на лист 22; нижняя ниже +7,370 — на лист 16.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_dfae064f26494949a92afe3b0f6f9158.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_ids": [
+            "F-019"
+          ],
+          "limits": "No new direct graphic inspection or engineer acceptance claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json",
+          "sha256": "3b9bdd5ae305bfa08f477c45706ea5b839ced2270c0aa0fa4477f7e919f84dbf",
+          "primary_adjudication": null,
+          "limits": "Подтверждена несогласованность шести адресов с авторитетной ведомостью и графикой трёх схем. Это не семь независимых дефектов. Лист16 по ведомости — кровля,22 — К1.1; номера не взяты из пагинации PDF. Полные штампы целевых листов16/18/22 отдельно не просмотрены; назначение этих листов установлено по TEXT ведомости. Поузловая стыковка всех стояков, обратные ссылки, смежные комплекты и последствия при монтаже не проверены. Не установлены фактические затраты, переделки или конкретное нарушение ГОСТ. Повторяемость обосновывает дальнейшую сверку, но не доказывает ошибки во всех ссылках комплекта.",
+          "wording": "Согласовать ссылки продолжения К1 с ведомостью листов. Для стояков К1-2.1–К1-2.10 (лист19 по ведомости) нижняя ссылка ведёт на16 вместо схемы секции2 на17, верхняя — на22 вместо верхней схемы К1 на23. Для К1-3.1–К1-3.10 и К1-3.11–К1-3.20 (листы20 и21) нижние ссылки ведут на17 вместо схемы секции3 на18, верхние — на22 вместо23. Сохранить все шесть мест в одном вопросе и проверить связанные обратные ссылки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_bf9e42b43a6a45a8bab27fd03948ed37.png",
+          "sha256": "5e6ae04d4ef30c48a89315f16da25cdfc5cbf2b1fa3e2413cf713bc66622f279",
+          "block_id": "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "На схеме К1-3.1…3.10 листа 20 общая верхняя скобка выше +38,640 направляет на лист 22; нижняя ниже +7,370 — на лист 17.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_bf9e42b43a6a45a8bab27fd03948ed37.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_ids": [
+            "F-020"
+          ],
+          "limits": "No new direct graphic inspection or engineer acceptance claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json",
+          "sha256": "3b9bdd5ae305bfa08f477c45706ea5b839ced2270c0aa0fa4477f7e919f84dbf",
+          "primary_adjudication": null,
+          "limits": "Подтверждена несогласованность шести адресов с авторитетной ведомостью и графикой трёх схем. Это не семь независимых дефектов. Лист16 по ведомости — кровля,22 — К1.1; номера не взяты из пагинации PDF. Полные штампы целевых листов16/18/22 отдельно не просмотрены; назначение этих листов установлено по TEXT ведомости. Поузловая стыковка всех стояков, обратные ссылки, смежные комплекты и последствия при монтаже не проверены. Не установлены фактические затраты, переделки или конкретное нарушение ГОСТ. Повторяемость обосновывает дальнейшую сверку, но не доказывает ошибки во всех ссылках комплекта.",
+          "wording": "Согласовать ссылки продолжения К1 с ведомостью листов. Для стояков К1-2.1–К1-2.10 (лист19 по ведомости) нижняя ссылка ведёт на16 вместо схемы секции2 на17, верхняя — на22 вместо верхней схемы К1 на23. Для К1-3.1–К1-3.10 и К1-3.11–К1-3.20 (листы20 и21) нижние ссылки ведут на17 вместо схемы секции3 на18, верхние — на22 вместо23. Сохранить все шесть мест в одном вопросе и проверить связанные обратные ссылки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_11ab29134110467ba6ce9b0991b6ea82.png",
+          "sha256": "140140cbe9eec89dc6adde4374611d4e385529cac4235259836811ed0d1bcd7f",
+          "block_id": "blk_11ab29134110467ba6ce9b0991b6ea82",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "На схеме К1-3.11…3.20 листа 21 общая верхняя скобка выше +38,640 направляет на лист 22.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_11ab29134110467ba6ce9b0991b6ea82.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json",
+          "sha256": "3b9bdd5ae305bfa08f477c45706ea5b839ced2270c0aa0fa4477f7e919f84dbf",
+          "primary_adjudication": null,
+          "limits": "Подтверждена несогласованность шести адресов с авторитетной ведомостью и графикой трёх схем. Это не семь независимых дефектов. Лист16 по ведомости — кровля,22 — К1.1; номера не взяты из пагинации PDF. Полные штампы целевых листов16/18/22 отдельно не просмотрены; назначение этих листов установлено по TEXT ведомости. Поузловая стыковка всех стояков, обратные ссылки, смежные комплекты и последствия при монтаже не проверены. Не установлены фактические затраты, переделки или конкретное нарушение ГОСТ. Повторяемость обосновывает дальнейшую сверку, но не доказывает ошибки во всех ссылках комплекта.",
+          "wording": "Согласовать ссылки продолжения К1 с ведомостью листов. Для стояков К1-2.1–К1-2.10 (лист19 по ведомости) нижняя ссылка ведёт на16 вместо схемы секции2 на17, верхняя — на22 вместо верхней схемы К1 на23. Для К1-3.1–К1-3.10 и К1-3.11–К1-3.20 (листы20 и21) нижние ссылки ведут на17 вместо схемы секции3 на18, верхние — на22 вместо23. Сохранить все шесть мест в одном вопросе и проверить связанные обратные ссылки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_11ab29134110467ba6ce9b0991b6ea82.png",
+          "sha256": "140140cbe9eec89dc6adde4374611d4e385529cac4235259836811ed0d1bcd7f",
+          "block_id": "blk_11ab29134110467ba6ce9b0991b6ea82",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "На схеме К1-3.11…3.20 листа 21 общая нижняя скобка ниже +7,370 направляет на лист 17.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_11ab29134110467ba6ce9b0991b6ea82.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_ids": [
+            "F-021",
+            "F-022"
+          ],
+          "limits": "No new direct graphic inspection or engineer acceptance claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_c5143b0e4651468d97318ae7d877d087.png",
+          "sha256": "97589fc63a0caa006e84af6d1f487a5cdc115de3bee5945c26cbd79f6bd65c0a",
+          "route": "directly_viewed_r3_GRAPHIC",
+          "observation": "Sheet18 grouped continuation labels to19 traced at K1-3.3,3.4,3.10,3.11; target sheet determined by register."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-019"
+        }
+      ],
+      "disposition": "assessed_r3_VK_cross_reference_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "One compound reference finding; four frozen prior reviews reused with verified hashes and identical r3 sources, plus direct r3 sheet18 graphic inspection for changed object addresses. No new engineer decision or full installation trace."
+}
