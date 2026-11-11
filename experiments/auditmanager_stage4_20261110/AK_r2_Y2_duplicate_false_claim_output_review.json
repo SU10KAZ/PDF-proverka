@@ -1,0 +1,300 @@
+{
+  "status": "duplicate_claim_refuted_by_graphic_alignment",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "5f6e6e4ce6fe8ba00855314678d94fb2ab7c83833ec6edfee8842f67c44b04e6",
+  "queue_after_sha256": "af28c04330580590700a5df31d7945a91d1b2f557c0fc5556ddd5f9c41a66567",
+  "reviewer": "Codex direct GRAPHIC and enlarged matrix inspection",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-049",
+      "finding": {
+        "id": "F-049",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_assignment",
+        "sheet": "Лист 15",
+        "page": 19,
+        "problem": "На функциональной схеме Пн5.1, лист 15, линия 10 от электропривода воздушной заслонки Y2 подписана «Управление ПЧ пуск/стоп, 0–100%». При этом для неё отмечен только DO, а преобразователь частоты двигателя М1 и сигналы AO/DO показаны на линии 11.",
+        "description": "На функциональной схеме Пн5.1, лист 15, линия 10 от электропривода воздушной заслонки Y2 подписана «Управление ПЧ пуск/стоп, 0–100%». При этом для неё отмечен только DO, а преобразователь частоты двигателя М1 и сигналы AO/DO показаны на линии 11.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Обозначить линию 10 как управление заслонкой Y2 и отнести подпись управления преобразователем частоты М1 к линии 11.",
+        "risk": "Неверная комплектация аналоговых выходов и отсутствие управления частью ПЧ.",
+        "source_finding_ids": [
+          "G-031"
+        ],
+        "source_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "related_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "page": 19
+          }
+        ],
+        "highlight_regions": [],
+        "source_stage": "stage01_atomicity_guard",
+        "atomicity_guard": {
+          "split_from": "F-046",
+          "reason": "distinct_nonrecommendational_candidates_same_block"
+        },
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-031",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Линия10 отY2 подписана как управлениеПЧ пуск/стоп0–100%.",
+          "verdict": "refuted_direct_GRAPHIC_column_alignment",
+          "limits": "Подпись у линии10 — управление воздушной заслонкой. УправлениеПЧ и состояние вентилятора относятся к11, рядомSCUZ2."
+        },
+        {
+          "claim": "В столбце10 отмечен толькоDO, в11 естьAO/DI/DO.",
+          "verdict": "confirmed_direct_GRAPHIC_matrix",
+          "limits": "Эти отметки соответствуют разным функциям и сами по себе не создают заявленного конфликта."
+        },
+        {
+          "claim": "Нужно исправить подпись10 науправлениеY2 иперенести управлениеПЧ к11.",
+          "verdict": "unsupported_correction_remove",
+          "limits": "Требуемая адресация подписей уже показана в просмотренном фрагменте."
+        },
+        {
+          "claim": "Неверная комплектация аналоговых выходов и отсутствие управления частью ПЧ.",
+          "verdict": "not_established",
+          "limits": "Неверная адресация, комплектация и отсутствие управления не установлены. Монтаж/программа/модули не проверены."
+        }
+      ],
+      "unsupported_additions": "false_label_to_column_binding_and_unsupported_consequence",
+      "novel_useful_content": "none_in_this_refuted_claim",
+      "duplicate_burden": "F-049 and F-052 repeat one false claim; two emitted rows, one semantic error",
+      "profile_and_section": "exclude_refuted_claim_not_question",
+      "engineer_reuse": "Direct graphic review; no engineer decision asserted.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "directly_viewed_IMAGE_graphic_column_alignment"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AK_r2_Y2_matrix_detail.png",
+          "sha256": "40b35163cbd39f6fa2376121d6267c22b4cd255571ddae54d2ba2188920bc1d2",
+          "crop_box_pixels": [
+            445,
+            523,
+            627,
+            1137
+          ],
+          "source_size": [
+            1818,
+            1137
+          ],
+          "resized_to": [
+            700,
+            2100
+          ],
+          "route": "directly_viewed_detail"
+        }
+      ],
+      "disposition": "assessed_refuted_graphic_column_shift_remove"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-052",
+      "finding": {
+        "id": "F-052",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Назначение сигналов",
+        "sheet": "Лист 15",
+        "page": 19,
+        "problem": "Управление заслонкой Y2 подписано как управление ПЧ.",
+        "description": "Линия 10 от воздушной заслонки Y2 названа «Управление ПЧ пуск/стоп, 0–100%», хотя для неё показан только DO. ПЧ двигателя М1 связан с другой линией.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Обозначить линию 10 как управление Y2 и согласовать подпись управления ПЧ с его фактическим каналом.",
+        "risk": "Ошибочная адресация команды заслонки или ПЧ.",
+        "source_finding_ids": [
+          "G-031"
+        ],
+        "source_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "related_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "page": 19
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-031",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Линия10 отY2 подписана как управлениеПЧ пуск/стоп0–100%.",
+          "verdict": "refuted_direct_GRAPHIC_column_alignment",
+          "limits": "Подпись у линии10 — управление воздушной заслонкой. УправлениеПЧ и состояние вентилятора относятся к11, рядомSCUZ2."
+        },
+        {
+          "claim": "В столбце10 отмечен толькоDO, в11 естьAO/DI/DO.",
+          "verdict": "confirmed_direct_GRAPHIC_matrix",
+          "limits": "Эти отметки соответствуют разным функциям и сами по себе не создают заявленного конфликта."
+        },
+        {
+          "claim": "Нужно исправить подпись10 науправлениеY2 иперенести управлениеПЧ к11.",
+          "verdict": "unsupported_correction_remove",
+          "limits": "Требуемая адресация подписей уже показана в просмотренном фрагменте."
+        },
+        {
+          "claim": "Ошибочная адресация команды заслонки или ПЧ.",
+          "verdict": "not_established",
+          "limits": "Неверная адресация, комплектация и отсутствие управления не установлены. Монтаж/программа/модули не проверены."
+        }
+      ],
+      "unsupported_additions": "false_label_to_column_binding_and_unsupported_consequence",
+      "novel_useful_content": "none_in_this_refuted_claim",
+      "duplicate_burden": "F-049 and F-052 repeat one false claim; two emitted rows, one semantic error",
+      "profile_and_section": "exclude_refuted_claim_not_question",
+      "engineer_reuse": "Direct graphic review; no engineer decision asserted.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "directly_viewed_IMAGE_graphic_column_alignment"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AK_r2_Y2_matrix_detail.png",
+          "sha256": "40b35163cbd39f6fa2376121d6267c22b4cd255571ddae54d2ba2188920bc1d2",
+          "crop_box_pixels": [
+            445,
+            523,
+            627,
+            1137
+          ],
+          "source_size": [
+            1818,
+            1137
+          ],
+          "resized_to": [
+            700,
+            2100
+          ],
+          "route": "directly_viewed_detail"
+        }
+      ],
+      "disposition": "assessed_refuted_graphic_column_shift_remove"
+    }
+  ],
+  "relation_to_prior_trace": "AK_r2_atomicity_duplicate_replay.json established duplication mechanism only; this review separately refutes the underlying claim. No inference that deduplicating alone fixes truth.",
+  "limits": [
+    "Block55 is IMAGE, not authoritative TEXT; no TEXT correction performed.",
+    "Review limited to columns10/11 and their shown connections, not all signals or physical implementation.",
+    "This DEV-known review is not evidence of experimental candidate success."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
