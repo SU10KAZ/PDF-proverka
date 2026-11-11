@@ -141,3 +141,36 @@ def test_graphic_and_counterpart_requests_share_one_revision(tmp_path):
     assert len(followup.image_paths)==10
     assert packet['prior_operation_response_untrusted']==payload
     assert verify_operation_source_binding(followup) is None
+
+
+def test_detail_budget_reclaims_only_supplements_and_preserves_originals(tmp_path):
+    request,payload,pdf,blocks,md=setup(tmp_path)
+    htext='### BLOCK #3 [GRAPHIC]: h\nOther diagram\n'
+    md.write_text(md.read_text()+htext)
+    data=json.loads(blocks.read_text());data['blocks'].append({**data['blocks'][0],'block_id':'h'});blocks.write_text(json.dumps(data))
+    h=tmp_path/'h.png';h.write_bytes((tmp_path/'g.png').read_bytes())
+    binding=freeze_operation_sources(md,tmp_path,{'g':'g.png','h':'h.png'},None)
+    binding['graphic_source']=freeze_graphic_source(pdf,blocks,tmp_path/'details')
+    request=replace(request,continuation_source=binding)
+    first,_=build_object_operation_followup(request,payload)
+    packet=json.loads(first.messages[-1]['content'])
+    packet['source_context'].append({'block_id':'h','kind':'GRAPHIC','content':htext})
+    packet['allowed_source_refs'].append('h')
+    packet['attached_image_ids_in_order']+=['h']+['g']*5
+    full=replace(first,image_paths=first.image_paths+(str(h),)+(str(tmp_path/'g.png'),)*5,
+                 messages=[first.messages[0],{'role':'user','content':json.dumps(packet)}])
+    assert len(full.image_paths)==16
+    response=deepcopy(payload);response['object_operation_results'][0]['graphic_detail_requests']=[{'block_id':'h','reason':'Read second drawing'}]
+    following,receipt=build_object_operation_followup(full,response)
+    assert receipt['status']=='prepared' and len(receipt['supplemental_images_retired'])==9
+    assert len(following.image_paths)==16
+    assert following.image_paths.count(str(tmp_path/'g.png'))==6
+    assert str(h) in following.image_paths
+    new=json.loads(following.messages[-1]['content'])
+    assert new['source_context']==packet['source_context']
+    assert new['context_revision']==2
+    assert len(new['graphic_detail_views'])==1 and new['graphic_detail_views'][0]['block_id']=='h'
+    assert new['graphic_view_retirements'][0]['retired_images']==receipt['supplemental_images_retired']
+    assert new['prior_operation_response_untrusted']==response
+    assert verify_operation_source_binding(following) is None
+    assert len(full.image_paths)==16  # Original frozen request is never rewritten.

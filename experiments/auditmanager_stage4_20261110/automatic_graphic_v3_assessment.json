@@ -1,0 +1,14 @@
+{
+  "status": "no_findings_recovered",
+  "findings_by_step": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "principle_scheme_found": true,
+  "remaining_limit": "Prior detail views exhausted image slots before the requested principle-scheme detail could be attached.",
+  "correction": "Explicitly retire supplemental detail views only when needed; preserve or restore every original graphic, preserve text, store retired image hashes and prior views, prohibit treating retired images as currently attached.",
+  "tests_passed": 36,
+  "full_acceptance": false
+}

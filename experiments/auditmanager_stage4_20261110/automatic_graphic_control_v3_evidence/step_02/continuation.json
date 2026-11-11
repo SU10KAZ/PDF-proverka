@@ -1,0 +1,23 @@
+{
+  "status": "prepared",
+  "new_source_ids": [
+    "blk_a203939b21504fa6935b621a29929d7d"
+  ],
+  "omitted": [
+    {
+      "block_id": "blk_8445a5ccfd584b2d8f96d2b7079e113b",
+      "reason": "image_bytes_budget"
+    }
+  ],
+  "automatic_dispatch": false,
+  "absence_proven": false,
+  "semantic_verified": false,
+  "graphic_detail": {
+    "status": "graphic_image_budget",
+    "requested_block_ids": [
+      "blk_0103a941fa5a4b0d9141a4149e927bff"
+    ]
+  },
+  "next_stage": "object_operations_1d5ddc8a6489d3c9_context_3",
+  "request_sha256": "ac4379ef976a466b95722c9d36ea5e90e82d8698538c94206176b8460b43cfef"
+}

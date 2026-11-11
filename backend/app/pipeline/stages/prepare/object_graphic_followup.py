@@ -93,13 +93,34 @@ def prepare_graphic_followup(request, payload, sources):
         if (bid not in packet['attached_image_ids_in_order'] or bid not in sources
                 or sources[bid]['kind'] not in ('GRAPHIC', 'IMAGE')):
             raise ValueError('Detail request must name a supplied GRAPHIC')
-    done = {im['block_id'] for im in binding.get('detail_images', [])}
+    attached_paths = {str(Path(p).resolve()) for p in request.image_paths}
+    done = {im['block_id'] for im in binding.get('detail_images', [])
+            if str(Path(im['path']).resolve()) in attached_paths}
     pending = [bid for bid in requested if bid not in done]
     if not pending:
         return None, {'status': 'graphic_details_already_supplied', 'requested_block_ids': requested}
-    remaining = 16 - len(request.image_paths)
+    base_paths = [str(p) for p in request.image_paths]
+    base_ids = list(packet['attached_image_ids_in_order'])
+    retired = []
     bid = pending[0]
-    columns, rows = choose_detail_grid(source, bid, remaining)
+    columns, rows = choose_detail_grid(source, bid, 16-len(base_paths))
+    if not columns:
+        # Retire only supplemental views. Keep every original attachment, or
+        # restore its hash-bound original if a prior window supplied tiles only.
+        kept_paths, kept_ids = [], []
+        for image_id,path in zip(base_ids,base_paths,strict=True):
+            original = binding['images'][image_id]
+            if Path(path).resolve() == Path(original['path']).resolve():
+                kept_paths.append(path); kept_ids.append(image_id)
+            else:
+                retired.append({'block_id':image_id,
+                    'sha256':hashlib.sha256(Path(path).read_bytes()).hexdigest()})
+        for image_id in dict.fromkeys(base_ids):
+            if image_id not in kept_ids:
+                kept_ids.append(image_id); kept_paths.append(binding['images'][image_id]['path'])
+        if retired:
+            base_ids, base_paths = kept_ids, kept_paths
+            columns, rows = choose_detail_grid(source, bid, 16-len(base_paths))
     if not columns:
         return None, {'status': 'graphic_image_budget', 'requested_block_ids': pending}
     # One full block per revision; no silent replacement of earlier evidence.
@@ -109,15 +130,21 @@ def prepare_graphic_followup(request, payload, sources):
                       source['pdf_sha256'], run / 'tiles', columns=columns, rows=rows, scale=3)
     verify_graphic_source(source)
     tiles = manifest['tiles']
-    paths = [str(p) for p in request.image_paths] + [t['path'] for t in tiles]
+    paths = base_paths + [t['path'] for t in tiles]
     if sum(Path(p).stat().st_size for p in paths) > 24_000_000:
         return None, {'status': 'graphic_bytes_budget', 'requested_block_ids': pending}
     next_packet = deepcopy(packet)
     next_packet['context_revision'] = packet.get('context_revision', 0) + 1
-    next_packet['attached_image_ids_in_order'] += [bid] * len(tiles)
+    next_packet['attached_image_ids_in_order'] = base_ids + [bid] * len(tiles)
+    if retired:
+        next_packet.setdefault('retired_graphic_detail_views', []).extend(next_packet.pop('graphic_detail_views', []))
+        next_packet.setdefault('graphic_view_retirements', []).append({
+            'context_revision':next_packet['context_revision'], 'retired_images':retired,
+            'reason':'Supplemental detail budget reclaimed; all original block images retained or restored.',
+            'boundary':'Retired details remain in the audit history but are not attached now. Prior observations are untrusted; cite only currently attached images for new graphic claims.'})
     next_packet['prior_operation_response_untrusted'] = payload
     next_packet.setdefault('graphic_detail_views', []).append({
-        'block_id': bid, 'first_image_index_zero_based': len(request.image_paths),
+        'block_id': bid, 'first_image_index_zero_based': len(base_paths),
         'tile_count': len(tiles), 'grid_columns': columns, 'grid_rows': rows,
         'same_source_block': True, 'semantic_verified': False})
     messages = deepcopy(request.messages)
@@ -161,7 +188,7 @@ def prepare_graphic_followup(request, payload, sources):
     if error:
         raise ValueError(error)
     return followup, {'status': 'prepared', 'route': 'graphic_detail', 'next_stage': stage,
-                      'block_id': bid, 'tiles_added': len(tiles),
+                      'block_id': bid, 'tiles_added': len(tiles), 'supplemental_images_retired': retired,
                       'deferred_block_ids': pending[1:], 'manifest_path': str(run / 'tiles/manifest.json'),
                       'semantic_verified': False, 'absence_proven': False,
                       'simultaneous_context_retrieval': text_receipt}
