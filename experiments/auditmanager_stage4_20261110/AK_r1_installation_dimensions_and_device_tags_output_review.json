@@ -1,0 +1,668 @@
+{
+  "status": "three_installation_and_identity_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "25f1b35333379b6ad144c4b93b6efca014c09171f3916922b1c5b70bece2c733",
+  "queue_after_sha256": "38511407d9a00b0e7d941e2021ac5743e64130dc4f90b3ee1e38e75632c2ceb6",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-056",
+      "finding": {
+        "id": "F-056",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка кабелей",
+        "sheet": "Лист 33",
+        "page": 37,
+        "problem": "Сигнальный кабель привода Пн5.1 обозначен маркой системы Ва3.1.",
+        "description": "Кабель привода Y4 системы Пн5.1 обозначен «Ва3.1-18». Соседняя линия питания того же привода обозначена «Пн5.1-17».",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить согласованность марки кабеля с принадлежностью оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-072"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-072"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить марку сигнальной линии Y4 системы Пн5.1 и согласовать её во всех документах.",
+        "risk": "Ошибочная трассировка и подключение линии другой системы.",
+        "source_finding_ids": [
+          "G-072"
+        ],
+        "source_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "related_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+            "page": 37
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-072",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "На внешней схемеY4 Пн5.1 сигнальная линия черезXT5 обозначенаВа3.1-18, соседняя силоваяПн5.1-17.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "КЖ задаётПн5.1.-17 иПн5.1.-18 отШАУВ-4-К5ПЧ доХТ5, каждая35м.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать идентификатор сигнальной линии между схемой иКЖ.",
+          "verdict": "supported_cable_identity_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Провод физически проложен кВа3.1 либо отсутствует.",
+          "verdict": "not_established",
+          "limits": "Марка не доказывает реальную трассу или ошибочный монтаж; новая линия и дополнительный метраж не обоснованы."
+        },
+        {
+          "claim": "Подтверждено конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Нормативный кандидат без проверенного пункта не достаточен."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "source_confirmed_cable_identity_engineer_acceptance_not_established",
+      "duplicate_burden": "One labelled cable; not added hardware or length.",
+      "profile_and_section": "technical_cable_identity_no_proven_misrouting",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+          "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Original-resolution graphic: Y4 viaXT5, powerPn5.1-17, signalVa3.1-18."
+        }
+      ],
+      "disposition": "assessed_preserve_cable_system_identifier_conflict"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-057",
+      "finding": {
+        "id": "F-057",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка оборудования",
+        "sheet": "Лист 33",
+        "page": 37,
+        "problem": "На схеме ШАУВ-4-К5ПЧ одинаковые позиции присвоены разным устройствам.",
+        "description": "М2 обозначает двигатель резервного вентилятора Пн5.1р и циркуляционный насос Пн5.1. Y7 обозначает регулирующий клапан теплоносителя Пн5.1 и воздушный клапан Вн5.1.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить уникальность позиционных обозначений устройств в схеме шкафа.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-073"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-073"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Назначить устройствам разные позиции и согласовать функциональную схему, внешние подключения и журнал.",
+        "risk": "Ошибочное подключение или управление другим исполнительным механизмом.",
+        "source_finding_ids": [
+          "G-073"
+        ],
+        "source_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "related_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a",
+          "blk_1421872a752e4019a31247d056c0e9bc",
+          "blk_0074662f330048ff843342b285e6a016"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+            "page": 37
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-073",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Внешняя схема:М2 обозначает резервный вентиляторПн5.1р и насосПн5.1;Y7 — клапан теплоносителяПн5.1 и воздушную заслонкуВн5.1.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Перечень лист15:М1–М4 вентиляторы,М5 насос;Y1–Y10 заслонки,Y11 регулирующий клапан.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "КЖПн5.1.-21 называет конечное устройствоМ1; это третий вариант для цепи насоса.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Дополнительный контекст проверки, не автоматическая добавка к полноте исходногоF-057; пересекается сF-021."
+        },
+        {
+          "claim": "Согласовать роли и позиции оборудования во внешней схеме, перечне иКЖ.",
+          "verdict": "supported_device_identity_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Повторы обозначений означают одно общее физическое устройство либо фактическое подключение насоса вместо вентилятора.",
+          "verdict": "not_established",
+          "limits": "Разные функции и отдельные графические устройства видны; монтаж не проверен. Число устройств не увеличивать."
+        },
+        {
+          "claim": "Подтверждено конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Нормативный кандидат без проверенного пункта не достаточен."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "Two device identity conflicts; pump endpoint overlaps F-021 and must not be counted twice. Broad linked motor register not wholly recovered by this row.",
+      "profile_and_section": "technical_device_identity_no_proven_cross_connection",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_0074662f330048ff843342b285e6a016",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT «МЗ», «Пн5.1.-21» и суффикс НФ сохранены буквально. Не исправлять их по растру. Расхождение устанавливается по номеру линии, шкафу и назначению, а не догадке о распознавании.",
+            "Наличие насосной линии опровергает её полное отсутствие, но не снимает конфликт адреса с КЖ.",
+            "Совпадение позиции M2 в двух строках само по себе не доказывает ошибку: различие назначений проверено графически.",
+            "Тип и длина кабеля не используются для автоматического выбора правильного обозначения; заводские схемы и фактический монтаж не проверены.",
+            "Отказ, физическая перестановка цепей и нормативная квалификация не установлены."
+          ],
+          "wording": "Согласовать адреса двигателей: Пкр4.1-13 в КЖ→M2, на схеме подключений и функциональной схеме насос→M3; Пкр5.1-9 в КЖ→M2, на схемах резервный вентилятор→M3, а Пкр5.1-13 в КЖ→«МЗ», на схемах насос→M2; Пн5.1.-21 в КЖ→M1, насос на функциональной схеме→M5, на схеме подключений→M2. Сохранять функциональное назначение каждой линии при согласовании обозначений."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065",
+          "primary_adjudication": null,
+          "limits": [
+            "Назначение сопоставлено по шкафу,системе,технологической функции и отдельным цепям, а не только одинаковой букве позиции.",
+            "Согласованность функциональной схемы и перечня даёт конкретные обозначения для проверки исправления; заводская маркировка, внутренние схемы и монтаж не проверены.",
+            "Две исходные записи объединены в тему идентификации устройств одного шкафа с сохранением двух отдельных конфликтов в object_mapping. Не объявлять второй конфликт снятым дублем первого.",
+            "Отказ, неправильное подключение или нарушение конкретного пункта ГОСТ21.408 не установлены. Решение инженера по blind-кандидатам не найдено."
+          ],
+          "wording": "Согласовать обозначения устройств ШАУВ-4-К5ПЧ между схемой внешних подключений и функциональной схемой с перечнем. В подключениях насосПн5.1 названM2, как и резервный вентилятор; клапан теплоносителя названY7, как и воздушный клапанВн5.1. В функциональной схеме и перечне насос имеет позициюM5, клапан теплоносителя —Y11."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065",
+          "primary_adjudication": null,
+          "limits": [
+            "Назначение сопоставлено по шкафу,системе,технологической функции и отдельным цепям, а не только одинаковой букве позиции.",
+            "Согласованность функциональной схемы и перечня даёт конкретные обозначения для проверки исправления; заводская маркировка, внутренние схемы и монтаж не проверены.",
+            "Две исходные записи объединены в тему идентификации устройств одного шкафа с сохранением двух отдельных конфликтов в object_mapping. Не объявлять второй конфликт снятым дублем первого.",
+            "Отказ, неправильное подключение или нарушение конкретного пункта ГОСТ21.408 не установлены. Решение инженера по blind-кандидатам не найдено."
+          ],
+          "wording": "Согласовать обозначения устройств ШАУВ-4-К5ПЧ между схемой внешних подключений и функциональной схемой с перечнем. В подключениях насосПн5.1 названM2, как и резервный вентилятор; клапан теплоносителя названY7, как и воздушный клапанВн5.1. В функциональной схеме и перечне насос имеет позициюM5, клапан теплоносителя —Y11."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+          "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Original-resolution graphic: M2 at reserve fan and far-right circulation pump; Y7 at heating valve and exhaust damper."
+        }
+      ],
+      "disposition": "assessed_preserve_pump_and_valve_tag_conflicts"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-064",
+      "finding": {
+        "id": "F-064",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Монтажные размеры",
+        "sheet": "Лист 53",
+        "page": 57,
+        "problem": "Размерная цепь установки ШАУВ-1-К6-ПЧ не замыкается.",
+        "description": "Высота шкафа 1400 мм и расстояние от пола до низа 1000 мм дают отметку верха 2400 мм. Общий размер до верха указан 1800 мм. Расхождение составляет 600 мм.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к однозначности размеров и монтажных привязок на чертежах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-098",
+                "G-099"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-098",
+                  "G-099"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить габарит шкафа и высоту установки, затем согласовать все вертикальные размеры.",
+        "risk": "Установка шкафа на неверной высоте и затруднение обслуживания.",
+        "source_finding_ids": [
+          "G-098",
+          "G-099"
+        ],
+        "source_block_ids": [
+          "blk_d52bf811660e42b59acdce0038f9fbf0"
+        ],
+        "related_block_ids": [
+          "blk_d52bf811660e42b59acdce0038f9fbf0",
+          "blk_47b4422b84f2413495ab9da6b8332760"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d52bf811660e42b59acdce0038f9fbf0",
+            "page": 57
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-098",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-099",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одну размерную коллизию шкафа ШАУВ-1-К6-ПЧ на листе 53: 1400 + 1000 = 2400 мм при указанном размере 1800 мм; расхождение 600 мм. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одну размерную коллизию шкафа ШАУВ-1-К6-ПЧ на листе 53: 1400 + 1000 = 2400 мм при указанном размере 1800 мм; расхождение 600 мм. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 93,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "УстановкаШАУВ-1-К6-ПЧ: размер корпуса1400, от пола до низа1000, от того же пола до верха1800мм.",
+          "verdict": "confirmed_direct_GRAPHIC_dimension_endpoints",
+          "limits": ""
+        },
+        {
+          "claim": "1400+1000=2400; расхождение с1800 составляет600мм.",
+          "verdict": "confirmed_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать три размера узла установки.",
+          "verdict": "supported_dimension_chain_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Обязательно поднять верх шкафа до2400мм или изменить высоту корпуса.",
+          "verdict": "not_established",
+          "limits": "Не определено, какая из трёх исходных величин верна. Размеры реального шкафа и согласованная монтажная высота не проверены."
+        },
+        {
+          "claim": "План расположения доказывает высоту установки.",
+          "verdict": "not_established",
+          "limits": "План показывает позициюШАУВ-1-К6ПЧ и трассы; вертикальную размерную цепь он не разрешает."
+        },
+        {
+          "claim": "Шкаф фактически установлен с нарушением или недоступен для обслуживания.",
+          "verdict": "not_established",
+          "limits": "Фактический монтаж и необходимые эксплуатационные расстояния не проверены."
+        },
+        {
+          "claim": "Подтверждено конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Нормативный кандидат без проверенного пункта не достаточен."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "source_confirmed_dimension_conflict_engineer_acceptance_not_established",
+      "duplicate_burden": "One inconsistent vertical dimension chain, not three independent defects.",
+      "profile_and_section": "technical_dimension_core_no_automatic_value_selection",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d52bf811660e42b59acdce0038f9fbf0.png",
+          "sha256": "42c7d8b05562c4c461752bf37d98233d9a519a4530360dd8f160494b4500ce95",
+          "block_id": "blk_d52bf811660e42b59acdce0038f9fbf0",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Dimension endpoints: floor-to-bottom1000, bottom-to-top1400, same-floor-to-top1800. Cabinet label SHAUV-1-K6-PCh."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47b4422b84f2413495ab9da6b8332760.png",
+          "sha256": "4c428eba5057eb6c607287d48a460febe7467d4a9872ad85a833ad19bdadf36f",
+          "block_id": "blk_47b4422b84f2413495ab9da6b8332760",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Plan identifies SHAUV-1-K6PCh and cable routes; no vertical installation height resolving1800/2400."
+        }
+      ],
+      "disposition": "assessed_preserve_cabinet_installation_dimension_conflict"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+      "authoritative_TEXT": "### BLOCK #223 [TEXT]: blk_af7d76cf48cd48db813eee8d44227292\n\n> **Created:** 2026-09-28 07:29:43 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/TR3-tYrgVPJ-QBbPFBN0)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 16 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Пн5.1.-6 | ШАУВ-4-К5ПЧ | PDS2 | КСПВПГнг(А)-HF | 1х2х0,75 | 35 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 30/5 |  |\n| Пн5.1.-7 | ШАУВ-4-К5ПЧ | PDS3 | КСПВПГнг(А)-HF | 1х2х0,75 | 35 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 30/5 |  |\n| Пн5.1.-8 | ШАУВ-4-К5ПЧ | M1 | ППГнг(А)-HF | 4х2,5 | 35 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 30/5 |  |\n| Пн5.1.-9 | ШАУВ-4-К5ПЧ | M2 | ППГнг(А)-HF | 4х2,5 | 35 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 30/5 |  |\n| Пн5.1.-10 | ШАУВ-4-К5ПЧ | ХТ1 | КСПЭВПГнг(А)-HF | 2х2х0,75 | 35 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 2х2х0,75 | 30/5 |  |\n| Пн5.1.-11 | ШАУВ-4-К5ПЧ | ХТ2 | ППГнг(А)-HF | 3х1,5 | 35 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 30/5 |  |\n| Пн5.1.-12 | ШАУВ-4-К5ПЧ | ХТ2 | КСПВПГнг(А)-HF | 1х2х0,75 | 35 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 30/5 |  |\n| Пн5.1.-13 | ШАУВ-4-К5ПЧ | ХТ3 | ППГнг(А)-HF | 3х1,5 | 35 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 30/5 |  |\n| Пн5.1.-14 | ШАУВ-4-К5ПЧ | ХТ3 | КСПВПГнг(А)-HF | 1х2х0,75 | 35 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 30/5 |  |\n| Пн5.1.-15 | ШАУВ-4-К5ПЧ | ХТ4 | ППГнг(А)-HF | 3х1,5 | 35 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 30/5 |  |\n| Пн5.1.-16 | ШАУВ-4-К5ПЧ | ХТ4 | КСПВПГнг(А)-HF | 1х2х0,75 | 35 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 30/5 |  |\n| Пн5.1.-17 | ШАУВ-4-К5ПЧ | ХТ5 | ППГнг(А)-HF | 3х1,5 | 35 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 30/5 |  |\n| Пн5.1.-18 | ШАУВ-4-К5ПЧ | ХТ5 | КСПВПГнг(А)-HF | 1х2х0,75 | 35 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 30/5 |  |\n| Пн5.1.-19 | ШАУВ-4-К5ПЧ | ХТ6 | ППГнг(А)-HF | 3х1,5 | 35 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 30/5 |  |\n| Пн5.1.-20 | ШАУВ-4-К5ПЧ | ХТ6 | КСПВПГнг(А)-HF | 1х2х0,75 | 35 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 30/5 |  |\n\n## Page 75 — Sheet 17\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+      "authoritative_TEXT": "### BLOCK #56 [TEXT]: blk_83ff7d2544fe4ddd843f3c1ec01c7087\n\n> **Created:** 2026-09-28 07:28:50 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/7sDdQmerGRCMscU9MFFj)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 15 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточная система Пн5.1, вытяжная система Вн5.1. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS2-PDS5 | Датчик давления дифференциальный 20-200 Па | 4 |  |\n| PDS1 | Датчик давления дифференциальный 50-500 Па | 1 |  |\n| Y1-Y10 | Электропривод воздушной заслонки | 10 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| Y11 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M4 | Электродвигатель вентилятора | 4 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M5 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SCUZ1 -SCUZ4 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001H | 4 |  |\n\nПримечание:\n\n1. Предельные рабочие значения измеряемых величин уточняются при ПНР\n\n## Page 20 — Sheet 16 — Приточная система Пл3.1, вытяжные системы Вк3.1, Всу3.1. Функциональная схема автоматизации\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_0074662f330048ff843342b285e6a016",
+      "authoritative_TEXT": "### BLOCK #224 [TEXT]: blk_0074662f330048ff843342b285e6a016\n\n> **Created:** 2026-09-28 07:29:43 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/qDgWzsn0xB2p8oZIOK5T)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 17 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Пн5.1.-21 | ШАУВ-4-К5ПЧ | M1 | ППГнг(А)-HF | 3x1,5 | 35 | лоток 100х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 30/5 |  |\n| Вн5.1-1 | ШАУВ-4-К5ПЧ | PDS4 | КСПВПГнг(А)-HF | 1x2x0,75 | 40 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 35/5 |  |\n| Вн5.1-2 | ШАУВ-4-К5ПЧ | PDS5 | КСПВПГнг(А)-HF | 1x2x0,75 | 40 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 35/5 |  |\n| Вн5.1-3 | ШАУВ-4-К5ПЧ | M3 | ППГнг(А)-HF | 4x2,5 | 40 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x2,5 | 35/5 |  |\n| Вн5.1-4 | ШАУВ-4-К5ПЧ | M4 | ППГнг(А)-HF | 4x2,5 | 40 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x2,5 | 35/5 |  |\n| Вн5.1-5 | ШАУВ-4-К5ПЧ | XТ7 | ППГнг(А)-HF | 3x1,5 | 40 | лоток 100х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 35/5 |  |\n| Вн5.1-6 | ШАУВ-4-К5ПЧ | XТ7 | КСПВПГнг(А)-HF | 1x2x0,75 | 40 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 35/5 |  |\n| Вн5.1-7 | ШАУВ-4-К5ПЧ | XТ8 | ППГнг(А)-HF | 3x1,5 | 40 | лоток 100х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 35/5 |  |\n| Вн5.1-8 | ШАУВ-4-К5ПЧ | XТ8 | КСПВПГнг(А)-HF | 1x2x0,75 | 40 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 35/5 |  |\n| Вн5.1-9 | ШАУВ-4-К5ПЧ | XТ9 | ППГнг(А)-HF | 3x1,5 | 40 | лоток 100х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 35/5 |  |\n| Вн5.1-10 | ШАУВ-4-К5ПЧ | XТ9 | КСПВПГнг(А)-HF | 1x2x0,75 | 40 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 35/5 |  |\n| Вн5.1-11 | ШАУВ-4-К5ПЧ | XТ10 | ППГнг(А)-HF | 3x1,5 | 40 | лоток 100х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 35/5 |  |\n| Вн5.1-12 | ШАУВ-4-К5ПЧ | XТ10 | КСПВПГнг(А)-HF | 1x2x0,75 | 40 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 35/5 |  |\n| Вн5.1-13 | ШАУВ-4-К5ПЧ | XТ11 | ППГнг(А)-HF | 3x1,5 | 40 | лоток 100х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 35/5 |  |\n| Вн5.1-14 | ШАУВ-4-К5ПЧ | XТ11 | КСПВПГнг(А)-HF | 1x2x0,75 | 40 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 35/5 |  |\n\n## Page 76 — Sheet 18\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+      "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+      "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Original-resolution graphic: Y4 viaXT5, powerPn5.1-17, signalVa3.1-18."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+      "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+      "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Original-resolution graphic: M2 at reserve fan and far-right circulation pump; Y7 at heating valve and exhaust damper."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d52bf811660e42b59acdce0038f9fbf0.png",
+      "sha256": "42c7d8b05562c4c461752bf37d98233d9a519a4530360dd8f160494b4500ce95",
+      "block_id": "blk_d52bf811660e42b59acdce0038f9fbf0",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Dimension endpoints: floor-to-bottom1000, bottom-to-top1400, same-floor-to-top1800. Cabinet label SHAUV-1-K6-PCh."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47b4422b84f2413495ab9da6b8332760.png",
+      "sha256": "4c428eba5057eb6c607287d48a460febe7467d4a9872ad85a833ad19bdadf36f",
+      "block_id": "blk_47b4422b84f2413495ab9da6b8332760",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Plan identifies SHAUV-1-K6PCh and cable routes; no vertical installation height resolving1800/2400."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+      "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270",
+      "primary_adjudication": null,
+      "limits": [
+        "TEXT «МЗ», «Пн5.1.-21» и суффикс НФ сохранены буквально. Не исправлять их по растру. Расхождение устанавливается по номеру линии, шкафу и назначению, а не догадке о распознавании.",
+        "Наличие насосной линии опровергает её полное отсутствие, но не снимает конфликт адреса с КЖ.",
+        "Совпадение позиции M2 в двух строках само по себе не доказывает ошибку: различие назначений проверено графически.",
+        "Тип и длина кабеля не используются для автоматического выбора правильного обозначения; заводские схемы и фактический монтаж не проверены.",
+        "Отказ, физическая перестановка цепей и нормативная квалификация не установлены."
+      ],
+      "wording": "Согласовать адреса двигателей: Пкр4.1-13 в КЖ→M2, на схеме подключений и функциональной схеме насос→M3; Пкр5.1-9 в КЖ→M2, на схемах резервный вентилятор→M3, а Пкр5.1-13 в КЖ→«МЗ», на схемах насос→M2; Пн5.1.-21 в КЖ→M1, насос на функциональной схеме→M5, на схеме подключений→M2. Сохранять функциональное назначение каждой линии при согласовании обозначений."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+      "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065",
+      "primary_adjudication": null,
+      "limits": [
+        "Назначение сопоставлено по шкафу,системе,технологической функции и отдельным цепям, а не только одинаковой букве позиции.",
+        "Согласованность функциональной схемы и перечня даёт конкретные обозначения для проверки исправления; заводская маркировка, внутренние схемы и монтаж не проверены.",
+        "Две исходные записи объединены в тему идентификации устройств одного шкафа с сохранением двух отдельных конфликтов в object_mapping. Не объявлять второй конфликт снятым дублем первого.",
+        "Отказ, неправильное подключение или нарушение конкретного пункта ГОСТ21.408 не установлены. Решение инженера по blind-кандидатам не найдено."
+      ],
+      "wording": "Согласовать обозначения устройств ШАУВ-4-К5ПЧ между схемой внешних подключений и функциональной схемой с перечнем. В подключениях насосПн5.1 названM2, как и резервный вентилятор; клапан теплоносителя названY7, как и воздушный клапанВн5.1. В функциональной схеме и перечне насос имеет позициюM5, клапан теплоносителя —Y11."
+    }
+  ],
+  "limits": [
+    "Dimension inconsistency does not select correct installation height.",
+    "Duplicate device labels do not imply shared hardware.",
+    "Frozen evaluator, independent inputs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
