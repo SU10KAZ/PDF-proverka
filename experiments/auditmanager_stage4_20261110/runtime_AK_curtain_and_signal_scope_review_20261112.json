@@ -1,0 +1,146 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-009",
+      "status": "stale_question_overlaps_confirmed_findings",
+      "review_reason": "Текстовые количества и марки верны,но оговорка о непосчитанной графике устарела:та же итоговая выдача F-063/F-064 содержит проверку4двигателей/2клапанов. При объединении перенести подтверждённые расхождения в актуальное описание;оставить лишь неразрешённую комплектность смежногоОВ. Не удалять эти полезные атомы вместе с повторной строкой.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+        "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+        "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "start": 148290,
+          "end": 149704,
+          "sha256": "5a8905e7f8ed1ead3c312b835a2b523081306fe4653328f2363146bb4c00a6fd"
+        },
+        {
+          "block_id": "blk_1afb9b9bff5242cca6f364f218b96506",
+          "start": 149706,
+          "end": 150660,
+          "sha256": "70bf13d797debc3c4ff455fbde1c36db43d42b813389a87a55822625a564e1d5"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-063",
+      "status": "confirmed_document_conflict",
+      "review_reason": "В четырёх отдельных контурах У4.3–У4.6 по одному двигателю M3/M4/M5/M6. В авторитетном перечне M3-M6 количество2. Локальный конфликт4/2 подтверждён. Решение условно сохранить4при показанной схеме и сверитьОВ не доказывает фактическую недопоставку.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+        "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+        "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "start": 148290,
+          "end": 149704,
+          "sha256": "5a8905e7f8ed1ead3c312b835a2b523081306fe4653328f2363146bb4c00a6fd"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-064",
+      "status": "confirmed_document_conflict",
+      "review_reason": "Прослежены два смесительных узла:Y1 приM1 иY2 приM2. Каждый содержит один регулирующий клапан с электроприводом;запорные клапаны без этих марок не добавлялись. ПереченьY1/Y2 содержит4. Локальный конфликт2/4 подтверждён,уменьшение закупки обусловлено проверкойОВ.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+        "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+        "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "start": 148290,
+          "end": 149704,
+          "sha256": "5a8905e7f8ed1ead3c312b835a2b523081306fe4653328f2363146bb4c00a6fd"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-036",
+      "status": "confirmed_document_conflict",
+      "review_reason": "Два отдельных символа под7/14 в строке ШАУВ-2-К4ПЧ подписаны SC UZ1. Перечень содержит SC UZ1,SC UZ2,2шт. Выдача требует согласования адресов и не назначает вторую марку произвольно.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+        "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+        "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_0457419703024673bb4328b18d47501e",
+          "start": 62907,
+          "end": 64260,
+          "sha256": "6e591883daa81cb2e2db9f220b00bab89cd07314875c88e14d9596fbebf48aa3"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-037",
+      "status": "unsupported_technical_promotion",
+      "review_reason": "В столбце6 электронагревателя П4.1.3 действительно точка DI безDO. Но название пуск/стоп само по себе не отличает команду от сигнала состояния. Условное решение в выдаче допускает оба варианта;технический заголовок и дополнение называют команду установленным фактом. Сохранить вопрос назначения,как для F-041,без автоматического переносаDI→DO.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+        "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+        "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-038",
+      "status": "confirmed_document_label_direction_conflict",
+      "review_reason": "Прослежены Y2/GSH→11 иY3/GSH→13. Обе подписи состояния0–100% отмеченыAO;несогласованность направления и названия подтверждена. Решение корректно предусматривает альтернативы:исправление названия команды либо вход для обратной связи. Фактическое наличие обратной связи и необходимость добавлять входы не установлены.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+        "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+        "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-046",
+      "status": "confirmed_matrix_omission_scope_limited",
+      "review_reason": "В колонке10 SC UZ1 заявлено управление0–100%,но точки толькоDI/DO. СтрокаAO содержит ровно2точки:7для клапана и18дляSC UZ2. Факт отсутствия AO в этой колонке подтверждён. Решение обоснованно допускает другой явно показанный способ задания скорости;неработоспособность ПЧ и обязательное добавление аналогового модуля не доказаны.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+        "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+        "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}

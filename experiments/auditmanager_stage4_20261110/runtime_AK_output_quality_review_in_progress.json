@@ -82,8 +82,14 @@
       "finding_id": "F-009",
       "problem": "Количество двигателей и клапанов завес требует расшифровки.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "stale_question_overlaps_confirmed_findings",
+      "engineer_decision": null,
+      "review_reason": "Текстовые количества и марки верны,но оговорка о непосчитанной графике устарела:та же итоговая выдача F-063/F-064 содержит проверку4двигателей/2клапанов. При объединении перенести подтверждённые расхождения в актуальное описание;оставить лишь неразрешённую комплектность смежногоОВ. Не удалять эти полезные атомы вместе с повторной строкой.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+        "sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-010",
@@ -360,22 +366,41 @@
       "finding_id": "F-036",
       "problem": "Два преобразователя частоты обозначены SC UZ1 при разных позициях в перечне.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Два отдельных символа под7/14 в строке ШАУВ-2-К4ПЧ подписаны SC UZ1. Перечень содержит SC UZ1,SC UZ2,2шт. Выдача требует согласования адресов и не назначает вторую марку произвольно.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+        "sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-037",
       "problem": "Сигнал пуска и останова электронагревателя отнесён к дискретному входу.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "unsupported_technical_promotion",
+      "engineer_decision": null,
+      "review_reason": "В столбце6 электронагревателя П4.1.3 действительно точка DI безDO. Но название пуск/стоп само по себе не отличает команду от сигнала состояния. Условное решение в выдаче допускает оба варианта;технический заголовок и дополнение называют команду установленным фактом. Сохранить вопрос назначения,как для F-041,без автоматического переносаDI→DO.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+        "sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631"
+      },
+      "source_review_complete_for_published_claims": true,
+      "proposed_section": "questions"
     },
     {
       "finding_id": "F-038",
       "problem": "Сигналы состояния заслонок Y2 и Y3 обозначены как аналоговые выходы.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_label_direction_conflict",
+      "engineer_decision": null,
+      "review_reason": "Прослежены Y2/GSH→11 иY3/GSH→13. Обе подписи состояния0–100% отмеченыAO;несогласованность направления и названия подтверждена. Решение корректно предусматривает альтернативы:исправление названия команды либо вход для обратной связи. Фактическое наличие обратной связи и необходимость добавлять входы не установлены.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+        "sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-039",
@@ -461,8 +486,14 @@
       "finding_id": "F-046",
       "problem": "В матрице не показан канал задания 0–100% для SC UZ1 системы П5.1.1.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_matrix_omission_scope_limited",
+      "engineer_decision": null,
+      "review_reason": "В колонке10 SC UZ1 заявлено управление0–100%,но точки толькоDI/DO. СтрокаAO содержит ровно2точки:7для клапана и18дляSC UZ2. Факт отсутствия AO в этой колонке подтверждён. Решение обоснованно допускает другой явно показанный способ задания скорости;неработоспособность ПЧ и обязательное добавление аналогового модуля не доказаны.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+        "sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-047",
@@ -656,15 +687,27 @@
       "finding_id": "F-063",
       "problem": "Количество двигателей М3–М6 в перечне не соответствует четырём двигателям на схеме.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "В четырёх отдельных контурах У4.3–У4.6 по одному двигателю M3/M4/M5/M6. В авторитетном перечне M3-M6 количество2. Локальный конфликт4/2 подтверждён. Решение условно сохранить4при показанной схеме и сверитьОВ не доказывает фактическую недопоставку.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+        "sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-064",
       "problem": "Перечень содержит четыре регулирующих клапана Y1, Y2 при двух показанных на схеме.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Прослежены два смесительных узла:Y1 приM1 иY2 приM2. Каждый содержит один регулирующий клапан с электроприводом;запорные клапаны без этих марок не добавлялись. ПереченьY1/Y2 содержит4. Локальный конфликт2/4 подтверждён,уменьшение закупки обусловлено проверкойОВ.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+        "sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-065",
@@ -890,6 +933,6 @@
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 44,
-  "unchecked_findings": 41
+  "reviewed_findings": 51,
+  "unchecked_findings": 34
 }
