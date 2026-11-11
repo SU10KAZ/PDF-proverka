@@ -1,0 +1,119 @@
+{
+  "status": "official_title_checked_model_correction_imprecise",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "81962acc9868462ce0be39ef776035c0a801bab61becab7ed21ae1ea7b246dc2",
+  "queue_after_sha256": "c6a629fd102463aac1e5eee48408ed228f7144293619e76aa03f762e4dc16ef3",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-047",
+      "finding": {
+        "id": "F-047",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "Наименование ГОСТ Р 50571.5.54-2024 не соответствует указанной редакции.",
+        "description": "Строка MD 333: «| ГОСТ Р 50571.5.54-2024 | Электроустановки зданий. Часть 5 «Выбор и монтаж электрооборудования. Глава 54. Заземляющие устройства и защитные проводники»; |  |». Для указанного стандарта наименование — «Электроустановки низковольтные. Часть 5-54. Выбор и монтаж электрооборудования. Заземляющие устройства и защитные проводники». В ведомости неверно указаны название серии и структура части.",
+        "page": 2,
+        "norm": "ГОСТ Р 50571.5.54-2024 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Привести наименование стандарта в соответствие с обозначением ГОСТ Р 50571.5.54-2024.",
+        "risk": "Неоднозначная идентификация редакции нормативного документа.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+            "page": 2,
+            "md_lines": "строка 333"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet_unavailable": true,
+        "sheet_unavailable_reason": "page_not_in_map",
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 50571.5.54-2024",
+            "cited_designation": "ГОСТ Р 50571.5.54-2024",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 36,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "formal_reference_category",
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F046_new_reference_identity:composite:2",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В строке 333 обозначение 2024 сопровождается названием серии «Электроустановки зданий» и структурой «Часть 5 / Глава 54».",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Официальная карточка Росстандарта содержит другую серию и часть 5-54."
+        },
+        {
+          "claim": "Предложенное моделью полное название точно соответствует официальному.",
+          "verdict": "partially_refuted_official_title",
+          "limits": "В карточке: «Выбор и монтаж электрического оборудования», а не слитное «электрооборудования», использованное моделью. При исправлении брать наименование из официального источника."
+        },
+        {
+          "claim": "Исправить наименование стандарта.",
+          "verdict": "supported_editorial_question",
+          "limits": "Обозначение и год уже заданы; неправильное применение технических требований или ошибка заземления не доказаны."
+        }
+      ],
+      "unsupported_additions": "Suggested exact title is not exact; actual engineering consequences unverified.",
+      "novel_useful_content": "editorial_reference_question_usefulness_not_engineer_confirmed",
+      "duplicate_burden": "one_register_entry_not_electrical_defect",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No engineer acceptance inferred.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+          "line": 333,
+          "route": "authoritative_TEXT"
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/45fc74f0-6fce-4163-8982-f2a89c8d1792",
+          "accessed": "2026-11-11",
+          "route": "official_Rosstandart_catalog",
+          "title": "ГОСТ Р 50571.5.54-2024",
+          "support": "Series is low-voltage installations, part 5-54; equipment wording is two words электрического оборудования.",
+          "limits": "Catalog title comparison only; applicability to project not adjudicated."
+        }
+      ],
+      "disposition": "assessed_preserve_reference_title_question_correct_model_wording"
+    }
+  ],
+  "model_calls": 0,
+  "web_search_calls": 1,
+  "production_acceptance": false
+}
