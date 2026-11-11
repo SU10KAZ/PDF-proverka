@@ -1,0 +1,152 @@
+{
+  "status": "partial_coordinator_coverage_review",
+  "discipline": "VK",
+  "repeat": 1,
+  "mapped_atoms": [
+    {
+      "target_id": "B-VK-F-008:91aa2581cf81197e6fe8",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-009"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-008.json",
+          "sha256": "04017a8927d6b2f0a646bbcb162274eb2227858c8917d70c4a68455e32d8adc3"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Сохранены позиция30, Rapid DN100, код310100 и4,70шт. Автоматическая замена на470 и округление без расчёта прямо исключены. Последствия закупки отдельно не подтверждены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-VK-F-014:e9e5e1b148f844eb7d6d",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-015"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-014.json",
+          "sha256": "a9974e014f896ed662677424d1ee50e93b654ebb9878fe140dfb4315b895ff3e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Обозначения ТУ22825 ДП-В/ДП-К и необходимость сверки оригинала сохранены. Неверная величина нагрузки или чужие ТУ не объявлены установленными.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK14:f8b1abbe9f89c7203c04",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-008"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK14.json",
+          "sha256": "570852e44331a5bb4b36806002728b354e19f8b7079a17ab6c5abf7f6d7d1619"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Строка д50×0 длиной5,2м найдена и интерпретация толщины условна. Но заголовок говорит о нулевой стенке, а плановая линия объединена со строкой спецификации без доказанной идентичности; полное соблюдение границ вопроса не засчитано.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/VK_review.json",
+  "review_ledger_sha256": "3da3f791aeec775a435d7400db9947d4cfbbd08afdb5fb319394d6c18af3fef5",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "VK",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 2,
+          "availability_unchecked": 2,
+          "unchecked": 2
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 26,
+          "availability_available": 3,
+          "full": 2,
+          "partial": 1,
+          "availability_unchecked": 23,
+          "unchecked": 23
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 11,
+          "availability_unchecked": 11,
+          "unchecked": 11
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 2
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "limits": [
+    "Проверены три положительные цели из39; оценки отсутствия ещё не выставлены.",
+    "Совпадение строки спецификации с планом не доказывается похожим обозначением.",
+    "Категории, последствия и новые утверждения требуют отдельной оценки."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
