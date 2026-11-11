@@ -1,0 +1,80 @@
+{
+  "status": "corrected_source_and_transport_verified_not_trial_acceptance",
+  "source_manifest": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/corrected_candidate_catalog_snapshot_provenance.json",
+  "source_manifest_sha256": "92413b79ac0cfc23337c7b8836a29369eaf2707e8ce942b86d5f532519f6d60b",
+  "source_files_verified": 981,
+  "changes_since_old_trial": [
+    "backend/app/pipeline/stages/prepare/candidate_recovery.py",
+    "backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+    "backend/app/pipeline/stages/prepare/recovery_context.py",
+    "backend/app/pipeline/stages/prepare/recovery_format.py",
+    "backend/app/pipeline/stages/prepare/recovery_snapshot.py",
+    "backend/app/services/llm/claude_runner.py"
+  ],
+  "removed_files": [],
+  "preflights": [
+    {
+      "variant": "classic_current",
+      "path": "/tmp/auditmanager_corrected_preflight_20261111/classic_current/transport_preflight.json",
+      "sha256": "68121ab1f8be75d2bfde70c788037fd2c29a6c7514adde9628a6ecf2a898a4e4",
+      "result": "shared_transport_preflight_passed"
+    },
+    {
+      "variant": "inventory",
+      "path": "/tmp/auditmanager_corrected_preflight_20261111/inventory/transport_preflight.json",
+      "sha256": "9bdd1842fa0b78488bd7570041f96821ed7dbe7ec0c59fd9e3a57f6b108d8615",
+      "result": "shared_transport_preflight_passed"
+    },
+    {
+      "variant": "source_review",
+      "path": "/tmp/auditmanager_corrected_preflight_20261111/source_review/transport_preflight.json",
+      "sha256": "f2d22d307af7da2ecf513898e6694e19436b2d7ee91c0922c165c2ac1132a2f4",
+      "result": "shared_transport_preflight_passed"
+    },
+    {
+      "variant": "candidate",
+      "path": "/tmp/auditmanager_corrected_preflight_20261111/candidate/transport_preflight.json",
+      "sha256": "443c9b45f6c765f91961eeeb4a677bb586929839b56a8e221baa66d9c8933b1f",
+      "result": "shared_transport_preflight_passed"
+    }
+  ],
+  "profiles": [
+    {
+      "discipline": "AK",
+      "runtime_profile": "SS",
+      "files_verified": 9
+    },
+    {
+      "discipline": "ITP",
+      "runtime_profile": "ITP",
+      "files_verified": 9
+    },
+    {
+      "discipline": "AR",
+      "runtime_profile": "AR",
+      "files_verified": 9
+    },
+    {
+      "discipline": "KM",
+      "runtime_profile": "KM",
+      "files_verified": 9
+    },
+    {
+      "discipline": "VK",
+      "runtime_profile": "VK",
+      "files_verified": 9
+    },
+    {
+      "discipline": "EOM",
+      "runtime_profile": "EOM",
+      "files_verified": 8
+    }
+  ],
+  "model_calls": 0,
+  "production_changed": false,
+  "remaining": [
+    "Freeze corrected comparison inputs and shared executor bindings",
+    "Run bounded recovery and merge checks after current measured run",
+    "Execute and assess matched six-discipline comparison"
+  ]
+}
