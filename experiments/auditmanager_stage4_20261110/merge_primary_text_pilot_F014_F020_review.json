@@ -1,0 +1,913 @@
+{
+  "status": "seven_more_output_findings_reviewed_one_wording_correction",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "source_md": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+  },
+  "reviews": [
+    {
+      "finding_id": "F-014",
+      "original_model_finding": {
+        "id": "F-014",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Ведомость кабелей",
+        "report_section": "technical_findings",
+        "sheet": "Лист 26",
+        "page": [
+          30,
+          63,
+          64
+        ],
+        "problem": "Метраж двух исполнений контрольного кабеля ШАУВ-2-К4ПЧ не согласован.",
+        "description": "В журнале восемь отдельных линий КСПВПГнг(А)-HF 1×2×0,75 по 15 м дают 120 м, а ведомость листа 26 содержит 50 м. Три линии КСПЭВПГнг(А)-HF 1×2×0,75 длиной 20, 15 и 15 м дают 50 м против 105 м в ведомости. Разности составляют 70 и 55 м. Подтверждено расхождение документов, а не фактическая недостача или излишек закупки. Графический подсчет не использован.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать ведомость с действующим журналом, раздельно учитывая экранированное и неэкранированное исполнения; обновить сводную спецификацию.",
+        "risk": "Ошибки заказа по метражу и исполнению кабеля.",
+        "source_finding_ids": [
+          "T-014",
+          "G-063",
+          "G-064"
+        ],
+        "source_block_ids": [
+          "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396"
+        ],
+        "related_block_ids": [
+          "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_b2b11f12b2c24e10bebb7fb32c3680f5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+            "page": 30
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+            "page": 63
+          },
+          {
+            "type": "text",
+            "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+            "page": 64
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_cable_quantity_conflict",
+      "reason": "Восемь различных марок линий КСПВПГнг(А)-HF 1×2×0,75 в КЖ5–6 дают 120 м против 50 м в ведомости листа 26. Три линии экранированного исполнения дают 50 м против 105 м. Дублированный силовой П4.1.3-9 не включён в этот подсчёт. Расхождение документов подтверждено; фактическая закупка и графический метраж не проверялись.",
+      "evidence": [
+        {
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "md_span_sha256": "c34742a55bd1489d791e14b7061b5f6e552b772bedc7ef9114bd502924783139",
+          "start": 164256,
+          "end": 165307,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "md_span_sha256": "fa926184379362b8d7d66af6ef80e363227b786525e4c4e62e2af8efe7ac53cc",
+          "start": 359757,
+          "end": 362382,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "md_span_sha256": "899dc247db77b7021b33a7cc6d7175d2c322ba909f985462c8a43e4e4ac67a8c",
+          "start": 362382,
+          "end": 364959,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed",
+      "arithmetic_input_rows": [
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "line_id": "П4.1.3-1",
+          "start": "ШАУВ-2-К4ПЧ",
+          "end": "ТЕ1",
+          "cable": "КСПЭВПГнг(А)-HF",
+          "section_literal": "1х2х0,75",
+          "length_m": 20
+        },
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "line_id": "П4.1.3-2",
+          "start": "ШАУВ-2-К4ПЧ",
+          "end": "ТЕ2",
+          "cable": "КСПЭВПГнг(А)-HF",
+          "section_literal": "1х2х0,75",
+          "length_m": 15
+        },
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "line_id": "П4.1.3-3",
+          "start": "ШАУВ-2-К4ПЧ",
+          "end": "ТС1",
+          "cable": "КСПВПГнг(А)-HF",
+          "section_literal": "1х2х0,75",
+          "length_m": 15
+        },
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "line_id": "П4.1.3-4",
+          "start": "ШАУВ-2-К4ПЧ",
+          "end": "PDS1",
+          "cable": "КСПВПГнг(А)-HF",
+          "section_literal": "1х2х0,75",
+          "length_m": 15
+        },
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "line_id": "П4.1.3-5",
+          "start": "ШАУВ-2-К4ПЧ",
+          "end": "PDS2",
+          "cable": "КСПВПГнг(А)-HF",
+          "section_literal": "1х2х0,75",
+          "length_m": 15
+        },
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "line_id": "П4.1.3-8",
+          "start": "ШАУВ-2-К4ПЧ",
+          "end": "XТ1",
+          "cable": "КСПВПГнг(А)-HF",
+          "section_literal": "1х2х0,75",
+          "length_m": 15
+        },
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "line_id": "П4.1.4-1",
+          "start": "ШАУВ-2-К4ПЧ",
+          "end": "ТЕ3",
+          "cable": "КСПЭВПГнг(А)-HF",
+          "section_literal": "1х2х0,75",
+          "length_m": 15
+        },
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "line_id": "П4.1.4-2",
+          "start": "ШАУВ-2-К4ПЧ",
+          "end": "PDS3",
+          "cable": "КСПВПГнг(А)-HF",
+          "section_literal": "1х2х0,75",
+          "length_m": 15
+        },
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "line_id": "П4.1.4-3",
+          "start": "ШАУВ-2-К4ПЧ",
+          "end": "PDS4",
+          "cable": "КСПВПГнг(А)-HF",
+          "section_literal": "1х2х0,75",
+          "length_m": 15
+        },
+        {
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "line_id": "П4.1.4-6",
+          "start": "ШАУВ-2-К4ПЧ",
+          "end": "ХТ2",
+          "cable": "КСПВПГнг(А)-HF",
+          "section_literal": "1x2x0,75",
+          "length_m": 15
+        },
+        {
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "line_id": "П4.1.4-8",
+          "start": "ШАУВ-2-К4ПЧ",
+          "end": "ХТ3",
+          "cable": "КСПВПГнг(А)-HF",
+          "section_literal": "1x2x0,75",
+          "length_m": 15
+        }
+      ],
+      "arithmetic_group_totals": [
+        {
+          "cable": "КСПЭВПГнг(А)-HF",
+          "section": "1x2x0,75",
+          "total_m": 50
+        },
+        {
+          "cable": "КСПВПГнг(А)-HF",
+          "section": "1x2x0,75",
+          "total_m": 120
+        }
+      ]
+    },
+    {
+      "finding_id": "F-015",
+      "original_model_finding": {
+        "id": "F-015",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Ведомость кабелей",
+        "report_section": "technical_findings",
+        "sheet": "Лист 33",
+        "page": [
+          37,
+          74
+        ],
+        "problem": "Длина кабеля Пн5.1.-10 различается на 20 м.",
+        "description": "Линия Пн5.1.-10 от ШАУВ-4-К5ПЧ к ХТ1 задана в журнале как 35 м КСПЭВПГнг(А)-HF 2×2×0,75. Ведомость этого шкафа на листе 33 содержит 15 м того же исполнения.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить проектную длину линии и согласовать локальную ведомость со сводной спецификацией.",
+        "risk": "Неверный объем кабеля в заказе.",
+        "source_finding_ids": [
+          "T-015"
+        ],
+        "source_block_ids": [
+          "blk_bcea3caf8104407b919f6960e2c12274",
+          "blk_af7d76cf48cd48db813eee8d44227292"
+        ],
+        "related_block_ids": [
+          "blk_bcea3caf8104407b919f6960e2c12274",
+          "blk_af7d76cf48cd48db813eee8d44227292",
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+            "page": 37
+          },
+          {
+            "type": "text",
+            "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+            "page": 74
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_cable_length_conflict",
+      "reason": "КЖ16 задаёт Пн5.1.-10 от ШАУВ-4-К5ПЧ к ХТ1 длиной 35 м; ведомость этого шкафа на листе 33 содержит всего 15 м КСПЭВПГнг(А)-HF 2×2×0,75. Разница 20 м подтверждена. Выбор правильной длины требует трассы; по одним ведомостям не устанавливается.",
+      "evidence": [
+        {
+          "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+          "md_span_sha256": "1abbaa3c0a44e4830474ce68c78b398c0e4c265ec48021b0a38326f7d5bee5f3",
+          "start": 195061,
+          "end": 196071,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+          "md_span_sha256": "ba54a9c95fe6f88a1a046c83c2619d223b1226f3bd8bafaf35b5a35b47008d79",
+          "start": 386225,
+          "end": 388847,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-016",
+      "original_model_finding": {
+        "id": "F-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Ведомость кабелей",
+        "report_section": "technical_findings",
+        "sheet": "Лист 29",
+        "page": [
+          33,
+          67,
+          68
+        ],
+        "problem": "Ведомость Па3.1/Ва3.1 расходится с журналом по двум силовым кабелям.",
+        "description": "Для ППГнг(А)-HF 3×1,5 журнал дает 2×20 + 5×120 = 640 м против 620 м в ведомости. Для ППГнг(А)-HF 4×2,5 — 2×20 + 2×120 + 2×15 = 310 м против 290 м. Разница по каждому исполнению составляет 20 м. Межшкафные линии по 15 м учтены отдельно от линий к двигателям. Фактическая недостача материалов не установлена.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать метражи с действующими концами и длинами линий, затем обновить локальную и сводную ведомости.",
+        "risk": "Заниженный заказ кабелей при сохранении длин журнала.",
+        "source_finding_ids": [
+          "T-016",
+          "G-069"
+        ],
+        "source_block_ids": [
+          "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_3705aceeb77e406ebacc38fcaf7f2d28"
+        ],
+        "related_block_ids": [
+          "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "blk_cd9d763d198246859c3df42c18b5c3d8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+            "page": 33
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+            "page": 67
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+            "page": 68
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_cable_quantity_conflict",
+      "reason": "КЖ9–10: ППГнг(А)-HF 3×1,5 = 20+20+5×120 = 640 м, ведомость 620 м. Исполнение 4×2,5 = 20+20+120+120+15+15 = 310 м, ведомость 290 м. Межшкафные Ва3.1-3ПЧ/-4ПЧ имеют другие концы, чем Ва3.1-3/-4 к двигателям, поэтому не исключены как дубли. Подтверждено расхождение на 20 м по каждому исполнению, не физическая недостача.",
+      "evidence": [
+        {
+          "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "md_span_sha256": "e3788dedfde0f01103d58813b2328e7dda6e3c771a7ff3720b80b820966d8c79",
+          "start": 176574,
+          "end": 177530,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "md_span_sha256": "26dfc9ca56ee05e38b7bd4580d4210febb93d5e5819aef4477beb3e28dbcdcca",
+          "start": 370196,
+          "end": 372825,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "md_span_sha256": "011d9bb51ca62819ba1ab6de3b9424d6c8dc3b35f53557288e4f349365677ad5",
+          "start": 372825,
+          "end": 375364,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed",
+      "arithmetic_input_rows": [
+        {
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "line_id": "Па3.1-7",
+          "start": "ШАУВ-1-К4АС",
+          "end": "M1",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "4х2,5",
+          "length_m": 20
+        },
+        {
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "line_id": "Па3.1-9",
+          "start": "ШАУВ-1-К4АС",
+          "end": "XТ2",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "3х1,5",
+          "length_m": 20
+        },
+        {
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "line_id": "Па3.1-11",
+          "start": "ШАУВ-1-К4АС",
+          "end": "M2",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "3х1,5",
+          "length_m": 20
+        },
+        {
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "line_id": "Па3.1-12",
+          "start": "ШАУВ-1-К4АС",
+          "end": "M5",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "4х2,5",
+          "length_m": 20
+        },
+        {
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "line_id": "Ва3.1-3",
+          "start": "ШАУВ-1-К4АС.ПЧ",
+          "end": "M3",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "4х2,5",
+          "length_m": 120
+        },
+        {
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "line_id": "Ва3.1-4",
+          "start": "ШАУВ-1-К4АС.ПЧ",
+          "end": "M4",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "4х2,5",
+          "length_m": 120
+        },
+        {
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "line_id": "Ва3.1-3ПЧ",
+          "start": "ШАУВ-1-К4АС",
+          "end": "ШАУВ-1-К4АС.ПЧ",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "4x2,5",
+          "length_m": 15
+        },
+        {
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "line_id": "Ва3.1-4ПЧ",
+          "start": "ШАУВ-1-К4АС",
+          "end": "ШАУВ-1-К4АС.ПЧ",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "4x2,5",
+          "length_m": 15
+        },
+        {
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "line_id": "Ва3.1-5",
+          "start": "ШАУВ-1-К4АС",
+          "end": "ХТ3",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "3x1,5",
+          "length_m": 120
+        },
+        {
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "line_id": "Ва3.1-7",
+          "start": "ШАУВ-1-К4АС",
+          "end": "ХТ4",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "3x1,5",
+          "length_m": 120
+        },
+        {
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "line_id": "Ва3.1-9",
+          "start": "ШАУВ-1-К4АС",
+          "end": "ХТ5",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "3x1,5",
+          "length_m": 120
+        },
+        {
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "line_id": "Ва3.1-11",
+          "start": "ШАУВ-1-К4АС",
+          "end": "ХТ6",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "3x1,5",
+          "length_m": 120
+        },
+        {
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "line_id": "Ва3.1-13",
+          "start": "ШАУВ-1-К4АС",
+          "end": "ХТ7",
+          "cable": "ППГнг(А)-HF",
+          "section_literal": "3x1,5",
+          "length_m": 120
+        }
+      ],
+      "arithmetic_group_totals": [
+        {
+          "cable": "ППГнг(А)-HF",
+          "section": "4x2,5",
+          "total_m": 310
+        },
+        {
+          "cable": "ППГнг(А)-HF",
+          "section": "3x1,5",
+          "total_m": 640
+        }
+      ]
+    },
+    {
+      "finding_id": "F-017",
+      "original_model_finding": {
+        "id": "F-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Питание электронагревателя",
+        "report_section": "technical_findings",
+        "sheet": "Лист 35",
+        "page": [
+          39,
+          77
+        ],
+        "problem": "Число жил и сечение кабеля электронагревателя По5.1 не согласованы.",
+        "description": "Журнал, лист 19, задает По5.1-9: ППГнг(А)-HF 4×4,0, 10 м. Ведомость ШАУВ-6-К5ПЧ на листе 35 не содержит этого исполнения и содержит 10 м ППГнг(А)-HF 3×2,5. Отнесение 3×2,5 непосредственно к линии на графической схеме не проверено, однако конфликт локальной номенклатуры и журнала подтвержден.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "По мощности, фазности и защите нагревателя выбрать согласованный кабель и исправить журнал, схему и ведомость.",
+        "risk": "Поставка кабеля с неподходящим числом жил или сечением.",
+        "source_finding_ids": [
+          "T-017",
+          "G-077",
+          "G-078"
+        ],
+        "source_block_ids": [
+          "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ],
+        "related_block_ids": [
+          "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "blk_c63456cda51644db9470fb57f29b27de",
+          "blk_065a335469904b2db1640b480b321503"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+            "page": 39
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+            "page": 77
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_cable_assortment_conflict",
+      "reason": "По5.1-9 к электронагревателю указан 4×4,0 длиной 10 м; локальная ведомость ШАУВ-6-К5ПЧ не содержит 4×4,0 и содержит 3×2,5 длиной 10 м. Совпадение длины не доказывает, что 3×2,5 предназначен именно для нагревателя. Вывод модели ограничен конфликтом номенклатуры, поэтому поддержан; правильное сечение не рассчитано.",
+      "evidence": [
+        {
+          "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "md_span_sha256": "34c39c0bdc6ae018b4cb95539ad9dc56dfb6da1235b0f074a5ee1aae24377a47",
+          "start": 203909,
+          "end": 204909,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "md_span_sha256": "7938d16e802cb533ab671403bd96f81c1106e64b80990454535aece2964aa435",
+          "start": 393942,
+          "end": 396424,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-018",
+      "original_model_finding": {
+        "id": "F-018",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кабельная спецификация",
+        "report_section": "technical_findings",
+        "sheet": "Лист 28",
+        "page": [
+          32,
+          65,
+          102,
+          103
+        ],
+        "problem": "Силовой кабель 3×2,5 из локальной ведомости отсутствует в сводной спецификации.",
+        "description": "Для П4.1.1-4 к М1 журнал предусматривает 20 м ППГнг(А)-НФ 3×2,5. Ведомость листа 28 содержит 20 м ППГнг(А)-HF 3×2,5. В полном разделе кабелей сводной спецификации позиции силового кабеля 3×2,5 нет. Написание НФ/HF также требует согласования; замена на 4×2,5 без проектного решения не обоснована.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить точную марку линии и включить согласованное исполнение в сводную поставку.",
+        "risk": "Отсутствие необходимой номенклатуры в заказе и произвольная замена при монтаже.",
+        "source_finding_ids": [
+          "T-018"
+        ],
+        "source_block_ids": [
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_45a5493bf459424ea614bc2de6d6e514",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "related_block_ids": [
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_45a5493bf459424ea614bc2de6d6e514",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+            "page": 65
+          },
+          {
+            "type": "text",
+            "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+            "page": 32
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_missing_summary_cable_item",
+      "reason": "П4.1.1-4 в КЖ7 имеет 3×2,5, 20 м; локальная ведомость листа 28 содержит 3×2,5, 20 м. В полном разделе 21 спецификации, заканчивающемся перед разделом 22, нет силового кабеля 3×2,5. НФ и HF сохранены буквально, их эквивалентность не объявлена. Автоматическая замена на 4×2,5 не допускается; физическая поставка не проверена.",
+      "evidence": [
+        {
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "md_span_sha256": "b4b5473c4cbec1f32f175c18d9cbd3e47994ef7113a6d0f0d7db0eca6afb70fe",
+          "start": 364959,
+          "end": 367559,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+          "md_span_sha256": "3030a4532bf353c8b8e23a3beb3d33c0a9bb47a71df405f4e9ab42cac8235a7d",
+          "start": 172372,
+          "end": 173360,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "md_span_sha256": "6788dfbfdca0eeb3d9a89e1c460f758be70a1385c93d7e22029c2ff7b092c952",
+          "start": 453077,
+          "end": 455518,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "md_span_sha256": "71f81fe0f9f2620a2061361bfa8bfc44fb2c69e8d5890679804e1e7ba9c6b35d",
+          "start": 455518,
+          "end": 458041,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-019",
+      "original_model_finding": {
+        "id": "F-019",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Марки кабелей",
+        "report_section": "questions",
+        "sheet": "Листы 25, 37, 40",
+        "page": [
+          29,
+          41,
+          44,
+          59,
+          81,
+          90,
+          92,
+          93,
+          102
+        ],
+        "problem": "Требуется унифицировать заводские обозначения контрольных кабелей.",
+        "description": "Спецификация использует КСПВППГнг(А)-HF, локальные ведомости — КСПВПГнг(А)-HF, журнал также содержит КСВПГнг(А)-HF и КСПВПнг(А)-HF. Для В6.1.1-4, В6.1.2-1, В6.1.2-4, В6.1.4-1 журнал задает КСВПГнг(А)-HF 1×2×0,75 по 30 м, а локальная ведомость шкафа — КСПВПГнг(А)-HF. Для связи СКЗ с ШАУВ-1-К6АС журнал задает КСПВПнг(А)-HF 1×2×0,75, 45 м, локальная ведомость — КСПВПГнг(А)-HF. Встречается НФ вместо HF. Равнозначность вариантов и марки непосредственно на графических линиях не подтверждены.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "По техническим условиям изготовителя установить точные марки и согласовать журнал, локальные перечни, схемы и спецификацию.",
+        "risk": "Неоднозначный заказ кабелей и объединение разных исполнений при подсчете.",
+        "source_finding_ids": [
+          "T-019",
+          "G-086",
+          "G-092",
+          "G-093"
+        ],
+        "source_block_ids": [
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_019b790b96c0452e9b83c348ec3d429c",
+          "blk_13604b1cfe21408f85c2bc28e358b012",
+          "blk_7b41b193ccad4f559ba654a2248576d5",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+          "blk_a3ebf964570e4e669569795872f6001b",
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_82df3363fc824144b9390f2cd6635937"
+        ],
+        "related_block_ids": [
+          "blk_b8712be58c8b43f6ac75cfa6420d5479",
+          "blk_47163e69651c48528b3e054d5a5db095",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+          "blk_a256f98d4e01408d90baba99d8b2cc19"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          },
+          {
+            "type": "text",
+            "block_id": "blk_019b790b96c0452e9b83c348ec3d429c",
+            "page": 59
+          },
+          {
+            "type": "text",
+            "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+            "page": 81
+          },
+          {
+            "type": "text",
+            "block_id": "blk_a3ebf964570e4e669569795872f6001b",
+            "page": 41
+          },
+          {
+            "type": "text",
+            "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+            "page": 93
+          },
+          {
+            "type": "text",
+            "block_id": "blk_82df3363fc824144b9390f2cd6635937",
+            "page": 44
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_literal_cable_designations",
+      "reason": "Проверенные строки содержат КСПВППГнг, КСПВПГнг, КСВПГнг и КСПВПнг; четыре перечисленные линии В6 имеют КСВПГнг по 30 м, локальная ведомость — КСПВПГнг; СУКЗ-1 к К6АС содержит КСПВПнг 45 м, местная ведомость — КСПВПГнг. Это подтверждает вопрос об унификации обозначений. Заводские ТУ, эквивалентность исполнения и графические подписи не проверены; написание не превращено в доказательство непригодности кабеля.",
+      "evidence": [
+        {
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "md_span_sha256": "6788dfbfdca0eeb3d9a89e1c460f758be70a1385c93d7e22029c2ff7b092c952",
+          "start": 453077,
+          "end": 455518,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_019b790b96c0452e9b83c348ec3d429c",
+          "md_span_sha256": "7b3f83f50fed3f1d57296a698a04c61c9b4cc4103f4acc14ec2e5d376fe8ab82",
+          "start": 353185,
+          "end": 354948,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_13604b1cfe21408f85c2bc28e358b012",
+          "md_span_sha256": "5d23a940a635a7f6c1d7e67c1b28f6c7acaf7f1d248078ed7fe173d0b1a868cf",
+          "start": 160088,
+          "end": 161007,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+          "md_span_sha256": "36e173f4e3124a4e248035764fc85bae86d235ff2a827e5ea517f7a4b3b2ec22",
+          "start": 423798,
+          "end": 426019,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "md_span_sha256": "cb38bf51dd1ac96735f0fe9cdc5e934cd640610ab30f8dc6b7632f058ea654d6",
+          "start": 428379,
+          "end": 430911,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+          "md_span_sha256": "0030ca747f56914e9d8ecbc37990baee9419c4ea0c699893ed7c45100ad8a5ec",
+          "start": 403514,
+          "end": 405279,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_a3ebf964570e4e669569795872f6001b",
+          "md_span_sha256": "36ad125ae719a02f6af593c498f9e0e3cb15ab3799c8471f0e9f48ff694e8306",
+          "start": 214129,
+          "end": 215245,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "md_span_sha256": "a0c2f57dfe554d763ea9544d0a85b338c752587308acc9e09f534a8833dec026",
+          "start": 430911,
+          "end": 432749,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_82df3363fc824144b9390f2cd6635937",
+          "md_span_sha256": "03669cf6b1d45710fc7e07964f7cec881598fa001bb716bf56a0f8fc482dfa34",
+          "start": 225546,
+          "end": 226451,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-020",
+      "original_model_finding": {
+        "id": "F-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Огнестойкость кабельных линий",
+        "report_section": "questions",
+        "sheet": "Лист 47",
+        "page": [
+          8,
+          51,
+          93,
+          103
+        ],
+        "problem": "Требуется подтвердить конструкцию линий температурного контроля противодымных систем.",
+        "description": "Шесть температурных линий ПД выполнены кабелем КСРЭПнг(А)-FRHF 2×2×1,13 общей длиной 420 м с прокладкой в гофротрубе. Спецификация содержит общие ПВХ-гофротрубы и держатели. Марка FRHF не подтверждает работоспособность всей линии вместе с креплениями. Роль этих цепей при пожаре, необходимое время работы и конкретная конструкция огнестойкой линии в доступных материалах не установлены.",
+        "norm": "Федеральный закон № 123-ФЗ — норматив-кандидат; применимая редакция и статус требований подлежат проверке.",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "Федеральный закон № 123-ФЗ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требование сохранения работоспособности линий, необходимых для противодымной защиты, с учетом роли температурного контроля.",
+            "clause_candidate": "Статья 82, часть 2",
+            "quote_candidate": null,
+            "provenance": {
+              "source_finding_ids": [
+                "T-020"
+              ],
+              "designation_source": "Исходное текстовое замечание"
+            }
+          }
+        ],
+        "solution": "Проектировщикам АК и СПЗ определить необходимое время работы и указать подтвержденную конструкцию линии, крепления, трассу и условия монтажа.",
+        "risk": "При неподтвержденной конструкции возможна потеря управления подогревом в пожарном режиме; несоответствие пока не установлено.",
+        "source_finding_ids": [
+          "T-020"
+        ],
+        "source_block_ids": [
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ],
+        "related_block_ids": [
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_57ebcc215b52427c8b10b61a7202b14d"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+            "page": 93
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": 8
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_requires_narrower_wording",
+      "reason": "КЖ35 содержит шесть температурных линий FRHF длиной 45+35+105+105+65+65=420 м с гофротрубой. Спецификация содержит 420 м этого кабеля, общую ПВХ-гофротрубу и держатели. Однако утверждение, что роль цепей при пожаре не установлена, чрезмерно: пункт 7 прямо описывает включение тёплого подпора по сигналу ПОЖАР и управление подогревом от датчика-реле. Следует сохранить вопрос о необходимом времени работы и конкретной подтверждённой конструкции линии. По общей позиции ПВХ нельзя доказать её назначение каждой пожарной линии или нарушение требований; нормативное соответствие не оценивалось.",
+      "evidence": [
+        {
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "md_span_sha256": "a0c2f57dfe554d763ea9544d0a85b338c752587308acc9e09f534a8833dec026",
+          "start": 430911,
+          "end": 432749,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "md_span_sha256": "71f81fe0f9f2620a2061361bfa8bfc44fb2c69e8d5890679804e1e7ba9c6b35d",
+          "start": 455518,
+          "end": 458041,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        },
+        {
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "md_span_sha256": "2cbc98fcdd0ca377cb4ef3b7a0e6c57c8dfda7905b38e69eaa07a8c00e32c154",
+          "start": 34947,
+          "end": 40661,
+          "inspection_scope": "authoritative TEXT table rows and relevant statements; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    }
+  ],
+  "production_acceptance": false
+}

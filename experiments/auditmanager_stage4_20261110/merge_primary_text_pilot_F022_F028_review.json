@@ -1,0 +1,571 @@
+{
+  "status": "seven_more_findings_reviewed_with_one_external_reference_check_pending",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "source_md": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+  },
+  "reviews": [
+    {
+      "finding_id": "F-022",
+      "original_model_finding": {
+        "id": "F-022",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "report_section": "questions",
+        "sheet": null,
+        "page": [
+          6,
+          8
+        ],
+        "problem": "Две нормативные ссылки не обеспечивают однозначную идентификацию документов.",
+        "description": "В общих указаниях записано «ГОСТ 21.4.08-2013» при наименовании правил документации автоматизации. Высота газоанализаторов 1,5 м обоснована «ТУ-газ-86» без полного наименования и реквизитов. Ошибочность самой высоты установки не установлена.",
+        "norm": "ГОСТ 21.408-2013 — кандидат для уточнения обозначения; статус редакции не проверен. «ТУ-газ-86» — документ не идентифицирован.",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.4.08-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить правильное обозначение документа, соответствующего приведенному наименованию правил рабочей документации автоматизации.",
+            "clause_candidate": null,
+            "quote_candidate": null,
+            "provenance": {
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "designation_source": "Первичная ссылка с дополнительной точкой"
+            }
+          },
+          {
+            "designation": "ТУ-газ-86",
+            "candidate_relevance": 0.4,
+            "reason": "Идентифицировать документ, которым обоснована высота газоанализаторов 1,5 м, и проверить применимость к выбранному прибору.",
+            "clause_candidate": null,
+            "quote_candidate": null,
+            "provenance": {
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "designation_source": "Первичные общие данные проекта"
+            }
+          }
+        ],
+        "solution": "Уточнить обозначение ГОСТ; привести полные реквизиты технических условий либо ссылку на применимое руководство выбранного сигнализатора.",
+        "risk": "Невозможность проверить нормативное основание проектных указаний.",
+        "source_finding_ids": [
+          "T-022"
+        ],
+        "source_block_ids": [
+          "blk_adc4052a68344abf9c8f56861b9294d1",
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ],
+        "related_block_ids": [
+          "blk_adc4052a68344abf9c8f56861b9294d1",
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": 8
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "literal_references_confirmed_normative_check_pending",
+      "reason": "В общих указаниях действительно записано ГОСТ 21.4.08-2013 с названием правил документации автоматизации; пункт 6 содержит ТУ-газ-86 и высоту 1,5 м. Это подтверждает цитирование проекта, но не официальную ошибочность обозначения либо недостаточность реквизитов по применимому стандарту. Оставить вопрос, не засчитывать как подтверждённое нормативное нарушение; официальный поиск ещё нужен.",
+      "evidence": [
+        {
+          "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+          "md_span_sha256": "48fee9dc76efeb1511fa2bf4cd675d6104d219c3bd4fcd5bc2f74a55db640471",
+          "start": 11959,
+          "end": 15801,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        },
+        {
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "md_span_sha256": "2cbc98fcdd0ca377cb4ef3b7a0e6c57c8dfda7905b38e69eaa07a8c00e32c154",
+          "start": 34947,
+          "end": 40661,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-023",
+      "original_model_finding": {
+        "id": "F-023",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Границы электроснабжения",
+        "report_section": "questions",
+        "sheet": null,
+        "page": [
+          6,
+          7,
+          8
+        ],
+        "problem": "Для питания шкафов указаны разные смежные комплекты.",
+        "description": "Описание приточных и вытяжных систем относит питание шкафов к 13АВ-РД-ЭМ2-ПА, а пункт 8 общих данных — к 13АВ-РД-ЭМ-КЗ. Там же для водяных калориферов заявлены I категория цепей защиты и II категория привода вентилятора. Применимый комплект для каждой группы шкафов и отдельных вводов не определен этими ссылками.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проектировщикам АК и ЭМ указать адресный перечень питающих линий, комплектов и категорий для каждого ввода.",
+        "risk": "Пропуск или дублирование питающей линии на границе разделов.",
+        "source_finding_ids": [
+          "T-023"
+        ],
+        "source_block_ids": [
+          "blk_76e892431d7d4c48a09aba49a57b223c",
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_f30f5e10b54f415392e7e149a87dae24"
+        ],
+        "related_block_ids": [
+          "blk_76e892431d7d4c48a09aba49a57b223c",
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_f30f5e10b54f415392e7e149a87dae24"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_76e892431d7d4c48a09aba49a57b223c",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": 8
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_cross_discipline_reference_scope",
+      "reason": "В описании приточных систем питание отнесено к ЭМ2-ПА; описание вытяжных содержит ту же часть обозначения с иным написанием префикса. Пункт 8 отсылает к ЭМ-КЗ и разделяет I категорию защиты водяного калорифера и II категорию привода. Разные ссылки подтверждены. Ошибку категории или отсутствие фактического питания из этого не выводим: нужны соответствующие комплекты ЭМ и привязки вводов.",
+      "evidence": [
+        {
+          "block_id": "blk_76e892431d7d4c48a09aba49a57b223c",
+          "md_span_sha256": "ac93a82bb8680fc59420a6050a184c4e9210f61d15cf107a60e8a01b77484215",
+          "start": 19537,
+          "end": 23412,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        },
+        {
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "md_span_sha256": "2cbc98fcdd0ca377cb4ef3b7a0e6c57c8dfda7905b38e69eaa07a8c00e32c154",
+          "start": 34947,
+          "end": 40661,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        },
+        {
+          "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+          "md_span_sha256": "d7a0da4054d020c1e5fc598eec93b367235d9ff4f3e6542eb161b3986c5ca737",
+          "start": 29938,
+          "end": 33139,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-024",
+      "original_model_finding": {
+        "id": "F-024",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Алгоритм защиты калорифера",
+        "report_section": "technical_findings",
+        "sheet": null,
+        "page": 6,
+        "problem": "В описании защиты калорифера не согласовано место измерения температуры воздуха.",
+        "description": "Перечень функций задает защиту по обратной воде и воздуху после калорифера. Рабочий алгоритм на том же листе использует условие «обратный теплоноситель ≤20 °C или наружный воздух ≤3 °C» с полным открытием клапана и отключением регулирования температуры. При буквальном исполнении наружная температура ниже +3 °C удерживает защитный режим даже при прогретом калорифере. Предварительный прогрев считается завершенным при обратном теплоносителе выше 40 °C; условия выхода из рабочей защиты и критерий неэффективного прогрева не определены.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Установить контролируемый датчик и место измерения; согласовать условия входа, выхода, задержки и аварийного завершения прогрева с проектировщиком ОВ и программой контроллера.",
+        "risk": "Постоянная работа с полностью открытым клапаном, потеря регулирования и некорректная аварийная остановка.",
+        "source_finding_ids": [
+          "T-024"
+        ],
+        "source_block_ids": [
+          "blk_a5c923d5f33046ad9585e4102dc033c7",
+          "blk_76e892431d7d4c48a09aba49a57b223c"
+        ],
+        "related_block_ids": [
+          "blk_a5c923d5f33046ad9585e4102dc033c7",
+          "blk_76e892431d7d4c48a09aba49a57b223c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_a5c923d5f33046ad9585e4102dc033c7",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "blk_76e892431d7d4c48a09aba49a57b223c",
+            "page": 6
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_conditional_algorithm_conflict",
+      "reason": "Перечень функций называет защиту по обратной воде и воздуху после калорифера; рабочий алгоритм использует обратную воду ≤20 °C ИЛИ наружный воздух ≤3 °C и полное открытие клапана с отключением регулирования, либо аварийное отключение при неэффективности. При наружной температуре ниже +3 °C условие остаётся истинным независимо от прогрева обратной воды. В приведённом тексте нет критерия неэффективности и выхода из рабочей защиты. Порог >40 °C относится к предварительному прогреву; указание закрывать клапан при повышении температуры — к дежурному режиму. Условный вывод модели подтверждён, реальная программа контроллера не проверена. Проектные числа не являются универсальными уставками.",
+      "evidence": [
+        {
+          "block_id": "blk_a5c923d5f33046ad9585e4102dc033c7",
+          "md_span_sha256": "cd6d538f9d6136fa366f1a199608327fdbc029a5f5f2c1cb725d755a6868ad3e",
+          "start": 15801,
+          "end": 19537,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        },
+        {
+          "block_id": "blk_76e892431d7d4c48a09aba49a57b223c",
+          "md_span_sha256": "ac93a82bb8680fc59420a6050a184c4e9210f61d15cf107a60e8a01b77484215",
+          "start": 19537,
+          "end": 23412,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-025",
+      "original_model_finding": {
+        "id": "F-025",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектация кровельных опор",
+        "report_section": "technical_findings",
+        "sheet": "Листы 48, 50, 53",
+        "page": [
+          52,
+          54,
+          57,
+          103
+        ],
+        "problem": "Монтажные таблицы и спецификация задают разные подвесы кровельных опор.",
+        "description": "Таблицы крепления на листах 48, 50 и 53 одинаково задают одну плиту, один двойной подвес ДКС BSD4120 и четыре консоли ВВН-60 на типовой комплект. Спецификация, позиция 22.6, предусматривает 15 подвесов BSD2120 (BSD-21), а также 15 плит и 15 консолей. Конфликт марок подтвержден текстом. Число применений каждого узла не раскрыто; недостача 45 консолей не доказана.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать марку подвеса; составить ведомость применений опор с привязкой комплектации, количества консолей и границ поставки.",
+        "risk": "Поставка подвеса другого исполнения и неопределенность монтажной комплектности.",
+        "source_finding_ids": [
+          "T-025",
+          "G-104"
+        ],
+        "source_block_ids": [
+          "blk_56331ec5845f4d73be99b93df1faec9c",
+          "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "related_block_ids": [
+          "blk_56331ec5845f4d73be99b93df1faec9c",
+          "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_978fa763ed7e4a39977b35b866485e2e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_56331ec5845f4d73be99b93df1faec9c",
+            "page": 52
+          },
+          {
+            "type": "text",
+            "block_id": "blk_39fda1bca4154e719671c8db8fa6eeed",
+            "page": 54
+          },
+          {
+            "type": "text",
+            "block_id": "blk_6136fac6ecc947f49aa62c1e5803f276",
+            "page": 57
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_support_type_conflict_quantity_held",
+      "reason": "Три таблицы кровли содержат BSD4120 (1), плиту (1), консоль ВВН-60 (4); спецификация содержит подвес BSD-21/BSD2120 (15), плиту (15), консоль (15). Разница обозначений подтверждена; эквивалентность изделий по каталогу и число применений узлов не проверены. Нельзя автоматически умножать 15 на 4 и выдавать недостачу 45 консолей.",
+      "evidence": [
+        {
+          "block_id": "blk_56331ec5845f4d73be99b93df1faec9c",
+          "md_span_sha256": "ff0bfe1a942826189e1c0003ff432144e91a534ffff17c5c27aa743c20d9264a",
+          "start": 270129,
+          "end": 270925,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        },
+        {
+          "block_id": "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "md_span_sha256": "ac5b94fb584e6ac5f34c90f05c728cc1709967879c997b6bb50cfb28f5e3a492",
+          "start": 295252,
+          "end": 296141,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        },
+        {
+          "block_id": "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "md_span_sha256": "d69aaedb0a36cd8540d884b40b52d47d616171c7daba0ab7b30ef1e33d90ac80",
+          "start": 325603,
+          "end": 326399,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        },
+        {
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "md_span_sha256": "71f81fe0f9f2620a2061361bfa8bfc44fb2c69e8d5890679804e1e7ba9c6b35d",
+          "start": 455518,
+          "end": 458041,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-026",
+      "original_model_finding": {
+        "id": "F-026",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Закупочные идентификаторы",
+        "report_section": "questions",
+        "sheet": null,
+        "page": [
+          103,
+          104
+        ],
+        "problem": "В спецификации повторены идентификаторы разных изделий.",
+        "description": "Обозначение 35341 указано для лотка 100×100 L3000 и треугольной бирки. BSD2120 указано для подвеса и стальной трубы Ду 32. Позиция 21.10 повторена для интерфейсных кабелей 3×2×0,78 и 2×2×0,78. Правильные заводские коды без каталога не установлены.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить коды изделий по каталогам и назначить уникальные номера строк кабельной спецификации.",
+        "risk": "Ошибочное адресование изделий при заказе и согласовании замен.",
+        "source_finding_ids": [
+          "T-026"
+        ],
+        "source_block_ids": [
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_f4bf6dec4072413fa43043bf27d880eb"
+        ],
+        "related_block_ids": [
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_f4bf6dec4072413fa43043bf27d880eb"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f4bf6dec4072413fa43043bf27d880eb",
+            "page": 104
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_reused_codes_and_position_numbers",
+      "reason": "В спецификации 35341 повторён для лотка и треугольной бирки, BSD2120 — для подвеса и трубы Ду-32. Позиция 21.10 повторена для двух разных интерфейсных кабелей. Все повторы подтверждены буквальными строками. Правильные коды и фактически заказанные изделия без каталога и закупочных документов не установлены.",
+      "evidence": [
+        {
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "md_span_sha256": "71f81fe0f9f2620a2061361bfa8bfc44fb2c69e8d5890679804e1e7ba9c6b35d",
+          "start": 455518,
+          "end": 458041,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        },
+        {
+          "block_id": "blk_f4bf6dec4072413fa43043bf27d880eb",
+          "md_span_sha256": "663d2d29e55e4e225ca8953fad647a78db9047000df42fc52a4e0e5f668f8be9",
+          "start": 458041,
+          "end": 459351,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-027",
+      "original_model_finding": {
+        "id": "F-027",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Адресация оборудования",
+        "report_section": "questions",
+        "sheet": "Листы 40, 54",
+        "page": [
+          58,
+          101
+        ],
+        "problem": "Примечания к ПЧ шкафа ШАУВ-1-К6АС адресованы системам другого шкафа.",
+        "description": "Позиции 16.2 и 16.3 спецификации подписаны «для Ва4.1» и «для Па4.1». Таблица применимости относит ШАУВ-1-К6АС к Па5.1/Ва5.1, а Па4.1/Ва4.1 — к ШАУВ-1-К5АС. Графические подписи листа 40 и плана не проверены; текстовая таблица подтверждает несогласованную адресацию.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Исправить адреса систем в примечаниях после сверки с заданием ОВ; мощности ПЧ между шкафами автоматически не переносить.",
+        "risk": "Ошибочная привязка ПЧ при заказе и сборке шкафов.",
+        "source_finding_ids": [
+          "T-027",
+          "G-090",
+          "G-091"
+        ],
+        "source_block_ids": [
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052"
+        ],
+        "related_block_ids": [
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "blk_47163e69651c48528b3e054d5a5db095"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+            "page": 101
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+            "page": 58
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_equipment_system_address",
+      "reason": "Раздел 16 относится к ШАУВ-1-К6АС, но 16.2 и 16.3 подписаны для Ва4.1 и Па4.1. Таблица применимости связывает этот шкаф с Па5.1/Ва5.1, а Па4.1/Ва4.1 — с К5АС. Противоречие адресации подтверждено текстом. Графика и действительная привязка приводов не проверены.",
+      "evidence": [
+        {
+          "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "md_span_sha256": "e35ac512dab6993959cd00914d1e81beeeb1cad821244a4142e26c19cc0d06ca",
+          "start": 450496,
+          "end": 453077,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        },
+        {
+          "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "md_span_sha256": "96e9d96ed9f61f230e035d6f559e60397df97e2c9a55e730a53c9f104d4db6a0",
+          "start": 352024,
+          "end": 353185,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-028",
+      "original_model_finding": {
+        "id": "F-028",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Принадлежность реестра отклонений",
+        "report_section": "questions",
+        "sheet": null,
+        "page": [
+          1,
+          8,
+          105
+        ],
+        "problem": "В реестре отклонений указан другой шифр комплекта.",
+        "description": "Реестр с обозначением 13АВ-РД-АК2-ПА.РО содержит строку «13АВ-РД-АК-КЗ Книга 1» об исключении Modbus-RTU и применении CAN/Ethernet. Титул и ведомость комплектов относят рассматриваемую документацию к АК2-ПА. Принадлежность записи этому комплекту требует подтверждения.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Подтвердить область изменения протоколов и исправить шифр раздела в реестре.",
+        "risk": "Неоднозначность согласования изменений относительно проектной документации.",
+        "source_finding_ids": [
+          "T-028"
+        ],
+        "source_block_ids": [
+          "blk_e1d470118a394e9a9e75718113a9b37d",
+          "blk_e298f80a8fbc4796ac98687118263a56",
+          "blk_3a701ccb1ff24442a4885446ad4adf55"
+        ],
+        "related_block_ids": [
+          "blk_e1d470118a394e9a9e75718113a9b37d",
+          "blk_e298f80a8fbc4796ac98687118263a56",
+          "blk_3a701ccb1ff24442a4885446ad4adf55"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e1d470118a394e9a9e75718113a9b37d",
+            "page": 105
+          },
+          {
+            "type": "text",
+            "block_id": "blk_e298f80a8fbc4796ac98687118263a56",
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3a701ccb1ff24442a4885446ad4adf55",
+            "page": 1
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_deviation_register_scope",
+      "reason": "Реестр имеет штамп АК2-ПА.РО, но строка относится к АК-КЗ Книга 1 и описывает отказ от Modbus-RTU в пользу CAN/Ethernet. Титул задаёт АК2-ПА, ведомость отдельно перечисляет корпусные комплекты и подземную автостоянку. Принадлежность записи требует уточнения; из этого нельзя вывести реальное несоответствие протоколов оборудования.",
+      "evidence": [
+        {
+          "block_id": "blk_e1d470118a394e9a9e75718113a9b37d",
+          "md_span_sha256": "31daf777123b40564e94bd8614dc94632eb67725c34d6d07ea7d9464501d49f2",
+          "start": 459351,
+          "end": 460321,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        },
+        {
+          "block_id": "blk_e298f80a8fbc4796ac98687118263a56",
+          "md_span_sha256": "8815ef3099aeba5eb1babc7c115c1850481d586a27cd356f04eefbae11ca8ce9",
+          "start": 33139,
+          "end": 34947,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        },
+        {
+          "block_id": "blk_3a701ccb1ff24442a4885446ad4adf55",
+          "md_span_sha256": "18aaa9f033989a9fd91d157bade2ba344d0a1837c660a19abd119572d4cbbe7e",
+          "start": 292,
+          "end": 1205,
+          "inspection_scope": "relevant authoritative TEXT content; graphics and external normative sources not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    }
+  ],
+  "production_acceptance": false
+}
