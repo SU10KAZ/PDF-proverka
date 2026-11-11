@@ -1,0 +1,161 @@
+{
+  "regions": [
+    {
+      "source": {
+        "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+        "parent_image_sha256": "847037c08616aa20e44353c005fda5c0a0f36e7f9b4f878eb2326f550c8a5375",
+        "parent_path": "/tmp/auditmanager_itp_automatic_t411_source_review_20261111/graphics/detail_1.png",
+        "parent_size": [
+          3707,
+          1840
+        ],
+        "proposed_bbox_norm_xyxy": [
+          0.258,
+          0.162,
+          0.383,
+          0.254
+        ],
+        "pixel_box": [
+          910,
+          281,
+          1467,
+          485
+        ],
+        "rotation_ccw": 0,
+        "selection": "first usable evidence region per attached image",
+        "semantic_verified": false
+      },
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Read only the attached drawing image. No tools, files, web or engineering inference. Transcribe visible annotations literally, preserving printed digits, marks and units. Do not guess unreadable characters. Return JSON with annotations (list of objects, each with literal, bbox_norm_xyxy [left,top,right,bottom] in 0..1), and reading_uncertainties (list of nonempty strings). Empty annotations are allowed if nothing is legible. This is literal graphic reading, not a defect verdict."
+          },
+          {
+            "role": "user",
+            "content": "Transcribe the supplied image."
+          }
+        ],
+        "image_paths": [
+          "/tmp/auditmanager_itp_automatic_t411_source_review_20261111/workflow_auto_regions_v2/graphic_regions/8b84e432bf28914ac1bb72e9e4d188eda3dc9f5968ea4e17278ddcad5f9057dc.png"
+        ],
+        "image_bindings": [
+          {
+            "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+            "path": "/tmp/auditmanager_itp_automatic_t411_source_review_20261111/workflow_auto_regions_v2/graphic_regions/8b84e432bf28914ac1bb72e9e4d188eda3dc9f5968ea4e17278ddcad5f9057dc.png",
+            "sha256": "6ffd455540e573876c1b801bc2dfe018b95a72cabf6b417d9f1bf4067b679097",
+            "width": 557,
+            "height": 204,
+            "view_kind": "review_region"
+          }
+        ]
+      }
+    },
+    {
+      "source": {
+        "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+        "parent_image_sha256": "b537ed2bb367e41d0edcaa2ddba327885ad76b370accf82aaf137fd8659061ec",
+        "parent_path": "/tmp/auditmanager_itp_automatic_t411_source_review_20261111/graphics/detail_10.png",
+        "parent_size": [
+          5532,
+          2632
+        ],
+        "proposed_bbox_norm_xyxy": [
+          0.407,
+          0.16,
+          0.425,
+          0.361
+        ],
+        "pixel_box": [
+          2241,
+          368,
+          2362,
+          1004
+        ],
+        "rotation_ccw": 90,
+        "selection": "first usable evidence region per attached image",
+        "semantic_verified": false
+      },
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Read only the attached drawing image. No tools, files, web or engineering inference. Transcribe visible annotations literally, preserving printed digits, marks and units. Do not guess unreadable characters. Return JSON with annotations (list of objects, each with literal, bbox_norm_xyxy [left,top,right,bottom] in 0..1), and reading_uncertainties (list of nonempty strings). Empty annotations are allowed if nothing is legible. This is literal graphic reading, not a defect verdict."
+          },
+          {
+            "role": "user",
+            "content": "Transcribe the supplied image."
+          }
+        ],
+        "image_paths": [
+          "/tmp/auditmanager_itp_automatic_t411_source_review_20261111/workflow_auto_regions_v2/graphic_regions/8b03460c52d3ddd9efa6e6424b2dffcecbe55d3e98deecd530fb8475be6526f3.png"
+        ],
+        "image_bindings": [
+          {
+            "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+            "path": "/tmp/auditmanager_itp_automatic_t411_source_review_20261111/workflow_auto_regions_v2/graphic_regions/8b03460c52d3ddd9efa6e6424b2dffcecbe55d3e98deecd530fb8475be6526f3.png",
+            "sha256": "9e72ee6f177d9fd8f932f95844c7a009f8109677627b33c13829fabdb4a19d4e",
+            "width": 636,
+            "height": 121,
+            "view_kind": "review_region"
+          }
+        ]
+      }
+    },
+    {
+      "source": {
+        "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+        "parent_image_sha256": "b912407176437e746a465c78e72293ad851026cb26d5f2dfb5b3fdcb597f8301",
+        "parent_path": "/tmp/auditmanager_itp_automatic_t411_source_review_20261111/graphics/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+        "parent_size": [
+          2427,
+          770
+        ],
+        "proposed_bbox_norm_xyxy": [
+          0.747,
+          0.359,
+          0.927,
+          0.878
+        ],
+        "pixel_box": [
+          1769,
+          236,
+          2294,
+          717
+        ],
+        "rotation_ccw": 0,
+        "selection": "first usable evidence region per attached image",
+        "semantic_verified": false
+      },
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Read only the attached drawing image. No tools, files, web or engineering inference. Transcribe visible annotations literally, preserving printed digits, marks and units. Do not guess unreadable characters. Return JSON with annotations (list of objects, each with literal, bbox_norm_xyxy [left,top,right,bottom] in 0..1), and reading_uncertainties (list of nonempty strings). Empty annotations are allowed if nothing is legible. This is literal graphic reading, not a defect verdict."
+          },
+          {
+            "role": "user",
+            "content": "Transcribe the supplied image."
+          }
+        ],
+        "image_paths": [
+          "/tmp/auditmanager_itp_automatic_t411_source_review_20261111/workflow_auto_regions_v2/graphic_regions/553e56f74abaf8c6f90f19879f188cafce7a106bb7d3b978121a5ab0a8153291.png"
+        ],
+        "image_bindings": [
+          {
+            "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+            "path": "/tmp/auditmanager_itp_automatic_t411_source_review_20261111/workflow_auto_regions_v2/graphic_regions/553e56f74abaf8c6f90f19879f188cafce7a106bb7d3b978121a5ab0a8153291.png",
+            "sha256": "418de82ad6d9f0806a6741df51aa6e428ad6896c8877d2141590fb567b1c06b5",
+            "width": 525,
+            "height": 481,
+            "view_kind": "review_region"
+          }
+        ]
+      }
+    }
+  ],
+  "skipped": [],
+  "source_request_sha256": "32fb45d3b689cf7f86905fa7bd4faede85adb88fa5f49855ee07191950170dc2",
+  "response_sha256": "d3576bb9488ba026d3b7c0fde196cb9480f706b3e99ba6b44dd403380a37840c",
+  "semantic_verified": false
+}

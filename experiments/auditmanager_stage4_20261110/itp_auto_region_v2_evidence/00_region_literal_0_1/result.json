@@ -1,0 +1,99 @@
+{
+  "text": "{\"annotations\":[{\"literal\":\"Т411\",\"bbox_norm_xyxy\":[0.875,0.45,0.904,0.833]},{\"literal\":\"Т411\",\"bbox_norm_xyxy\":[0.024,0.6,0.07,0.817]},{\"literal\":\"φ48\",\"bbox_norm_xyxy\":[0.551,0.0,0.584,0.325]},{\"literal\":\"φ48\",\"bbox_norm_xyxy\":[0.727,0.0,0.759,0.375]},{\"literal\":\"φ4\",\"bbox_norm_xyxy\":[0.344,0.033,0.376,0.267]},{\"literal\":\"DN3\",\"bbox_norm_xyxy\":[0.917,0.0,0.945,0.367]},{\"literal\":\"Т\",\"bbox_norm_xyxy\":[0.42,0.85,0.433,0.992]},{\"literal\":\"Р\",\"bbox_norm_xyxy\":[0.216,0.833,0.23,0.975]}],\"reading_uncertainties\":[\"Several vertical annotations extend beyond the top or bottom image boundary; their complete text is not visible.\",\"The diameter annotation near x=0.36 is cropped after the visible φ4.\",\"The cyan DN3 annotation reaches the top boundary; any continuation is not visible.\",\"Green text at the far left and black annotations along the bottom are clipped and cannot be transcribed completely.\",\"The printed Т and Р glyphs are visually indistinguishable from Latin T and P.\"]}",
+  "json_data": {
+    "annotations": [
+      {
+        "literal": "Т411",
+        "bbox_norm_xyxy": [
+          0.875,
+          0.45,
+          0.904,
+          0.833
+        ]
+      },
+      {
+        "literal": "Т411",
+        "bbox_norm_xyxy": [
+          0.024,
+          0.6,
+          0.07,
+          0.817
+        ]
+      },
+      {
+        "literal": "φ48",
+        "bbox_norm_xyxy": [
+          0.551,
+          0.0,
+          0.584,
+          0.325
+        ]
+      },
+      {
+        "literal": "φ48",
+        "bbox_norm_xyxy": [
+          0.727,
+          0.0,
+          0.759,
+          0.375
+        ]
+      },
+      {
+        "literal": "φ4",
+        "bbox_norm_xyxy": [
+          0.344,
+          0.033,
+          0.376,
+          0.267
+        ]
+      },
+      {
+        "literal": "DN3",
+        "bbox_norm_xyxy": [
+          0.917,
+          0.0,
+          0.945,
+          0.367
+        ]
+      },
+      {
+        "literal": "Т",
+        "bbox_norm_xyxy": [
+          0.42,
+          0.85,
+          0.433,
+          0.992
+        ]
+      },
+      {
+        "literal": "Р",
+        "bbox_norm_xyxy": [
+          0.216,
+          0.833,
+          0.23,
+          0.975
+        ]
+      }
+    ],
+    "reading_uncertainties": [
+      "Several vertical annotations extend beyond the top or bottom image boundary; their complete text is not visible.",
+      "The diameter annotation near x=0.36 is cropped after the visible φ4.",
+      "The cyan DN3 annotation reaches the top boundary; any continuation is not visible.",
+      "Green text at the far left and black annotations along the bottom are clipped and cannot be transcribed completely.",
+      "The printed Т and Р glyphs are visually indistinguishable from Latin T and P."
+    ]
+  },
+  "input_tokens": 10960,
+  "output_tokens": 691,
+  "cost_usd": 0.0,
+  "duration_ms": 30222,
+  "model": "codex/gpt-6-astra",
+  "is_error": false,
+  "error_message": "",
+  "cached_tokens": 10240,
+  "cache_write_tokens": 0,
+  "reasoning_tokens": 369,
+  "cost_source": "subscription",
+  "response_id": "01a1c840-db73-74c1-8977-a9e7573158a8",
+  "finish_reason": "stop"
+}

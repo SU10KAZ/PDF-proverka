@@ -1,0 +1,13 @@
+{
+  "repairs": [
+    {
+      "claim_index": 5,
+      "evidence_index": 1,
+      "original_block_id": "blk_0103a9415a4b0d9141a4149e927bff",
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "image_sha256": "b537ed2bb367e41d0edcaa2ddba327885ad76b370accf82aaf137fd8659061ec",
+      "basis": "unique_exact_attached_image_sha256"
+    }
+  ],
+  "semantic_verified": false
+}

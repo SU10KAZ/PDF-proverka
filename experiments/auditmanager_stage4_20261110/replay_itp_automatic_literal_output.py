@@ -16,26 +16,29 @@ OUT=Path(__file__).parent
 BASELINE=Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/ITP/findings_verify.json')
 
 
-def main():
-    candidate=json.loads((ROOT/'workflow/candidate.json').read_text())
-    finding=json.loads((ROOT/'finding.json').read_text())
+def main(automatic_regions=False):
+    root=Path('/tmp/auditmanager_itp_automatic_t411_source_review_20261111') if automatic_regions else ROOT
+    workflow=root/('workflow_auto_regions_v2' if automatic_regions else 'workflow')
+    label='regions' if automatic_regions else 'literal'
+    candidate=json.loads((workflow/'candidate.json').read_text())
+    finding=json.loads((root/'finding.json').read_text())
     before=json.loads(BASELINE.read_text())
     assert candidate['status']=='candidate_ready'
     revised,receipts=apply_review_admissions({'findings':[finding]},[candidate['entry']],(BASE/'02_work/document.md').read_text())
     assert receipts[0]['status']=='applied',receipts
     row,=revised['findings']
     text='\n'.join(str(row.get(k,'')) for k in ('problem','description','solution'))
-    assert all(v in text for v in ('Т411','5,89','2,73','3,16'))
+    assert all(v in text for v in (('Т411','5,89','2,7') if automatic_regions else ('Т411','5,89','2,73','3,16')))
     assert '2,78' not in text and '3,11' not in text
     assert row['report_section']=='technical_findings'
     row['source_review_history']=revised['source_review_history']
-    row['independent_graphic_readings']=json.loads((ROOT/'workflow/independent_graphic_readings.json').read_text())
+    row['independent_graphic_readings']=json.loads((workflow/'independent_graphic_readings.json').read_text())
     # Local overlap check, not a generic semantic duplicate detector.
     assert not any('Т411' in str(f.get('problem',''))+str(f.get('description','')) for f in before['findings'])
     after=combine_findings_with_targeted(before,[('automatic_T411_source_review',revised)])
     assert len(before['findings'])==53 and len(after['findings'])==54
     assert after['findings'][:-1]==before['findings']
-    output=ROOT/'output';output.mkdir(exist_ok=True)
+    output=root/('output_auto_regions' if automatic_regions else 'output');output.mkdir(exist_ok=True)
     immutable(output/'03_findings.json',after)
     wb=Workbook();build_project_sheet(wb,{'project_id':'ITP','sheet_name':'ITP','findings_json':after})
     wb.save(output/'report.xlsx');wb.close()
@@ -50,16 +53,25 @@ def main():
     wb.close()
     report={'scope':'Automatic known-object candidate plus executor-selected literal crop, admission and actual Excel export. Not a complete blind project audit.',
         'baseline_sha256':hashlib.sha256(BASELINE.read_bytes()).hexdigest(),
-        'source_candidate_sha256':hashlib.sha256((ROOT/'workflow/candidate.json').read_bytes()).hexdigest(),
+        'source_candidate_sha256':hashlib.sha256((workflow/'candidate.json').read_bytes()).hexdigest(),
         'original_rows_retained_exactly':53,'final_rows':54,'added_id':final['id'],
         'source_value_corrected':'2,78 -> 2,73','arithmetic_corrected':'3,11 -> 3,16',
         'useful_discrepancy_retained':True,'original_wrong_claim_archived':True,
         'autonomous_detail_selection_proven':False,'full_acceptance':False,
         'broader_pilot_composition':'Separate baseline branch. Do not append to the existing 55-row GVS report: its F054 already covers T411/T412. Broader rows are not removed or replaced.',
         'excel_path':str(output/'report.xlsx'),'receipts':receipts}
-    immutable(OUT/'ITP_automatic_literal_output_replay.json',report)
-    (OUT/'ITP_automatic_literal_control.xlsx').write_bytes((output/'report.xlsx').read_bytes())
+    if automatic_regions:
+        report.update(scope='Known-object automatic discovery, model-selected region refinement, source-only readings and actual Excel export. No manually selected detail supplied.',
+            source_value_corrected='Unsupported 2,78 withheld; exact final digit remains unresolved in report',
+            arithmetic_corrected='Unsupported 3,11 withheld',autonomous_detail_selection_proven=True,
+            exact_numeric_recovery_proven=False,
+            limitation='Independent reader returned 2,73, but final reviewer retained 2,7…; useful conflict preserved, exact factual recovery incomplete.')
+    immutable(OUT/f'ITP_automatic_{label}_output_replay.json',report)
+    (OUT/f'ITP_automatic_{label}_control.xlsx').write_bytes((output/'report.xlsx').read_bytes())
     print(json.dumps(report,ensure_ascii=False))
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    import argparse
+    p=argparse.ArgumentParser();p.add_argument('--automatic-regions',action='store_true')
+    main(p.parse_args().automatic_regions)
