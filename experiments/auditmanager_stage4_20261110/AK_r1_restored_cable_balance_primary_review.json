@@ -1,0 +1,82 @@
+{
+  "status": "restored_candidate_narrow_fact_verified_not_final_run_acceptance",
+  "project": "13АВ-РД-АК2-ПА_V1",
+  "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
+  "source_candidate_ids": [
+    "G-084",
+    "G-085"
+  ],
+  "historical_source": {
+    "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+    "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5",
+    "original_claim": "Маркировка и состав кабелей к ПЧ-щиту вытяжных вентиляторов Ва4.1 на листе 36 не совпадает с КЖ: в КЖ кабели названы «Ва3.1-…» (марки шкафа ШАУВ-1-К4АС, дубль), а кабели ПЧ—двигатель 4x2,5 L=15м на листе не имеют марки и не входят в таблицу кабелей.",
+    "engineer_decision": "Принято",
+    "engineer_comment": "Принято (решение эксперта 22.10.2026 по тому же факту, разбор 13АВ-РД-АК2-ПА V1, F-016). Факт: на схеме подключений л. 36 (стр. 40) кабели к ПЧ-щиту вытяжных вентиляторов Ва4.1 названы Ва4.1-3ПЧ, Ва4.1-4ПЧ, Ва4.1-RS, а в КЖ (стр. 79–80) те же линии носят марки «Ва3.1-…» (марки шкафа К4АС); кабели ПЧ—двигатель 4×2,5, 15 м на схеме не имеют марки и не входят в таблицу кабелей.  Почему принято: марки на схеме и в КЖ не совпадают, а моторные кабели не заведены ни в КЖ, ни в таблицу — монтаж и закупка опираются на неполные данные.  Урок для аудита: марки кабелей схемы и КЖ сверять по системе (Ва4.1 против Ва3.1) и проверять, что кабель до двигателя имеет марку и учтён в таблице.",
+    "limits": "Engineer accepted the broader compound cable-identity/completeness issue; arithmetic atom verified independently. Do not attribute this exact recovered wording to the engineer."
+  },
+  "primary_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_397f9663589b40bfbde9b898e99e5117.png",
+      "sha256": "96df1986c5929c97c62369499fd26e3a7eb38071d3066a995f0aff8684fc9893",
+      "route": "direct_GRAPHIC_original_resolution",
+      "observations": [
+        "Same cabinet ШАУВ-1-К5АС / К5АС.ПЧ, sheet36.",
+        "4x2.5 motorM1 andM5 branches each20m.",
+        "4x2.5 feeds Ва4.1-3ПЧ/-4ПЧ each330m.",
+        "4x2.5 ПЧ→M2 andM3 segments each15m."
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "route": "authoritative_TEXT",
+      "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+      "quote": "|  | Кабель ППГнг(A)-HF 4x2,5мм² | 700 | м |"
+    }
+  ],
+  "calculation": {
+    "segments_m": [
+      20,
+      20,
+      330,
+      330,
+      15,
+      15
+    ],
+    "sum_m": 730,
+    "schedule_m": 700,
+    "difference_m": 30
+  },
+  "trace": {
+    "detector": "candidate group G084/G085 present",
+    "recovery": "model retained arithmetic claim",
+    "admission_before": "missing_inspected_source_reference: evidence was a string despite explicit valid source_refs",
+    "final_frozen_output": "arithmetic target absent",
+    "local_adapter_replay": "one finding admitted with original explanation preserved",
+    "live_corrected_output": "not_run"
+  },
+  "source_backed_wording": "Согласовать ведомость кабелей листа36 со схемой: шесть показанных участков ППГнг(А)-HF 4×2,5 суммарно730м, в локальной ведомости700м. Проверить состав учёта и назначение связанных трасс перед корректировкой количества.",
+  "unsupported_extensions": [
+    "Actual procurement shortage30m not established.",
+    "Reason why700m was recorded not proven.",
+    "Do not blindly substitute730m as procurement total without scope reconciliation."
+  ],
+  "paired_coverage_before": {
+    "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
+    "route": "technical",
+    "baseline_coverage": "full",
+    "candidate_coverage": "absent",
+    "baseline_finding_ids": [
+      "F-059"
+    ],
+    "candidate_finding_ids": []
+  },
+  "control_boundary": {
+    "preserve": "Addressed arithmetic discrepancy730/700 for this cabinet and sheet.",
+    "do_not_promote": "Claim that30m is proven actual procurement shortfall.",
+    "negative_classification": "insufficient_data_not_technically_refuted",
+    "confirmed_negative_pair": false
+  },
+  "model_calls": 0,
+  "production_acceptance": false
+}
