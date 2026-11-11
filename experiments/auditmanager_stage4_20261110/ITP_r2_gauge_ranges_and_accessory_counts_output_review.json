@@ -1,0 +1,272 @@
+{
+  "status": "two_ITP_instrument_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "0276b42d0c0c016c4898464d3f0ddd9a8939cda6e214c876670ce064979a7d25",
+  "queue_after_sha256": "4c86444c54f599e6186076043379e5786d281695ff43ce74f609391cb2124f99",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-037",
+      "finding": {
+        "id": "F-037",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Измерение давления",
+        "sheet": "Листы 5., 3, 4",
+        "page": [
+          28,
+          41,
+          42,
+          94,
+          103,
+          109
+        ],
+        "problem": "Не подтверждена достаточность диапазонов манометров для высоконапорных контуров.",
+        "description": "Основная группа манометров имеет шкалу 0–1,6 МПа, тогда как в греющем контуре и третьих зонах указаны давления выше 1,6 МПа. Приборов 0–2,5 МПа предусмотрено четыре, но распределение диапазонов по точкам измерения не установлено. Ошибка в каждом конкретном месте без позиционной привязки не доказана.",
+        "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 510.1325800.2022",
+            "cited_designation": "СП 510.1325800.2022",
+            "candidate_relevance": 0.9,
+            "reason": "Оснащение теплового пункта приборами контроля давления с подходящими характеристиками.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-037"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-037"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Составить перечень точек измерения с рабочими и контрольными давлениями и назначить соответствующие диапазоны приборов.",
+        "risk": "Выход показаний за шкалу и невозможность достоверного контроля давления.",
+        "source_finding_ids": [
+          "T-037"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 35,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F036_gauge_range_allocation:450cb0a7d585250b421e",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "СО содержит позицию 111: четыре манометра 0–2,5 МПа; позицию 112: 175 манометров 0–1,6 МПа.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Верхние пределы шкалы соответствуют 25 и 16 бар; предел шкалы не подменяет паспортную прочность прибора."
+        },
+        {
+          "claim": "В проекте есть расчётные давления выше 16 и 10 бар.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Например подбор отопления третьей зоны задаёт максимум 16,3 бар. В ПЗ АИТ указаны 17,5/17,9 атм; эти единицы не заменялись молча барами."
+        },
+        {
+          "claim": "В проверенных строках СО не раскрыто распределение исполнений приборов по точкам и контурам.",
+          "verdict": "confirmed_bounded_specification_scope",
+          "limits": "Это не доказывает отсутствие привязки во всех чертежах, заданиях АТМ и комплектовочных документах."
+        },
+        {
+          "claim": "Четырёх манометров до 2,5 МПа заведомо достаточно для всех высоконапорных точек.",
+          "verdict": "not_established",
+          "limits": "Не установлены состав точек, комплектные приборы и их диапазоны; наличие одной подходящей позиции не закрывает вопрос распределения."
+        },
+        {
+          "claim": "Выход показаний за шкалу, повреждения и утечки фактически подтверждены.",
+          "verdict": "not_established",
+          "limits": "Это возможные последствия, а не наблюдённые отказы."
+        },
+        {
+          "claim": "Требуется установить распределение шкал по точкам измерения.",
+          "verdict": "supported_scoped_question",
+          "limits": "Второй повтор прямо оговаривает отсутствие доказанного дефекта в конкретном месте. Не назначать число замен по175приборам."
+        },
+        {
+          "claim": "Строка сохраняет вопрос о38воздухоотводчикахРу10.",
+          "verdict": "not_covered_in_this_row",
+          "limits": "Второй повтор обсуждает только манометры. Покрытие воздухоотводчиков всей выдачей нужно проверять отдельно."
+        },
+        {
+          "claim": "Выдача содержит прямые ссылки на доказательства.",
+          "verdict": "missing_output_evidence_links",
+          "limits": "evidenceиrelated_block_idsпусты;deterministiccorrectorпоставилno_evidence. Оценщик нашёл источники, но это не устраняет дефект прослеживаемости самой выдачи."
+        }
+      ],
+      "unsupported_additions": "Предел шкалы не допустимое давление корпуса; отсутствие распределения в строкеСОне доказывает отсутствие во всём проекте.",
+      "novel_useful_content": "Сохранён ограниченный вопрос о диапазонах, отдельная часть о воздухоотводчиках в этой строке отсутствует.",
+      "duplicate_burden": "Gauge scale allocation and air-vent rating are distinct atomic checks within one output row; no multiplication by 175 or 38. Shared high-pressure context is not proof of every component location.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F036_gauge_range_allocation.json",
+          "sha256": "414eb7b03e2e13826337c12f9b097562f2a8efcf45dbcb35da7ab6ce225e9a83",
+          "primary_adjudication": null,
+          "limits": "Наличие преимущественно шкал до16бар не доказывает работу конкретного манометра за пределом шкалы. Четыре прибора до25бар — количество отдельной позицииСО, не доказанное число всех приборов высокого диапазона во всех комплектах. В подборе SPL RM1500 для теплоснабжения вентиляции явно указан комплектный манометр; его диапазон не указан и к третьим зонам он не относится. Это контрпример к простому подсчёту, а не объяснение достаточности четырёх приборов. Просмотрены три фрагмента схемы, не все задания автоматизации и комплектовочные ведомости.",
+          "wording": "Уточнить распределение манометров позиции111 со шкалой0–2,5МПа (4шт.) и позиции112 со шкалой0–1,6МПа (175шт.) по точкам измерения греющего контура и третьих зон. В связанных расчётах встречаются давления выше16бар; просмотренные символыP не позволяют установить, какая шкала назначена каждой точке."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-022",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F037_gauge_ranges_scoped"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-036",
+      "finding": {
+        "id": "F-036",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Контрольно-измерительные приборы",
+        "sheet": "Лист 5.",
+        "page": 28,
+        "problem": "Количество принадлежностей манометров не увязано с количеством приборов.",
+        "description": "Предусмотрены 4+175=179 манометров, но по 182 отборных устройства и закладных штуцера. Назначение трёх дополнительных комплектов не объяснено; считать их заведомо лишними нельзя.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.75,
+            "reason": "Однозначность комплектности оборудования и принадлежностей в рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-036"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-036"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить приборы и принадлежности по точкам установки, отдельно обозначить резервные или дополнительные комплекты.",
+        "risk": "Ошибки комплектования и необоснованные закупки.",
+        "source_finding_ids": [
+          "T-036"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 61,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Манометры111/112:4+175=179,отборные113и закладные118—по182шт.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": "Разность3шт. для каждой группы. Это не шесть дополнительных комплектов и не доказанные три лишних прибора."
+        },
+        {
+          "claim": "Дополнительные принадлежности заведомо лишние.",
+          "verdict": "not_established_and_explicitly_qualified_in_r2",
+          "limits": "Нужна привязка точек,комплектных приборов,резерва и принадлежностей; равенство1:1по всему проекту не доказано."
+        },
+        {
+          "claim": "Сверить количество по точкам и пояснить резерв.",
+          "verdict": "supported_scoped_question",
+          "limits": "Техническая ошибка закупки и фактические затраты не установлены."
+        },
+        {
+          "claim": "Выдача содержит доказательную привязку.",
+          "verdict": "missing_output_evidence_links",
+          "limits": "evidenceиrelated_block_idsпусты,естьno_evidence. Блок56найден оценщиком; не приписывать эту ссылку исходному результату."
+        }
+      ],
+      "unsupported_additions": "Не считать разность количества доказанным избытком без схемы комплектования.",
+      "novel_useful_content": "Новый ограниченный вопрос179/182; полезность отдельной строки инженером не оценена.",
+      "duplicate_burden": "quantity_topic_distinct_from_F037_range_assignment",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "no_new_same_claim_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F036_gauge_accessory_count_question"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
