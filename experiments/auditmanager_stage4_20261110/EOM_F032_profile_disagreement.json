@@ -1,0 +1,11 @@
+{
+  "status": "routing_disagreement_recorded",
+  "model_expected_answer_supplied": false,
+  "model_action": "revise",
+  "model_profile": "technical_findings",
+  "benchmark_profile": "questions",
+  "fact_agreement": "Both retain the area discrepancy and qualify power consequences.",
+  "model_reason": "Area is an input to electrical load calculation; documented discrepancy is not proven merely editorial or outside discipline. Absence of equipment failure does not justify demotion.",
+  "evaluation_handling": "Exclude this disputed routing label from profile accuracy until adjudicated in a new frozen evaluator. Keep factual preservation and overclaim checks independently scored. Existing frozen benchmark unchanged.",
+  "production_acceptance": false
+}

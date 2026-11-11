@@ -1,0 +1,9 @@
+{
+  "source_candidate_sha256": "43ae5ffae0358e19290135e6312e7464ee81a5a364b20228fbbafed382607b81",
+  "request_sha256": "05987216af6dd1a10819de819235afc9d69ff30d29d25e77f6d2e8fb372c7586",
+  "model": "codex/gpt-6-astra",
+  "history_or_engineer_answers_supplied": false,
+  "previous_adjudication_supplied": false,
+  "automatic_retries": 0,
+  "reason": "Evaluate the explicit user output profile without expected routing."
+}
