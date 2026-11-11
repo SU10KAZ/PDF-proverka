@@ -1,0 +1,908 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "85a7be5618d8d498239b5965af6f1a38c7ec0b3608d9a9e2e288add273a3d082",
+  "queue_after_sha256": "27f9a784cd91770a5cc4094aed2721ffe9f5f5e9f078370689ad1f98b561dbc5",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 2",
+        "page": 6,
+        "problem": "Ошибочно записано обозначение стандарта на рабочую документацию автоматизации.",
+        "description": "В общих указаниях приведено «ГОСТ 21.4.08-2013». Указанному наименованию соответствует ГОСТ 21.408-2013.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Идентификация стандарта на оформление документации автоматизации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить обозначение и проверить применимость указанной редакции.",
+        "risk": "Неоднозначная идентификация нормативного основания проекта.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [
+          "blk_adc4052a68344abf9c8f56861b9294d1"
+        ],
+        "related_block_ids": [
+          "blk_adc4052a68344abf9c8f56861b9294d1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В исходном TEXT ГОСТ21.4.08-2013; название соответствует ГОСТ21.408-2013.",
+          "verdict": "confirmed_TEXT_and_prior_official_catalog_review",
+          "limits": "Проверенные ранее реквизиты каталога сохранены; новая проверка действующей редакции и её применимости здесь не проводилась."
+        },
+        {
+          "claim": "Исправить обозначение и проверить применимость редакции.",
+          "verdict": "supported_editorial_question",
+          "limits": "Исходный MD не изменять. Причина лишней точки не установлена; не объявлять ошибку OCR или техническую неисправность."
+        },
+        {
+          "claim": "Нормативное основание невозможно идентифицировать.",
+          "verdict": "overstatement_if_categorical",
+          "limits": "Название позволяет установить документ; неточность ссылки не доказывает нарушение требований стандарта."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Нет новой проверки применимости нормативов, дефекта заземления, ошибочных уставок СО или программных адресов вентиляторов. Ранее проверенные реквизиты и графические факты сохранены с ограничениями.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Правки реквизитов относятся к вопросам и уточнениям; подписи вентиляторов требуют согласования статической идентичности и динамических ролей. Фактическое распределение разделов отчёта не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+          "sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66",
+          "primary_adjudication": null,
+          "limits": [
+            "Официальные карточки подтверждают реквизиты, но не доказывают нарушение конкретных технических требований в проекте.",
+            "В разделе заземления есть собственные указания и ссылка на СП 76.13330.2016; отсутствие точного пункта ПУЭ не означает отсутствия требований.",
+            "Текст ПУЭ и нормативное требование приводить полное название СП не проверены. Сокращение названия не выпускать отдельным техническим дефектом.",
+            "Решение инженера по этому слепому кандидату отсутствует; историческое принятие не приписывается."
+          ],
+          "wording": "Исправить обозначение ГОСТ 21.4.08-2013 на ГОСТ 21.408-2013 в общих указаниях. Уточнить адрес ссылки «гл.7 ПУЭ» в разделе заземления. Объединить эти редакционные уточнения в один вопрос по реквизитам; техническое нарушение заземления данным замечанием не установлено."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/ad7aee01-bcb3-495e-a46f-6393783f864c",
+          "access_date": "2026-11-11",
+          "route": "official_catalog_direct_web_open",
+          "verified_fact": "ГОСТ21.408-2013 identifies the standard on working documentation of process automation.",
+          "limits": "Bibliographic identity only; no project technical compliance adjudicated.",
+          "reuse_limits": "Использовано прежнее чтение источника, сохранённое в проверке первого повтора. Нового запроса или проверки актуальности в этой записи нет."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-001",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-002"
+        }
+      ],
+      "disposition": "assessed_r3_norm_reference_and_dynamic_role_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Контроль загазованности",
+        "sheet": "Лист 4",
+        "page": 8,
+        "problem": "Пороги СО обоснованы утратившим силу гигиеническим нормативом.",
+        "description": "Для порогов 20 и 100 мг/м³ приведены ГН 2.2.5.1313-03, отмеченные в исходном анализе как утратившие силу. Не разделены основания предупредительного и аварийного порогов и допустимая длительность воздействия; 100 мг/м³ нельзя использовать как универсальную ПДК.",
+        "norm": "СанПиН 1.2.3685-21 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СанПиН 1.2.3685-21",
+            "cited_designation": "СанПиН 1.2.3685-21",
+            "candidate_relevance": 0.9,
+            "reason": "Гигиенические нормативы концентрации СО и условия допустимого воздействия.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Актуализировать обоснование порогов с учётом назначения помещений, длительности воздействия и алгоритма вентиляции.",
+        "risk": "Неверная интерпретация допустимой концентрации СО и несвоевременное реагирование системы.",
+        "source_finding_ids": [
+          "T-002"
+        ],
+        "source_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ],
+        "related_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": 8
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Проект ссылается на ГН2.2.5.1313-03 для порогов20/100мг/м³.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": "История отмены постановления о введении проверена ранее; это не новая проверка действующих требований или даты применимости к проекту."
+        },
+        {
+          "claim": "Не разделены основания порогов и длительность воздействия.",
+          "verdict": "supported_bounded_basis_question",
+          "limits": "Проект уже задаёт предупреждение и включение вентиляции при первом пороге и аварийный сигнал при втором. Не выдавать это за отсутствие назначения порогов или алгоритма."
+        },
+        {
+          "claim": "100мг/м³ нельзя превращать в универсальную ПДК.",
+          "verdict": "retain_non_generalization_limit",
+          "limits": "Проект не разрешает постоянное пребывание при100мг/м³. Типовые пороги прибора20/100 сами по себе не доказывают ни нормативную пригодность, ни неправильность уставок."
+        },
+        {
+          "claim": "Актуализировать обоснование; риск несвоевременного реагирования.",
+          "verdict": "question_supported_failure_not_established",
+          "limits": "Не менять пороги автоматически. Действующая применимая норма, длительность воздействия и испытание всей системы не проверены этим проходом."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Нет новой проверки применимости нормативов, дефекта заземления, ошибочных уставок СО или программных адресов вентиляторов. Ранее проверенные реквизиты и графические факты сохранены с ограничениями.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Правки реквизитов относятся к вопросам и уточнениям; подписи вентиляторов требуют согласования статической идентичности и динамических ролей. Фактическое распределение разделов отчёта не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+          "sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0",
+          "primary_adjudication": null,
+          "limits": [
+            "Совпадение с листом изготовителя не доказывает нормативную достаточность алгоритма оповещения и вентиляции для объекта.",
+            "ТУ-газ-86 и руководство конкретного исполнения не проверены. Основание200м² не установлено, но отсутствие основания в разделе6 не доказывает отсутствия во всём проекте.",
+            "Планы размещения, воздухообмен, препятствия и покрытие этим решением не оценены.",
+            "Нельзя переносить20/100,1,5м или200м² в универсальные допуски для других газов, приборов или помещений."
+          ],
+          "wording": "Уточнить нормативное основание системы контроляCO: раздел6 ссылается на отменённые ГН2.2.5.1313-03 и не раскрывает реквизиты ТУ-газ-86 для высоты установки. Представить применимое основание площади200м² на сигнализатор. Пороги20/100мг/м³ и высота1,5м согласуются с опубликованными данными изготовителя СТГ-3-И-СО; требование изменить эти значения данным замечанием не обосновано."
+        },
+        {
+          "url": "https://www.consultant.ru/document/cons_doc_LAW_296440/92d969e26a4326c5d02fa79b8f9cf4994ee5633b/",
+          "access_date": "2026-11-11",
+          "route": "primary_normative_act_republished_text",
+          "verified_fact": "Point3 of decree13.02.2018No25 repeals decree30.04.2003No76 introducing GN2.2.5.1313-03.",
+          "limits": "Republication, not issuer site; no current replacement or whole-design compliance determination.",
+          "reuse_limits": "Использовано прежнее чтение источника, сохранённое в проверке первого повтора. Нового запроса или проверки актуальности в этой записи нет."
+        },
+        {
+          "url": "https://www.analitpribor-smolensk.ru/files/rek_listovki_2017/stg-3.pdf",
+          "path": "/tmp/ak_stg3_manufacturer.pdf",
+          "sha256": "08d4f0c13dbfd3e3ee9f655c4a544a5966a6b2bca042f6fa05a4d0df70520538",
+          "access_date": "2026-11-11",
+          "route": "manufacturer_primary_PDF_table_visually_verified",
+          "verified_fact": "Page1 rowSTG-3-CO/STG-3-I-CO: threshold1=20,threshold2=100mg/m3.",
+          "limits": "Manufacturer nominal thresholds only, not hygienic exposure permission or project compliance.",
+          "reuse_limits": "Использовано прежнее чтение источника, сохранённое в проверке первого повтора. Нового запроса или проверки актуальности в этой записи нет."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-002",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-001"
+        }
+      ],
+      "disposition": "assessed_r3_norm_reference_and_dynamic_role_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-044",
+      "finding": {
+        "id": "F-044",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Сигналы состояния вентиляторов",
+        "sheet": "Листы 11, 15, 22",
+        "page": [
+          15,
+          19,
+          26
+        ],
+        "problem": "Перепутаны подписи состояния основных и резервных вентиляторов.",
+        "description": "На листе 11 канал 16 от М3/Ва3.1 назван резервным, канал 19 от М4/Ва3.1р — основным. На листе 15 сигналы 11 и 26 основных М1/М3 названы резервными, 14 и 29 резервных М2/М4 — основными. На листе 22 аналогично переставлены каналы 16 от М2/Ва5.1 и 19 от М3/Ва5.1р.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Правильное соответствие сигналов технологическому оборудованию.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-017",
+                "G-018",
+                "G-026",
+                "G-028",
+                "G-052",
+                "G-053"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-017",
+                  "G-018",
+                  "G-026",
+                  "G-028",
+                  "G-052",
+                  "G-053"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Привести подписи каналов и адреса диспетчеризации в соответствие с основными и резервными агрегатами.",
+        "risk": "Ложная индикация состояния и ошибки алгоритма резервирования.",
+        "source_finding_ids": [
+          "G-017",
+          "G-018",
+          "G-026",
+          "G-028",
+          "G-052",
+          "G-053"
+        ],
+        "source_block_ids": [
+          "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "blk_1421872a752e4019a31247d056c0e9bc",
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "related_block_ids": [
+          "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "blk_1421872a752e4019a31247d056c0e9bc",
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+            "page": 15
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "page": 19
+          },
+          {
+            "type": "text",
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "page": 26
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-026",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-028",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-052",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-053",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на перестановку подписей каналов 16 и 19: М3/Ва3.1 подписан как резервный, М4/Ва3.1р — как основной.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на перестановку подписей каналов 16 и 19: М3/Ва3.1 подписан как резервный, М4/Ва3.1р — как основной.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадает ошибочное назначение подписей состояния М1/М3 и М2/М4; оба замечания требуют исправить сигналы 11, 14, 26 и 29.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковую перестановку подписей: сигнал 16 от М2/Ва5.1 назван состоянием резервного вентилятора, а сигнал 19 от М3/Ва5.1р — основного.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Лист11:М3/Ва3.1→16рез.,М4/Ва3.1р→19осн.;лист15:М1/М3→11/26рез.,М2/М4→14/29осн.;лист22:М2/Ва5.1→16рез.,М3/Ва5.1р→19осн.",
+          "verdict": "confirmed_prior_GRAPHIC_three_addressed_sheets",
+          "limits": "Сохранены три отдельные привязки в одном составном замечании; номера являются колонками функциональных таблиц, не доказанными аппаратными адресами."
+        },
+        {
+          "claim": "Привести подписи и адреса диспетчеризации к назначению агрегатов.",
+          "verdict": "requires_role_semantics_before_changes",
+          "limits": "Общие указания предусматривают ротацию для уравнивания наработки. Нужно выяснить, подпись относится к физическому агрегату или текущей роли; программные теги и адреса не проверены."
+        },
+        {
+          "claim": "Ложная индикация и ошибки резервирования.",
+          "verdict": "not_established_operational_consequence",
+          "limits": "Подтверждена неоднозначность документации, не реальное переключение. Автоматическая перестановка сигналов недопустима без проверки привязки."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Нет новой проверки применимости нормативов, дефекта заземления, ошибочных уставок СО или программных адресов вентиляторов. Ранее проверенные реквизиты и графические факты сохранены с ограничениями.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Правки реквизитов относятся к вопросам и уточнениям; подписи вентиляторов требуют согласования статической идентичности и динамических ролей. Фактическое распределение разделов отчёта не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+          "primary_adjudication": null,
+          "limits": [
+            "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Это допускает динамические роли, но в проверенных подписях связь динамической роли с конкретным агрегатом не пояснена. Подтверждена неоднозначность документации, не неправильная реализация ротации.",
+            "Номера — колонки/линии функциональных схем, не установленные аппаратные адреса или программные теги.",
+            "Программа контроллера, таблица тегов и экраны АРМ не проверены. Нельзя автоматически менять сигналы или утверждать показ состояния другого вентилятора.",
+            "Исходные номера15 и30 на листе15 неверны. Ошибка этой части не опровергает отдельные подтверждённые расхождения.",
+            "Нормативное нарушение и историческое решение инженера не установлены."
+          ],
+          "wording": "Согласовать подписи состояний основного и резервного вентиляторов со статическими обозначениями агрегатов: лист11, Ва3.1/M3→16 «рез.» и Ва3.1р/M4→19 «осн.»; лист15, Пн5.1/M1→11 «рез.», Пн5.1 рез/M2→14 «осн.», Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.». Уточнить, обозначают ли подписи физические агрегаты или текущие роли при ротации."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+          "primary_adjudication": null,
+          "limits": [
+            "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Это допускает динамические роли, но в проверенных подписях связь динамической роли с конкретным агрегатом не пояснена. Подтверждена неоднозначность документации, не неправильная реализация ротации.",
+            "Номера — колонки/линии функциональных схем, не установленные аппаратные адреса или программные теги.",
+            "Программа контроллера, таблица тегов и экраны АРМ не проверены. Нельзя автоматически менять сигналы или утверждать показ состояния другого вентилятора.",
+            "Исходные номера15 и30 на листе15 неверны. Ошибка этой части не опровергает отдельные подтверждённые расхождения.",
+            "Нормативное нарушение и историческое решение инженера не установлены."
+          ],
+          "wording": "Согласовать подписи состояний основного и резервного вентиляторов со статическими обозначениями агрегатов: лист11, Ва3.1/M3→16 «рез.» и Ва3.1р/M4→19 «осн.»; лист15, Пн5.1/M1→11 «рез.», Пн5.1 рез/M2→14 «осн.», Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.». Уточнить, обозначают ли подписи физические агрегаты или текущие роли при ротации."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+          "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet11 M3/Va3.1 to16 reserve; M4/Va3.1r to19 main.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet15 four fan states11/14/26/29 conflict with static main/reserve labels;15/30 are pressure columns, not states.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet22 M2/Va5.1 to16 reserve; M3/Va5.1r to19 main.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-044",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "route": "directly_viewed_GRAPHIC",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT",
+          "block_ids": [
+            "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+            "blk_88d8dd46122c41148a81ba6b14c890eb"
+          ],
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+          "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925",
+          "route": "frozen_scoped_decision"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+          "primary_adjudication": null,
+          "limits": [
+            "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Это допускает динамические роли, но в проверенных подписях связь динамической роли с конкретным агрегатом не пояснена. Подтверждена неоднозначность документации, не неправильная реализация ротации.",
+            "Номера — колонки/линии функциональных схем, не установленные аппаратные адреса или программные теги.",
+            "Программа контроллера, таблица тегов и экраны АРМ не проверены. Нельзя автоматически менять сигналы или утверждать показ состояния другого вентилятора.",
+            "Исходные номера15 и30 на листе15 неверны. Ошибка этой части не опровергает отдельные подтверждённые расхождения.",
+            "Нормативное нарушение и историческое решение инженера не установлены."
+          ],
+          "wording": "Согласовать подписи состояний основного и резервного вентиляторов со статическими обозначениями агрегатов: лист11, Ва3.1/M3→16 «рез.» и Ва3.1р/M4→19 «осн.»; лист15, Пн5.1/M1→11 «рез.», Пн5.1 рез/M2→14 «осн.», Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.». Уточнить, обозначают ли подписи физические агрегаты или текущие роли при ротации."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+          "primary_adjudication": null,
+          "limits": [
+            "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Это допускает динамические роли, но в проверенных подписях связь динамической роли с конкретным агрегатом не пояснена. Подтверждена неоднозначность документации, не неправильная реализация ротации.",
+            "Номера — колонки/линии функциональных схем, не установленные аппаратные адреса или программные теги.",
+            "Программа контроллера, таблица тегов и экраны АРМ не проверены. Нельзя автоматически менять сигналы или утверждать показ состояния другого вентилятора.",
+            "Исходные номера15 и30 на листе15 неверны. Ошибка этой части не опровергает отдельные подтверждённые расхождения.",
+            "Нормативное нарушение и историческое решение инженера не установлены."
+          ],
+          "wording": "Согласовать подписи состояний основного и резервного вентиляторов со статическими обозначениями агрегатов: лист11, Ва3.1/M3→16 «рез.» и Ва3.1р/M4→19 «осн.»; лист15, Пн5.1/M1→11 «рез.», Пн5.1 рез/M2→14 «осн.», Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.». Уточнить, обозначают ли подписи физические агрегаты или текущие роли при ротации."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+          "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet11 M3/Va3.1 to16 reserve; M4/Va3.1r to19 main.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet15 four fan states11/14/26/29 conflict with static main/reserve labels;15/30 are pressure columns, not states.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet22 M2/Va5.1 to16 reserve; M3/Va5.1r to19 main.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-044",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-044"
+        }
+      ],
+      "disposition": "assessed_r3_norm_reference_and_dynamic_role_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-065",
+      "finding": {
+        "id": "F-065",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "Неверно указан номер главы ПУЭ по заземлению.",
+        "description": "Строка MD 745: «Оборудование АК подлежит заземлению в соответствии с требованиями СП 76.13330.2016 и гл.7 «ПУЭ» с использованием общего контура заземления. Сопротивление заземляющего устройства, используемого для заземления электрооборудования, предусматривается не более 4 Ом. В цепи заземляющих и нулевых проводников отсутствуют разъединяющие приспособления и предохранители. Присоединение заземляющих и нулевых проводников к частям электрооборудования выполняется сваркой или болтовым соединением, в соответствии с «ПУЭ». Рабочее заземление оборудования следует выполнять согласно техническим требованиям на оборудование». Требования ПУЭ к заземлению и защитным мерам электробезопасности содержатся в главе 1.7. Указание «гл.7» ошибочно: раздел 7 посвящён электрооборудованию специальных установок.",
+        "page": null,
+        "norm": "ПУЭ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Исправить ссылку «гл.7» на главу 1.7 ПУЭ.",
+        "risk": "Ошибочная адресация нормативных требований при выполнении и проверке заземления.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": null,
+            "md_lines": "строка 745"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Лист 4",
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 42,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [
+            "formal_reference_category",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В разделе заземления MD указана гл.7 ПУЭ.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": "Авторитетный текст сохранён; причина записи и намерение автора неизвестны."
+        },
+        {
+          "claim": "Общая глава по заземлению и защитным мерам —1.7.",
+          "verdict": "confirmed_prior_act_text_review",
+          "limits": "Ранее прочитана републикация приказа08.07.2002№204. Это библиографическое основание правки, не новая правовая проверка применимых требований."
+        },
+        {
+          "claim": "Описание предмета раздела7 в текущей строке.",
+          "verdict": "not_independently_verified_added_scope",
+          "limits": "Прежняя проверка устанавливает предмет главы1.7; расширенное описание раздела7 отдельно не засчитывается."
+        },
+        {
+          "claim": "Исправить ссылку на1.7.",
+          "verdict": "supported_editorial_reference_question",
+          "limits": "Не доказывает неверное заземление или отсутствие требований. Проектные4Ом не являются универсальной нормой; монтаж и измерения не проверены."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Нет новой проверки применимости нормативов, дефекта заземления, ошибочных уставок СО или программных адресов вентиляторов. Ранее проверенные реквизиты и графические факты сохранены с ограничениями.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Правки реквизитов относятся к вопросам и уточнениям; подписи вентиляторов требуют согласования статической идентичности и динамических ролей. Фактическое распределение разделов отчёта не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+          "sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66",
+          "primary_adjudication": null,
+          "limits": [
+            "Официальные карточки подтверждают реквизиты, но не доказывают нарушение конкретных технических требований в проекте.",
+            "В разделе заземления есть собственные указания и ссылка на СП 76.13330.2016; отсутствие точного пункта ПУЭ не означает отсутствия требований.",
+            "Текст ПУЭ и нормативное требование приводить полное название СП не проверены. Сокращение названия не выпускать отдельным техническим дефектом.",
+            "Решение инженера по этому слепому кандидату отсутствует; историческое принятие не приписывается."
+          ],
+          "wording": "Исправить обозначение ГОСТ 21.4.08-2013 на ГОСТ 21.408-2013 в общих указаниях. Уточнить адрес ссылки «гл.7 ПУЭ» в разделе заземления. Объединить эти редакционные уточнения в один вопрос по реквизитам; техническое нарушение заземления данным замечанием не установлено."
+        },
+        {
+          "url": "https://legalacts.ru/doc/prikaz-minenergo-rf-ot-08072002-n-204/",
+          "access_date": "2026-11-11",
+          "route": "primary_normative_act_republished_text",
+          "verified_fact": "Chapter1.7 is grounding and protective measures;1.7.1 describes general scope.",
+          "limits": "Chapter identity only; not a full legal applicability or project compliance assessment.",
+          "reuse_limits": "Использовано прежнее чтение источника, сохранённое в проверке первого повтора. Нового запроса или проверки актуальности в этой записи нет."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-066",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-074"
+        }
+      ],
+      "disposition": "assessed_r3_norm_reference_and_dynamic_role_limits"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Four current findings assessed with six frozen prior rows; F044 uses three addressed fan-role inspections. Local evidence hashes and r3 MD/PNG identity verified. Historical legal/catalogue reviews reused only within their recorded scope; no new current-law applicability check, graphic view or engineer decision claimed."
+}
