@@ -1,0 +1,88 @@
+{
+  "status": "duplicate_reproduced_with_frozen_baseline_atomicity_function",
+  "code": {
+    "path": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_with_catalog/backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+    "sha256": "301857b35ba09999cba3e4f58d9a61e4157365c0a686c7385947f96e0d836274"
+  },
+  "function": "enforce_stage01_atomicity",
+  "input": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+    "sha256": "b1b6cfc38fb7e69d6f8ac288aa55848e7e63b9720890213c41c237aed2779b22"
+  },
+  "stage01": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+    "sha256": "d4b203576d3de0281e7f353b9ea904b89ccdf547311067da1ea9378e66b7c808"
+  },
+  "recorded_pre_merge": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings_pre_merge.json",
+    "sha256": "8cc0220bf1fb38545237ae62fd99c7712d09b9afef9e53ee081f5d38531d6e24"
+  },
+  "final": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "23f2f26b2037210e7d364cf48c55d42f62832e649a25b10b0f3eb4f1ab8a8c3b"
+  },
+  "before": [
+    {
+      "id": "F-046",
+      "problem": "Требуется проверить распределение пяти AO шкафа ШАУВ-4-К5ПЧ.",
+      "description": "Указан итог AO=5 для клапана теплоносителя и четырёх ПЧ. Одно описание матрицы сообщает только об одной отметке AO у клапана, другое — также об AO/DO на линии 11 двигателя М1. Без изображения точный состав отметок не установлен; сведения о распределении выходов противоречивы.",
+      "source_finding_ids": [
+        "G-027",
+        "G-031"
+      ],
+      "source_stage": null,
+      "atomicity_guard": null
+    },
+    {
+      "id": "F-049",
+      "problem": "Управление заслонкой Y2 подписано как управление ПЧ.",
+      "description": "Линия 10 от воздушной заслонки Y2 названа «Управление ПЧ пуск/стоп, 0–100%», хотя для неё показан только DO. ПЧ двигателя М1 связан с другой линией.",
+      "source_finding_ids": [
+        "G-031"
+      ],
+      "source_stage": null,
+      "atomicity_guard": null
+    }
+  ],
+  "replayed_after": [
+    {
+      "id": "F-073",
+      "problem": "На функциональной схеме Пн5.1, лист 15, линия 10 от электропривода воздушной заслонки Y2 подписана «Управление ПЧ пуск/стоп, 0–100%». При этом для неё отмечен только DO, а преобразователь частоты двигателя М1 и сигналы AO/DO показаны на линии 11.",
+      "description": "На функциональной схеме Пн5.1, лист 15, линия 10 от электропривода воздушной заслонки Y2 подписана «Управление ПЧ пуск/стоп, 0–100%». При этом для неё отмечен только DO, а преобразователь частоты двигателя М1 и сигналы AO/DO показаны на линии 11.",
+      "source_finding_ids": [
+        "G-031"
+      ],
+      "source_stage": "stage01_atomicity_guard",
+      "atomicity_guard": {
+        "split_from": "F-046",
+        "reason": "distinct_nonrecommendational_candidates_same_block"
+      }
+    },
+    {
+      "id": "F-049",
+      "problem": "Управление заслонкой Y2 подписано как управление ПЧ.",
+      "description": "Линия 10 от воздушной заслонки Y2 названа «Управление ПЧ пуск/стоп, 0–100%», хотя для неё показан только DO. ПЧ двигателя М1 связан с другой линией.",
+      "source_finding_ids": [
+        "G-031"
+      ],
+      "source_stage": null,
+      "atomicity_guard": null
+    }
+  ],
+  "replayed_matches_recorded_duplicate_claims": true,
+  "source_files_unchanged": true,
+  "causal_assessment": "Базовый ответ уже содержит отдельную строку G-031 и одновременно ссылается на G-031 в составной строке F-046 вместе с G-027. enforce_stage01_atomicity рассматривает каждую строку отдельно и повторно выпускает G-031 при расщеплении F-046. Повтор воспроизводится локально на точном снимке кода и совпадает с сохранённым pre_merge. В итоговой выдаче обе строки остаются как F-049/F-052.",
+  "required_behavior": "При расщеплении учитывать уже представленные самостоятельные тезисы во всём отчёте. Не удалять строки только по совпадению source ID: одна исходная запись может содержать несколько тезисов. Подтвердить смысловое покрытие перед исключением повторного выпуска.",
+  "protected_controls": [
+    "Сохранить отдельный тезис G-031 о назначении линии 10 Y2.",
+    "Отдельно оценивать G-027 о количестве AO; он не тождественен G-031, но его техническая истинность этим воспроизведением не подтверждена.",
+    "Сохранить самостоятельные тезисы, отсутствующие в другой строке; совпадение блока не является основанием удаления."
+  ],
+  "limits": [
+    "Результат воспроизведения не изменяет текущие независимые прогоны и не доказывает качество потенциального исправления.",
+    "Истинность технических утверждений и необоснованных последствий требует отдельной оценки.",
+    "Полная цепочка последующей дедупликации здесь не воспроизведена; факт сохранения дубля подтверждён итоговым файлом."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
