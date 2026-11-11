@@ -1,0 +1,160 @@
+{
+  "status": "partial_coverage_review_not_quality_acceptance",
+  "ledger_before_sha256": "bd53ea048a5a204646230993339ec7c375758bb8f32a71a6c4360f97c1c11ca1",
+  "ledger_after_sha256": "5bfd4347a0169114bf4b2cb16ac7a4c1911e4f425d78e6b9a53c5271116fb440",
+  "reviewed_targets": [
+    {
+      "target_id": "EOM_F020_enclosure_minimums:b34c225d7cc1d2d234e8",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-009"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F020_enclosure_minimums.json",
+          "sha256": "bf585abffce6c388509728cf559c7128600172b2a0e177b5b859c20235fb3d07"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-009"
+        }
+      ],
+      "reason": "Все три щита3ЩРОВ2/2ЩРОВ1/2ЩРОВ2 связаны сминимумамиIP54/31. Это сохранение вопроса согласования заказа; фактически поставленная оболочка неизвестна, минимумы логически совместимы.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F030_CT_minimum_substitutions:e48399b0ddd41647bc4a",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F030_CT_minimum_substitutions.json",
+          "sha256": "537dee4a137c78461c807d74d1def9412b209d680414692bc6b0dbd638082946"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-006"
+        }
+      ],
+      "reason": "ВРУ2:23,9/30,6 вместо77/74,результаты0,341/0,383 названы; проектный порог0,1 сохранён. Новый0,25 требует отдельного подтверждения и не засчитывается эталоном.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F030_CT_minimum_substitutions:82bb92f6ba02b2b7c780",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F030_CT_minimum_substitutions.json",
+          "sha256": "537dee4a137c78461c807d74d1def9412b209d680414692bc6b0dbd638082946"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-006"
+        }
+      ],
+      "reason": "ВРУ3:39,4/28,6 вместо77/74,результаты0,394/0,358 названы; обе системы и сохранение неравенств отражены. Само соответствие не доказывает пригодностьТТ.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F031_CT_emergency_assumptions:d8fbf0545ffcdbb28172",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F031_CT_emergency_assumptions.json",
+          "sha256": "170491373e1f56f3edabfeeba46b1bd400c09a887065f8bcc05472f567d8e71a"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-004"
+        }
+      ],
+      "reason": "ДляВРУ2/3 сохранены384,1/390,3 и465,1/471,4, режимАвар.Пожар и неподтверждённая паспортом перегрузка20%. ЕдиницаIpи категоричное принятие максимума требуют оценки качества отдельно.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F032_commercial_area_inputs:16faed04bf572c1876a5",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-012"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json",
+          "sha256": "5162f21dcede7066fb3d1512cd551bef5cf76a3746d6360ac9d9959a69283c99"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-012"
+        }
+      ],
+      "reason": "7Н105,4/108,1 и8Н68,6/63,0 адресно сопоставлены.23,78 условно по0,22; правильная расчётная площадь и минимум20кВт этим не установлены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F032_commercial_area_inputs:147160644f952ff76e59",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-012"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json",
+          "sha256": "5162f21dcede7066fb3d1512cd551bef5cf76a3746d6360ac9d9959a69283c99"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-012"
+        }
+      ],
+      "reason": "Оба помещения названы, для8Н68,6против63,0 явно сохранено. Это отдельный адресный атом площади, но не ещё одна независимая итоговая строка.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F033_apartment_board_scope:dbb1bab29b165bc0b8ca",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-010"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F033_apartment_board_scope.json",
+          "sha256": "733ea2ad8e0939b80ecb45e225de97885ae4879d5e2d56470b01ce7441c11a83"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-010"
+        }
+      ],
+      "reason": "63+27квартирных щитов с автоматикой сопоставлены с установкой собственником и временным щитом на отделку. Сохранён вопрос этапа/границ поставки, не запрет поставки собственнику.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "unchecked_targets": 44,
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": [
+    "Seven narrow targets mapped. Shared output rows do not represent independent findings for each target. CT threshold0.25, units, minimum power and actual enclosure remain separate quality questions; no physical defect acceptance."
+  ]
+}
