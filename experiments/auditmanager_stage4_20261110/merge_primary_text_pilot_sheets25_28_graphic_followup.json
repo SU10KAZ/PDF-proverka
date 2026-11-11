@@ -1,0 +1,541 @@
+{
+  "status": "eight_candidate_records_four_issue_groups_graphically_reviewed",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "G-061",
+      "pointer": "/block_analyses/20/findings/0",
+      "original_candidate": {
+        "id": "G-061",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "project_references",
+        "finding": "На схеме внешних подключений ШАУВ-1-К4ПЧ, лист 25, приведены противоречащие друг другу ссылки на проект питающего кабеля: в заголовке ввода указан 13АВ-РД-ЭМ2-ПА, у кабельной линии — 13АВ-РД-ЭМ-К4.\n\nРекомендация: Уточнить раздел, в котором предусмотрен питающий кабель шкафа, и привести обе ссылки к единому обозначению.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_1c493988cdf14cee9ad351ef2e706470",
+        "value_found": "13АВ-РД-ЭМ2-ПА; 13АВ-РД-ЭМ-К4",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-061",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 0.99,
+          "reason": "Оба замечания указывают на одинаковое противоречие ссылок для питающего кабеля ШАУВ-1-К4ПЧ: 13АВ-РД-ЭМ2-ПА и 13АВ-РД-ЭМ-К4. Ссылка правого замечания на общие указания дополнительно подтверждает ту же проблему без существенного расширения.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_power_reference_conflict",
+      "reason": "Лист 25, единственный ввод питания ШАУВ-1-К4ПЧ: заголовок относит ввод к 13АВ-РД-ЭМ2-ПА, подпись вдоль той же линии к 13АВ-РД-ЭМ-К4. Общие указания TEXT относят питание шкафов вентиляции к ЭМ2-ПА. Подтверждено противоречие ссылок, а не отсутствие питания; действующий раздел окончательно не выбран без межраздельной сверки.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1c493988cdf14cee9ad351ef2e706470.png",
+        "sha256": "fa028d82f0e5f818dd38743f9b5d6fb88006621d52993253769127266e375b24",
+        "bytes": 433150,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_76e892431d7d4c48a09aba49a57b223c",
+          "heading": "### BLOCK #11 [TEXT]: blk_76e892431d7d4c48a09aba49a57b223c",
+          "start": 19537,
+          "end": 23412,
+          "sha256": "ac93a82bb8680fc59420a6050a184c4e9210f61d15cf107a60e8a01b77484215",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-062",
+      "pointer": "/block_analyses/20/findings/1",
+      "original_candidate": {
+        "id": "G-062",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "ссылки_на_смежные_разделы",
+        "finding": "На схеме внешних подключений ШАУВ-1-К4ПЧ, лист 25, указаны разные разделы для одного питающего кабеля: в заголовке — 13АВ-РД-ЭМ2-ПА, возле линии ввода — 13АВ-РД-ЭМ-К4. Общие указания также относят питание шкафов вентиляции к разделу ЭМ2-ПА.\n\nРекомендация: Указать единое корректное обозначение раздела, в котором предусмотрен питающий кабель шкафа.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_1c493988cdf14cee9ad351ef2e706470",
+        "value_found": "13АВ-РД-ЭМ2-ПА; 13АВ-РД-ЭМ-К4",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-062",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 0.99,
+          "reason": "Оба замечания указывают на одинаковое противоречие ссылок для питающего кабеля ШАУВ-1-К4ПЧ: 13АВ-РД-ЭМ2-ПА и 13АВ-РД-ЭМ-К4. Ссылка правого замечания на общие указания дополнительно подтверждает ту же проблему без существенного расширения.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_power_reference_conflict",
+      "reason": "Лист 25, единственный ввод питания ШАУВ-1-К4ПЧ: заголовок относит ввод к 13АВ-РД-ЭМ2-ПА, подпись вдоль той же линии к 13АВ-РД-ЭМ-К4. Общие указания TEXT относят питание шкафов вентиляции к ЭМ2-ПА. Подтверждено противоречие ссылок, а не отсутствие питания; действующий раздел окончательно не выбран без межраздельной сверки.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1c493988cdf14cee9ad351ef2e706470.png",
+        "sha256": "fa028d82f0e5f818dd38743f9b5d6fb88006621d52993253769127266e375b24",
+        "bytes": 433150,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_76e892431d7d4c48a09aba49a57b223c",
+          "heading": "### BLOCK #11 [TEXT]: blk_76e892431d7d4c48a09aba49a57b223c",
+          "start": 19537,
+          "end": 23412,
+          "sha256": "ac93a82bb8680fc59420a6050a184c4e9210f61d15cf107a60e8a01b77484215",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-063",
+      "pointer": "/block_analyses/21/findings/0",
+      "original_candidate": {
+        "id": "G-063",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_quantity_mismatch",
+        "finding": "На листе 26 ведомость кабелей не соответствует схеме внешних подключений ШАУВ-2-К4ПЧ: КСПВПГнг(А)-HF 1х2х0,75 требуется 120 м, указано 50 м; КСПЭВПГнг(А)-HF 1х2х0,75 требуется 50 м, указано 105 м. Расхождение приводит к недостаче 70 м неэкранированного кабеля и избытку 55 м экранированного.\n\nРекомендация: Привести марки и количества кабелей в ведомости листа 26 в соответствие со схемой внешних подключений.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+        "value_found": "КСПВПГнг(A)-HF 1x2x0,75 мм² — 50 м; КСПЭВПГнг(A)-HF 1x2x0,75 мм² — 105 м",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-063",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковые расхождения на листе 26: КСПВПГнг(А)-HF 1х2х0,75 — 50 м вместо 120 м; КСПЭВПГнг(А)-HF 1х2х0,75 — 105 м вместо 50 м. Указанные слева недостача 70 м и избыток 55 м являются арифметическим следствием этих же данных.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_cable_length_conflict",
+      "reason": "Лист 26: неэкранированные КСПВПГнг(А)-HF 1х2х0,75 линии П4.1.3-3,-4,-5,-8 и П4.1.4-2,-3,-6,-8 имеют по 15 м: 8×15=120 м против 50 м ведомости. Экранированные КСПЭВПГнг(А)-HF 1х2х0,75 линии П4.1.3-1,-2 и П4.1.4-1 имеют 20+15+15=50 м против 105 м ведомости. Линии 2х2х0,75 не включены в эти суммы. Документные разности 70 и 55 м подтверждены; фактическая недостача или избыточная закупка не доказана.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b2b11f12b2c24e10bebb7fb32c3680f5.png",
+        "sha256": "152537eff5e3477a461f86fc4fdafc54ba9263ebc2c6808265bf971fcf635e3f",
+        "bytes": 384935,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "heading": "### BLOCK #97 [TEXT]: blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "start": 164256,
+          "end": 165307,
+          "sha256": "c34742a55bd1489d791e14b7061b5f6e552b772bedc7ef9114bd502924783139",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-064",
+      "pointer": "/block_analyses/21/findings/1",
+      "original_candidate": {
+        "id": "G-064",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_quantity",
+        "finding": "На листе 26 количества двух марок кабеля в спецификации противоречат схеме внешних подключений ШАУВ-2-К4ПЧ: КСПВПГнг(А)-HF 1х2х0,75 указан в количестве 50 м при сумме линий 120 м; КСПЭВПГнг(А)-HF 1х2х0,75 — 105 м при сумме линий 50 м.\n\nРекомендация: Согласовать спецификацию со схемой: учесть 120 м КСПВПГнг(А)-HF 1х2х0,75 и 50 м КСПЭВПГнг(А)-HF 1х2х0,75.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+        "value_found": "КСПВПГнг(A)-HF 1x2x0,75 мм² — 50 м; КСПЭВПГнг(A)-HF 1x2x0,75 мм² — 105 м",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-064",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковые расхождения на листе 26: КСПВПГнг(А)-HF 1х2х0,75 — 50 м вместо 120 м; КСПЭВПГнг(А)-HF 1х2х0,75 — 105 м вместо 50 м. Указанные слева недостача 70 м и избыток 55 м являются арифметическим следствием этих же данных.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_cable_length_conflict",
+      "reason": "Лист 26: неэкранированные КСПВПГнг(А)-HF 1х2х0,75 линии П4.1.3-3,-4,-5,-8 и П4.1.4-2,-3,-6,-8 имеют по 15 м: 8×15=120 м против 50 м ведомости. Экранированные КСПЭВПГнг(А)-HF 1х2х0,75 линии П4.1.3-1,-2 и П4.1.4-1 имеют 20+15+15=50 м против 105 м ведомости. Линии 2х2х0,75 не включены в эти суммы. Документные разности 70 и 55 м подтверждены; фактическая недостача или избыточная закупка не доказана.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b2b11f12b2c24e10bebb7fb32c3680f5.png",
+        "sha256": "152537eff5e3477a461f86fc4fdafc54ba9263ebc2c6808265bf971fcf635e3f",
+        "bytes": 384935,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "heading": "### BLOCK #97 [TEXT]: blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "start": 164256,
+          "end": 165307,
+          "sha256": "c34742a55bd1489d791e14b7061b5f6e552b772bedc7ef9114bd502924783139",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-065",
+      "pointer": "/block_analyses/22/findings/0",
+      "original_candidate": {
+        "id": "G-065",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_quantity",
+        "finding": "На листе 27 ведомость кабелей не соответствует схеме внешних подключений ШАУВ-3-К4ПЧ: для КСПВПГнг(А)-HF 1х2х0,75 указано 45 м вместо суммарных 50 м, а для КСПЭВПГнг(А)-HF 1х2х0,75 — 40 м вместо 35 м. Неэкранированный кабель недоучтён на 5 м, экранированный завышен на 5 м.\n\nРекомендация: Согласовать ведомость со схемой: указать 50 м неэкранированного и 35 м экранированного кабеля 1х2х0,75.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_fcd31b6618d34e0f982af6c418e3bf37",
+        "value_found": "КСПВПГнг(A)-HF 1x2x0,75 мм² — 45 м; КСПЭВПГнг(A)-HF 1x2x0,75 мм² — 40 м",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-065",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковое расхождение ведомости листа 27 со схемой ШАУВ-3-К4ПЧ: КСПВПГнг(А)-HF 1х2х0,75 — 45 м вместо 50 м; КСПЭВПГнг(А)-HF 1х2х0,75 — 40 м вместо 35 м. Указание разницы в 5 м не добавляет существенной детализации.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_quantity_conflict_with_unresolved_cross_document_brand",
+      "reason": "Лист 27: пять линий Пкр4.1-4,-5,-6,-7,-12 на схеме подписаны КСПВПГнг(А)-HF 1х2х0,75 по 10 м: сумма 50 м против 45 м в ведомости. Экранированные линии Пкр4.1-1,-2,-3 имеют 15+10+10=35 м против 40 м ведомости. Отдельная линия -10 имеет 2х2х0,75 и в сумму 1х2х0,75 не включается. В авторитетном TEXT кабельного журнала линия Пкр4.1-12 записана как КСПВПГнг(А)-НФ длиной 10 м: графика не исправляет этот TEXT. Подтверждено локальное расхождение схема–ведомость; автоматическое принятие 50 м HF для всех документов преждевременно до согласования марки -12. Закупочная недостача не доказана.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fcd31b6618d34e0f982af6c418e3bf37.png",
+        "sha256": "7265169d198c15255584b261cce1dbc1517006493ca16c6a463b4607bc01325f",
+        "bytes": 352292,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "heading": "### BLOCK #100 [TEXT]: blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "start": 168197,
+          "end": 169204,
+          "sha256": "29ecee002a7f285f4e8896cca4ee6fa6d568ea8dcbd96d3b50527e5af089f967",
+          "authority": "prepared Markdown TEXT"
+        },
+        {
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "heading": "### BLOCK #214 [TEXT]: blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "start": 364959,
+          "end": 367559,
+          "sha256": "b4b5473c4cbec1f32f175c18d9cbd3e47994ef7113a6d0f0d7db0eca6afb70fe",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-066",
+      "pointer": "/block_analyses/22/findings/1",
+      "original_candidate": {
+        "id": "G-066",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_quantity",
+        "finding": "На листе 27 ведомость кабелей не соответствует схеме подключений ШАУВ-3-К4ПЧ: КСПВПГнг(А)-HF 1х2х0,75 требуется 50 м, указано 45 м; КСПЭВПГнг(А)-HF 1х2х0,75 требуется 35 м, указано 40 м.\n\nРекомендация: Привести ведомость в соответствие с длинами линий на схеме: 50 м неэкранированного и 35 м экранированного кабеля 1х2х0,75.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_fcd31b6618d34e0f982af6c418e3bf37",
+        "value_found": "КСПВПГнг(A)-HF 1x2x0,75 мм² — 45 м; КСПЭВПГнг(A)-HF 1x2x0,75 мм² — 40 м",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-066",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковое расхождение ведомости листа 27 со схемой ШАУВ-3-К4ПЧ: КСПВПГнг(А)-HF 1х2х0,75 — 45 м вместо 50 м; КСПЭВПГнг(А)-HF 1х2х0,75 — 40 м вместо 35 м. Указание разницы в 5 м не добавляет существенной детализации.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_quantity_conflict_with_unresolved_cross_document_brand",
+      "reason": "Лист 27: пять линий Пкр4.1-4,-5,-6,-7,-12 на схеме подписаны КСПВПГнг(А)-HF 1х2х0,75 по 10 м: сумма 50 м против 45 м в ведомости. Экранированные линии Пкр4.1-1,-2,-3 имеют 15+10+10=35 м против 40 м ведомости. Отдельная линия -10 имеет 2х2х0,75 и в сумму 1х2х0,75 не включается. В авторитетном TEXT кабельного журнала линия Пкр4.1-12 записана как КСПВПГнг(А)-НФ длиной 10 м: графика не исправляет этот TEXT. Подтверждено локальное расхождение схема–ведомость; автоматическое принятие 50 м HF для всех документов преждевременно до согласования марки -12. Закупочная недостача не доказана.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fcd31b6618d34e0f982af6c418e3bf37.png",
+        "sha256": "7265169d198c15255584b261cce1dbc1517006493ca16c6a463b4607bc01325f",
+        "bytes": 352292,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "heading": "### BLOCK #100 [TEXT]: blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "start": 168197,
+          "end": 169204,
+          "sha256": "29ecee002a7f285f4e8896cca4ee6fa6d568ea8dcbd96d3b50527e5af089f967",
+          "authority": "prepared Markdown TEXT"
+        },
+        {
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "heading": "### BLOCK #214 [TEXT]: blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "start": 364959,
+          "end": 367559,
+          "sha256": "b4b5473c4cbec1f32f175c18d9cbd3e47994ef7113a6d0f0d7db0eca6afb70fe",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-067",
+      "pointer": "/block_analyses/23/findings/0",
+      "original_candidate": {
+        "id": "G-067",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "terminal_numbering",
+        "finding": "На схеме внешних подключений ШАУВ-4-К4ПЧ клеммы 29 и 30 назначены одновременно однофазному двигателю М1 (L, N) и трёхфазному двигателю М2 (U, V). Повторная нумерация не позволяет однозначно определить точки подключения этих двигателей.\n\nРекомендация: Согласовать с заводом-изготовителем и указать однозначные обозначения клемм подключения М1 и М2.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_96ed7d88fb23414bb14d93191a89365a",
+        "value_found": "М1: 29, 30, PE; М2: 29, 30, 31, PE",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-067",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 0.99,
+          "reason": "Оба замечания указывают на повторное назначение клемм 29 и 30 цепям L/N двигателя М1 и U/V двигателя М2 шкафа ШАУВ-4-К4ПЧ. Доказательства и рекомендации совпадают; уточнение о примечании изготовителя существенно не расширяет проблему.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_terminal_address_ambiguity",
+      "reason": "Лист 28: нижние клеммы под M1 подписаны 29,30,PE и связаны с L,N,PE однофазного двигателя; под M2 подписаны 29,30,31,PE и связаны с U,V,W,PE. Различающих обозначений клеммников для этих двух нижних групп не показано. Обозначения XT1–XT3 выше относятся к комплектным соединениям приводов Y и не различают группы M1/M2. Подтверждена неоднозначность адресации в представленном чертеже, не электрическое объединение цепей и не фактическое короткое замыкание. Заводской чертёж не проверен.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_96ed7d88fb23414bb14d93191a89365a.png",
+        "sha256": "8e69fe04c4bd1743063db50a61e17c1813f8a1214949ff6c8855abc3ed3bf1bb",
+        "bytes": 431293,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-068",
+      "pointer": "/block_analyses/23/findings/1",
+      "original_candidate": {
+        "id": "G-068",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "terminal_numbering",
+        "finding": "На схеме внешних подключений ШАУВ-4-К4ПЧ, лист 28, номера клемм 29 и 30 повторно назначены разным цепям: L/N двигателя М1 (~220 В) и U/V двигателя М2. Раздельные обозначения клеммников не показаны, поэтому подключение по этим номерам неоднозначно. Примечание об уточнении нумерации у изготовителя не разрешает это противоречие.\n\nРекомендация: Согласовать с изготовителем и указать однозначные обозначения клемм подключения М1 и М2.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_96ed7d88fb23414bb14d93191a89365a",
+        "value_found": "М1: 29, 30, PE; М2: 29, 30, 31, PE",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-068",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 0.99,
+          "reason": "Оба замечания указывают на повторное назначение клемм 29 и 30 цепям L/N двигателя М1 и U/V двигателя М2 шкафа ШАУВ-4-К4ПЧ. Доказательства и рекомендации совпадают; уточнение о примечании изготовителя существенно не расширяет проблему.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_terminal_address_ambiguity",
+      "reason": "Лист 28: нижние клеммы под M1 подписаны 29,30,PE и связаны с L,N,PE однофазного двигателя; под M2 подписаны 29,30,31,PE и связаны с U,V,W,PE. Различающих обозначений клеммников для этих двух нижних групп не показано. Обозначения XT1–XT3 выше относятся к комплектным соединениям приводов Y и не различают группы M1/M2. Подтверждена неоднозначность адресации в представленном чертеже, не электрическое объединение цепей и не фактическое короткое замыкание. Заводской чертёж не проверен.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_96ed7d88fb23414bb14d93191a89365a.png",
+        "sha256": "8e69fe04c4bd1743063db50a61e17c1813f8a1214949ff6c8855abc3ed3bf1bb",
+        "bytes": 431293,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}
