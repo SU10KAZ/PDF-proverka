@@ -1,0 +1,158 @@
+{
+  "status": "area_claim_assessed_section_hold_retained",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "bbf96036468abd04b1bd68aadd53c8a84a55d96f98a4b5a785bd0bbbdaa9f0dd",
+  "queue_after_sha256": "c70495c75b3ed891a33c9ad69df756d7cc87f461ead3efa3678c548cb5a22b81",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчет нагрузок",
+        "sheet": "Листы 4, 16, 26",
+        "page": [
+          7,
+          19,
+          28
+        ],
+        "problem": "Площади и правило назначения нагрузок коммерческих помещений не согласованы.",
+        "description": "В расчете ВРУ-К площадь 7Н равна 105,4 м² вместо 108,1 м² в экспликации, площадь 8Н — 68,6 вместо 63,0 м². При удельной нагрузке 0,22 кВт/м² для 7Н получается 23,782 вместо 23,2 кВт. Для большинства остальных помещений приняты 20 кВт, хотя произведение площади на удельную нагрузку меньше; основание минимальной выделенной мощности не раскрыто.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к расчетным нагрузкам, используемым при выборе проводников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Принять согласованные с архитектурой площади и явно указать правило назначения мощности: удельный расчет, выделенная мощность либо их обоснованное сочетание.",
+        "risk": "Неверная расчетная или выделенная мощность коммерческих помещений.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [
+          "blk_fb5f780dae7a475ca6c249f62b64771e",
+          "blk_f2b273baee994702906a6e5d94a43063",
+          "blk_29be4ff018f040daaa2000c0a3ebde08"
+        ],
+        "related_block_ids": [
+          "blk_fb5f780dae7a475ca6c249f62b64771e",
+          "blk_f2b273baee994702906a6e5d94a43063",
+          "blk_29be4ff018f040daaa2000c0a3ebde08"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f2b273baee994702906a6e5d94a43063",
+            "page": 19
+          },
+          {
+            "type": "text",
+            "block_id": "blk_29be4ff018f040daaa2000c0a3ebde08",
+            "page": 28
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F032_commercial_area_inputs:16faed04bf572c1876a5",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "EOM_F032_commercial_area_inputs:147160644f952ff76e59",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "7Н: 105,4 в расчете против 108,1 в двух экспликациях; 8Н: 68,6 против 63,0.",
+          "verdict": "confirmed_same_room_TEXT",
+          "limits": "Суммы 98,5+6,1+3,5=108,1 и 55,4+2,2+5,4=63,0 воспроизводятся. Актуальная архитектурная версия и расчетная граница площади не установлены."
+        },
+        {
+          "claim": "108,1×0,22=23,782 вместо принятых 23,2.",
+          "verdict": "conditional_arithmetic_not_required_design_load",
+          "limits": "105,4×0,22=23,188 округляется до 23,2: ошибка умножения в проектной строке не доказана. Единицы столбцов Площадь/Кэф. не указаны."
+        },
+        {
+          "claim": "Большинство других помещений имеют 20 кВт при меньшем произведении площади и коэффициента.",
+          "verdict": "confirmed_table_pattern_not_universal_minimum",
+          "limits": "В 6Н коэффициент 0,25, а не 0,22; 60,5×0,25=15,125 также меньше 20. Договорный или нормативный минимум 20 кВт не установлен."
+        },
+        {
+          "claim": "Согласовать расчетные площади и метод назначения мощности.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не назначать 23,782 автоматически и не уменьшать мощности до произведений; ошибка подбора оборудования не доказана."
+        },
+        {
+          "claim": "Нормативные кандидаты выдачи",
+          "verdict": "not_checked",
+          "limits": "Нарушение конкретного требования не засчитывается."
+        }
+      ],
+      "unsupported_additions": "No established minimum allocation, architectural precedence or required new power.",
+      "novel_useful_content": "known_area_and_method_question",
+      "duplicate_burden": "Area inputs differ from F032 same-board 20/23.2 conflict; do not count consequence as another defect.",
+      "profile_and_section": "held_disputed_output_section_only",
+      "engineer_reuse": "No new engineer acceptance; frozen evaluator section hold retained for EOM_F032 area targets.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_fb5f780dae7a475ca6c249f62b64771e",
+            "blk_f2b273baee994702906a6e5d94a43063",
+            "blk_29be4ff018f040daaa2000c0a3ebde08"
+          ],
+          "route": "authoritative_TEXT_direct_review"
+        }
+      ],
+      "disposition": "assessed_preserve_area_method_question_hold_output_section"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
