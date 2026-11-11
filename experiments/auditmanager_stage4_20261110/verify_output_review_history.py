@@ -40,7 +40,7 @@ def initial_queue(receipt):
                                    'coverage': target['coverage']})
         for finding in findings:
             fid = finding['id']
-            rows.append({'discipline': source['discipline'], 'repeat': 1,
+            rows.append({'discipline': source['discipline'], 'repeat': receipt.get('repeat', 1),
                          'finding_id': fid, 'finding': finding, 'target_links': links[fid],
                          'triage': 'mapped_requires_addition_review' if links[fid] else 'unmapped_not_yet_classified',
                          'claim_reviews': [], 'unsupported_additions': 'unchecked',
@@ -51,6 +51,18 @@ def initial_queue(receipt):
               'sources': copy.deepcopy(receipt['sources']), 'rows': rows,
               'counts': dict(Counter(r['triage'] for r in rows)), 'rules': receipt['rules'],
               'model_calls': 0, 'production_acceptance': False}
+    if 'repeat' in receipt:
+        result['repeat'] = receipt['repeat']
+        result['discipline_counts'] = dict(Counter(r['discipline'] for r in rows))
+        # Preserve original insertion order, because hashes bind exact JSON bytes.
+        result = {k: result[k] for k in receipt if k not in ('queue_path', 'queue_sha256', 'findings')}
+        # Receipts omit rows; restore their original position after sources.
+        ordered = {}
+        for k, value in result.items():
+            ordered[k] = value
+            if k == 'sources':
+                ordered['rows'] = rows
+        result = ordered
     assert len(rows) == receipt['findings']
     assert digest(result) == receipt['queue_sha256'], 'Initial queue reconstruction differs'
     return result
@@ -60,8 +72,8 @@ def key(row):
     return row['discipline'], row['repeat'], row['finding_id']
 
 
-def verify(queue_path=None):
-    initial = json.loads((HERE / 'baseline_r1_output_review_queue_receipt.json').read_text())
+def verify(queue_path=None, initial_path=None):
+    initial = json.loads(Path(initial_path or HERE / 'baseline_r1_output_review_queue_receipt.json').read_text())
     result = initial_queue(initial)
     transitions = {}
     for path in HERE.glob('*.json'):
@@ -114,9 +126,10 @@ def verify(queue_path=None):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--queue', type=Path)
+    parser.add_argument('--initial', type=Path)
     parser.add_argument('--output', type=Path)
     args = parser.parse_args()
-    report = verify(args.queue)
+    report = verify(args.queue, args.initial)
     if args.output:
         args.output.write_bytes(encode(report))
     print(json.dumps({k: v for k, v in report.items() if k != 'transitions'}, ensure_ascii=False))

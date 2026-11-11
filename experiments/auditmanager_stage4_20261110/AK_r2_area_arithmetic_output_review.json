@@ -1,0 +1,105 @@
+{
+  "status": "second_repeat_arithmetic_output_refuted",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "2d2680564c2b5ccb9669536790eda6ec323fa0e76c225bbfc2e8c920f000fa77",
+  "queue_after_sha256": "707cd93ff032dc384540d53b159b3f0c76a761b0b92a02d31801e889764bcd25",
+  "reviewer": "Codex authoritative TEXT and executable Decimal calculation",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-034",
+      "finding": {
+        "id": "F-034",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Арифметика экспликации",
+        "sheet": "Лист 54",
+        "page": 58,
+        "problem": "Итоги площадей расходятся с суммой опубликованных строк на 0,1 м².",
+        "description": "Блоки кладовых дают 453,2 м² вместо 453,1 м². Общая сумма опубликованных строк составляет 19058,9 м² вместо 19058,8 м². Возможная причина — округление исходных площадей.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проверить исходную точность площадей и согласовать способ округления отображаемых итогов.",
+        "risk": "Формальная несогласованность экспликации; влияние на электротехнические расчёты не установлено.",
+        "source_finding_ids": [
+          "T-032"
+        ],
+        "source_block_ids": [
+          "blk_6ba4df04a74d4e8d8db22cb4db7aff4f"
+        ],
+        "related_block_ids": [
+          "blk_6ba4df04a74d4e8d8db22cb4db7aff4f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6ba4df04a74d4e8d8db22cb4db7aff4f",
+            "page": 58
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "expertise_formality"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F025_area_arithmetic:eaa42cc0bf57fa49a886",
+          "route": "negative",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F025_area_arithmetic:88b00bcefd42161838b4",
+          "route": "negative",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Кладовые дают453,2м² вместо453,1м².",
+          "verdict": "refuted_complete_decimal_recalculation",
+          "limits": "Все69 исходных строк соответствующей группы дают453,10м²; совпадает с опубликованным итогом."
+        },
+        {
+          "claim": "Общая сумма строк19058,9м² вместо19058,8м².",
+          "verdict": "refuted_complete_decimal_recalculation",
+          "limits": "Все191 исходная строка9групп дают19058,80м². Заголовки и промежуточные итоги повторно не суммируются."
+        },
+        {
+          "claim": "Причиной расхождения может быть округление исходных площадей; инженеру нужно согласовать итоги.",
+          "verdict": "unsupported_followup_remove",
+          "limits": "Расхождение в опубликованных числах опровергнуто. Непроверенные неокруглённые площади не являются основанием отдельного вопроса проектировщику."
+        }
+      ],
+      "unsupported_additions": "false_arithmetic_and_unfounded_followup",
+      "novel_useful_content": "none_identified_in_this_row",
+      "duplicate_burden": "one_output_row_two_related_false_arithmetic_claims_not_two_independent_defects",
+      "profile_and_section": "exclude_refuted_claim_not_question",
+      "engineer_reuse": "No engineer acceptance invented; same-source complete Decimal recalculation independently refutes the output.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AK_r2_area_arithmetic_primary_trace.json",
+          "sha256": "7c7656256e7f30b5205da87e5fa531ea69191bb6a903ea090865080952dbb23c",
+          "route": "authoritative_TEXT_complete_Decimal_recalculation"
+        }
+      ],
+      "disposition": "assessed_refuted_arithmetic_remove"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
