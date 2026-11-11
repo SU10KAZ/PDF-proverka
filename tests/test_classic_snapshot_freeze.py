@@ -7,7 +7,7 @@ import pytest
 
 ROOT=Path(__file__).resolve().parents[1]
 
-@pytest.mark.parametrize('mutation', ['none','changed','omitted_marker','foreign_root'])
+@pytest.mark.parametrize('mutation', ['none','changed','omitted_marker','foreign_root','changed_catalog','omitted_catalog'])
 def test_snapshot_freeze_checks_complete_source_bytes_without_git(tmp_path,mutation):
     code='''
 import hashlib,json,sys
@@ -15,14 +15,16 @@ from pathlib import Path
 sys.path.insert(0,str(Path.cwd()/'experiments/classic_investigator'))
 import classic_control as c
 base=Path(sys.argv[1]);c.ROOT=base/'snapshot'
-for name,text in [('backend/__init__.py',''),('backend/app/example.py','value=1'),('prompts/test.md','Source only')]:
+for name,text in [('backend/__init__.py',''),('backend/app/example.py','value=1'),('prompts/test.md','Source only'),('backend/app/pipeline/stages/block_context/reference_catalog/rules.json','{}')]:
  p=c.ROOT/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text)
 work=base/'work';r=work/'classic_control';r.mkdir(parents=True)
 (r/'input_checks.json').write_text('{"status":"passed"}')
 (r/'input_manifest.json').write_text('[]')
 manifest={'source_root':str(c.ROOT),'source_files':{str(p.relative_to(c.ROOT)):c.sha(p) for p in c.ROOT.rglob('*') if p.is_file()},'provenance':{'kind':'test export','historical_commit':'test-only-not-a-real-commit'}}
 mutation=sys.argv[2]
-if mutation=='changed':(c.ROOT/'backend/app/example.py').write_text('value=2')
+if mutation=='changed_catalog':(c.ROOT/'backend/app/pipeline/stages/block_context/reference_catalog/rules.json').write_text('{"changed":true}')
+elif mutation=='omitted_catalog':manifest['source_files'].pop('backend/app/pipeline/stages/block_context/reference_catalog/rules.json')
+elif mutation=='changed':(c.ROOT/'backend/app/example.py').write_text('value=2')
 elif mutation=='omitted_marker':manifest['source_files'].pop('backend/__init__.py')
 elif mutation=='foreign_root':manifest['source_root']=str(base/'other')
 # A snapshot freeze must never consult Git in the source copy.

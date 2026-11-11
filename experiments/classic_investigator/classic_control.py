@@ -91,6 +91,8 @@ def freeze(work, *, source_snapshot=None):
     files=[]
     for directory,pattern in [('backend/app','*.py'),('prompts','*'),('experiments/classic_investigator','*.py')]:
         files.extend(p for p in (ROOT/directory).rglob(pattern) if p.is_file())
+    catalog=ROOT/'backend/app/pipeline/stages/block_context/reference_catalog'
+    files.extend(p for p in catalog.rglob('*') if p.is_file() and p.suffix in {'.json','.md'})
     marker=ROOT/'backend/__init__.py'
     if marker.is_file():files.append(marker)
     source_files={str(p.relative_to(ROOT)):sha(p) for p in files}

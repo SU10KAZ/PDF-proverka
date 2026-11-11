@@ -1,0 +1,11 @@
+{
+  "tests": [
+    "tests/test_classic_snapshot_freeze.py",
+    "tests/test_paired_shared_protocol.py",
+    "tests/test_paired_method_profiles.py"
+  ],
+  "passed": 32,
+  "model_calls": 0,
+  "catalog_bound_to_source_freeze": true,
+  "method_acceptance": false
+}

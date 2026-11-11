@@ -13,9 +13,11 @@ ROOT=Path('/tmp/auditmanager_comparative_trial_layout_20261111')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def ref(p):return {'path':str(p.resolve()),'sha256':sha(p)}
 
-def main(root=ROOT):
+def main(root=ROOT, snapshot_path=None, candidate_snapshot_path=None):
     ROOT=Path(root).resolve()
-    snapshot_path=HERE/'classic_isolated_snapshot_provenance.json';snapshot=json.loads(snapshot_path.read_text())
+    snapshot_path=Path(snapshot_path or HERE/'classic_isolated_snapshot_provenance.json')
+    candidate_snapshot_path=Path(candidate_snapshot_path or HERE/'candidate_snapshot_provenance.json')
+    snapshot=json.loads(snapshot_path.read_text())
     layout=json.loads((ROOT/'layout.json').read_text());runs=[r for r in layout['runs'] if r['variant']=='classic']
     assert len(runs)==18
     trial_path=ROOT/'baseline_collection_trial.json'
@@ -29,7 +31,7 @@ def main(root=ROOT):
         'purpose':'Collect the original fixed-classic arm without waiting for engineering resolution of candidate controls. This does not close stage4 or admit candidate methods.',
         'evaluator':ref(HERE/'evaluator_release_errata_v2.json'),
         'acceptance_protocol':ref(HERE/'original_trial_protocol.json'),
-        'source_snapshot':ref(snapshot_path),'candidate_snapshot_reserved_for_later':ref(HERE/'candidate_snapshot_provenance.json'),
+        'source_snapshot':ref(snapshot_path),'candidate_snapshot_reserved_for_later':ref(candidate_snapshot_path),
         'model':'codex/gpt-6-astra','effort':'high','max_request_attempts':3,'retry_delay_seconds':10,
         'graphic_parallelism':2,'project_parallelism':1,
         'dispatch_order':'Repeat 1: AK ITP AR KM VK EOM; repeat 2 same order; repeat 3 same order. Candidate arms require separate admission; timing confounding must be reported.',
@@ -60,4 +62,5 @@ def main(root=ROOT):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--root',type=Path,default=ROOT)
-    main(p.parse_args().root)
+    p.add_argument('--snapshot',type=Path);p.add_argument('--candidate-snapshot',type=Path)
+    a=p.parse_args();main(a.root,a.snapshot,a.candidate_snapshot)
