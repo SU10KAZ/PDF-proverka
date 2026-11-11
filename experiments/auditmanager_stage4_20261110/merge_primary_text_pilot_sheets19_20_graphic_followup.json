@@ -1,0 +1,407 @@
+{
+  "status": "six_candidate_records_three_issue_groups_graphically_reviewed",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "G-045",
+      "pointer": "/block_analyses/14/findings/0",
+      "original_candidate": {
+        "id": "G-045",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_marking",
+        "finding": "На листе 19 в перечне элементов указан диапазон «SC UZ1 - SC UZ53», тогда как на функциональной схеме обозначены SC UZ1, SC UZ2 и SC UZ3. Конечная позиция диапазона противоречит маркировке на схеме и количеству 3 шт. в перечне.\n\nРекомендация: Исправить диапазон обозначений в перечне элементов на «SC UZ1 – SC UZ3».",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_5999641136b84d1c9a5dd129e06ae055",
+        "value_found": "SC UZ1 - SC UZ53; Кол-во: 3",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-045",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на ошибочный диапазон «SC UZ1 - SC UZ53» при количестве 3 шт. и обозначениях SC UZ1, SC UZ2, SC UZ3 на схеме; исправление одинаковое. Различие в оценке критичности не меняет сути проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_designation_conflict",
+      "reason": "Лист 19: три отдельных обозначения SC UZ1, SC UZ2, SC UZ3 стоят в колонках 3, 7, 11 матрицы. Авторитетный TEXT перечня содержит SC UZ1 - SC UZ53 при количестве 3. Несогласованность конечной позиции подтверждена; из UZ53 не следует количество 53 или нехватка 50 преобразователей.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5999641136b84d1c9a5dd129e06ae055.png",
+        "sha256": "cb1c9c5fdf02478799b5474ff55d7f18a9e6d54da46e9ffdc4733bc5ab0f0a80",
+        "bytes": 313734,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_50601fa20414465ea70cc3f42158d923",
+          "heading": "### BLOCK #70 [TEXT]: blk_50601fa20414465ea70cc3f42158d923",
+          "start": 125261,
+          "end": 126199,
+          "sha256": "3917571a0824507fc08dc905a816c7ac5cb39a40bd3ff90db144402fef06a463",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-046",
+      "pointer": "/block_analyses/14/findings/1",
+      "original_candidate": {
+        "id": "G-046",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "equipment_identification",
+        "finding": "В перечне элементов листа 19 указан диапазон «SC UZ1 - SC UZ53» при количестве 3 шт., тогда как на функциональной схеме обозначены SC UZ1, SC UZ2 и SC UZ3. Конечное позиционное обозначение в перечне противоречит схеме.\n\nРекомендация: Исправить диапазон обозначений в перечне элементов на «SC UZ1 – SC UZ3» в соответствии со схемой.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_5999641136b84d1c9a5dd129e06ae055",
+        "value_found": "SC UZ1 - SC UZ53",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-046",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на ошибочный диапазон «SC UZ1 - SC UZ53» при количестве 3 шт. и обозначениях SC UZ1, SC UZ2, SC UZ3 на схеме; исправление одинаковое. Различие в оценке критичности не меняет сути проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_designation_conflict",
+      "reason": "Лист 19: три отдельных обозначения SC UZ1, SC UZ2, SC UZ3 стоят в колонках 3, 7, 11 матрицы. Авторитетный TEXT перечня содержит SC UZ1 - SC UZ53 при количестве 3. Несогласованность конечной позиции подтверждена; из UZ53 не следует количество 53 или нехватка 50 преобразователей.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5999641136b84d1c9a5dd129e06ae055.png",
+        "sha256": "cb1c9c5fdf02478799b5474ff55d7f18a9e6d54da46e9ffdc4733bc5ab0f0a80",
+        "bytes": 313734,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_50601fa20414465ea70cc3f42158d923",
+          "heading": "### BLOCK #70 [TEXT]: blk_50601fa20414465ea70cc3f42158d923",
+          "start": 125261,
+          "end": 126199,
+          "sha256": "3917571a0824507fc08dc905a816c7ac5cb39a40bd3ff90db144402fef06a463",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-047",
+      "pointer": "/block_analyses/15/findings/0",
+      "original_candidate": {
+        "id": "G-047",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "В перечне элементов листа 20 для ТЕ3, ТЕ4 указано количество 1, хотя схема содержит два отдельных датчика — по одному в системах П6.1.1 и П6.1.4. Спецификация оборудования также предусматривает 2 канальных датчика для ШАУВ-2-К6ПЧ.\n\nРекомендация: Исправить количество датчиков ТЕ3, ТЕ4 в перечне элементов на 2 в соответствии со схемой и спецификацией.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_54608a880c2545aa926c442d213988c3",
+        "value_found": "ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-047",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:004"
+          ],
+          "confidence": 0.99,
+          "reason": "Оба замечания указывают количество 1 вместо 2 для ТЕ3, ТЕ4 в перечне элементов и подтверждают требуемое количество схемой и спецификацией ШАУВ-2-К6ПЧ. Различается только оценка серьёзности.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_quantity_conflict",
+      "reason": "Лист 20: TE3 после вентилятора П6.1.1 имеет отдельную линию к колонке 11; TE4 после вентилятора П6.1.4 — к колонке 20. Перечень TEXT объединяет ТЕ3,ТЕ4 с количеством 1, спецификация шкафа ШАУВ-2-К6ПЧ п.14.6 содержит 2 канальных датчика. Подтверждены два самостоятельных датчика на схеме и противоречие перечня. Фактическая недопоставка не доказана.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+        "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+        "bytes": 431390,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "heading": "### BLOCK #74 [TEXT]: blk_917406a6b2804ee2abedff901eb85582",
+          "start": 130512,
+          "end": 132110,
+          "sha256": "9bca0c4a8f7bc1302052554c4e2c66ab4fa16187d401ede300913c5b8e1ac844",
+          "authority": "prepared Markdown TEXT"
+        },
+        {
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "heading": "### BLOCK #249 [TEXT]: blk_5b5187b5afb740efb6423fa40c399349",
+          "start": 447851,
+          "end": 450496,
+          "sha256": "52b019673ec133c34788afa344835bcdc2cd45e0dee21d5379a7759ff39eda43",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-049",
+      "pointer": "/block_analyses/15/findings/2",
+      "original_candidate": {
+        "id": "G-049",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "equipment_quantity",
+        "finding": "В перечне элементов на листе 20 для ТЕ3, ТЕ4 указано количество 1, хотя на схеме показаны два отдельных датчика. Спецификация шкафа ШАУВ-2-К6ПЧ, позиция 14.6, также предусматривает 2 канальных датчика.\n\nРекомендация: Исправить количество датчиков ТЕ3, ТЕ4 в перечне элементов на 2 шт., согласовав его со схемой и спецификацией.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_54608a880c2545aa926c442d213988c3",
+        "value_found": "ТЕ3,ТЕ4 — Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt — 1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-049",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:004",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 0.99,
+          "reason": "Оба замечания указывают количество 1 вместо 2 для ТЕ3, ТЕ4 в перечне элементов и подтверждают требуемое количество схемой и спецификацией ШАУВ-2-К6ПЧ. Различается только оценка серьёзности.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_quantity_conflict",
+      "reason": "Лист 20: TE3 после вентилятора П6.1.1 имеет отдельную линию к колонке 11; TE4 после вентилятора П6.1.4 — к колонке 20. Перечень TEXT объединяет ТЕ3,ТЕ4 с количеством 1, спецификация шкафа ШАУВ-2-К6ПЧ п.14.6 содержит 2 канальных датчика. Подтверждены два самостоятельных датчика на схеме и противоречие перечня. Фактическая недопоставка не доказана.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+        "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+        "bytes": 431390,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "heading": "### BLOCK #74 [TEXT]: blk_917406a6b2804ee2abedff901eb85582",
+          "start": 130512,
+          "end": 132110,
+          "sha256": "9bca0c4a8f7bc1302052554c4e2c66ab4fa16187d401ede300913c5b8e1ac844",
+          "authority": "prepared Markdown TEXT"
+        },
+        {
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "heading": "### BLOCK #249 [TEXT]: blk_5b5187b5afb740efb6423fa40c399349",
+          "start": 447851,
+          "end": 450496,
+          "sha256": "52b019673ec133c34788afa344835bcdc2cd45e0dee21d5379a7759ff39eda43",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-048",
+      "pointer": "/block_analyses/15/findings/1",
+      "original_candidate": {
+        "id": "G-048",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "control_signals",
+        "finding": "В функциональной схеме П6.1.4 на листе 20 предусмотрена команда «Электр. воздухонагреватель пуск/стоп», но в таблице сигналов для неё не назначен выход шкафа ШАУВ-2-К6ПЧ. Управление электронагревателем в таблице не реализовано.\n\nРекомендация: Указать выход управления электронагревателем в колонке 17 и скорректировать количество выходов шкафа.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_54608a880c2545aa926c442d213988c3",
+        "value_found": "Электр. воздухонагреватель пуск/стоп; DO 5",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-048",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "extension",
+          "role": "base",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 0.96,
+          "reason": "Оба замечания касаются отсутствия корректного выхода управления электронагревателем П6.1.4 в колонке 17. Правое существенно уточняет ошибку: команда «пуск/стоп» отнесена к DI.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_command_channel_inconsistency",
+      "reason": "Лист 20: колонка 17 Электр. воздухонагреватель пуск/стоп имеет точку в DI и не имеет точки в DO. Команда и направление канала в матрице не согласованы. Утверждение G-048 об отсутствии назначенного выхода подтверждено в пределах этой матрицы; фактическая невозможность управления, интерфейс устройства и необходимость аппаратного изменения не проверены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+        "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+        "bytes": 431390,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-050",
+      "pointer": "/block_analyses/15/findings/3",
+      "original_candidate": {
+        "id": "G-050",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_type",
+        "finding": "На функциональной схеме, лист 20, сигнал «Электр. воздухонагреватель пуск/стоп» системы П6.1.4 отнесён к дискретным входам DI. Команда управления нагревателем ошибочно обозначена как входной сигнал.\n\nРекомендация: Предусмотреть выход управления нагревателем и согласовать обозначение сигнала 17 и итоговое количество входов и выходов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_54608a880c2545aa926c442d213988c3",
+        "value_found": "17 — Электр. воздухонагреватель пуск/стоп; DI",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-050",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:003",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "extension",
+          "role": "extends",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 0.96,
+          "reason": "Оба замечания касаются отсутствия корректного выхода управления электронагревателем П6.1.4 в колонке 17. Правое существенно уточняет ошибку: команда «пуск/стоп» отнесена к DI.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_command_channel_inconsistency",
+      "reason": "Лист 20: колонка 17 Электр. воздухонагреватель пуск/стоп имеет точку в DI и не имеет точки в DO. Команда и направление канала в матрице не согласованы. Утверждение G-048 об отсутствии назначенного выхода подтверждено в пределах этой матрицы; фактическая невозможность управления, интерфейс устройства и необходимость аппаратного изменения не проверены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+        "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+        "bytes": 431390,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}
