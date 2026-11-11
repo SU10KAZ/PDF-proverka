@@ -1,0 +1,507 @@
+{
+  "status": "three_KM_documentation_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "419ecc9ff5f5b839f1a77de9fca86b2792388eac0bd74252d5340848cfdb54d7",
+  "queue_after_sha256": "fe50ad78e6d06095f80b35327d1f8020cfafa377d1e7d336b1fd8e7ab5b9fc91",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Документация",
+        "sheet": "Листы 1, 2, 4, 6, 8, 9, 10",
+        "page": [
+          3,
+          4,
+          6,
+          8,
+          10,
+          11,
+          12
+        ],
+        "problem": "Описание конструктивных решений не соответствует разработанным ограждениям лестниц.",
+        "description": "Раздел конструктивных решений описывает стремянки из уголков, круглого проката и полосовой стали с болтовым креплением ограждений. Название комплекта и ведомости предусматривают ограждения лестниц из круглых и квадратных труб, опорных пластин и анкеров. Уголки, ступени стремянок и полосовые ограждения в ведомостях отсутствуют.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), кандидат п. 4.1; ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к составу и содержанию рабочих чертежей металлических конструкций.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить согласованность спецификации с предусмотренными рабочими чертежами изделиями и материалами.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Заменить описание стремянок описанием фактически разработанных ограждений, их материалов и соединений.",
+        "risk": "Ошибочное применение требований при разработке КМД, изготовлении и монтаже.",
+        "source_finding_ids": [
+          "T-002"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_531e843c117243a3b1582cb3399f4681",
+          "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_f63af88de2a840e49ca709d736eaa225"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 42,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F002_ladder_description_scope:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Раздел2 описывает уголковую стремянку, круглый прокат для ступеней и полосовое ограждение на болтах.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "В полной технической спецификации листа2КМ1.2 перечислены трубы, лист10 и анкеры, а названные уголки, круглый сортовой прокат, полоса и болты отсутствуют.",
+          "verdict": "confirmed_bounded_specification_mismatch",
+          "limits": "ТрубаØ40×3 не равна круглому сортовому прокату. Анкеры присутствуют; отсутствие всех креплений неверно."
+        },
+        {
+          "claim": "Следует безусловно заменить описание стремянки трубчатыми ограждениями.",
+          "verdict": "scope_decision_not_fully_established",
+          "limits": "Есть отдельный КМ6.2 «Лестницы, стремянки на кровле. Секция С2,С3». Его содержание и принадлежность стремянки не проверены. Сначала согласовать границы комплекта и принадлежность текста; случайное копирование — гипотеза."
+        },
+        {
+          "claim": "Материалы не поставлены или закуплены ошибочно.",
+          "verdict": "not_established",
+          "limits": "Отсутствие строк в данном комплекте не доказывает отсутствие материалов во всём проекте."
+        },
+        {
+          "claim": "Описание стремянок нужно безусловно заменить.",
+          "verdict": "requires_package_scope_confirmation",
+          "limits": "Сначала проверить принадлежность текста и границы смежногоКМ6.2. Ошибочное копирование пока гипотеза."
+        }
+      ],
+      "unsupported_additions": "Не выводить недопоставку,ошибку монтажа или отсутствие конструкций во всём проекте из локальных расхождений текста и ссылок.",
+      "novel_useful_content": "Основной тезис сохранён из первого повтора;новая самостоятельная техническая находка не установлена.",
+      "duplicate_burden": "distinct_general_documentation_question",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F002_ladder_description_scope.json",
+          "sha256": "151514dfc81300d49bb4d1a639ed4f1aa4c315ae354ce07ec93e89f6a653d70a",
+          "primary_adjudication": null,
+          "limits": "Подтверждено несогласованное описание и отсутствие названных уголков, круглого сортового проката, полосы и болтов именно в полной технической спецификации листа2КМ1.2. Отсутствие всех материалов/крепежа во всём проекте не установлено; анкерыHSA-M10×90 вСО есть. Круглая трубаØ40×3 не тождественна круглому сортовому прокату для ступеней. КМ2/КМ6.2 и конкретная стремянка не проверены. Перенос текста из другого комплекта — гипотеза, не установленная причина. Недопоставка, неправильная закупка и обязательное дополнениеКМ1.2 материалами не доказаны.",
+          "wording": "Согласовать пункты2.1–2.2 общих указанийКМ1.2 с составом комплекта: они описывают стремянку из уголков, круглого проката, полосовой стали и болтов, тогда как комплект посвящён ограждениям лестниц, а техническая спецификация содержит трубы, лист10мм и анкеры. Уточнить принадлежность описанной стремянки; в перечне для лестниц и стремянок на кровле выделенКМ6.2."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-002",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-002_scoped_documentation_question"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-009",
+      "finding": {
+        "id": "F-009",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Документация",
+        "sheet": "Лист 4",
+        "page": [
+          3,
+          6
+        ],
+        "problem": "Примечание на листе деталей секции С2 содержит ошибочную ссылку на схему расположения.",
+        "description": "В примечании 5 листа 4 записано «Схему расположения ограждений см. л.4». Ссылка ведет на сам лист деталей. По ведомости рабочих чертежей схема секции С2 находится на листе 3.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к взаимосвязи схем расположения и чертежей металлических конструкций.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить ссылку в примечании 5 на лист 3.",
+        "risk": "Затруднение поиска схемы и ошибочное использование монтажной документации.",
+        "source_finding_ids": [
+          "T-009"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_531e843c117243a3b1582cb3399f4681",
+          "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "blk_addaa8965de54d218095d13652f30388",
+          "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+          "blk_ec977eb41e834dc8b7b332a66932a777",
+          "blk_f63af88de2a840e49ca709d736eaa225"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 34,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F009_sheet_cross_reference:01c2e819a95b8ab792a2",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Примечание 5 листа 4 направляет к схеме расположения ограждений на том же листе 4. По ведомости рабочих чертежей схема секции С2 находится на листе 3, а лист 4 содержит изделия и узлы.",
+          "verdict": "supported_in_reviewed_source_scope",
+          "limits": "Подтверждено расхождение перекрёстной ссылки и ведомости, не отсутствие самой схемы. Правильный адрес есть в ведомости; нормативное нарушение, задержка изготовления, ошибка монтажа и ущерб не доказаны. Использованы номера листов по штампу и ведомости, не номера страницPDF. Не требуется спрашивать инженера о гипотетическом ущербе для исправления ссылки."
+        },
+        {
+          "claim": "Исправить ссылку в примечании 5 на лист 3.",
+          "verdict": "scoped_correction_supported"
+        },
+        {
+          "claim": "Ошибки поиска монтажной схемы и задержка подготовки работ.",
+          "verdict": "hypothetical_not_observed"
+        }
+      ],
+      "unsupported_additions": "Не выводить недопоставку,ошибку монтажа или отсутствие конструкций во всём проекте из локальных расхождений текста и ссылок.",
+      "novel_useful_content": "Основной тезис сохранён из первого повтора;новая самостоятельная техническая находка не установлена.",
+      "duplicate_burden": "separate_sheet_reference_from_cap_reference",
+      "profile_and_section": "editorial_question_missing_explicit_question_section",
+      "engineer_reuse": "no_independent_same_claim_engineer_decision_in_frozen_record",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F009_sheet_cross_reference.json",
+          "sha256": "7fbdfa43cd59998b7eba82f63bed364033f257914b0db60f482280b24d7def1e",
+          "role": "frozen_source_adjudication_not_new_engineer_decision"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-010"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_02786cefba4641928c7e149eda44f872",
+          "authoritative_TEXT": "### BLOCK #30 [TEXT]: blk_02786cefba4641928c7e149eda44f872\n\n> **Created:** 2026-10-21 13:32:37 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/HX-ErnWgMKW11FPba0Ng)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...6, 8 | Organization: GLOBUS ПРОЕКТ | Revisions: Не указано\n\n1. Размеры и отметки высот в метрах, остальные в миллиметрах.\n\n2. Сварные швы выполнять полуавтоматической по ГОСТ 14771-76 или ручной дуговой сваркой по ГОСТ 5264-80* электродами Э42 по ГОСТ 9467-75*.\n\n3. Катеты сварных швов выполнять по наименьшей толщине свариваемых элементов, но не более 1,2Т, где Т - наименьшая толщина свариваемых элементов.\n\n4. Заглушки устанавливать при помощи сварки на торцах поручней, если нет примыкающих ограждений и на концах стоек, листом толщиной 3мм.\n\n5. Схему расположения ограждений см. л.4.\n\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "authoritative_TEXT": "### BLOCK #5 [TEXT]: blk_5e4c3725456d4cafa74220f8a1fad14c\n\n> **Created:** 2026-10-21 13:32:33 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/l5kRG213jcI31jJ3sBJk)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Общие данные | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость рабочих чертежей основного комплекса ПД-00580716-КМ1.2\n\n| Лист | Наименование | Примечание |\n|---|---|---|\n| 1 | Общие данные |  |\n| 2 | Техническая спецификация металлопроката |  |\n| 3 | Схема расположения ограждений лестницы секции 2 на отм. +0.550 ~ +41.190 |  |\n| 4 | Ограждения ОГМ 1...6, 8 |  |\n| 5 | Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 |  |\n| 6 | Ограждения ОГМ 1...8 |  |\n| 7 | Схема расположения ограждений лестниц ЛК1.1, ЛК3.1, ЛК4.1, ЛК5, ЛК6 на отм. -9.300 ~ +2.100 |  |\n| 8 | Ограждения ОГМ 1...8 |  |\n| 9 | Ограждения ОГМ 9...16 |  |\n| 10 | Ограждения ОГМ 17...25 |  |\n\n##### Ведомость спецификаций\n\n| Лист | Наименование | Примечание |\n|---|---|---|\n| 2 | Техническая спецификация металлопроката |  |\n| 4 | Ведомость элементов ограждений ОГМ 1...6, ОГМ 8 |  |\n| 6 | Ведомость элементов ограждений ОГМ 1...8 |  |\n| 7 | Спецификация к схемам расположения металлических ограждений |  |\n| 8 | Ведомость элементов ограждений ОГМ 1...8 |  |\n| 9 | Ведомость элементов ограждений ОГМ 9...16 |  |\n| 10 | Ведомость элементов ограждений ОГМ 17...25 |  |\n|  |  |  |\n\n##### Ведомость ссылочных и прилагаемых документов\n\n| Обозначение | Наименование | Примечание |\n|---|---|---|\n| ГОСТ 27772-2021 | Прокат для строительных стальных конструкций |  |\n| ГОСТ 8732-2025 | Трубы стальные бесшовные горячедеформированные. Сортамент |  |\n| ГОСТ 8639-82 | Трубы стальные квадратные. Сортамент |  |\n| ГОСТ 19903-2015 | Лист стальной горячекатаный. Сортамент |  |\n| ГОСТ 56731-2023 | Анкеры механические для крепления в бетоне |  |\n\n##### Ведомость основных комплектов рабочих чертежей марки КМ\n\n| Обозначение | Наименование | Примечание |\n|---|---|---|\n| ПД-00580716-КМ1.1 | Ограждения лестниц. Секция С1. |  |\n| ПД-00580716-КМ1.2 | Ограждения лестниц. Секция С2, С3. |  |\n| ПД-00580716-КМ2 | Ограждения МХМС (кладовок), металлоконструкции для установки оборудования, лестницы в приямки, перемычки и конструкции для крепления противопожарных ворот и прочие конструкции |  |\n| ПД-00580716-КМ3.1 | Ограждение лоджий, балконов, корзин сплит-систем. Конструкции крылец, рекламных конструкций, архитектурных декоративных элементов, элементов и подконструкций фасада. Секция С1. |  |\n| ПД-00580716-КМ3.2 | Ограждение лоджий, балконов, корзин сплит-систем. Конструкции крылец, рекламных конструкций, архитектурных декоративных элементов, элементов и подконструкций фасада. Секция С2, С3. |  |\n| ПД-00580716-КМ4 | Конструктивные элементы стен, перегородок, перекрытий, фахверковые стойки. Спецификации. |  |\n| ПД-00580716-КМ5.1 | Ограждение паралпетов кровли. Секция С1. |  |\n| ПД-00580716-КМ5.2 | Ограждение паралпетов кровли. Секция С2, С3. |  |\n| ПД-00580716-КМ6.1 | Лестницы, стремянки на кровле. Секция С1. |  |\n| ПД-00580716-КМ6.2 | Лестницы, стремянки на кровле. Секция С2, С3. |  |\n| ПД-00580716-КМ7 | Ограждение территории (включая решения по фундаментам, узлы и детали). |  |\n| ПД-00580716-КМ8 | Конструктивные расчеты и обоснования (отдельные элементы, узлы и детали, при необходимости) |  |\n| ПД-00580716-КМ9.1 | Проект обслуживания фасада, в том числе проект на установку закладных деталей для крепления механизмов по обслуживанию фасадов (монтажных крепок для альпинистов, люлек и т.п.). Секция С1. |  |\n| ПД-00580716-КМ9.2 | Проект обслуживания фасада, в том числе проект на установку закладных деталей для крепления механизмов по обслуживанию фасадов (монтажных крепок для альпинистов, люлек и т.п.). Секция С2, С3. |  |\n| ПД-00580716-КМ10.1 | Рабочий проект по конструкциям шумоизоляционных и декоративных элементов кровли. Секция С1. |  |\n| ПД-00580716-КМ10.2 | Рабочий проект по конструкциям шумоизоляционных и декоративных элементов кровли. Секция С2, С3. |  |\n| ПД-00580716-КМ11 | Конструктивные решения козырьков. |  |\n\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-010",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-009_scoped_documentation_question"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Документация",
+        "sheet": "Лист 4",
+        "page": 6,
+        "problem": "Выноска заглушки в узле Д ссылается на отсутствующее примечание.",
+        "description": "Выноска «Заглушка (см. п.п.6)» указывает на пункт 6, хотя примечания листа заканчиваются пунктом 5. Требования к заглушкам приведены в пункте 4.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.8,
+            "reason": "Найти требования к указаниям и ссылкам на чертежах узлов металлических конструкций.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-007",
+                "G-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-007",
+                  "G-008"
+                ],
+                "designation_source": "Подобран при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить ссылку заглушки узла Д на пункт 4 примечаний.",
+        "risk": "Пропуск требований к заглушке при изготовлении.",
+        "source_finding_ids": [
+          "G-007",
+          "G-008"
+        ],
+        "source_block_ids": [
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d"
+        ],
+        "related_block_ids": [
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-008",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочную ссылку «Заглушка (см. п.п.6)» в узле Д: примечания заканчиваются пунктом 5, а указания о заглушках находятся в пункте 4.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочную ссылку «Заглушка (см. п.п.6)» в узле Д: примечания заканчиваются пунктом 5, а указания о заглушках находятся в пункте 4.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 51,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Выноска заглушки узла Д ссылается на пункт 6 на листе 4",
+          "verdict": "supported_by_viewed_graphic"
+        },
+        {
+          "claim": "На этом листе примечания заканчиваются пунктом 5; заглушки описаны в пункте 4",
+          "verdict": "supported_by_authoritative_TEXT"
+        },
+        {
+          "claim": "Неверное толкование требований или неправильное выполнение работ",
+          "verdict": "hypothetical_consequence_not_observed",
+          "note": "Полный текст требования и решение заглушки присутствуют. Производственный дефект не доказан."
+        },
+        {
+          "claim": "Строка покрывает аналогичную неверную ссылку заглушки листа6.",
+          "verdict": "not_covered_by_current_location",
+          "limits": "В текущей строке указанлист4 иего блок. ПервоповторноеF-018 листа6 нельзя считать сохранённым этим адресом."
+        }
+      ],
+      "unsupported_additions": "Не выводить недопоставку,ошибку монтажа или отсутствие конструкций во всём проекте из локальных расхождений текста и ссылок.",
+      "novel_useful_content": "Основной тезис сохранён из первого повтора;новая самостоятельная техническая находка не установлена.",
+      "duplicate_burden": "Сходный тезис двух листов допускает объединение,но оба места должны быть перечислены;второй адрес нельзя потерять как дубль.",
+      "profile_and_section": "editorial_question_recommended_no_explicit_question_section",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_02786cefba4641928c7e149eda44f872",
+          "authoritative_TEXT": "### BLOCK #30 [TEXT]: blk_02786cefba4641928c7e149eda44f872\n\n> **Created:** 2026-10-21 13:32:37 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/HX-ErnWgMKW11FPba0Ng)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...6, 8 | Organization: GLOBUS ПРОЕКТ | Revisions: Не указано\n\n1. Размеры и отметки высот в метрах, остальные в миллиметрах.\n\n2. Сварные швы выполнять полуавтоматической по ГОСТ 14771-76 или ручной дуговой сваркой по ГОСТ 5264-80* электродами Э42 по ГОСТ 9467-75*.\n\n3. Катеты сварных швов выполнять по наименьшей толщине свариваемых элементов, но не более 1,2Т, где Т - наименьшая толщина свариваемых элементов.\n\n4. Заглушки устанавливать при помощи сварки на торцах поручней, если нет примыкающих ограждений и на концах стоек, листом толщиной 3мм.\n\n5. Схему расположения ограждений см. л.4.\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cfd1c741a6fa4cd99c3eccd1d42afc7d.png",
+          "sha256": "b9a65fa02aecbc35f4fa72c98c2daba4002bbbc9a303ffadda7617686ee52c84",
+          "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-014"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-014",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-014_scoped_documentation_question"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
