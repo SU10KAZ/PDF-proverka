@@ -1,0 +1,245 @@
+{
+  "status": "one_historical_technical_target_mapped_not_full_pilot_score",
+  "target_id": "AK14:65ea2c2649999f640c83",
+  "project": "13АВ-РД-АК2-ПА_V1",
+  "historical_finding_id": "UNI-014",
+  "rule_ids": [
+    "AK-002"
+  ],
+  "original_engineer_record": {
+    "control_id": "AK:14",
+    "case_key": "13АВ-РД-АК2-ПА_V1::UNI-014",
+    "project": "13АВ-РД-АК2-ПА_V1",
+    "finding_id": "UNI-014",
+    "source": "Codex",
+    "original_claim": "Одинаковые номера клемм присвоены разным силовым и управляющим цепям без указания различающих клеммников.",
+    "original_title": "Повторение номеров клемм разных цепей",
+    "engineer_decision": "Принято",
+    "engineer_reason": null,
+    "engineer_comment": "Принято (решение инженера 30.10.2026; тот же класс дефекта, что принятый экспертом 22.10.2026 F-067 — разбор 13АВ-РД-АК2-ПА V1 — «повтор номеров клемм разных цепей, объединять как системную ошибку»). Факт: повтор клемм подтверждён на л. 28 (К4ПЧ-4), л. 29 (К4АС), л. 33 (К5ПЧ-4) и л. 40 (ШАУВ-1-К6АС, стр. 44: М1, М2, М3, М5 — клеммы 23, 24, 25, PE); л. 32 (К5ПЧ-3) входит в F-067. Почему принято: системная ошибка нумерации клемм по нескольким шкафам, цепи разных двигателей не различимы; принимается в части подтверждённых шкафов. Урок для аудита: повтор номера клеммы у разных цепей в одном шкафу — дефект, даже если на листе есть примечание «Нумерацию клемм уточнить у завода-изготовителя»: эксперт не считает его оправданием; находки одного класса по разным шкафам объединять.",
+    "later_learning": "Группировать по шкафу, клеммнику и номеру, затем искать разные независимые цепи. Не включать цепь в ключ поиска. Проверить шины PE/N, допустимые общие точки, перемычки и ссылку между листами.",
+    "later_label": "accepted",
+    "control_type": "положительный исторический",
+    "verification_status": "не перепроверено полностью",
+    "evidence_assessment": "Повтор клемм независимых цепей: принятая тема; точные цепи требуют сверки PDF32,33,36,37,44. Не закрывать ссылкой на завод без адресного чертежа.",
+    "evidence_ids": [],
+    "failure_stage": "Связь цепь→полный адрес клеммника",
+    "workbook": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1 аудит/Unified_Engineering_Audit.xlsx",
+    "workbook_row": 15,
+    "location": "АК2-ПА; лист 28; 29; 32; 33; 40; стр. PDF 32; 33; 36; 37; 44.\nКлеммы шкафов ШАУВ-4-К4ПЧ, ШАУВ-1-К4АС, ШАУВ-3-К5ПЧ, ШАУВ-4-К5ПЧ, ШАУВ-1-К6АС",
+    "rule_ids": [
+      "AK-002"
+    ]
+  },
+  "frozen_decision": {
+    "candidate_ids": [
+      "H-AK-14"
+    ],
+    "decision": "confirmed_terminal_address_ambiguity",
+    "output_section": "Технические замечания",
+    "review_date": "2026-11-09",
+    "primary_adjudication": {
+      "path": "experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json",
+      "sha256": "487d04234ff08cce0f4a72e3675111dea1bc7b8fbb8d6941d61f47bb64a4ec5a"
+    },
+    "wording": "Сохранить одну системную тему неоднозначных клеммных адресов с адресами шкафов.",
+    "limits": "Примечание об уточнении у изготовителя не доказывает устранение неоднозначности; фактическое ошибочное подключение не установлено.",
+    "preservation": "Принимается только изложенный узкий смысл; исходные составные строки и версии модели сохранены.",
+    "production_changed": false,
+    "atomic_dispositions": [
+      {
+        "claim": "Повтор клемм разных независимых цепей без различающего полного адреса",
+        "verdict": "confirmed_for_five_listed_drawings"
+      },
+      {
+        "claim": "Примечание об уточнении у изготовителя устраняет неоднозначность исходных схем",
+        "verdict": "not_supported"
+      },
+      {
+        "claim": "Имеется фактическое короткое замыкание или ошибочный монтаж",
+        "verdict": "not_established"
+      },
+      {
+        "claim": "Любое повторение PE/N является дефектом",
+        "verdict": "not_supported"
+      }
+    ],
+    "benchmark_scope_review": {
+      "status": "reviewed_scope_pending_benchmark_freeze",
+      "basis": "Сопоставление исходных тезисов с сохранёнными первичными решениями; не новый независимый аудит.",
+      "scorable_narrow_claim": "Неоднозначность адресов только пяти шкафов из confirmed_addresses связанной проверки; одна системная тема с сохранением адресов.",
+      "unscored_claims": [
+        "Фактический монтаж и отказ оборудования",
+        "Заводская документация и все прочие шкафы комплекта"
+      ],
+      "control_pair_readiness": "В связанном решении есть ограничения для PE/N, но отдельная доказанная историческая отрицательная пара не зафиксирована. Не считать общий фильтр повторов клемм испытанным.",
+      "automatic_filter_authorized": false
+    }
+  },
+  "evidence": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_review_initial.json",
+      "sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json",
+      "sha256": "487d04234ff08cce0f4a72e3675111dea1bc7b8fbb8d6941d61f47bb64a4ec5a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK14.json",
+      "sha256": "bb941339701a63e2ae2989a1dda9e5e8cd9aae4f8eb3639899fd049ebf73280a"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets25_28_graphic_followup.json",
+      "sha256": "43ec9e7065cfe90c7e03cb6d77e5dfe0a6a335db289d6dc73228e7b49ffeb361"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets32_34_graphic_followup.json",
+      "sha256": "404f4445aead6f203c0cfd7666b54427a51dc841a938d772c01c3a6ff48e49c4"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_preparation.json",
+      "sha256": "b7a0da06712bca1d0ace1f787c3c4df9b86e74456891cfeef89e620f6c32cb4e"
+    }
+  ],
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "addresses": [
+    {
+      "historical_address": {
+        "pdf_page": 32,
+        "cabinet": "ШАУВ-4-К4ПЧ",
+        "example": "M1:29,30,PE; M2:29,30,31,PE"
+      },
+      "pilot_candidate_ids": [
+        "G-067",
+        "G-068"
+      ],
+      "pilot_final_finding_ids": [],
+      "candidate_stage_coverage": "found",
+      "merge_stage_disposition": "needs_data_images_not_delivered",
+      "final_coverage": "absent",
+      "root_cause_scope": "Confirmed missing image evidence at merge; no recovery result for this theme in this pilot."
+    },
+    {
+      "historical_address": {
+        "pdf_page": 33,
+        "cabinet": "ШАУВ-1-К4АС",
+        "example": "PDS3 и PDS4:17,18; группы приводов повторяют29,30 и31,32"
+      },
+      "pilot_candidate_ids": [],
+      "pilot_final_finding_ids": [],
+      "candidate_stage_coverage": "not_found_in_frozen_147_candidate_packet",
+      "merge_stage_disposition": "not_applicable_no_input_candidate",
+      "final_coverage": "absent",
+      "root_cause_scope": "Absence before merge established; cause inside detection/extraction not established."
+    },
+    {
+      "historical_address": {
+        "pdf_page": 36,
+        "cabinet": "ШАУВ-3-К5ПЧ",
+        "example": "PDS4 и PDS5:23,24; M1 и M2:29,30,31,PE"
+      },
+      "pilot_candidate_ids": [
+        "G-072",
+        "G-073"
+      ],
+      "pilot_final_finding_ids": [],
+      "candidate_stage_coverage": "found",
+      "merge_stage_disposition": "needs_data_images_not_delivered",
+      "final_coverage": "absent",
+      "root_cause_scope": "Confirmed missing image evidence at merge; no recovery result for this theme in this pilot."
+    },
+    {
+      "historical_address": {
+        "pdf_page": 37,
+        "cabinet": "ШАУВ-4-К5ПЧ",
+        "example": "M1–M4:23,24,25,PE"
+      },
+      "pilot_candidate_ids": [],
+      "pilot_final_finding_ids": [],
+      "candidate_stage_coverage": "not_found_in_frozen_147_candidate_packet",
+      "merge_stage_disposition": "not_applicable_no_input_candidate",
+      "final_coverage": "absent",
+      "root_cause_scope": "Absence before merge established; cause inside detection/extraction not established."
+    },
+    {
+      "historical_address": {
+        "pdf_page": 44,
+        "cabinet": "ШАУВ-1-К6АС",
+        "example": "M1,M2,M3,M5:23,24,25,PE; СКЗ и пожарный вход:47,48"
+      },
+      "pilot_candidate_ids": [],
+      "pilot_final_finding_ids": [],
+      "candidate_stage_coverage": "not_found_in_frozen_147_candidate_packet",
+      "merge_stage_disposition": "not_applicable_no_input_candidate",
+      "final_coverage": "absent",
+      "root_cause_scope": "Absence before merge established; cause inside detection/extraction not established."
+    }
+  ],
+  "model_dispositions_verbatim": [
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/23/findings/0",
+      "candidate_id": "G-067",
+      "decision": "needs_data",
+      "reason": "Повторение клемм 29 и 30 у М1/М2 и отсутствие разных клеммников требуют изображения. Примечание изготовителя не содержит их фактической нумерации.",
+      "source_refs": [
+        "blk_5dea9af6d2bd4d0ea0674db8bd79f38c"
+      ]
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/23/findings/1",
+      "candidate_id": "G-068",
+      "decision": "needs_data",
+      "reason": "Пара match о L/N и U/V на одинаковых клеммах остается непроверенной без схемы; примечание об уточнении не опровергает и не подтверждает конфликт.",
+      "source_refs": [
+        "blk_5dea9af6d2bd4d0ea0674db8bd79f38c"
+      ]
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/27/findings/0",
+      "candidate_id": "G-072",
+      "decision": "needs_data",
+      "reason": "Повторение клемм 23–24 для PDS4/PDS5 и 29–31 для М1/М2 требует изображения и обозначений клеммных групп.",
+      "source_refs": [
+        "blk_053f940839a3432681679d67d2fdadda"
+      ]
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/27/findings/1",
+      "candidate_id": "G-073",
+      "decision": "needs_data",
+      "reason": "Парное утверждение о четырех цепях на повторных клеммах невозможно проверить по примечанию об уточнении нумерации.",
+      "source_refs": [
+        "blk_053f940839a3432681679d67d2fdadda"
+      ]
+    }
+  ],
+  "coverage_summary": {
+    "historical_address_count": 5,
+    "input_addresses_found": 2,
+    "input_candidate_records": 4,
+    "final_addresses_found": 0,
+    "technical_target_full_preservation": false,
+    "technical_target_coverage": "absent"
+  },
+  "proposed_behavior": [
+    "At merge, attach or retrieve the original graphic for each unresolved terminal-address claim, verify cabinet and terminal-group identity, and record an explicit disposition before final emission.",
+    "Track independent circuit to full terminal address across all cabinet drawings; preserve PE/N and intentional common-point exceptions; consolidate confirmed instances into one issue with all addresses.",
+    "Do not upgrade needs_data to refuted or silently count it as successful filtering. Keep unresolved questions distinct from confirmed technical findings."
+  ],
+  "regression_controls": {
+    "positive": "Engineer-accepted AK14 five addressed cabinet drawings; source-confirmed pilot candidates on two cabinets.",
+    "negative": "No separately engineer-verified negative terminal-duplication case established here; generic PE/N warning is not a validated negative pair."
+  },
+  "limits": [
+    "Candidate coverage refers only to frozen 147-record packet; earlier discarded detections have not been examined here.",
+    "Source review after the pilot is not credited to the pilot output.",
+    "Four candidate records correspond to two addresses within one historical target, not four independent defects.",
+    "One target cannot establish global recall or acceptance."
+  ],
+  "production_acceptance": false
+}
