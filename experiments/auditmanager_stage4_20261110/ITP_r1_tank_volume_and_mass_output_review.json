@@ -1,0 +1,783 @@
+{
+  "status": "three_ITP_tank_outputs_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "599604f3d7765323ab089e55654b49d3f1674445a20e4f15819b8464448de13d",
+  "queue_after_sha256": "bbb318bab2c9e43bab9c30e1b35d55ef83a601f9ea8086cb759ec163f5093d5c",
+  "reviewer": "coordinator_TEXT_GRAPHIC_equipment_scope_review",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-042",
+      "finding": {
+        "id": "F-042",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расширительные баки",
+        "sheet": "Листы 4, 9, 14",
+        "page": [
+          9,
+          11,
+          16,
+          23,
+          25,
+          107
+        ],
+        "problem": "Объём бака К22 на чертежах не соответствует экспликации и спецификации.",
+        "description": "На плане ИТП листа 4, разрезе 18-18 листа 9 и плане дренажа листа 14 бак К22 обозначен как 1000 л. Экспликация задаёт 1500 л, спецификация — два бака RM 1500 PN10 по 1500 л. Расхождение относится к объёму одного аппарата; фактическое количество по предоставленным результатам графически не подтверждено.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать объём и количество баков с расчётом расширения, затем исправить все планы, разрезы и ведомости.",
+        "risk": "Поставка баков недостаточного объёма и ошибочная компоновка оборудования.",
+        "source_finding_ids": [
+          "G-003",
+          "G-005",
+          "G-016",
+          "G-017",
+          "G-033",
+          "G-034"
+        ],
+        "source_block_ids": [
+          "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "blk_27af51f0cd26488ea08ffa55589b0c3e",
+          "blk_06029d59a01b4b779037ffcee1ae5260"
+        ],
+        "related_block_ids": [
+          "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "blk_27af51f0cd26488ea08ffa55589b0c3e",
+          "blk_06029d59a01b4b779037ffcee1ae5260"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+            "page": 11
+          },
+          {
+            "type": "text",
+            "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+            "page": 16
+          },
+          {
+            "type": "text",
+            "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+            "page": 23
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 9
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 25
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 107
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-003",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-005",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-033",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-034",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение объёма бака К22: 1000 л на плане и 1500 л в экспликации листа 2.1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение объёма бака К22: 1000 л на плане и 1500 л в экспликации листа 2.1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 51,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К22 подписан1000л на плане,разрезе18–18 и плане дренажа.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Экспликация,спецификация и подбор задают2бака по1500л.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Недостаточно количества баков.",
+          "verdict": "not_established",
+          "limits": "Повторные проекции не дополнительные аппараты. Текущая выдача правильно ограничивает вывод объёмом единицы."
+        },
+        {
+          "claim": "1500л достаточно и нужно безусловно исправить1000на1500.",
+          "verdict": "not_established",
+          "limits": "Согласованность таблиц не проверяет расчётные температуры,давления иобъёмы системы; они оцениваются отдельно."
+        },
+        {
+          "claim": "Согласовать объём иобновить подписи после проверки расчётных условий.",
+          "verdict": "supported_document_conflict",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F042_and_F043_same_reconciliation_family_distinct_equipment_keep_both_atoms",
+      "profile_and_section": "technical_document_conflict_core_preserved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json",
+          "sha256": "0f1d4fb84c176ca0d580db069121b9d8112ce52047f0ac636243d2114f75159e",
+          "primary_adjudication": null,
+          "limits": "Подтверждено расхождение объёма единицы, не нехватка числа баков. Количества в таблицах определены; повторные проекции не являются дополнительными баками. Полная инвентаризация всех ёмкостей не выполнена. Совпадение подбора и спецификации не доказывает достаточность объёма: вопросы давления и температуры сохранены отдельно вB-ITP-F-023/024. Фактическая неверная поставка и ошибка строительного задания не установлены.",
+          "wording": "Согласовать объёмы баков в графике и таблицах: К22 подписан1000л на плане и разрезе18-18, а спецификация, экспликация и подбор задают2бака по1500л. К23 на плане подписан100л, тогда как таблицы и подбор задают1бак200л. Обновить подписи после согласования расчётных условий."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_61cbeb249f9e4bba8d0a30f6b4b3b79c.png",
+          "sha256": "9a098a71fc26249d70777e78f9bfe35539f7b32844d48bfdd8221ca2e51012c1",
+          "block_id": "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "route": "direct_GRAPHIC_review",
+          "observation": "Планлист4:К22бак теплоснабжения1000л."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_27af51f0cd26488ea08ffa55589b0c3e.png",
+          "sha256": "9ae3ec6ff303ff8f3b6317bd8cfa1b49ab22653581184818e10d9f0393bf4c7a",
+          "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+          "route": "direct_GRAPHIC_review",
+          "observation": "Разрез18–18:К22бак теплоснабжения1000л."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+          "sha256": "99f0948dd8e59ee31f68b9f79a58131e5fa3a0fc63e5fdfcb0a541f00871bb8c",
+          "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+          "route": "direct_GRAPHIC_review",
+          "observation": "Пландренажа:К22бак теплоснабжения1000л."
+        }
+      ],
+      "disposition": "assessed_K22_unit_volume_conflict_preserved"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-043",
+      "finding": {
+        "id": "F-043",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расширительные баки",
+        "sheet": "Листы 4, 14",
+        "page": [
+          9,
+          11,
+          23,
+          25,
+          106
+        ],
+        "problem": "Объём бака отопления ДОО К23 указан как 100 и 200 л.",
+        "description": "План ИТП листа 4 и план дренажа листа 14 содержат подпись «К23 бак ДОО 100л». Экспликация, спецификация и подбор предусматривают бак 200 л. Расхождение объёмов сохраняется независимо от необходимости уточнения расчётной зарядки бака.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Определить окончательный объём К23 по согласованному расчёту и привести чертежи и спецификацию к единому исполнению.",
+        "risk": "Ошибочная поставка и недостаточная компенсация расширения воды в отоплении ДОО.",
+        "source_finding_ids": [
+          "G-004",
+          "G-006",
+          "G-032",
+          "G-035"
+        ],
+        "source_block_ids": [
+          "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "blk_06029d59a01b4b779037ffcee1ae5260"
+        ],
+        "related_block_ids": [
+          "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "blk_06029d59a01b4b779037ffcee1ae5260"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+            "page": 11
+          },
+          {
+            "type": "text",
+            "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+            "page": 23
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 9
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 25
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 106
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-004",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-006",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-032",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-035",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение объёма бака К23: 100 л на плане и 200 л в экспликации листа 2.1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение объёма бака К23: 100 л на плане и 200 л в экспликации листа 2.1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-042:ecfe1ebab48bd184691d",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К23бакДОО100л на планеИТП ипланедренажа; таблицы иподбор200л,1шт.",
+          "verdict": "confirmed_GRAPHIC_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Расхождение подписи объёма сохраняется независимо от проверки зарядки бака.",
+          "verdict": "supported_distinct_atom",
+          "limits": ""
+        },
+        {
+          "claim": "200л — доказанно правильный расчётный объём.",
+          "verdict": "not_established",
+          "limits": "Подбор прочитан как источник выбранного изделия; исходные условия здесь не подтверждены."
+        },
+        {
+          "claim": "Согласовать объём после проверки расчёта иобновить документы.",
+          "verdict": "supported_document_conflict",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F042_and_F043_same_reconciliation_family_distinct_equipment_keep_both_atoms",
+      "profile_and_section": "technical_document_conflict_core_preserved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json",
+          "sha256": "0f1d4fb84c176ca0d580db069121b9d8112ce52047f0ac636243d2114f75159e",
+          "primary_adjudication": null,
+          "limits": "Подтверждено расхождение объёма единицы, не нехватка числа баков. Количества в таблицах определены; повторные проекции не являются дополнительными баками. Полная инвентаризация всех ёмкостей не выполнена. Совпадение подбора и спецификации не доказывает достаточность объёма: вопросы давления и температуры сохранены отдельно вB-ITP-F-023/024. Фактическая неверная поставка и ошибка строительного задания не установлены.",
+          "wording": "Согласовать объёмы баков в графике и таблицах: К22 подписан1000л на плане и разрезе18-18, а спецификация, экспликация и подбор задают2бака по1500л. К23 на плане подписан100л, тогда как таблицы и подбор задают1бак200л. Обновить подписи после согласования расчётных условий."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_61cbeb249f9e4bba8d0a30f6b4b3b79c.png",
+          "sha256": "9a098a71fc26249d70777e78f9bfe35539f7b32844d48bfdd8221ca2e51012c1",
+          "block_id": "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "route": "direct_GRAPHIC_review",
+          "observation": "СправавсерединеК23бакДОО100л."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+          "sha256": "99f0948dd8e59ee31f68b9f79a58131e5fa3a0fc63e5fdfcb0a541f00871bb8c",
+          "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+          "route": "direct_GRAPHIC_review",
+          "observation": "СправавсерединеК23бакДОО100л."
+        }
+      ],
+      "disposition": "assessed_K23_unit_volume_conflict_preserved"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-053",
+      "finding": {
+        "id": "F-053",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Нагрузки на основания",
+        "sheet": "Лист 12.1",
+        "page": 20,
+        "problem": "Масса бака LVF 400 с обвязкой и теплоносителем указана меньше собственной массы.",
+        "description": "На плане фундаментов для LVF 400 приведены собственная масса 91 кг и масса с обвязкой 60 кг. По примечаниям листа вторая величина включает теплоноситель, поэтому она не может быть на 31 кг меньше собственной массы. Значение нагрузки на основание недостоверно.",
+        "norm": "СП 20.13330.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 20.13330.2016",
+            "cited_designation": "СП 20.13330.2016",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к определению нагрузок от оборудования и его эксплуатационного заполнения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-031"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-031"
+                ],
+                "designation_source": "Перечень нормативных документов текстового этапа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить эксплуатационную массу бака с фактическим заполнением и обвязкой, исправить план и передать уточнённую нагрузку в строительный раздел.",
+        "risk": "Занижение исходной нагрузки для проверки основания.",
+        "source_finding_ids": [
+          "G-031"
+        ],
+        "source_block_ids": [
+          "blk_693e53fec5744b27b721eb667e933ef5"
+        ],
+        "related_block_ids": [
+          "blk_693e53fec5744b27b721eb667e933ef5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+            "page": 20
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-031",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одну ошибку: для LVF 400 масса с обвязкой и теплоносителем 60 кг меньше собственной массы 91 кг. Разница 31 кг и следствие для нагрузки на фундамент не меняют сути замечания.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 79,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-050:5cd9d3d1be70ff9681c3",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На плане фундаментовLVF400:масса91кг,масса с обвязкой60кг.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "По примечанию масса с обвязкой учитывает теплоноситель,собственная нет.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Записанная эксплуатационная масса на31кг меньше собственной.",
+          "verdict": "confirmed_documentary_arithmetic_inconsistency",
+          "limits": ""
+        },
+        {
+          "claim": "Фактически переданная ипринятая конструктором нагрузка занижена на31кг.",
+          "verdict": "not_established",
+          "limits": "Паспорт исполнения,фактическое заполнение ирасчёт конструктора не проверены; подпись сама внутренне противоречива."
+        },
+        {
+          "claim": "Ошибка возникла переносом60кг из экспликации.",
+          "verdict": "plausible_not_proven_cause",
+          "limits": "ЭкспликацияК19.2 содержит60кг,спецификация91кг; история формирования подписи не прослежена."
+        },
+        {
+          "claim": "Уточнить исходные массы ирасчётную нагрузку.",
+          "verdict": "supported_document_conflict",
+          "limits": "Не назначать491кг илидругую исправленную массу по предположению о полном заполнении400л."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "potential_overlap_F029_mass_reconciliation_keep_loaded_mass_invariant_separate",
+      "profile_and_section": "technical_document_conflict_core_preserved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cf2c8c8d10574e858ad464481044e3de",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-050.json",
+          "sha256": "693016921491b5dd0c2c10b23f03b22e9269d9a9ba37245e1ccb25d73e2b7d14",
+          "primary_adjudication": null,
+          "limits": "Оба числа прочитаны на одном графическом фрагменте. В подборе отдельно указана массаLVF40060кг, в спецификации91кг; это возможный источник переноса, а не доказанная причина ошибки. Паспорт фактического исполнения, заполнение и принятая конструктором нагрузка не проверены. Не назначать исправленное значение автоматически, не заявлять доказанное занижение расчётной нагрузки основания.",
+          "wording": "Согласовать нагрузочную подпись LVF400 на плане фундаментов: масса91кг, масса с обвязкой60кг. Согласно примечанию масса с обвязкой включает теплоноситель; она записана на31кг меньше собственной. Уточнить массу принятого исполнения и значение для строительного задания."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+          "sha256": "054e48c413554acbe425a0a73a982a4f39c215d2b53aeb5877ccd77d8d686713",
+          "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+          "route": "direct_GRAPHIC_review",
+          "observation": "LVF400вверхнейцентральнойзоне:масса91кг,масса с обвязкой60кг."
+        }
+      ],
+      "disposition": "assessed_LVF400_mass_internal_conflict_no_proven_structural_underdesign"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+      "authoritative_TEXT": "### BLOCK #15 [TEXT]: blk_11981549aceb463ba84c7c0de619d2fc\n\n> **Created:** 2026-10-20 11:48:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Ms-YCCsV2szBs4SRUQOu)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ | Stage: Р | Sheet: 2.1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, межДН ул. Лобачевского и платформой \"Матвеевское\", Квартал 3, 2-я очередь, корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Индивидуальный тепловой пункт | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n##### Экспликация оборудования (продолжение)\n\n| Марка поз. | Обозначение | Наименование | Кол. | Масса ед.кг. | Приме- ечение |\n|---|---|---|---|---|---|\n| K21 |  | Автоматическая установка поддержания давления греющего контура, В составе: | 1 |  |  |\n| K21.1 | SPL BASIC 2-E-4-21 | Блок управления с 2-мя насосами; Nэл=2х4,0 кВт; 3х380В; 50 Гц; | 1 |  |  |\n| K21.2 | LVF 800 | Основная емкость V=0,8 м³ (Ø780 мм) | 1 | 183 |  |\n| K21.3 | SPL RM 80 25 бар | Демпферная емкость, V=80л, 25 бар | 1 | 46,0 |  |\n| K22 | SPL RM 1500л 10 бар | Бак расширительный V=1500л, 10 бар | 2 | 240,0 |  |\n| K23 | SPL RM 200л 10 бар | Бак расширительный V=200л, 10 бар | 1 | 17,2 |  |\n| K24 | ООО \"Водэко\" | Блочная установка ХВП в составе | 1 |  |  |\n| K24.1 |  | АКВАФЛОУ SA 112-376 | 1 | 440 |  |\n| K24.2 |  | Комплекс дозирования АКВАФЛОУ DC SP 6401 | 1 | 130 |  |\n| K24.3 |  | Комплекс дозирования АКВАФЛОУ DC SP 61 | 1 | 130 |  |\n| 25 | AFD-R/VFG-2R \"РИДАН\" | Регулятор давления \"После себя\" Kvs=20 м³/ч DN40 мм, диапазон настройки P=3-12бар, PN=16 бар | 1 | 14,0 |  |\n| 26 |  | Катушка/проставка DN40 | 1 | - |  |\n| 27 | VFM-2R-100-140 \"РИДАН\" | Клапан запорно регулирующий отопления 1, с эл. приводом (см. АТМ); Kvs=140 м³/ч, DN100 мм | 1 | 54,3 |  |\n| 28 | VFM-2R-80-88 \"РИДАН\" | Клапан запорно регулирующий отопления 2, с эл. приводом (см. АТМ); Kvs=88 м³/ч, DN80 мм | 1 | 32,5 |  |\n| 29 | VFM-2R-32-16 \"РИДАН\" | Клапан запорно регулирующий отопления 3, с эл. приводом (см. АТМ); Kvs=16,0 м³/ч, DN32 мм | 1 | 11,7 |  |\n| 30 | VFM-2R-20-6,3 \"РИДАН\" | Клапан запорно регулирующий отопления ДОО, с эл. приводом (см. АТМ); Kvs=6,3 м³/ч, DN25 мм | 1 | 8,7 |  |\n| 31 | VFM-2R-80-88 \"РИДАН\" | Клапан запорно регулирующий теплоснабжения, с эл. приводом (см. АТМ); Kvs=88 м³/ч, DN80 мм | 2 | 32,5 | по 50% |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+      "authoritative_TEXT": "### BLOCK #50 [TEXT]: blk_5c7cb0c7b68c4f78ac019a2e7535195f\n\n> **Created:** 2026-10-20 11:49:14 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/fBJA1jsd1xD6eJ_bbMcA)\n> **Stamp:** Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 2. | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1ед., кг. | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| Оборудование |  |  |  |  |  |  |  |  |\n| 19 | Установка поддержания давления (отопление 2-зона): SPL; Блок управления насосом SPL BASIC 2-B-125; Комплект гибких подключений основного бака LVF 400 | SPL BASIC 2-B-125 |  | SPL | шт | 1 | 254 | подпитка, отопление 2-зона |\n| 19.1 | Атмосферный бак V=400л, PN=10бар | LVF 400 |  | SPL | шт. | 1 | 91 | подпитка отопление 2-зона |\n| 19.2 | Расширительный мембранный бак V=50л, PN=16бар | RM 580 PN16 |  | SPL | шт. | 1 | 8.00 | подпитка, отопление 2-зона |\n| 20 | Установка поддержания давления (отопление 3-зона): SPL; Блок управления насосом SPL BASIC 2-E-1-27; Комплект гибких подключений основного бака LVF 200 | SPL BASIC 2-E-1-27 |  | SPL | шт | 1 |  | подпитка отопление 3-зона |\n| 20.1 | Атмосферный бак V=200л, PN=2бар | LVF 200 | 233341 | SPL | шт. | 1 | 71 | подпитка отопление 3-зона |\n| 20.2 | Расширительный мембранный бак V=50л, PN=25бар | RM 50 PN25 |  | SPL | шт. | 1 | 8.00 | подпитка, отопление 3-зона |\n| 21 | Установка поддержания давления (греющий контур): SPL; Блок управления насосом SPL BASIC 2-E-4-21; Комплект гибких подключений основного бака LVF 800 | SPL BASIC 2-E-4-21 |  | SPL | шт | 1 |  | подпитка греющий контур |\n| 21.1 | Атмосферный бак V=800л, PN=2бар | LVF 800 | 223311 | SPL | шт. | 1 | 196 | подпитка греющий контур |\n| 21.2 | Расширительный мембранный бак V=80л, PN=25бар | RM 80 PN25 |  | SPL | шт. | 1 | 12.00 | подпитка, греющий контур |\n| 22 | Расширительный мембранный бак V=1500л, PN=10бар | RM 1500 PN10 | SPL801500 | SPL | шт. | 2 | 252.00 | подпитка вентиляции |\n| 23 | Расширительный мембранный бак V=200л, PN=10бар | RM 200 PN10 | SPL800200 | SPL | шт. | 1 | 34.00 | подпитка, отопления |\n| 24 | Блочная установка ХВП | АКВАФЛОУ SA 112-376 |  | 000 Водэко | шт | 1 |  | (см. раздел TX) |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "authoritative_TEXT": "### BLOCK #145 [TEXT]: blk_72bd74f01146432880a289b071f70238\n\n> **Created:** 2026-10-20 11:49:56 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/jcS5zXAAG3lT7Z9DLmVy)\n\n**ВОДОКОМФОРТ**\n\nООО фирма «Водокомфорт»\n112114, г. Москва,\nул. Кожевническая, д. 16 стр. 4\nТел.: (495) 959 55 45\n\nwww.vodokomfort.ru\ninfo@vodokomfort.ru\n\nШакирова Рената r.shakirova@vodokomfort.ru\n\n###### ИНФОРМАЦИЯ О ЗАКАЗЧИКЕ\n\nНазвание компании* _____\nАдрес* _____\n\n###### КОНТАКТНОЕ ЛИЦО\n\nФ.И.О.* _____\nДолжность* _____\nТел./Факс* _____ E-mail: _____\n\n###### СВЕДЕНИЯ ОБ ОБЪЕКТЕ\n\nНазвание* **ЖК Событие 6.2**\n\nАдрес* **г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2**\n\nСистема** **другая** Место установки* **Теплоснабжение вентиляции**\n\n###### ИСХОДНЫЕ ДАННЫЕ ДЛЯ РАСЧЕТА\n\nТепловая мощность системы** **1,528 Гкал/ч** **1,777064 МВт**\nОбъем системы проектный **27000 л**\nМинимальное давление в системе** **25 м вод.ст.** **2,5 бар**\nМаксимальное давление в системе** **40 м вод.ст.** **4 бар**\nТип теплоносителя* **вода**\nТемпературный график системы* °C прямая T1 = **80** / обратная T2 = **60** Tср. = **70**\n\n###### ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ\n\nОграничение по габаритам проёма **по высоте м _____ по ширине м _____**\nЗаменяемая мембрана **да, тип бака RM 10, 16, 25 бар**\n\n###### РАСЧЁТ МЕМБРАННОГО РАСШИРИТЕЛЬНОГО БАКА\n\nКоэффициент расширения, или прирост объёма теплоносителя при его нагреве (охлаждении) от 10 °C до средней температуры системы, считая что система заполняется при температуре 10 °C.\n\n**Kрасш. = 2,2579**\n\nОбъем расширения теплоносителя. Vрасш. - объем жидкости, вытесняемый из системы при ее нагреве от 10 °C до средней температуры системы.\n\n**Vрасш. = (Vсист. x Kрасш.) : 100 = 610 л**\n\nКоэффициента заполнения бака (коэффициент эффективности) при заданных условиях работы, который показывает максимальный объём жидкости в процентах от полного объема расширительного бака.\n\n**Kзап. = (Pмакс.+1 - Pстат.+1) : Pмакс.+1 = 0,3** Максимальное значение Kзап. для **FM=0,5**; для **RM=0,7**\n\n**Потребный объем мембранного расширительного бака с учётом коэффициента запаса 1,25.**\n\n**Vбака = (1,25 x Vрасш.) : Kзап. = 2540 л** **2 шт. SPL RM 1500 л 10 бар**\n\n###### РЕКОМЕНДУЕМЫЙ МЕМБРАННЫЙ РАСШИРИТЕЛЬНЫЙ БАК\n\n| Модель бака | Объем, л | Pмакс.раб. | Pпредв. | Ø, мм | H, мм | Присоед., резьба | Тип резьбы | Подкл. к системе | Манометр | Вес, кг |\n|---|---|---|---|---|---|---|---|---|---|---|\n| SPL RM 1500 | 1500 | 10 | 4 | 960 | 2380 | 2\" | внутр. | нижнее | есть | 252,0 |\n\n**ВНИМАНИЕ! Перед монтажом мембранного расширительного бака необходимо давление в газовой полости Pпредв. привести в соответствие с расчётным предварительным давлением!**\n\n**Pпредв.расч. = 3,0 бар** Давление в газовой полости бака необходимо довести до этой величины!\n\n## Page 108\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+      "authoritative_TEXT": "### BLOCK #144 [TEXT]: blk_7e913f6c32cb4db7aa9d9b8688b6e979\n\n> **Created:** 2026-10-20 11:49:56 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Xhn0vFbKt2q4oVwYQP3Z)\n\n**ВОДОКОМФОРТ**\n\nООО фирма «Водокомфорт»\n112114, г. Москва,\nул. Кожевническая, д. 16 стр. 4\nТел.: (495) 959 55 45\n\nwww.vodokomfort.ru\ninfo@vodokomfort.ru\n\nШакирова Рената r.shakirova@vodokomfort.ru\n\n###### ИНФОРМАЦИЯ О ЗАКАЗЧИКЕ\n\nНазвание компании* _____\nАдрес* _____\n\n###### КОНТАКТНОЕ ЛИЦО\n\nФ.И.О.* _____\nДолжность* _____\nТел./Факс* _____ E-mail: _____\n\n###### СВЕДЕНИЯ ОБ ОБЪЕКТЕ\n\nНазвание* **ЖК Событие 6.2**\nАдрес* **г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2**\n\nСистема** **отопление** Место установки* **ДОО**\n\n###### ИСХОДНЫЕ ДАННЫЕ ДЛЯ РАСЧЕТА\n\nТепловая мощность системы** **0,067 Гкал/ч** **0,077921 МВт**\nОбъем системы проектный **1458 л**\nМинимальное давление в системе** **25 м вод.ст.** **2,5 бар**\nМаксимальное давление в системе** **38 м вод.ст.** **3,8 бар**\nТип теплоносителя* **вода**\nТемпературный график системы* °C прямая T1 = **80** / обратная T2 = **60** Tср. = **70**\n\n###### ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ\n\nОграничение по габаритам проёма **по высоте м _____ по ширине м _____**\nЗаменяемая мембрана **да, тип бака RM 10, 16, 25 бар**\n\n###### РАСЧЁТ МЕМБРАННОГО РАСШИРИТЕЛЬНОГО БАКА\n\nКоэффициент расширения, или прирост объёма теплоносителя при его нагреве (охлаждении) от 10 °C до средней температуры системы, считая что система заполняется при температуре 10 °C.\n\n**Kрасш. = 2,2579**\n\nОбъем расширения теплоносителя. Vрасш. - объем жидкости, вытесняемый из системы при ее нагреве от 10 °C до средней температуры системы.\n\n**Vрасш. = (Vсист. x Kрасш.) : 100 = 33 л**\n\nКоэффициента заполнения бака (коэффициент эффективности) при заданных условиях работы, который показывает максимальный объём жидкости в процентах от полного объема расширительного бака.\n\n**Kзап. = (Pмакс.+1 - Pстат.+1) : Pмакс.+1 = 0,3** Максимальное значение Kзап. для **FM=0,5**; для **RM=0,7**\n\n**Потребный объем мембранного расширительного бака с учётом коэффициента запаса 1,25.**\n\n**Vбака = (1,25 x Vрасш.) : Kзап. = 152 л** **1 шт. SPL RM 200 л 10 бар**\n\n###### РЕКОМЕНДУЕМЫЙ МЕМБРАННЫЙ РАСШИРИТЕЛЬНЫЙ БАК\n\n| Модель бака | Объем, л | Pмакс.раб. | Pпредв. | Ø, мм | H, мм | Присоед., резьба | Тип резьбы | Подкл. к системе | Манометр | Вес, кг |\n|---|---|---|---|---|---|---|---|---|---|---|\n| SPL RM 200 | 200 | 10 | 1,5 | 580 | 1120 | 1 ¼\" | внутр. | верхнее. | - | 34,0 |\n\n**ВНИМАНИЕ! Перед монтажом мембранного расширительного бака необходимо давление в газовой полости Pпредв. привести в соответствие с расчётным предварительным давлением!**\n\n**Pпредв.расч. = 3,0 бар** Давление в газовой полости бака необходимо довести до этой величины!\n\n## Page 107\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_cf2c8c8d10574e858ad464481044e3de",
+      "authoritative_TEXT": "### BLOCK #46 [TEXT]: blk_cf2c8c8d10574e858ad464481044e3de\n\n> **Created:** 2026-10-20 11:52:45 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/nhD-SKpaIuxJrB20Ji8c)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ | Stage: Р | Sheet: 12 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: ИТП_План фундаментов и расстановки опор на отм -4.450. М 150 | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nПримечание:\n\n1. 1 .масса оборудования указана согласно паспортным данным, без учета теплоносителя\n2. 2 масса с обвязкой указана согласно паспортным данным с учетом теплоносителя\n\n## Page 22 — Sheet 13 — ИПТ_План организования слива дренажа в ИПТ на отм.-4.450 . M150\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "authoritative_TEXT": "### BLOCK #13 [TEXT]: blk_1601889b50624245a5c590ad23d87175\n\n> **Created:** 2026-10-20 11:48:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/7IbDVoQ3xVscfL1_2fOb)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ | Stage: Р | Sheet: 2 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой \"Матвеевское\", Квартал 3, 2-я очередь, корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Индивидуальный тепловой пункт | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nЭкспликация оборудования (начало)\n\n18\n\n| Марка поз. | Обозначение | Наименование | Кол. | Масса ед.кг. | Приме- чение |\n|---|---|---|---|---|---|\n| K1 | \"РИДАН\" | Теплообменник пластинчатый системы отопления 1-ая зона, Q=1,707 Гкал/ч | 2 | 650,88 | с 15 % запасом по нагрузке |\n| K2 | \"РИДАН\" | Теплообменник пластинчатый системы отопления 2-ая зона, Q=1,012 Гкал/ч | 2 | 511,29 | с 15 % запасом по нагрузке |\n| K3 | \"РИДАН\" | Теплообменник пластинчатый системы отопления 3-ая зона, Q=0,220 Гкал/ч | 2 | 180,35 | с 15 % запасом по нагрузке |\n| K4 | \"РИДАН\" | Теплообменник пластинчатый системы отопления ДОО, Q=0,077 Гкал/ч | 2 | 123,09 | с 15 % запасом по нагрузке |\n| K5 | \"РИДАН\" | Теплообменник пластинчатый системы теплоснабжения, Q=1,757 Гкал/ч | 1 | 575,05 | с 15 % запасом по нагрузке |\n| K6 | \"РИДАН\" | Теплообменник пластинчатый системы ГВС I-ая зона, Q=0,419 Гкал/ч | 2 | 139,82 | с 15 % запасом по нагрузке |\n| K7 | \"РИДАН\" | Теплообменник пластинчатый системы ГВС II-ая зона, Q=0,217 Гкал/ч | 2 | 98,48 | с 15 % запасом по нагрузке |\n| K8 | \"РИДАН\" | Теплообменник пластинчатый системы ГВС III-ая зона, Q=0,104 Гкал/ч | 2 | 88,93 | с 15 % запасом по нагрузке |\n| K9 | IL 65/140-7,5/2-R | Насос циркуляционный системы отопления 1-ая зона, Q=82,83 м³/ч, H=22,53 м.в.см., 3x380В, N=7,5 кВт | 2 | 98,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K10 | IL 50/140-4/2-R | Насос циркуляционный системы отопления 2-ая зона, Q=47,08 м³/ч, H=21,29 м.в.см., 3x380В, N=4,0 кВт | 2 | 87,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K11 | IL 40/140-2,2/2-R | Насос циркуляционный системы отопления 3-ая зона, Q=12,42 м³/ч, H=19,29 м.в.см., 3x380В, N=2,2 кВт | 2 | 48,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K12 | IL 40/220-1,5/4-R | Насос циркуляционный системы отопления ДОО, Q=4,42 м³/ч, H=16,98 м.в.см., 3x380В, N=0,55 кВт | 2 | 29,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K13 | IL 65/120-4/2-R | Насос циркуляционный системы теплоснабжения, Q=63,56 м³/ч, H=15,27 м.в.см., 3x380В, N=4,0 кВт | 2 | 70,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K14 | IL 100/160-18,5/2-R | Насос циркуляционный греющего контура, Q=147,83 м³/ч, H=27,92 м.в.см., 3x380В, N=18,5 кВт | 3 | 284,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K15 | HELIX V 603-1/16/E/KS/400-50-N | Насос циркуляционный системы ГВС 1-ая зона, Q=4,31 м³/ч, H=18,57 м.в.см., 3x380В, N=0,55 кВт | 2 | 49,5 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K16 | HELIX V 603-1/16/E/KS/400-50-N | Насос циркуляционный системы ГВС 2-ая зона, Q=2,55 м³/ч, H=21,01 м.в.см., 3x380В, N=0,55 кВт | 2 | 29,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K17 | HELIX V 603-1/16/E/KS/400-50-N | Насос циркуляционный системы ГВС 3-ая зона, Q=1,29 м³/ч, H=21,92 м.в.см., 3x380В, N=0,55 кВт | 2 | 30,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K18 |  | Автоматическая установка поддержания давления отопления 1-ая зона в составе: | 1 |  |  |\n| K18.1 | SPL BASIC 2-C-60 | Блок управления с 2-мя насосами N=2x2,2 кВт; 3x380В; 50 Гц; | 1 |  |  |\n| K18.2 | LVF 600 | Основная емкость V=0,6 м³ (Ø780 мм) | 1 | 145,0 |  |\n| K18.3 | SPL RM 80 10бар | Демпферная емкость, V=80л, 10 бар | 1 | 12,0 |  |\n| K19 |  | Автоматическая установка поддержания давления отопления 2-ая зона в составе: | 1 |  |  |\n| K19.1 | SPL BASIC 2-B-125 | Блок управления с 2-мя насосами N=2x2,2 кВт; 3x380В; 50 Гц; | 1 |  |  |\n| K19.2 | LVF 400 | Основная емкость V=0,4 м³ (Ø750 мм) | 1 | 60,0 |  |\n| K19.3 | SPL RM 50 16 бар | Демпферная емкость, V=50л, 16 бар | 1 | 17,0 |  |\n| K20 |  | Автоматическая установка поддержания давления отопления 3-ая зона в составе: | 1 |  |  |\n| K20.1 | SPL BASIC 2-E-1-27 | Блок управления с 2-мя насосами N=2x1,5 кВт; 3x380В; 50 Гц; | 1 |  |  |\n| K20.2 | LVF 200 | Основная емкость V=0,2 м³ (Ø585 мм) | 1 | 48,0 |  |\n| K20.3 | SPL RM 50 25 бар | Демпферная емкость, V=50л, 25 бар | 1 | 30,0 |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json",
+      "sha256": "0f1d4fb84c176ca0d580db069121b9d8112ce52047f0ac636243d2114f75159e",
+      "primary_adjudication": null,
+      "limits": "Подтверждено расхождение объёма единицы, не нехватка числа баков. Количества в таблицах определены; повторные проекции не являются дополнительными баками. Полная инвентаризация всех ёмкостей не выполнена. Совпадение подбора и спецификации не доказывает достаточность объёма: вопросы давления и температуры сохранены отдельно вB-ITP-F-023/024. Фактическая неверная поставка и ошибка строительного задания не установлены.",
+      "wording": "Согласовать объёмы баков в графике и таблицах: К22 подписан1000л на плане и разрезе18-18, а спецификация, экспликация и подбор задают2бака по1500л. К23 на плане подписан100л, тогда как таблицы и подбор задают1бак200л. Обновить подписи после согласования расчётных условий."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-050.json",
+      "sha256": "693016921491b5dd0c2c10b23f03b22e9269d9a9ba37245e1ccb25d73e2b7d14",
+      "primary_adjudication": null,
+      "limits": "Оба числа прочитаны на одном графическом фрагменте. В подборе отдельно указана массаLVF40060кг, в спецификации91кг; это возможный источник переноса, а не доказанная причина ошибки. Паспорт фактического исполнения, заполнение и принятая конструктором нагрузка не проверены. Не назначать исправленное значение автоматически, не заявлять доказанное занижение расчётной нагрузки основания.",
+      "wording": "Согласовать нагрузочную подпись LVF400 на плане фундаментов: масса91кг, масса с обвязкой60кг. Согласно примечанию масса с обвязкой включает теплоноситель; она записана на31кг меньше собственной. Уточнить массу принятого исполнения и значение для строительного задания."
+    }
+  ],
+  "limits": [
+    "No new engineer decisions.",
+    "No final corrected tank size or structural load chosen.",
+    "Frozen evaluator and independent model inputs unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
