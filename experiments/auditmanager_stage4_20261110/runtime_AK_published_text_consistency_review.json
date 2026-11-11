@@ -1,0 +1,71 @@
+{
+  "status": "confirmed_output_presentation_defects",
+  "output_path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+  "output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "issues": [
+    {
+      "finding_id": "F-033",
+      "issue": "stale_limitation",
+      "quote_1": "Утверждение о подключении По5.1-1 к TE2 на схеме без изображения не подтверждено.",
+      "quote_2": "По5.1-1 на схеме подключён именно к TE2.",
+      "scope": "Published-text consistency only; does not establish source truth.",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-044",
+      "issue": "stale_limitation",
+      "quote_1": "Содержание позиции 7.3 спецификации в предоставленных первичных источниках отсутствует и не проверено.",
+      "quote_2": "Позиция 7.3 спецификации шкафа ШАУВ-2-К5ПЧ предусматривает для PDS3 диапазон 50–500 Па.",
+      "scope": "Published-text consistency only; does not establish source truth.",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-051",
+      "issue": "stale_limitation",
+      "quote_1": "Утверждение о ТС1 в кабельном журнале не проверено: соответствующий исходный текст в пакете отсутствует.",
+      "quote_2": "Кабельный журнал адресует термостат электронагревателя Пу5.1 обозначению ТС1.",
+      "scope": "Published-text consistency only; does not establish source truth.",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-053",
+      "issue": "stale_limitation",
+      "quote_1": "Заявленное обозначение в кабельном журнале по представленным первичным источникам не проверено.",
+      "quote_2": "В кабельном журнале термостат электронагревателя По5.1 обозначен ТС1.",
+      "scope": "Published-text consistency only; does not establish source truth.",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-077",
+      "issue": "claim_reason_tension",
+      "quote_1": "Две ссылки на электроснабжение БУРР-1М противоречат друг другу.",
+      "quote_2": "Технический дефект не подтверждён.",
+      "scope": "Published-text consistency only; does not establish source truth.",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-058",
+      "issue": "misleading_local_id",
+      "quote_1": "Сохранено в F-036 совместно с G-053.",
+      "quote_2": "Самостоятельное повторное замечание не создаётся; утверждение сохранено в F-036",
+      "scope": "Published-text consistency only; does not establish source truth.",
+      "engineer_decision": null
+    }
+  ],
+  "findings_with_internal_parent_alias_in_published_description": [
+    "F-039",
+    "F-044",
+    "F-051",
+    "F-053",
+    "F-082"
+  ],
+  "proposed_behavior": "Keep original and recovery receipts in audit history. Publish a reconciled current statement with source-linked confirmed facts, explicit unresolved parts and stable final finding IDs. Do not simply strip caveats or concatenate unreviewed claims.",
+  "required_controls": [
+    "Confirmed recovery replaces only its corresponding stale limitation.",
+    "Unresolved claims and conditional solutions survive reconciliation.",
+    "Claim/reason disagreement stays unresolved until adjudicated.",
+    "No internal request-local ID is exposed as if it were a final finding ID.",
+    "F-009 and F-063/F-064 are reconciled without losing either quantity atom."
+  ],
+  "semantic_source_review_complete": false
+}

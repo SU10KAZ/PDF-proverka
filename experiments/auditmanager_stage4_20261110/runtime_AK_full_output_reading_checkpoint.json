@@ -1,5 +1,5 @@
 {
-  "status": "partial_full_text_reading",
+  "status": "full_text_reading_complete_source_adjudication_in_progress",
   "output_path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
   "output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
   "read_parts": [
@@ -55,13 +55,116 @@
         "F-032"
       ],
       "read_all_published_fields": true
+    },
+    {
+      "path": "/tmp/auditmanager_AK_full_output_reading_20261112/part_04.txt",
+      "sha256": "77e5792b8b9329deb4dfc47060ef6bbe740357a8b56d85aae9a42e91c2889e44",
+      "finding_ids": [
+        "F-033",
+        "F-034",
+        "F-035",
+        "F-036",
+        "F-037",
+        "F-038",
+        "F-039",
+        "F-040",
+        "F-041"
+      ],
+      "read_all_published_fields": true
+    },
+    {
+      "path": "/tmp/auditmanager_AK_full_output_reading_20261112/part_05.txt",
+      "sha256": "a8a641542844357b0c16ab8d9e08523d93ece867598be73fdcfaacb7d483153b",
+      "finding_ids": [
+        "F-042",
+        "F-043",
+        "F-044",
+        "F-045",
+        "F-046",
+        "F-047",
+        "F-048"
+      ],
+      "read_all_published_fields": true
+    },
+    {
+      "path": "/tmp/auditmanager_AK_full_output_reading_20261112/part_06.txt",
+      "sha256": "c1649d6f88323db4af445236f1a50083b599836bb6a27230d179b678b2999454",
+      "finding_ids": [
+        "F-049",
+        "F-050",
+        "F-051",
+        "F-052",
+        "F-053",
+        "F-054"
+      ],
+      "read_all_published_fields": true
+    },
+    {
+      "path": "/tmp/auditmanager_AK_full_output_reading_20261112/part_07.txt",
+      "sha256": "5e1e7017c0480fc9075ecda583bf1b4dcf130a2d3dc7ac288f99be94b4cf7ff5",
+      "finding_ids": [
+        "F-055",
+        "F-056",
+        "F-057",
+        "F-058",
+        "F-059",
+        "F-060",
+        "F-061",
+        "F-062",
+        "F-063"
+      ],
+      "read_all_published_fields": true
+    },
+    {
+      "path": "/tmp/auditmanager_AK_full_output_reading_20261112/part_08.txt",
+      "sha256": "fdcdb1be787c012b5c50ba16784a4272a68098d66c65ddbf193caf751351bc32",
+      "finding_ids": [
+        "F-064",
+        "F-065",
+        "F-066",
+        "F-067",
+        "F-068",
+        "F-069",
+        "F-070",
+        "F-071",
+        "F-072"
+      ],
+      "read_all_published_fields": true
+    },
+    {
+      "path": "/tmp/auditmanager_AK_full_output_reading_20261112/part_09.txt",
+      "sha256": "53f596262f8adb94a0b1a3525089add47e2ea87734f7a5acbe7e618e994d581d",
+      "finding_ids": [
+        "F-073",
+        "F-074",
+        "F-075",
+        "F-076",
+        "F-077",
+        "F-078",
+        "F-079",
+        "F-080"
+      ],
+      "read_all_published_fields": true
+    },
+    {
+      "path": "/tmp/auditmanager_AK_full_output_reading_20261112/part_10.txt",
+      "sha256": "81a3efaf3bccff8a017334da959ab05cf11577b613a5cc3bb12b74056c4a9b30",
+      "finding_ids": [
+        "F-081",
+        "F-082",
+        "F-083",
+        "F-084",
+        "F-085"
+      ],
+      "read_all_published_fields": true
     }
   ],
   "total_parts": 10,
-  "read_finding_count": 32,
-  "negative_absence_scoring_allowed": false,
+  "read_finding_count": 85,
+  "negative_absence_scoring_allowed": true,
   "limits": [
-    "Full-text reading is not complete factual source verification.",
-    "Do not mark negative controls absent until every output part is reviewed."
+    "All 85 findings have been read in full; this is not complete factual source verification.",
+    "Negative controls may now be assessed against the whole output individually; absence has not been scored automatically.",
+    "Source quality and engineer decisions remain separate from full-text reading."
   ]
 }
