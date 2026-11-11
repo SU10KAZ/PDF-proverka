@@ -1,0 +1,950 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "68ba7f243824cfb6a16341136e58fc4bd3b9e2aef04fc1f0a7a4f26f17dd4b4e",
+  "queue_after_sha256": "8727c935433862d60e91a64bd9b52ae6f6987f56361832bc61c8685e7de6b714",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-056",
+      "finding": {
+        "id": "F-056",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка сигнального кабеля",
+        "sheet": "Лист 33",
+        "page": 37,
+        "problem": "Кабель клапана Y4 системы Пн5.1 обозначен маркой другой системы.",
+        "description": "Сигнальный кабель концевого выключателя Y4 подписан «Ва3.1-18», тогда как питающий кабель этого привода обозначен «Пн5.1-17».",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Однозначность обозначений внешних проводок.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-077",
+                "G-078"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-077",
+                  "G-078"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить системную принадлежность марки и согласовать её с журналом.",
+        "risk": "Ошибочная маркировка и подключение сигнальной цепи клапана.",
+        "source_finding_ids": [
+          "G-077",
+          "G-078"
+        ],
+        "source_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "related_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+            "page": 37
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-077",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-078",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 0.99,
+              "reason": "Одна и та же ошибочная маркировка «Ва3.1-18» сигнального кабеля клапана Y4 системы Пн5.1. Указание справа питающего кабеля «Пн5.1-17» подтверждает ту же проблему без существенного расширения.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Одна и та же ошибочная маркировка «Ва3.1-18» сигнального кабеля клапана Y4 системы Пн5.1. Указание справа питающего кабеля «Пн5.1-17» подтверждает ту же проблему без существенного расширения.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Ва3.1-18 у сигнала Y4 Пн5.1 рядом с питающим Пн5.1-17.",
+          "verdict": "confirmed_same_source_GRAPHIC",
+          "limits": "В КЖ Пн5.1.-17/-18 к XT5 по35м; согласовать марку. Новая линия и фактическая ошибочная трасса не доказаны."
+        },
+        {
+          "claim": "Конкретное нормативное нарушение и фактический ущерб.",
+          "verdict": "not_established",
+          "limits": "Нормативные кандидаты не проверены; фактический монтаж и ущерб не наблюдались."
+        }
+      ],
+      "unsupported_additions": "",
+      "novel_useful_content": "F-062 опровергнуто; F-063 сохраняет подтверждённую неувязку. Другие строки имеют подтверждённые узкие предметы, новая инженерная полезность не установлена.",
+      "duplicate_burden": "No separate repeated atom established in these five rows; F-062/F-063 are different objects and outcomes.",
+      "profile_and_section": "Опровергнутое F-062 снять, не переводить в вопросы. Подтверждённые конфликты сохранить. Разделы реального отчёта не проверены.",
+      "engineer_reuse": "Нового инженерного решения нет; прежнее первичное доказательство используется только для того же источника и тезиса.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Prior direct source inspection reused after byte identity; no new graphic view claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+          "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Original-resolution graphic: Y4 viaXT5, powerPn5.1-17, signalVa3.1-18.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+          "reuse_scope": "Prior direct source inspection reused after byte identity; no new graphic view claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-056",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-066"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_identity_or_dimension_with_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-058",
+      "finding": {
+        "id": "F-058",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Ввод электропитания",
+        "sheet": "Лист 35",
+        "page": 39,
+        "problem": "Напряжение ввода ШАУВ-6-К5ПЧ противоречит показанным проводникам.",
+        "description": "Ввод подписан «кат. 2, 2,0 кВт, 380 В», но подключение показано к L, N и PE, то есть между одной фазой и нейтралью. Показанная схема не соответствует заявленному напряжению 380 В.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Согласованность параметров питания и схемы внешних подключений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-086",
+                "G-087"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-086",
+                  "G-087"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать напряжение и число питающих проводников с исполнением шкафа и разделом электроснабжения.",
+        "risk": "Подача неверного питания и невозможность работы подключённого оборудования.",
+        "source_finding_ids": [
+          "G-086",
+          "G-087"
+        ],
+        "source_block_ids": [
+          "blk_065a335469904b2db1640b480b321503"
+        ],
+        "related_block_ids": [
+          "blk_065a335469904b2db1640b480b321503"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_065a335469904b2db1640b480b321503",
+            "page": 39
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-086",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-087",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на противоречие между напряжением ввода 380 В и подключением L, N, PE.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на противоречие между напряжением ввода 380 В и подключением L, N, PE.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Ввод ШАУВ-6-К5ПЧ:380В при L/N/PE.",
+          "verdict": "confirmed_same_source_GRAPHIC_document_conflict",
+          "limits": "Подпись2кВт относится к вводу, не подтверждает мощность нагревателя."
+        },
+        {
+          "claim": "Согласовать напряжение и проводники с ЭМ и исполнением шкафа.",
+          "verdict": "supported_bounded_recommendation",
+          "limits": "Автоматический выбор220В или добавление фаз не обоснованы. Реальное питание и отказ не проверены."
+        },
+        {
+          "claim": "Конкретное нормативное нарушение и фактический ущерб.",
+          "verdict": "not_established",
+          "limits": "Нормативные кандидаты не проверены; фактический монтаж и ущерб не наблюдались."
+        }
+      ],
+      "unsupported_additions": "Автоматический выбор220В или добавление фаз не обоснованы. Реальное питание и отказ не проверены.",
+      "novel_useful_content": "F-062 опровергнуто; F-063 сохраняет подтверждённую неувязку. Другие строки имеют подтверждённые узкие предметы, новая инженерная полезность не установлена.",
+      "duplicate_burden": "No separate repeated atom established in these five rows; F-062/F-063 are different objects and outcomes.",
+      "profile_and_section": "Опровергнутое F-062 снять, не переводить в вопросы. Подтверждённые конфликты сохранить. Разделы реального отчёта не проверены.",
+      "engineer_reuse": "Нового инженерного решения нет; прежнее первичное доказательство используется только для того же источника и тезиса.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+          "block_id": "blk_065a335469904b2db1640b480b321503",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Supply header380V2.0kW, lower inlet L/N/PE; three motor symbols220V L/N/PE; heater L/N/PE.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "reuse_scope": "Prior direct source inspection reused after byte identity; no new graphic view claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-058",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-067"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_identity_or_dimension_with_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-062",
+      "finding": {
+        "id": "F-062",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Размеры планов",
+        "sheet": "Лист 52",
+        "page": 56,
+        "problem": "Общий размер между осями 5.1–5.5 расходится с размерной цепью.",
+        "description": "План первого этажа содержит 16300 мм, план технического пространства — 16800 мм. Промежуточные размеры 7050+1750+4850+2650 дают 16300 мм. Расхождение составляет 500 мм.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Согласованность размеров на рабочих чертежах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-101"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-101"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить архитектурную основу и исправить общий размер технического пространства на согласованный.",
+        "risk": "Ошибки привязки трасс и оборудования к осям.",
+        "source_finding_ids": [
+          "G-101"
+        ],
+        "source_block_ids": [
+          "blk_69a0cd3b48964764884d44fb2e0597e5"
+        ],
+        "related_block_ids": [
+          "blk_69a0cd3b48964764884d44fb2e0597e5",
+          "blk_7519332eea8f44cca60ee966f3ef72aa"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_69a0cd3b48964764884d44fb2e0597e5",
+            "page": 56
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-101",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "16300 и16800 заданы между одинаковыми осями5.1–5.5.",
+          "verdict": "refuted_same_source_endpoint_mismatch",
+          "limits": "Цепь16800 дополнительно включает500мм отП.42 до5.1. Границы различаются."
+        },
+        {
+          "claim": "7050+1750+4850+2650=16300.",
+          "verdict": "confirmed_arithmetic_incomplete_comparison",
+          "limits": "С добавленными500 сумма16800. Ошибка не в арифметике, а в пропущенном участке."
+        },
+        {
+          "claim": "Исправить размерную цепь из-за500мм.",
+          "verdict": "unsupported_remove_not_engineer_question",
+          "limits": "Предпосылка опровергнута; не увеличивать нагрузку на инженера вопросом без подтверждённого конфликта."
+        },
+        {
+          "claim": "Конкретное нормативное нарушение и фактический ущерб.",
+          "verdict": "not_established",
+          "limits": "Нормативные кандидаты не проверены; фактический монтаж и ущерб не наблюдались."
+        }
+      ],
+      "unsupported_additions": "Цепь16800 дополнительно включает500мм отП.42 до5.1. Границы различаются.; Предпосылка опровергнута; не увеличивать нагрузку на инженера вопросом без подтверждённого конфликта.",
+      "novel_useful_content": "F-062 опровергнуто; F-063 сохраняет подтверждённую неувязку. Другие строки имеют подтверждённые узкие предметы, новая инженерная полезность не установлена.",
+      "duplicate_burden": "No separate repeated atom established in these five rows; F-062/F-063 are different objects and outcomes.",
+      "profile_and_section": "Опровергнутое F-062 снять, не переводить в вопросы. Подтверждённые конфликты сохранить. Разделы реального отчёта не проверены.",
+      "engineer_reuse": "Нового инженерного решения нет; прежнее первичное доказательство используется только для того же источника и тезиса.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_69a0cd3b48964764884d44fb2e0597e5.png",
+          "sha256": "d7258eb89275719bc7f4e5c1237693f4b0563ffa79f269538915549a0da1eef8",
+          "block_id": "blk_69a0cd3b48964764884d44fb2e0597e5",
+          "route": "byte_identical_GRAPHIC_to_prior_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_69a0cd3b48964764884d44fb2e0597e5.png",
+          "observation": "First-floor plan bottom chain5.1–5.5:7050/1750/4850/2650, total16300.",
+          "reuse_scope": "Prior direct source inspection reused after byte identity; no new graphic view claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7519332eea8f44cca60ee966f3ef72aa.png",
+          "sha256": "82f005708e2ecb3e02e4efda92b429e11b411f70c9bcbd7ac2c9a0c7752d5606",
+          "block_id": "blk_7519332eea8f44cca60ee966f3ef72aa",
+          "route": "byte_identical_GRAPHIC_to_prior_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7519332eea8f44cca60ee966f3ef72aa.png",
+          "observation": "Technical-space plan: extra left500 betweenP.42 and5.1; total16800 fromP.42 to5.5, includes all five segments. Comparison used different endpoints.",
+          "reuse_scope": "Prior direct source inspection reused after byte identity; no new graphic view claimed."
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AK_r1_dimension_endpoint_false_positive_output_review.json",
+          "sha256": "73c28e50378eab5431b6dbdb87cbb8947f8173e73d113846b0c2a59fc4dce1b3",
+          "prior_finding_id": "F-063",
+          "current_finding_id": "F-070"
+        },
+        {
+          "source": "frozen_r2_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-070"
+        }
+      ],
+      "disposition": "assessed_refuted_dimension_endpoints_remove"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-063",
+      "finding": {
+        "id": "F-063",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Высота установки шкафа",
+        "sheet": "Лист 53",
+        "page": 57,
+        "problem": "Вертикальные размеры установки ШАУВ-1-К6-ПЧ противоречат друг другу.",
+        "description": "Высота шкафа 1400 мм и расстояние до его низа 1000 мм дают отметку верха 2400 мм. Прямой размер до верха указан 1800 мм; неувязка составляет 600 мм.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Однозначность монтажных размеров рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-104"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-104"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить проектную высоту шкафа и его размещения и согласовать размерную цепь.",
+        "risk": "Монтаж на неверной высоте и затруднение эксплуатации шкафа.",
+        "source_finding_ids": [
+          "G-104"
+        ],
+        "source_block_ids": [
+          "blk_d52bf811660e42b59acdce0038f9fbf0"
+        ],
+        "related_block_ids": [
+          "blk_d52bf811660e42b59acdce0038f9fbf0"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d52bf811660e42b59acdce0038f9fbf0",
+            "page": 57
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-104",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одну размерную неувязку шкафа ШАУВ-1-К6-ПЧ: 1400 + 1000 = 2400 мм вместо указанных 1800 мм; расхождение 600 мм. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 93,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Высота1400, низ1000 и верх1800 относятся к одному шкафу и одному полу.",
+          "verdict": "confirmed_same_source_graphic_endpoints",
+          "limits": "Сумма1000+1400=2400; неувязка600мм. Сохранить один документальный конфликт."
+        },
+        {
+          "claim": "Согласовать габарит и размещение шкафа.",
+          "verdict": "supported_bounded_recommendation",
+          "limits": "Не установлено, какой именно размер правильный. Фактический монтаж и доступ обслуживания не проверены."
+        },
+        {
+          "claim": "Конкретное нормативное нарушение и фактический ущерб.",
+          "verdict": "not_established",
+          "limits": "Нормативные кандидаты не проверены; фактический монтаж и ущерб не наблюдались."
+        }
+      ],
+      "unsupported_additions": "Не установлено, какой именно размер правильный. Фактический монтаж и доступ обслуживания не проверены.",
+      "novel_useful_content": "F-062 опровергнуто; F-063 сохраняет подтверждённую неувязку. Другие строки имеют подтверждённые узкие предметы, новая инженерная полезность не установлена.",
+      "duplicate_burden": "No separate repeated atom established in these five rows; F-062/F-063 are different objects and outcomes.",
+      "profile_and_section": "Опровергнутое F-062 снять, не переводить в вопросы. Подтверждённые конфликты сохранить. Разделы реального отчёта не проверены.",
+      "engineer_reuse": "Нового инженерного решения нет; прежнее первичное доказательство используется только для того же источника и тезиса.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d52bf811660e42b59acdce0038f9fbf0.png",
+          "sha256": "42c7d8b05562c4c461752bf37d98233d9a519a4530360dd8f160494b4500ce95",
+          "block_id": "blk_d52bf811660e42b59acdce0038f9fbf0",
+          "route": "byte_identical_GRAPHIC_to_prior_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d52bf811660e42b59acdce0038f9fbf0.png",
+          "observation": "Dimension endpoints: floor-to-bottom1000, bottom-to-top1400, same-floor-to-top1800. Cabinet label SHAUV-1-K6-PCh.",
+          "reuse_scope": "Prior direct source inspection reused after byte identity; no new graphic view claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47b4422b84f2413495ab9da6b8332760.png",
+          "sha256": "4c428eba5057eb6c607287d48a460febe7467d4a9872ad85a833ad19bdadf36f",
+          "block_id": "blk_47b4422b84f2413495ab9da6b8332760",
+          "route": "byte_identical_GRAPHIC_to_prior_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47b4422b84f2413495ab9da6b8332760.png",
+          "observation": "Plan identifies SHAUV-1-K6PCh and cable routes; no vertical installation height resolving1800/2400.",
+          "reuse_scope": "Prior direct source inspection reused after byte identity; no new graphic view claimed."
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AK_r1_installation_dimensions_and_device_tags_output_review.json",
+          "sha256": "e710d8412d1064c7c4fa06af697fd2a6af3b531cd0d21e28393d5c03dcc793d3",
+          "prior_finding_id": "F-064",
+          "current_finding_id": "F-071"
+        },
+        {
+          "source": "frozen_r2_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-071"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_identity_or_dimension_with_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-064",
+      "finding": {
+        "id": "F-064",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка сигнализаторов СО",
+        "sheet": "Лист 54",
+        "page": 58,
+        "problem": "Марка сигнализатора СТГ-3-И-1.13 повторена в разных группах.",
+        "description": "СТГ-3-И-1.13 обозначен рядом с БПС-1.13 и повторно рядом с БПС-3.13. Для группы 3 таблица предусматривает СТГ-3-И-3.1–3.20; обозначение СТГ-3-И-3.13 на плане отсутствует.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Однозначная идентификация приборов на плане и схемах подключения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-107",
+                "G-108"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-107",
+                  "G-108"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать марку прибора рядом с БПС-3.13 с таблицей применимости и схемой подключения.",
+        "risk": "Ошибочная адресация сигнализатора и неверное определение места загазованности.",
+        "source_finding_ids": [
+          "G-107",
+          "G-108"
+        ],
+        "source_block_ids": [
+          "blk_f42735b18cb140928c3d9f29d2891ae2"
+        ],
+        "related_block_ids": [
+          "blk_f42735b18cb140928c3d9f29d2891ae2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_f42735b18cb140928c3d9f29d2891ae2",
+            "page": 58
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-107",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-108",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают дублирование марки СТГ-3-И-1.13 при БПС-1.13 и БПС-3.13 и несоответствие диапазону группы 3. Указание справа на отсутствие СТГ-3-И-3.13 уточняет тот же дефект без существенного расширения.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают дублирование марки СТГ-3-И-1.13 при БПС-1.13 и БПС-3.13 и несоответствие диапазону группы 3. Указание справа на отсутствие СТГ-3-И-3.13 уточняет тот же дефект без существенного расширения.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 65,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "rework",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Две разные выноски СТГ-3-И-1.13 при БПС-1.13 и БПС-3.13.",
+          "verdict": "confirmed_same_source_GRAPHIC",
+          "limits": "Два разных символа, не повторное упоминание одного объекта."
+        },
+        {
+          "claim": "Таблица задаёт серию3.1–3.20; следует согласовать марку около БПС-3.13.",
+          "verdict": "confirmed_TEXT_supported_identity_question",
+          "limits": "Рекомендация3.13 поддерживается серией, но окончательную марку согласовать с адресным перечнем."
+        },
+        {
+          "claim": "Обозначение3.13 отсутствует на всём плане.",
+          "verdict": "absence_scope_not_fully_verified_in_reuse",
+          "limits": "Прежний просмотр подтвердил конкретные две выноски. Полный поиск всех надписей плана здесь не повторён; общий тезис отсутствия остаётся неподтверждённым."
+        },
+        {
+          "claim": "Ошибочная адресация сигнализатора.",
+          "verdict": "potential_consequence_not_observed",
+          "limits": "Проектная марка не равна настроенному сетевому адресу; монтаж и фактическая настройка не проверены."
+        },
+        {
+          "claim": "Конкретное нормативное нарушение и фактический ущерб.",
+          "verdict": "not_established",
+          "limits": "Нормативные кандидаты не проверены; фактический монтаж и ущерб не наблюдались."
+        }
+      ],
+      "unsupported_additions": "Прежний просмотр подтвердил конкретные две выноски. Полный поиск всех надписей плана здесь не повторён; общий тезис отсутствия остаётся неподтверждённым.; Проектная марка не равна настроенному сетевому адресу; монтаж и фактическая настройка не проверены.",
+      "novel_useful_content": "F-062 опровергнуто; F-063 сохраняет подтверждённую неувязку. Другие строки имеют подтверждённые узкие предметы, новая инженерная полезность не установлена.",
+      "duplicate_burden": "No separate repeated atom established in these five rows; F-062/F-063 are different objects and outcomes.",
+      "profile_and_section": "Опровергнутое F-062 снять, не переводить в вопросы. Подтверждённые конфликты сохранить. Разделы реального отчёта не проверены.",
+      "engineer_reuse": "Нового инженерного решения нет; прежнее первичное доказательство используется только для того же источника и тезиса.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Prior direct source inspection reused after byte identity; no new graphic view claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f42735b18cb140928c3d9f29d2891ae2.png",
+          "sha256": "9181d53b64ad6288ad3b812fd129106544526319303f89b4b77b3094bd9cec48",
+          "block_id": "blk_f42735b18cb140928c3d9f29d2891ae2",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Two distinct leader-labelled detector symbols inspected with lossless local crops; STG-3-I-1.13 repeated under BPS1.13 and BPS3.13.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f42735b18cb140928c3d9f29d2891ae2.png",
+          "reuse_scope": "Prior direct source inspection reused after byte identity; no new graphic view claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_bbb38608a83147928af64a1a9ca583a6.png",
+          "sha256": "f5a557a51398edf59e050c1db6265eb02502c90fecd118930ddba1533bc671ab",
+          "block_id": "blk_bbb38608a83147928af64a1a9ca583a6",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Section4 external diagram lists3.1,3.2,...3.19,3.20; omitted middle drawn symbol is not missing hardware.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_bbb38608a83147928af64a1a9ca583a6.png",
+          "reuse_scope": "Prior direct source inspection reused after byte identity; no new graphic view claimed."
+        },
+        {
+          "path": "/tmp/ak_co_label1.png",
+          "sha256": "e94e175de2cdf5760a5a0350ccf5b2fbdb9f7dbe92c3b7eea10987e29cbc456b",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "parent_block_id": "blk_f42735b18cb140928c3d9f29d2891ae2",
+          "crop_box_pixels": [
+            1900,
+            1300,
+            2450,
+            1700
+          ]
+        },
+        {
+          "path": "/tmp/ak_co_label3.png",
+          "sha256": "71248724e1ec10cc90cd2ed3ec3e1c28ea4dbfe77d4e320e688efefbe51564a6",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "parent_block_id": "blk_f42735b18cb140928c3d9f29d2891ae2",
+          "crop_box_pixels": [
+            4100,
+            2800,
+            4700,
+            3100
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-065",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-072"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_identity_or_dimension_with_limits"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Current claims checked against bound prior inspections of identical source bytes. Dimension control pair: remove F-062 different endpoints, retain F-063 same endpoints. Filter execution and engineer usefulness not established."
+}
