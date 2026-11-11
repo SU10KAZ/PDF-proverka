@@ -1,0 +1,578 @@
+{
+  "status": "three_ITP_equipment_and_quantity_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "84eec563cc94bdaf7e107db574bba846245d6b9e06b30ac6efa4de29036d8743",
+  "queue_after_sha256": "d2b86c5bdce3d17cec5b070a59a970302f3fb9f5df230b2c64af6a630dbf6256",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Электрические характеристики насосов",
+        "sheet": "Лист 2",
+        "page": [
+          8,
+          24,
+          52,
+          76
+        ],
+        "problem": "В экспликации занижена мощность двигателя насоса отопления ДОО.",
+        "description": "Для К12 IL 40/220-1,5/4-R на листе 2 указано N=0,55 кВт. Спецификация, пояснительная записка и технический лист содержат 1,5 кВт. Для двух насосов установленная мощность равна 3,0 кВт вместо 1,1 кВт, получаемых из экспликации.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Согласованность характеристик оборудования в рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-016",
+                "G-001",
+                "G-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-016",
+                  "G-001",
+                  "G-002"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить экспликацию и проверить задание на питание, защиту, кабели и преобразователи частоты по мощности выбранного исполнения.",
+        "risk": "Ошибочный выбор электрической защиты и питающих линий.",
+        "source_finding_ids": [
+          "T-016",
+          "G-001",
+          "G-002"
+        ],
+        "source_block_ids": [
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "related_block_ids": [
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+            "page": 8
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-002",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "image_only"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие для К12: 1,5 кВт в обозначении IL 40/220-1,5/4-R и N=0,55 кВт в характеристиках. Упоминание задания на электроснабжение в правой рекомендации существенно не дополняет выявленную проблему.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие для К12: 1,5 кВт в обозначении IL 40/220-1,5/4-R и N=0,55 кВт в характеристиках. Упоминание задания на электроснабжение в правой рекомендации существенно не дополняет выявленную проблему.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-016:6f0370becae84fed440d",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К12:IL40/220-1,5/4-R;экспликация0,55кВт;ПЗ,спецификация иноминальная мощность технического листа1,5кВт.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Сопоставлено одинаковое оборудование поДОО,модели,артикулу2786053 иточке4,42м³/ч,16,98м.",
+          "verdict": "confirmed_identity_binding",
+          "limits": ""
+        },
+        {
+          "claim": "P2=0,74кВт в рабочей точке устраняет расхождение номиналов.",
+          "verdict": "refuted_parameter_semantics",
+          "limits": "Технический лист отдельно содержит рабочуюP2и номинальную мощность1,5. Не выбирать одно из трёх чисел без названия параметра."
+        },
+        {
+          "claim": "Неверно подобраны защита ичастотный преобразователь.",
+          "verdict": "not_established",
+          "limits": "Задание электрикам,расчёт защиты ифактическая поставка не проверены."
+        },
+        {
+          "claim": "Согласовать экспликацию ипереданную электрическую нагрузку.",
+          "verdict": "supported_document_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Два насоса дают3,0кВт вместо1,1кВт по экспликации.",
+          "verdict": "confirmed_installed_nameplate_arithmetic_not_simultaneous_demand",
+          "limits": "2×1,5=3,0;2×0,55=1,1. В экспликации иСО указан1рабочий+1резервный; это не доказательство одновременной нагрузки3кВт, неверного кабеля или защиты. Нужно учитывать режим и выбранное исполнение."
+        }
+      ],
+      "unsupported_additions": "Не считать установленную мощность одновременной нагрузкой; не приписывать материал участку только по сходству длин; незаполненное количество не доказывает отсутствия поставки.",
+      "novel_useful_content": "Основные документальные расхождения сохранены; новые арифметические и геометрические выводы ограничены условиями их применимости.",
+      "duplicate_burden": "K12_power_distinct_from_K12_mass_F029",
+      "profile_and_section": "technical_document_conflict_core_preserved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-016.json",
+          "sha256": "08e2ee802e6a8be9e9f5a16dc884d01f4b962cc6bc6dbbf87a6d41f850988661",
+          "primary_adjudication": null,
+          "limits": "Насос сопоставлен по назначению, модели, артикулу и рабочей точке 4,42 м³/ч / 16,98 м. Мощность P2 в рабочей точке 0,74 кВт не смешивать с номинальной. Неверный выбор аппаратов защиты, фактическая комплектация и отказ насоса не установлены.",
+          "wording": "Согласовать мощность насоса К12 отопления ДОО IL 40/220-1,5/4-R: в экспликации N=0,55 кВт, в ПЗ и спецификации N=1,5 кВт, а технический лист артикула 2786053 подтверждает номинальную мощность двигателя 1,5 кВт. Исправить экспликацию и сверить переданное задание электрикам."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-016",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-016_equipment_or_quantity_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-024",
+      "finding": {
+        "id": "F-024",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Тепловая изоляция",
+        "sheet": "Листы 6., 15., 19",
+        "page": [
+          29,
+          38,
+          57
+        ],
+        "problem": "Не согласован типоразмер изоляции для труб наружным диаметром 325 мм.",
+        "description": "Для 85,1 м трубы 325 мм отсутствует соответствующая строка цилиндров. Повторена позиция 273×40 мм количеством 97 м дополнительно к 2 м того же размера для 1,7 м трубы 273 мм. Цилиндр с внутренним диаметром 273 мм не подходит для трубы 325 мм. Возможность применения матов для этого участка в спецификации явно не раскрыта.",
+        "norm": "СП 61.13330.2012 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 61.13330.2012",
+            "cited_designation": "СП 61.13330.2012",
+            "candidate_relevance": 0.9,
+            "reason": "Соответствие конструкции теплоизоляции геометрии изолируемого трубопровода.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-024"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-024"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить диаметр цилиндров либо явно назначить маты с расчётом количества и конструкцией крепления.",
+        "risk": "Закупка непригодной изоляции, задержка монтажа и повышенные теплопотери.",
+        "source_finding_ids": [
+          "T-024"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-029:268aafac2624c208753e",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Труба325×7:85,1м;273×7:1,7м;цилиндры273×40две строки2и97м.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "В двух проверенных таблицах цилиндр325 не указан.",
+          "verdict": "confirmed_bounded_absence",
+          "limits": ""
+        },
+        {
+          "claim": "Изоляция325 нигде не предусмотрена.",
+          "verdict": "not_established",
+          "limits": "Втаблицах есть50и250м²матов; их распределение по оборудованию итрубам не установлено. Общие указания называют цилиндры,но это не инвентаризация всех изоляционных решений."
+        },
+        {
+          "claim": "Строку97м нужно автоматически переименовать в325.",
+          "verdict": "not_established",
+          "limits": "Нужны назначение строки иконструкция изоляции; численное сходство не доказывает опечатку."
+        },
+        {
+          "claim": "Согласовать диаметр,количество иназначение матов.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "Цилиндр с внутренним диаметром273мм нельзя установить на трубу наружным диаметром325мм.",
+          "verdict": "supported_conditional_geometry_not_proven_wrong_assignment",
+          "limits": "При этих значениях радиальный зазор отрицателен. Но принадлежность97м цилиндров именно трубам325мм не установлена; распределение матов и структура заказа требуют проверки. Это не доказательство, что проект предписывает такое несовместимое соединение."
+        }
+      ],
+      "unsupported_additions": "Не считать установленную мощность одновременной нагрузкой; не приписывать материал участку только по сходству длин; незаполненное количество не доказывает отсутствия поставки.",
+      "novel_useful_content": "Основные документальные расхождения сохранены; новые арифметические и геометрические выводы ограничены условиями их применимости.",
+      "duplicate_burden": "distinct_insulation_support_or_identification_issue_group_specification_questions",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ec07216893c540b88b7560c80b87ecd9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_e46d7b061235453f8917708c1387217c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-029.json",
+          "sha256": "92f98a8b73d3db1a60c32f0d100a2dfd0e5688ea5295792e06a212154edd7ef0",
+          "primary_adjudication": null,
+          "limits": "Проверена ограниченная область отсутствия — две таблицы изоляции, а не весь проект или поставка. На листе14 есть50м² матов, на листе15 —250м²; распределение по трубам и оборудованию не установлено. Нельзя автоматически заменить273 на325, добавить85,1м цилиндров или объявить поставку некомплектной. Нарушение СП61 не подтверждалось.",
+          "wording": "Уточнить соответствие труб и изоляции: предусмотрено85,1м трубы325×7, но в таблицах изоляции листов14–15 нет отдельной строки цилиндра для325мм; цилиндр273×40 записан дважды —2 и97м при1,7м трубы273×7. Подтвердить назначение строки97м и предусмотренных матов."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-025",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-024_equipment_or_quantity_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-025",
+      "finding": {
+        "id": "F-025",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Опоры трубопроводов",
+        "sheet": "Листы 6., 13.",
+        "page": [
+          29,
+          36
+        ],
+        "problem": "Не заполнено количество креплений труб диаметром 325 мм.",
+        "description": "Для труб 325×7 мм длиной 85,1 м строка крепления Дн325 не содержит единицы измерения и количества. Для трубы Дн273 длиной 1,7 м указаны 32 комплекта креплений. Возможный перенос количества в соседнюю строку требует проверки по плану опор.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Полнота и однозначность данных рабочей документации для комплектования и монтажа.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-025"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-025"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить ведомость с планом опор и указать единицы измерения и обоснованные количества креплений каждого диаметра.",
+        "risk": "Некомплектная поставка опор и отклонения от проектной схемы крепления.",
+        "source_finding_ids": [
+          "T-025"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-030:a4e56855f9942b943bff",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-030:15e7e0c93d727b6902f9",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Строка крепленияДн325 существует,единица иколичество пусты;труба325×7имеет85,1м.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "ДляДн273указаны32комплекта при1,7мтрубы.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "32комплекта избыточны или должны быть перенесены в325.",
+          "verdict": "not_established",
+          "limits": "Планопор,участки иучёт креплений не сверены; не определять количество только из длины."
+        },
+        {
+          "claim": "Пункт5.18.3.2требует объём работ иосновных материалов с нормативным расходом.",
+          "verdict": "confirmed_project_requirement",
+          "limits": "Он не устанавливает число опор илиправильный диаметр этой строки."
+        },
+        {
+          "claim": "Заполнить поля после сверки плана ирасчёта опор.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Фактически опоры не поставлены илимонтажневозможен.",
+          "verdict": "not_established",
+          "limits": ""
+        },
+        {
+          "claim": "Новый текст требует автоматически перенести32комплекта в соседнюю строку.",
+          "verdict": "not_asserted_in_r2",
+          "limits": "Второй повтор явно оставляет перенос гипотезой и требует план опор. Сохранить эту оговорку; не превращать её в готовое исправление количества."
+        }
+      ],
+      "unsupported_additions": "Не считать установленную мощность одновременной нагрузкой; не приписывать материал участку только по сходству длин; незаполненное количество не доказывает отсутствия поставки.",
+      "novel_useful_content": "Основные документальные расхождения сохранены; новые арифметические и геометрические выводы ограничены условиями их применимости.",
+      "duplicate_burden": "distinct_insulation_support_or_identification_issue_group_specification_questions",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_20c9372392c34ef08a1e81d99316f0cb",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ea746747ceeb432db81d3380109e5608",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+          "sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1",
+          "primary_adjudication": null,
+          "limits": "Пропуск двух полей подтверждён непосредственно по строке.32комплекта не являются автоматически доказанным избытком: схема опор, участки и границы учёта не сверены. Не переносить32комплекта в строку325 без расчёта. Фактическая непоставка опор, задержка монтажа и невозможность монтажа не установлены.",
+          "wording": "Заполнить единицу измерения и количество креплений Дн325 в спецификации: строка есть, обе ячейки пусты; труба325×7 предусмотрена длиной85,1м. Одновременно сверить распределение: дляДн273 указаны32комплекта при1,7м трубы273×7."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+          "sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1",
+          "primary_adjudication": null,
+          "limits": "Пропуск двух полей подтверждён непосредственно по строке.32комплекта не являются автоматически доказанным избытком: схема опор, участки и границы учёта не сверены. Не переносить32комплекта в строку325 без расчёта. Фактическая непоставка опор, задержка монтажа и невозможность монтажа не установлены.",
+          "wording": "Заполнить единицу измерения и количество креплений Дн325 в спецификации: строка есть, обе ячейки пусты; труба325×7 предусмотрена длиной85,1м. Одновременно сверить распределение: дляДн273 указаны32комплекта при1,7м трубы273×7."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-026",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-025_equipment_or_quantity_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
