@@ -1,0 +1,696 @@
+{
+  "status": "three_drive_label_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "827be84d5740c14a613ad96d050a7285a4f7398be70be8e5dbb945ea5e257a38",
+  "queue_after_sha256": "8ac363cc5317810582a1789f88a566b3fc4bae934618d93c719e8f9ed65a9754",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-039",
+      "finding": {
+        "id": "F-039",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка преобразователей",
+        "sheet": "Лист 8",
+        "page": 12,
+        "problem": "Два преобразователя ШАУВ-2-К4ПЧ обозначены одинаково.",
+        "description": "На функциональной схеме П4.1.3/П4.1.4 оба преобразователя обозначены SC UZ1. Перечень элементов предусматривает SC UZ1 и SC UZ2.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить однозначность позиционных обозначений оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-004",
+                "G-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-004",
+                  "G-005"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Присвоить преобразователям разные позиции согласно перечню и согласовать их с двигателями М1 и М2.",
+        "risk": "Ошибочная адресация управления и подключение преобразователей.",
+        "source_finding_ids": [
+          "G-004",
+          "G-005"
+        ],
+        "source_block_ids": [
+          "blk_aa15c30f0e7e48988cadcac795e1ccff"
+        ],
+        "related_block_ids": [
+          "blk_aa15c30f0e7e48988cadcac795e1ccff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+            "page": 12
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-004",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-005",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое обозначение двух преобразователей SC UZ1 при наличии SC UZ1 и SC UZ2 в перечне элементов листа 8.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое обозначение двух преобразователей SC UZ1 при наличии SC UZ1 и SC UZ2 в перечне элементов листа 8.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F035_UZ_identity:f588470dec49e00c838c",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На схемеП4.1.3/П4.1.4 два разных символаПЧ в строкеШАУВ-2-К4ПЧ обозначеныSC UZ1.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Переченьлист8 задаётSC UZ1 иSC UZ2 количеством2.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Нужно согласовать идентификаторы двух устройств.",
+          "verdict": "supported_technical_identity_conflict",
+          "limits": "Наличие двух символов и двух изделий не доказывает нехватку; назначениеUZ2 именноM2 требует сверки."
+        },
+        {
+          "claim": "Повтор обозначения доказывает физическое объединение цепей или неправильный монтаж.",
+          "verdict": "not_established",
+          "limits": "Принципиальная заводская схема и фактическое соединение не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One ambiguity between two represented drives, not missing hardware.",
+      "profile_and_section": "technical_core_identity_no_physical_failure",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_0457419703024673bb4328b18d47501e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",
+          "sha256": "17877ee974090aeee8c5f2406c725cff99f585b7f47a60d464c265ca844e90ec",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждена неоднозначность идентификации, не нехватка оборудования: два символа и два изделия.",
+            "Не доказаны ошибочный монтаж или необходимость без сверки присвоить UZ2 именно двигателюM2.",
+            "Нормативный пункт и заводские схемы не проверены. Решение инженера по blind-кандидату не установлено."
+          ],
+          "wording": "Лист8, П4.1.3/П4.1.4: согласовать обозначения ПЧ. В перечне указаны SC UZ1 и SC UZ2, а на функциональной схеме у двух разных двигателей в строке одного шкафа повторён SC UZ1."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+          "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+          "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Two SC UZ1 symbols tied to separate fan control columns in same cabinet row."
+        }
+      ],
+      "disposition": "assessed_preserve_two_drive_identity_conflict"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-046",
+      "finding": {
+        "id": "F-046",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка преобразователей",
+        "sheet": "Лист 15",
+        "page": 19,
+        "problem": "Четырём преобразователям Пн5.1/Вн5.1 присвоены только две повторяющиеся марки.",
+        "description": "На схеме указана последовательность SC UZ2, SC UZ3, SC UZ2, SC UZ3. Перечень элементов предусматривает четыре позиции SCUZ1–SCUZ4.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить уникальность обозначений преобразователей в пределах схемы.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-025",
+                "G-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-025",
+                  "G-026"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Присвоить четырём преобразователям индивидуальные позиции и согласовать их с двигателями и перечнем.",
+        "risk": "Ошибочная идентификация приводов при монтаже и наладке.",
+        "source_finding_ids": [
+          "G-025",
+          "G-026"
+        ],
+        "source_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "related_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "page": 19
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-025",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-026",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на повторение SC UZ2 и SC UZ3 у четырёх преобразователей вместо позиций SCUZ1–SCUZ4 из перечня элементов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на повторение SC UZ2 и SC UZ3 у четырёх преобразователей вместо позиций SCUZ1–SCUZ4 из перечня элементов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На схемеПн5.1/Вн5.1 четыре позицииПЧ подписаныUZ2,UZ3,UZ2,UZ3; переченьSCUZ1–SCUZ4 количеством4.",
+          "verdict": "confirmed_TEXT_GRAPHIC_identity_difference",
+          "limits": ""
+        },
+        {
+          "claim": "СО9.2 содержит4 преобразователя и примечание об отдельных щитахВн5.1 иПн5.1.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Повторы непременно ошибочны, поскольку устройства находятся в единой области нумерации.",
+          "verdict": "not_established",
+          "limits": "Отдельные щиты допускают гипотезу локальной нумерации, но соответствие общему перечню не показано в проверенном фрагменте."
+        },
+        {
+          "claim": "Уточнить соответствие локальных и общих обозначений.",
+          "verdict": "supported_identity_coordination",
+          "limits": "Не объявлять недостачуUZ1/UZ4: четыре устройства представлены. Историческая потеря при выдаче не доказывает конкретный механизм подавления текущего прогона."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One mapping question across four drives; no two missing physical units inferred.",
+      "profile_and_section": "technical_identity_core_local_numbering_unresolved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_88d8dd46122c41148a81ba6b14c890eb",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+          "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925",
+          "primary_adjudication": null,
+          "limits": [
+            "Количество4 и характеристики0,75кВт/380В согласованы с поз.9.2 СО; недостаток ПЧ не установлен.",
+            "Позиция9.2 прямо указывает отдельные щиты для Вн5.1 и Пн5.1. Повторы могут относиться к локальным областям нумерации; это не снимает необходимость связи с общим перечнем.",
+            "Отсутствие UZ1/UZ4 установлено среди четырёх просмотренных графических символов, не во всём комплекте. Правая часть фрагмента листа обрезана; перечень проверен отдельно по TEXT.",
+            "Факт неправильного монтажа и эксплуатационного отказа не установлен. Заводская маркировка не проверена.",
+            "Историческая запись указывает потерю при выдаче, но механизм подавления не подтверждён здесь журналом классического AuditManager. Причину следует установить на этапе2."
+          ],
+          "wording": "Лист15, Пн5.1/Вн5.1: согласовать идентификацию четырёх ПЧ между функциональной схемой (UZ2,UZ3,UZ2,UZ3) и перечнем (UZ1–UZ4). Если применяется локальная нумерация отдельных щитов, показать её соответствие позициям общего перечня."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Four drive symbols with UZ2/UZ3 repeated for supply/exhaust branches. Right-side register clipped; register verified independently from TEXT."
+        }
+      ],
+      "disposition": "assessed_preserve_drive_identity_mapping_with_local_scope_caveat"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-050",
+      "finding": {
+        "id": "F-050",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка преобразователей",
+        "sheet": "Лист 19",
+        "page": 23,
+        "problem": "Диапазон обозначений преобразователей не соответствует трём устройствам.",
+        "description": "В перечне указано «SC UZ1 - SC UZ53» при количестве 3 шт. На схеме предусмотрены SC UZ1, SC UZ2 и SC UZ3.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить согласованность позиционных обозначений перечня и схемы.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-039",
+                "G-040"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-039",
+                  "G-040"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить оригинал и исправить диапазон на SC UZ1–SC UZ3.",
+        "risk": "Неоднозначная идентификация позиций при комплектовании шкафа.",
+        "source_finding_ids": [
+          "G-039",
+          "G-040"
+        ],
+        "source_block_ids": [
+          "blk_5999641136b84d1c9a5dd129e06ae055"
+        ],
+        "related_block_ids": [
+          "blk_5999641136b84d1c9a5dd129e06ae055"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_5999641136b84d1c9a5dd129e06ae055",
+            "page": 23
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-039",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-040",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на один и тот же ошибочный диапазон «SC UZ1 - SC UZ53» при количестве 3 шт. и обозначениях SC UZ1, SC UZ2, SC UZ3 на схеме; исправление одинаковое.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на один и тот же ошибочный диапазон «SC UZ1 - SC UZ53» при количестве 3 шт. и обозначениях SC UZ1, SC UZ2, SC UZ3 на схеме; исправление одинаковое.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 67,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Авторитетный переченьлист19 содержитSC UZ1–SC UZ53 количеством3.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Не исправлено по растру таблицы."
+        },
+        {
+          "claim": "Функциональная схема показываетSC UZ1,UZ2,UZ3 для трёх вентиляторов.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Запись диапазона означает53 физических устройства или недостаток50 преобразователей.",
+          "verdict": "not_established",
+          "limits": "Количество3 согласовано со схемой; дефект относится к записи обозначений."
+        },
+        {
+          "claim": "Редакционно согласовать обозначение диапазона.",
+          "verdict": "supported_editorial_question",
+          "limits": "Не включать как техническую неисправность; паспортные мощности и монтаж не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One editorial range issue, no per-unit defect multiplication.",
+      "profile_and_section": "questions_clarifications_editorial",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_50601fa20414465ea70cc3f42158d923",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F046_position_range_editorial.json",
+          "sha256": "912b8afed5b7dd638a2fb92ba907a9cda2ab531204e7f17dabe88ee0f2c2c81b",
+          "primary_adjudication": null,
+          "limits": [
+            "ЗаписьUZ53 взята из авторитетного TEXT и не корректировалась по растру таблицы. Графика проверена для независимого сопоставления устройств на схеме.",
+            "Количество3 в перечне согласовано с тремя графическими ПЧ. Диапазон не является доказательством53 физических устройств,недостачи50 или избыточной закупки.",
+            "Заводская комплектация,нагрузки и мощности не проверены. Нормативное нарушение и фактические ошибки заказа не установлены.",
+            "Редакционную неточность не включать в число технических дефектов; учитывать в отдельной нагрузке раздела уточнений."
+          ],
+          "wording": "Редакционно согласовать диапазон обозначений ПЧ в перечне листа19: записаноSC UZ1–SC UZ53 при количестве3шт.; схема того же листа показываетSC UZ1,SC UZ2,SC UZ3. Исправить запись диапазона в соответствии с принятой нумерацией."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5999641136b84d1c9a5dd129e06ae055.png",
+          "sha256": "cb1c9c5fdf02478799b5474ff55d7f18a9e6d54da46e9ffdc4733bc5ab0f0a80",
+          "block_id": "blk_5999641136b84d1c9a5dd129e06ae055",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Three independent schematic drive symbols UZ1 UZ2 UZ3; no raster re-reading of authoritative TEXT table."
+        }
+      ],
+      "disposition": "assessed_preserve_editorial_position_range_question"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_0457419703024673bb4328b18d47501e",
+      "authoritative_TEXT": "### BLOCK #28 [TEXT]: blk_0457419703024673bb4328b18d47501e\n\n> **Created:** 2026-09-28 07:28:41 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/9Z7-VfG1AcoQ_XZM-q1M)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 8 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П4.1.3, П4.1.4. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2, ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 2 |  |\n| ТС1 | Теромастат | 1 | (комплектно с электронагревателем) |\n| PDS2, PDS4 | Датчик давления дифференциальный 20-200 Па | 2 |  |\n| PDS1, PDS3 | Датчик давления дифференциальный 50-500 Па | 2 |  |\n| У1 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В | 1 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| У2, У3 | Электропривод воздушной заслонки без возвратной пружиной, плавное регулирование 24 В | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| SC UZ1, SC UZ2 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001Н | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+      "authoritative_TEXT": "### BLOCK #56 [TEXT]: blk_83ff7d2544fe4ddd843f3c1ec01c7087\n\n> **Created:** 2026-09-28 07:28:50 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/7sDdQmerGRCMscU9MFFj)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 15 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточная система Пн5.1, вытяжная система Вн5.1. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS2-PDS5 | Датчик давления дифференциальный 20-200 Па | 4 |  |\n| PDS1 | Датчик давления дифференциальный 50-500 Па | 1 |  |\n| Y1-Y10 | Электропривод воздушной заслонки | 10 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| Y11 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M4 | Электродвигатель вентилятора | 4 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M5 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SCUZ1 -SCUZ4 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001H | 4 |  |\n\nПримечание:\n\n1. Предельные рабочие значения измеряемых величин уточняются при ПНР\n\n## Page 20 — Sheet 16 — Приточная система Пл3.1, вытяжные системы Вк3.1, Всу3.1. Функциональная схема автоматизации\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_88d8dd46122c41148a81ba6b14c890eb",
+      "authoritative_TEXT": "### BLOCK #247 [TEXT]: blk_88d8dd46122c41148a81ba6b14c890eb\n\n> **Created:** 2026-09-28 07:29:55 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/apX7VMdMimPi7vCEWcKX)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 5 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 9 | Шкаф ШАУВ-4-К5ПЧ |  |  |  |  |  |  |  |\n| 9.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 9.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 4 |  | Установлен внутри отдельного щита (Вн5.1 и Пн5.1 отдельно) |\n| 9.3 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 9.4 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 4 |  |  |\n| 9.5 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 9.6 | Датчик температуры канальный Рт1000 (длина зонда 260мм) |  | ДТ-К2/Рт | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 9.7 | Датчик температуры накладной термо- и влагостойкий |  | ДТ-Н2/Рт | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 9.8 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 10 | Шкаф ШАУВ-5-К5ПЧ |  |  |  |  |  |  |  |\n| 10.1 | Шкаф управления с контроллером Феникс шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 10.2 | Регулятор скорости |  | СИ-РСУ10 | Савэл-Инжиниринг | шт. | 3 |  | Установлен внутри щита (для Пу5.1, Ву5.1, Всу 5.1) |\n| 10.3 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 10.4 | Датчик температуры канальный Рт1000 (длина зонда 260мм) |  | ДТ-К2/Рт | Савэл-Инжиниринг | шт. | 1 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 99 — Sheet 6\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_50601fa20414465ea70cc3f42158d923",
+      "authoritative_TEXT": "### BLOCK #70 [TEXT]: blk_50601fa20414465ea70cc3f42158d923\n\n> **Created:** 2026-09-28 07:28:54 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/dHyr7Ekj2ELdreyuHGxK)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 19 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Вытяжные системы В6.1.1, В6.1.2, В6.1.4 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| PDS1-PDS 3 | Датчик давления дифференциальный 20-200 Па | 3 |  |\n| Y1-Y3 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В DA5FU230-DS | 3 |  |\n| SC UZ1 - SC UZ53 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001H | 3 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+      "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+      "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Two SC UZ1 symbols tied to separate fan control columns in same cabinet row."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+      "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+      "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Four drive symbols with UZ2/UZ3 repeated for supply/exhaust branches. Right-side register clipped; register verified independently from TEXT."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5999641136b84d1c9a5dd129e06ae055.png",
+      "sha256": "cb1c9c5fdf02478799b5474ff55d7f18a9e6d54da46e9ffdc4733bc5ab0f0a80",
+      "block_id": "blk_5999641136b84d1c9a5dd129e06ae055",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Three independent schematic drive symbols UZ1 UZ2 UZ3; no raster re-reading of authoritative TEXT table."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",
+      "sha256": "17877ee974090aeee8c5f2406c725cff99f585b7f47a60d464c265ca844e90ec",
+      "primary_adjudication": null,
+      "limits": [
+        "Подтверждена неоднозначность идентификации, не нехватка оборудования: два символа и два изделия.",
+        "Не доказаны ошибочный монтаж или необходимость без сверки присвоить UZ2 именно двигателюM2.",
+        "Нормативный пункт и заводские схемы не проверены. Решение инженера по blind-кандидату не установлено."
+      ],
+      "wording": "Лист8, П4.1.3/П4.1.4: согласовать обозначения ПЧ. В перечне указаны SC UZ1 и SC UZ2, а на функциональной схеме у двух разных двигателей в строке одного шкафа повторён SC UZ1."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+      "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925",
+      "primary_adjudication": null,
+      "limits": [
+        "Количество4 и характеристики0,75кВт/380В согласованы с поз.9.2 СО; недостаток ПЧ не установлен.",
+        "Позиция9.2 прямо указывает отдельные щиты для Вн5.1 и Пн5.1. Повторы могут относиться к локальным областям нумерации; это не снимает необходимость связи с общим перечнем.",
+        "Отсутствие UZ1/UZ4 установлено среди четырёх просмотренных графических символов, не во всём комплекте. Правая часть фрагмента листа обрезана; перечень проверен отдельно по TEXT.",
+        "Факт неправильного монтажа и эксплуатационного отказа не установлен. Заводская маркировка не проверена.",
+        "Историческая запись указывает потерю при выдаче, но механизм подавления не подтверждён здесь журналом классического AuditManager. Причину следует установить на этапе2."
+      ],
+      "wording": "Лист15, Пн5.1/Вн5.1: согласовать идентификацию четырёх ПЧ между функциональной схемой (UZ2,UZ3,UZ2,UZ3) и перечнем (UZ1–UZ4). Если применяется локальная нумерация отдельных щитов, показать её соответствие позициям общего перечня."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F046_position_range_editorial.json",
+      "sha256": "912b8afed5b7dd638a2fb92ba907a9cda2ab531204e7f17dabe88ee0f2c2c81b",
+      "primary_adjudication": null,
+      "limits": [
+        "ЗаписьUZ53 взята из авторитетного TEXT и не корректировалась по растру таблицы. Графика проверена для независимого сопоставления устройств на схеме.",
+        "Количество3 в перечне согласовано с тремя графическими ПЧ. Диапазон не является доказательством53 физических устройств,недостачи50 или избыточной закупки.",
+        "Заводская комплектация,нагрузки и мощности не проверены. Нормативное нарушение и фактические ошибки заказа не установлены.",
+        "Редакционную неточность не включать в число технических дефектов; учитывать в отдельной нагрузке раздела уточнений."
+      ],
+      "wording": "Редакционно согласовать диапазон обозначений ПЧ в перечне листа19: записаноSC UZ1–SC UZ53 при количестве3шт.; схема того же листа показываетSC UZ1,SC UZ2,SC UZ3. Исправить запись диапазона в соответствии с принятой нумерацией."
+    }
+  ],
+  "limits": [
+    "Device labels are not physical connection proof.",
+    "Separate enclosures require numbering-scope mapping.",
+    "Frozen evaluator and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
