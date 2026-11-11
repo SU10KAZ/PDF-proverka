@@ -1,0 +1,1164 @@
+{
+  "status": "completed_AR_output_review_with_retained_uncertainty",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AR_output_review_queue.json",
+  "queue_before_sha256": "853c6aecf6d58ece8880e33f5cdfb2b0f59ec8d14c0f6017e146d99c6cc8b4b4",
+  "queue_after_sha256": "ea8c315d4c36faf78a9c6d7571de1a6a5c0657d0c00c693c6e18e5ef1dd74160",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-007",
+      "finding": {
+        "id": "F-007",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Материалы покрытий",
+        "sheet": "Листы 7, 11",
+        "page": [
+          9,
+          13
+        ],
+        "problem": "Для покрытий К-3 и К-4 одновременно заданы бетонная плитка и плитка из натурального камня.",
+        "description": "В конструкциях К-3 и К-4 на листе 7 предусмотрена бетонная тротуарная плитка толщиной 40 мм, для К-4 — со ссылкой на проект ЛД. В ведомости материалов этих покрытий указана плитка из натурального камня 600×600×40 мм. В текстовой таблице слоёв К-4 на листе 11 также указана бетонная плитка толщиной 40 мм. Материал финишного слоя неоднозначен; изделия требуют согласования по прочности и работе на отдельных опорах.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён; СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованному заданию материалов в ведомостях и узлах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007",
+                "G-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007",
+                  "G-001"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 17.13330.2017",
+            "cited_designation": "СП 17.13330.2017",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к защитному покрытию эксплуатируемой кровли и применению плит на опорах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007",
+                "G-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007",
+                  "G-001"
+                ],
+                "designation_source": "Подбор по предмету замечания и нормативным ссылкам проекта"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить единое изделие для каждого покрытия, согласовать его с проектом ЛД, расчётом и опорами; исправить ведомости и все таблицы слоёв.",
+        "risk": "Закупка неподходящего покрытия, изменение стоимости и нагрузки, повреждение плит при эксплуатации.",
+        "source_finding_ids": [
+          "T-007",
+          "G-001"
+        ],
+        "source_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645"
+        ],
+        "related_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645",
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "blk_ba73c64702884635a06b2882d4e2bf91",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение для К-3 и К-4: бетонная плитка 40 мм в конструкциях и натуральный камень 600×600×40 мм в ведомости материалов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 97,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "schedule",
+            "construction",
+            "operations"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_K3_K4_material:2c8cea013dfa60768080",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К-3/К-4: бетонная плитка40мм против натурального камня600×600×40; дляК-4 предусмотрена связь сЛД.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Исходное «по согласованию» для камня не раскрыто итогом. ЛД, масса, цена и прочность конкретных изделий не проверены. Дополнительное упоминание таблицы лист11 требует отдельной адресной проверки."
+        },
+        {
+          "claim": "Установить единое изделие для каждого покрытия, согласовать его с проектом ЛД, расчётом и опорами; исправить ведомости и все таблицы слоёв.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Согласовать выбранное изделие сЛД и опорами до корректировки документов; не считать ошибочную закупку или нагрузку доказанными."
+        },
+        {
+          "claim": "Закупка неподходящего покрытия, изменение стоимости и нагрузки, повреждение плит при эксплуатации.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        },
+        {
+          "claim": "Текстовая таблица лист11 также содержит бетонную плитку40мм по проектуЛД.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Блок64 прочитан непосредственно; связь узла сК-4 использует ранее проверенный контекст."
+        }
+      ],
+      "unsupported_additions": "Исходное «по согласованию» для камня не раскрыто итогом. ЛД, масса, цена и прочность конкретных изделий не проверены. Дополнительная таблица лист11 подтверждена авторитетным TEXT; согласование ЛД по-прежнему не проверено.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "Tile material and underlying protective layer are distinct decisions.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer acceptance inferred; source hashes verified and revised wording assessed.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json",
+          "sha256": "1b5bec9fd487811b2b78e77d12d54eae2ef20a5a9f8770de2a94673ffb5aa51f",
+          "primary_adjudication": null,
+          "limits": "Оговорки «по согласованию» и «по проектуЛД» сохранены. Фактическая ошибочная закупка и окончательный выбор материала не установлены. Узел молниеотвода в этой сверке не использован.",
+          "wording": "Увязать материал финишной плитки К-3/К-4: бетонная40мм в ведомости покрытий против натурального камня600×600×40мм «по согласованию» в ведомости материалов; дляК-4 проверить решениеЛД.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "К-3: бетонная40мм; К-4: бетонная по проектуЛД40мм.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b9257ef1636a40f9a224955e061eb46e.png",
+          "sha256": "7dd38136e060454182817ea43ee1391af5c00ccef3033610e3f9bcd509207f98",
+          "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "МаркаК-4 у схемы и бетонная плитка по проектуЛД в её перечне.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b9257ef1636a40f9a224955e061eb46e.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-006",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-007",
+          "route": "current_sealed_output"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "route": "authoritative_TEXT_read_this_turn"
+        }
+      ],
+      "disposition": "assessed_r3_material_conflict_with_LD_approval_limit"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-009",
+      "finding": {
+        "id": "F-009",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Обозначение материалов",
+        "sheet": "Листы 7, 11",
+        "page": [
+          9,
+          13
+        ],
+        "problem": "Полное обозначение гидроизоляции К-4 не согласовано между ведомостью и узлом.",
+        "description": "В ведомости указана гидроизоляция Техноэласт ЭПП в два слоя, в таблице слоёв — Техноэласт П ЭПП в два слоя общей толщиной 7 мм. По переданным данным не установлено, обозначают ли записи один продукт либо разные исполнения.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к однозначному обозначению материалов в рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить обозначение с технической документацией изготовителя и указать единое полное наименование, число и толщину слоёв.",
+        "risk": "Неоднозначный подбор материала при закупке и выполнении гидроизоляции.",
+        "source_finding_ids": [
+          "T-009"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "blk_ba73c64702884635a06b2882d4e2bf91",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 70,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "В ведомости материалов К-4 Техноэласт ЭПП, в таблице узла П ЭПП в2слоя7мм.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Графическая ведомость покрытий того же листа7 также содержит П ЭПП и7мм.",
+          "verdict": "confirmed_prior_GRAPHIC_countercontext",
+          "limits": "Отсутствие П нельзя распространить на весь лист7."
+        },
+        {
+          "claim": "Записи обозначают разные продукты или ошибочную толщину.",
+          "verdict": "not_established",
+          "limits": "Каталог и точный выбранный продукт не проверены; вопрос эквивалентности сохраняется."
+        },
+        {
+          "claim": "Сверить полное наименование, толщину и число слоёв.",
+          "verdict": "scoped_question_usefulness_unestablished",
+          "limits": "Не назначать автоматически3,5мм каждому слою."
+        },
+        {
+          "claim": "Неоднозначный подбор материала при закупке и выполнении гидроизоляции.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты."
+        },
+        {
+          "claim": "Нормативы-кандидаты доказывают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Пункт и применимость отдельно не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Отсутствие П нельзя распространить на весь лист7.; Каталог и точный выбранный продукт не проверены; вопрос эквивалентности сохраняется.; Не назначать автоматически3,5мм каждому слою.; Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты.; Пункт и применимость отдельно не подтверждены.",
+      "novel_useful_content": "Не засчитывать как новую подтверждённую техническую находку без решения неопределённостей.",
+      "duplicate_burden": "distinct_claim_check_related_roof_questions_before_counting_independent_defects",
+      "profile_and_section": "Вопрос/уточнение отдельно от подтверждённых технических дефектов; фактическое размещение итогового отчёта ещё не оценено.",
+      "engineer_reuse": "Нового решения инженера нет; историческое решение не распространяется на расширенные тезисы.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "prior_source_review_reused_after_identical_r3_hash_check"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "route": "prior_source_review_reused_after_identical_r3_hash_check"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "route": "prior_source_review_reused_after_identical_r3_hash_check",
+          "observation": "К-4 слой4: ТехноэластПЭПП,2слоя,7мм."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-008",
+          "route": "prior_atomic_review_with_current_wording_comparison"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-009",
+          "route": "sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_question_product_identity_unresolved"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Пожарная безопасность",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Расшифровка подкласса Ф3.6 требует согласования с фактическим назначением помещений.",
+        "description": "В общих данных подкласс Ф3.6 расшифрован как «подсобные и бытовые помещения, детский клуб». Согласно текстовому замечанию, такая расшифровка не соответствует классификации Федерального закона №123-ФЗ. Для детского клуба не представлены сведения о деятельности, возрасте посетителей и режиме пребывания, необходимые для выбора класса.",
+        "norm": "ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 1.0,
+            "reason": "Проверить определение подкласса Ф3.6 и классификацию помещений по фактическому функциональному назначению.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Получить функциональную программу помещений, согласовать классы с разделом пожарной безопасности и исправить общие данные.",
+        "risk": "Неправильный выбор требований к эвакуации, противопожарному разделению и инженерной защите помещений.",
+        "source_finding_ids": [
+          "T-010"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_9229dc363c184ae3abca81013e330dfa",
+          "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "blk_da80f01d01214295afe19fe6063fe5e1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 98,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F009_club_classification_scope:4e28ba265a83e035660e",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В общих данных Ф3.6 включает подсобные и бытовые помещения, детский клуб.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Такая расшифровка не соответствует123-ФЗ.",
+          "verdict": "unverified_legal_assertion",
+          "limits": "Атрибуция исходному текстовому замечанию не доказывает норму. Функция, режим клуба и применимость не проверены."
+        },
+        {
+          "claim": "В полном блоке есть ссылки на ПД,ТЗ иСТУПБ.",
+          "verdict": "confirmed_countercontext",
+          "limits": "Обоснование в этих документах не проверено, отсутствие во всём проекте не доказано."
+        },
+        {
+          "claim": "Получить функциональную программу и согласовать класс.",
+          "verdict": "supported_cross_profile_question",
+          "limits": "Сначала проверить смежное обоснование; автоматически менять класс по слову «детский» нельзя."
+        },
+        {
+          "claim": "Неправильный выбор требований к эвакуации, противопожарному разделению и инженерной защите помещений.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты."
+        },
+        {
+          "claim": "Нормативы-кандидаты доказывают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Пункт и применимость отдельно не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Атрибуция исходному текстовому замечанию не доказывает норму. Функция, режим клуба и применимость не проверены.; Обоснование в этих документах не проверено, отсутствие во всём проекте не доказано.; Сначала проверить смежное обоснование; автоматически менять класс по слову «детский» нельзя.; Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты.; Пункт и применимость отдельно не подтверждены.",
+      "novel_useful_content": "Не засчитывать как новую подтверждённую техническую находку без решения неопределённостей.",
+      "duplicate_burden": "distinct_claim_check_related_roof_questions_before_counting_independent_defects",
+      "profile_and_section": "Вопрос/уточнение отдельно от подтверждённых технических дефектов; фактическое размещение итогового отчёта ещё не оценено.",
+      "engineer_reuse": "Нового решения инженера нет; историческое решение не распространяется на расширенные тезисы.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "route": "prior_source_review_reused_after_identical_r3_hash_check"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F009_club_classification_scope.json",
+          "sha256": "61976229e7eab9c4d96c6917b2954409fdafba9d960a76a0583702a0b3396796",
+          "primary_adjudication": null,
+          "limits": "Полностью прочитан блок общих данных. Он ссылается на проектную документацию, техническое задание и СТУ ПБ, но не раскрывает режим работы клуба. Непроверенное обоснование в смежном разделе нельзя считать отсутствующим. Само название клуба не является достаточным доказательством другого класса. Применимые нормативные положения, технология клуба, возраст посетителей, режим пребывания, эвакуация и отделение помещения не проверены. Нормативное нарушение, необходимость изменения класса и влияние на кровельные решения не установлены.",
+          "wording": "В общих данных ПД-00580716-АР6.2 к Ф3.6 отнесены «подсобные и бытовые помещения, детский клуб». Для профильной проверки уточните назначение и режим работы клуба и ссылку на обоснование класса в проектной документации/разделе пожарной безопасности. По этому кровельному тому ошибочность класса не установлена."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_identical_sources_current_wording_checked",
+          "finding_id": "F-011",
+          "limits": "No new normative applicability conclusion or engineer verdict."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-010",
+          "route": "prior_atomic_review_with_current_wording_comparison"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "route": "authoritative_TEXT_read_this_turn"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-010",
+          "route": "sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_question_separate_fire_profile_no_proven_wrong_class"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Оформление документации",
+        "sheet": "Лист 15",
+        "page": 17,
+        "problem": "Наименование изменения в реестре отступлений не соответствует его содержанию.",
+        "description": "В строке 4 реестра параметр назван «Доступ на эксплуатируемую кровлю», тогда как исходное решение, новое решение и обоснование относятся к доступу на неэксплуатируемую кровлю секций 2 и 3. Номер листа не подтверждён записью графического анализа для этой страницы.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.7,
+            "reason": "Проверить требования к однозначному описанию решений и изменений рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить наименование параметра в строке 4 в соответствии с фактическим предметом изменения.",
+        "risk": "Ошибочное понимание режима использования кровли и содержания согласованного изменения.",
+        "source_finding_ids": [
+          "T-011"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_61f174f49da34cb0821c0b91863cd608"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 62,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "operations"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F011_access_register:16a9d1d9252402ce3968",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Строка4 реестра названа доступом на эксплуатируемую кровлю, содержание относится к неэксплуатируемой секций2/3.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Графический анализ не подтвердил номер листа.",
+          "verdict": "not_independently_checked_stage_trace",
+          "limits": "MD содержит Sheet15 и ведомость реестра15. Отсутствие подтверждения конкретным графическим этапом не означает отсутствия номера в источнике."
+        },
+        {
+          "claim": "Исправить название параметра.",
+          "verdict": "supported_editorial_question",
+          "limits": "Назначение доступа понятно; техническое отсутствие доступа и небезопасность не доказаны."
+        },
+        {
+          "claim": "Ошибочное понимание режима использования кровли и содержания согласованного изменения.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты."
+        },
+        {
+          "claim": "Нормативы-кандидаты доказывают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Пункт и применимость отдельно не подтверждены."
+        }
+      ],
+      "unsupported_additions": "MD содержит Sheet15 и ведомость реестра15. Отсутствие подтверждения конкретным графическим этапом не означает отсутствия номера в источнике.; Назначение доступа понятно; техническое отсутствие доступа и небезопасность не доказаны.; Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты.; Пункт и применимость отдельно не подтверждены.",
+      "novel_useful_content": "Не засчитывать как новую подтверждённую техническую находку без решения неопределённостей.",
+      "duplicate_burden": "distinct_claim_check_related_roof_questions_before_counting_independent_defects",
+      "profile_and_section": "Вопрос/уточнение отдельно от подтверждённых технических дефектов; фактическое размещение итогового отчёта ещё не оценено.",
+      "engineer_reuse": "Нового решения инженера нет; историческое решение не распространяется на расширенные тезисы.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_61f174f49da34cb0821c0b91863cd608",
+          "route": "prior_source_review_reused_after_identical_r3_hash_check"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_da80f01d01214295afe19fe6063fe5e1",
+          "route": "prior_source_review_reused_after_identical_r3_hash_check"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F011_access_register.json",
+          "sha256": "16b8030466ed9894b7dab677ae14f1e4a922012725ffc0c400ef12def3a6f0bc",
+          "primary_adjudication": null,
+          "limits": "В полной строке назначение доступа понятно: через створку ограждения эксплуатируемой кровли на неэксплуатируемую. Подтверждена неточность заголовка, а не отсутствие доступа или противоречие конструктивного решения. Последствия для монтажа и безопасности не установлены; учитывать отдельно от технических дефектов.",
+          "wording": "В строке 4 реестра отступлений уточнить название параметра «Доступ на эксплуатируемую кровлю»: исходное решение, изменённое решение и обоснование относятся к доступу на неэксплуатируемую кровлю секций 2, 3."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-013",
+          "route": "prior_atomic_review_with_current_wording_comparison"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-011",
+          "route": "sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_question_editorial_access_register"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Согласованность комплектов документации",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Ссылка на комплект с мероприятиями доступности МГН не позволяет однозначно найти решения.",
+        "description": "Пункт 4 общих указаний относит мероприятия доступности к АР2. В ведомости комплектов указаны АР2.1 и АР2.2 «Конструкции стен», самостоятельный комплект АР2 не приведён. Вынесение мероприятий в другой комплект само по себе не является недостатком.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к обозначению комплектов и оформлению ссылок на связанные документы.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать точное обозначение комплекта и листы, содержащие мероприятия доступности МГН.",
+        "risk": "Пропуск необходимых решений при координации документации и выполнении работ.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_9229dc363c184ae3abca81013e330dfa",
+          "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "blk_da80f01d01214295afe19fe6063fe5e1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 62,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Пункт4 общих указаний отсылает МГН вАР2, ведомость содержитАР2.1/АР2.2 «Конструкции стен» и не содержит отдельной строкиАР2.",
+          "verdict": "confirmed_bounded_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Ссылка не позволяет найти решения доступности.",
+          "verdict": "only_local_navigation_ambiguity_supported",
+          "limits": "АР2 может быть групповым обозначением; сами смежные комплекты и их содержание не проверены."
+        },
+        {
+          "claim": "Уточнить точный комплект и листы.",
+          "verdict": "supported_editorial_cross_document_question",
+          "limits": "Не доказывает отсутствие мероприятий МГН или нарушение доступности; не назначать другой шифр без просмотра."
+        },
+        {
+          "claim": "Пропуск необходимых решений при координации документации и выполнении работ.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты."
+        },
+        {
+          "claim": "Нормативы-кандидаты доказывают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Пункт и применимость отдельно не подтверждены."
+        }
+      ],
+      "unsupported_additions": "АР2 может быть групповым обозначением; сами смежные комплекты и их содержание не проверены.; Не доказывает отсутствие мероприятий МГН или нарушение доступности; не назначать другой шифр без просмотра.; Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты.; Пункт и применимость отдельно не подтверждены.",
+      "novel_useful_content": "Не засчитывать как новую подтверждённую техническую находку без решения неопределённостей.",
+      "duplicate_burden": "distinct_claim_check_related_roof_questions_before_counting_independent_defects",
+      "profile_and_section": "Вопрос/уточнение отдельно от подтверждённых технических дефектов; фактическое размещение итогового отчёта ещё не оценено.",
+      "engineer_reuse": "Нового решения инженера нет; историческое решение не распространяется на расширенные тезисы.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "route": "authoritative_TEXT_read_this_turn"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_9229dc363c184ae3abca81013e330dfa",
+          "route": "authoritative_TEXT_read_this_turn"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-012",
+          "route": "sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_question_reference_scope_no_proven_missing_accessibility"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Гидроизоляция кровли",
+        "sheet": "Лист 11",
+        "page": 13,
+        "problem": "В узле воронки задано сварное сопряжение ПВХ-фартука с битумно-полимерной гидроизоляцией.",
+        "description": "Графический анализ узла Ж фиксирует фартук из ПВХ-мембраны, сварной шов 30 мм и кровельную гидроизоляцию Техноэласт ЭПП в два слоя. Прямое сварное соединение этих разных материалов не обеспечивает предусмотренную для однородных мембран технологию сопряжения; переходное решение в переданных доказательствах не указано.",
+        "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 17.13330.2017",
+            "cited_designation": "СП 17.13330.2017",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить требования к герметичному сопряжению кровельного ковра с водоприёмными воронками и совместимости материалов соединения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-019"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-019"
+                ],
+                "designation_source": "Подбор по предмету замечания и нормативным ссылкам проекта"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Разработать сопряжение воронки с битумно-полимерной кровлей с совместимым фартуком либо предусмотренным изготовителем переходным или прижимным узлом; уточнить технологию герметизации.",
+        "risk": "Протечки у воронки, увлажнение теплоизоляции и повреждение кровельной конструкции.",
+        "source_finding_ids": [
+          "G-019"
+        ],
+        "source_block_ids": [
+          "blk_6aa88dbbee66440da2e544563775c9d9"
+        ],
+        "related_block_ids": [
+          "blk_6aa88dbbee66440da2e544563775c9d9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_6aa88dbbee66440da2e544563775c9d9",
+            "page": 13
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "УзелЖ содержит ПВХ-фартук, жидкийПВХ, ТехноэластЭПП и выноску сварного шва30мм.",
+          "verdict": "confirmed_prior_same_GRAPHIC_review",
+          "limits": ""
+        },
+        {
+          "claim": "Выноска доказывает непосредственную сварку ПВХ с битумным материалом.",
+          "verdict": "insufficient_interface_resolution",
+          "limits": "Ранее просмотренный общий фрагмент не устанавливает однозначную пару соединяемых поверхностей; наличие материалов не заменяет трассировку."
+        },
+        {
+          "claim": "Сопряжение не обеспечивает технологию соединения и требует разработки нового решения.",
+          "verdict": "not_established_premature_remedy",
+          "limits": "Переход, точный продукт и решение изготовителя не проверены. Сохранить адресный вопрос о сопряжении, не обязательную замену фартука."
+        },
+        {
+          "claim": "Протечки у воронки, увлажнение теплоизоляции и повреждение кровельной конструкции.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты."
+        },
+        {
+          "claim": "Нормативы-кандидаты доказывают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Пункт и применимость отдельно не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Ранее просмотренный общий фрагмент не устанавливает однозначную пару соединяемых поверхностей; наличие материалов не заменяет трассировку.; Переход, точный продукт и решение изготовителя не проверены. Сохранить адресный вопрос о сопряжении, не обязательную замену фартука.; Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты.; Пункт и применимость отдельно не подтверждены.",
+      "novel_useful_content": "Не засчитывать как новую подтверждённую техническую находку без решения неопределённостей.",
+      "duplicate_burden": "distinct_claim_check_related_roof_questions_before_counting_independent_defects",
+      "profile_and_section": "Вопрос/уточнение отдельно от подтверждённых технических дефектов; фактическое размещение итогового отчёта ещё не оценено.",
+      "engineer_reuse": "Нового решения инженера нет; историческое решение не распространяется на расширенные тезисы.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6aa88dbbee66440da2e544563775c9d9.png",
+          "sha256": "97abf62860b312f0d53b15dcc56a5ad81b6c26d876a47f735c33d8580800a4c2",
+          "block_id": "blk_6aa88dbbee66440da2e544563775c9d9",
+          "route": "prior_source_review_reused_after_identical_r3_hash_check",
+          "observation": "ПравыйузелЖ:перечень1ПВХ-фартук,13жидкийПВХ,14ТехноэластЭПП;сварнойшов30мм;воронка с обжимнымфланцем.Прямая сварная пара неустановлена."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-020",
+          "route": "prior_atomic_review_with_current_wording_comparison"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-018",
+          "route": "sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_question_interface_unresolved_not_confirmed_defect"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Основание под гидроизоляцию",
+        "sheet": "Лист 12",
+        "page": 14,
+        "problem": "Для основания под рулонную гидроизоляцию задана стяжка М100; требуется проверка нормативной прочности.",
+        "description": "В узле Л «Примыкание к стене» непосредственно под рулонной гидроизоляцией указана цементно-песчаная стяжка М100 толщиной 50 мм с базальтовой сеткой 50×50 мм. Исходное графическое замечание сопоставляет её с требованием прочности не менее 15 МПа, соответствующей М150. Точный пункт, редакция и применимость приведённого требования на этапе консолидации не подтверждены. Армирование не заменяет проверку марки раствора.",
+        "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 17.13330.2017",
+            "cited_designation": "СП 17.13330.2017",
+            "candidate_relevance": 0.99,
+            "reason": "Найти требование к прочности цементно-песчаной стяжки, служащей основанием под рулонную кровлю, и проверить его применимость к узлу.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-020"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-020"
+                ],
+                "designation_source": "Неподтверждённая нормативная цитата исходного графического замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": "Цементно-песчаные стяжки, служащие основанием под рулонную и мастичную кровлю, должны иметь прочность на сжатие не менее 15 МПа (М150)."
+          }
+        ],
+        "solution": "Проверить применимое требование к основанию и назначить соответствующую прочность раствора; при подтверждении порога 15 МПа заменить М100 на марку не ниже М150 и согласовать аналогичные узлы.",
+        "risk": "Недостаточная прочность основания, разрушение поверхностного слоя и повреждение приклеенной гидроизоляции.",
+        "source_finding_ids": [
+          "G-020"
+        ],
+        "source_block_ids": [
+          "blk_991adbd801a742779ab41df7896030b7"
+        ],
+        "related_block_ids": [
+          "blk_991adbd801a742779ab41df7896030b7"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_991adbd801a742779ab41df7896030b7",
+            "page": 14
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "УзелЛ «Примыкание к стене»: непосредственно под рулонной гидроизоляцией стяжкаЦПСМ100,50мм,сетка50×50.",
+          "verdict": "confirmed_current_direct_GRAPHIC",
+          "limits": "Нижняя выравнивающая стяжкаМ10030мм — другой слой. Это не узелН40мм из второго повтора."
+        },
+        {
+          "claim": "Для этого основания требуется не менее15МПа/М150.",
+          "verdict": "unsupported_applicable_threshold",
+          "limits": "В сохранённой репродукции СП17 п.5.1.4г приведены40мм иМ100. Это контрдоказательство универсальному порогу15МПа; актуальная применимая редакция и кровельная система не установлены."
+        },
+        {
+          "claim": "При подтверждении15МПа заменитьМ100 и аналогичные узлы.",
+          "verdict": "conditional_action_not_yet_justified",
+          "limits": "Условная формулировка не подтверждает само условие. Недостаточность прочности, разрушение и необходимость замены не доказаны."
+        },
+        {
+          "claim": "Недостаточная прочность основания, разрушение поверхностного слоя и повреждение приклеенной гидроизоляции.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты."
+        },
+        {
+          "claim": "Нормативы-кандидаты доказывают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Пункт и применимость отдельно не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Нижняя выравнивающая стяжкаМ10030мм — другой слой. Это не узелН40мм из второго повтора.; В сохранённой репродукции СП17 п.5.1.4г приведены40мм иМ100. Это контрдоказательство универсальному порогу15МПа; актуальная применимая редакция и кровельная система не установлены.; Условная формулировка не подтверждает само условие. Недостаточность прочности, разрушение и необходимость замены не доказаны.; Фактические последствия не наблюдались и не учитываются как подтверждённые дефекты.; Пункт и применимость отдельно не подтверждены.",
+      "novel_useful_content": "Не засчитывать как новую подтверждённую техническую находку без решения неопределённостей.",
+      "duplicate_burden": "distinct_claim_check_related_roof_questions_before_counting_independent_defects",
+      "profile_and_section": "Вопрос/уточнение отдельно от подтверждённых технических дефектов; фактическое размещение итогового отчёта ещё не оценено.",
+      "engineer_reuse": "Нового решения инженера нет; историческое решение не распространяется на расширенные тезисы.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_991adbd801a742779ab41df7896030b7.png",
+          "sha256": "2a6c7f9f6f97186bebabcd60a80b3249c4b1c554fbbc4df2518bbb4f5006dcb6",
+          "block_id": "blk_991adbd801a742779ab41df7896030b7",
+          "route": "current_direct_GRAPHIC_view",
+          "observation": "УзелЛ,К-1.1:ТехноэластЭПП2слоя10мм;под нимЦПСМ10050мм с базальтовой сеткой50×50;нижняя выравнивающаяМ10030мм отдельно."
+        },
+        {
+          "url": "https://www.doerken.com/ru/ru/content/preview/28737/file/СП%2017.13330.2017%20Кровли.%20Актуализированная%20редакция%20СНиП%20II-26-76%20%28с%20Изменениями%20N%201%2C%202%2C%203%29.pdf",
+          "route": "primary_norm_document_reproduction_hosted_by_manufacturer_web_text_open",
+          "checked": "2026-11-11",
+          "section": "5.1.4г, страница14 репродукции сИзм.1–5",
+          "fact": "Для монолитных цементно-песчаных стяжек установлены40мм иМ100; абзац помечен изменениями1,2,4.",
+          "limits": "Имя URL перечисляет1–3, содержимое заголовка1–5; источник не официальный реестр. Не доказаны текущий юридический статус, редакция нормативной базы проекта и требования конкретной кровельной системы.",
+          "reuse_note": "Prior saved norm reproduction, not a fresh legal applicability check."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-020",
+          "route": "prior_norm_counterevidence_only",
+          "limits": "Different graphic node; current node independently viewed. No transfer of the old40mm geometry."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-019",
+          "route": "sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_candidate_threshold_unresolved_no_required_upgrade"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": [
+    "All20rows assessed; unresolved interface and normative applicability are not accepted defects.",
+    "Only nodeL GRAPHIC directly viewed this turn; other graphics reused after hash verification."
+  ]
+}
