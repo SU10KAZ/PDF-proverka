@@ -1,0 +1,363 @@
+{
+  "status": "source_bound_output_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "fefa2b7e0a3d1c6a7550e153d66c72662a63cf6d00fb5808ac2116333a5cd614",
+  "queue_after_sha256": "c2458cfd892111f2373c40be065144c85aa72d715d754fa9f6dd8b82cd5c3baf",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-054",
+      "finding": {
+        "id": "F-054",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "duplicate_designation",
+        "sheet": "Лист 33",
+        "page": 37,
+        "problem": "На схеме внешних подключений ШАУВ-4-К5ПЧ, лист 33, обозначение М2 присвоено электродвигателю вентилятора Вн5.1р и циркуляционному насосу Пн5.1. Обозначение Y7 также повторено для регулирующего клапана теплоносителя Пн5.1 и воздушного клапана Вн5.1, что делает идентификацию оборудования неоднозначной.",
+        "description": "На схеме внешних подключений ШАУВ-4-К5ПЧ, лист 33, обозначение М2 присвоено электродвигателю вентилятора Вн5.1р и циркуляционному насосу Пн5.1. Обозначение Y7 также повторено для регулирующего клапана теплоносителя Пн5.1 и воздушного клапана Вн5.1, что делает идентификацию оборудования неоднозначной.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Однозначность позиционных обозначений и связи устройств со схемами.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-075"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-075",
+                  "G-076"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Присвоить различным устройствам уникальные позиционные обозначения и согласовать их на связанных схемах.",
+        "risk": "Ошибочная идентификация насоса, вентилятора и клапанов при монтаже.",
+        "source_finding_ids": [
+          "G-075"
+        ],
+        "source_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "related_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+            "page": 37
+          }
+        ],
+        "highlight_regions": [],
+        "source_stage": "stage01_atomicity_guard",
+        "atomicity_guard": {
+          "split_from": "F-054",
+          "reason": "distinct_nonrecommendational_candidates_same_block"
+        },
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-075",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "disputed",
+          "relations": [
+            {
+              "relation": "disputed",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают дублирование М2 у вентилятора и насоса Пн5.1, но противоречат друг другу в принадлежности вентилятора: слева Вн5.1р, справа Пн5.1р. Слева дополнительно отмечено дублирование Y7.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "M2 одновременно обозначает вентилятор и циркуляционный насос Пн5.1 на листе33.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": "На просмотренной схеме M2 у вентилятора Пн5.1р и отдельно у насоса Пн5.1; разные цепи Пн5.1-9 и Пн5.1-21."
+        },
+        {
+          "claim": "Вентилятор с M2 принадлежит Вн5.1р.",
+          "verdict": "refuted_direct_graphic",
+          "limits": "В заголовке столбца M2 указано Пн5.1р. Вн5.1р относится к столбцу M4. Нельзя считать разные написания признаком двух независимых конфликтов M2."
+        },
+        {
+          "claim": "Y7 повторён у клапана теплоносителя Пн5.1 и воздушного клапана Вн5.1.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": "Раздельные столбцы, функции и цепи показаны. Это самостоятельный конфликт, не дубль M2. Окончательные заводские номера не назначены."
+        },
+        {
+          "claim": "Риск ошибочной идентификации при монтаже.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические монтаж и заводская маркировка не проверены. Документальная неоднозначность не доказывает ошибку выполненного подключения."
+        }
+      ],
+      "unsupported_additions": "В F-054 ошибочно указано Вн5.1р вместо Пн5.1р. Исправить адрес, сохранив факт повторного M2. Фактическая ошибка монтажа не установлена.",
+      "novel_useful_content": "Конфликты M2/Y7 уже представлены в эталоне; новый независимый прирост этими строками не доказан.",
+      "duplicate_burden": "confirmed_shared_M2_atom_F054_F055_preserve_distinct_Y7_in_F054",
+      "profile_and_section": "Документальные конфликты обозначений относятся к технической сверке. Фактическое распределение по разделам итогового отчёта здесь не проверялось.",
+      "engineer_reuse": "Самостоятельного решения инженера по этим blind-кандидатам в эталоне не найдено. Технический вывод основан на исходной графике, не на согласии модели.",
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34",
+          "finding_ids": [
+            "F-054",
+            "F-055"
+          ]
+        },
+        {
+          "source": "direct_graphic_review_original_resolution",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+          "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+          "observations": [
+            "M2: вентилятор Пн5.1р, линия Пн5.1-9; насос Пн5.1, линия Пн5.1-21",
+            "Y7: регулирующий клапан теплоносителя Пн5.1 и воздушный клапан Вн5.1"
+          ]
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065"
+        }
+      ],
+      "disposition": "assessed_preserve_M2_and_Y7_correct_fan_identity_merge_repeated_M2"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-055",
+      "finding": {
+        "id": "F-055",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "device_identification",
+        "sheet": "Лист 33",
+        "page": 37,
+        "problem": "На схеме внешних подключений ШАУВ-4-К5ПЧ, лист 33, обозначение М2 присвоено двум разным устройствам: электродвигателю вентилятора Пн5.1р и электродвигателю циркуляционного насоса Пн5.1. Позиция М2 не обеспечивает однозначную идентификацию оборудования.",
+        "description": "На схеме внешних подключений ШАУВ-4-К5ПЧ, лист 33, обозначение М2 присвоено двум разным устройствам: электродвигателю вентилятора Пн5.1р и электродвигателю циркуляционного насоса Пн5.1. Позиция М2 не обеспечивает однозначную идентификацию оборудования.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Однозначность позиционных обозначений и связи устройств со схемами.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-076"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-075",
+                  "G-076"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Присвоить двигателям разные позиционные обозначения и согласовать их в связанных схемах.",
+        "risk": "Ошибочная идентификация насоса, вентилятора и клапанов при монтаже.",
+        "source_finding_ids": [
+          "G-076"
+        ],
+        "source_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "related_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+            "page": 37
+          }
+        ],
+        "highlight_regions": [],
+        "source_stage": "stage01_atomicity_guard",
+        "atomicity_guard": {
+          "split_from": "F-054",
+          "reason": "distinct_nonrecommendational_candidates_same_block"
+        },
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-076",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "disputed",
+          "relations": [
+            {
+              "relation": "disputed",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают дублирование М2 у вентилятора и насоса Пн5.1, но противоречат друг другу в принадлежности вентилятора: слева Вн5.1р, справа Пн5.1р. Слева дополнительно отмечено дублирование Y7.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "M2 одновременно обозначает вентилятор и циркуляционный насос Пн5.1 на листе33.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": "На просмотренной схеме M2 у вентилятора Пн5.1р и отдельно у насоса Пн5.1; разные цепи Пн5.1-9 и Пн5.1-21."
+        },
+        {
+          "claim": "Вентилятор с M2 принадлежит Пн5.1р.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": "В заголовке столбца M2 указано Пн5.1р. Вн5.1р относится к столбцу M4. Нельзя считать разные написания признаком двух независимых конфликтов M2."
+        },
+        {
+          "claim": "Риск ошибочной идентификации при монтаже.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические монтаж и заводская маркировка не проверены. Документальная неоднозначность не доказывает ошибку выполненного подключения."
+        }
+      ],
+      "unsupported_additions": "Риск упоминает клапаны, хотя данная строка раскрывает только M2. Клапанный конфликт Y7 содержится в F-054; не считать его второй новой находкой F-055.",
+      "novel_useful_content": "Конфликты M2/Y7 уже представлены в эталоне; новый независимый прирост этими строками не доказан.",
+      "duplicate_burden": "confirmed_shared_M2_atom_F054_F055_preserve_distinct_Y7_in_F054",
+      "profile_and_section": "Документальные конфликты обозначений относятся к технической сверке. Фактическое распределение по разделам итогового отчёта здесь не проверялось.",
+      "engineer_reuse": "Самостоятельного решения инженера по этим blind-кандидатам в эталоне не найдено. Технический вывод основан на исходной графике, не на согласии модели.",
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34",
+          "finding_ids": [
+            "F-054",
+            "F-055"
+          ]
+        },
+        {
+          "source": "direct_graphic_review_original_resolution",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+          "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+          "observations": [
+            "M2: вентилятор Пн5.1р, линия Пн5.1-9; насос Пн5.1, линия Пн5.1-21",
+            "Y7: регулирующий клапан теплоносителя Пн5.1 и воздушный клапан Вн5.1"
+          ]
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065"
+        }
+      ],
+      "disposition": "assessed_repeated_M2_atom_merge_with_F054_keep_correct_Pn5_1r"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Direct review of GRAPHIC source at original resolution; identifies one shared M2 atom, independent Y7 atom and erroneous fan system in F-054. Frozen findings and coverage links preserved. No runtime change, new engineer decision or measured review-time claim."
+}
