@@ -1,0 +1,911 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "9848995cabdc4db4bc42c45042869f517cab2aed37a5540fe01dbe395606c946",
+  "queue_after_sha256": "9182e0477f044eabf2f566a4cedb458748b851267dd168c5860a80e6536b7145",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-043",
+      "finding": {
+        "id": "F-043",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Диапазоны реле давления",
+        "sheet": "Листы 9, 13",
+        "page": [
+          13,
+          17
+        ],
+        "problem": "Диапазоны PDS3 систем Пкр4.1 и Пкр5.1 не согласованы.",
+        "description": "Функциональные схемы указывают для PDS3 диапазон 20–200 Па, перечни элементов — 50–500 Па. Для ШАУВ-2-К5ПЧ диапазон 50–500 Па также приведён в спецификации.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Согласованность характеристик приборов на схемах и в перечнях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-009",
+                "G-010",
+                "G-019",
+                "G-020"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-009",
+                  "G-010",
+                  "G-019",
+                  "G-020"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить требуемый диапазон каждого PDS3 и исправить связанные документы.",
+        "risk": "Поставка приборов с несогласованным диапазоном настройки.",
+        "source_finding_ids": [
+          "G-009",
+          "G-010",
+          "G-019",
+          "G-020"
+        ],
+        "source_block_ids": [
+          "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "blk_4e142b330766407099c7d561f0a8eb6a"
+        ],
+        "related_block_ids": [
+          "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "blk_4e142b330766407099c7d561f0a8eb6a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+            "page": 13
+          },
+          {
+            "type": "text",
+            "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+            "page": 17
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие для PDS3 системы Пкр4.1: диапазон 20–200 Па на функциональной схеме и 50–500 Па в перечне элементов. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие для PDS3 системы Пкр4.1: диапазон 20–200 Па на функциональной схеме и 50–500 Па в перечне элементов. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "PDS3 Пкр4.1 и Пкр5.1:20–200Па в схемах против50–500Па перечней.",
+          "verdict": "confirmed_same_source_TEXT_and_GRAPHIC",
+          "limits": "Два разных адреса сохранены в одной строке. Объединение не увеличивает число обнаруженных приборов."
+        },
+        {
+          "claim": "Для ШАУВ-2-К5ПЧ50–500 также вСО.",
+          "verdict": "confirmed_same_source_cross_document_identity",
+          "limits": "СО7.3 содержит3 датчика; не доказывает отказ при уставке50Па, входящей в оба диапазона."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Разница диапазонов не доказывает отказ при уставке внутри обоих; повтор клемм не доказывает физическое соединение. Нормативные кандидаты отдельно не подтверждены.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Диапазонные конфликты сохранить; полные клеммные адреса согласовать как вопрос заводской документации. Фактическая маршрутизация отчёта не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+            "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+          },
+          "limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+          "wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+          "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78",
+          "route": "historical_engineer_decision_and_later_auditor_scope"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+          "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0",
+          "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pkr4.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-3-K4PCh. Right register not used to override TEXT.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+          "sha256": "4abaff5efb5a1c9a6466cb37fc407035b9aa2c5cb6afe3a9dfa885c05c4aff01",
+          "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pkr5.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-2-K5PCh.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-042",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+            "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+          },
+          "limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+          "wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+          "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78",
+          "route": "historical_engineer_decision_and_later_auditor_scope"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+          "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0",
+          "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pkr4.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-3-K4PCh. Right register not used to override TEXT.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+          "sha256": "4abaff5efb5a1c9a6466cb37fc407035b9aa2c5cb6afe3a9dfa885c05c4aff01",
+          "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pkr5.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-2-K5PCh.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-042",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-043"
+        }
+      ],
+      "disposition": "assessed_r3_pressure_range_or_terminal_address_with_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-048",
+      "finding": {
+        "id": "F-048",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Диапазоны реле давления",
+        "sheet": "Лист 18",
+        "page": 22,
+        "problem": "Диапазоны PDS2–PDS4 не совпадают в таблице сигналов и перечне.",
+        "description": "Таблица сигналов задаёт 20–200 Па, перечень элементов — приборы 50–500 Па. Участок 20–50 Па вторым диапазоном не покрывается, хотя сама уставка 100 Па находится в обоих диапазонах.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Согласованность диапазонов приборов в частях рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-043"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-043"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить требуемые диапазоны и согласовать таблицу с выбранными приборами.",
+        "risk": "Неоднозначный заказ и невозможность части заявленных настроек.",
+        "source_finding_ids": [
+          "G-043"
+        ],
+        "source_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9"
+        ],
+        "related_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+            "page": 22
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-043",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Лист18: PDS2–PDS4 Па4.1/Ва4.1, таблица20–200 против перечня50–500.",
+          "verdict": "confirmed_same_source_TEXT_and_GRAPHIC",
+          "limits": "Прежняя проверка связывает приборы с колонками10/20/26; текущая строка колонок не приводит."
+        },
+        {
+          "claim": "Участок20–50 не покрыт,100Па находится в обоих диапазонах.",
+          "verdict": "confirmed_numeric_membership",
+          "limits": "Потребность уставки в20–50 не установлена. Различие диапазонов сохранить, фактическую непригодность не утверждать."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Разница диапазонов не доказывает отказ при уставке внутри обоих; повтор клемм не доказывает физическое соединение. Нормативные кандидаты отдельно не подтверждены.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Диапазонные конфликты сохранить; полные клеммные адреса согласовать как вопрос заводской документации. Фактическая маршрутизация отчёта не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT",
+          "block_id": "blk_51ab9fc59a1a45e98c268dec561eed08",
+          "quote": "| PDS1-PDS4 | Датчик давления дифференциальный 50-500 Па | 4 |  |",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+          "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+          "route": "direct_GRAPHIC_review",
+          "directly_viewed": true,
+          "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+          "observations": "Прослежены отборы PDS2/PDS3/PDS4 и линии 10/20/26 к таблице. В колонках 10/20/26 диапазон 20–200 Па; на трёх приборах уставка 100 Па. Видно примечание об уточнении предельных рабочих значений при ПНР.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-056"
+        }
+      ],
+      "disposition": "assessed_r3_pressure_range_or_terminal_address_with_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-053",
+      "finding": {
+        "id": "F-053",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Клеммные подключения",
+        "sheet": "Листы 28, 32",
+        "page": [
+          32,
+          36
+        ],
+        "problem": "Одинаковые номера клемм назначены разным цепям без различения клеммников.",
+        "description": "В ШАУВ-4-К4ПЧ номера 29–30 повторены у L/N однофазного М1 и U/V трёхфазного М2. В ШАУВ-3-К5ПЧ клеммы 23–24 повторены у PDS4 и PDS5, 29–31 — у М1 и М2. Примечание об уточнении нумерации изготовителем не устраняет неоднозначность схемы.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Однозначность адресов внешних подключений и обозначений зажимов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-067",
+                "G-068",
+                "G-073",
+                "G-074"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-067",
+                  "G-068",
+                  "G-073",
+                  "G-074"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать нумерацию с изготовителем; при повторении номеров указать разные клеммники.",
+        "risk": "Соединение несовместимых силовых цепей или ошибочное подключение датчиков.",
+        "source_finding_ids": [
+          "G-067",
+          "G-068",
+          "G-073",
+          "G-074"
+        ],
+        "source_block_ids": [
+          "blk_96ed7d88fb23414bb14d93191a89365a",
+          "blk_f784be4786274e8c84f32d874ed99969"
+        ],
+        "related_block_ids": [
+          "blk_96ed7d88fb23414bb14d93191a89365a",
+          "blk_f784be4786274e8c84f32d874ed99969"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+            "page": 32
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+            "page": 36
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-067",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-068",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-073",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-074",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на повторное назначение клемм 29 и 30 цепям L/N двигателя М1 и U/V двигателя М2 в ШАУВ-4-К4ПЧ на листе 28; детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на повторное назначение клемм 29 и 30 цепям L/N двигателя М1 и U/V двигателя М2 в ШАУВ-4-К4ПЧ на листе 28; детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK14:65ea2c2649999f640c83",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F054_F055_terminal_number_scope:62cc730e92af787c8d46",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F054_F055_terminal_number_scope:0fadfeadec26c587750e",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К4ПЧ-4:29/30 уM1/M2; К5ПЧ-3:23/24 уPDS4/PDS5 и29–31 уM1/M2.",
+          "verdict": "confirmed_same_source_GRAPHIC",
+          "limits": "Три адресные группы в двух шкафах. Не считать общийPE самостоятельным конфликтом."
+        },
+        {
+          "claim": "Примечание изготовителя не устраняет неоднозначность; указать разные клеммники при повторе номеров.",
+          "verdict": "supported_full_address_question",
+          "limits": "Примечания присутствуют. Полные адреса могут различить группы без обязательной перенумерации."
+        },
+        {
+          "claim": "Несовместимые цепи физически соединены.",
+          "verdict": "not_established",
+          "limits": "Повтор подписи не доказывает электрическое соединение; внутренние схемы и монтаж не проверены."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Разница диапазонов не доказывает отказ при уставке внутри обоих; повтор клемм не доказывает физическое соединение. Нормативные кандидаты отдельно не подтверждены.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Диапазонные конфликты сохранить; полные клеммные адреса согласовать как вопрос заводской документации. Фактическая маршрутизация отчёта не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5dea9af6d2bd4d0ea0674db8bd79f38c",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_053f940839a3432681679d67d2fdadda",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK14.json",
+          "sha256": "bb941339701a63e2ae2989a1dda9e5e8cd9aae4f8eb3639899fd049ebf73280a",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json",
+            "sha256": "487d04234ff08cce0f4a72e3675111dea1bc7b8fbb8d6941d61f47bb64a4ec5a"
+          },
+          "limits": "Примечание об уточнении у изготовителя не доказывает устранение неоднозначности; фактическое ошибочное подключение не установлено.",
+          "wording": "Сохранить одну системную тему неоднозначных клеммных адресов с адресами шкафов."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены повторные подписи, а не физическое объединение цепей. Внутренние соединения шкафов и фактический монтаж не проверены.",
+            "Уточнение заводской нумерации предусмотрено самой документацией. Нельзя представлять запрос как обнаруженный пропуск указания проектировщика.",
+            "Раздельная нумерация разных клеммников — возможное объяснение, но применительно к спорным группам оно не доказано. Примечание не доказывает, что все номера уже согласованы.",
+            "Не назначать новые номера и не требовать разъединения цепей без заводских схем. Нормативное нарушение, отказ и решение инженера не установлены."
+          ],
+          "wording": "Уточнить по заводским схемам полные обозначения клемм: в ШАУВ-4-К4ПЧ номера29/30 повторяются у M1/M2; в ШАУВ-3-К5ПЧ пары23/24 повторяются у PDS4/PDS5, номера29–31 — у M1/M2. Примечания листов28/32 предусматривают уточнение нумерации у изготовителя; проверить, различаются ли группы обозначениями клеммников."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены повторные подписи, а не физическое объединение цепей. Внутренние соединения шкафов и фактический монтаж не проверены.",
+            "Уточнение заводской нумерации предусмотрено самой документацией. Нельзя представлять запрос как обнаруженный пропуск указания проектировщика.",
+            "Раздельная нумерация разных клеммников — возможное объяснение, но применительно к спорным группам оно не доказано. Примечание не доказывает, что все номера уже согласованы.",
+            "Не назначать новые номера и не требовать разъединения цепей без заводских схем. Нормативное нарушение, отказ и решение инженера не установлены."
+          ],
+          "wording": "Уточнить по заводским схемам полные обозначения клемм: в ШАУВ-4-К4ПЧ номера29/30 повторяются у M1/M2; в ШАУВ-3-К5ПЧ пары23/24 повторяются у PDS4/PDS5, номера29–31 — у M1/M2. Примечания листов28/32 предусматривают уточнение нумерации у изготовителя; проверить, различаются ли группы обозначениями клеммников."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены повторные подписи, а не физическое объединение цепей. Внутренние соединения шкафов и фактический монтаж не проверены.",
+            "Уточнение заводской нумерации предусмотрено самой документацией. Нельзя представлять запрос как обнаруженный пропуск указания проектировщика.",
+            "Раздельная нумерация разных клеммников — возможное объяснение, но применительно к спорным группам оно не доказано. Примечание не доказывает, что все номера уже согласованы.",
+            "Не назначать новые номера и не требовать разъединения цепей без заводских схем. Нормативное нарушение, отказ и решение инженера не установлены."
+          ],
+          "wording": "Уточнить по заводским схемам полные обозначения клемм: в ШАУВ-4-К4ПЧ номера29/30 повторяются у M1/M2; в ШАУВ-3-К5ПЧ пары23/24 повторяются у PDS4/PDS5, номера29–31 — у M1/M2. Примечания листов28/32 предусматривают уточнение нумерации у изготовителя; проверить, различаются ли группы обозначениями клеммников."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_96ed7d88fb23414bb14d93191a89365a.png",
+          "sha256": "8e69fe04c4bd1743063db50a61e17c1813f8a1214949ff6c8855abc3ed3bf1bb",
+          "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "M1 L/N29/30, M2 U/V29/30, drawn as separate cables. No electrical bridge shown between these groups.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_96ed7d88fb23414bb14d93191a89365a.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f784be4786274e8c84f32d874ed99969.png",
+          "sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2",
+          "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "PDS4 and PDS5 both23/24; M1 and M2 both29/30/31, separate cables.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f784be4786274e8c84f32d874ed99969.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-054",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5dea9af6d2bd4d0ea0674db8bd79f38c",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_053f940839a3432681679d67d2fdadda",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK14.json",
+          "sha256": "bb941339701a63e2ae2989a1dda9e5e8cd9aae4f8eb3639899fd049ebf73280a",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json",
+            "sha256": "487d04234ff08cce0f4a72e3675111dea1bc7b8fbb8d6941d61f47bb64a4ec5a"
+          },
+          "limits": "Примечание об уточнении у изготовителя не доказывает устранение неоднозначности; фактическое ошибочное подключение не установлено.",
+          "wording": "Сохранить одну системную тему неоднозначных клеммных адресов с адресами шкафов."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены повторные подписи, а не физическое объединение цепей. Внутренние соединения шкафов и фактический монтаж не проверены.",
+            "Уточнение заводской нумерации предусмотрено самой документацией. Нельзя представлять запрос как обнаруженный пропуск указания проектировщика.",
+            "Раздельная нумерация разных клеммников — возможное объяснение, но применительно к спорным группам оно не доказано. Примечание не доказывает, что все номера уже согласованы.",
+            "Не назначать новые номера и не требовать разъединения цепей без заводских схем. Нормативное нарушение, отказ и решение инженера не установлены."
+          ],
+          "wording": "Уточнить по заводским схемам полные обозначения клемм: в ШАУВ-4-К4ПЧ номера29/30 повторяются у M1/M2; в ШАУВ-3-К5ПЧ пары23/24 повторяются у PDS4/PDS5, номера29–31 — у M1/M2. Примечания листов28/32 предусматривают уточнение нумерации у изготовителя; проверить, различаются ли группы обозначениями клеммников."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены повторные подписи, а не физическое объединение цепей. Внутренние соединения шкафов и фактический монтаж не проверены.",
+            "Уточнение заводской нумерации предусмотрено самой документацией. Нельзя представлять запрос как обнаруженный пропуск указания проектировщика.",
+            "Раздельная нумерация разных клеммников — возможное объяснение, но применительно к спорным группам оно не доказано. Примечание не доказывает, что все номера уже согласованы.",
+            "Не назначать новые номера и не требовать разъединения цепей без заводских схем. Нормативное нарушение, отказ и решение инженера не установлены."
+          ],
+          "wording": "Уточнить по заводским схемам полные обозначения клемм: в ШАУВ-4-К4ПЧ номера29/30 повторяются у M1/M2; в ШАУВ-3-К5ПЧ пары23/24 повторяются у PDS4/PDS5, номера29–31 — у M1/M2. Примечания листов28/32 предусматривают уточнение нумерации у изготовителя; проверить, различаются ли группы обозначениями клеммников."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены повторные подписи, а не физическое объединение цепей. Внутренние соединения шкафов и фактический монтаж не проверены.",
+            "Уточнение заводской нумерации предусмотрено самой документацией. Нельзя представлять запрос как обнаруженный пропуск указания проектировщика.",
+            "Раздельная нумерация разных клеммников — возможное объяснение, но применительно к спорным группам оно не доказано. Примечание не доказывает, что все номера уже согласованы.",
+            "Не назначать новые номера и не требовать разъединения цепей без заводских схем. Нормативное нарушение, отказ и решение инженера не установлены."
+          ],
+          "wording": "Уточнить по заводским схемам полные обозначения клемм: в ШАУВ-4-К4ПЧ номера29/30 повторяются у M1/M2; в ШАУВ-3-К5ПЧ пары23/24 повторяются у PDS4/PDS5, номера29–31 — у M1/M2. Примечания листов28/32 предусматривают уточнение нумерации у изготовителя; проверить, различаются ли группы обозначениями клеммников."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_96ed7d88fb23414bb14d93191a89365a.png",
+          "sha256": "8e69fe04c4bd1743063db50a61e17c1813f8a1214949ff6c8855abc3ed3bf1bb",
+          "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "M1 L/N29/30, M2 U/V29/30, drawn as separate cables. No electrical bridge shown between these groups.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_96ed7d88fb23414bb14d93191a89365a.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f784be4786274e8c84f32d874ed99969.png",
+          "sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2",
+          "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "PDS4 and PDS5 both23/24; M1 and M2 both29/30/31, separate cables.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f784be4786274e8c84f32d874ed99969.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-054",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-063"
+        }
+      ],
+      "disposition": "assessed_r3_pressure_range_or_terminal_address_with_limits"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Three current range and terminal findings reviewed against five frozen prior source inspections. All local hashes and r3 MD/PNG identity checked. No new graphic view or engineer decision claimed."
+}
