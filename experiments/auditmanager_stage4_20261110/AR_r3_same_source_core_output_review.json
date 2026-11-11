@@ -1,0 +1,2811 @@
+{
+  "status": "same_source_atomic_review_with_limits",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AR_output_review_queue.json",
+  "queue_before_sha256": "b262dfb450bf73d7905f9a9da88026207b6f5f3380e25062b27cbaacb2c7113d",
+  "queue_after_sha256": "853c6aecf6d58ece8880e33f5cdfb2b0f59ec8d14c0f6017e146d99c6cc8b4b4",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Оформление документации",
+        "sheet": "Листы 1, 10, 12",
+        "page": [
+          3,
+          12,
+          14,
+          15
+        ],
+        "problem": "Дублируется номер листа 12 и нарушена согласованность перекрёстных ссылок.",
+        "description": "Согласно текстовому анализу, номер 12 присвоен листам «Узлы» и «Светопрозрачное ограждение кровли», а лист 13 отсутствует в ведомости при наличии ссылки на него на листе 10. Метаданные графического анализа также обозначают страницы 14 и 15 как «Лист 12». Исходные основные надписи на этом этапе визуально не проверены.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к нумерации листов, ведомости рабочих чертежей и согласованности ссылок.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить основные надписи, присвоить листам однозначные номера и одновременно исправить ведомость и ссылки на листы.",
+        "risk": "Ошибки поиска и выдачи чертежей, применение неверного листа при производстве работ.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_9229dc363c184ae3abca81013e330dfa",
+          "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "blk_da80f01d01214295afe19fe6063fe5e1",
+          "blk_d9481af62d6447f6b591d328f7d0d3a9",
+          "blk_c725ce887579494f86b4968fc113b951"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 30,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F008_sheet_register:3b6bd4f3bacbcd4e30ae",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В ведомости две строки12, нет13; лист10 ссылается на13. Метаданные страниц14/15 называют лист12.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Физические штампы не прочитаны повторно; метаданные не самостоятельное графическое подтверждение. Отсутствие чертежа не доказано."
+        },
+        {
+          "claim": "Сверить основные надписи, присвоить листам однозначные номера и одновременно исправить ведомость и ссылки на листы.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Сверить штампы и состав, согласовать номера и ссылки; не назначать13 конкретному листу автоматически."
+        },
+        {
+          "claim": "Ошибки поиска и выдачи чертежей, применение неверного листа при производстве работ.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "Физические штампы не прочитаны повторно; метаданные не самостоятельное графическое подтверждение. Отсутствие чертежа не доказано.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "Одна строка на самостоятельный вопрос: нумерация, адреса КМ или область примечания. Повторные ссылки внутри одного вопроса не считать отдельными дефектами.",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "Исторические решения применимы лишь к совпадающему тезису; инженерное принятие всей новой формулировки и фактическое время проверки не установлены.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_da80f01d01214295afe19fe6063fe5e1",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_2f3068ab00334ed49a43fbc0d168a15b",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F008_sheet_register.json",
+          "sha256": "b35cb86bcd0ba6f11196bc1af9696e6dc5296f7cbe34ae124a24876558cdb29f",
+          "primary_adjudication": null,
+          "limits": "Подтверждено дублирование номера в ведомости; подготовленная карта страниц MD также обозначает страницы 14/15 номером 12. Это не независимая визуальная проверка оригинальных штампов. Отсутствие самого чертежа, неправильное изготовление и правильный номер для перенумерации не установлены. Ссылка на лист 13 не называет конкретный узел или чертёж ограждения.",
+          "wording": "Уточнить нумерацию в ведомости рабочих чертежей АР6.2: номер 12 указан для «Узлы» и «Светопрозрачное ограждение кровли», строки 13 нет. При этом примечание листа 10 требует совместного рассмотрения с листом 13. Согласовать ведомость и адрес ссылки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d9481af62d6447f6b591d328f7d0d3a9",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observed_metadata": "> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 12 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.1) | Наименование листа: Узлы | Organization: GLOBUS PROJECT | Revisions: Не указано"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_c725ce887579494f86b4968fc113b951",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observed_metadata": "> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 12 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.1) | Наименование листа: Светопрозрачное ограждение кровли | Organization: GLOBUS PROJECT | Revisions: Не указано"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_after_identical_source_hash_check_and_current_wording_review",
+          "finding_id": "F-001",
+          "limits": "Historical decisions reused only within their stated scope. Current authoritative TEXT read directly; physical stamps and plan graphics not newly inspected."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-001",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-001",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Общие указания содержат несогласованные обозначения редакций нормативных документов.",
+        "description": "В пункте 15 указаний по зимним работам приведены СП 48.13330.2011 и СП 45.13330.2012, а в ведомости ссылочных документов для организации строительства указан СП 48.13330.2019. Текстовый анализ предварительно относит первые два обозначения к заменённым; проверка статуса и применимости на дату выпуска комплекта не представлена.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), кандидат п. 4.2.5",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к оформлению общих данных и ведомости ссылочных документов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.2.5",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить применимые редакции на дату выпуска документации и согласовать обозначения в общих указаниях и ведомости ссылочных документов.",
+        "risk": "Неоднозначное применение требований при производстве и приёмке работ.",
+        "source_finding_ids": [
+          "T-002"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_9229dc363c184ae3abca81013e330dfa",
+          "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "blk_da80f01d01214295afe19fe6063fe5e1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 38,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F001_sp_editions:0fa6c5d50247757e829d",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AR_F001_sp_editions:8f90690c3dc52ad03760",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пункт15 зимних работ: СП48.13330.2011 и45.13330.2012, ведомость: СП48.13330.2019.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "В третьем повторе отсутствует утверждение о конкретном преемнике СП45; статус и применимость прямо оставлены непроверенными. Исторические карточки не доказывают нарушение работ."
+        },
+        {
+          "claim": "Установить применимые редакции на дату выпуска документации и согласовать обозначения в общих указаниях и ведомости ссылочных документов.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Согласовать редакции по нормативной базе проекта; вопрос ссылок, не самостоятельный технический дефект."
+        },
+        {
+          "claim": "Неоднозначное применение требований при производстве и приёмке работ.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "В третьем повторе отсутствует утверждение о конкретном преемнике СП45; статус и применимость прямо оставлены непроверенными. Исторические карточки не доказывают нарушение работ.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "distinct_atomic_scope_keep_partial_supported_content",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_6ef90a858b8e47e1ac668fa68744b9f2",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_2c751cd478764bae9d5e0b1df794ad89",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+          "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3",
+          "primary_adjudication": null,
+          "limits": "Пункт15 относится к зимним работам. Не проверены применимость редакций к дате/основаниям разработки, переходные положения, ППР и конкретные различия требований. Нет доказательства, что подрядчик уже применил или обязательно применит неверные требования. НаличиеСП45 в кровельном альбоме само по себе не доказывает непрофильность: ссылка находится в общем перечне, а смежные работы не проверены. Из дат официальной карточки не выводится самостоятельное юридическое заключение.",
+          "wording": "В АР6.2, лист1, п.15 о зимних работах содержит СП48.13330.2011 иСП45.13330.2012, тогда как ведомость ссылается наСП48.13330.2019. Уточнить применимые редакции и согласовать ссылки: официально подтверждены замены48.13330.2011→48.13330.2019 и45.13330.2012→45.13330.2017."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+          "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3",
+          "primary_adjudication": null,
+          "limits": "Пункт15 относится к зимним работам. Не проверены применимость редакций к дате/основаниям разработки, переходные положения, ППР и конкретные различия требований. Нет доказательства, что подрядчик уже применил или обязательно применит неверные требования. НаличиеСП45 в кровельном альбоме само по себе не доказывает непрофильность: ссылка находится в общем перечне, а смежные работы не проверены. Из дат официальной карточки не выводится самостоятельное юридическое заключение.",
+          "wording": "В АР6.2, лист1, п.15 о зимних работах содержит СП48.13330.2011 иСП45.13330.2012, тогда как ведомость ссылается наСП48.13330.2019. Уточнить применимые редакции и согласовать ссылки: официально подтверждены замены48.13330.2011→48.13330.2019 и45.13330.2012→45.13330.2017."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_identical_sources_current_wording_checked",
+          "finding_id": "F-002",
+          "limits": "No new normative applicability conclusion or engineer verdict."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-003",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-002",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-003",
+      "finding": {
+        "id": "F-003",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Согласованность комплектов документации",
+        "sheet": "Листы 2, 3, 8, 10",
+        "page": [
+          4,
+          5,
+          10,
+          12
+        ],
+        "problem": "Ссылки на комплекты металлических конструкций лестниц и ограждений противоречат друг другу.",
+        "description": "На листе 8 ограждения отнесены к КМ5.2, лестницы — к КМ6.2. На листе 10 ограждения отнесены к КМ4.2, лестницы — к КМ5.2. Графический анализ отдельно фиксирует для лестниц КМ5.2 в примечании 6 листа 10 и КМ6.2 в примечании 2 листов 2 и 3. Правильное обозначение комплекта по представленным данным не установлено.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к обозначениям основных комплектов и ссылкам на связанные рабочие чертежи.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003",
+                "G-017",
+                "G-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003",
+                  "G-017",
+                  "G-018"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить состав выданной документации КМ и исправить ссылки на лестницы и ограждения во всех затронутых листах.",
+        "risk": "Изготовление или монтаж элементов по неподходящим деталям, задержки согласования и переделки.",
+        "source_finding_ids": [
+          "T-003",
+          "G-017",
+          "G-018"
+        ],
+        "source_block_ids": [
+          "blk_ec74ee6311844434b2aab7ca7f844085"
+        ],
+        "related_block_ids": [
+          "blk_ec74ee6311844434b2aab7ca7f844085",
+          "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+          "blk_092e358681fc45ada6058a3f894b2582",
+          "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "blk_2f3068ab00334ed49a43fbc0d168a15b",
+          "blk_6ff6b58a285e4ec1b276342a846e08e7",
+          "blk_747f574e1fa54f62aa0ad09874faa314"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_ec74ee6311844434b2aab7ca7f844085",
+            "page": 12
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно несоответствие ссылок на конструкции кровельных лестниц: КМ5.2 в примечании 6 листа 10 и КМ6.2 в примечании 2 листов 2 и 3. Детализация и рекомендации эквивалентны; различие в оценке серьёзности не является противоречием по факту.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно несоответствие ссылок на конструкции кровельных лестниц: КМ5.2 в примечании 6 листа 10 и КМ6.2 в примечании 2 листов 2 и 3. Детализация и рекомендации эквивалентны; различие в оценке серьёзности не является противоречием по факту.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F007_KM_references:b89d5f235921cd9de65b",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AR_F007_KM_references:b06b284a61699380958a",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Ограждения: КМ5.2 лист8/КМ4.2 лист10; лестницы: КМ6.2/КМ5.2; листы2/3 также КМ6.2.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Сами смежные комплекты не проверены; частота ссылки не определяет правильный шифр."
+        },
+        {
+          "claim": "Сверить состав выданной документации КМ и исправить ссылки на лестницы и ограждения во всех затронутых листах.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Сверить состав выпущенной КМ и исправить подтверждённо неверные адреса."
+        },
+        {
+          "claim": "Изготовление или монтаж элементов по неподходящим деталям, задержки согласования и переделки.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "Сами смежные комплекты не проверены; частота ссылки не определяет правильный шифр.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "Одна строка на самостоятельный вопрос: нумерация, адреса КМ или область примечания. Повторные ссылки внутри одного вопроса не считать отдельными дефектами.",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "Исторические решения применимы лишь к совпадающему тезису; инженерное принятие всей новой формулировки и фактическое время проверки не установлены.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_6ff6b58a285e4ec1b276342a846e08e7",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_2f3068ab00334ed49a43fbc0d168a15b",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_856c9c095c754ef5a3e0444e6c1aacd7",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_b29aa98eb0994f5c8f5901f9aa255c41",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
+          "sha256": "ce707aee07ee4cfe839a3ab5f6c83717d449ac8da6a8d1e7fbab4b49feb44bde",
+          "primary_adjudication": null,
+          "limits": "Подтверждено различие адресов для одинаково названных конструкций и секций. Правильный шифр не установлен: повтор КМ6.2 не заменяет проверки самого комплекта. Неверное изготовление, отсутствие узлов и конструктивная непригодность не доказаны. Исторический проект дисциплины КМ нельзя автоматически считать смежным комплектом этого АР без проверки объекта, шифра и версии.",
+          "wording": "Согласовать ссылки на комплекты КМ: ограждения парапетов секций С2/С3 на листе 8 отнесены к КМ5.2, на листе 10 — к КМ4.2. Лестницы и стремянки этих секций отнесены соответственно к КМ6.2 и КМ5.2; примечание листа 2 также ссылается для лестниц на КМ6.2."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
+          "sha256": "ce707aee07ee4cfe839a3ab5f6c83717d449ac8da6a8d1e7fbab4b49feb44bde",
+          "primary_adjudication": null,
+          "limits": "Подтверждено различие адресов для одинаково названных конструкций и секций. Правильный шифр не установлен: повтор КМ6.2 не заменяет проверки самого комплекта. Неверное изготовление, отсутствие узлов и конструктивная непригодность не доказаны. Исторический проект дисциплины КМ нельзя автоматически считать смежным комплектом этого АР без проверки объекта, шифра и версии.",
+          "wording": "Согласовать ссылки на комплекты КМ: ограждения парапетов секций С2/С3 на листе 8 отнесены к КМ5.2, на листе 10 — к КМ4.2. Лестницы и стремянки этих секций отнесены соответственно к КМ6.2 и КМ5.2; примечание листа 2 также ссылается для лестниц на КМ6.2."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_after_identical_source_hash_check_and_current_wording_review",
+          "finding_id": "F-009",
+          "limits": "Historical decisions reused only within their stated scope. Current authoritative TEXT read directly; physical stamps and plan graphics not newly inspected."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-002",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-003",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Комплектация и объёмы материалов",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Количество регулируемых опор задано дробными значениями в штуках.",
+        "description": "Для покрытий К-3 и К-4 указаны соответственно 75,82 и 2144,84 шт. регулируемых опор. Расчётные значения расхода не преобразованы в целое количество изделий по фактической раскладке.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.75,
+            "reason": "Проверить требования к представлению количества изделий и оформлению комплектующих в рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подсчитать опоры по раскладке плит с учётом крайних, угловых и подрезанных участков; внести целое количество изделий в ведомость.",
+        "risk": "Недокомплект или избыточная закупка опор, дополнительные поставки и изменение стоимости.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 74,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-AR-F-004:5ba89cb25036827448d4",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Ведомость К-3/К-4 содержит75,82/2144,84шт. опор.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Дробный расчётный расход не доказывает поставку доли изделия. Третий повтор не предлагает автоматическое округление."
+        },
+        {
+          "claim": "Подсчитать опоры по раскладке плит с учётом крайних, угловых и подрезанных участков; внести целое количество изделий в ведомость.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Сохранить вопрос целого комплектовочного количества по раскладке; нехватка или избыточная закупка не установлены."
+        },
+        {
+          "claim": "Недокомплект или избыточная закупка опор, дополнительные поставки и изменение стоимости.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "Дробный расчётный расход не доказывает поставку доли изделия. Третий повтор не предлагает автоматическое округление.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "Different material quantities; do not count decimal discrepancy as equipment failure.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "Prior evidence hashes verified; revised wording and arithmetic assessed without inventing engineer acceptance.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json",
+          "sha256": "537a01df4ce22327d818b38016a5a600bc295ff1a19845640465f4f4af74e6d2",
+          "primary_adjudication": null,
+          "limits": "Это ведомость материалов, а не проверенный заказ поставщику; дробный расчётный расход не доказывает физическую поставку дробных опор или ошибку стоимости. Количество по раскладке не рассчитано; округление не назначать автоматически.",
+          "wording": "Уточнить комплектовочное число опор HILST для К-3/К-4: ведомость материалов содержит75,82 и2144,84шт.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json",
+          "route": "byte_identical_authoritative_source_reuse"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-007",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-004",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-005",
+      "finding": {
+        "id": "F-005",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Арифметика ведомостей",
+        "sheet": "Лист 8",
+        "page": 10,
+        "problem": "Итог длины ограждений отличается от суммы строк на 0,01 пог. м.",
+        "description": "Сумма 153,82 + 27,35 + 35,43 + 12,69 + 30,18 составляет 259,47 пог. м. В ведомости указан итог 259,48 пог. м. Расхождение может быть связано с использованием исходных значений большей точности, но такое основание не раскрыто.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.65,
+            "reason": "Проверить требования к согласованному представлению количественных данных в ведомостях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-005"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить итог на 259,47 пог. м либо пояснить порядок округления исходных величин.",
+        "risk": "Формальное расхождение количественных данных при проверке ведомости.",
+        "source_finding_ids": [
+          "T-005"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "blk_6ff6b58a285e4ec1b276342a846e08e7"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 18,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "expertise_formality",
+            "reference_register"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "153,82+27,35+35,43+12,69+30,18=259,47м; опубликован итог259,48м.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Разница0,01м может следовать из неокруглённых исходников. Их значения не восстановлены; технический дефект не доказан."
+        },
+        {
+          "claim": "Исправить итог на 259,47 пог. м либо пояснить порядок округления исходных величин.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Допустимо пояснить порядок округления вместо изменения итога. Малозначимое уточнение учитывать отдельно."
+        },
+        {
+          "claim": "Формальное расхождение количественных данных при проверке ведомости.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "Разница0,01м может следовать из неокруглённых исходников. Их значения не восстановлены; технический дефект не доказан.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "Different material quantities; do not count decimal discrepancy as equipment failure.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "Prior evidence hashes verified; revised wording and arithmetic assessed without inventing engineer acceptance.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-009",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-005",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-006",
+      "finding": {
+        "id": "F-006",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Комплектация и объёмы материалов",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Не раскрыто основание повышенного количества плитки покрытия К-3.",
+        "description": "Для К-3 указано 18,96 м² плитки при 10,84 м² геотекстиля и гидроизоляции. Разница составляет 8,12 м², или около 74,9%. Дополнительные участки, запас на подрезку либо другая причина различия не указаны. Всё превышение нельзя считать излишним материалом без проверки раскладки.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.75,
+            "reason": "Проверить требования к согласованности количественных данных ведомостей и рабочих чертежей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать плитку по раскладке, отдельно показать площадь покрытия и обоснованный запас, согласовать итог с ведомостью.",
+        "risk": "Необоснованное увеличение закупки и сметной стоимости либо неверное распределение материалов между участками.",
+        "source_finding_ids": [
+          "T-006"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 62,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "cost",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR36_B-AR-F-005:d576dd306cbd1e602f34",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Плитка К-3 18,96м² против геотекстиля/гидроизоляции10,84м²; разница8,12м², около74,9%.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Раскладка, вычеты и запас неизвестны. Отсутствие основания подтверждено лишь в проверенных строках; всё превышение не является доказанным излишком."
+        },
+        {
+          "claim": "Пересчитать плитку по раскладке, отдельно показать площадь покрытия и обоснованный запас, согласовать итог с ведомостью.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Сохранить запрос расчёта по границам и раскладке; не уравнивать площади всех слоёв и не вводить универсальный запас."
+        },
+        {
+          "claim": "Необоснованное увеличение закупки и сметной стоимости либо неверное распределение материалов между участками.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "Раскладка, вычеты и запас неизвестны. Отсутствие основания подтверждено лишь в проверенных строках; всё превышение не является доказанным излишком.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "Different material quantities; do not count decimal discrepancy as equipment failure.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "Prior evidence hashes verified; revised wording and arithmetic assessed without inventing engineer acceptance.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+          "sha256": "c0e65e558fcbde7f84022893578b1c64f1bf53f716100b3106a804db4280d657",
+          "primary_adjudication": null,
+          "limits": "Не назначать одинаковые площади всех слоёв без проверки геометрии; не считать1,4092м³ окончательной потребностью. Процент запаса К-4 не является универсальным допуском дляК-3. Избыток закупки и нехватка утеплителя не доказаны.",
+          "wording": "Проверить расчёт количеств К-3: покрытие10,8м², гидроизоляция/геотекстиль10,84м², плитка18,96м², утеплитель1,24м³ при указанном слое130мм. Раскрыть границы площадей, вычеты и запас.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+          "route": "byte_identical_authoritative_source_reuse"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-008",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-006",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-007",
+      "finding": {
+        "id": "F-007",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Материалы покрытий",
+        "sheet": "Листы 7, 11",
+        "page": [
+          9,
+          13
+        ],
+        "problem": "Для покрытий К-3 и К-4 одновременно заданы бетонная плитка и плитка из натурального камня.",
+        "description": "В конструкциях К-3 и К-4 на листе 7 предусмотрена бетонная тротуарная плитка толщиной 40 мм, для К-4 — со ссылкой на проект ЛД. В ведомости материалов этих покрытий указана плитка из натурального камня 600×600×40 мм. В текстовой таблице слоёв К-4 на листе 11 также указана бетонная плитка толщиной 40 мм. Материал финишного слоя неоднозначен; изделия требуют согласования по прочности и работе на отдельных опорах.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён; СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованному заданию материалов в ведомостях и узлах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007",
+                "G-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007",
+                  "G-001"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 17.13330.2017",
+            "cited_designation": "СП 17.13330.2017",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к защитному покрытию эксплуатируемой кровли и применению плит на опорах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007",
+                "G-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007",
+                  "G-001"
+                ],
+                "designation_source": "Подбор по предмету замечания и нормативным ссылкам проекта"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить единое изделие для каждого покрытия, согласовать его с проектом ЛД, расчётом и опорами; исправить ведомости и все таблицы слоёв.",
+        "risk": "Закупка неподходящего покрытия, изменение стоимости и нагрузки, повреждение плит при эксплуатации.",
+        "source_finding_ids": [
+          "T-007",
+          "G-001"
+        ],
+        "source_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645"
+        ],
+        "related_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645",
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "blk_ba73c64702884635a06b2882d4e2bf91",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение для К-3 и К-4: бетонная плитка 40 мм в конструкциях и натуральный камень 600×600×40 мм в ведомости материалов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 97,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "schedule",
+            "construction",
+            "operations"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_K3_K4_material:2c8cea013dfa60768080",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К-3/К-4: бетонная плитка40мм против натурального камня600×600×40; дляК-4 предусмотрена связь сЛД.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Исходное «по согласованию» для камня не раскрыто итогом. ЛД, масса, цена и прочность конкретных изделий не проверены. Дополнительное упоминание таблицы лист11 требует отдельной адресной проверки."
+        },
+        {
+          "claim": "Установить единое изделие для каждого покрытия, согласовать его с проектом ЛД, расчётом и опорами; исправить ведомости и все таблицы слоёв.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Согласовать выбранное изделие сЛД и опорами до корректировки документов; не считать ошибочную закупку или нагрузку доказанными."
+        },
+        {
+          "claim": "Закупка неподходящего покрытия, изменение стоимости и нагрузки, повреждение плит при эксплуатации.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        },
+        {
+          "claim": "Текстовая таблица слоёв К-4 листа11 также указывает бетонную плитку40мм.",
+          "verdict": "not_separately_verified_in_this_review",
+          "limits": "Основной конфликт ведомостей подтверждён; дополнительное место не засчитывается новым доказательством."
+        }
+      ],
+      "unsupported_additions": "Исходное «по согласованию» для камня не раскрыто итогом. ЛД, масса, цена и прочность конкретных изделий не проверены. Дополнительное упоминание таблицы лист11 требует отдельной адресной проверки.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "Tile material and underlying protective layer are distinct decisions.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer acceptance inferred; source hashes verified and revised wording assessed.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json",
+          "sha256": "1b5bec9fd487811b2b78e77d12d54eae2ef20a5a9f8770de2a94673ffb5aa51f",
+          "primary_adjudication": null,
+          "limits": "Оговорки «по согласованию» и «по проектуЛД» сохранены. Фактическая ошибочная закупка и окончательный выбор материала не установлены. Узел молниеотвода в этой сверке не использован.",
+          "wording": "Увязать материал финишной плитки К-3/К-4: бетонная40мм в ведомости покрытий против натурального камня600×600×40мм «по согласованию» в ведомости материалов; дляК-4 проверить решениеЛД.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "К-3: бетонная40мм; К-4: бетонная по проектуЛД40мм.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b9257ef1636a40f9a224955e061eb46e.png",
+          "sha256": "7dd38136e060454182817ea43ee1391af5c00ccef3033610e3f9bcd509207f98",
+          "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "МаркаК-4 у схемы и бетонная плитка по проектуЛД в её перечне.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b9257ef1636a40f9a224955e061eb46e.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-006",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-007",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_core_preserved_additional_location_unverified"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Состав кровли и пожарные характеристики",
+        "sheet": "Листы 7, 11",
+        "page": [
+          9,
+          13
+        ],
+        "problem": "Ведомость и таблица слоёв К-4 задают разные защитные материалы.",
+        "description": "В ведомости материалов К-4 предусмотрена противопожарная мембрана ТЕХНОНИКОЛЬ АЛЬФА ПРОФ НГ площадью 517,72 м². В текстовой таблице слоёв узла на соответствующем месте указан геотекстиль 300 г/м², а противопожарная мембрана не перечислена. Назначение и свойства материалов различаются. Обязательность конкретной противопожарной мембраны и требуемая пожарная характеристика конструкции по переданным данным не установлены.",
+        "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён; ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 17.13330.2017",
+            "cited_designation": "СП 17.13330.2017",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к защитным и разделительным слоям принятой конструкции кровли.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Подбор по предмету замечания и нормативным ссылкам проекта"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.75,
+            "reason": "Определить применимые требования к пожарным характеристикам кровельной конструкции и материалов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Подбор по предмету замечания и нормативным ссылкам проекта"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить утверждённый состав К-4 и его пожарное обоснование; согласовать материал, положение и количество защитных слоёв в ведомости и узлах.",
+        "risk": "Устройство кровли с составом, отличающимся от принятого проектного решения; неподтверждённые защитные и пожарные характеристики.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "blk_ba73c64702884635a06b2882d4e2bf91",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 58,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-AR-F-006:76e7568bcfeededeb028",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К-4: АЛЬФА ПРОФ НГ517,72м² в материалах против геотекстиля300г/м² в таблице адресного узла.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Две общие ведомости по мембране согласованы; ложное сравнение их между собой не повторено. Свойства не означают установленную взаимозаменяемость или пожарное нарушение."
+        },
+        {
+          "claim": "Уточнить утверждённый состав К-4 и его пожарное обоснование; согласовать материал, положение и количество защитных слоёв в ведомости и узлах.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Уточнить утверждённый состав и назначение слоёв; не удалять слой автоматически. Итог прямо оставляет обязательность мембраны неизвестной."
+        },
+        {
+          "claim": "Устройство кровли с составом, отличающимся от принятого проектного решения; неподтверждённые защитные и пожарные характеристики.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "Две общие ведомости по мембране согласованы; ложное сравнение их между собой не повторено. Свойства не означают установленную взаимозаменяемость или пожарное нарушение.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "Tile material and underlying protective layer are distinct decisions.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer acceptance inferred; source hashes verified and revised wording assessed.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json",
+          "sha256": "1147ad2d578ff19db335f86765998d19952dfea3e32ff9ac3da027a390ff84a8",
+          "primary_adjudication": null,
+          "limits": "Установлено различие документов об одном покрытии. Фактическое отсутствие мембраны на объекте, пожарное нарушение и возможность замены материалов не установлены.",
+          "wording": "Согласовать состав К-4: ведомость покрытий и ведомость материалов указывают противопожарную мембрану АЛЬФА ПРОФ НГ; адресный узел размещения молниеотвода с маркойК-4 и его перечень указывают геотекстиль300г/м² без отдельной мембраны.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "К-4 слой3: противопожарная мембрана; слой4: гидроизоляция.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b9257ef1636a40f9a224955e061eb46e.png",
+          "sha256": "7dd38136e060454182817ea43ee1391af5c00ccef3033610e3f9bcd509207f98",
+          "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "МаркаК-4 связывает узел с перечнем, в котором геотекстиль300г/м² без отдельной мембраны.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b9257ef1636a40f9a224955e061eb46e.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-005",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-008",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-013",
+      "finding": {
+        "id": "F-013",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Теплоизоляция",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Марка теплоизоляции К-3 не соответствует указанному виду материала.",
+        "description": "В конструкции К-3 записано: «Экструзионный пенополистирол Технониколь LOGICPIR PROF Ф/Ф (или аналог) — 130 мм». Марка LOGICPIR относится к пенополиизоцианурату, поэтому наименование и марка задают разные виды теплоизоляции.",
+        "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён; ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 17.13330.2017",
+            "cited_designation": "СП 17.13330.2017",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к теплоизоляционному слою кровли и характеристикам выбранного материала.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-002",
+                "G-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-002",
+                  "G-003"
+                ],
+                "designation_source": "Подбор по предмету замечания и нормативным ссылкам проекта"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к однозначному заданию материала и его марки в рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-002",
+                "G-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-002",
+                  "G-003"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить принятый материал К-3, исправить его наименование и согласовать требования к допустимым аналогам с расчётами и технической документацией изготовителя.",
+        "risk": "Замена утеплителя материалом с другими теплотехническими, механическими и пожарными характеристиками.",
+        "source_finding_ids": [
+          "G-002",
+          "G-003"
+        ],
+        "source_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645"
+        ],
+        "related_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-002",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-003",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое противоречие в К-3: LOGICPIR PROF Ф/Ф толщиной 130 мм назван экструзионным пенополистиролом, хотя относится к PIR.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое противоречие в К-3: LOGICPIR PROF Ф/Ф толщиной 130 мм назван экструзионным пенополистиролом, хотя относится к PIR.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 97,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F014_insulation_identity:20063319c847e004daca",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К-3,130мм: «Экструзионный пенополистирол» одновременно с LOGICPIR PROF Ф/Ф; сохранённая карточка производителя относит семейство кPIR.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Производитель проверен в предыдущем разборе; новая проверка партии не выполнялась. «Или аналог» не разрешает произвольную замену XPS/PIR."
+        },
+        {
+          "claim": "Уточнить принятый материал К-3, исправить его наименование и согласовать требования к допустимым аналогам с расчётами и технической документацией изготовителя.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Согласовать название, выбранный материал и требования к аналогу; не менять130мм автоматически."
+        },
+        {
+          "claim": "Замена утеплителя материалом с другими теплотехническими, механическими и пожарными характеристиками.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "Производитель проверен в предыдущем разборе; новая проверка партии не выполнялась. «Или аналог» не разрешает произвольную замену XPS/PIR.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "distinct_roof_layer_or_material_atom_group_related_clarifications_without_losing_claims",
+      "profile_and_section": "technical_document_conflict_core_preserved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F014_insulation_identity.json",
+          "sha256": "c99e19d272729607a77cc1d3873ca5be57009c2c5bd329ffa7cca5d64fc4b181",
+          "primary_adjudication": null,
+          "limits": "Подтверждено противоречие наименования и марки одного слоя. Не доказаны неверная поставка, недостаточная теплоизоляция, пожарное нарушение или необходимость менять толщину130 мм. «Или аналог» не снимает противоречие исходного описания и не разрешает любую взаимозаменяемость XPS/PIR. Повтор марки в ведомости не доказывает окончательный замысел проектировщика. Норматив-кандидат СП17 без подтверждённого пункта не используется как основание обвинения.",
+          "wording": "Согласовать материал слоя К-3 толщиной 130 мм: ведомость покрытий одновременно называет экструзионный пенополистирол и LOGICPIR PROF Ф/Ф, который производитель относит к PIR. В ведомости материалов также указана марка LOGICPIR PROF Ф/Ф. Уточнить выбранный материал и привести общее наименование и марку в соответствие."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "СтрокаК-3 слой6: экструзионный пенополистиролLOGICPIR PROF Ф/Ф(илианалог),130мм."
+        },
+        {
+          "url": "https://www.tn.ru/catalogue/teploizolyatsionnye-plity-pir/plity-teploizolyatsionnye-logicpir-prof-f-f/",
+          "source": "ТЕХНОНИКОЛЬ, карточка производителя LOGICPIR PROF Ф/Ф",
+          "checked": "2026-11-11",
+          "fact": "Материал плит — полиизоцианурат; двусторонняя фольгированная обкладка.",
+          "limits": "Текущая идентификация семейства продукта; не паспорт поставленной партии и не проверка всей кровельной системы.",
+          "reuse_note": "Saved earlier primary-source check; no new web request or supplied-product verification."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_with_identical_source_hashes_and_current_wording_review",
+          "finding_id": "F-015",
+          "limits": "No new engineer verdict. Manufacturer identity evidence reused from prior same-day primary-source check; no new certification of supplied product."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-015",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-013",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Комплектация и объёмы материалов",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Объём утеплителя К-3 не согласуется с указанными площадью и толщиной.",
+        "description": "В ведомости конструкций для К-3 указаны площадь 10,8 м² и толщина утеплителя 130 мм: расчётный объём составляет 1,404 м³. Ведомость материалов предусматривает 1,24 м³, то есть на 0,164 м³ меньше. При использовании площади смежных слоёв 10,84 м² получается 1,4092 м³; фактическую площадь именно теплоизоляции необходимо уточнить.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к согласованности геометрических параметров конструкций и количественных данных материалов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-004"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить площадь слоя теплоизоляции и пересчитать его объём при проектной толщине 130 мм; согласовать ведомости.",
+        "risk": "Недостаточная закупка утеплителя или уменьшение толщины слоя при выполнении работ.",
+        "source_finding_ids": [
+          "G-004"
+        ],
+        "source_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645"
+        ],
+        "related_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-004",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 61,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR36_B-AR-F-005:d576dd306cbd1e602f34",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "10,8×0,13=1,404м³ против1,24; разность0,164. Для10,84 получается1,4092м³.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Оба пересчёта условны: площадь покрытия или смежных слоёв не доказывает площадь утеплителя. Не подтверждены закупка и фактическое уменьшение толщины."
+        },
+        {
+          "claim": "Уточнить площадь слоя теплоизоляции и пересчитать его объём при проектной толщине 130 мм; согласовать ведомости.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Уточнить границы слоя и пересчитать по принятой площади; не назначать1,4092 окончательной потребностью."
+        },
+        {
+          "claim": "Недостаточная закупка утеплителя или уменьшение толщины слоя при выполнении работ.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "Оба пересчёта условны: площадь покрытия или смежных слоёв не доказывает площадь утеплителя. Не подтверждены закупка и фактическое уменьшение толщины.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "F016 shares K3 scope with F008 but distinct material; F017 separate parapet object.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer decision inferred; prior evidence bytes verified, revised claim arithmetic checked.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+          "sha256": "c0e65e558fcbde7f84022893578b1c64f1bf53f716100b3106a804db4280d657",
+          "primary_adjudication": null,
+          "limits": "Не назначать одинаковые площади всех слоёв без проверки геометрии; не считать1,4092м³ окончательной потребностью. Процент запаса К-4 не является универсальным допуском дляК-3. Избыток закупки и нехватка утеплителя не доказаны.",
+          "wording": "Проверить расчёт количеств К-3: покрытие10,8м², гидроизоляция/геотекстиль10,84м², плитка18,96м², утеплитель1,24м³ при указанном слое130мм. Раскрыть границы площадей, вычеты и запас.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+          "route": "byte_identical_source_reuse_of_prior_graphic_or_TEXT_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "К-3: площадь10,8м², слой6 толщиной130мм.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-016",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-014",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Комплектация и объёмы материалов",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Площадь отлива Оп-1 требует согласования с длиной и геометрией профиля.",
+        "description": "Для Оп-1 приведены размер 690×1 мм, длина 145,44 пог. м и площадь 78,5 м². При трактовке 690 мм как постоянной ширины отлива произведение 145,44×0,690 составляет 100,3536 м², что на 21,8536 м² больше указанной площади ещё без учёта дополнительных отгибов. Текстовый анализ отмечает необходимость проверки развёртки. Поэтому величина недоучёта условна до подтверждения смысла размера 690 мм и состава учитываемых участков.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к согласованности размеров изделия и количественных данных ведомости.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-005",
+                "G-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-005",
+                  "G-006"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить развёртку и границы учитываемых участков Оп-1, пересчитать площадь металла и согласовать её с длиной и размерами профиля.",
+        "risk": "При подтверждении расхождения — недостаточная закупка металла и корректировка стоимости изготовления отливов.",
+        "source_finding_ids": [
+          "G-005",
+          "G-006"
+        ],
+        "source_block_ids": [
+          "blk_82cbe376e70f4cc3833a1203b0d0a0ee"
+        ],
+        "related_block_ids": [
+          "blk_82cbe376e70f4cc3833a1203b0d0a0ee"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_82cbe376e70f4cc3833a1203b0d0a0ee",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-005",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-006",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое несоответствие площади Оп-1: при длине 145,44 м и ширине 690 мм расчётная площадь 100,35 м² вместо 78,5 м², разница 21,85 м² без учёта отгибов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое несоответствие площади Оп-1: при длине 145,44 м и ширине 690 мм расчётная площадь 100,35 м² вместо 78,5 м², разница 21,85 м² без учёта отгибов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-AR-F-016:fff2912112e6c79e3b46",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Оп-1:145,44м,690мм,78,5м²; произведение100,3536м², разность21,8536м².",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "690мм в ранее просмотренной графике — горизонтальный габарит. Развёртка, отгибы, нахлёсты и область суммарной длины не установлены."
+        },
+        {
+          "claim": "Установить развёртку и границы учитываемых участков Оп-1, пересчитать площадь металла и согласовать её с длиной и размерами профиля.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Уточнить геометрию и состав участков до пересчёта металла. Третий повтор прямо делает недоучёт условным."
+        },
+        {
+          "claim": "При подтверждении расхождения — недостаточная закупка металла и корректировка стоимости изготовления отливов.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "690мм в ранее просмотренной графике — горизонтальный габарит. Развёртка, отгибы, нахлёсты и область суммарной длины не установлены.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "F016 shares K3 scope with F008 but distinct material; F017 separate parapet object.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer decision inferred; prior evidence bytes verified, revised claim arithmetic checked.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json",
+          "sha256": "6de616cbb7c5cca66864facc621709f0f7ac35569d40b16b8fded829cd5b3436",
+          "primary_adjudication": null,
+          "limits": "Не считать100,3536м² окончательной площадью заготовки: загибы, нахлёсты, раскрой и область суммарной длины не установлены. Недостаточная закупка не доказана.",
+          "wording": "Уточнить площадь Оп-1:145,44м×0,690м=100,3536м² уже по горизонтальному габариту против78,5м² в ведомости. Проверить длину, развёртку и смысл столбца площади.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json",
+          "route": "byte_identical_source_reuse_of_prior_graphic_or_TEXT_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_82cbe376e70f4cc3833a1203b0d0a0ee.png",
+          "sha256": "08c59290764e600b59fb738855634a1711743e41159af4b34340953c23237b57",
+          "block_id": "blk_82cbe376e70f4cc3833a1203b0d0a0ee",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "Оп-1: горизонтальный габарит690, описание690×1мм, длина145,44м, площадь78,5м², крепёж727.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_82cbe376e70f4cc3833a1203b0d0a0ee.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-017",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-015",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Размеры шумозащитных экранов",
+        "sheet": "Лист 8",
+        "page": 10,
+        "problem": "Высоты экранов ОГШ-1, ОГШ-2 и ОГШ-3 на видах не согласованы с ведомостью.",
+        "description": "Ведомость задаёт высоты ОГШ-1, ОГШ-2 и ОГШ-3 соответственно 5900, 2800 и 1900 мм. На видах В.1–В.3 для ОГШ-1 указано 5700 мм; на В.7 и В.8 тот же размер получается как 2600+3100 мм. Для ОГШ-2 на В.7–В.9 указано 2600 мм. Для ОГШ-3 на В.4 указано 1690 мм, на В.5–В.7 — 1700 мм. Отличие от ведомости составляет 200 мм, для В.4 — 210 мм. Между видами ОГШ-3 имеется дополнительная разница 10 мм. Не установлено, объясняется ли систематическая разница 200 мм различием полной высоты и высоты заполнения.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к согласованности размеров на видах и в ведомостях, а также к однозначному обозначению границ измерения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-007",
+                "G-008",
+                "G-011",
+                "G-012",
+                "G-013",
+                "G-014",
+                "G-015",
+                "G-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-007",
+                  "G-008",
+                  "G-011",
+                  "G-012",
+                  "G-013",
+                  "G-014",
+                  "G-015",
+                  "G-016"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать высоты с конструктивным и акустическим решениями. Раздельно обозначить полный габарит, высоту заполнения и нижний зазор; устранить необоснованные различия видов и ведомости.",
+        "risk": "Изготовление экранов неверных размеров, изменение стоимости и неподтверждённая эффективность шумозащиты.",
+        "source_finding_ids": [
+          "G-007",
+          "G-008",
+          "G-011",
+          "G-012",
+          "G-013",
+          "G-014",
+          "G-015",
+          "G-016"
+        ],
+        "source_block_ids": [
+          "blk_3d63e546cfb54b108a681fffc5c2e192",
+          "blk_622df5aee83e4bb09a3944020fb92380",
+          "blk_c52dea9d372c4c468025a641ffac8192",
+          "blk_fc7a4e61819c4c0ca3606d47a0282ae6"
+        ],
+        "related_block_ids": [
+          "blk_3d63e546cfb54b108a681fffc5c2e192",
+          "blk_622df5aee83e4bb09a3944020fb92380",
+          "blk_c52dea9d372c4c468025a641ffac8192",
+          "blk_fc7a4e61819c4c0ca3606d47a0282ae6"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_3d63e546cfb54b108a681fffc5c2e192",
+            "page": 10
+          },
+          {
+            "type": "image",
+            "block_id": "blk_622df5aee83e4bb09a3944020fb92380",
+            "page": 10
+          },
+          {
+            "type": "image",
+            "block_id": "blk_c52dea9d372c4c468025a641ffac8192",
+            "page": 10
+          },
+          {
+            "type": "image",
+            "block_id": "blk_fc7a4e61819c4c0ca3606d47a0282ae6",
+            "page": 10
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-008",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-012",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-013",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-014",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-015",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одно расхождение высоты ОГШ-1 на листе 8: 5700 мм на видах В.1–В.3 против 5900 мм в ведомости, разница 200 мм. Уточнение границ измерения в левой рекомендации не добавляет самостоятельной проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одно расхождение высоты ОГШ-1 на листе 8: 5700 мм на видах В.1–В.3 против 5900 мм в ведомости, разница 200 мм. Уточнение границ измерения в левой рекомендации не добавляет самостоятельной проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR17:b3834745b8377f227bbc",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ОГШ1:5700/5900; ОГШ2:2600/2800; ОГШ3:1690–1700/1900. Разницы200/210мм и10мм между видами.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Одинаковые физические границы с ведомостью не доказаны; возможная высота заполнения не является установленной поправкой. КМ10.2 и изготовленные изделия не проверены."
+        },
+        {
+          "claim": "Согласовать высоты с конструктивным и акустическим решениями. Раздельно обозначить полный габарит, высоту заполнения и нижний зазор; устранить необоснованные различия видов и ведомости.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Сохранить согласование полной высоты, заполнения и зазора; не снимать по условному допуску200мм."
+        },
+        {
+          "claim": "Изготовление экранов неверных размеров, изменение стоимости и неподтверждённая эффективность шумозащиты.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "Одинаковые физические границы с ведомостью не доказаны; возможная высота заполнения не является установленной поправкой. КМ10.2 и изготовленные изделия не проверены.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "one_topic_multiple_marks_and_addresses_not_independent_defect_per_dimension",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json",
+        "sha256": "df73701f0cbb7275908c4ab51a94c3a5987c248b5e16d2dd3fc34968997bb98a",
+        "decision": "Принято",
+        "original_comment": "Повтор: высоты экранов ОГШ — это F-019 аудита 20.10, направлено заказчику 21.10 как замечание №9. Модель повторно нашла его верно.\n",
+        "scope": "same_marks_same_version_height_reconciliation_question_only",
+        "new_engineer_decision": false
+      },
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR17.json",
+          "sha256": "2c7bce2f3456b9bebdf7059d5b3ee79a40c72b29a994684d937747fdce46a7fd",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json",
+            "sha256": "df73701f0cbb7275908c4ab51a94c3a5987c248b5e16d2dd3fc34968997bb98a"
+          },
+          "limits": "Разные физические границы и КМ10.2 не проверены; производство неверных изделий не установлено.",
+          "wording": "Увязать высоты экранов ОГШ-1/2/3 между ведомостью и видами, указав базу измерения."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_3d63e546cfb54b108a681fffc5c2e192.png",
+          "sha256": "89a130aff8f3c5d6bb71a51e6a30f4a48ff289332d9586daeef55012f8090ff6",
+          "block_id": "blk_3d63e546cfb54b108a681fffc5c2e192",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "В.1–В.3:ОГШ-1=5700."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_622df5aee83e4bb09a3944020fb92380.png",
+          "sha256": "256b1727aa3c7bb2e8fc5ed1f6401f1d240349a5eb61c3b75340000a1416e57d",
+          "block_id": "blk_622df5aee83e4bb09a3944020fb92380",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "В.4:ОГШ-3=1690;В.5/В.6=1700."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_c52dea9d372c4c468025a641ffac8192.png",
+          "sha256": "c6f6651815eb75ea5430e5bb752a5043d3396cf6c233af910a953d784e5a45c9",
+          "block_id": "blk_c52dea9d372c4c468025a641ffac8192",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "В.7:ОГШ-1=2600+3100;ОГШ-2=2600;ОГШ-3=1700."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fc7a4e61819c4c0ca3606d47a0282ae6.png",
+          "sha256": "8f471eed78ced4cccba039c1957aae3905898730706ac777ed10604d5d715650",
+          "block_id": "blk_fc7a4e61819c4c0ca3606d47a0282ae6",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "В.8:ОГШ-1=2600+3100;ОГШ-2=2600;В.9:ОГШ-2=2600."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_with_identical_source_hashes_and_current_wording_review",
+          "finding_id": "F-018",
+          "limits": "No new engineer verdict. Manufacturer identity evidence reused from prior same-day primary-source check; no new certification of supplied product."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_c52dea9d372c4c468025a641ffac8192.png",
+          "sha256": "c6f6651815eb75ea5430e5bb752a5043d3396cf6c233af910a953d784e5a45c9",
+          "block_id": "blk_c52dea9d372c4c468025a641ffac8192",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "На В.7 слева2600+3100, справа1700+4000; обе цепочки дают5700. Общая верхняя линия; ОГШ-1 в центре."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-018",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-016",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-017",
+      "finding": {
+        "id": "F-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Состав шумозащитных экранов",
+        "sheet": "Лист 8",
+        "page": 10,
+        "problem": "Заполнение шумозащитных экранов неоднозначно задано на аксонометрии и в ведомости.",
+        "description": "На аксонометрии указано «Заполнение стальными ламелями». Ведомость для ОГШ-1, ОГШ-2 и ОГШ-3 предусматривает акустические сэндвич-панели с минераловатным заполнением толщиной 30 мм. Совместное применение и взаимное положение ламелей и панелей не обозначены. По переданным данным нельзя установить, являются ли они частями одной конструкции или альтернативными решениями.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к однозначному изображению состава конструкции и согласованности чертежей с ведомостью.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-009",
+                "G-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-009",
+                  "G-010"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить состав экранов по акустическому и конструктивному решениям, показать расположение всех слоёв и согласовать аксонометрию с ведомостью.",
+        "risk": "Изготовление экрана с неподтверждёнными акустическими свойствами и необходимость замены заполнения.",
+        "source_finding_ids": [
+          "G-009",
+          "G-010"
+        ],
+        "source_block_ids": [
+          "blk_3833cfb33b574f36b5a8f0764f7471e5"
+        ],
+        "related_block_ids": [
+          "blk_3833cfb33b574f36b5a8f0764f7471e5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_3833cfb33b574f36b5a8f0764f7471e5",
+            "page": 10
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одно расхождение: «Заполнение стальными ламелями» на аксонометрии и акустические сэндвич-панели с минераловатным утеплителем толщиной 30 мм для ОГШ-1, ОГШ-2 и ОГШ-3 в ведомости. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одно расхождение: «Заполнение стальными ламелями» на аксонометрии и акустические сэндвич-панели с минераловатным утеплителем толщиной 30 мм для ОГШ-1, ОГШ-2 и ОГШ-3 в ведомости. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 49,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F018_screen_identity:2fc8c1d03f237cb052ba",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Аксонометрия подписана «Заполнение стальными ламелями», ведомость ОГШ1/2/3 — акустические панели с минватой30мм.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Марка аксонометрии не установлена; совместное применение не опровергнуто. Не доказаны отсутствие утепления и акустическая непригодность."
+        },
+        {
+          "claim": "Уточнить состав экранов по акустическому и конструктивному решениям, показать расположение всех слоёв и согласовать аксонометрию с ведомостью.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Установить принадлежность и полный состав по рабочим решениям; возможно пояснение, а не замена заполнения."
+        },
+        {
+          "claim": "Изготовление экрана с неподтверждёнными акустическими свойствами и необходимость замены заполнения.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "Марка аксонометрии не установлена; совместное применение не опровергнуто. Не доказаны отсутствие утепления и акустическая непригодность.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "distinct_material_identity_or_OGN4_height_question",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F018_screen_identity.json",
+          "sha256": "4697afa158d947df5c5673d1292bbf9c16d10cff73cc1d5ea894d98a7d4d9580",
+          "primary_adjudication": null,
+          "limits": "Подтверждены разные описания, но не тождество изделий и не техническая несовместимость решений. Общий заголовок и цвет RAL7021 не устанавливают конкретную марку. Нельзя автоматически объявлять ламели неакустическими или утверждать отсутствие утепления по внешнему виду. Полный комплект КМ10.2, рабочие сечения и акустический расчёт не проверены; отсутствие привязки во всём проекте и нарушение шумозащиты не установлены.",
+          "wording": "Уточнить привязку аксонометрии ламелей шумозащитного экрана к марке изделия и согласовать описание заполнения: на аксонометрии указаны стальные ламели, а для ОГШ-1/2/3 ведомость задаёт акустические сэндвич-панели с минераловатным утеплителем толщиной 30 мм."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_3833cfb33b574f36b5a8f0764f7471e5.png",
+          "sha256": "c1514c1fd6a2c69a5464b1e212e23d475d0efac5bade7426a26931021580441a",
+          "block_id": "blk_3833cfb33b574f36b5a8f0764f7471e5",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "Подпись:заполнение стальными ламелями; каркассм.КМ; конкретной маркиОГШ нет."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_with_identical_source_hashes_and_current_wording_review",
+          "finding_id": "F-019",
+          "limits": "No new engineer verdict. Manufacturer identity evidence reused from prior same-day primary-source check; no new certification of supplied product."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-019",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-017",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Размеры ограждений",
+        "sheet": "Листы 8, 12",
+        "page": [
+          10,
+          15
+        ],
+        "problem": "Высота ограждения ОГН-4 различается на виде, в узле и в ведомости.",
+        "description": "На виде светопрозрачного ограждения ОГН-4 указан вертикальный размер 2110 мм. В ведомости наружных ограждений листа 8 задана высота 2100 мм, в соседнем узле крепления — 2,1 м. Разница составляет 10 мм; её связь с различными границами измерения не раскрыта.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованности размеров изделия на видах, в узлах и ведомостях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-021"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить границы измерения и согласовать высоту ОГН-4 на виде, в узле крепления и в ведомости.",
+        "risk": "Неоднозначность размеров при изготовлении стеклянных элементов и монтаже ограждения.",
+        "source_finding_ids": [
+          "G-021"
+        ],
+        "source_block_ids": [
+          "blk_eb64722d53da4f5aa3e984fa2fb552c5"
+        ],
+        "related_block_ids": [
+          "blk_eb64722d53da4f5aa3e984fa2fb552c5",
+          "blk_c2c52346b94e41d082d3db11655d2706"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_eb64722d53da4f5aa3e984fa2fb552c5",
+            "page": 15
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T152445Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:24:45.656178+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одно расхождение высоты ОГН-4: 2110 мм на виде против 2100 мм в ведомости, разница 10 мм. Дополнительная ссылка слева на узел «h=2.1м» подтверждает тот же факт без существенного расширения проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 49,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F020_OGN4_height:45b7c32dafd201c30a67",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ОГН4:2110мм на виде против2100мм ведомости и2,1м узла; разность10мм.",
+          "verdict": "supported_by_identical_sources_and_prior_atomic_review",
+          "limits": "Размерные границы и отметки существуют; отличие их смысла не установлено. Универсальный допуск10мм и выбор2100 по большинству не обоснованы."
+        },
+        {
+          "claim": "Уточнить границы измерения и согласовать высоту ОГН-4 на виде, в узле крепления и в ведомости.",
+          "verdict": "supported_only_with_scope",
+          "limits": "Согласовать границы и применяемую высоту, не заявлять фактическую ошибку изготовленного изделия."
+        },
+        {
+          "claim": "Неоднозначность размеров при изготовлении стеклянных элементов и монтаже ограждения.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические поставка, монтаж, повреждения и затраты не наблюдались; риск не считается подтверждённым дефектом."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают конкретное нарушение.",
+          "verdict": "not_verified",
+          "limits": "Кандидаты и непроверенные пункты не используются как самостоятельные доказательства."
+        }
+      ],
+      "unsupported_additions": "Размерные границы и отметки существуют; отличие их смысла не установлено. Универсальный допуск10мм и выбор2100 по большинству не обоснованы.",
+      "novel_useful_content": "Основной тезис уже проверен во втором повторе; повтор не считается новой независимой находкой.",
+      "duplicate_burden": "distinct_material_identity_or_OGN4_height_question",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F020_OGN4_height.json",
+          "sha256": "7801c49ea3c7172f8c0487ab722a493b90e3c08973e31e151dc0d953d1fcfd19",
+          "primary_adjudication": null,
+          "limits": "Размерные границы и отметки на рисунках присутствуют, поэтому утверждение об отсутствии точек отсчёта не подтверждается. Не установлено, объясняется ли разница монтажным габаритом, зазором или ошибкой. Не назначать правильный размер по большинству совпадений и не вводить универсальный допуск 10 мм. Ошибка изготовленного изделия, необходимость переделки и нарушение требований безопасности не доказаны.",
+          "wording": "Согласовать высоту ОГН-4: на виде указан размер 2110 мм, в ведомости — 2100 мм; узел крепления содержит h=2,1 м и отметки +43,380/+41,280, также дающие 2100 мм. Уточнить основание разницы 10 мм и применяемый размер."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eb64722d53da4f5aa3e984fa2fb552c5.png",
+          "sha256": "f9d066c70ef7cfc14850e5d87b13e2103c5262141dcac7285f900c585fec13d4",
+          "block_id": "blk_eb64722d53da4f5aa3e984fa2fb552c5",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "ОГН-4:вертикальный размер2110, отметка41,280."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_c2c52346b94e41d082d3db11655d2706.png",
+          "sha256": "ada6f98bef863cfa58e17d4bf8c8fce8278e6964a8f678932897d883ded5d00b",
+          "block_id": "blk_c2c52346b94e41d082d3db11655d2706",
+          "route": "prior_evidence_reused_after_identical_r3_source_hash_verification",
+          "observation": "УзелОГН-4:h=2,1м;верх43,380;покрытие41,280."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_with_identical_source_hashes_and_current_wording_review",
+          "finding_id": "F-021",
+          "limits": "No new engineer verdict. Manufacturer identity evidence reused from prior same-day primary-source check; no new certification of supplied product."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-021",
+          "route": "prior_atomic_review_reused_with_new_wording_assessment",
+          "limits": "No new engineer acceptance or direct image viewing is claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+          "finding_id": "F-020",
+          "route": "current_sealed_output"
+        }
+      ],
+      "disposition": "assessed_r3_same_source_core_preserved_with_explicit_limits"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": [
+    "No new direct GRAPHIC observation or engineer acceptance claimed.",
+    "14 rows assessed, six remain unchecked. Uncertainty is retained, not accepted as engineering truth."
+  ]
+}
