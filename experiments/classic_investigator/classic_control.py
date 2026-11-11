@@ -77,6 +77,23 @@ def inline_evidence_options(options):
     return {**options, 'allowed_tools': ''}
 
 
+def preflight_inventory_inputs(version, output_dir, config):
+    """Reject unexecutable inventory inputs before any graphic/text model call."""
+    if 'inventory_max_packets' not in config:
+        return {'status':'not_enabled','model_calls':0}
+    from backend.app.pipeline.stages.prepare.object_inventory_passes import build_object_inventory_passes
+    from backend.app.pipeline.stages.block_context.contract import resolve_blocks_dir
+    requests, manifest = build_object_inventory_passes(
+        Path(version)/'02_work/document.md', resolve_blocks_dir(Path(output_dir)),
+        max_chars=config['inventory_max_source_chars'], max_images=config['inventory_max_images'])
+    if not manifest['input_coverage_complete']:
+        raise ValueError('inventory_preflight_incomplete_source_coverage')
+    if len(requests) > config['inventory_max_packets']:
+        raise ValueError('inventory_preflight_packet_budget_exceeded')
+    return {'status':'passed','model_calls':0,'manifest':manifest,
+            'semantic_inventory_complete':False}
+
+
 def process_guard(event, args):
     if event == 'subprocess.Popen':
         executable = Path(os.fsdecode(args[0])).name
@@ -213,6 +230,11 @@ async def run(work,disc):
     save()
     try:
         with audit_scope.bind_audit_scope(output_dir=out,version_dir=version,project_id=pid,version_id=version.name):
+            preflight = preflight_inventory_inputs(version, out, METHOD_CONFIG)
+            write(root/'method_input_preflight'/f'{disc}.json', preflight)
+            state['method_input_preflight'] = {'status':preflight['status'],
+                'sha256':sha(root/'method_input_preflight'/f'{disc}.json')}
+            save()
             result=await run_findings_only_for_project(version,output_dir_override=out,model=MODELS['block_batch'],
                 reasoning_effort=REASONING_EFFORT,parallelism=2,timeout_s=600,on_progress=progress,project_id=pid,version_id=version.name,job_id=pid)
             blocks=result['output_doc']['block_analyses']

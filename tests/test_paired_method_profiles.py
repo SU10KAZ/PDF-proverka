@@ -60,3 +60,34 @@ for value in ('Read', 'WebSearch', 'mcp__norms__search', ['Read']):
 """
     result=subprocess.run([sys.executable,'-c',code],cwd=ROOT,capture_output=True,text=True)
     assert result.returncode==0,result.stdout+result.stderr
+
+
+def test_inventory_sources_checked_without_model_calls_before_audit(tmp_path):
+    code = r'''
+import json, sys
+from pathlib import Path
+sys.path.insert(0,'experiments/classic_investigator')
+import classic_control as c
+root=Path(sys.argv[1]); version=root/'v'; out=version/'03_analysis/runs/test'
+graphics=out/'blocks_stage02_100';graphics.mkdir(parents=True)
+work=version/'02_work';work.mkdir()
+md=work/'document.md';md.write_text('### BLOCK #1 [TEXT]: t1\nFirst source\n')
+(graphics/'index.json').write_text('{"blocks":[]}')
+assert c.preflight_inventory_inputs(version,out,{})['status']=='not_enabled'
+assert 'backend' not in sys.modules
+config={'inventory_max_packets':1,'inventory_max_source_chars':100,'inventory_max_images':1}
+report=c.preflight_inventory_inputs(version,out,config)
+assert report['status']=='passed' and report['model_calls']==0
+assert not report['semantic_inventory_complete']
+md.write_text('### BLOCK #1 [TEXT]: t1\n'+'a'*80+'\n### BLOCK #2 [TEXT]: t2\n'+'b'*80)
+try:c.preflight_inventory_inputs(version,out,config)
+except ValueError as e:assert 'packet_budget_exceeded' in str(e)
+else:raise AssertionError('Unaffordable inventory admitted')
+md.write_text('### BLOCK #1 [IMAGE]: g1\nDescription without actual image')
+try:c.preflight_inventory_inputs(version,out,config)
+except ValueError as e:assert 'incomplete_source_coverage' in str(e)
+else:raise AssertionError('Missing graphic admitted')
+assert not list(root.rglob('response*.json'))
+'''
+    result=subprocess.run([sys.executable,'-c',code,str(tmp_path)],cwd=ROOT,capture_output=True,text=True)
+    assert result.returncode==0,result.stdout+result.stderr
