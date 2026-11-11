@@ -175,3 +175,18 @@ async def test_quote_spacing_resume_preserves_raw_response_and_reuses_review(tmp
     assert not json.loads((root/'00_repaired_validation.json').read_text())['errors']
     assert result['entry']['response']['claims'][0]['evidence'][0]['quote']=='| A |  | 28 |'
     assert len(json.loads((root/'00_quote_spacing.json').read_text())['repairs'])==1
+
+
+@pytest.mark.asyncio
+async def test_phase_opt_in_for_automatic_graphic_regions_is_forwarded_and_isolated(tmp_path):
+    from unittest.mock import AsyncMock, patch
+    from backend.app.pipeline.stages.findings_verify.source_review_workflow import run_source_review_workflow_phase
+    md,f,q=setup_case();(tmp_path/'03_findings.json').write_text(json.dumps({'findings':[f]}))
+    stub=AsyncMock(return_value={'status':'candidate_ready'})
+    with patch('backend.app.pipeline.stages.findings_verify.source_review_workflow.run_source_review_workflow',stub):
+        for enabled in (False,True):
+            await run_source_review_workflow_phase(tmp_path,md,invoke=provider([]),executor_id='test',max_findings=1,auto_graphic_regions=enabled)
+    first,second=stub.call_args_list
+    assert first.kwargs['auto_graphic_regions'] is False and second.kwargs['auto_graphic_regions'] is True
+    assert first.args[4]!=second.args[4]
+    assert json.loads((tmp_path/'03_findings.json').read_text())=={'findings':[f]}

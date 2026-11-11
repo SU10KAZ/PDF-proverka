@@ -163,12 +163,14 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
     return report
 
 
-async def run_source_review_workflow_phase(output_dir, md, *, invoke, executor_id, max_findings, is_cancelled=None):
+async def run_source_review_workflow_phase(output_dir, md, *, invoke, executor_id, max_findings, is_cancelled=None, auto_graphic_regions=False):
     """Explicit experimental opt-in; prepare candidates, never mutate findings.
 
     Rebuild inputs AFTER absence correction so response hashes bind current text.
     Raw candidates use a separate file, never the reviewed admission inbox.
     """
+    if type(auto_graphic_regions) is not bool:
+        raise ValueError('invalid_graphic_reading_mode')
     from .source_review_queue import build_source_review_queue
     from .source_review_graphics import attach_graphic_receipts
     if not isinstance(max_findings,int) or isinstance(max_findings,bool) or max_findings<1:
@@ -194,11 +196,14 @@ async def run_source_review_workflow_phase(output_dir, md, *, invoke, executor_i
         # Hash-based directory: project IDs cannot become paths; changed inputs
         # cannot reuse earlier remote results.
         one={**queue,'packets':[packet],'pending_count':1}
-        key=evidence_digest({'packet':packet,'source':queue['source_md_sha256'],'executor':executor_id})
+        key_data={'packet':packet,'source':queue['source_md_sha256'],'executor':executor_id}
+        if auto_graphic_regions:key_data['auto_graphic_regions']=True
+        key=evidence_digest(key_data)
         try:
             report=await run_source_review_workflow(one,packet['finding_snapshot'],md,root/'blocks_stage02_100',
                 root/'source_review_workflows'/key,invoke=invoke,executor_id=executor_id,is_cancelled=is_cancelled,
-                max_images=16 if queue.get('_operation_graphic_detail_dir') else 8)
+                max_images=16 if queue.get('_operation_graphic_detail_dir') else 8,
+                auto_graphic_regions=auto_graphic_regions)
             reports.append({'finding_id':fid,**report})
         except Exception as exc:
             reports.append({'finding_id':fid,'status':'not_completed','error_type':type(exc).__name__,'reason':str(exc)})

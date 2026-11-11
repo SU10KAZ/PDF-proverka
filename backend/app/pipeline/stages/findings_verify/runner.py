@@ -280,6 +280,7 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
                 invoke=ctx.source_review_invoke,
                 executor_id=getattr(ctx, 'source_review_executor_id', None),
                 max_findings=getattr(ctx, 'source_review_max_findings', 0),
+                auto_graphic_regions=getattr(ctx, 'source_review_auto_graphic_regions', False),
                 is_cancelled=ctx.is_cancelled,
             )
             result.source_review_candidates_ready = workflow['candidate_ready']
