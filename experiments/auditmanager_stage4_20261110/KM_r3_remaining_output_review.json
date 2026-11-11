@@ -1,0 +1,1037 @@
+{
+  "status": "completed_KM_output_review_with_uncertainty",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/KM_output_review_queue.json",
+  "queue_before_sha256": "ba87d8872a512fe4498a17482437def4506af9c03576615bcee0a3ed5f4a5743",
+  "queue_after_sha256": "a921412aab0910c84d0caeddbfa2abc3e6bafcabac76cca5d754b6ba9da5a75b",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 3,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификации и количества",
+        "sheet": "Листы 2, 4, 7, 9, 10",
+        "page": [
+          4,
+          6,
+          9,
+          11,
+          12
+        ],
+        "problem": "Сводная спецификация содержит на 80 анкеров меньше, чем пересчитанные ведомости ограждений.",
+        "description": "Для секции С2 по ведомостям получено 488 анкеров вместо 448, для ЛК6 — 228 вместо 188. Остальные пять столбцов согласуются с пересчётом. Общая потребность по детализации составляет 1748 вместо 1668 анкеров; соответствующее количество опорных пластин — 437. Пересчёт отражает переданные ведомости и требует окончательного согласования после уточнения марок ограждений на схемах.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к составлению спецификаций и указанию количества изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить количества ограждений, опорных пластин и анкеров по каждой лестнице; исправить сводную спецификацию и закупочную потребность.",
+        "risk": "Недокомплект анкеров, дополнительные закупки и задержка монтажа.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_7fc4d0805a89466695360d1c96b75a3b",
+          "blk_addaa8965de54d218095d13652f30388",
+          "blk_b9096ac74f95416da66cc607a9828c3f",
+          "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+          "blk_ec977eb41e834dc8b7b332a66932a777",
+          "blk_f8cad33a4f74403cb982ba27beeb20fc",
+          "blk_fe9c8af96413404a8b896cd8382fc410"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 60,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM13_F004_S2_anchor_multiplicity:59a9339a0f210f950692",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "KM14_LK6_repetitions_conditional_totals:f37239acceec07686153",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "KM_F005_total_plate_balance:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "С2:488 против448 анкеров, разница40.",
+          "verdict": "confirmed_frozen_positive",
+          "limits": ""
+        },
+        {
+          "claim": "ЛК6:228 против188, общий1748 против1668, дефицит80.",
+          "verdict": "conditional_total_not_proven",
+          "limits": "28 в строкахОГМ21/24 расположены в иных столбцах при пустом количестве. Условие не разрешено уточнением марок. Сохранить подтверждённые40С2 и отдельный вопросЛК6."
+        },
+        {
+          "claim": "437пластин, включая57ЛК6.",
+          "verdict": "confirmed_document_balance",
+          "limits": "Это баланс ведомостей по заданной повторяемости, не полная проверка физических изделий. Общий итог не третья независимая находка."
+        },
+        {
+          "claim": "Остальные пять столбцов согласуются.",
+          "verdict": "partly_supported_by_document_balance_not_full_anchor_reaudit",
+          "limits": "Совпадение4×число пластин132/136/132/140/492 сСО не заменяет прямой проверки каждой анкерной строки; здесь не повторялся полный пересчёт всех пяти групп."
+        },
+        {
+          "claim": "Недокомплект анкеров, дополнительные закупки и задержка монтажа.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические изготовление, закупка, монтаж и ущерб не наблюдались."
+        },
+        {
+          "claim": "Нормативы-кандидаты подтверждают нарушение.",
+          "verdict": "not_verified",
+          "limits": "Нет отдельной проверки применимости и пункта."
+        }
+      ],
+      "unsupported_additions": "28 в строкахОГМ21/24 расположены в иных столбцах при пустом количестве. Условие не разрешено уточнением марок. Сохранить подтверждённые40С2 и отдельный вопросЛК6.; Это баланс ведомостей по заданной повторяемости, не полная проверка физических изделий. Общий итог не третья независимая находка.; Совпадение4×число пластин132/136/132/140/492 сСО не заменяет прямой проверки каждой анкерной строки; здесь не повторялся полный пересчёт всех пяти групп.; Фактические изготовление, закупка, монтаж и ущерб не наблюдались.; Нет отдельной проверки применимости и пункта.",
+      "novel_useful_content": "Оценивать только подтверждённые узкие тезисы; условные суммы и спорные привязки не являются новым доказанным приростом.",
+      "duplicate_burden": "F015_dependent_on_F017; F001_aggregate_not_independent_of_S2_and_LK6",
+      "profile_and_section": "Неопределённые вопросы отдельно от подтверждённых технических дефектов; фактическая маршрутизация отчёта не проверена.",
+      "engineer_reuse": "Нет нового решения инженера. Ранее принятый тезис С2 не означает принятия всех добавленных итогов.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM13_F004_S2_anchor_multiplicity.json",
+          "sha256": "b039e259c55746828a55fdad1fbb9afe04bc99d2498ae858403e14b33bf19631",
+          "route": "frozen_primary_adjudication_reused"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM14_LK6_repetitions_conditional_totals.json",
+          "sha256": "ef42022ce9ccb4895b2cc4bb11aacc050a7d72636e26bd45375b95a0c663a3b4",
+          "route": "frozen_primary_adjudication_reused"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F005_total_plate_balance.json",
+          "sha256": "c0650dd58ee0c6cf3ec04847956f7b9534183f7169c5f65f167fba59080061cf",
+          "route": "frozen_primary_adjudication_reused"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "route": "authoritative_TEXT_read",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "24144ca36a134832df47be32c1b795fc8923515017c46a3e07296ab7380ce60f",
+          "route": "sealed_output",
+          "finding_id": "F-001"
+        }
+      ],
+      "disposition": "assessed_r3_preserve_S2_40_keep_LK6_and_total_conditional"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 3,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификации и расход металла",
+        "sheet": "Листы 2, 7, 9, 10",
+        "page": [
+          4,
+          9,
+          11,
+          12
+        ],
+        "problem": "Сводный расход металла для ЛК6 существенно ниже пересчёта ведомостей.",
+        "description": "По текстовому пересчёту для ЛК6 получено: круглой трубы 35,125 м, около 0,0962 т вместо 0,080 т; трубы 40×40×3 — 68,500 м, около 0,2302 т вместо 0,190 т; трубы 25×25×3 — 196,540 м, около 0,3833 т вместо 0,321 т. Масса 57 пластин без вычета отверстий составляет около 0,0644 т вместо 0,053 т листового проката. Суммарно без заглушек получено около 0,7741 т против 0,645 т. Разница около 0,1291 т не объясняется округлением. Результат предварительный: использованы восстановленные по тексту сечения и округлённые погонные массы.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к отражению состава и количества материалов в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать расход металла ЛК6 по согласованным количествам ограждений, фактическим сечениям и длинам деталей; отдельно учесть отверстия, заглушки и принятые добавки.",
+        "risk": "Недостаточная закупка проката и занижение стоимости изготовления.",
+        "source_finding_ids": [
+          "T-002"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_7fc4d0805a89466695360d1c96b75a3b",
+          "blk_b9096ac74f95416da66cc607a9828c3f",
+          "blk_f8cad33a4f74403cb982ba27beeb20fc",
+          "blk_fe9c8af96413404a8b896cd8382fc410"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM14_LK6_repetitions_conditional_totals:f37239acceec07686153",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "KM_F005_total_plate_balance:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "KM_F007_round_pipe_unreproduced_total:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ЛК6:35,125м по выбранным позициям круглой трубы.",
+          "verdict": "conditional_selected_position_sum",
+          "limits": "33,265м позиций2 плюс3×0,620=35,125; круглая принадлежность каждой выбранной позиции не доказана."
+        },
+        {
+          "claim": "68,500/196,540м — полные потребности квадратных профилей.",
+          "verdict": "not_independently_verified_full_profile_balance",
+          "limits": "Ранее проверены добавочные длины повторных изделий, но не весь профильный баланс. Не подменять его модельным пересчётом."
+        },
+        {
+          "claim": "При массах2,74/3,36/1,95кг/м и7850кг/м³ сумма774,0883кг против645, разница129,0883кг.",
+          "verdict": "confirmed_conditional_decimal_arithmetic",
+          "limits": "Эти погонные массы воспроизводят округлённые результаты модели; их нормативная применимость, сечения, отверстия, заглушки и методика сводной не подтверждены."
+        },
+        {
+          "claim": "Разница не объясняется округлением.",
+          "verdict": "true_only_under_stated_inputs",
+          "limits": "Арифметическая разность велика относительно последнего знака; это не доказывает правильность исходной классификации и обязательную закупку129,1кг."
+        },
+        {
+          "claim": "Недостаточная закупка проката и занижение стоимости изготовления.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические изготовление, закупка, монтаж и ущерб не наблюдались."
+        },
+        {
+          "claim": "Нормативы-кандидаты подтверждают нарушение.",
+          "verdict": "not_verified",
+          "limits": "Нет отдельной проверки применимости и пункта."
+        }
+      ],
+      "unsupported_additions": "33,265м позиций2 плюс3×0,620=35,125; круглая принадлежность каждой выбранной позиции не доказана.; Ранее проверены добавочные длины повторных изделий, но не весь профильный баланс. Не подменять его модельным пересчётом.; Эти погонные массы воспроизводят округлённые результаты модели; их нормативная применимость, сечения, отверстия, заглушки и методика сводной не подтверждены.; Арифметическая разность велика относительно последнего знака; это не доказывает правильность исходной классификации и обязательную закупку129,1кг.; Фактические изготовление, закупка, монтаж и ущерб не наблюдались.; Нет отдельной проверки применимости и пункта.",
+      "novel_useful_content": "Оценивать только подтверждённые узкие тезисы; условные суммы и спорные привязки не являются новым доказанным приростом.",
+      "duplicate_burden": "No independent duplicate burden measure established.",
+      "profile_and_section": "Неопределённые вопросы отдельно от подтверждённых технических дефектов; фактическая маршрутизация отчёта не проверена.",
+      "engineer_reuse": "Нет нового решения инженера. Ранее принятый тезис С2 не означает принятия всех добавленных итогов.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM14_LK6_repetitions_conditional_totals.json",
+          "sha256": "ef42022ce9ccb4895b2cc4bb11aacc050a7d72636e26bd45375b95a0c663a3b4",
+          "route": "frozen_primary_adjudication_reused"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F007_round_pipe_unreproduced_total.json",
+          "sha256": "6b38efc1f6e92ce5dc08ce3b43ed619504013063160fdb52d3bd13e62f931a88",
+          "route": "frozen_primary_adjudication_reused"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F005_total_plate_balance.json",
+          "sha256": "c0650dd58ee0c6cf3ec04847956f7b9534183f7169c5f65f167fba59080061cf",
+          "route": "frozen_primary_adjudication_reused"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "route": "authoritative_TEXT_read",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae"
+        },
+        {
+          "route": "local_Decimal_recalculation",
+          "inputs_and_results": {
+            "round_pipe_conditional_kg": "96.24250",
+            "square40_conditional_kg": "230.16000",
+            "square25_conditional_kg": "383.25300",
+            "plates_blank_conditional_kg": "64.432800000"
+          },
+          "total_kg": "774.088300000",
+          "limits": "Conditional numerical reproduction, not independently accepted profile mass."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "24144ca36a134832df47be32c1b795fc8923515017c46a3e07296ab7380ce60f",
+          "route": "sealed_output",
+          "finding_id": "F-002"
+        }
+      ],
+      "disposition": "assessed_r3_conditional_mass_question_not_proven_procurement_shortage"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 3,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Оформление документации",
+        "sheet": "Листы 1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+        "page": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "problem": "Текстовое извлечение показывает неодинаковое обозначение стадии в основных надписях.",
+        "description": "На титульных листах комплект назван рабочей документацией. В извлечённых основных надписях листов 1, 2, 4, 5, 6 и 10 указана стадия «П», а листов 3, 7, 8 и 9 — «Р». Вывод предварительный: изображения основных надписей для проверки не представлены.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить правила заполнения графы стадии в основных надписях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить обозначение стадии на оригиналах и при подтверждении расхождения привести основные надписи к единому статусу выпуска.",
+        "risk": "Неоднозначность статуса документации при выдаче в производство и приёмке работ.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_e32648e76bae476f840c5cf12bfe3003",
+          "blk_f3f0332f544a4ca493442513059a154d"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 40,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "MD:листы1/2/4/5/6/10 имеютStageП,3/7/8/9 —Р; титулы «РАБОЧАЯ ДОКУМЕНТАЦИЯ».",
+          "verdict": "confirmed_TEXT_and_extraction_metadata",
+          "limits": "Проверены все метаданные листов; они не являются независимым просмотром оригинальных штампов."
+        },
+        {
+          "claim": "Требуется привести выпуск к одному статусу.",
+          "verdict": "conditional_editorial_question",
+          "limits": "Сначала установить статус выдачи; реальные версии и оригинальные штампы не проверены. Предложение корректировать распознавание по растру здесь не выполнялось."
+        },
+        {
+          "claim": "Неоднозначность статуса документации при выдаче в производство и приёмке работ.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические изготовление, закупка, монтаж и ущерб не наблюдались."
+        },
+        {
+          "claim": "Нормативы-кандидаты подтверждают нарушение.",
+          "verdict": "not_verified",
+          "limits": "Нет отдельной проверки применимости и пункта."
+        }
+      ],
+      "unsupported_additions": "Проверены все метаданные листов; они не являются независимым просмотром оригинальных штампов.; Сначала установить статус выдачи; реальные версии и оригинальные штампы не проверены. Предложение корректировать распознавание по растру здесь не выполнялось.; Фактические изготовление, закупка, монтаж и ущерб не наблюдались.; Нет отдельной проверки применимости и пункта.",
+      "novel_useful_content": "Оценивать только подтверждённые узкие тезисы; условные суммы и спорные привязки не являются новым доказанным приростом.",
+      "duplicate_burden": "No independent duplicate burden measure established.",
+      "profile_and_section": "Неопределённые вопросы отдельно от подтверждённых технических дефектов; фактическая маршрутизация отчёта не проверена.",
+      "engineer_reuse": "Нет нового решения инженера. Ранее принятый тезис С2 не означает принятия всех добавленных итогов.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "route": "authoritative_TEXT_read",
+          "block_id": "blk_f3f0332f544a4ca493442513059a154d"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "route": "authoritative_TEXT_read",
+          "block_id": "blk_ef276d1030da49b48f4bb057ebafe685"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "route": "complete_sheet_stage_metadata_scan",
+          "result": {
+            "П": [
+              1,
+              2,
+              4,
+              5,
+              6,
+              10
+            ],
+            "Р": [
+              3,
+              7,
+              8,
+              9
+            ]
+          }
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "24144ca36a134832df47be32c1b795fc8923515017c46a3e07296ab7380ce60f",
+          "route": "sealed_output",
+          "finding_id": "F-008"
+        }
+      ],
+      "disposition": "assessed_r3_editorial_stage_metadata_question_not_verified_original_stamps"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 3,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Размеры и привязки",
+        "sheet": "Лист 5",
+        "page": 7,
+        "problem": "Размер площадки на отметке +37,510 различается на 100 мм.",
+        "description": "На разрезе 1–1 указан размер 1370 мм, а на групповой схеме расположения ограждений, включающей эту отметку, — 1270 мм.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к размерам и привязкам на схемах расположения металлических конструкций.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-013"
+                ],
+                "designation_source": "Подбор при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить проектный размер площадки и привести разрез и групповую схему к одному значению.",
+        "risk": "Несоответствие изготовленного ограждения монтажному месту.",
+        "source_finding_ids": [
+          "G-013"
+        ],
+        "source_block_ids": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+        ],
+        "related_block_ids": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T154921Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-013",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:49:21.359132+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 81,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "На разрезе у+37,510 есть1370мм, в групповом плане левый размер1270мм и последняя отметка+37,510.",
+          "verdict": "confirmed_current_direct_GRAPHIC_numbers",
+          "limits": ""
+        },
+        {
+          "claim": "Это один размер одной площадки и ошибка100мм.",
+          "verdict": "not_established_object_identity",
+          "limits": "Групповой список включает+37,510 вместо связанного с+35,990 нижнего уровня+34,150; этот конфликт ужеF-017. На разрезе у+34,150 стоит1270, у+37,510 —1370. Пока принадлежность последнего элемента списка не разрешена, нельзя считать размер независимым дефектом."
+        },
+        {
+          "claim": "Привести оба размера к одному.",
+          "verdict": "premature_without_level_binding",
+          "limits": "Сначала установить область групповой схемы и конечные точки размера; не распространять типовой1270 на следующую площадку."
+        },
+        {
+          "claim": "Несоответствие изготовленного ограждения монтажному месту.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические изготовление, закупка, монтаж и ущерб не наблюдались."
+        },
+        {
+          "claim": "Нормативы-кандидаты подтверждают нарушение.",
+          "verdict": "not_verified",
+          "limits": "Нет отдельной проверки применимости и пункта."
+        }
+      ],
+      "unsupported_additions": "Групповой список включает+37,510 вместо связанного с+35,990 нижнего уровня+34,150; этот конфликт ужеF-017. На разрезе у+34,150 стоит1270, у+37,510 —1370. Пока принадлежность последнего элемента списка не разрешена, нельзя считать размер независимым дефектом.; Сначала установить область групповой схемы и конечные точки размера; не распространять типовой1270 на следующую площадку.; Фактические изготовление, закупка, монтаж и ущерб не наблюдались.; Нет отдельной проверки применимости и пункта.",
+      "novel_useful_content": "Оценивать только подтверждённые узкие тезисы; условные суммы и спорные привязки не являются новым доказанным приростом.",
+      "duplicate_burden": "F015_dependent_on_F017; F001_aggregate_not_independent_of_S2_and_LK6",
+      "profile_and_section": "Неопределённые вопросы отдельно от подтверждённых технических дефектов; фактическая маршрутизация отчёта не проверена.",
+      "engineer_reuse": "Нет нового решения инженера. Ранее принятый тезис С2 не означает принятия всех добавленных итогов.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f8b3c96af858494c946ff4f1ceaa1fb5.png",
+          "sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+          "route": "current_direct_GRAPHIC_view",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f0a5333974ac4088b7778f525922b014.png",
+          "sha256": "afe14108cef59c53cc2e0518187d711a9fce8c09552044605c99c59611221a00",
+          "route": "current_direct_GRAPHIC_view",
+          "block_id": "blk_f0a5333974ac4088b7778f525922b014"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
+          "sha256": "86849d4e464c5efa654fd2e5aa1e08127b5859ee7c63a2ec2eddd62ecda17ea5",
+          "route": "frozen_primary_adjudication_reused"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "24144ca36a134832df47be32c1b795fc8923515017c46a3e07296ab7380ce60f",
+          "route": "sealed_output",
+          "finding_id": "F-015"
+        }
+      ],
+      "disposition": "assessed_r3_dimension_candidate_dependent_on_level_list_not_independent_defect"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 3,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Маркировка ограждений",
+        "sheet": "Лист 5",
+        "page": 7,
+        "problem": "На схеме и разрезе у отметки +7,270 ограждение обозначено разными марками.",
+        "description": "На схеме расположения ограждений на отметке +9,110 у площадки +7,270 указано ОГМ6, а на разрезе 1–1 — ОГМ4. Исходные описания различаются в отнесении выноски к площадке или примыкающему маршу между +6,070 и +7,270; оба детектора и их сопоставление фиксируют одно противоречие маркировки.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к обозначению марок элементов на схемах и их связи с деталировкой.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-014",
+                "G-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-014",
+                  "G-015"
+                ],
+                "designation_source": "Подбор при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить принадлежность выноски и нужную марку по деталям листа 6; согласовать схему, разрез и спецификацию.",
+        "risk": "Заказ и изготовление ограждения другой марки, дополнительные затраты на замену.",
+        "source_finding_ids": [
+          "G-014",
+          "G-015"
+        ],
+        "source_block_ids": [
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e"
+        ],
+        "related_block_ids": [
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "page": 7
+          },
+          {
+            "type": "image",
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T154921Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-014",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:49:21.359132+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T154921Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-015",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:49:21.359132+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.94,
+              "reason": "Оба замечания фиксируют одно противоречие: ОГМ 6 на схеме +9.110 и ОГМ 4 на разрезе 1–1 листа 5 у отметки +7.270. Различается описание элемента — площадка или примыкающий марш, но основной дефект и требуемое исправление совпадают.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.94,
+              "reason": "Оба замечания фиксируют одно противоречие: ОГМ 6 на схеме +9.110 и ОГМ 4 на разрезе 1–1 листа 5 у отметки +7.270. Различается описание элемента — площадка или примыкающий марш, но основной дефект и требуемое исправление совпадают.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "ОГМ6 плана у+7,270 иОГМ4 разреза относятся к одному объекту.",
+          "verdict": "held_unresolved_identity",
+          "limits": "Третий повтор сам отмечает разное отнесение выноски к площадке/маршу. Исторический отказ и поздние разборы расходятся; frozen truth hold сохраняется."
+        },
+        {
+          "claim": "Два детектора подтвердили одно противоречие.",
+          "verdict": "agreement_not_truth_evidence",
+          "limits": "Согласие моделей не устанавливает концы марша и не снимает hold."
+        },
+        {
+          "claim": "Уточнить принадлежность выноски перед изменением марки.",
+          "verdict": "supported_context_request_only",
+          "limits": "Не засчитывать как доказанную техническую находку, повтор ложного тезиса или результат нового фильтра."
+        },
+        {
+          "claim": "Заказ и изготовление ограждения другой марки, дополнительные затраты на замену.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические изготовление, закупка, монтаж и ущерб не наблюдались."
+        },
+        {
+          "claim": "Нормативы-кандидаты подтверждают нарушение.",
+          "verdict": "not_verified",
+          "limits": "Нет отдельной проверки применимости и пункта."
+        }
+      ],
+      "unsupported_additions": "Третий повтор сам отмечает разное отнесение выноски к площадке/маршу. Исторический отказ и поздние разборы расходятся; frozen truth hold сохраняется.; Согласие моделей не устанавливает концы марша и не снимает hold.; Не засчитывать как доказанную техническую находку, повтор ложного тезиса или результат нового фильтра.; Фактические изготовление, закупка, монтаж и ущерб не наблюдались.; Нет отдельной проверки применимости и пункта.",
+      "novel_useful_content": "Оценивать только подтверждённые узкие тезисы; условные суммы и спорные привязки не являются новым доказанным приростом.",
+      "duplicate_burden": "No independent duplicate burden measure established.",
+      "profile_and_section": "Неопределённые вопросы отдельно от подтверждённых технических дефектов; фактическая маршрутизация отчёта не проверена.",
+      "engineer_reuse": "Нет нового решения инженера. Ранее принятый тезис С2 не означает принятия всех добавленных итогов.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/evaluator_release_errata_v2.json",
+          "sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+          "route": "frozen_truth_hold"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/KM_r3_completed_coverage_ledger.json",
+          "sha256": "79515eb1000d61bc5d8fbcc332d4e161d7626fd67e2375fc7a7b77a26fc66512",
+          "route": "held_target_coverage"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/km_f014_sheet_priority_release_evidence/final_check/receipt.json",
+          "sha256": "23c3873cb1516a4a5b48e26422ef8e8838e8feece9c80879dae1c5df76e027c8",
+          "route": "prior_identity_review_not_hold_resolution"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "24144ca36a134832df47be32c1b795fc8923515017c46a3e07296ab7380ce60f",
+          "route": "sealed_output",
+          "finding_id": "F-016"
+        }
+      ],
+      "disposition": "assessed_r3_flight_identity_hold_preserved"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 3,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Количество изделий и назначение ведомости",
+        "sheet": "Листы 7, 8",
+        "page": [
+          9,
+          10
+        ],
+        "problem": "Требуется уточнить, обозначает ли «1 шт.» в ведомости ОГМ3 состав одного изделия или общее количество выпуска.",
+        "description": "На разрезе 1–1 ЛК1.1 показаны два ограждения ОГМ3, и спецификация предусматривает 2 шт. В заголовке ведомости элементов приведено «ОГМ3 (1 шт.)». Исходное замечание трактует это как недоучёт одного ограждения. Однако ведомость может задавать состав одного изделия, умножаемый на количество из спецификации; без установления принятого принципа оформления недоучёт не доказан.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить правила представления ведомостей элементов и количества одинаковых изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-024"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-024"
+                ],
+                "designation_source": "Подбор при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить принцип составления ведомостей. Если приведён состав одного изделия, явно указать изготовление двух ОГМ3 по спецификации; если заголовок задаёт общий выпуск, исправить количество.",
+        "risk": "При неоднозначном прочтении ведомости возможно изготовление только одного ограждения вместо двух.",
+        "source_finding_ids": [
+          "G-024"
+        ],
+        "source_block_ids": [
+          "blk_9e54c5e5fb6b4b28ae2304bd06c49949"
+        ],
+        "related_block_ids": [
+          "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+          "blk_ae8f7849e07147388fc213cff1fbb43f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T154921Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-024",
+              "mode": "independent",
+              "detected_at": "2026-11-11T15:49:21.359132+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 61,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "СпецификацияЛК1.1 содержит2ОГМ3.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Заголовок ведомости ОГМ3 содержит «1шт.».",
+          "verdict": "not_supported_by_authoritative_TEXT",
+          "limits": "Блок65 назван «Ведомость элементов ограждения ОГМЗ» без1шт. Количество1 в строках деталей не является общим количеством изделий. TEXT не исправлялся по растру."
+        },
+        {
+          "claim": "Уточнить принцип оформления из-за заголовка1шт.",
+          "verdict": "unsupported_premise_creates_unnecessary_question",
+          "limits": "Оговорка о составе одного изделия не исправляет неподтверждённую цитату. Не требовать изменения заголовка или количества по этому основанию."
+        },
+        {
+          "claim": "При неоднозначном прочтении ведомости возможно изготовление только одного ограждения вместо двух.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактические изготовление, закупка, монтаж и ущерб не наблюдались."
+        },
+        {
+          "claim": "Нормативы-кандидаты подтверждают нарушение.",
+          "verdict": "not_verified",
+          "limits": "Нет отдельной проверки применимости и пункта."
+        }
+      ],
+      "unsupported_additions": "Блок65 назван «Ведомость элементов ограждения ОГМЗ» без1шт. Количество1 в строках деталей не является общим количеством изделий. TEXT не исправлялся по растру.; Оговорка о составе одного изделия не исправляет неподтверждённую цитату. Не требовать изменения заголовка или количества по этому основанию.; Фактические изготовление, закупка, монтаж и ущерб не наблюдались.; Нет отдельной проверки применимости и пункта.",
+      "novel_useful_content": "Оценивать только подтверждённые узкие тезисы; условные суммы и спорные привязки не являются новым доказанным приростом.",
+      "duplicate_burden": "No independent duplicate burden measure established.",
+      "profile_and_section": "Неопределённые вопросы отдельно от подтверждённых технических дефектов; фактическая маршрутизация отчёта не проверена.",
+      "engineer_reuse": "Нет нового решения инженера. Ранее принятый тезис С2 не означает принятия всех добавленных итогов.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "route": "authoritative_TEXT_read",
+          "block_id": "blk_b9096ac74f95416da66cc607a9828c3f"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "route": "authoritative_TEXT_read",
+          "block_id": "blk_5de20e336f994591bdd8c56c0f1e4183"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "24144ca36a134832df47be32c1b795fc8923515017c46a3e07296ab7380ce60f",
+          "route": "sealed_output",
+          "finding_id": "F-018"
+        }
+      ],
+      "disposition": "assessed_r3_unsupported_header_premise_do_not_request_quantity_change"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": [
+    "All25rows assessed, not all claims verified true.",
+    "F014identity hold unchanged; conditional balances and dimension identity remain unresolved.",
+    "New GRAPHIC viewing used for F015; authoritative TEXT not re-extracted or corrected."
+  ]
+}
