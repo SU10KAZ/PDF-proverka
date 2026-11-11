@@ -79,8 +79,14 @@
       "finding_id": "F-007",
       "problem": "В двух перечнях для ТЕ3 и ТЕ4 указана одна штука.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_with_stale_caveat",
+      "engineer_decision": null,
+      "review_reason": "На листе14 непосредственно показаны отдельные TE3 после вентилятора П5.1.1 с сигналом12 и TE4 после П5.1.3 с сигналом20. На листе20 отдельно TE3 после П6.1.1 с сигналом11 и TE4 после П6.1.4 с сигналом20. Перечни обоих листов задают общую строку ТЕ3,ТЕ4 с количеством1. Спецификация8.6 шкафа ШАУВ-3-К5ПЧ и14.6 шкафа ШАУВ-2-К6ПЧ содержит по2 канальных датчика. КЖ имеет отдельные линии П5.1.1-3/П5.1.3-1 и П6.1.1-3/Пб.1.4-1 к ТЕ3/ТЕ4; буквальные варианты ШАУВ-З и Пб сохранены, не исправлены по растру. Состав из двух приборов подтверждён независимыми графическими местами и адресами, не только диапазоном марок. Это конфликт локальных количеств, а не закупочная нехватка: сводная спецификация уже содержит по2. Начальная оговорка о непроверенном размещении устарела; решение «после подтверждения состава» можно актуализировать с учётом выполненной проверки.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_two_channel_sensors_quantity_review_20261112.json",
+        "sha256": "7c78a399a2644480d46413d767282ea4e98d918bbf1d3ac2d898f623df59576e"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-008",
@@ -1087,14 +1093,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 78,
-  "unchecked": 7,
+  "reviewed": 79,
+  "unchecked": 6,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 78,
-  "unchecked_findings": 7
+  "reviewed_findings": 79,
+  "unchecked_findings": 6
 }

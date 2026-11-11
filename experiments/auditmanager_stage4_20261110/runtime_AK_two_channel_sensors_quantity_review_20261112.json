@@ -1,0 +1,81 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-007",
+      "status": "confirmed_document_conflict_with_stale_caveat",
+      "review_reason": "На листе14 непосредственно показаны отдельные TE3 после вентилятора П5.1.1 с сигналом12 и TE4 после П5.1.3 с сигналом20. На листе20 отдельно TE3 после П6.1.1 с сигналом11 и TE4 после П6.1.4 с сигналом20. Перечни обоих листов задают общую строку ТЕ3,ТЕ4 с количеством1. Спецификация8.6 шкафа ШАУВ-3-К5ПЧ и14.6 шкафа ШАУВ-2-К6ПЧ содержит по2 канальных датчика. КЖ имеет отдельные линии П5.1.1-3/П5.1.3-1 и П6.1.1-3/Пб.1.4-1 к ТЕ3/ТЕ4; буквальные варианты ШАУВ-З и Пб сохранены, не исправлены по растру. Состав из двух приборов подтверждён независимыми графическими местами и адресами, не только диапазоном марок. Это конфликт локальных количеств, а не закупочная нехватка: сводная спецификация уже содержит по2. Начальная оговорка о непроверенном размещении устарела; решение «после подтверждения состава» можно актуализировать с учётом выполненной проверки.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+          "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+          "directly_viewed": true,
+          "detail": "original"
+        },
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+          "block_id": "blk_54608a880c2545aa926c442d213988c3",
+          "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "start": 97032,
+          "end": 98631,
+          "sha256": "3f453964bc5df53311927a3d14f61c23cbd5a1156ce9cb3be348c6449ce65e42"
+        },
+        {
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "start": 130512,
+          "end": 132109,
+          "sha256": "53c3417b543a056b7217bd6c7bd2974ab4d559a71d1ec5d3b4d84c827585604e"
+        },
+        {
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "start": 440474,
+          "end": 443052,
+          "sha256": "4bd199fa403185e3454052521bddf90fc9b96c85d9476ac86503741f51d0a4ee"
+        },
+        {
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "start": 447851,
+          "end": 450472,
+          "sha256": "fc63519500f8d0946e53e1e078e93c4ea3521e39d26b68ee9a0641abb753c806"
+        },
+        {
+          "block_id": "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "start": 381123,
+          "end": 383713,
+          "sha256": "05212a0872f405c40460b1fc0db4baeecc7892fa7c11657ddbaa23e127300f4f"
+        },
+        {
+          "block_id": "blk_bdfeffa5dba44748bf80fcc48b97c618",
+          "start": 383737,
+          "end": 386201,
+          "sha256": "6029524275dcd8482caf89919fee102fffd1ff386ac7efe5079393a87567889b"
+        },
+        {
+          "block_id": "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "start": 405279,
+          "end": 407374,
+          "sha256": "08464a78fdd4d9860f50d119c8ebc9de9ae65b7408b4c001a51cb51c4ca3d696"
+        },
+        {
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "start": 407398,
+          "end": 409900,
+          "sha256": "dd3d73d839edb23f1b7ff261f6004680071d58ede520975031abf8ec264e3a2f"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false
+}
