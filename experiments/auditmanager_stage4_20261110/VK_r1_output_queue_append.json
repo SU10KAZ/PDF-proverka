@@ -1,0 +1,3257 @@
+{
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "b77752b0c8f033bd8e914ade1290838fd4870e5478749c151c2d45a8e25eecbb",
+  "queue_after_sha256": "0f7a7359827cb90310ffea0a971fac4db5d6a9dcbe61dfcd61dddc032f0610cc",
+  "source": {
+    "discipline": "VK",
+    "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "final_sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8",
+    "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r1_completed_coverage_ledger.json",
+    "ledger_sha256": "51d93d5ab1e16b3699a93df72df3c601c426986f1e34be0061e93d766dbf9a7b"
+  },
+  "added_rows": [
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Документация",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Итог суточного расхода отличается от суммы опубликованных расходов зон на 0,01 м³/сут.",
+        "description": "В таблице основных показателей сумма 136,09 + 59,76 + 53,64 + 10,80 составляет 260,29 м³/сут, а общий итог указан 260,28 м³/сут. Расхождение может быть связано с округлением исходных значений и не доказывает ошибку подбора оборудования.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проверить исходные неокруглённые расходы и согласовать итог с опубликованными строками либо пояснить порядок округления.",
+        "risk": "Неоднозначность исходных данных при последующих расчётах и проверках.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05"
+        ],
+        "related_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_082880f1dc1c45628641110a8a4f8f44",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_733ee397f6cf418fb158aa823b35cdcc",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+            "page": 3
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Бытовая канализация",
+        "sheet": "Листы 2, 19, 20",
+        "page": [
+          4,
+          21,
+          22
+        ],
+        "problem": "Периодичность установки ревизий в примечаниях к стоякам противоречит общим указаниям.",
+        "description": "Общие указания требуют ревизии на первом и последнем жилых этажах и далее не реже чем через каждые три этажа. Примечания к схемам стояков назначают ревизии только на 2, 6 и 10-м этажах, с интервалами четыре этажа. Установлено внутреннее противоречие проекта; точный нормативный интервал требует проверки.",
+        "norm": "СП 30.13330.2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 30.13330.2020",
+            "cited_designation": "СП 30.13330.2020",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить требования к размещению ревизий на канализационных стояках многоэтажных зданий и доступу к ним.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать общие указания и схемы стояков, назначить этажи установки ревизий по проверенному нормативному требованию и показать доступ к каждой ревизии.",
+        "risk": "Недостаточная доступность участков стояков для прочистки и увеличение продолжительности устранения засоров.",
+        "source_finding_ids": [
+          "T-002"
+        ],
+        "source_block_ids": [
+          "blk_0322283990a44921bed00f2feff715a4",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "related_block_ids": [
+          "blk_0322283990a44921bed00f2feff715a4",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e",
+          "blk_dfae064f26494949a92afe3b0f6f9158",
+          "blk_bf9e42b43a6a45a8bab27fd03948ed37"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_686c23c287f1430199897dff70be0878",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_d01ac56c817044c4a525d02e3251ba0e",
+            "page": 4
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F001_revision_interval:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-003",
+      "finding": {
+        "id": "F-003",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Испытания канализации",
+        "sheet": "Лист 2",
+        "page": 4,
+        "problem": "Методика испытания канализации задаёт долю расчётного расхода вместо доли одновременно открытых приборов.",
+        "description": "В пункте 7 общих требований установлен пролив расходом не менее 75% расчётного. В исходном анализе указано, что условие должно относиться к одновременному открытию 75% санитарных приборов проверяемого участка. Эти условия неэквивалентны. Порядок испытания участков без установленных внутриквартирных приборов отдельно не определён.",
+        "norm": "СП 73.13330.2016 (норматив-кандидат), кандидат п. 7.5.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 73.13330.2016",
+            "cited_designation": "СП 73.13330.2016",
+            "candidate_relevance": 1.0,
+            "reason": "Проверить метод испытания внутренней канализации проливом и условие одновременного открытия санитарных приборов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "7.5.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить методику после проверки нормативного пункта и определить программу испытания участков, сдаваемых без внутриквартирных приборов.",
+        "risk": "Приёмка сети по неэквивалентному режиму испытания и пропуск дефектов герметичности или отвода стоков.",
+        "source_finding_ids": [
+          "T-003"
+        ],
+        "source_block_ids": [
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "related_block_ids": [
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_686c23c287f1430199897dff70be0878",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_d01ac56c817044c4a525d02e3251ba0e",
+            "page": 4
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F006_test_criterion:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектность спецификации",
+        "sheet": "Листы 1, 2, 19, 20, 01, 02",
+        "page": [
+          3,
+          4,
+          21,
+          22,
+          30,
+          31
+        ],
+        "problem": "Количество ревизий и поэтажных деталей К1 не согласовано с заявленным составом стояков.",
+        "description": "Перечислены 10 стояков секции С2 и 20 стояков секции С3. При ревизиях на трёх этажах требуется проверить обеспечение 30 × 3 = 90 мест установки, тогда как в спецификации указаны 7 полипропиленовых ревизий. Дополнительно требуют пересчёта 17 компенсационных патрубков и 99 противопожарных муфт при требовании поэтажной установки. Окончательное количество зависит от фактической протяжённости и материала каждого стояка.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить требования к полноте спецификации и соответствию количества изделий рабочим чертежам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Составить ведомость деталей по каждому стояку и этажу, учесть уточнённую периодичность ревизий и привести спецификацию в соответствие с ведомостью.",
+        "risk": "Недокомплект поставки, отсутствие предусмотренных средств прочистки, компенсации и противопожарной защиты проходок.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [
+          "blk_0322283990a44921bed00f2feff715a4",
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_1d17a25462884606ae486c345090fe20",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "related_block_ids": [
+          "blk_0322283990a44921bed00f2feff715a4",
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_1d17a25462884606ae486c345090fe20",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e",
+          "blk_dfae064f26494949a92afe3b0f6f9158",
+          "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+          "blk_11ab29134110467ba6ce9b0991b6ea82"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_082880f1dc1c45628641110a8a4f8f44",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_686c23c287f1430199897dff70be0878",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1d17a25462884606ae486c345090fe20",
+            "page": 30
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 83,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F002_revision_compensator_inventory:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "VK_F002_revision_compensator_inventory:composite:2",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-005",
+      "finding": {
+        "id": "F-005",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Контроль засоров",
+        "sheet": "Листы 1, 2, 01",
+        "page": [
+          3,
+          4,
+          30
+        ],
+        "problem": "25 датчиков засора не обеспечивают заявленную установку на каждом из 30 основных стояков К1.",
+        "description": "Общие указания требуют датчик на каждом канализационном стояке в техническом пространстве +5,320. В ведомости перечислены 30 основных стояков К1 секций С2 и С3, а в спецификации указаны 25 датчиков GS-Blockage D110. При применении требования ко всем основным стоякам не обеспечены пять мест установки. Исключение для опусков первого этажа само по себе это расхождение не объясняет.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить соответствие количества оборудования в спецификации принятому проектному решению.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-005"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Составить перечень контролируемых стояков, обосновать возможные исключения и согласовать количество датчиков со спецификацией и заданием разделу АК.",
+        "risk": "Отсутствие сигнализации засора на части стояков и позднее обнаружение аварийного заполнения.",
+        "source_finding_ids": [
+          "T-005"
+        ],
+        "source_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_1d17a25462884606ae486c345090fe20",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "related_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_1d17a25462884606ae486c345090fe20",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_082880f1dc1c45628641110a8a4f8f44",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_686c23c287f1430199897dff70be0878",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1d17a25462884606ae486c345090fe20",
+            "page": 30
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK20_sensor_count_identity:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-006",
+      "finding": {
+        "id": "F-006",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Внутренние водостоки",
+        "sheet": "Листы 2, 03, 04",
+        "page": [
+          4,
+          32,
+          33
+        ],
+        "problem": "Количество усиливающих хомутов К2 меньше количества соединителей при требовании усиления всех соединений SML.",
+        "description": "Для DN100 предусмотрены 7 соединителей Rapid и 4 усиливающих хомута, для DN150 — 33 соединителя и 18 хомутов. При требовании общих указаний усилить все соединения недостаёт 3 и 15 хомутов соответственно, всего 18 шт. Для DN200 количества совпадают: по 26 шт.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить комплектность спецификации соединительных и усиливающих элементов согласно проектному решению.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Увязать ведомость соединений с количеством усилений и подтвердить по паспортам допустимое давление каждой выбранной пары соединителя и усиливающего хомута.",
+        "risk": "Монтаж части соединений без предусмотренного усиления и возможная разгерметизация при заполнении водостока.",
+        "source_finding_ids": [
+          "T-006"
+        ],
+        "source_block_ids": [
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_9b1d774c2f6c4127b2f8618e3792a647",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "related_block_ids": [
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_9b1d774c2f6c4127b2f8618e3792a647",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_686c23c287f1430199897dff70be0878",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+            "page": 32
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 49,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F003_reinforcement_counts:7ad222ee93fc76cab7bc",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-007",
+      "finding": {
+        "id": "F-007",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Изоляция трубопроводов",
+        "sheet": "Листы 2, 01, 02, 03, 04, 05, 06",
+        "page": [
+          4,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35
+        ],
+        "problem": "Предусмотренная проектом антиконденсатная изоляция К2 отсутствует отдельной позицией в спецификации.",
+        "description": "Общие указания назначают по всей длине К2 изоляцию из вспененного полиэтилена толщиной 9 мм, группы горючести Г1. Сумма длин труб К2 составляет 258,7 м. Соответствующая позиция в полной спецификации не приведена; изоляция 100×40 мм в разделах К1 и К2.1 не соответствует указанному решению.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить включение в спецификацию материалов изоляции, предусмотренных рабочей документацией.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Добавить изоляцию К2 с толщиной, характеристиками и количеством по фактическим наружным диаметрам труб; уточнить объём изоляции фасонных частей.",
+        "risk": "Неполная закупка изоляции, образование конденсата и увлажнение окружающих конструкций и отделки.",
+        "source_finding_ids": [
+          "T-007"
+        ],
+        "source_block_ids": [
+          "blk_1d17a25462884606ae486c345090fe20",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "related_block_ids": [
+          "blk_1d17a25462884606ae486c345090fe20",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e",
+          "blk_9b1d774c2f6c4127b2f8618e3792a647"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_686c23c287f1430199897dff70be0878",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1d17a25462884606ae486c345090fe20",
+            "page": 30
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 61,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F004_insulation_scope:02bb3aef959f1c658194",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Материалы трубопроводов",
+        "sheet": "Лист 3",
+        "page": [
+          5,
+          31
+        ],
+        "problem": "Труба К1 диаметром 50 мм обозначена с нулевой толщиной стенки на плане и в спецификации.",
+        "description": "На плане первого этажа, лист 3, зафиксировано обозначение «ø50х0.0». В текстовом анализе спецификации К1 приведена строка «д50×0» длиной 5,2 м. Если второе число обозначает толщину стенки, запись физически некорректна и не определяет закупочный типоразмер. Совпадение ошибок объединено без повышения серьёзности: отдельная запись проверки текста по чертежу отсутствует.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1; ГОСТ 32414-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить требования к однозначному обозначению изделия в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008",
+                "G-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 32414-2013",
+            "cited_designation": "ГОСТ 32414-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить размерный ряд и обозначение полипропиленовой трубы внутренней канализации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008",
+                "G-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить строку спецификации с оригиналом и паспортом выбранного изделия, указать фактическую толщину стенки или корректное номинальное обозначение с артикулом, затем исправить план.",
+        "risk": "Неоднозначный заказ трубы и необходимость уточнения типоразмера при закупке и монтаже.",
+        "source_finding_ids": [
+          "T-008",
+          "G-001"
+        ],
+        "source_block_ids": [
+          "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+          "blk_05cc98f235e94d8c86d0758dfc8f2cd0"
+        ],
+        "related_block_ids": [
+          "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+          "blk_05cc98f235e94d8c86d0758dfc8f2cd0"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+            "page": 31
+          },
+          {
+            "type": "image",
+            "block_id": "blk_05cc98f235e94d8c86d0758dfc8f2cd0",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 61,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK14:f8b1abbe9f89c7203c04",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-009",
+      "finding": {
+        "id": "F-009",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Комплектность спецификации",
+        "sheet": "Лист 02",
+        "page": 31,
+        "problem": "Количество штучных соединителей Rapid DN100 записано дробным числом.",
+        "description": "В позиции 30 соединительных деталей К1 для соединителя Rapid DN100 с кодом 310100 указано 4,70 шт. Для отдельного штучного изделия такая запись не задаёт корректное закупочное количество. Исходная строка требует проверки по оригиналу.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить правила указания количества и единиц измерения изделий в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить оригинальную строку с ведомостью соединений и указать обоснованное целое количество; не заменять число на 470 и не округлять без расчёта.",
+        "risk": "Ошибочная закупка соединителей и задержка комплектования сети.",
+        "source_finding_ids": [
+          "T-009"
+        ],
+        "source_block_ids": [
+          "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+        ],
+        "related_block_ids": [
+          "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+            "page": 31
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 67,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-VK-F-008:91aa2581cf81197e6fe8",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектность спецификации",
+        "sheet": "Листы 01, 02",
+        "page": [
+          30,
+          31
+        ],
+        "problem": "Для безраструбных деталей К1 DN150 не определены соответствующие трубы и соединители.",
+        "description": "Спецификация К1 содержит опорные трубы, отводы, тройники и ревизии DN150. При этом в разделе труб отсутствует чугунная труба DN150, а в соединительных деталях не указаны соединители Rapid DN150. Требуется проверить принадлежность деталей системе и фактическую сборку участков.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить полноту спецификации труб и соединительных изделий для принятого диаметра.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить участки DN150 с чертежами, добавить необходимые трубы и соединители либо исправить ошибочные диаметры и принадлежность позиций.",
+        "risk": "Невозможность собрать предусмотренные участки из закупленного комплекта и несогласованные замены при монтаже.",
+        "source_finding_ids": [
+          "T-010"
+        ],
+        "source_block_ids": [
+          "blk_1d17a25462884606ae486c345090fe20"
+        ],
+        "related_block_ids": [
+          "blk_1d17a25462884606ae486c345090fe20"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1d17a25462884606ae486c345090fe20",
+            "page": 30
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектность спецификации",
+        "sheet": "Листы 04, 06",
+        "page": [
+          33,
+          35
+        ],
+        "problem": "Для протяжённого участка К2.1 DN125 не предусмотрены соответствующие соединители и не определены переходы.",
+        "description": "Указаны 495,5 м безраструбной чугунной трубы 125×5 мм и 250 креплений диаметром 125 мм, но соединители DN125 отсутствуют. Приведён только один отвод DN125; переходы к деталям DN100 не определены. Отдельная строка креплений подтверждает применение размера 125 мм, поэтому считать длину 495,5 м простой опечаткой нельзя.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить полноту спецификации безраструбных труб, соединителей и переходных деталей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить трассировку и длину DN125 по чертежам, составить ведомость соединений и переходов, затем исправить спецификацию.",
+        "risk": "Недокомплект соединительных деталей и невозможность выполнить предусмотренную сеть без дополнительных закупок.",
+        "source_finding_ids": [
+          "T-011"
+        ],
+        "source_block_ids": [
+          "blk_2832f2bda58d416ab8c388c81c339b02",
+          "blk_5a8674f9dc2343498ae3b666f20e67c9"
+        ],
+        "related_block_ids": [
+          "blk_2832f2bda58d416ab8c388c81c339b02",
+          "blk_5a8674f9dc2343498ae3b666f20e67c9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "page": 33
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5a8674f9dc2343498ae3b666f20e67c9",
+            "page": 35
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 37,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "editorial_issue",
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F009_pipe_125_inventory:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Крепления трубопроводов",
+        "sheet": "Листы 03, 06",
+        "page": [
+          32,
+          35
+        ],
+        "problem": "В спецификации не заполнено количество креплений К1.1.",
+        "description": "Для К1.1 предусмотрено 63,2 м чугунных труб, однако строка креплений диаметром 100 мм оставлена без количества. Учёт этих креплений в другой строке явно не обозначен.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить полноту количественных данных по креплениям в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить количество по расположению опор и подвесок и заполнить строку; при учёте в другой позиции дать однозначную ссылку.",
+        "risk": "Неопределённость объёма закупки креплений и распределения их между системами.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [
+          "blk_5a8674f9dc2343498ae3b666f20e67c9",
+          "blk_9b1d774c2f6c4127b2f8618e3792a647"
+        ],
+        "related_block_ids": [
+          "blk_5a8674f9dc2343498ae3b666f20e67c9",
+          "blk_9b1d774c2f6c4127b2f8618e3792a647"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+            "page": 32
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5a8674f9dc2343498ae3b666f20e67c9",
+            "page": 35
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK35_B-VK-F-010:3dfbbec7f05abd4276e4",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-013",
+      "finding": {
+        "id": "F-013",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Водосточные воронки",
+        "sheet": "Листы 15, 03",
+        "page": [
+          17,
+          32
+        ],
+        "problem": "Основная спецификация не определяет модель и состав 12 комплектов водосточных воронок.",
+        "description": "В спецификации указаны диаметр 110 мм и электроподогрев, но не заполнены марка, изготовитель и состав комплекта. В описании узла установки на листе 15 приведены HL62.1H/1, HL65H и элемент 116010. Эти сведения позволяют уточнить спецификацию, но не доказывают одинаковую комплектацию всех 12 воронок для разных типов кровли. Отсутствие отдельных строк деталей не означает их фактического отсутствия в комплекте.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить требования к идентификации оборудования и комплектности закупочной позиции.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать модель, изготовителя и состав каждого типа комплекта с привязкой к кровельным узлам; проверить пропускную способность и передать электрическую мощность обогрева в смежный раздел.",
+        "risk": "Закупка несовместимой комплектации и невозможность однозначно проверить гидравлические и электрические характеристики.",
+        "source_finding_ids": [
+          "T-013"
+        ],
+        "source_block_ids": [
+          "blk_9b1d774c2f6c4127b2f8618e3792a647"
+        ],
+        "related_block_ids": [
+          "blk_9b1d774c2f6c4127b2f8618e3792a647",
+          "blk_646b9b78524b469f982f5ec9f3b85138",
+          "blk_f55a34ccc6704860863578612dabc254"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+            "page": 32
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 81,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "absence_guard_downgraded": true,
+        "absence_guard_original_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "absence_guard_evidence": "На листе 15 в узле кровли К-4 указаны модель воронки HL62.1H/1 и состав комплекта с элементом HL65H и трубой DN125."
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F013_drain_assembly_scope:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Высотная координация",
+        "sheet": "Листы 14, 2",
+        "page": [
+          3,
+          4,
+          16,
+          37
+        ],
+        "problem": "Отметка верхнего технического пространства отличается на 50 мм в разных частях комплекта.",
+        "description": "В заголовке плана, лист 14, и общих указаниях приведено +38,690. В ведомости рабочих чертежей для верхнего технического пространства и в гидравлическом расчёте секции №3, лист 2 приложения, указано +38,640. Разница составляет 50 мм. Не установлено, относятся ли значения к разным поверхностям или к одному уровню.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к согласованности высотных обозначений и сведений взаимосвязанных документов рабочего комплекта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-014",
+                "G-002",
+                "G-003",
+                "G-019"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-014",
+                  "G-002",
+                  "G-003",
+                  "G-019"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить уровни по архитектурным разрезам, обозначить поверхность отсчёта и согласовать план, ведомость, общие указания и расчёт. Не изменять положение трубопроводов на 50 мм без проверки.",
+        "risk": "Неоднозначная высотная привязка трубопроводов и ошибки координации со смежными конструкциями.",
+        "source_finding_ids": [
+          "T-014",
+          "G-002",
+          "G-003",
+          "G-019"
+        ],
+        "source_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e",
+          "blk_5c59e6512a18487d9748e1766d2233b2",
+          "blk_d2571e41e76d4f328298d074001845db"
+        ],
+        "related_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e",
+          "blk_5c59e6512a18487d9748e1766d2233b2",
+          "blk_d2571e41e76d4f328298d074001845db",
+          "blk_b5c6b2d82a0c49eeab068093582b6e3e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_082880f1dc1c45628641110a8a4f8f44",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_686c23c287f1430199897dff70be0878",
+            "page": 4
+          },
+          {
+            "type": "image",
+            "block_id": "blk_5c59e6512a18487d9748e1766d2233b2",
+            "page": 16
+          },
+          {
+            "type": "image",
+            "block_id": "blk_d2571e41e76d4f328298d074001845db",
+            "page": 37
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-002",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-003",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение в 50 мм между отметкой +38,690 в заголовке плана листа 14 и +38,640 в ведомости листа 1, с одинаковой ссылкой на +38,690 в общих указаниях и одинаковой рекомендацией.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение в 50 мм между отметкой +38,690 в заголовке плана листа 14 и +38,640 в ведомости листа 1, с одинаковой ссылкой на +38,690 в общих указаниях и одинаковой рекомендацией.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 47,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F011_technical_space_level:c654fd4efb33b8840ce7",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Исходные данные",
+        "sheet": "Листы 1, 2",
+        "page": [
+          3,
+          4
+        ],
+        "problem": "Обозначение технических условий водоотведения различается в основаниях проектирования и описании К1.",
+        "description": "В основаниях проектирования указаны технические условия №22825 ДП-В от 19.10.2023, а при описании нагрузки на подключение — №22825 ДП-К. Расходы 577,878 м³/сут и 19,08 л/с вследствие этого не имеют однозначной ссылки на исходный документ.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Сверить реквизиты с оригиналом технических условий и привести обозначение во всех частях комплекта к правильному виду.",
+        "risk": "Ошибочная идентификация основания подключения и затруднения при согласовании расчётных нагрузок.",
+        "source_finding_ids": [
+          "T-015"
+        ],
+        "source_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "related_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_082880f1dc1c45628641110a8a4f8f44",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_686c23c287f1430199897dff70be0878",
+            "page": 4
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-VK-F-014:e9e5e1b148f844eb7d6d",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Высотная координация",
+        "sheet": "Лист 15",
+        "page": [
+          3,
+          17
+        ],
+        "problem": "Отметка кровли в заголовке плана отличается от ведомости чертежей на 590 мм.",
+        "description": "В заголовке плана на листе 15 указано +41,280, а в ведомости рабочих чертежей для этого плана — +40,690. Разница составляет 0,590 м. Правильная отметка и поверхность отсчёта по переданным данным не определены.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к согласованности наименований и высотных отметок в ведомости и на чертежах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-004",
+                "G-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-004",
+                  "G-005"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить отметку по архитектурным разрезам и составу кровли, затем согласовать заголовок плана и ведомость рабочих чертежей.",
+        "risk": "Неоднозначная привязка кровельных элементов и необходимость уточнений при координации водостока.",
+        "source_finding_ids": [
+          "G-004",
+          "G-005"
+        ],
+        "source_block_ids": [
+          "blk_646b9b78524b469f982f5ec9f3b85138"
+        ],
+        "related_block_ids": [
+          "blk_646b9b78524b469f982f5ec9f3b85138",
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_646b9b78524b469f982f5ec9f3b85138",
+            "page": 17
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-004",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-005",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение отметки кровли: +41,280 в заголовке плана листа 15 и +40,690 в ведомости рабочих чертежей, разница 590 мм. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение отметки кровли: +41,280 в заголовке плана листа 15 и +40,690 в ведомости рабочих чертежей, разница 590 мм. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 47,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F015_roof_title_level:2bb76a02a4eaf106a275",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-017",
+      "finding": {
+        "id": "F-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Уклоны канализации",
+        "sheet": "Лист 17",
+        "page": 19,
+        "problem": "Высотные отметки участка К1.1 противоречат указанному направлению уклона.",
+        "description": "На участке К1.1-ø110×5,0 в направлении уклона 0,010 отметка изменяется от +5,512 до +5,521. Вместо понижения получается повышение на 9 мм.",
+        "norm": "СП 30.13330.2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 30.13330.2020",
+            "cited_designation": "СП 30.13330.2020",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить требования к уклонам и гидравлической работоспособности самотечных трубопроводов канализации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-006"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить направление стока и длину участка, согласовать обе отметки с уклоном и обеспечить понижение трубы по ходу движения стоков.",
+        "risk": "При монтаже по указанным отметкам возможны застой стоков, отложения и засоры.",
+        "source_finding_ids": [
+          "G-006"
+        ],
+        "source_block_ids": [
+          "blk_ece9516e802e47a8baa35590355f2526"
+        ],
+        "related_block_ids": [
+          "blk_ece9516e802e47a8baa35590355f2526"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_ece9516e802e47a8baa35590355f2526",
+            "page": 19
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-006",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Ссылки между чертежами",
+        "sheet": "Лист 18",
+        "page": [
+          3,
+          20,
+          21,
+          22,
+          23
+        ],
+        "problem": "Продолжения стояков секции №3 ошибочно адресованы на схему секции №2.",
+        "description": "На схеме секции №3, лист 18, для стояков К1-3.3, К1-3.4, К1-3.7 и К1-3.11 указано «далее см. Лист 19». Лист 19 содержит стояки секции №2. Стояки К1-3.1–К1-3.10 относятся к листу 20, а К1-3.11–К1-3.20 — к листу 21.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к ссылкам на взаимосвязанные чертежи и однозначности продолжений изображений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-007",
+                "G-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-007",
+                  "G-008"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить ссылки для К1-3.3, К1-3.4 и К1-3.7 на лист 20, для К1-3.11 — на лист 21; проверить остальные ссылки этой схемы.",
+        "risk": "Использование схемы другой секции при монтаже и ошибочная увязка стояков.",
+        "source_finding_ids": [
+          "G-007",
+          "G-008"
+        ],
+        "source_block_ids": [
+          "blk_c5143b0e4651468d97318ae7d877d087"
+        ],
+        "related_block_ids": [
+          "blk_c5143b0e4651468d97318ae7d877d087",
+          "blk_dfae064f26494949a92afe3b0f6f9158",
+          "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+          "blk_11ab29134110467ba6ce9b0991b6ea82",
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_c5143b0e4651468d97318ae7d877d087",
+            "page": 20
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-008",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на ошибочную ссылку «далее см. Лист 19» для стояков К1-3.3 и К1-3.4 секции №3. Правое дополнительно охватывает К1-3.7 и К1-3.11 и уточняет адресацию на лист 21 для К1-3.11–К1-3.20.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на ошибочную ссылку «далее см. Лист 19» для стояков К1-3.3 и К1-3.4 секции №3. Правое дополнительно охватывает К1-3.7 и К1-3.11 и уточняет адресацию на лист 21 для К1-3.11–К1-3.20.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 51,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Ссылки между чертежами",
+        "sheet": "Лист 19",
+        "page": [
+          3,
+          18,
+          19,
+          21,
+          24,
+          25
+        ],
+        "problem": "На схеме стояков К1 секции №2 неверно указаны оба листа продолжения.",
+        "description": "Для стояков К1-2.1–К1-2.10 ниже +7,370 указан лист 16, а выше +38,640 — лист 22. По ведомости лист 16 содержит план кровли, лист 22 — схему К1.1. Соответствующие продолжения К1 размещены на листах 17 и 23.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к корректности ссылок на продолжения схем рабочего комплекта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-009",
+                "G-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-009",
+                  "G-010"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить нижнюю ссылку на лист 17, верхнюю — на лист 23 и согласовать взаимные ссылки.",
+        "risk": "Ошибочная увязка стояков с планом кровли или другой системой канализации при производстве работ.",
+        "source_finding_ids": [
+          "G-009",
+          "G-010"
+        ],
+        "source_block_ids": [
+          "blk_dfae064f26494949a92afe3b0f6f9158"
+        ],
+        "related_block_ids": [
+          "blk_dfae064f26494949a92afe3b0f6f9158",
+          "blk_02d4fb9a7c524289a73899512cd4f3d0",
+          "blk_ece9516e802e47a8baa35590355f2526",
+          "blk_7f11769cf1164f53aec644339cd35e97",
+          "blk_b5c6b2d82a0c49eeab068093582b6e3e",
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_dfae064f26494949a92afe3b0f6f9158",
+            "page": 21
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковые ошибочные ссылки листа 19: ниже +7,370 указан лист 16 вместо 17, выше +38,640 — лист 22 вместо 23. Различие в оценке серьёзности не меняет сути и детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковые ошибочные ссылки листа 19: ниже +7,370 указан лист 16 вместо 17, выше +38,640 — лист 22 вместо 23. Различие в оценке серьёзности не меняет сути и детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 33,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F017_F028_cross_references:e41c019d214dddc2adbd",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Ссылки между чертежами",
+        "sheet": "Лист 20",
+        "page": [
+          3,
+          19,
+          20,
+          22,
+          24,
+          25
+        ],
+        "problem": "Продолжения стояков К1-3.1–К1-3.10 адресованы на листы другой секции и другой системы.",
+        "description": "На листе 20 нижнее продолжение ниже +7,370 указано на лист 17 со схемой секции №2, а верхнее выше +38,640 — на лист 22 со стояками К1.1. Правильные адреса для К1 секции №3: нижнее продолжение — лист 18, верхнее — лист 23.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к корректности ссылок на продолжения схем рабочего комплекта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-011",
+                "G-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-011",
+                  "G-012"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить нижнюю ссылку на лист 18 и верхнюю на лист 23, проверить соответствие марок стояков на стыках схем.",
+        "risk": "Ошибочное присоединение к участкам другой секции или использование решений системы К1.1.",
+        "source_finding_ids": [
+          "G-011",
+          "G-012"
+        ],
+        "source_block_ids": [
+          "blk_bf9e42b43a6a45a8bab27fd03948ed37"
+        ],
+        "related_block_ids": [
+          "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+          "blk_ece9516e802e47a8baa35590355f2526",
+          "blk_c5143b0e4651468d97318ae7d877d087",
+          "blk_7f11769cf1164f53aec644339cd35e97",
+          "blk_b5c6b2d82a0c49eeab068093582b6e3e",
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+            "page": 22
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-012",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания выявляют одинаковые ошибочные ссылки листа 20: нижнюю на лист 17 вместо 18 и верхнюю на лист 22 вместо 23. Детализация эквивалентна; различие в оценке серьёзности не является противоречием по факту.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания выявляют одинаковые ошибочные ссылки листа 20: нижнюю на лист 17 вместо 18 и верхнюю на лист 22 вместо 23. Детализация эквивалентна; различие в оценке серьёзности не является противоречием по факту.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F017_F028_cross_references:e41c019d214dddc2adbd",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-021",
+      "finding": {
+        "id": "F-021",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Ссылки между чертежами",
+        "sheet": "Лист 21",
+        "page": [
+          3,
+          23,
+          24,
+          25
+        ],
+        "problem": "Верхнее продолжение стояков К1-3.11–К1-3.20 ошибочно адресовано на схему К1.1.",
+        "description": "На листе 21 для продолжения К1 выше +38,640 указан лист 22, содержащий схему К1.1. Согласно ведомости соответствующая схема К1 размещена на листе 23.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к правильности ссылок на продолжения изображений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-013"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить номер листа верхнего продолжения с 22 на 23.",
+        "risk": "Ошибочное прочтение связи схем и дополнительные уточнения при монтаже.",
+        "source_finding_ids": [
+          "G-013"
+        ],
+        "source_block_ids": [
+          "blk_11ab29134110467ba6ce9b0991b6ea82"
+        ],
+        "related_block_ids": [
+          "blk_11ab29134110467ba6ce9b0991b6ea82",
+          "blk_7f11769cf1164f53aec644339cd35e97",
+          "blk_b5c6b2d82a0c49eeab068093582b6e3e",
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_11ab29134110467ba6ce9b0991b6ea82",
+            "page": 23
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-013",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания выявляют одинаковую ошибку ссылки выше +38,640: указан лист 22 со схемой К1.1 вместо листа 23 со схемой К1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 39,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F017_F028_cross_references:e41c019d214dddc2adbd",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-022",
+      "finding": {
+        "id": "F-022",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Ссылки между чертежами",
+        "sheet": "Лист 21",
+        "page": [
+          3,
+          19,
+          20,
+          23
+        ],
+        "problem": "Нижнее продолжение стояков К1-3.11–К1-3.20 ошибочно адресовано на схему секции №2.",
+        "description": "На листе 21 для продолжения ниже +7,370 указан лист 17 со схемой секции №2. По ведомости схема К1 нижнего технического пространства секции №3 размещена на листе 18.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к правильности ссылок на продолжения изображений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-014"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-014"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить номер листа нижнего продолжения с 17 на 18.",
+        "risk": "Неоднозначность связи стояков со сборными трубопроводами соответствующей секции.",
+        "source_finding_ids": [
+          "G-014"
+        ],
+        "source_block_ids": [
+          "blk_11ab29134110467ba6ce9b0991b6ea82"
+        ],
+        "related_block_ids": [
+          "blk_11ab29134110467ba6ce9b0991b6ea82",
+          "blk_ece9516e802e47a8baa35590355f2526",
+          "blk_c5143b0e4651468d97318ae7d877d087",
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_11ab29134110467ba6ce9b0991b6ea82",
+            "page": 23
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-014",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания выявляют одинаковую ошибку ссылки ниже +7,370: указан лист 17 для секции №2 вместо листа 18 для секции №3.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 25,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F017_F028_cross_references:e41c019d214dddc2adbd",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-023",
+      "finding": {
+        "id": "F-023",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка стояков",
+        "sheet": "Лист 22",
+        "page": 24,
+        "problem": "Все семь стояков К1.1 имеют разные обозначения в заголовках и на выносках.",
+        "description": "Заголовкам К1.1-1–К1.1-7 на схеме соответствуют выноски К1.1-3.5, К1.1-3.4, К1.1-3.3, К1.1-3.2, К1.1-3.1, К1.1-2.2 и К1.1-2.1. Например, К1.1-1 подписан у трубы как К1.1-3.5, а К1.1-7 — как К1.1-2.1. Единая система идентификации не обеспечена.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к однозначности обозначений элементов и согласованности маркировки на рабочих чертежах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-015",
+                "G-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-015",
+                  "G-016"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить марки стояков с планами и схемами продолжения, затем привести все заголовки и выноски к единой маркировке.",
+        "risk": "Перепутывание стояков при монтаже, обследовании и эксплуатации.",
+        "source_finding_ids": [
+          "G-015",
+          "G-016"
+        ],
+        "source_block_ids": [
+          "blk_7f11769cf1164f53aec644339cd35e97"
+        ],
+        "related_block_ids": [
+          "blk_7f11769cf1164f53aec644339cd35e97",
+          "blk_05cc98f235e94d8c86d0758dfc8f2cd0",
+          "blk_2a21dbf47d6e4e96af94bb73b6befec2",
+          "blk_ece9516e802e47a8baa35590355f2526",
+          "blk_c5143b0e4651468d97318ae7d877d087"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_7f11769cf1164f53aec644339cd35e97",
+            "page": 24
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-015",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают двойную маркировку всех семи стояков К1.1 на листе 22 с одинаковыми примерами: К1.1-1 / К1.1-3.5 и К1.1-7 / К1.1-2.1. Различие в оценке серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают двойную маркировку всех семи стояков К1.1 на листе 22 с одинаковыми примерами: К1.1-1 / К1.1-3.5 и К1.1-7 / К1.1-2.1. Различие в оценке серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 83,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F024_riser_labels:f44954b8bdd41b2ea649",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-024",
+      "finding": {
+        "id": "F-024",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Высотная координация канализации",
+        "sheet": "Лист 26",
+        "page": 28,
+        "problem": "Отметки верхнего участка стояка К2.1-2.2 противоречат изображённому положению присоединений.",
+        "description": "Верхний отвод обозначен отметкой +38,787, а изображённое ниже присоединение — +39,647. По числовым отметкам нижняя точка оказывается выше верхней на 0,860 м. Переданные данные не позволяют выбрать правильную отметку.",
+        "norm": "СП 30.13330.2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 30.13330.2020",
+            "cited_designation": "СП 30.13330.2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к трассировке и обеспечению самотечного отвода воды при принятом высотном положении присоединений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-017"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-017"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Увязать обе отметки с планом верхнего технического пространства и фактическим направлением стока, исправить числовые значения либо изображение участка.",
+        "risk": "Невозможность однозначно выполнить монтаж и нарушение предусмотренной схемы отвода воды.",
+        "source_finding_ids": [
+          "G-017"
+        ],
+        "source_block_ids": [
+          "blk_1861896656bb467fb9787ee25605c340"
+        ],
+        "related_block_ids": [
+          "blk_1861896656bb467fb9787ee25605c340",
+          "blk_5c59e6512a18487d9748e1766d2233b2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_1861896656bb467fb9787ee25605c340",
+            "page": 28
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 81,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-025",
+      "finding": {
+        "id": "F-025",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Уклоны канализации",
+        "sheet": "Лист 26",
+        "page": 28,
+        "problem": "Отметки нижнего отвода К2.1-3.1 задают повышение трубы к выпуску.",
+        "description": "На нижнем отводящем участке от стояка К2.1-3.1 отметка по направлению к выпуску повышается с +5,651 до +5,666, то есть на 15 мм. Это противоречит указанному уклону 0,010 в направлении отвода воды.",
+        "norm": "СП 30.13330.2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 30.13330.2020",
+            "cited_designation": "СП 30.13330.2020",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить требования к уклонам и работоспособности самотечных отводящих трубопроводов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-018"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить длину участка и направление стока, согласовать отметки с уклоном 0,010 и обеспечить понижение к выпуску.",
+        "risk": "Застой воды, отложения и снижение надёжности аварийного и дренажного водоотведения.",
+        "source_finding_ids": [
+          "G-018"
+        ],
+        "source_block_ids": [
+          "blk_1861896656bb467fb9787ee25605c340"
+        ],
+        "related_block_ids": [
+          "blk_1861896656bb467fb9787ee25605c340"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_1861896656bb467fb9787ee25605c340",
+            "page": 28
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 83,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "finding_id": "F-026",
+      "finding": {
+        "id": "F-026",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Расчёт внутренних водостоков",
+        "sheet": "Лист 2",
+        "page": [
+          3,
+          17,
+          18,
+          37
+        ],
+        "problem": "На расчётной схеме секции №3 кровля и надстройка имеют отметку технического пространства.",
+        "description": "На листе 2 гидравлического расчёта кровля, надстройка и техническое пространство обозначены одинаковой отметкой +38,640. В ведомости чертежей кровли указаны на +40,690 и +44,870. Заголовок плана нижней кровли дополнительно содержит +41,280, поэтому окончательные значения нельзя выбирать только по ведомости. Влияние ошибочных подписей на фактические расчётные высоты не установлено.",
+        "norm": "СП 30.13330.2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 30.13330.2020",
+            "cited_designation": "СП 30.13330.2020",
+            "candidate_relevance": 0.93,
+            "reason": "Проверить требования к гидравлическому расчёту внутренних водостоков и учёту фактических высот расчётных участков.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-020"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-020"
+                ],
+                "designation_source": "Подбор нормативного кандидата при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить отметки кровель и надстройки по согласованным планам и разрезам, исправить расчётную схему и проверить использованные в расчёте высоты участков.",
+        "risk": "Неоднозначность расчётной модели; при использовании неверных высот возможна ошибочная оценка давления и параметров водостока.",
+        "source_finding_ids": [
+          "G-020"
+        ],
+        "source_block_ids": [
+          "blk_d2571e41e76d4f328298d074001845db"
+        ],
+        "related_block_ids": [
+          "blk_d2571e41e76d4f328298d074001845db",
+          "blk_646b9b78524b469f982f5ec9f3b85138",
+          "blk_02d4fb9a7c524289a73899512cd4f3d0",
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_d2571e41e76d4f328298d074001845db",
+            "page": 37
+          },
+          {
+            "type": "image",
+            "block_id": "blk_646b9b78524b469f982f5ec9f3b85138",
+            "page": 17
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T082355Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:23:55.540329+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 51,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F027_calculation_level_labels:7479fd101bd142ad9eec",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [],
+      "unsupported_additions": "unchecked",
+      "novel_useful_content": "unchecked",
+      "duplicate_burden": "unchecked",
+      "profile_and_section": "unchecked",
+      "engineer_reuse": "unchecked",
+      "evidence": [],
+      "disposition": "unchecked"
+    }
+  ],
+  "preserved_rows": 171,
+  "total_rows": 197,
+  "model_calls": 0,
+  "quality_acceptance": false
+}
