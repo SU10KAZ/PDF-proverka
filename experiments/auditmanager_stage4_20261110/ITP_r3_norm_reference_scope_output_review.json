@@ -1,0 +1,639 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "5e2d69c9421f1226274baf07e15dd31db663b64a52eb881ad4b20639d56fcb37",
+  "queue_after_sha256": "1df9dba2347ea2613287b6c447558ff1d9658b5bd81d97bd63eb15508e345545",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-034",
+      "finding": {
+        "id": "F-034",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Листы 1, 11., 12., 3, 18",
+        "page": [
+          7,
+          34,
+          35,
+          41,
+          56
+        ],
+        "problem": "Перечень нормативных ссылок требует проверки редакций и применимости.",
+        "description": "Сохранены ссылки на приказ Минэнерго №115, ГОСТ 12820-80 и ГОСТ 14918-80, для которых исходный анализ сообщает о последующих заменяющих документах. Одновременно применяются СНиП 3.05.03-85 и СП 74.13330.2023, СП 41-101-95 и СП 510.1325800.2022. Официальная проверка статусов и переходных условий не выполнена.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), кандидат п. 5.2.3",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к оформлению перечня ссылочных документов и его идентификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-034"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-034"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "5.2.3",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить статусы, редакции и основания применения по официальным источникам; согласованно обновить перечень и соответствующие требования проекта.",
+        "risk": "Применение неподходящих требований и замечания при экспертизе или приёмке.",
+        "source_finding_ids": [
+          "T-034"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_90da5d0d361c48008030c2bf87767ced",
+          "blk_9167c15ea57c423ea6ad708738bb420f",
+          "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 34
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 56
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F033_replaced_product_standards:3f903a601969ba823079",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "ITP_F034_mixed_norm_references:5c96f17d8af25d1ba443",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В проекте есть приказ115,ГОСТ12820-80/14918-80 и33259-2015.",
+          "verdict": "confirmed_prior_TEXT_and_direct_order_reference",
+          "limits": "Приказ сдатой24.03.2003 присутствует вблоке8. Совместные ссылки не доказывают непригодность изделий."
+        },
+        {
+          "claim": "Исходный анализ сообщает о заменяющих документах; официальная проверка не выполнена.",
+          "verdict": "honest_output_limit_preserved",
+          "limits": "Не приписывать прогону последующую работу оценщика. Ранее каталоговая заменаГОСТ была проверена, первичное подтверждение приказа осталось неполным; текущий статус права здесь не проверяется."
+        },
+        {
+          "claim": "СП41-101-95/СП510 иСНиП3.05.03-85/СП74 сосуществуют.",
+          "verdict": "confirmed_reference_mixture",
+          "limits": "Блок81 прямо содержитСП41-101-95; конкретные несовместимые требования не выявлены."
+        },
+        {
+          "claim": "Согласовать реквизиты и применимость редакций.",
+          "verdict": "supported_reference_question",
+          "limits": "Дата выпуска не заменяет переходные условия, договорную базу и содержание требований. Автоматическая замена изделий не обоснована."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены действующая применимость всех норм, техническая непригодность изделий, отсутствие реквизитов во всём проекте и адрес неполногоСП101-95.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Отдельный раздел вопросов и уточнений; технические дефекты из несовпадения реквизитов автоматически не выводятся. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fd984f8c5d03427497ffd926feaf8ed5",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e9fdca2261a4324959220546412f377",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F033_replaced_product_standards.json",
+          "sha256": "d8b8c313183679e564f305522d3a0c60a3ac6011a65f0e86b54d4d0a7278e6ff",
+          "primary_adjudication": null,
+          "limits": "Карточки подтверждают нормативную преемственность, но не недопустимость конкретного изделия, несовместимость соединений, ошибочную поставку или обязательность механической замены ссылки. Статус стандарта не равен проверке соответствия продукции. Работы проектировщика по сопоставлению изделий не наблюдались: нельзя утверждать, что проверку не выполняли. Таблицы размеров, покрытия, материалы, договорные условия и переходные основания отдельно не изучены. Даты введения указаны как данные реестра, не как самостоятельное юридическое заключение.",
+          "wording": "В ИТП.ТМ.СО, лист11, для части плоских приварных фланцев указан ГОСТ12820-80*, а на листе12 для оцинкованной стали0,5мм — ГОСТ14918-80. Подтверждена замена этих стандартов на33259-2015 и14918-2020 соответственно. Согласовать ссылки и обозначения предусмотренных изделий; при актуализации сохранить требуемые присоединительные и материальные характеристики."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+          "primary_adjudication": null,
+          "limits": "Подтверждена отмена конкретного приказа и локальная неполнота ссылок, не нарушение фактической эксплуатации. ТЗ проекта ссылается на договор15.09.2025, позднее даты отмены; окончательная дата выпуска и договорная нормативная база требуют проверки. В ведомости реквизиты№115 присутствуют, поэтому «во всём проекте нет реквизитов» неверно. Отсутствие реквизитов правилучёта вУУТЭ не установлено. Содержание конкретных конфликтующих требованийСП74/СНиП не выявлено.",
+          "wording": "Согласовать нормативные ссылки: в ведомости указан приказМинэнерго24.03.2003№115, отменённый с01.09.2025 приказом14.05.2025№511; вПЗ правила эксплуатации и учёта названы без реквизитов. Уточнить применимые документы и согласовать перечни. НазваниеСП510 исправить совместно сF-053; совместное упоминаниеСП74 иСНиП3.05.03-85 само по себе не считать техническим противоречием."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-035",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e9fdca2261a4324959220546412f377",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a7ba21ea8083491389a223015720c9cb",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_d348bae526df42fca9f56ba8b87ce79b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cbdb89d581ca4f3e99c2b3221c0f5708",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F032_channel_standard_scope.json",
+          "sha256": "2a2861ef488cb53b24ae648891bf66e9912e56d0c64403e708afb229da0649d4",
+          "primary_adjudication": null,
+          "limits": "В строке имеются размеры100×50×5, длина59,90м и масса6,97кг/м: считать изделие полностью неидентифицированным нельзя. По первичному сортаменту масса пока не сверена. Несущая способность, нагрузки, узлы и фактическая поставка не проверены. Неправильная поставка, ошибка расчёта и недостаточная прочность не доказаны. Замена ГОСТ или профиля автоматически не допускается.",
+          "wording": "В спецификации металла ИТП.ТМ.СО, лист12, строка100×50×5 называет швеллер горячекатаным, но ссылается на ГОСТ8278-83 для гнутых равнополочных швеллеров. Согласовать наименование с предусмотренным типом профиля; при уточнении проверить соответствие принятой массы6,97 кг/м и характеристик профиля рабочим узлам."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+          "primary_adjudication": null,
+          "limits": "Подтверждена отмена конкретного приказа и локальная неполнота ссылок, не нарушение фактической эксплуатации. ТЗ проекта ссылается на договор15.09.2025, позднее даты отмены; окончательная дата выпуска и договорная нормативная база требуют проверки. В ведомости реквизиты№115 присутствуют, поэтому «во всём проекте нет реквизитов» неверно. Отсутствие реквизитов правилучёта вУУТЭ не установлено. Содержание конкретных конфликтующих требованийСП74/СНиП не выявлено.",
+          "wording": "Согласовать нормативные ссылки: в ведомости указан приказМинэнерго24.03.2003№115, отменённый с01.09.2025 приказом14.05.2025№511; вПЗ правила эксплуатации и учёта названы без реквизитов. Уточнить применимые документы и согласовать перечни. НазваниеСП510 исправить совместно сF-053; совместное упоминаниеСП74 иСНиП3.05.03-85 само по себе не считать техническим противоречием."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+          "primary_adjudication": null,
+          "limits": "Подтверждена отмена конкретного приказа и локальная неполнота ссылок, не нарушение фактической эксплуатации. ТЗ проекта ссылается на договор15.09.2025, позднее даты отмены; окончательная дата выпуска и договорная нормативная база требуют проверки. В ведомости реквизиты№115 присутствуют, поэтому «во всём проекте нет реквизитов» неверно. Отсутствие реквизитов правилучёта вУУТЭ не установлено. Содержание конкретных конфликтующих требованийСП74/СНиП не выявлено.",
+          "wording": "Согласовать нормативные ссылки: в ведомости указан приказМинэнерго24.03.2003№115, отменённый с01.09.2025 приказом14.05.2025№511; вПЗ правила эксплуатации и учёта названы без реквизитов. Уточнить применимые документы и согласовать перечни. НазваниеСП510 исправить совместно сF-053; совместное упоминаниеСП74 иСНиП3.05.03-85 само по себе не считать техническим противоречием."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fd984f8c5d03427497ffd926feaf8ed5",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e9fdca2261a4324959220546412f377",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F033_replaced_product_standards.json",
+          "sha256": "d8b8c313183679e564f305522d3a0c60a3ac6011a65f0e86b54d4d0a7278e6ff",
+          "primary_adjudication": null,
+          "limits": "Карточки подтверждают нормативную преемственность, но не недопустимость конкретного изделия, несовместимость соединений, ошибочную поставку или обязательность механической замены ссылки. Статус стандарта не равен проверке соответствия продукции. Работы проектировщика по сопоставлению изделий не наблюдались: нельзя утверждать, что проверку не выполняли. Таблицы размеров, покрытия, материалы, договорные условия и переходные основания отдельно не изучены. Даты введения указаны как данные реестра, не как самостоятельное юридическое заключение.",
+          "wording": "В ИТП.ТМ.СО, лист11, для части плоских приварных фланцев указан ГОСТ12820-80*, а на листе12 для оцинкованной стали0,5мм — ГОСТ14918-80. Подтверждена замена этих стандартов на33259-2015 и14918-2020 соответственно. Согласовать ссылки и обозначения предусмотренных изделий; при актуализации сохранить требуемые присоединительные и материальные характеристики."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+          "primary_adjudication": null,
+          "limits": "Подтверждена отмена конкретного приказа и локальная неполнота ссылок, не нарушение фактической эксплуатации. ТЗ проекта ссылается на договор15.09.2025, позднее даты отмены; окончательная дата выпуска и договорная нормативная база требуют проверки. В ведомости реквизиты№115 присутствуют, поэтому «во всём проекте нет реквизитов» неверно. Отсутствие реквизитов правилучёта вУУТЭ не установлено. Содержание конкретных конфликтующих требованийСП74/СНиП не выявлено.",
+          "wording": "Согласовать нормативные ссылки: в ведомости указан приказМинэнерго24.03.2003№115, отменённый с01.09.2025 приказом14.05.2025№511; вПЗ правила эксплуатации и учёта названы без реквизитов. Уточнить применимые документы и согласовать перечни. НазваниеСП510 исправить совместно сF-053; совместное упоминаниеСП74 иСНиП3.05.03-85 само по себе не считать техническим противоречием."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-035",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-029"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Local reference wording only; no current legal-status verification."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Local reference wording only; no current legal-status verification."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Local reference wording only; no current legal-status verification."
+        }
+      ],
+      "disposition": "assessed_r3_ITP_norm_reference_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-035",
+      "finding": {
+        "id": "F-035",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные обозначения",
+        "sheet": "Листы 10., 12., 3, 18",
+        "page": [
+          33,
+          35,
+          41,
+          56
+        ],
+        "problem": "Часть ссылок на стандарты и наименований изделий указана ошибочно или неполно.",
+        "description": "Для прямого тройника из ковкого чугуна указан ГОСТ 6948-75 вместо подлежащего проверке ГОСТ 8948-75. Швеллер по ГОСТ 8278-83 назван горячекатаным, хотя стандарт относится к гнутым швеллерам. Обозначение «СП 101-95» неполно; правила учёта, эксплуатации и московские технические правила не имеют идентифицирующих реквизитов.",
+        "norm": "ГОСТ 8278-83 (норматив-кандидат), кандидат п. 1; ГОСТ 8948-75 (норматив-кандидат), кандидат п. 1; ГОСТ Р 21.101-2020 (норматив-кандидат), кандидат п. 5.2.3",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 8278-83",
+            "cited_designation": "ГОСТ 8278-83",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить вид и наименование швеллера по указанному сортаменту.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-035"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-035"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 8948-75",
+            "cited_designation": "ГОСТ 8948-75",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить соответствие стандарта прямому резьбовому тройнику из ковкого чугуна.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-035"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-035"
+                ],
+                "designation_source": "Кандидат исправления в исходном замечании"
+              }
+            },
+            "clause_candidate": "1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к однозначному оформлению нормативных ссылок.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-035"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-035"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "5.2.3",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить наименования и обозначения после сверки сортамента; дополнить реквизиты всех применённых правил.",
+        "risk": "Закупка другого исполнения изделия и неоднозначное применение требований.",
+        "source_finding_ids": [
+          "T-035"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_68c0bbe2863c496d8bf491bcdc947351",
+          "blk_a7ba21ea8083491389a223015720c9cb"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 33
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 35
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 56
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F032_channel_standard_scope:8edf0d0f42a81f234dc5",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "ITP_F034_mixed_norm_references:2bca6641f93ace5ac5a6",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Тройник указан по6948-75;8948-75 предложен для проверки.",
+          "verdict": "confirmed_source_reference_candidate_not_final_choice",
+          "limits": "Прежний каталог поддерживал наименование8948; отсутствие6948вообще и конкретное исполнение изделия не доказаны."
+        },
+        {
+          "claim": "Швеллер100×50×5 назван горячекатаным при8278-83.",
+          "verdict": "confirmed_prior_TEXT_and_catalog_scope",
+          "limits": "Прежняя каталоговая проверка относила8278кгнутому профилю; горячекатаная исходная сталь не делает готовый профиль горячекатаным. Несущая способность не проверена."
+        },
+        {
+          "claim": "ВПЗ правила эксплуатации, учёта и московские правила без реквизитов.",
+          "verdict": "confirmed_direct_TEXT_local_scope",
+          "limits": "Блок79. Но в ведомости8 приказ115имеетдату/номер; утверждение об отсутствии реквизитов во всём проекте неверно."
+        },
+        {
+          "claim": "ОбозначениеСП101-95 неполно.",
+          "verdict": "not_independently_located_in_this_pass",
+          "limits": "Впрямо проверенномблоке81 есть полноеСП41-101-95. Это не опровергает иную неполную ссылку, но конкретный адрес текущей претензии здесь не подтверждён."
+        },
+        {
+          "claim": "Уточнить профиль, реквизиты и обозначения.",
+          "verdict": "supported_scoped_editorial_question",
+          "limits": "Нельзя автоматически выбрать иной сортамент, заменить тройник или объявить нормативное техническое нарушение."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены действующая применимость всех норм, техническая непригодность изделий, отсутствие реквизитов во всём проекте и адрес неполногоСП101-95.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Отдельный раздел вопросов и уточнений; технические дефекты из несовпадения реквизитов автоматически не выводятся. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e9fdca2261a4324959220546412f377",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a7ba21ea8083491389a223015720c9cb",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_d348bae526df42fca9f56ba8b87ce79b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cbdb89d581ca4f3e99c2b3221c0f5708",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F032_channel_standard_scope.json",
+          "sha256": "2a2861ef488cb53b24ae648891bf66e9912e56d0c64403e708afb229da0649d4",
+          "primary_adjudication": null,
+          "limits": "В строке имеются размеры100×50×5, длина59,90м и масса6,97кг/м: считать изделие полностью неидентифицированным нельзя. По первичному сортаменту масса пока не сверена. Несущая способность, нагрузки, узлы и фактическая поставка не проверены. Неправильная поставка, ошибка расчёта и недостаточная прочность не доказаны. Замена ГОСТ или профиля автоматически не допускается.",
+          "wording": "В спецификации металла ИТП.ТМ.СО, лист12, строка100×50×5 называет швеллер горячекатаным, но ссылается на ГОСТ8278-83 для гнутых равнополочных швеллеров. Согласовать наименование с предусмотренным типом профиля; при уточнении проверить соответствие принятой массы6,97 кг/м и характеристик профиля рабочим узлам."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+          "primary_adjudication": null,
+          "limits": "Подтверждена отмена конкретного приказа и локальная неполнота ссылок, не нарушение фактической эксплуатации. ТЗ проекта ссылается на договор15.09.2025, позднее даты отмены; окончательная дата выпуска и договорная нормативная база требуют проверки. В ведомости реквизиты№115 присутствуют, поэтому «во всём проекте нет реквизитов» неверно. Отсутствие реквизитов правилучёта вУУТЭ не установлено. Содержание конкретных конфликтующих требованийСП74/СНиП не выявлено.",
+          "wording": "Согласовать нормативные ссылки: в ведомости указан приказМинэнерго24.03.2003№115, отменённый с01.09.2025 приказом14.05.2025№511; вПЗ правила эксплуатации и учёта названы без реквизитов. Уточнить применимые документы и согласовать перечни. НазваниеСП510 исправить совместно сF-053; совместное упоминаниеСП74 иСНиП3.05.03-85 само по себе не считать техническим противоречием."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+          "primary_adjudication": null,
+          "limits": "Подтверждена отмена конкретного приказа и локальная неполнота ссылок, не нарушение фактической эксплуатации. ТЗ проекта ссылается на договор15.09.2025, позднее даты отмены; окончательная дата выпуска и договорная нормативная база требуют проверки. В ведомости реквизиты№115 присутствуют, поэтому «во всём проекте нет реквизитов» неверно. Отсутствие реквизитов правилучёта вУУТЭ не установлено. Содержание конкретных конфликтующих требованийСП74/СНиП не выявлено.",
+          "wording": "Согласовать нормативные ссылки: в ведомости указан приказМинэнерго24.03.2003№115, отменённый с01.09.2025 приказом14.05.2025№511; вПЗ правила эксплуатации и учёта названы без реквизитов. Уточнить применимые документы и согласовать перечни. НазваниеСП510 исправить совместно сF-053; совместное упоминаниеСП74 иСНиП3.05.03-85 само по себе не считать техническим противоречием."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-036",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-031"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Local reference wording only; no current legal-status verification."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Local reference wording only; no current legal-status verification."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Local reference wording only; no current legal-status verification."
+        }
+      ],
+      "disposition": "assessed_r3_ITP_norm_reference_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Two current norm-reference findings assessed from frozen historical catalog reviews and matching source hashes; blocks8/79/81 directly read. No new legal-status verification or current applicability claim. Unlocated abbreviated SP claim remains uncertain, not refuted."
+}
