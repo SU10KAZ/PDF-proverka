@@ -1,0 +1,323 @@
+{
+  "status": "two_AK57_atoms_mapped_not_full_pilot_score",
+  "project": "13АВ-РД-АК2-ПА_V1",
+  "historical_engineer_record": {
+    "control_id": "AK:57",
+    "case_key": "13АВ-РД-АК2-ПА_V1::UNI-057",
+    "project": "13АВ-РД-АК2-ПА_V1",
+    "finding_id": "UNI-057",
+    "source": "Claude",
+    "original_claim": "В перечнях элементов датчики перепада давления на ВЕНТИЛЯТОРЕ включены в позицию «Датчик давления дифференциальный 50-500 Па» (предназначенную для фильтров), тогда как в таблицах сигналов тех же листов диапазон перепада на вентиляторе указан 20…200 Па, а рабочая уставка на схеме ΔP=50 Па (Пкр4.1, Пкр5.1) или 100 Па (Пм4.1, Па3.1, Ва3.1, Ва3.1р). На листах 8 и 14 те же датчики вентилятора (PDS2, PDS4) верно заданы как 20-200 Па.",
+    "original_title": "Диапазоны PDS на вентиляторных цепях",
+    "engineer_decision": "Принято",
+    "engineer_reason": null,
+    "engineer_comment": "Принято (решение эксперта 22.10.2026 по тому же факту, разбор 13АВ-РД-АК2-ПА V1, F-036). Факт: в перечнях листов 9, 10, 11, 13 и в СО датчики перепада давления на вентиляторах включены в позицию «50–500 Па» (она предназначена для фильтров), тогда как в таблицах сигналов тех же листов для вентилятора задан диапазон 20…200 Па, уставка ΔP = 50 Па (Пкр4.1, Пкр5.1) или 100 Па; на л. 8 и 14 те же датчики заданы верно.  Почему принято: в СО заложен не тот диапазон, а уставка 50 Па лежит на нижнем пределе шкалы 50–500 Па — датчики не будут работать в заданном режиме; ошибка системная, поэтому принята одним объединённым замечанием.  Урок для аудита: диапазон датчика сверять с уставкой в таблице сигналов; системную ошибку объединять, а не дробить по листам.",
+    "later_learning": "Проверять у каждого PDS назначение, уставку, диапазон таблицы сигналов, перечня и СО; найденный тип расхождения автоматически проверять на всех аналогичных шкафах.",
+    "later_label": "accepted",
+    "control_type": "положительный исторический",
+    "verification_status": "недостаточно данных для физического отказа",
+    "evidence_assessment": "Диапазоны 50–500/20–200 и уставки надо сохранить как документный конфликт; для доказанного отказа на границе диапазона требуется точный паспорт. Позднее DP-003 после первоначальной редакционной классификации.",
+    "evidence_ids": [],
+    "failure_stage": "Полезный конфликт подавлен фильтром значимости",
+    "workbook": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1 аудит/Unified_Engineering_Audit.xlsx",
+    "workbook_row": 58,
+    "location": "13АВ-РД-АК2-ПА (основной комплект, листы 1–54); лист 9; 10; 11; 13; стр. PDF 13; 14; 15; 17; 22; 26; 95; 96; 97; 99; 101.\nДатчики перепада давления на вентиляторе: Пкр4.1 (PDS3, ШАУВ-3-К4ПЧ), Пм4.1 (PDS4, ШАУВ-4-К4ПЧ), Па3.1 (PDS2), Ва3.1 (PDS3), Ва3.1р (PDS4) (ШАУВ-1-К4АС), Пкр5.1 (PDS3, ШАУВ-2-К5ПЧ)",
+    "rule_ids": [
+      "AK-005"
+    ]
+  },
+  "frozen_decision_wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать.",
+  "frozen_decision_limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+  "evidence": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_review_initial.json",
+      "sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+      "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+      "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets8_10_graphic_followup.json",
+      "sha256": "87776b7c446f80f08993460c4da2f497e67c25c907a183ffac28cd4e9af74ab6"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+      "sha256": "933904e7dd0cd1841c05acf8ea8f090d7face9124dfb3a1ca3f4f4cca6a01c4d"
+    }
+  ],
+  "target_reviews": [
+    {
+      "target_id": "AK57:9851f2c4946bad03af44",
+      "scope": "six specifically addressed signal-table versus element-list range conflicts",
+      "addresses": [
+        {
+          "system": "Пкр4.1",
+          "sensor": "PDS3",
+          "historical_signal_range_Pa": [
+            20,
+            200
+          ],
+          "historical_listed_range_Pa": [
+            50,
+            500
+          ],
+          "pilot_candidate_ids": [
+            "G-009",
+            "G-010"
+          ],
+          "pilot_final_confirmed_range_conflict": false,
+          "pilot_final_unverified_mention": [],
+          "loss_stage": "merge_needs_data_without_image",
+          "limits": "No physical sensor failure inferred; missing detection cause not established."
+        },
+        {
+          "system": "Пм4.1",
+          "sensor": "PDS4",
+          "historical_signal_range_Pa": [
+            20,
+            200
+          ],
+          "historical_listed_range_Pa": [
+            50,
+            500
+          ],
+          "pilot_candidate_ids": [
+            "G-011",
+            "G-012"
+          ],
+          "pilot_final_confirmed_range_conflict": false,
+          "pilot_final_unverified_mention": [
+            "F-006"
+          ],
+          "loss_stage": "partial_retention_of_text_only_graphic_subclaim_pending",
+          "limits": "No physical sensor failure inferred; missing detection cause not established."
+        },
+        {
+          "system": "Па3.1",
+          "sensor": "PDS2",
+          "historical_signal_range_Pa": [
+            20,
+            200
+          ],
+          "historical_listed_range_Pa": [
+            50,
+            500
+          ],
+          "pilot_candidate_ids": [],
+          "pilot_final_confirmed_range_conflict": false,
+          "pilot_final_unverified_mention": [],
+          "loss_stage": "not_found_in_frozen_candidate_packet",
+          "limits": "No physical sensor failure inferred; missing detection cause not established."
+        },
+        {
+          "system": "Ва3.1",
+          "sensor": "PDS3",
+          "historical_signal_range_Pa": [
+            20,
+            200
+          ],
+          "historical_listed_range_Pa": [
+            50,
+            500
+          ],
+          "pilot_candidate_ids": [],
+          "pilot_final_confirmed_range_conflict": false,
+          "pilot_final_unverified_mention": [],
+          "loss_stage": "not_found_in_frozen_candidate_packet",
+          "limits": "No physical sensor failure inferred; missing detection cause not established."
+        },
+        {
+          "system": "Ва3.1р",
+          "sensor": "PDS4",
+          "historical_signal_range_Pa": [
+            20,
+            200
+          ],
+          "historical_listed_range_Pa": [
+            50,
+            500
+          ],
+          "pilot_candidate_ids": [],
+          "pilot_final_confirmed_range_conflict": false,
+          "pilot_final_unverified_mention": [],
+          "loss_stage": "not_found_in_frozen_candidate_packet",
+          "limits": "No physical sensor failure inferred; missing detection cause not established."
+        },
+        {
+          "system": "Пкр5.1",
+          "sensor": "PDS3",
+          "historical_signal_range_Pa": [
+            20,
+            200
+          ],
+          "historical_listed_range_Pa": [
+            50,
+            500
+          ],
+          "pilot_candidate_ids": [
+            "G-021",
+            "G-022"
+          ],
+          "pilot_final_confirmed_range_conflict": false,
+          "pilot_final_unverified_mention": [],
+          "loss_stage": "merge_needs_data_without_image",
+          "limits": "No physical sensor failure inferred; missing detection cause not established."
+        }
+      ],
+      "input_addresses_found": 3,
+      "final_confirmed_addresses_found": 0,
+      "final_pending_address_mentions": 1,
+      "full_preservation": false,
+      "coverage": "partial_context_only_not_confirmed_technical_preservation"
+    },
+    {
+      "target_id": "AK57:a998dcf058f81b7ac194",
+      "scope": "ШАУВ-4-К4ПЧ three-way range composition balance",
+      "input_candidate_ids": [
+        "T-006",
+        "G-011",
+        "G-012"
+      ],
+      "final_finding_ids": [
+        "F-006"
+      ],
+      "coverage": "partial",
+      "preserved": "Element-list composition 1/3 versus specification 3/1, total 4 unchanged.",
+      "not_preserved_as_confirmed": "Signal-table composition 2/2 and PDS2/PDS4 mapping.",
+      "full_preservation": false
+    }
+  ],
+  "final_F006_verbatim": {
+    "id": "F-006",
+    "severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "category": "Комплектация приборов",
+    "report_section": "technical_findings",
+    "sheet": "Лист 10",
+    "page": [
+      14,
+      95
+    ],
+    "problem": "Количество реле давления ШАУВ-4-К4ПЧ переставлено между диапазонами.",
+    "description": "Перечень листа 10 задает PDS2: 20–200 Па, 1 шт.; PDS1, PDS3, PDS4: 50–500 Па, 3 шт. Спецификация, позиции 4.4 и 4.5, содержит соответственно 3 и 1 шт. Общее количество четыре совпадает, состав по диапазонам различается. Дополнительное утверждение о диапазоне PDS4 20–200 Па в графической таблице сигналов не проверено.",
+    "norm": null,
+    "norm_quote": null,
+    "candidate_norm_references": [],
+    "solution": "Согласовать назначение, диапазон и уставку каждого PDS1–PDS4; исправить перечень и спецификацию, проверить таблицу сигналов.",
+    "risk": "Поставка реле с диапазоном, не соответствующим назначенной уставке.",
+    "source_finding_ids": [
+      "T-006",
+      "G-011",
+      "G-012"
+    ],
+    "source_block_ids": [
+      "blk_47212e9079d1485c9c43fc3d1e9cd108",
+      "blk_3dfcda405820460b84179ebf65d182d1"
+    ],
+    "related_block_ids": [
+      "blk_47212e9079d1485c9c43fc3d1e9cd108",
+      "blk_3dfcda405820460b84179ebf65d182d1",
+      "blk_e3e39f8820d7474caa10ab626d2a2c91"
+    ],
+    "evidence_text_refs": [],
+    "evidence": [
+      {
+        "type": "text",
+        "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+        "page": 14
+      },
+      {
+        "type": "text",
+        "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+        "page": 95
+      }
+    ],
+    "highlight_regions": []
+  },
+  "model_dispositions_verbatim": [
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/4/findings/0",
+      "candidate_id": "G-009",
+      "decision": "needs_data",
+      "reason": "Перечень подтверждает 50–500 Па для PDS1–PDS3. Диапазон 20–200 Па для PDS3 в графической таблице не проверен.",
+      "source_refs": [
+        "blk_6414183ffe264f65a253b3d6a5155da1"
+      ]
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/4/findings/1",
+      "candidate_id": "G-010",
+      "decision": "needs_data",
+      "reason": "Без графической таблицы нельзя установить исходное расхождение PDS3 и требование охватывать участок 20–50 Па. Примечание о ПНР его не подтверждает и не опровергает.",
+      "source_refs": [
+        "blk_6414183ffe264f65a253b3d6a5155da1"
+      ]
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/0",
+      "candidate_id": "G-011",
+      "decision": "retained",
+      "reason": "Сохранена подтвержденная текстом часть: количества 1/3 против 3/1 по диапазонам PDS. Графическое утверждение PDS4=20–200 Па остается непроверенным и отмечено в итоговом описании.",
+      "source_refs": [
+        "blk_47212e9079d1485c9c43fc3d1e9cd108",
+        "blk_3dfcda405820460b84179ebf65d182d1"
+      ]
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/1",
+      "candidate_id": "G-012",
+      "decision": "duplicate",
+      "reason": "Согласно match объединено с парным кандидатом и текстовым замечанием. Сохранены диапазоны и количества перечня/спецификации; распределение PDS2 и PDS4 по графической таблице не подтверждено.",
+      "source_refs": [
+        "blk_47212e9079d1485c9c43fc3d1e9cd108",
+        "blk_3dfcda405820460b84179ebf65d182d1"
+      ]
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/8/findings/0",
+      "candidate_id": "G-021",
+      "decision": "needs_data",
+      "reason": "50–500 Па подтверждено перечнем и спецификацией, но 20–200 Па для PDS3 на схеме не подтверждено первичным изображением.",
+      "source_refs": [
+        "blk_08e6971dafd541b2a40e0aa270404a4e",
+        "blk_576ad6ac1cff48f79ac223f56ba405ae"
+      ]
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/8/findings/1",
+      "candidate_id": "G-022",
+      "decision": "needs_data",
+      "reason": "Пара match о диапазоне PDS3 остается нерешенной из-за отсутствия графической таблицы листа 13.",
+      "source_refs": [
+        "blk_08e6971dafd541b2a40e0aa270404a4e",
+        "blk_576ad6ac1cff48f79ac223f56ba405ae"
+      ]
+    }
+  ],
+  "other_systems_not_substituted": [
+    "G-044 on sheet18",
+    "G-054/G-055 on sheet22"
+  ],
+  "cause": "Primary TEXT handoff preserves the textual subclaim while missing graphic evidence leaves address-specific subclaims pending. Retained/duplicate labels alone overstate semantic preservation.",
+  "proposed_behavior": [
+    "Track disposition per independently checkable subclaim, not only per candidate.",
+    "For retained or duplicate compound candidates, keep unresolved graphic obligations with their source block and object address until checked or explicitly issued as questions.",
+    "Compare range tables, element lists and specifications by system plus PDS identity; do not use new addresses as substitutes for historical target addresses."
+  ],
+  "control_limits": [
+    "Engineer acceptance establishes usefulness of the documentary conflict, not proof of failure at 50 or 100 Pa.",
+    "No generic rejection of 50–500 Pa devices or universal requirement for 20–200 Pa is authorized by these cases.",
+    "Post-pilot graphical verification is not credited as model output."
+  ],
+  "production_acceptance": false
+}
