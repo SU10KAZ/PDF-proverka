@@ -1,0 +1,695 @@
+{
+  "status": "three_ITP_tank_input_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "ed1885b95888d70307c61a372f41fdc53e042e0133fa8c866db562c193760799",
+  "queue_after_sha256": "2739354c9a47bc49ad6f61e69cd4d102d8da03f024841a8b5bc6af66ed87c23e",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-007",
+      "finding": {
+        "id": "F-007",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Поддержание давления",
+        "sheet": null,
+        "page": [
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          110,
+          111,
+          112,
+          113
+        ],
+        "problem": "Баки поддержания давления подобраны по несогласованным объёмам систем.",
+        "description": "Анкеты задают для первой зоны с арендой и автостоянкой 24,9255 м³ против 20,676 м³ в подборе, для второй — 15,2 против 13,016 м³. По применённой методике при расширении 2,258% и запасе 1,3 требуются не менее 731,7 и 446,2 л без добавления объёма ИТП; выбраны LVF 600 и LVF 400. LVF 600 меньше даже напечатанного расчётного объёма 606,9 л.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.85,
+            "reason": "Расчётное обоснование вместимости оборудования компенсации температурного расширения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить полный водяной объём каждого контура, включая ИТП, и повторить подбор баков и установок поддержания давления.",
+        "risk": "Исчерпание вместимости баков, сброс теплоносителя и нестабильность давления.",
+        "source_finding_ids": [
+          "T-007"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "sheet_unavailable": true,
+        "sheet_unavailable_reason": "page_not_in_map",
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 65,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-020:e9f7120697b89e6da747",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-020:2052d4e286115c641e7f",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-022:8cd785f32b0f2581717f",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Объёмы зон1/2вподборах20,676/13,016м³, в анкетах24,9255суммарно/15,2м³.",
+          "verdict": "confirmed_published_values_and_sum",
+          "limits": "24,9255—сумма жилья, коммерции и парковки. Полнота общего контура и уже включённая частьИТПне установлены."
+        },
+        {
+          "claim": "По формуле данного подбора 24925,5×2,258/100×1,3=731,663127 л, 15200×2,258/100×1,3=446,1808 л.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "Перенос коэффициентов и объёмов между расчётами условный; не доказывает необходимые типоразмеры 732 и 447 л."
+        },
+        {
+          "claim": "Подбор зоны 1 вычисляет 606,9 л, требует объём не меньше расчётного и выбирает LVF600.",
+          "verdict": "confirmed_internal_selection_inconsistency",
+          "limits": "Спецификация указывает 600 л. Сохранить узкий тезис о несогласованности расчёта и выбора."
+        },
+        {
+          "claim": "Значения объёмов в подборах доказанно занижены и к ним обязательно нужно добавить весь объём ИТП.",
+          "verdict": "not_established_scope_overstatement",
+          "limits": "Различие чисел подтверждено, но состав объёмов и уже включённая часть ИТП не установлены. Повторное добавление может привести к двойному учёту."
+        },
+        {
+          "claim": "Недостаточная компенсация расширения и сбросы в эксплуатации доказаны.",
+          "verdict": "not_established",
+          "limits": "Полезная вместимость, рабочие уровни и алгоритм АУПД не проверены; RM80 не прибавляется автоматически к основному баку."
+        },
+        {
+          "claim": "Требуется согласовать исходные объёмы и обосновать выбор основного бака.",
+          "verdict": "supported_scoped_followup",
+          "limits": "Коэффициент 1,3 относится к данному листу подбора, не является универсальным допуском."
+        },
+        {
+          "claim": "Не менее731,7/446,2л — безусловно требуемая вместимость.",
+          "verdict": "conditional_recalculation_not_final_requirement",
+          "limits": "Результат верен при переносе указанных объёмов,2,258%и1,3в формулу этого подбора; границы контуров и условия ещё требуют согласования. Не добавлять весьИТПповторно без инвентаризации."
+        },
+        {
+          "claim": "Новая строка сохраняет расхождение1,883/3,7м³ третьей зоны.",
+          "verdict": "not_covered_in_this_row",
+          "limits": "Второй повтор здесь перечисляет только первую и вторую зоны. Покрытие третьей другими строками проверять отдельно, не начислять по общему заголовку."
+        }
+      ],
+      "unsupported_additions": "Проектные коэффициенты не универсальные нормы; различие входных данных не доказывает фактический сброс; полезная вместимость и номинальный объём не взаимозаменяемы.",
+      "novel_useful_content": "Сохранены исходные конфликты и внутренний выбор606,9/600л; изменённый охват составных замечаний отмечен отдельно.",
+      "duplicate_burden": "F-010 shares volume inputs with F-040 and F-012; preserve its independent 606.9-versus-600 selection conflict. F-011 concerns precharge and acceptance factor, not a new count of the same volume mismatch.",
+      "profile_and_section": "preserve_documented_calculation_conflict_no_operational_failure_proven",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b4fb33513ca44182af058d09c8ab2dbb",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-022.json",
+          "sha256": "bdc1b9b8e17f8d4f6431e10bb694e9032588c6833ee872e935de193bf6ee30bb",
+          "primary_adjudication": null,
+          "limits": "Не утверждать недостаточную компенсацию в эксплуатации только по разнице номинальных объёмов. Полезная вместимость, рабочие уровни, алгоритм АУПД и согласованные исходные объёмы системы не проверены. Демпферный RM80 указан отдельно: складывать его номинальные80л с600л как доступную компенсацию без схемы и функции нельзя. Коэффициент1,3 взят из листа подбора этого проекта, не универсальный запас; нормативное нарушение не установлено.",
+          "wording": "Согласовать подбор основного бака отопления первой зоны: лист вычисляет606,9л и требует объём не меньше расчётного, но выбирает LVF600; спецификация прямо указывает600л. Разница6,9л требует пояснения принятого решения."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-010",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-007_tank_selection_inputs_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Расширительные баки",
+        "sheet": null,
+        "page": [
+          106,
+          107
+        ],
+        "problem": "Предварительная зарядка мембранных баков не соответствует расчёту их вместимости.",
+        "description": "В расчёте принято минимальное давление 2,5 бар, а монтажное указание требует зарядку 3,0 бар. При зарядке 3,0 бар коэффициент приёма для ДОО составляет 0,1667 и требуется около 246,9 л вместо 200 л. Для вентиляции коэффициент равен 0,2 и требуется около 3810 л вместо 3000 л. Эти значения получены по приведённой методике и требуют проверки после согласования всех исходных параметров.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.85,
+            "reason": "Согласованность расчётных и монтажных параметров оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать давление зарядки, заполнения и максимальное рабочее давление; пересчитать полезную вместимость и номинальный объём баков.",
+        "risk": "Недостаточная компенсация расширения, частые сбросы и подпитка систем.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "sheet_unavailable": true,
+        "sheet_unavailable_reason": "page_not_in_map",
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 67,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-023:4c138c58b906579e3ebd",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Оба листа задают минимальное давление 2,5 бар и предписывают перед монтажом установить газовую полость 3,0 бар.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Табличные заводские Pпредв 1,5/4 бар не заменяют прямое монтажное указание 3,0 бар."
+        },
+        {
+          "claim": "Максимальные давления ДОО/вентиляции 3,8/4,0 бар, выбранные объёмы 200/3000 л.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "При K=(Pmax−Pinitial)/(Pmax+1) и V=1,25×Vрасш/K начальное 2,5 бар даёт около 151,94/2540,14 л.",
+          "verdict": "confirmed_explicitly_conditional_reconstruction",
+          "limits": "Напечатанная формула неоднозначна по скобкам. Совпадение с опубликованными 152/2540 не доказывает алгоритм поставщика; авторитетный TEXT не исправлялся."
+        },
+        {
+          "claim": "При той же интерпретации и начальном 3,0 бар K=1/6 и 0,2, объёмы около 246,90/3810,21 л.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "Расширение рассчитано из 1458/27000 л и 2,2579%; напечатанные округлённые 33/610 л дадут слегка другие результаты."
+        },
+        {
+          "claim": "Следует обязательно заменить баки на рассчитанные 247 и 3810 л.",
+          "verdict": "not_established",
+          "limits": "Это условные числа, не установленные типоразмеры. Требуется согласовать методику, точки приведения давлений, температурный режим, начальное заполнение и полезную вместимость."
+        },
+        {
+          "claim": "Нужно согласовать расчётные давления и настройки газовой полости.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Срабатывание предохранительных клапанов или фактический дефицит приёмной ёмкости подтверждены.",
+          "verdict": "not_established",
+          "limits": "Последствия не наблюдались; заголовок о несогласованности требует оговорки о расчётной модели."
+        },
+        {
+          "claim": "Числа246,9/3810л подтверждают необходимые новые номиналы.",
+          "verdict": "explicitly_conditional_in_r2",
+          "limits": "Второй повтор требует согласования исходных параметров. Сохранить эту оговорку и неоднозначность скобок напечатанной формулы; расчётные числа не являются самостоятельно выбранными типоразмерами."
+        }
+      ],
+      "unsupported_additions": "Проектные коэффициенты не универсальные нормы; различие входных данных не доказывает фактический сброс; полезная вместимость и номинальный объём не взаимозаменяемы.",
+      "novel_useful_content": "Сохранены исходные конфликты и внутренний выбор606,9/600л; изменённый охват составных замечаний отмечен отдельно.",
+      "duplicate_burden": "F-010 shares volume inputs with F-040 and F-012; preserve its independent 606.9-versus-600 selection conflict. F-011 concerns precharge and acceptance factor, not a new count of the same volume mismatch.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-023.json",
+          "sha256": "595fa7304d48f38c01f2be3368151416604df6f002b42913c5977d4e25f2c5fd",
+          "primary_adjudication": null,
+          "limits": "Формула Kзап в авторитетном TEXT неоднозначна по скобкам; она не исправлялась по растру. Использована явно обозначенная интерпретация K=(Pmax−Pinitial)/(Pmax+1), V=1,25×Vрасш/K; совпадение с результатами листов не доказывает фактический алгоритм поставщика. Числа247/3810л не являются окончательными требуемыми типоразмерами. Температуры, точки приведения давлений, начальное заполнение и полезная вместимость требуют согласования. Табличные Pпредв1,5/4бар не подменяют прямое монтажное указание3,0бар. Рост давления сверх допустимого и срабатывание защиты не установлены.",
+          "wording": "Согласовать расчёт и настройку баков ДОО и вентиляции: при минимальном давлении2,5бар оба листа предписывают установить газовую полость3,0бар. Опубликованные объёмы152/2540л воспроизводятся при начальном2,5бар по указанной ниже интерпретации коэффициента. При3,0бар та же условная модель даёт около247/3810л против выбранных200/3000л; требуется подтверждение методики и пересчёт по согласованным условиям."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-011",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-008_tank_selection_inputs_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-009",
+      "finding": {
+        "id": "F-009",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Температурные режимы",
+        "sheet": "Лист 10",
+        "page": [
+          17,
+          42,
+          106,
+          107,
+          153,
+          159
+        ],
+        "problem": "Температурные графики ДОО и вентиляции не согласованы между заданием, чертежами и расчётами баков.",
+        "description": "Основные расчёты и техническое задание предусматривают для ДОО 75/55 °C, для вентиляции 85/60 °C. Подборы баков выполнены для 80/60 °C. На разрезе 26-26, лист 10, для Т14 и Т24 также указаны 80 и 60 °C вместо требуемых для ДОО 75 и 55 °C. При используемой методике средние температуры составляют 65 и 72,5 °C вместо 70 °C; для вентиляции принятый коэффициент расширения занижен.",
+        "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 510.1325800.2022",
+            "cited_designation": "СП 510.1325800.2022",
+            "candidate_relevance": 0.85,
+            "reason": "Согласование расчётных температур систем и подбора оборудования теплового пункта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-009",
+                "G-021",
+                "G-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009",
+                  "G-021",
+                  "G-022"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Принять согласованные графики по техническому заданию, исправить разрезы и пересчитать баки по соответствующим температурам и объёмам систем.",
+        "risk": "Неверные настройки регулирования и недостаточная вместимость расширительных устройств.",
+        "source_finding_ids": [
+          "T-009",
+          "G-021",
+          "G-022"
+        ],
+        "source_block_ids": [
+          "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+        ],
+        "related_block_ids": [
+          "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+            "page": 17
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-022",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют расхождение графика отопления ДОО: 80/60 °C в разрезе 26-26 против 75/55 °C в п. 5.5.1.1 требований проекта.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют расхождение графика отопления ДОО: 80/60 °C в разрезе 26-26 против 75/55 °C в п. 5.5.1.1 требований проекта.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-024:f36bd082707154691153",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Подбор бака ДОО принимает 80/60 °C, ПЗ и ТЗ 5.5.1.1 и 5.8.1.3 задают 75/55 °C.",
+          "verdict": "confirmed_documented_temperature_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Разрез 26-26 подписывает подачу Т14 отопления ДОО T=80 °C и обратку Т24 T=60 °C.",
+          "verdict": "confirmed_prior_direct_GRAPHIC_identical_r2_bytes",
+          "limits": "Сверены подписи именно отопления ДОО, а не соседнего трубопровода; расход 3,35 м³/ч и нагрузка 0,067 указаны в этих выносках. Использован прежний просмотр при совпаденииSHA256."
+        },
+        {
+          "claim": "Подбор вентиляционного бака принимает 80/60 °C, ПЗ и ТЗ 5.5.1.2 и 5.8.1.3 — 85/60 °C.",
+          "verdict": "confirmed_documented_temperature_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Нужно согласовать таблицу исходных данных и температурные подписи с применимыми требованиями ТЗ.",
+          "verdict": "supported_scoped_followup",
+          "limits": "Требования относятся к этому проекту; 75/55 и 85/60 не универсальные запреты на другие графики."
+        },
+        {
+          "claim": "Неверный подбор оборудования и ошибочная фактическая наладка доказаны.",
+          "verdict": "not_established",
+          "limits": "Подтверждены несогласованные документы, эксплуатационный режим не измерен."
+        },
+        {
+          "claim": "Графический источник в выдаче помечен type=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "При оценке использован IMAGE; исходная выдача не изменялась."
+        },
+        {
+          "claim": "Средние температурыДОО65,вентиляции72,5вместо70°C.",
+          "verdict": "confirmed_arithmetic_means_only",
+          "limits": "(75+55)/2=65;(85+60)/2=72,5;(80+60)/2=70. Это среднее выбранных температур, не измеренная средняя температура полного водяного объёма."
+        },
+        {
+          "claim": "Коэффициент расширения вентиляции занижен и вместимость недостаточна.",
+          "verdict": "conditional_method_direction_not_final_capacity_proof",
+          "limits": "Для окончательного вывода нужны принятые свойства теплоносителя,начальная температура,методика расширения и объём контура. Разница средних температур сама не устанавливает новый коэффициент или необходимый бак; конкретный пересчёт здесь не выполнен."
+        },
+        {
+          "claim": "Строка сохраняет прежние нагрузкиАУПД5,858/0,958/0,214и объём27/14,3.",
+          "verdict": "not_covered_in_this_row",
+          "limits": "Новая строка посвящена температурам. Эти самостоятельные тезисы не считаются сохранёнными лишь по совпадению темы баков."
+        }
+      ],
+      "unsupported_additions": "Проектные коэффициенты не универсальные нормы; различие входных данных не доказывает фактический сброс; полезная вместимость и номинальный объём не взаимозаменяемы.",
+      "novel_useful_content": "Сохранены исходные конфликты и внутренний выбор606,9/600л; изменённый охват составных замечаний отмечен отдельно.",
+      "duplicate_burden": "F-010/F-040 share volume consistency; F-012 adds independent temperature and load comparisons. Two detector findings on the same section 26 are one graphic discrepancy, not two defects.",
+      "profile_and_section": "preserve_documented_temperature_conflict_separate_unresolved_volume_question",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_26b23c5bfabe4917a156a91077b5458d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fba6f821ad1d450ebfbc5fc330bbc2b2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_dc124e4fb56849bbba6c4e2db3e948e3",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_950ad44af3d645539b95e38ddad3a8e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ee2f019eb36f4a43afab4649bd118c31",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+          "sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4",
+          "primary_adjudication": null,
+          "limits": "Листы подбора датированы30.06.2026 и относят мощность к исходным проектным данным. Дата сама по себе не доказывает устаревшую версию. Общая нагрузка ИТП и нагрузка замкнутого греющего контура требуют подтверждения сопоставимости; запас нельзя автоматически переносить из подбора теплообменников. Различия не доказывают неправильный типоразмер АУПД или необходимость замены. Не дублировать этот вопрос отдельными замечаниями на каждый лист и не повторять уже учтённую тему режимаIIIзоны.",
+          "wording": "Согласовать тепловые мощности, переданные для подбора АУПД: греющий контур5,858 против суммарной нагрузки ПЗ5,229Гкал/ч; отопление1 —1,488/1,483; отопление2 —0,958/0,880; отопление3 —0,214/0,191. Подтвердить состав контуров, режим и наличие расчётного запаса перед пересмотром подбора."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+          "sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4",
+          "primary_adjudication": null,
+          "limits": "Листы подбора датированы30.06.2026 и относят мощность к исходным проектным данным. Дата сама по себе не доказывает устаревшую версию. Общая нагрузка ИТП и нагрузка замкнутого греющего контура требуют подтверждения сопоставимости; запас нельзя автоматически переносить из подбора теплообменников. Различия не доказывают неправильный типоразмер АУПД или необходимость замены. Не дублировать этот вопрос отдельными замечаниями на каждый лист и не повторять уже учтённую тему режимаIIIзоны.",
+          "wording": "Согласовать тепловые мощности, переданные для подбора АУПД: греющий контур5,858 против суммарной нагрузки ПЗ5,229Гкал/ч; отопление1 —1,488/1,483; отопление2 —0,958/0,880; отопление3 —0,214/0,191. Подтвердить состав контуров, режим и наличие расчётного запаса перед пересмотром подбора."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+          "sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4",
+          "primary_adjudication": null,
+          "limits": "Листы подбора датированы30.06.2026 и относят мощность к исходным проектным данным. Дата сама по себе не доказывает устаревшую версию. Общая нагрузка ИТП и нагрузка замкнутого греющего контура требуют подтверждения сопоставимости; запас нельзя автоматически переносить из подбора теплообменников. Различия не доказывают неправильный типоразмер АУПД или необходимость замены. Не дублировать этот вопрос отдельными замечаниями на каждый лист и не повторять уже учтённую тему режимаIIIзоны.",
+          "wording": "Согласовать тепловые мощности, переданные для подбора АУПД: греющий контур5,858 против суммарной нагрузки ПЗ5,229Гкал/ч; отопление1 —1,488/1,483; отопление2 —0,958/0,880; отопление3 —0,214/0,191. Подтвердить состав контуров, режим и наличие расчётного запаса перед пересмотром подбора."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-024.json",
+          "sha256": "3337cb4eb8166e1d8b866ec77e1b8640adf4f659cec8c3b764d511ddc6bf7fa6",
+          "primary_adjudication": null,
+          "limits": "Для ДОО среднее по данным ПЗ65°C, в подборе70°C; для вентиляции72,5°C против70°C. Нельзя заявлять занижение расширения для обоих случаев. Численное изменение коэффициента расширения и окончательные типоразмеры здесь не установлены. У ДОО разность температур в обоих графиках20°C: одинаковый расход не устраняет различие абсолютных температур. Неверная эксплуатация и нормативное нарушение не доказаны.",
+          "wording": "Согласовать температурные графики для расчётов баков и подписей: отопление ДОО75/55°C в таблице и анкете против80/60°C в подборе бака и разрезе26-26; теплоснабжение вентиляции85/60°C в таблице и анкете против80/60°C в подборе баков. После выбора действующих графиков проверить расчёт совместно с давлениями."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+          "sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19",
+          "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Section 26-26: T14 supply heating DOO 80 C, T24 return 60 C; both leaders name heating DOO."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-012",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-009_tank_selection_inputs_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
