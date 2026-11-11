@@ -84,4 +84,6 @@ async def main(execute):
 
 if __name__ == '__main__':
     parser=argparse.ArgumentParser(); parser.add_argument('--execute',action='store_true')
-    asyncio.run(main(parser.parse_args().execute))
+    parser.add_argument('--output-root',default=str(ROOT))
+    args=parser.parse_args(); ROOT=Path(args.output_root)
+    asyncio.run(main(args.execute))

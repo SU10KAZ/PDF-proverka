@@ -112,3 +112,14 @@ def test_builder_opt_in_freezes_source_and_adds_model_contract(tmp_path):
     legacy, = build_object_operation_passes(tmp_path,md,enable_followup=True)
     assert 'graphic_source' not in legacy.continuation_source
     assert 'graphic_detail_requests' not in legacy.messages[0]['content']
+
+
+@pytest.mark.parametrize('size,expected', [((1200,200),(3,1)),((200,1200),(1,3))])
+def test_long_drawings_use_full_extent_three_tile_strip(tmp_path,size,expected):
+    from backend.app.pipeline.stages.prepare.object_graphic_followup import choose_detail_grid
+    request,_,pdf,blocks,_=setup(tmp_path)
+    doc=fitz.open();doc.new_page(width=size[0],height=size[1]);doc.save(pdf);doc.close()
+    source=freeze_graphic_source(pdf,blocks,tmp_path/'details')
+    assert choose_detail_grid(source,'g',16)==expected
+    assert choose_detail_grid(source,'g',3)==expected
+    assert choose_detail_grid(source,'g',2)==(0,0)

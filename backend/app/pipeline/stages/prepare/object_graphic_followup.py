@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import re
 import tempfile
+import fitz
 
 from .graphic_detail_render import render
 
@@ -33,6 +34,31 @@ def verify_graphic_source(source):
     for name in ('pdf', 'blocks'):
         if hashlib.sha256(Path(source[name + '_path']).read_bytes()).hexdigest() != source[name + '_sha256']:
             raise ValueError(name + '_version_changed')
+
+
+def choose_detail_grid(source, bid, available):
+    """Rendering budget heuristic only; never an engineering tolerance."""
+    data = json.loads(Path(source['blocks_path']).read_text())
+    matches = [b for b in data['blocks'] if b['block_id'] == bid]
+    if data.get('coordinate_space') != 'normalized_page_top_left' or len(matches) != 1 or matches[0]['block_type'] != 'image':
+        raise ValueError('Exactly one normalized GRAPHIC required')
+    block = matches[0]
+    n = block['coords_norm']
+    if len(n) != 4 or not all(0 <= v <= 1 for v in n) or n[0] >= n[2] or n[1] >= n[3]:
+        raise ValueError('Invalid block geometry')
+    with fitz.open(source['pdf_path']) as doc:
+        page = doc[block['page_index']]
+        width = (n[2]-n[0])*page.rect.width
+        height = (n[3]-n[1])*page.rect.height
+    if available >= 3 and width / height >= 3:
+        return 3, 1
+    if available >= 3 and height / width >= 3:
+        return 1, 3
+    if available >= 9:
+        return 3, 3
+    if available >= 4:
+        return 2, 2
+    return 0, 0
 
 
 def prepare_graphic_followup(request, payload, sources):
@@ -72,15 +98,15 @@ def prepare_graphic_followup(request, payload, sources):
     if not pending:
         return None, {'status': 'graphic_details_already_supplied', 'requested_block_ids': requested}
     remaining = 16 - len(request.image_paths)
-    side = 3 if remaining >= 9 else 2 if remaining >= 4 else 0
-    if not side:
+    bid = pending[0]
+    columns, rows = choose_detail_grid(source, bid, remaining)
+    if not columns:
         return None, {'status': 'graphic_image_budget', 'requested_block_ids': pending}
     # One full block per revision; no silent replacement of earlier evidence.
-    bid = pending[0]
     parent = Path(source['output_dir']); parent.mkdir(parents=True, exist_ok=True)
     run = Path(tempfile.mkdtemp(prefix='graphic_detail_', dir=parent))
     manifest = render(source['pdf_path'], source['blocks_path'], bid,
-                      source['pdf_sha256'], run / 'tiles', columns=side, rows=side, scale=3)
+                      source['pdf_sha256'], run / 'tiles', columns=columns, rows=rows, scale=3)
     verify_graphic_source(source)
     tiles = manifest['tiles']
     paths = [str(p) for p in request.image_paths] + [t['path'] for t in tiles]
@@ -92,7 +118,7 @@ def prepare_graphic_followup(request, payload, sources):
     next_packet['prior_operation_response_untrusted'] = payload
     next_packet.setdefault('graphic_detail_views', []).append({
         'block_id': bid, 'first_image_index_zero_based': len(request.image_paths),
-        'tile_count': len(tiles), 'grid_columns': side, 'grid_rows': side,
+        'tile_count': len(tiles), 'grid_columns': columns, 'grid_rows': rows,
         'same_source_block': True, 'semantic_verified': False})
     messages = deepcopy(request.messages)
     messages[-1]['content'] = json.dumps(next_packet, ensure_ascii=False)
