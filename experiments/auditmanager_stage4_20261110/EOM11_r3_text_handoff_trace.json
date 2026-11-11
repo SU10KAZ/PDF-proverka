@@ -1,0 +1,97 @@
+{
+  "status": "repeat3_cross_document_evidence_handoff_gap",
+  "target_id": "EOM11:7985c84eea058c206240",
+  "request": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794417772640094523/request.json",
+    "sha256": "b16063ab991c9e0c627121704506a934ef816a1dc053f48198ac0465ea190da1",
+    "model": "codex/gpt-6-astra",
+    "stage": "text_analysis",
+    "images": 0,
+    "exact_specification_subsections_present": {
+      "exact_HF_section": true,
+      "exact_FRHF_section": true
+    }
+  },
+  "response": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794417772640094523/response_1.json",
+    "sha256": "68d95be167d10f64a4de95c6f1c54dabe9a7d40bb3605b58c53db77e65d312d3"
+  },
+  "text_output": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+    "sha256": "8737e134f157ec7f83dfb5cba1e718c13cef65c7946cadff66e2037077c37395",
+    "reviewed_candidate_ids": [
+      "T-001",
+      "T-002",
+      "T-003",
+      "T-004",
+      "T-005",
+      "T-006",
+      "T-007",
+      "T-008",
+      "T-009",
+      "T-010",
+      "T-011",
+      "T-012",
+      "T-013",
+      "T-014",
+      "T-015",
+      "T-016",
+      "T-017",
+      "T-018",
+      "T-019",
+      "T-020",
+      "T-021",
+      "T-022",
+      "T-023",
+      "T-024",
+      "T-025",
+      "T-026",
+      "T-027",
+      "T-028",
+      "T-029"
+    ],
+    "all_29_candidate_theses_read": true
+  },
+  "occurrence_checks": [
+    {
+      "pattern": "FRHF",
+      "offset": 1150,
+      "excerpt": "нормы освещённости, аварийное и эвакуационное освещение)\n- Пожарная безопасность (кабели нг(А)-FRLS/FRHFc, огнестойкие коробки, питание СПЗ)\n- Учёт электроэнергии (трансформаторы тока, класс точности, АСКУЭ)\n- Силовое электрооборудование (электроприводы вентиляции, насосов, лифтов)\n\n"
+    },
+    {
+      "pattern": "FRHF",
+      "offset": 34375,
+      "excerpt": "еские потребители систем противопожарной защиты (ПЭСПЗ) осуществляется огнестойким кабелем ППГнг(A)-FRHF.\n\nНе допускается совместная прокладка кабельных линий СПЗ с другими кабелями и проводами в одном коробе, трубе, жгуте, замкнутом канале строительной конструкции или на одном лотке"
+    },
+    {
+      "pattern": "FRHF",
+      "offset": 450199,
+      "excerpt": "е выделяющие коррозионно-активных газообразных продуктов при горении и тлении, сечением: | ППГнг(A)-FRHF | ГОСТ 31996-2012 |  |  |  |  |  |\n|  | 3x2,5 |  |  | АО «Завод «Энергокабель» | м | 1885 |  |  |\n|  | 5x2,5 |  |  | АО «Завод «Энергокабель» | м | 35 |  |  |\n|  | 5x6 |  |  | АО "
+    },
+    {
+      "pattern": "5\\s*[xх×*]\\s*35",
+      "offset": 93456,
+      "excerpt": " РА1РА2РА3; КV1; КV2; FV1; FV2; QF C2A; TN-S 380/220, 50Гц; 170м; ΔU=1,96%; ΔU=1,63%; ППгнг(А)-HF - 5х35; ППгнг(А)-HF 2х(5х95); TN-RS485; 1C1-IC3 КБПФ-1000В; 2C1-2C3 КБПФ-1000В; E1-CB0Ш-3 LED 110...230В; E2-CB0Ш-3 LED 110...230В; 1QF1; 250A; 3Р\n\n**Verification:** Обозначения щитов ЩМ"
+    },
+    {
+      "pattern": "5\\s*[xх×*]\\s*35",
+      "offset": 449584,
+      "excerpt": " «Энергокабель» | м | 122 |  |  |\n|  | 5x25 |  |  | АО «Завод «Энергокабель» | м | 849 |  |  |\n|  | 5x35 |  |  | АО «Завод «Энергокабель» | м | 172 |  |  |\n|  | 5x95 |  |  | АО «Завод «Энергокабель» | м | 680 |  |  |\n|  | 1x35 |  |  | АО «Завод «Энергокабель» | м | 50 |  |  |\n|  | 1x"
+    }
+  ],
+  "findings": [
+    "The exact HF and FRHF cable subsections were supplied to text analysis; absence of the specification in this stage is not the cause.",
+    "The text request has no images. Its5x35 occurrences refer toHF and the HF specification row, not FRHF line attributes. FRHF occurrences are general fire-safety guidance and the specification heading.",
+    "Neither the29text candidates nor the four inspected raw graphic detector responses emits the cable-specification candidate.",
+    "The missing relation is the graphic object attribute FRHF5x35 for C2513/C3510 linked to the specification subsection; the available packet did not preserve this as an explicit checkable relation."
+  ],
+  "cause_scope": "Observed handoff and operation gap in repeat3, not proof of unreadable graphics or intentional model suppression. The exact counterfactual repair is untested.",
+  "recommendation": "Evaluate the already frozen inventory arm for explicit cable identity/execution/section extraction, links to specification and a completed reconciliation receipt; preserve HF5x35 as counterevidence to the broader false absence claim.",
+  "limits": [
+    "Historical engineering acceptance and primary evidence remain evaluator-only.",
+    "Do not infer physical shortage160m or useHF172m asFRHF compensation.",
+    "Do not change frozen prompts or feed this answer to pending independent audits.",
+    "Candidate improvement and causal attribution to a single component await comparative results."
+  ],
+  "production_acceptance": false
+}
