@@ -200,6 +200,7 @@ async def run_claude_json_messages(
     reasoning_effort: str | None = None,
     output_schema: dict[str, Any] | None = None,
     allowed_tools: str | None = None,
+    on_result_event: Callable[[dict[str, Any]], Awaitable[None]] | None = None,
 ) -> LLMResult:
     """Один изолированный вызов ``claude -p``: весь контекст в запросе, ответ — JSON."""
     resolved_model = resolve_claude_json_model(model)
@@ -276,6 +277,13 @@ async def run_claude_json_messages(
     duration_ms = int((time.monotonic() - started) * 1000)
 
     event = _last_result_event(stdout)
+    if on_result_event is not None:
+        # Preserve the final CLI event before JSON extraction. Do not include
+        # stdin/image bytes, intermediate thinking events or environment data.
+        # A detached copy prevents an observer from altering parsing/usage.
+        await on_result_event(json.loads(json.dumps({
+            "exit_code": exit_code, "result_event": event,
+        }, ensure_ascii=False)))
     usage = dict((event or {}).get("usage") or {})
     input_tokens = sum(
         int(usage.get(key) or 0)

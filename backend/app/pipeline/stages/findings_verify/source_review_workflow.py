@@ -264,7 +264,7 @@ async def run_source_review_workflow_phase(output_dir, md, *, invoke, executor_i
     return summary
 
 
-def direct_cli_executor(model, *, project_id, timeout=900, reasoning_effort='high'):
+def direct_cli_executor(model, *, project_id, timeout=900, reasoning_effort='high', claude_result_observer=None):
     """Explicit direct-CLI adapter; no OpenRouter, fallback or retry here.
 
     Creation is local only. Caller must authorize every dispatch under its policy.
@@ -272,13 +272,16 @@ def direct_cli_executor(model, *, project_id, timeout=900, reasoning_effort='hig
     """
     if model not in ('codex/gpt-6-astra','claude/claude-sonnet-5-5'):
         raise ValueError('unsupported_direct_review_model')
+    if claude_result_observer is not None and not model.startswith('claude/'):
+        raise ValueError('claude_result_observer_requires_claude')
     async def invoke(request, phase):
         from dataclasses import asdict
         if model.startswith('claude/'):
             from backend.app.services.llm.claude_json_runner import run_claude_json_messages
             result=await run_claude_json_messages(request['messages'],model=model,
                 image_paths=request['image_paths'],timeout=timeout,reasoning_effort=reasoning_effort,
-                stage='source_review_'+phase,project_id=project_id)
+                stage='source_review_'+phase,project_id=project_id,
+                on_result_event=claude_result_observer)
         else:
             from backend.app.services.llm.codex_runner import run_codex_json_messages
             result=await run_codex_json_messages(request['messages'],model=model,

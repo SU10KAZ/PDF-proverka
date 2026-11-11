@@ -1,0 +1,13 @@
+{
+  "status": "root_cause_not_established",
+  "prior_assessment": "assessment.json",
+  "retained_decision": "Parsed response remains inadmissible; no evaluator or filter credit.",
+  "clarification": "Saved LLMResult.text is reserialized json_data, not the original CLI result text. The parser can select the first fenced JSON object. Original final event was not captured by this experiment; therefore model truncation cannot be distinguished from extraction of an intermediate JSON fragment.",
+  "code_evidence": [
+    "backend/app/services/llm/claude_json_runner.py:run_claude_json_messages",
+    "backend/app/services/llm/llm_runner.py:_try_parse_json_content"
+  ],
+  "next_execution_requirement": "Capture raw final CLI event before extraction via on_result_event/claude_result_observer; do not interpret the previous incomplete parsed object as the whole generated answer.",
+  "original_artifacts_modified": false,
+  "new_model_calls": 0
+}

@@ -180,3 +180,21 @@ def test_disclosure_confirmed_for_codex_does_not_cover_claude(tmp_path):
             requested_max_batch_images=1,
             model=audit_cli.CLAUDE_MODEL,
         )
+
+
+@pytest.mark.parametrize("raw_text", ['```json\n{"draft": true}\n```\nLater explanation', 'Not JSON'])
+def test_result_observer_preserves_raw_final_event_before_parsing(tmp_path, monkeypatch, raw_text):
+    event = {"type": "result", "is_error": False, "result": raw_text,
+             "usage": {"output_tokens": 17}, "session_id": "receipt-test"}
+    cli = _fake_cli(tmp_path, result=event)
+    monkeypatch.setattr(runner_mod, "get_claude_cli", lambda: str(cli))
+    saved = []
+    async def observer(receipt):
+        saved.append(json.loads(json.dumps(receipt)))
+        receipt['result_event']['result'] = '{"tampered": true}'
+        receipt['result_event']['usage']['output_tokens'] = 999
+    result = _run(on_result_event=observer)
+    assert saved == [{"exit_code": 0, "result_event": event}]
+    assert result.output_tokens == 17
+    assert result.json_data != {"tampered": True}
+    assert result.is_error == (raw_text == 'Not JSON')
