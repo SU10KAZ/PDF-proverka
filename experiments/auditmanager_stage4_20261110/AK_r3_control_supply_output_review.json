@@ -1,0 +1,1071 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "d2dd309892bbd235853f1217799ad733ab9e4a4880425c77c7bc632f46c37425",
+  "queue_after_sha256": "fbdc248181503b7c5e97c46411ac963cd46f70b60e377f70cb5b1ec3006f9eee",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-003",
+      "finding": {
+        "id": "F-003",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Алгоритмы управления",
+        "sheet": "Лист 2",
+        "page": 6,
+        "problem": "В алгоритме защиты калорифера противоречиво определён контролируемый воздух.",
+        "description": "Перечень функций предусматривает защиту по обратной воде и воздуху после калорифера, а рабочий алгоритм использует наружную температуру ≤3 °C. Буквальное выполнение такого условия может постоянно отключать регулирование и полностью открывать клапан в холодную погоду.",
+        "norm": "ГОСТ Р 2.105-2019 (норматив-кандидат), кандидат п. 5.2.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 2.105-2019",
+            "cited_designation": "ГОСТ Р 2.105-2019",
+            "candidate_relevance": 0.85,
+            "reason": "Однозначность описания алгоритма и условий срабатывания защиты.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "5.2.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать конкретный датчик, условия защиты, останова и возврата к нормальному регулированию.",
+        "risk": "Нарушение температурного режима и некорректная работа защиты от замораживания.",
+        "source_finding_ids": [
+          "T-003"
+        ],
+        "source_block_ids": [
+          "blk_a5c923d5f33046ad9585e4102dc033c7",
+          "blk_76e892431d7d4c48a09aba49a57b223c"
+        ],
+        "related_block_ids": [
+          "blk_a5c923d5f33046ad9585e4102dc033c7",
+          "blk_76e892431d7d4c48a09aba49a57b223c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_a5c923d5f33046ad9585e4102dc033c7",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F026_protection_boolean_condition:04fa5c0cbbedc7704f59",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Описание функций и рабочий алгоритм используют разные точки контроля воздуха.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": "Рабочий текст задаёт обратную воду ≤20°C ИЛИ наружный воздух ≤3°C. Наружный порог достаточен для прогрева при буквальном исполнении."
+        },
+        {
+          "claim": "В холодную погоду возможно отключение регулирования и полное открытие клапана.",
+          "verdict": "supported_conditional_logic",
+          "limits": "Текущая выдача не раскрывает оператор ИЛИ и порог обратной воды; реальная длительность и программа не проверены. Аварийное отключение дополнительно обусловлено неэффективностью прогрева."
+        },
+        {
+          "claim": "Уточнить датчик, переходы, останов и возврат.",
+          "verdict": "supported_scoped_remedy",
+          "limits": "Не заменять автоматически наружный датчик, оператор ИЛИ или проектные пороги. Дополнительная наружная защита сама по себе не опровергнута."
+        },
+        {
+          "claim": "Фактический отказ оборудования или подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не подтверждены реальный отказ, непосредственное подключение терморезистора, недопоставка 18 приборов, несовместимость кондиционеров и непригодность всей огнестойкой линии. Пределы каждой части указаны отдельно.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить подтверждённые документальные конфликты; учёт группы СО и состав линии требуют адресного уточнения. Фактические разделы итогового отчёта здесь не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a5c923d5f33046ad9585e4102dc033c7",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_76e892431d7d4c48a09aba49a57b223c",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F026_protection_boolean_condition.json",
+          "sha256": "cc1fd6840fb366f09e8f1ccbee1d9fef95dc5cbd40222981dbc35909b749eea3",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждено следствие логическогоИЛИ в записанном алгоритме. Это не проверка реально загруженной программы контроллера или фактических зимних режимов.",
+            "Непосредственный аварийный останов от наружной температуры текстом не задан: отключение указано при неэффективности прогрева. Утверждение о неизбежных постоянных остановах не подтверждено.",
+            "Рабочий режим,дежурная защита,пусковой прогрев и ночное поддержание описаны раздельно. Их условия нельзя смешивать.",
+            "Порог3°C относится к наружному воздуху в данном тексте; его нельзя автоматически заменить температурой после калорифера, операторомИ или иной универсальной уставкой.",
+            "Общие функции называют защиту по обратной воде и воздуху после калорифера, но это не доказывает отсутствие любых дополнительных функций по наружной температуре. Требуется согласование конкретного алгоритма.",
+            "Решение инженера, нормативное нарушение, фактический отказ или замерзание не установлены."
+          ],
+          "wording": "Согласовать условие защиты в рабочем режиме: текст связывает прогрев с полностью открытым клапаном и отключённым регулированием с обратной водой≤20°C ИЛИ наружным воздухом≤3°C. При буквальном исполнении наружный порог достаточен независимо от температуры обратной воды. Уточнить назначение наружного порога, переходы и возврат к регулированию."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-003",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-003"
+        }
+      ],
+      "disposition": "assessed_r3_control_and_supply_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Согласование кондиционеров",
+        "sheet": "Листы 3, 42, 9",
+        "page": [
+          7,
+          46,
+          102
+        ],
+        "problem": "Описание, схема и спецификация предусматривают разные системы согласования кондиционеров.",
+        "description": "Локальный перечень содержит БУРР-1М и два БИС-1М с радиосвязью, спецификация — три Haier TD0027170RU и шесть адаптеров без моделей. Общие данные заявляют отсутствие внешнего питания и дополнительных устройств сопряжения. Примечание о комплекте на одну сплит-систему не согласовано с управлением двумя кондиционерами.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1; ГОСТ Р 2.105-2019 (норматив-кандидат), кандидат п. 5.2.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Согласованность состава и моделей оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ Р 2.105-2019",
+            "cited_designation": "ГОСТ Р 2.105-2019",
+            "candidate_relevance": 0.85,
+            "reason": "Однозначность описания питания, интерфейсов и комплектности.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "5.2.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Выбрать одно решение, определить число пар кондиционеров, модели адаптеров, питание и интерфейсы.",
+        "risk": "Поставка несовместимых устройств и неработоспособность резервирования кондиционеров.",
+        "source_finding_ids": [
+          "T-013"
+        ],
+        "source_block_ids": [
+          "blk_52496725d0f247bf913f197b2ed305ac",
+          "blk_ed9c75d3fd26408c88f163f107138612",
+          "blk_400b84df0f63420ab16fb5c330de54b7",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "related_block_ids": [
+          "blk_52496725d0f247bf913f197b2ed305ac",
+          "blk_ed9c75d3fd26408c88f163f107138612",
+          "blk_400b84df0f63420ab16fb5c330de54b7",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_8de25b2b318647aeac8b3298fe03a98c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_ed9c75d3fd26408c88f163f107138612",
+            "page": 46
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 99,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "БУРР-1М и два БИС-1М против трёх Haier TD0027170RU и шести адаптеров без модели.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": "Конфликт проектных исполнений, не доказанная несовместимость изделий."
+        },
+        {
+          "claim": "Общие данные заявляют отсутствие внешнего питания и устройств сопряжения.",
+          "verdict": "confirmed_but_power_conflict_incompletely_expressed",
+          "limits": "Ранее просмотренная схема показывает 220В/QF1, однако текущая выдача не называет этот факт. Не засчитывать полноту конкретного противоречия питания по знанию оценщика."
+        },
+        {
+          "claim": "Комплект на одну сплит-систему при управлении двумя кондиционерами.",
+          "verdict": "supported_scope_question",
+          "limits": "Отношение 3:6 само по себе корректно для двух адаптеров на согласователь. Не умножать перечень автоматически."
+        },
+        {
+          "claim": "Согласовать исполнение, питание и интерфейсы.",
+          "verdict": "supported_document_remedy",
+          "limits": "Резервирование, поставка и реальная совместимость не испытаны; нельзя считать риск наблюдавшимся отказом."
+        },
+        {
+          "claim": "Фактический отказ оборудования или подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не подтверждены реальный отказ, непосредственное подключение терморезистора, недопоставка 18 приборов, несовместимость кондиционеров и непригодность всей огнестойкой линии. Пределы каждой части указаны отдельно.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить подтверждённые документальные конфликты; учёт группы СО и состав линии требуют адресного уточнения. Фактические разделы итогового отчёта здесь не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_52496725d0f247bf913f197b2ed305ac",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_ed9c75d3fd26408c88f163f107138612",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3",
+          "primary_adjudication": null,
+          "limits": [
+            "Два кондиционера на согласователь согласуются с общими данными и наименованием СО18.1. Соотношение3:6 само по себе не доказывает количественную ошибку.",
+            "Нельзя автоматически умножать локальный перечень на6 или на3 до уточнения единицы комплекта и привязки к помещениям.",
+            "Тип адаптера отсутствует в строке18.2, но отсутствие идентификации во всех смежных документах не проверено.",
+            "Совместимость Haier и Алекс электроникс, заводская комплектность, параметры интерфейсов, фактические заказ и монтаж не проверены. Конфликт обозначений не равнозначен доказанной несовместимости.",
+            "Ссылка на ЭМ определяет границу исполнения питания, а не отсутствие внешнего питания. Связанный вопрос шифров рассмотрен отдельно в F033; не дублировать его как отказ питания."
+          ],
+          "wording": "Согласовать исполнение автоматики кондиционеров. Общие данные описывают БУРР без внешнего источника питания и без дополнительных устройств сопряжения; лист42 задаёт БУРР-1М с питанием220В/QF1 и два БИС-1М «Алекс электроникс». СО18.1–18.2 задаёт три Haier TD0027170RU и шесть адаптеров без типа. Уточнить соответствие этих исполнений и состав комплекта; отдельно уточнить примечание3 «для1 сплит системы» при показанной паре К осн/К рез."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3",
+          "primary_adjudication": null,
+          "limits": [
+            "Два кондиционера на согласователь согласуются с общими данными и наименованием СО18.1. Соотношение3:6 само по себе не доказывает количественную ошибку.",
+            "Нельзя автоматически умножать локальный перечень на6 или на3 до уточнения единицы комплекта и привязки к помещениям.",
+            "Тип адаптера отсутствует в строке18.2, но отсутствие идентификации во всех смежных документах не проверено.",
+            "Совместимость Haier и Алекс электроникс, заводская комплектность, параметры интерфейсов, фактические заказ и монтаж не проверены. Конфликт обозначений не равнозначен доказанной несовместимости.",
+            "Ссылка на ЭМ определяет границу исполнения питания, а не отсутствие внешнего питания. Связанный вопрос шифров рассмотрен отдельно в F033; не дублировать его как отказ питания."
+          ],
+          "wording": "Согласовать исполнение автоматики кондиционеров. Общие данные описывают БУРР без внешнего источника питания и без дополнительных устройств сопряжения; лист42 задаёт БУРР-1М с питанием220В/QF1 и два БИС-1М «Алекс электроникс». СО18.1–18.2 задаёт три Haier TD0027170RU и шесть адаптеров без типа. Уточнить соответствие этих исполнений и состав комплекта; отдельно уточнить примечание3 «для1 сплит системы» при показанной паре К осн/К рез."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3",
+          "primary_adjudication": null,
+          "limits": [
+            "Два кондиционера на согласователь согласуются с общими данными и наименованием СО18.1. Соотношение3:6 само по себе не доказывает количественную ошибку.",
+            "Нельзя автоматически умножать локальный перечень на6 или на3 до уточнения единицы комплекта и привязки к помещениям.",
+            "Тип адаптера отсутствует в строке18.2, но отсутствие идентификации во всех смежных документах не проверено.",
+            "Совместимость Haier и Алекс электроникс, заводская комплектность, параметры интерфейсов, фактические заказ и монтаж не проверены. Конфликт обозначений не равнозначен доказанной несовместимости.",
+            "Ссылка на ЭМ определяет границу исполнения питания, а не отсутствие внешнего питания. Связанный вопрос шифров рассмотрен отдельно в F033; не дублировать его как отказ питания."
+          ],
+          "wording": "Согласовать исполнение автоматики кондиционеров. Общие данные описывают БУРР без внешнего источника питания и без дополнительных устройств сопряжения; лист42 задаёт БУРР-1М с питанием220В/QF1 и два БИС-1М «Алекс электроникс». СО18.1–18.2 задаёт три Haier TD0027170RU и шесть адаптеров без типа. Уточнить соответствие этих исполнений и состав комплекта; отдельно уточнить примечание3 «для1 сплит системы» при показанной паре К осн/К рез."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_66ba3cf1e99c46a292deb3fecd22f58a.png",
+          "sha256": "bb1ad5076255d43b3f37bacc2855e9f860699cbf8d9ba175c84c5e1f03864d0d",
+          "block_id": "blk_66ba3cf1e99c46a292deb3fecd22f58a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Directly viewed: Kmain/Kreserve with BIS-1M; BURR-1M220V viaQF1; enclosure layout. No manufacturer compatibility verified.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_66ba3cf1e99c46a292deb3fecd22f58a.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+          "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+          "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Directly viewed: Kmain/Kreserve with BIS-1M; BURR-1M220V viaQF1; enclosure layout. No manufacturer compatibility verified.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_045c688307e949da8a39ce4c49b8db7e.png",
+          "sha256": "e3efad4b1ac5e82d1fdfa5c601f3176d693d28ffdcd6ed11d3d8f7af34e9f417",
+          "block_id": "blk_045c688307e949da8a39ce4c49b8db7e",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Directly viewed: Kmain/Kreserve with BIS-1M; BURR-1M220V viaQF1; enclosure layout. No manufacturer compatibility verified.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_045c688307e949da8a39ce4c49b8db7e.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-014",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-014"
+        }
+      ],
+      "disposition": "assessed_r3_control_and_supply_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Границы системы контроля СО",
+        "sheet": "Листы 54, 31, 32, 33, 34, 35, 9",
+        "page": [
+          58,
+          89,
+          90,
+          91,
+          92,
+          93,
+          102
+        ],
+        "problem": "Требуется подтвердить учёт 18 сигнализаторов СО в смежном комплекте.",
+        "description": "Таблица применимости содержит 14+5+20+4+18=61 сигнализатор, спецификация — 43 сигнализатора и 43 коробки КСИ. Журнал охватывает первые четыре группы; цепочка СТГ-3-И-5.1–5.18 отсутствует. Принадлежность оставшихся 18 комплектов к АК1-ПА не подтверждена.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Полнота учёта оборудования с разделением поставки между комплектами.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-014"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-014"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить АК1-ПА и оформить явную ссылку на учёт 18 комплектов; при отсутствии учёта дополнить документацию.",
+        "risk": "Пропуск части приборов контроля СО при закупке и монтаже.",
+        "source_finding_ids": [
+          "T-014"
+        ],
+        "source_block_ids": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "blk_7b41b193ccad4f559ba654a2248576d5",
+          "blk_3eda565e44cb443c8143585904b82ced",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "related_block_ids": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "blk_7b41b193ccad4f559ba654a2248576d5",
+          "blk_3eda565e44cb443c8143585904b82ced",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_f42735b18cb140928c3d9f29d2891ae2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+            "page": 58
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "61 позиция таблицы против 43 сигнализаторов и 43 КСИ; разность 18.",
+          "verdict": "confirmed_same_source_TEXT_and_arithmetic",
+          "limits": "Число 18 совпадает с группой 5.1–5.18, но не является числом доказанных дефектов."
+        },
+        {
+          "claim": "Принадлежность группы к АК1-ПА не подтверждена.",
+          "verdict": "needs_scope_correction",
+          "limits": "На ранее просмотренном листе 45 группа заключена в рамку со ссылкой «см. книга1 АК1-ПА». Ссылка уже есть; не проверено содержание смежного комплекта и учёт поставки."
+        },
+        {
+          "claim": "Цепочка группы 5 отсутствует в журнале.",
+          "verdict": "bounded_prior_search_only",
+          "limits": "Проверены 43 строки БПС первых четырёх групп. Это не отсутствие кабельных связей на схеме или любых обозначений во всех документах."
+        },
+        {
+          "claim": "Проверить учёт в АК1-ПА и при отсутствии дополнить.",
+          "verdict": "supported_cross_package_question",
+          "limits": "Сохранить отдельным вопросом. Повторно требовать ссылку без признания существующей избыточно; недопоставка не доказана."
+        },
+        {
+          "claim": "Фактический отказ оборудования или подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не подтверждены реальный отказ, непосредственное подключение терморезистора, недопоставка 18 приборов, несовместимость кондиционеров и непригодность всей огнестойкой линии. Пределы каждой части указаны отдельно.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить подтверждённые документальные конфликты; учёт группы СО и состав линии требуют адресного уточнения. Фактические разделы итогового отчёта здесь не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+          "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e",
+          "primary_adjudication": null,
+          "limits": [
+            "Проверены таблица применимости, позиции19.2–19.3 СО, 43 строки БПС групп1–4, позиция интерфейсного кабеля985м и две схемы. Это не полная проверка всего кабельного журнала на отсутствие иных вариантов обозначения группы5.",
+            "Разные написания HF/НФ и символы сечения сохранены из TEXT; суммирование здесь по идентификаторам линий, не доказательство эквивалентности всех марок. Повторные значения графы проложен не суммировались.",
+            "Смежная спецификация АК1-ПА не проверена; ссылка не доказывает полноту поставки по двум комплектам. Вывод о недостаче также не доказан.",
+            "Нормативные нарушения ГОСТ21.110 и ГОСТ21.408 не проверены; не включать их в подтверждённые технические находки.",
+            "Самостоятельного решения инженера по этим blind-кандидатам не установлено. Их нельзя объявлять принятыми инженером или подтверждёнными пропусками классического метода."
+          ],
+          "wording": "При межкомплектной проверке запросить книгу1 АК1-ПА и подтвердить учёт группы5 (18 сигнализаторов, КСИ и соединительные линии до СУ-К33). Схемы АК2-ПА явно относят эту группу к АК1-ПА; добавление изделий и кабеля в АК2-ПА по одной арифметической разнице не обосновано."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_206d5fa1055148c5b12414a2919fbe84.png",
+          "sha256": "1eaedbf298530a27e8b5092fe8efae5bd4fec55ffa7c76ff671356830fe811b0",
+          "block_id": "blk_206d5fa1055148c5b12414a2919fbe84",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Original-resolution view: group5.1,5.2,...5.17,5.18 enclosed with explicit reference to book1 AK1-PA; shown wired chain joins loop2. Group4.1–4.4 outside frame.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_206d5fa1055148c5b12414a2919fbe84.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-006",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+          "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e",
+          "primary_adjudication": null,
+          "limits": [
+            "Проверены таблица применимости, позиции19.2–19.3 СО, 43 строки БПС групп1–4, позиция интерфейсного кабеля985м и две схемы. Это не полная проверка всего кабельного журнала на отсутствие иных вариантов обозначения группы5.",
+            "Разные написания HF/НФ и символы сечения сохранены из TEXT; суммирование здесь по идентификаторам линий, не доказательство эквивалентности всех марок. Повторные значения графы проложен не суммировались.",
+            "Смежная спецификация АК1-ПА не проверена; ссылка не доказывает полноту поставки по двум комплектам. Вывод о недостаче также не доказан.",
+            "Нормативные нарушения ГОСТ21.110 и ГОСТ21.408 не проверены; не включать их в подтверждённые технические находки.",
+            "Самостоятельного решения инженера по этим blind-кандидатам не установлено. Их нельзя объявлять принятыми инженером или подтверждёнными пропусками классического метода."
+          ],
+          "wording": "При межкомплектной проверке запросить книгу1 АК1-ПА и подтвердить учёт группы5 (18 сигнализаторов, КСИ и соединительные линии до СУ-К33). Схемы АК2-ПА явно относят эту группу к АК1-ПА; добавление изделий и кабеля в АК2-ПА по одной арифметической разнице не обосновано."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_206d5fa1055148c5b12414a2919fbe84.png",
+          "sha256": "1eaedbf298530a27e8b5092fe8efae5bd4fec55ffa7c76ff671356830fe811b0",
+          "block_id": "blk_206d5fa1055148c5b12414a2919fbe84",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Group5 wired chain and connection to loop2 shown; group5 frame explicitly refers to book1 AK1-PA.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_206d5fa1055148c5b12414a2919fbe84.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-013"
+        }
+      ],
+      "disposition": "assessed_r3_control_and_supply_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Управление тёплым подпором",
+        "sheet": "Листы 4, 9",
+        "page": [
+          8,
+          102
+        ],
+        "problem": "Выбранный датчик температуры не соответствует описанному релейному алгоритму.",
+        "description": "Алгоритм предусматривает «Спрут Т-06», непосредственно командующий пускателем нагревателя. В спецификации выбран пассивный МВТ 3280 с NTC10К, который самостоятельно релейную команду не формирует. Наличие совместимого регулятора в шкафу не определено.",
+        "norm": "ГОСТ Р 2.105-2019 (норматив-кандидат), кандидат п. 5.2.1; ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 2.105-2019",
+            "cited_designation": "ГОСТ Р 2.105-2019",
+            "candidate_relevance": 0.9,
+            "reason": "Соответствие алгоритма характеристикам выбранного оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-015"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "5.2.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Комплектность оборудования температурного регулирования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-015"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать совместимый регулятор и его подключения либо согласовать модель датчика-реле с алгоритмом.",
+        "risk": "Невыполнение регулирования подогрева воздуха пожаробезопасной зоны.",
+        "source_finding_ids": [
+          "T-015"
+        ],
+        "source_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "related_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 87,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F027_sensor_interface_scope:3eb9cafbfcfd6a395bee",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F027_sensor_interface_scope:eb93f9ee7771db58e73f",
+          "route": "negative",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Раздел 7 задаёт Спрут Т-06, СО20.1 — МВТ3280 NTC10К.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": "Сохранить документальное несоответствие модели и обработки сигнала."
+        },
+        {
+          "claim": "Датчик непосредственно командует пускателем, совместимый регулятор не определён.",
+          "verdict": "unsupported_directness_and_incomplete_context",
+          "limits": "В TEXT нет слова непосредственно. Схема ПД4.1.4 содержит AI1 температуры и DO2 управления; внешняя схема ведёт TE1 к XT2 и ссылается на заводской чертёж. Это не подтверждает прямую цепь NTC–катушка."
+        },
+        {
+          "claim": "Совместимость NTC10К с фактическим шкафом и необходимость дополнительного регулятора.",
+          "verdict": "not_established",
+          "limits": "Наличие AI не доказывает совместимость, но и отсутствие обработки не доказано. Нужны паспорт входа и схема смежного ЭМ; не назначать новый регулятор автоматически."
+        },
+        {
+          "claim": "Регулирование пожаробезопасной зоны не работает.",
+          "verdict": "not_established",
+          "limits": "Текущая строка возвращает предположение о непосредственности, снятое во втором повторе. Не считать все шесть установок доказанно неисправными."
+        },
+        {
+          "claim": "Фактический отказ оборудования или подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не подтверждены реальный отказ, непосредственное подключение терморезистора, недопоставка 18 приборов, несовместимость кондиционеров и непригодность всей огнестойкой линии. Пределы каждой части указаны отдельно.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить подтверждённые документальные конфликты; учёт группы СО и состав линии требуют адресного уточнения. Фактические разделы итогового отчёта здесь не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F027_sensor_interface_scope.json",
+          "sha256": "ce13d144b26733768053137e7f68d5b9cc1e428ea30e05cf60a79d73d40a2756",
+          "primary_adjudication": null,
+          "limits": [
+            "Наличие AI поддерживает возможность обработки в шкафу, но не доказывает совместимость с конкретным NTC10К или правильность программы.",
+            "Текст не содержит слова непосредственно; нельзя превращать описание назначения сигнала в доказанную электрическую связь без промежуточной обработки.",
+            "Прочитан тип датчика из авторитетной СО; характеристики конкретного изделия по паспорту и требования входа шкафа не проверены.",
+            "Схема ПД4.1.4 не доказывает идентичность исполнения всех шести датчиков спецификации.",
+            "Фактическая комплектация, принципиальные схемы смежного ЭМ и выполненный монтаж не проверены. Неработоспособность и нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать датчик и способ управления подогревом противодымной вентиляции: раздел7 общих данных задаёт датчик-реле «Спрут Т-06» и передачу управляющего сигнала в силовой шкаф на пускатель, а СО20.1 — термопреобразователь МВТ3280, NTC10К,6шт. Схема ПД4.1.4 предусматривает AI для TE1 и отдельные DO управления. Установить согласованную модель и обработку её сигнала в шкафу смежного раздела."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+          "sha256": "dd058661889a4dc4848d14c89c82942d241702c6c954001e2acef9f5a28b3851",
+          "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "AI1 temperature; DO2 heat source and fan; not direct thermistor-to-contactor proof.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_400a32e7aac048e6a9d6da65c598995f.png",
+          "sha256": "9f1c56a09670dc3bf5436ad8a321abef871308f8be8292c116e32b30cad1b5bb",
+          "block_id": "blk_400a32e7aac048e6a9d6da65c598995f",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "TE1 terminals1/2 lead to XT2 terminals26/27 with shield PE; manufacturer drawing reference; internal measurement processing not shown.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_400a32e7aac048e6a9d6da65c598995f.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-004",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-004"
+        }
+      ],
+      "disposition": "assessed_r3_control_and_supply_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-017",
+      "finding": {
+        "id": "F-017",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Огнестойкие кабельные линии",
+        "sheet": "Листы 35, 10",
+        "page": [
+          93,
+          103
+        ],
+        "problem": "Не определено исполнение огнестойкой линии управления подогревом противодымных систем.",
+        "description": "Шесть цепей датчиков выполнены кабелем КСРЭПнг(А)-FRHF общей длиной 420 м с прокладкой в гофротрубе. Спецификация предусматривает обычные ПВХ-гофротрубы и защёлки, но не устанавливает испытанное сочетание кабеля, креплений и монтажной системы и требуемое время работоспособности.",
+        "norm": "ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.98,
+            "reason": "Сохранение работоспособности кабельных линий систем противопожарной защиты при пожаре.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-016"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Задать требуемое время работы и подтверждённое исполнение кабельной линии в сборе, включая крепления и монтажные изделия.",
+        "risk": "Потеря управления подогревом противодымного притока во время пожара.",
+        "source_finding_ids": [
+          "T-016"
+        ],
+        "source_block_ids": [
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "related_block_ids": [
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+            "page": 93
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Шесть цепей FRHF суммарно 420м в гофротрубе; в СО ПВХ-труба и держатели.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": "45+35+105+105+65+65=420. Общая СО не доказывает точный состав крепления каждой линии."
+        },
+        {
+          "claim": "Не определены испытанное сочетание и требуемое время.",
+          "verdict": "confirmed_local_documentation_gap",
+          "limits": "Область доказательства: просмотренные КЖ35, СО10 и общие указания. Отсутствие подтверждения во всём проекте и смежных документах не установлено."
+        },
+        {
+          "claim": "Задать время работы и подтверждённый состав линии.",
+          "verdict": "supported_scoped_question",
+          "limits": "Нужна адресная проверка применимости и состава. Не объявлять ПВХ или держатель универсально запрещёнными; марка FRHF сама по себе не подтверждает сборку."
+        },
+        {
+          "claim": "Потеря управления при пожаре.",
+          "verdict": "risk_not_observed_failure",
+          "limits": "Монтаж и испытания не проверены. Прежняя нормативная справка не является новой проверкой редакции, применимости или конкретного времени."
+        },
+        {
+          "claim": "Фактический отказ оборудования или подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не подтверждены реальный отказ, непосредственное подключение терморезистора, недопоставка 18 приборов, несовместимость кондиционеров и непригодность всей огнестойкой линии. Пределы каждой части указаны отдельно.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить подтверждённые документальные конфликты; учёт группы СО и состав линии требуют адресного уточнения. Фактические разделы итогового отчёта здесь не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "url": "https://www.consultant.ru/document/cons_doc_LAW_78699/71a2397f45dc498720c1471f9aad80770ad6e8cf/",
+          "access_date": "2026-11-11",
+          "route": "primary_normative_act_republished_text",
+          "verified_fact": "Article82part2 requires listed fire protection wiring to retain function during fire for time necessary to perform functions.",
+          "limits": "General requirement only; project edition applicability, circuit-specific duration and actual noncompliance not established."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-005",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-005"
+        }
+      ],
+      "disposition": "assessed_r3_control_and_supply_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Five current control and supply findings reviewed against five frozen prior inspections; authoritative algorithm TEXT reread, current wording assessed separately. All local hashes and r3 MD/PNG identity checked. No new graphic view or engineer decision claimed."
+}
