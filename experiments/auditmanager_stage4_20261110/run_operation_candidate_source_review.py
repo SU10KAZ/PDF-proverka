@@ -34,7 +34,7 @@ def prepare(args):
     index=json.loads((crops_source/'index.json').read_text())
     required=set(queue['packets'][0]['required_graphic_block_ids'])
     original_bindings=[]
-    for bid in required:
+    for bid in sorted(required):
         row,=[r for r in index['blocks'] if r['block_id']==bid]
         path=(crops_source/row['file']).resolve()
         assert path.is_relative_to(crops_source.resolve())
@@ -81,7 +81,7 @@ async def main(args):
         assert Path(args.md_path).read_text()==md
         return result
     result=await run_source_review_workflow(queue,finding,md,crops,Path(args.output_root)/'workflow',
-        invoke=invoke,executor_id='direct-codex-gpt-6-astra-high',max_images=16)
+        invoke=invoke,executor_id='direct-codex-gpt-6-astra-high',max_images=16,repair_quote_spacing=True)
     print('COMPLETE',result['status'],flush=True)
 
 

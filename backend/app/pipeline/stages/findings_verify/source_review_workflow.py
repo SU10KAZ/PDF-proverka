@@ -39,7 +39,7 @@ For retain/revise/question provide display_field_reviews as an OBJECT keyed by e
         'image_paths':source_request['image_paths'],'image_bindings':source_request['image_bindings']}
 
 
-async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, *, invoke, executor_id, is_cancelled=None, max_images=8):
+async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, *, invoke, executor_id, is_cancelled=None, max_images=8, repair_quote_spacing=False):
     """invoke(request, phase) -> provider result dict; caller owns authorization.
 
     Maximum five source reviews (initial plus four context revisions) and one
@@ -95,6 +95,15 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
                     receipt['attached_to_model']=(receipt['block_id'],receipt['sha256']) in supplied
         validation=validate_source_review(response,current,[finding],md)
         _write(root/f'{step:02d}_validation.json',validation)
+        if repair_quote_spacing and validation['errors'] and all(e.endswith(':quote_not_in_source') for e in validation['errors']):
+            from .source_review_quote_spacing import repair_table_quote_spacing
+            repaired, spacing_receipt = repair_table_quote_spacing(response, md)
+            _write(root/f'{step:02d}_quote_spacing.json', spacing_receipt)
+            if spacing_receipt['repairs']:
+                repaired_validation = validate_source_review(repaired,current,[finding],md)
+                _write(root/f'{step:02d}_repaired_validation.json',repaired_validation)
+                if not repaired_validation['errors']:
+                    response, validation = repaired, repaired_validation
         if validation['errors']:raise ValueError('invalid_source_review')
         followup=prepare_review_followup(response,current,[finding],md,graphic_dir,max_images=max_images)
         _write(root/f'{step:02d}_followup.json',followup)
