@@ -4,7 +4,7 @@ import json
 import hashlib
 from pathlib import Path
 from .source_review_evidence import evidence_digest
-from .source_review_final_check import prepare_final_check, validate_final_check
+from .source_review_final_check import prepare_final_check, validate_final_check, final_check_policy_digest
 from .source_review_admission import apply_review_admissions
 
 
@@ -45,7 +45,8 @@ async def run_final_release_check(entry,document,md,work_dir,*,invoke,executor_i
     if evidence_digest(prepare_final_check(entry,document,md)['request'])!=binding['request_sha256']:
         raise ValueError('final_check_inputs_changed_during_dispatch')
     receipt=validate_final_check(entry,document,md,result['json_data'])
-    receipt.update(executor_id=executor_id,request_sha256=binding['request_sha256'],result_sha256=evidence_digest(result))
+    receipt.update(executor_id=executor_id,request_sha256=binding['request_sha256'],result_sha256=evidence_digest(result),
+                   review_policy_sha256=final_check_policy_digest())
     after=deepcopy(document)
     if receipt['status']=='release_candidate':
         after,admissions=apply_review_admissions(document,[entry],md)
@@ -84,10 +85,11 @@ async def run_final_release_phase(output_dir,md_path,*,invoke,executor_id,max_fi
             if prior:
                 current=next((f for f in document['findings'] if f.get('id')==entry['response']['finding_id']),None)
                 intact=(len(prior)==1 and prior[0].get('applied_finding_sha256')==evidence_digest(current)
-                        and prior[0]['binding']['source_md_sha256']==hashlib.sha256(Path(md_path).read_bytes()).hexdigest())
+                        and prior[0]['binding']['source_md_sha256']==hashlib.sha256(Path(md_path).read_bytes()).hexdigest()
+                        and prior[0].get('review_policy_sha256')==final_check_policy_digest())
                 records.append({'finding_id':entry['response']['finding_id'],
                                 'status':'already_applied' if intact else 'not_completed',
-                                **({} if intact else {'reason':'previous_release_state_changed'})});continue
+                                **({} if intact else {'reason':'previous_release_state_or_review_policy_changed'})});continue
             if processed>=max_findings:break
             processed+=1
             md_bytes=Path(md_path).read_bytes();md=md_bytes.decode('utf-8')

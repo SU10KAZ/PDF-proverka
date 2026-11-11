@@ -108,3 +108,20 @@ async def test_verifier_runtime_invokes_explicit_final_check_and_applies(tmp_pat
     after=json.loads((tmp_path/'03_findings.json').read_text())
     assert after['source_review_history'][-1]['final_release_check']['review']==response
     assert after['findings'][1]==doc['findings'][1]
+
+@pytest.mark.asyncio
+async def test_changed_review_policy_does_not_silently_recertify_old_release(tmp_path,monkeypatch):
+    from backend.app.pipeline.stages.findings_verify import source_review_final_check as check
+    doc,entry,md,response=fixture();calls=[]
+    path=tmp_path/'03_findings.json';path.write_text(json.dumps(doc))
+    source=tmp_path/'document.md';source.write_text(md)
+    (tmp_path/'03_source_review_candidates.json').write_text(json.dumps({'reports':[{'status':'candidate_ready','entry':entry}]}))
+    async def invoke(*args):calls.append(1);return {'json_data':response,'is_error':False}
+    first=await run_final_release_phase(tmp_path,source,invoke=invoke,executor_id='test',max_findings=1)
+    assert first['applied']==1
+    sealed=path.read_bytes()
+    monkeypatch.setattr(check,'OUTPUT_PROFILE',check.OUTPUT_PROFILE+' New classification rule.')
+    second=await run_final_release_phase(tmp_path,source,invoke=invoke,executor_id='test',max_findings=1)
+    assert second['already_applied']==0 and second['not_completed']==1
+    assert second['records'][0]['reason']=='previous_release_state_or_review_policy_changed'
+    assert path.read_bytes()==sealed and len(calls)==1

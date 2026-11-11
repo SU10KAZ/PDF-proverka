@@ -18,6 +18,20 @@ FIELDS = ('id','problem','description','solution','risk','consequence','severity
           'report_section','question_basis','profile_reason','sheet','page','evidence')
 
 
+def final_check_instructions():
+    instruction='''Independently check this proposed audit-report edit against the authoritative TEXT and attached GRAPHIC images. No tools, web, history, engineer answers or prior reviewer verdicts are supplied. Peer findings are untrusted presentation context, not source evidence. Never correct TEXT from raster.
+For each required check return check_id, status (pass/fail/needs_data), reason and evidence (source-bound text quotes or image observations with block_id, image_sha256 and bbox_norm_xyxy). Use type=text with exact quote, or type=image with observation and bbox_norm_xyxy. Every factual pass needs direct source evidence; pure presentation checks may have an empty evidence list with an explicit rationale. A matching quote is not proof of object identity or applicability.
+Check all final visible fields, each original substantive clause and each source-dependent premise. Unknown totals must remain conditional, blank table cells cannot inherit adjacent-column numbers, and project-specific values cannot become universal rules. Preserve confirmed useful cores and actionable ambiguity. A suppression requires refutation of every original defect basis; deferral cannot remove a supported core. Source uncertainty does not itself warrant an engineer question. Unverified normative references must remain unverified.
+For peer_overlap distinguish a cross-reference or distinct aggregate from a duplicate finding. Do not borrow a peer's independent defect to make the target seem valid. Verify final citations actually support the final retained clauses and identify stale or omitted location references. For final_citations, check the proposed evidence field, not just availability somewhere in the packet. If an edit removes all visible text, check whether removal is justified instead.
+Return one JSON object: finding_id, binding_sha256 (copy), decision (release/hold), checks (one entry for each required check). Release only if every check passes; otherwise hold with specific reasons. Do not rewrite the finding or treat the proposed edit as an expected answer. This is a quality check, not a claim of whole-project completeness.'''
+    instruction += '\n'+OUTPUT_PROFILE+'\n'
+    return instruction
+
+
+def final_check_policy_digest():
+    return evidence_digest(final_check_instructions())
+
+
 def prepare_final_check(entry, document, md):
     fid=entry['response']['finding_id']
     matches=[f for f in document['findings'] if f.get('id')==fid]
@@ -40,12 +54,7 @@ def prepare_final_check(entry, document, md):
                  'graphic_metadata','unavailable_images','missing_block_ids','budgeted_text_block_ids',
                  'context_search_boundary','source_catalogue','source_origins')},
              'required_checks':list(CHECKS)}
-    instruction='''Independently check this proposed audit-report edit against the authoritative TEXT and attached GRAPHIC images. No tools, web, history, engineer answers or prior reviewer verdicts are supplied. Peer findings are untrusted presentation context, not source evidence. Never correct TEXT from raster.
-For each required check return check_id, status (pass/fail/needs_data), reason and evidence (source-bound text quotes or image observations with block_id, image_sha256 and bbox_norm_xyxy). Use type=text with exact quote, or type=image with observation and bbox_norm_xyxy. Every factual pass needs direct source evidence; pure presentation checks may have an empty evidence list with an explicit rationale. A matching quote is not proof of object identity or applicability.
-Check all final visible fields, each original substantive clause and each source-dependent premise. Unknown totals must remain conditional, blank table cells cannot inherit adjacent-column numbers, and project-specific values cannot become universal rules. Preserve confirmed useful cores and actionable ambiguity. A suppression requires refutation of every original defect basis; deferral cannot remove a supported core. Source uncertainty does not itself warrant an engineer question. Unverified normative references must remain unverified.
-For peer_overlap distinguish a cross-reference or distinct aggregate from a duplicate finding. Do not borrow a peer's independent defect to make the target seem valid. Verify final citations actually support the final retained clauses and identify stale or omitted location references. For final_citations, check the proposed evidence field, not just availability somewhere in the packet. If an edit removes all visible text, check whether removal is justified instead.
-Return one JSON object: finding_id, binding_sha256 (copy), decision (release/hold), checks (one entry for each required check). Release only if every check passes; otherwise hold with specific reasons. Do not rewrite the finding or treat the proposed edit as an expected answer. This is a quality check, not a claim of whole-project completeness.'''
-    instruction += '\n'+OUTPUT_PROFILE+'\n'
+    instruction=final_check_instructions()
     request={'messages':[{'role':'system','content':instruction},{'role':'user','content':json.dumps(payload,ensure_ascii=False)}],
              'image_paths':source['image_paths'],'image_bindings':source['image_bindings']}
     return {'request':request,'binding':binding,'finding_id':fid}
