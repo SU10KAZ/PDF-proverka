@@ -1,0 +1,50 @@
+{
+  "status": "primary_recovery_queues_terminal_context_recheck_running",
+  "snapshot": "/tmp/auditmanager_recovery_complete_primary_20261112.json",
+  "snapshot_sha256": "7834036562199674cfa7bc2a36b9d080b8d3a34679133d22911d0250ec34cee4",
+  "summary": {
+    "successful_packets_replayed": 45,
+    "base_findings": 35,
+    "merged_findings": 83,
+    "pending_candidates": 24,
+    "pending_subclaims": 29,
+    "pending_reasons": {
+      "needs_data": 29
+    },
+    "published_addenda": 129,
+    "target_binding_repairs": 169,
+    "unresolved_target_bindings": 0
+  },
+  "queues": [
+    {
+      "root": "/tmp/auditmanager_primary_text_runtime_recovery_results_20261112",
+      "status": "ready_packets_completed_held_pending",
+      "completed_packets": 42,
+      "planned_ready": 42
+    },
+    {
+      "root": "/tmp/auditmanager_primary_text_runtime_recovery_split_results_20261112",
+      "status": "completed_unadjudicated",
+      "completed_packets": 2,
+      "planned_ready": 2
+    },
+    {
+      "root": "/tmp/auditmanager_runtime_recovery_graphic_detail_results_20261112",
+      "status": "completed_unadjudicated",
+      "completed_packets": 1,
+      "planned_ready": 1
+    }
+  ],
+  "context_recheck": {
+    "root": "/tmp/auditmanager_context_lineage_fixed_results_20261112",
+    "status": "running",
+    "pid": 990674,
+    "planned": 4
+  },
+  "production_acceptance": false,
+  "limits": [
+    "42 primary packets plus 2 replacement image partitions plus 1 graphic-detail followup; these are requests, not independent defects.",
+    "Prior four context responses are retained as diagnostics, superseded by lineage-corrected requests; do not merge both versions.",
+    "Full six-project comparison not yet run with this corrected mechanism."
+  ]
+}
