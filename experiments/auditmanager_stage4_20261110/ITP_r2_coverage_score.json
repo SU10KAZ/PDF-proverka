@@ -19,26 +19,29 @@
     "question": {
       "counts": {
         "denominator": 56,
-        "availability_unchecked": 56,
-        "unchecked": 56
+        "availability_available": 56,
+        "partial": 25,
+        "full": 19,
+        "absent": 12
       },
-      "review_complete": false,
-      "full_match_rate": null,
+      "review_complete": true,
+      "full_match_rate": 0.3392857142857143,
       "meaning": "fully preserved target rate"
     },
     "negative": {
       "counts": {
         "denominator": 12,
-        "availability_unchecked": 12,
-        "unchecked": 12
+        "availability_available": 12,
+        "absent": 11,
+        "partial": 1
       },
-      "review_complete": false,
-      "full_match_rate": null,
+      "review_complete": true,
+      "full_match_rate": 0.0,
       "meaning": "repeated false claim rate"
     }
   },
   "section_accuracy_counts": {
-    "unchecked": 7
+    "unchecked": 26
   },
   "filter_effectiveness": null,
   "production_acceptance": false,

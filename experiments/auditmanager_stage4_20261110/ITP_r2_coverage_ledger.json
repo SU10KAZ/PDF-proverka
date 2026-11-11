@@ -30,29 +30,66 @@
     },
     {
       "target_id": "B-ITP-F-011:f633e04640a9e4e3c71a",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-011.json",
+          "sha256": "8a084a320ad746b20cbd7831a159cca9581237cd62b98235ce6b11553998e0de"
+        }
+      ],
+      "reason": "1,3×0,016×1000/10=2,21 и правильные2,08 найдены; связь2,21 с0,017 предыдущей строки и принятая точность не раскрыты.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-011:cddfdb106afa191e3b80",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-011.json",
+          "sha256": "8a084a320ad746b20cbd7831a159cca9581237cd62b98235ce6b11553998e0de"
+        }
+      ],
+      "reason": "F-014 обсуждает усечение, не невозможность получить4,29/0,78 из округлённых исходных0,033/0,006.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-011:13234a067319a117c786",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-011.json",
+          "sha256": "8a084a320ad746b20cbd7831a159cca9581237cd62b98235ce6b11553998e0de"
+        }
+      ],
+      "reason": "РазмерностьGмакс=1,5×Qцирк поставлена под вопрос, но смыслQ как тепловой мощности явно не раскрыт.",
       "section_assessment": "unchecked"
     },
     {
@@ -189,164 +226,387 @@
     },
     {
       "target_id": "B-ITP-F-016:364c279f5f1b89fa2aee",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-016.json",
+          "sha256": "08e2ee802e6a8be9e9f5a16dc884d01f4b962cc6bc6dbbf87a6d41f850988661"
+        }
+      ],
+      "reason": "P2рабочейточки0,74 не подменяет номинальную мощность.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-017:05e18fdb07cf5bb1bc8b",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-017"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-017.json",
+          "sha256": "74771a0b6daae9eabd6757acee99d68e3f5ee7bb36d07325f9e22017d22bfc27"
+        }
+      ],
+      "reason": "Рабочий16,98/максимальный16,64 технического листаДОО сохранены, нужна согласованная характеристика.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-028",
+        "F-055"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
+          "sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9"
+        }
+      ],
+      "reason": "Есть массыК1/К12/К14 и общий тезисК10/К11, но нет полного реестраК9/К10/К11/К12/К14/К1 по трём источникам.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-019:7e4bf6b3afd2b736df6c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
+          "sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9"
+        }
+      ],
+      "reason": "F-028 требует уточнить исполнение и состав масс, окончательность массы подбора для чертежей не заявлена.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-020:e9f7120697b89e6da747",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-007",
+        "F-033"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d"
+        }
+      ],
+      "reason": "Отопление1:31,15,24,9255,20,676 присутствуют в двух строках; исходные6,23 и полная цепочка расчёта не раскрыты.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-020:2052d4e286115c641e7f",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-007",
+        "F-033"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d"
+        }
+      ],
+      "reason": "Отопление2:18,30,15,2,13,016 присутствуют;3,66 и полная цепочка не раскрыты.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-020:ddebb96399a114f724d6",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-033"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d"
+        }
+      ],
+      "reason": "Отопление3:4,50/1,883 названы, анкета3,7 и связанный расход0,90 не сопоставлены в балансе.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-020:c729cc29afbee39e2ed0",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-033"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d"
+        }
+      ],
+      "reason": "Вентиляция18,15/27 названы;3,63 и анкета14,3 не раскрыты.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-021:61e590ad93c41a790803",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+          "sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4"
+        }
+      ],
+      "reason": "Греющий контур5,858/5,229 в подбореАУПД не сопоставлен.5,205/5,229графики — иной источник.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-021:6dbe9315b20445709a44",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+          "sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4"
+        }
+      ],
+      "reason": "Отопление1:1,488/1,483 не сопоставлено.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-021:21e573255419bee97d92",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+          "sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4"
+        }
+      ],
+      "reason": "Отопление2:0,958/0,880подбораАУПД/ПЗ не сопоставлено.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-021:19069482aa6e7267f73b",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+          "sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4"
+        }
+      ],
+      "reason": "Отопление3:0,214/0,191подбораАУПД/ПЗ не сопоставлено.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-022:8cd785f32b0f2581717f",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-022.json",
+          "sha256": "bdc1b9b8e17f8d4f6431e10bb694e9032588c6833ee872e935de193bf6ee30bb"
+        }
+      ],
+      "reason": "606,9л исходного расчёта противLVF600 явно сохранены; фактическая вместимость не считается доказанной.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-023:4c138c58b906579e3ebd",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-008"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-023.json",
+          "sha256": "595fa7304d48f38c01f2be3368151416604df6f002b42913c5977d4e25f2c5fd"
+        }
+      ],
+      "reason": "2,5/3,0бар сохранены,но246,9/3810л получены без раскрытия неоднозначной интерпретации формулыTEXT; полный ограниченный вывод не сохранён.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-024:f36bd082707154691153",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-009"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-024.json",
+          "sha256": "3337cb4eb8166e1d8b866ec77e1b8640adf4f659cec8c3b764d511ddc6bf7fa6"
+        }
+      ],
+      "reason": "75/55ДОО,85/60вентиляции против80/60подборов иразрезаДОО сопоставлены.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-024:97a3c95e2b1698d996d0",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-024.json",
+          "sha256": "3337cb4eb8166e1d8b866ec77e1b8640adf4f659cec8c3b764d511ddc6bf7fa6"
+        }
+      ],
+      "reason": "F-009 различает направления температур ДОО и вентиляции, общего занижения обоих нет.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-025:c98f6c16f19022b52eb6",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-020"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-025.json",
+          "sha256": "d4942202ecc3470ab136bd00705df8420c3161499013567a2ff122a7c3c8a603"
+        }
+      ],
+      "reason": "61,12/219×6 и0,505/0,66 сохранены;76,40 и повтор0,66 для двух расходных режимов не раскрыты.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-026:97276f557b9fbedb0bef",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-038"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-026.json",
+          "sha256": "6d986df9fb3f9b2e8f000a6f33b2a535301725f63d5bc258b1d913cf3169be82"
+        }
+      ],
+      "reason": "2546/977,0 и199/158,8 плюс пересчёты976,9/159,0 сохранены, запрошен смысл итогов.",
       "section_assessment": "unchecked"
     },
     {
@@ -395,29 +655,66 @@
     },
     {
       "target_id": "B-ITP-F-027:0bd4729bc0b05b923141",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-026"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f"
+        }
+      ],
+      "reason": "Варианты найдены, но общая невозможность заказа заявлена до проверки достаточности остальных данных каждой строки.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-027:7853566af8288ba9432d",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f"
+        }
+      ],
+      "reason": "Масса идентифицированного фильтраDN300РИДАН-ФСФ01.16.300 не поставлена под вопрос.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-029:268aafac2624c208753e",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-024"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-029.json",
+          "sha256": "92f98a8b73d3db1a60c32f0d100a2dfd0e5688ea5295792e06a212154edd7ef0"
+        }
+      ],
+      "reason": "325,85,1м,273×40 по2+97м для1,7мтрубы сохранены; границы двух таблиц и распределение матов не установлены до предписания исправить.",
       "section_assessment": "unchecked"
     },
     {
@@ -444,47 +741,112 @@
     },
     {
       "target_id": "B-ITP-F-030:15e7e0c93d727b6902f9",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-025"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+          "sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1"
+        }
+      ],
+      "reason": "273:32комплекта/1,7м сохранены как вопрос планаопор, автоматический перенос запрещён смыслом рекомендации.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-031:20e0a2fe6cdbb065f78a",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-039"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-031.json",
+          "sha256": "1e77b4c1af3d96d38544e8d299129f7e02e867812d6138b2c8ecb99817db0e26"
+        }
+      ],
+      "reason": "Демпфер50л второйзоныRM580СО/RM50подбора сопоставлен; несуществование марки не утверждается.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-031:d7fa75e76f824fe5d722",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-026"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-031.json",
+          "sha256": "1e77b4c1af3d96d38544e8d299129f7e02e867812d6138b2c8ecb99817db0e26"
+        }
+      ],
+      "reason": "Поз89 повторенаDN25/118 иDN32/2, удалять разные изделия как дубли не предложено.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-035:4868f82f52227408ecc1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-040"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-035.json",
+          "sha256": "cf7c89bf0fa2b42a1a69c07ec109e87ea4a7822255d1751f4a866ec5179c52af"
+        }
+      ],
+      "reason": "ДоDN125/свышеDN150 оставляютDN150 без решения, вопрос сохранён.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-035:6e663d7b02b8e032a0c2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-040"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-035.json",
+          "sha256": "cf7c89bf0fa2b42a1a69c07ec109e87ea4a7822255d1751f4a866ec5179c52af"
+        }
+      ],
+      "reason": "0,01мм для уклона найдено; достаточность самого уклона не засчитывается как проверенная.",
       "section_assessment": "unchecked"
     },
     {
@@ -511,101 +873,240 @@
     },
     {
       "target_id": "B-ITP-F-038:705f2262875c31478443",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-038.json",
+          "sha256": "35c602bbbe1e1dd36f6aa55f734b93813654cc257bc170858a9006bc799f891f"
+        }
+      ],
+      "reason": "−4,000/−4,450/−4,900 и внутреннее различие анкеты сохранены, требуются базы уровней.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-039:20e8e64d70bd0535ad4d",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-032"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-039.json",
+          "sha256": "1db31635b83a1f4cbde483f5346662bb1f05664b507abc635a861ae5535b3a4a"
+        }
+      ],
+      "reason": "12СО/15ПЗ против15/20 сохранены; различие.С/.СО не раскрыто и максимальные номера приняты за число листов.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-040:7f53850450a0df3ef46e",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-040.json",
+          "sha256": "749b9a919d92ecdcb6ece7c7fcb5744d01a593cea646ae56fbe7d9d0973f2566"
+        }
+      ],
+      "reason": "Этап1 титулов/этап2ТЗ при общем адресе икадастре не рассмотрены.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-041"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json",
+          "sha256": "0f1d4fb84c176ca0d580db069121b9d8112ce52047f0ac636243d2114f75159e"
+        }
+      ],
+      "reason": "К22:1000графики/1500таблиц,два бака отмечены; объём единицы отделён от количества.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-042:ecfe1ebab48bd184691d",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-042"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json",
+          "sha256": "0f1d4fb84c176ca0d580db069121b9d8112ce52047f0ac636243d2114f75159e"
+        }
+      ],
+      "reason": "К23:100планов/200экспликации иСО сохранены.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-044:de24b888831313c4d337",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-043"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-044.json",
+          "sha256": "2a46b122ca2c41e1aeff054be481066700a8c8499669287a08bb9f5a89b23a10"
+        }
+      ],
+      "reason": "5,205/260,25графики против5,229/261,50ПЗ сохранены.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-050:5cd9d3d1be70ff9681c3",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-053"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-050.json",
+          "sha256": "693016921491b5dd0c2c10b23f03b22e9269d9a9ba37245e1ccb25d73e2b7d14"
+        }
+      ],
+      "reason": "Одна выноскаLVF400:91собственная/60собвязкой и водой сохранена; исправленная масса не назначена.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "B-ITP-F-051:6c86cc6a433d4ce0abd6",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-051.json",
+          "sha256": "48acd1c90479c0e5404f0712745a913c194d59c4f253660ae2a1eec826c66e9e"
+        }
+      ],
+      "reason": "НазначениеК13 вСО не названо теплоснабжением вместо вентиляции.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "H-ITP-63:7ba4e763f9b6758d0f09",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-017"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/H-ITP-63.json",
+          "sha256": "ec886ea171d16f2c81f3c31963104eeae8dd14400b7a53af1c76b644ff88c610"
+        }
+      ],
+      "reason": "К10при47,08:21,29/21,91 сохранено, невозможность рабочей точки не утверждается.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "H-ITP-64:0a12321728e29d5b1832",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-035"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/H-ITP-64.json",
+          "sha256": "a19c036e2038bc59c340d9147430c370a05bc48bbdcb8c2de0e60d8f2d5f245b"
+        }
+      ],
+      "reason": "Кодработ5.18.3.1 и отсутствие колонки найдены; применимостьТЗ по этапам не проверена.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-023"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP17_grooved_connection_identity.json",
+          "sha256": "86d4789b355603010fb36e5634f9f707854e9747a4637168699bba57a468ab33"
+        }
+      ],
+      "reason": "289муфтFC073E дляDN65 и коды076 найдены; полного набораGT076 и разграниченияВГП65×4/электросварной76×3,5 нет.",
       "section_assessment": "unchecked"
     },
     {
@@ -632,11 +1133,24 @@
     },
     {
       "target_id": "ITP40:24bca8b6c47714314059",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-021"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+          "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8"
+        }
+      ],
+      "reason": "ПодстановкаГВС3:9,05→9,08 явно названа, итоговая арифметика относится к уточнению, не самостоятельному доказанному отказу.",
       "section_assessment": "unchecked"
     },
     {
@@ -663,65 +1177,142 @@
     },
     {
       "target_id": "ITP44_GVS_maxima:2ad6745f21c33bf142fc",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP44_GVS_maxima.json",
+          "sha256": "44c276625c7e8a17cde89f7d22fabb997b8e89f85b6f6ec3145ef251f5ef1584"
+        }
+      ],
+      "reason": "F-012 признаёт общий максимум1,081 и основание неравномерности; отсутствие исходного значения не заявлено.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP58_GVS_branch_flows:f563ab4150d33b1acce3",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
+          "sha256": "18f4757f2b96969381e5504499213117983b5aaf771b02e5eb0207a647b01ad4"
+        }
+      ],
+      "reason": "Ветви13,34/12,13 и9,02/4,31 сК15 не сопоставлены.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP58_GVS_branch_flows:998f8c69c4c89da05aa9",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
+          "sha256": "18f4757f2b96969381e5504499213117983b5aaf771b02e5eb0207a647b01ad4"
+        }
+      ],
+      "reason": "НеоднозначностьТ411/Т412 не заявлена.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP58_GVS_branch_flows:092234a89fe9515c377c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
+          "sha256": "18f4757f2b96969381e5504499213117983b5aaf771b02e5eb0207a647b01ad4"
+        }
+      ],
+      "reason": "4,29м³/ч не заменено на4,29т/ч.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP68_grooved_scope:98fe6084bffb8305b8ed",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP68_grooved_scope.json",
+          "sha256": "99115cd8d26c814d789321933bae0f8e25a5bb13ded0fd458ae71bd361177c69"
+        }
+      ],
+      "reason": "ОбластьТЗ5.3.1.4 и муфты819шт не сопоставлены;DN65 вF-023 другая тема.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP72_wall_and_velocity:42140cc8a623c96428fe",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP72_wall_and_velocity.json",
+          "sha256": "475f5d890f33898ddc718d97ca9a785222529966ef0a5f87a312705ee21bd388"
+        }
+      ],
+      "reason": "Нет прямой пары стенок3,0ПЗ/3,5СО для тех же названных наружных диаметров;F-022 сравнивает иной набор сортамента.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP72_wall_and_velocity:5acf5de70b5d5444dfb8",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP72_wall_and_velocity.json",
+          "sha256": "475f5d890f33898ddc718d97ca9a785222529966ef0a5f87a312705ee21bd388"
+        }
+      ],
+      "reason": "Все графические57/76/89 не объявлены стенкой3,5мм.",
       "section_assessment": "unchecked"
     },
     {
@@ -770,173 +1361,417 @@
     },
     {
       "target_id": "ITP_F004_safety_valve_setpoints:d5f708be41c1a1f2266c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+          "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754"
+        }
+      ],
+      "reason": "20бар обобщены на защиту отопления3 без конфликта схемы16бар позиции45; прямой ложной фразы о20бар именно на схеме нет.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F005_test_pressure_scope:88ef772ecba424138f46",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F005_test_pressure_scope.json",
+          "sha256": "a7d32222f7f10b1f04ca6b13c42a7ababe200a411e6d0b42cce5ff47abb8648d"
+        }
+      ],
+      "reason": "12,5кг/см без границ контуров найдено; заголовок единого пробного давления предрешает область, нормативные основания нового давления не установлены.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F006_fuse_instruction:3453d72502ca1458b28c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
+          "sha256": "3f9035b4b5dd1c3025ee792a816175c764cbd6a6ea2492193cf061a4d5025477"
+        }
+      ],
+      "reason": "8.4 включённое питание сохранено; предписана безусловная замена после отключения до уточнения блоков/условий, общие меры8.1/8.5/8.6 не разобраны.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F006_fuse_instruction:427e462f69e3375e880c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
+          "sha256": "3f9035b4b5dd1c3025ee792a816175c764cbd6a6ea2492193cf061a4d5025477"
+        }
+      ],
+      "reason": "F-005 ограничивается8.4 и условиями операции, не утверждает отсутствия мер защиты во всём разделе.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F009_GVS_inlet_temperature:06cdf2a18fcf30aafead",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-034"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F009_GVS_inlet_temperature.json",
+          "sha256": "3105d42ff9d51573ed429301e98e68c83ef5967b37dd3d7f64806bb506c6d000"
+        }
+      ],
+      "reason": "5–65 и16,54 трёхподборов названы, смешение признано возможным. Отсутствие баланса не ограничено просмотренными фрагментами.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F010_GVS_formula:e2d706356b5cbdcedb39",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-013"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F010_GVS_formula.json",
+          "sha256": "370abff31e496cbfad890ab79c2379f01d1dbb05fa320d5f3f64af72a9eac867"
+        }
+      ],
+      "reason": "Перваяступень30°C против одноступенчатой65°C найдена; требование пересчитать опережает выяснение физического смысла и применимости формулы.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F028_reducer_designations:2f16d360921aab6e9949",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F028_reducer_designations.json",
+          "sha256": "948c401ded92dc7baf8da111f58e08619ee6485d56c8a1167192c2fd338a3e81"
+        }
+      ],
+      "reason": "45×20/57×20 не рассмотрены;другие переходы не подменяют цель.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F028_reducer_designations:fab751f2686c38838e0b",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-023"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F028_reducer_designations.json",
+          "sha256": "948c401ded92dc7baf8da111f58e08619ee6485d56c8a1167192c2fd338a3e81"
+        }
+      ],
+      "reason": "114×89/168×76 и108/159 названы;прямое сопряжение неизвестно, полный адресный вопрос каждойсборки не выполнен.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F032_channel_standard_scope:8edf0d0f42a81f234dc5",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-031"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F032_channel_standard_scope.json",
+          "sha256": "2a2861ef488cb53b24ae648891bf66e9912e56d0c64403e708afb229da0649d4"
+        }
+      ],
+      "reason": "Горячекатаный100×50×5 противГОСТ8278гнутого профиля сохранён.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F033_replaced_product_standards:3f903a601969ba823079",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-030"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F033_replaced_product_standards.json",
+          "sha256": "d8b8c313183679e564f305522d3a0c60a3ac6011a65f0e86b54d4d0a7278e6ff"
+        }
+      ],
+      "reason": "12820-80/14918-80 названы, адресные строки и проверенные статусы не раскрыты.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-029"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b"
+        }
+      ],
+      "reason": "Неполнота реквизитов правилэксплуатации названа, локальностьПЗ не обозначена;приказ115 в документации признан.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F034_mixed_norm_references:5c96f17d8af25d1ba443",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-029"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b"
+        }
+      ],
+      "reason": "115/511 названы как возможная замена; подтверждённая отмена и дата не установлены в выдаче.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F034_mixed_norm_references:2bca6641f93ace5ac5a6",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-029"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b"
+        }
+      ],
+      "reason": "Правилаучёта без реквизитов названы, областьПЗ/отдельныйУУТЭ не разграничены.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F036_gauge_range_allocation:450cb0a7d585250b421e",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-037"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F036_gauge_range_allocation.json",
+          "sha256": "414eb7b03e2e13826337c12f9b097562f2a8efcf45dbcb35da7ab6ce225e9a83"
+        }
+      ],
+      "reason": "0–1,6МПа ичетыре0–2,5МПа сохранены,175 в основнойгруппе не указано;позиционная пригодность оставлена открытой.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-056"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F053_standard_title.json",
+          "sha256": "48b25ee12d05eb09a1826215610c1a59dfe0f759cbf315a2d0f57949a5950513"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b"
+        }
+      ],
+      "reason": "НазваниеСП510 ведомости сопоставлено с примечаниями,второе неверное названиеПЗ не адресовано.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_heat_exchanger_labels:d9eb099d20a94bca22e2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0"
+        }
+      ],
+      "reason": "F-052 прямо признаёт15% запаса, глобальное отсутствие запаса не заявлено.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-045"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0"
+        }
+      ],
+      "reason": "К2:1,005/1,012 сопоставлены; эксплуатационная категория отдельно не одобрена.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_heat_exchanger_labels:92be8d7a03f9ca816e16",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-044"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0"
+        }
+      ],
+      "reason": "ГВС1:0,403/0,419 длядвух аппаратов по50% сохранены.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "ITP_heat_exchanger_labels:cae0fec45b0437f86c1a",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0"
+        }
+      ],
+      "reason": "К1:1,711/1,707 не сопоставлены.",
       "section_assessment": "unchecked"
     },
     {
@@ -1027,11 +1862,22 @@
     },
     {
       "target_id": "ITP_F004_safety_valve_setpoints:composite:2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+          "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754"
+        }
+      ],
+      "reason": "Нет связи позиции40 уставки20бар с защищаемымК17 и пределом16бар. F-003 про отопление3/первичныйконтур не заменяет эту ГВС-связь.",
       "section_assessment": "unchecked"
     }
   ],
@@ -1041,6 +1887,6 @@
     "Engineer confirmation is required; model suggestions alone are not final matches."
   ],
   "repeat": 2,
-  "output_review_scope": "All 57 final claims read for technical-target coverage; 68 question/negative targets remain unchecked.",
-  "status": "technical_route_complete_other_routes_pending"
+  "output_review_scope": "All 57 final problem/description/solution fields read for all 87 target matches; additions, grouping and engineer burden require separate review.",
+  "status": "all_87_targets_coverage_reviewed_additional_claims_pending"
 }
