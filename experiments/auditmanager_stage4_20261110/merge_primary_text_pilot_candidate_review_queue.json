@@ -2205,7 +2205,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_mounting_details50_54_graphic_followup.json",
+        "assessment": "confirmed_detail_note_inconsistency_fire_performance_unverified"
+      }
     },
     {
       "source_id": "G-099",
@@ -2216,7 +2220,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_mounting_details50_54_graphic_followup.json",
+        "assessment": "confirmed_detail_note_inconsistency_fire_performance_unverified"
+      }
     },
     {
       "source_id": "G-100",
@@ -2227,7 +2235,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_mounting_details50_54_graphic_followup.json",
+        "assessment": "confirmed_detail_note_inconsistency_fire_performance_unverified"
+      }
     },
     {
       "source_id": "G-101",
@@ -2238,7 +2250,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_mounting_details50_54_graphic_followup.json",
+        "assessment": "confirmed_detail_note_inconsistency_fire_performance_unverified"
+      }
     },
     {
       "source_id": "G-102",
@@ -2284,7 +2300,11 @@
       ],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_retained_graphic_candidate_review.json",
       "assessment": "text_claim_preserved",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_mounting_details50_54_graphic_followup.json",
+        "assessment": "confirmed_text_support_product_conflict_graphic_does_not_identify_model"
+      }
     },
     {
       "source_id": "D-792d00bce4b70937c9f38806",
@@ -2295,7 +2315,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
       "assessment": "text_claim_preserved",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_mounting_details50_54_graphic_followup.json",
+        "assessment": "confirmed_text_support_product_conflict_graphic_does_not_identify_model"
+      }
     },
     {
       "source_id": "G-105",
@@ -2328,7 +2352,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_mounting_details50_54_graphic_followup.json",
+        "assessment": "confirmed_detail_note_inconsistency_fire_performance_unverified"
+      }
     },
     {
       "source_id": "D-bb7d7e1bec45b1e1cc322381",
@@ -2339,7 +2367,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_mounting_details50_54_graphic_followup.json",
+        "assessment": "confirmed_detail_note_inconsistency_fire_performance_unverified"
+      }
     }
   ],
   "note": "All disposition reasons reviewed. This is NOT completion of graphic checks or acceptance:82 deferrals remain factual not_checked; retained/duplicate graphic subclaims also remain pending.",
