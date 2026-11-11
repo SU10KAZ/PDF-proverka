@@ -1,0 +1,294 @@
+{
+  "status": "partial_coordinator_coverage_review",
+  "discipline": "KM",
+  "repeat": 1,
+  "mapped_atoms": [
+    {
+      "target_id": "KM13_F004_S2_anchor_multiplicity:59a9339a0f210f950692",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM13_F004_S2_anchor_multiplicity.json",
+          "sha256": "b039e259c55746828a55fdad1fbb9afe04bc99d2498ae858403e14b33bf19631"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Сохранены секция С2, развёрнутая повторяемость и 488/448 анкеров. Масса пластин отмечена отдельно с оговоркой об отверстиях; фактическая недопоставка не считается доказанной этим совпадением.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM14_LK6_repetitions_conditional_totals:f37239acceec07686153",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM14_LK6_repetitions_conditional_totals.json",
+          "sha256": "ef42022ce9ccb4895b2cc4bb11aacc050a7d72636e26bd45375b95a0c663a3b4"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Повторяемость ОГМ22/25 по два и 57 пластин сохранены. Но 228/188 анкеров выданы без неопределённости значения 28 в строках ОГМ21/24; условный итог превращён в установленный недоучёт.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM3:23f9be653d9b57c84d4c",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-022"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM3.json",
+          "sha256": "b453c43a58d1054330e0ac62fc71b0488ebbfcc1bca7aabe16011cd7d124e215"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Выноска ОГМ26 на плане ЛК6 −0,700 и вопрос ошибочной марки найдены. Отсутствие деталировки и данных изготовления утверждается шире установленного отсутствия строки и ограничения ведомости.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM6_F018_straight_handrail_rejection_review:41b349266f7d7fa6803b",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-024",
+        "F-025"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json",
+          "sha256": "332c6b03682d0728dc030587f7934bbd6c930302eda3c3c261bee60353061ea3"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "ОГМ9 3400/3300 и ОГМ10 3065/2965 сохранены с вопросом границ. Нет третьего расхождения ОГМ4 3765/3665; объяснение вычета по узлам Д/Е не проверено, поэтому вся цель не покрыта.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F001_norm_editions_scope:cc6d088a37f8ea14e2fe",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-001"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F001_norm_editions_scope.json",
+          "sha256": "33b3aa3bc7d3e7470afa0640da907a872316eb10bda4279b180e36cca8f558de"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Разные редакции СП16 для перечня и сварки сохранены. ГОСТ23118-2012 назван, но его подтверждённая замена не установлена; основание применимости верно оставлено открытым.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F003_loads_document_link:978d350d6e39eb1fcf5a",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F003_loads_document_link.json",
+          "sha256": "c6dc587ee5359dc549bda0a342845dbff0d8941417085f9949b3e6e5f8eb6691"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Запрошен точный расчёт нагрузок и усилий, отмечены Конструктивно и ссылка КМ8. Прямая отсылка пункта 1.6 к КЖ не учтена; формулировка отсутствия исходных данных шире локальной проверки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F009_sheet_cross_reference:01c2e819a95b8ab792a2",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-010"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F009_sheet_cross_reference.json",
+          "sha256": "7fbdfa43cd59998b7eba82f63bed364033f257914b0db60f482280b24d7def1e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Примечание 5 листа 4 сопоставлено с зарегистрированным листом 3 схемы С2. Это покрытие ошибки ссылки; категория и гипотетические последствия отдельно не приняты.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F015_typical_level_list:bce51ca28ffba3fa98c3",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-015"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
+          "sha256": "86849d4e464c5efa654fd2e5aa1e08127b5859ee7c63a2ec2eddd62ecda17ea5"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Последняя отметка +37,510 в типовом списке С3 сопоставлена с +34,150 разреза и следующим участком ОГМ7. Исправление прямо обусловлено проверкой проектной геометрии.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/KM_review.json",
+  "review_ledger_sha256": "3e700e4b7d47a70b0a7dcf56a264a4af2ec25c25d844f40f8ef2e8c7a308d4e2",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "KM",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 4,
+          "availability_available": 3,
+          "full": 2,
+          "partial": 1,
+          "availability_unchecked": 1,
+          "unchecked": 1
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 20,
+          "availability_available": 5,
+          "partial": 4,
+          "availability_unchecked": 15,
+          "unchecked": 15,
+          "full": 1
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 3,
+          "availability_unchecked": 3,
+          "unchecked": 3,
+          "held": 1
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 3,
+      "held": 1
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "limits": [
+    "Проверены восемь положительных целей из 28; оценки отсутствия ещё не выставлены.",
+    "Покрытие не подтверждает категории, последствия, нормативные кандидаты и все дополнительные утверждения.",
+    "Эталонные решения инженеров не заменены новой инженерной приёмкой.",
+    "Условный расчёт количества не признаётся установленной потребностью."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
