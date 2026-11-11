@@ -1,0 +1,300 @@
+{
+  "status": "cabinet_label_question_review",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "2ba61d6762f7803b81acf65c291be0c67255683bdf2a821a68c1904cc3562c3e",
+  "queue_after_sha256": "40735e66592a49943e163df2cf52c3cb8c64dced8921110575e0b092a3ab674a",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-053",
+      "finding": {
+        "id": "F-053",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка шкафов",
+        "sheet": "Лист 24",
+        "page": [
+          28,
+          93
+        ],
+        "problem": "Шкаф ПД4.1.4 имеет разные обозначения на схеме и в журнале.",
+        "description": "Функциональная схема содержит «ШУ-ПД4.14», кабельный журнал для линии от ТЕ1 той же системы — «ЩУ-ПД4.1.4». Различаются буквенная часть и запись номера системы.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить единство маркировки шкафов и конечных адресов кабелей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-057",
+                "G-058"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-057",
+                  "G-058"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Принять единую марку шкафа и исправить схему и кабельный журнал.",
+        "risk": "Неоднозначное подключение температурной цепи противодымной вентиляции.",
+        "source_finding_ids": [
+          "G-057",
+          "G-058"
+        ],
+        "source_block_ids": [
+          "blk_dc32b584ce9748a5b520a300112b12de"
+        ],
+        "related_block_ids": [
+          "blk_dc32b584ce9748a5b520a300112b12de",
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_400a32e7aac048e6a9d6da65c598995f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+            "page": 28
+          },
+          {
+            "type": "text",
+            "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+            "page": 93
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-057",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-058",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно несоответствие марки шкафа системы ПД4.1.4: «ШУ-ПД4.14» на функциональной схеме и «ЩУ-ПД4.1.4» в кабельном журнале. Уточнение листа и конечной точки кабеля не меняет сути замечания.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно несоответствие марки шкафа системы ПД4.1.4: «ШУ-ПД4.14» на функциональной схеме и «ЩУ-ПД4.1.4» в кабельном журнале. Уточнение листа и конечной точки кабеля не меняет сути замечания.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Функциональная схема содержит ШУ-ПД4.14, журнал ЩУ-ПД4.1.4 для ТЕ1 системы ПД4.1.4.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Схема внешних подключений содержит ЩУ-ПД4.1.4 и линию ПД4.1.4-1 к ТЕ1.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Внешняя схема согласована с журналом; функциональная схема отличается."
+        },
+        {
+          "claim": "Нужно согласовать идентификатор шкафа между документами.",
+          "verdict": "supported_editorial_coordination_question",
+          "limits": "Связь по системе и ТЕ1 установлена; различие марки не доказывает наличие двух разных шкафов."
+        },
+        {
+          "claim": "Доказаны ошибочное подключение температурной цепи либо нарушение работы противодымной системы.",
+          "verdict": "not_established",
+          "limits": "Фактический монтаж, рабочая маркировка и испытания не проверены; повышать значимость по одному названию системы нельзя."
+        },
+        {
+          "claim": "Исправить оба документа на автоматически выбранную марку.",
+          "verdict": "overbroad_remedy",
+          "limits": "Сначала согласовать с обозначением в ЭМ; согласованные журнал и внешняя схема не требуют безусловного изменения."
+        },
+        {
+          "claim": "Подтверждено нормативное нарушение ГОСТ21.408-2013.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Пункт и цитата не подтверждены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_question_preserved_no_new_technical_defect",
+      "duplicate_burden": "One cabinet label question; not six defects from analogous application note and not separate defects for letter and dot differences.",
+      "profile_and_section": "questions_clarifications_label_coordination",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_db759e961c1045b2822ce177cef0a17f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2b217a39b5174211bec9d56597c2ec3e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F051_cabinet_label_scope.json",
+          "sha256": "a66c212be8c1dde3bd5132cf55aa4a8b92153efad0e9b2b3ce89f39fa3f5b853",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены различия ШУ/ЩУ и4.14/4.1.4. Они не доказывают наличие двух физических шкафов или неправильное подключение.",
+            "TEXT журнала сохранён буквально; графика просмотрена как самостоятельный документ, а не для исправления TEXT.",
+            "Раздел ЭМ, заводская маркировка и внешняя схема этого шкафа здесь не проверены. Не выбирать правильное написание автоматически.",
+            "Решение инженера и конкретное нормативное нарушение не установлены. Полнота противодымной автоматики и её работоспособность данным случаем не проверены."
+          ],
+          "wording": "Унифицировать обозначение шкафа ПД4.1.4 по разделу ЭМ: функциональная схема содержит ШУ-ПД4.14, КЖ лист35 для линии ПД4.1.4-1 от ТЕ1(ПД4.1.4) — ЩУ-ПД4.1.4. Связь датчика с системой понятна, правильное полное обозначение требует согласования."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+          "sha256": "dd058661889a4dc4848d14c89c82942d241702c6c954001e2acef9f5a28b3851",
+          "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Functional cabinet label ШУ-ПД4.14; system ПД4.1.4; TE1."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_400a32e7aac048e6a9d6da65c598995f.png",
+          "sha256": "9f1c56a09670dc3bf5436ad8a321abef871308f8be8292c116e32b30cad1b5bb",
+          "block_id": "blk_400a32e7aac048e6a9d6da65c598995f",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "External cabinet label ЩУ-ПД4.1.4; TE1 via ПД4.1.4-1 shown."
+        }
+      ],
+      "disposition": "assessed_preserve_cabinet_label_question_no_wiring_failure"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+      "authoritative_TEXT": "### BLOCK #242 [TEXT]: blk_a256f98d4e01408d90baba99d8b2cc19\n\n> **Created:** 2026-09-28 07:29:53 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/K_jKTyPPQPvVY2rAEVtK)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 35 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| СУКЗ-1 | СУ-К33 | ШАУВ-1-К6АС | КСПВПнг(A)-HF | 1х2х0,75 | 45 | лоток 100x100, лоток 50x50, труба гофр. | КСПВПнг(A)-HF 1х2х0,75 | 10/30/5 |  |\n| Противодымные приточные системы |  |  |  |  |  |  |  |  |  |\n| ПД4.1.4-1 | ТЕ1 (ПД 4.1.4) | ЩУ-ПД4.1.4 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 45 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 45 |  |\n| ПД4.1.21.2-1 | ТЕ1 (ПД4.1.21.2) | ЩУ-ПД4.1.21.2 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 35 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 35 |  |\n| ПД5.1.4-1 | ТЕ1 (ПД5.1.4) | ЩУ-ПД5.1.4 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 105 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 105 |  |\n| ПД5.1.21.2-1 | ТЕ1 (ПД5.1.21.2) | ЩУ-ПД5.1.21.2 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 105 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 105 |  |\n| ПД6.1.4-1 | ТЕ1 (ПД6.1.4) | ЩУ-ПД6.1.4 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 65 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 65 |  |\n| ПД6.1.21.2-1 | ТЕ1 (ПД6.1.21.2) | ЩУ-ПД6.1.21.2 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 65 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 65 |  |\n|  |  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n\n## Page 94 — Sheet 1 — Спецификация оборудования, изделий и материалов\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_db759e961c1045b2822ce177cef0a17f",
+      "authoritative_TEXT": "### BLOCK #90 [TEXT]: blk_db759e961c1045b2822ce177cef0a17f\n\n> **Created:** 2026-09-28 07:29:00 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Ga1XpK7jsd2RkLjCsiyt)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 24 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Противодымная приточная система ПД4.1.4, ПД4.1.21.2, ПД 5.1.4, ПД5.1.21.2, ПД 6.1.4, ПД6.1.21.2. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПримечание:\n\n1. Данная схема выполнена для противодымной приточной системы ПД4.1.4, для ПД4.1.21.2, ПД 5.1.4, ПД5.1.21.2, ПД 6.1.4, ПД6.1.21.2 аналогично.\n\n2. Предельные рабочие значения измеряемых величин уточняются при ПНР\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_2b217a39b5174211bec9d56597c2ec3e",
+      "authoritative_TEXT": "### BLOCK #162 [TEXT]: blk_2b217a39b5174211bec9d56597c2ec3e\n\n> **Created:** 2026-09-28 07:29:21 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/snx4gOZ7NsKUNL3LQZYS)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 47 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Противодымная приточная система ПД4.1.4, ПД4.1.21.2, ПД 5.1.4, ПД5.1.21.2, ПД 6.1.4, ПД6.1.21.2. Схема внешних подключений. | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПримечание:\n\nДанная схема выполнена для противодымной приточной системы ПД4.1.4,\nдля ПД4.1.21.2, ПД 5.1.4, ПД5.1.21.2, ПД 6.1.4, ПД6.1.21.2 аналогично\n\n## Page 52 — Sheet 48 — План расположения оборудования и кабельных трасс. Кровля. Корпус 4\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+      "sha256": "dd058661889a4dc4848d14c89c82942d241702c6c954001e2acef9f5a28b3851",
+      "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Functional cabinet label ШУ-ПД4.14; system ПД4.1.4; TE1."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_400a32e7aac048e6a9d6da65c598995f.png",
+      "sha256": "9f1c56a09670dc3bf5436ad8a321abef871308f8be8292c116e32b30cad1b5bb",
+      "block_id": "blk_400a32e7aac048e6a9d6da65c598995f",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "External cabinet label ЩУ-ПД4.1.4; TE1 via ПД4.1.4-1 shown."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F051_cabinet_label_scope.json",
+      "sha256": "a66c212be8c1dde3bd5132cf55aa4a8b92153efad0e9b2b3ce89f39fa3f5b853",
+      "primary_adjudication": null,
+      "limits": [
+        "Подтверждены различия ШУ/ЩУ и4.14/4.1.4. Они не доказывают наличие двух физических шкафов или неправильное подключение.",
+        "TEXT журнала сохранён буквально; графика просмотрена как самостоятельный документ, а не для исправления TEXT.",
+        "Раздел ЭМ, заводская маркировка и внешняя схема этого шкафа здесь не проверены. Не выбирать правильное написание автоматически.",
+        "Решение инженера и конкретное нормативное нарушение не установлены. Полнота противодымной автоматики и её работоспособность данным случаем не проверены."
+      ],
+      "wording": "Унифицировать обозначение шкафа ПД4.1.4 по разделу ЭМ: функциональная схема содержит ШУ-ПД4.14, КЖ лист35 для линии ПД4.1.4-1 от ТЕ1(ПД4.1.4) — ЩУ-ПД4.1.4. Связь датчика с системой понятна, правильное полное обозначение требует согласования."
+    }
+  ],
+  "limits": [
+    "No actual wiring failure or safety failure inferred.",
+    "Question section is intended classification, not verified rendered UI.",
+    "No frozen evaluator or runtime changed."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
