@@ -1,0 +1,46 @@
+{
+  "status": "local_fixture_check_passed_not_a_model_run",
+  "fixture_root": "/tmp/runtime_probe_local_fixture_uw2a576b",
+  "legacy_response_sha256": "eded7c3c62c4271e0b1f12afc71bda6dc17d45088f433db26ab3bbe93d524cb3",
+  "scope": "A saved prior response is used only as a local compatibility fixture with the current request shape. No claim that this response answers the new request.",
+  "assertions": [
+    "All 147 source candidates retained",
+    "All 147 old receipts explicitly counted as lacking subclaims",
+    "Existing findings remain identical in recovery context",
+    "Source-backed recovery packets prepared without model calls"
+  ],
+  "summary": {
+    "candidate_count": 147,
+    "findings": 36,
+    "reported_decisions": {
+      "retained": 47,
+      "needs_data": 82,
+      "duplicate": 16,
+      "refuted": 1
+    },
+    "candidates_without_subclaims": 147,
+    "candidates_with_pending_subclaims": 0,
+    "pending_subclaims": 0,
+    "not_checked_decisions": 7,
+    "usage": {
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 941818,
+      "input_tokens": 351699,
+      "output_tokens": 46496,
+      "cached_tokens": 8192
+    }
+  },
+  "model_calls": 0,
+  "production_acceptance": false,
+  "initial_recovery": {
+    "packets": 36,
+    "size_ready": 35,
+    "candidates": 90
+  },
+  "recovery_after_single_image_budget_alignment": {
+    "packets": 36,
+    "size_ready": 36,
+    "candidates": 90
+  },
+  "correction": "One original drawing exceeds the 16 MB batch budget. Aligned with the verified inventory policy: a single unchanged drawing may use up to 24 MB; multi-image packets retain 16 MB."
+}

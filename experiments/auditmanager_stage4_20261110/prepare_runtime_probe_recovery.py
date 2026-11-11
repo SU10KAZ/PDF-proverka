@@ -53,11 +53,16 @@ def prepare(root, destination):
         write(path, packet)
         chars = sum(len(m['content']) for m in targeted.messages)
         image_bytes = sum(Path(p).stat().st_size for p in images)
+        # Match the already validated inventory packet policy: preserve a large
+        # single drawing byte-for-byte, but keep multi-image batches at 16 MB.
+        image_budget = 24_000_000 if len(images) == 1 else 16_000_000
         rows.append({'path': str(path), 'sha256': sha(path), 'message_characters': chars,
                      'images': len(images), 'image_bytes': image_bytes,
+                     'image_budget': image_budget,
+                     'isolated_large_image': len(images) == 1 and image_bytes > 16_000_000,
                      'candidate_ids': [c['source_id'] for c in payload['candidate_group']],
                      'pending_subclaims': sum(len(c.get('pending_subclaims', [])) for c in payload['candidate_group']),
-                     'transport_size_ready': chars < 1_000_000 and image_bytes <= 16_000_000})
+                     'transport_size_ready': chars < 1_000_000 and image_bytes <= image_budget})
     receipt = {'status': 'recovery_prepared_not_dispatched', 'source_response_sha256': sha(response_path),
                'source_request_sha256': preparation['request_sha256'], 'requests': rows,
                'model_calls': 0, 'history_supplied': False, 'production_acceptance': False,
