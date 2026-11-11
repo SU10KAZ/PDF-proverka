@@ -1,0 +1,8 @@
+{
+  "status": "second_context_followup_running",
+  "improvement_observed": "After a distinct calculation operation and model-requested sources, response contains actual arithmetic traces instead of only pipe sizes and quantities.",
+  "not_yet_recovered": "Historical branch flow discrepancy is not issued; calculation scope and operating mode remain unresolved in the model response.",
+  "findings_after_first_followup": 0,
+  "comparison_limit": "Bounded control; no statistical causal claim from single responses.",
+  "full_acceptance": false
+}
