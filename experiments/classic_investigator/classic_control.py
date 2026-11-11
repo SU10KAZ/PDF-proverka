@@ -1,6 +1,7 @@
 """Source-only classic Codex control, isolated from production and research answers."""
 import argparse
 import asyncio
+from dataclasses import asdict, is_dataclass
 import os
 from pathlib import Path
 import subprocess
@@ -8,6 +9,7 @@ import sys
 import time
 from investigate import ROOT, read, write, sha, configure as configure_transport
 from subscription_retry import retry_subscription_call
+from execution_receipts import summarize_methods
 
 MODELS = {'text_analysis':'codex/gpt-6.1-sol','block_batch':'ensemble/codex-only',
           'findings_merge':'codex/gpt-6-sol','findings_critic':'codex/gpt-6-sol',
@@ -147,7 +149,7 @@ async def run(work,disc):
     from backend.app.pipeline.stages.findings_merge.runner import run_findings_merge
     from backend.app.pipeline.stages.findings_verify.runner import run_findings_verify
     sys.addaudithook(process_guard)
-    state={'status':'running','started':time.time(),'stages':{},'usage':[],'discipline':disc}
+    state={'status':'running','started':time.time(),'stages':{},'stage_results':{},'usage':[],'discipline':disc}
     def save():write(status_path,state)
     async def log(message,*a):print(f'[{disc}] {str(message)[:600]}',flush=True)
     async def yes():return not ((work/'STOP_REQUESTED.json').exists() or (root/'STOP_REQUESTED.json').exists())
@@ -164,6 +166,7 @@ async def run(work,disc):
     ctx=PipelineStageContext(project_dir=version,project_id=pid,output_dir=out,log=log,check_before_launch=yes,
         check_pause=yes,wait_for_rate_limit=no,record_cli_usage=usage,update_pipeline_log=update,
         run_subprocess=deny,project_info=read(version/'01_input/project_info.json'),version_id=version.name,
+        is_cancelled=lambda:(work/'STOP_REQUESTED.json').exists() or (root/'STOP_REQUESTED.json').exists(),
         **method_context_options(pid))
     save()
     try:
@@ -178,9 +181,14 @@ async def run(work,disc):
             for name,fn in [('text_analysis',run_text_analysis),('findings_merge',run_findings_merge),('findings_verify',run_findings_verify)]:
                 if not await yes():raise RuntimeError('Stop requested')
                 result=await fn(ctx,**({'with_rate_limit_retry':False} if name=='text_analysis' else {}))
+                state['stage_results'][name]=asdict(result) if is_dataclass(result) else vars(result)
+                save()
                 if not getattr(result,'success',getattr(result,'ok',False)):raise RuntimeError(f'{name} incomplete: {result}')
                 if (out/'03_findings.json').exists():write(root/'snapshots'/disc/f'{name}.json',read(out/'03_findings.json'))
-            state.update(status='completed_unadjudicated',final_sha256=sha(out/'03_findings.json'))
+            method_receipts=summarize_methods(out,METHOD_CONFIG,state['stage_results'])
+            write(root/'method_execution'/f'{disc}.json',method_receipts)
+            state.update(status='completed_unadjudicated' if method_receipts['declared_methods_execution_complete'] else 'completed_with_unresolved_methods',
+                method_execution=method_receipts,final_sha256=sha(out/'03_findings.json'))
     except Exception as exc:
         state.update(status='failed',error=f'{type(exc).__name__}: {exc}');raise
     finally:state['finished']=time.time();save()

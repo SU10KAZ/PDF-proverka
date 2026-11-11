@@ -9,6 +9,7 @@ SHARED_FILES=(
     'experiments/classic_investigator/classic_control.py',
     'experiments/classic_investigator/investigate.py',
     'experiments/classic_investigator/subscription_retry.py',
+    'experiments/classic_investigator/execution_receipts.py',
 )
 
 
