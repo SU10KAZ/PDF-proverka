@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 from .source_review_results import validate_source_review
 from .source_review_evidence import evidence_digest
+from .source_review_output_refs import final_reference_updates
 
 
 def _has_search_boundary(value):
@@ -183,6 +184,7 @@ def apply_review_admissions(document, entries, md):
             if validation['errors']:raise ValueError('invalid_source_receipt: '+','.join(validation['errors']))
             action=_check_decision(response,decision,original)
             display_updates=_review_display_fields(original,decision,action)
+            reference_updates=final_reference_updates(response,decision,md)
             history={'finding_id':fid,'original_finding':deepcopy(original),'decision':deepcopy(decision),
                      'response':deepcopy(response),'source_md_sha256':hashlib.sha256(md.encode()).hexdigest()}
             # Only mutate once all checks have passed for this entry.
@@ -194,6 +196,7 @@ def apply_review_admissions(document, entries, md):
             else:
                 if action in ('revise','question'):original.update(decision['approved_fields'])
                 original.update(display_updates)
+                original.update(reference_updates)
                 is_question = action == 'question' or original.get('report_section') == 'questions'
                 original['report_section']='questions' if is_question else 'technical_findings'
                 original['source_evidence_review_status']='reviewed_question' if is_question else 'reviewed_supported'

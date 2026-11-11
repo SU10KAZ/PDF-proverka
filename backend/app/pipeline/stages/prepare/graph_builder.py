@@ -819,7 +819,7 @@ def finding_block_ids(finding: dict) -> list:
     return ids
 
 
-_MD_PAGE_HEADING_RE = re.compile(r"^##\s*Page\s+(\d+)\s*$", re.IGNORECASE | re.MULTILINE)
+_MD_PAGE_HEADING_RE = re.compile(r"^##[ \t]*Page[ \t]+(\d+)(?:[ \t]+[—–-][ \t]+[^\n]*)?[ \t]*$", re.IGNORECASE | re.MULTILINE)
 
 
 def resolve_document_markdown(output_dir) -> Path | None:

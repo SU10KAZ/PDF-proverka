@@ -278,3 +278,17 @@ def test_review_severity_uses_report_vocabulary(severity, accepted):
     else:
         assert out == doc
         assert receipts[0]['reason'] == 'invalid_report_severity'
+
+
+def test_final_citation_rebinding_is_atomic_and_preserves_history():
+    doc,entries,md=case('retain','supported')
+    entries[0]['decision']['final_evidence_refs']=[{'claim_id':'C1','evidence_index':0}]
+    original=deepcopy(doc)
+    out,receipts=apply_review_admissions(doc,entries,md)
+    assert receipts[0]['status']=='applied'
+    assert out['findings'][0]['evidence']==[{'block_id':'t','quote':'rows sum 12'}]
+    assert out['source_review_history'][0]['original_finding']==original['findings'][0]
+    assert out['findings'][1]==original['findings'][1] and doc==original
+    entries[0]['decision']['final_evidence_refs'][0]['evidence_index']=99
+    unchanged,receipts=apply_review_admissions(doc,entries,md)
+    assert unchanged==original and receipts[0]['status']=='not_applied'
