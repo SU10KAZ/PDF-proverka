@@ -1,0 +1,1226 @@
+{
+  "status": "five_AK_cable_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "caf9034d9adbc0c9895e117317820f7b1a7fa5e9ae27aebedbd66d98037d6438",
+  "queue_after_sha256": "3ad3fd1336b5346b564fa4d3a5e81a385bb21eec1907fb80551c24ce54cca2de",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Количество кабеля",
+        "sheet": "Лист 26",
+        "page": [
+          30,
+          63,
+          64
+        ],
+        "problem": "Неверно учтены два типа контрольного кабеля ШАУВ-2-К4ПЧ.",
+        "description": "Схема и журнал дают 120 м КСПВПГнг(А)-HF 1×2×0,75 и 50 м КСПЭВПГнг(А)-HF 1×2×0,75. Ведомость содержит 50 и 105 м: недостаток 70 м неэкранированного и избыток 55 м экранированного кабеля.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие количества кабелей рабочим чертежам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-018",
+                "G-066",
+                "G-067"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-018"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать ведомость по согласованным маркам и длинам; исправить количества на 120 и 50 м при сохранении трасс.",
+        "risk": "Недостаток одной марки и избыточная закупка другой.",
+        "source_finding_ids": [
+          "T-018",
+          "G-066",
+          "G-067"
+        ],
+        "source_block_ids": [
+          "blk_b2b11f12b2c24e10bebb7fb32c3680f5"
+        ],
+        "related_block_ids": [
+          "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+          "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+            "page": 30
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-066",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-067",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают одинаковые расхождения ведомости листа 26 со схемой: КСПВПГнг(А)-HF 1х2х0,75 — 50 м вместо 120 м; КСПЭВПГнг(А)-HF 1х2х0,75 — 105 м вместо 50 м. Указанные слева разности 70 м и 55 м не добавляют существенной детализации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают одинаковые расхождения ведомости листа 26 со схемой: КСПВПГнг(А)-HF 1х2х0,75 — 50 м вместо 120 м; КСПЭВПГнг(А)-HF 1х2х0,75 — 105 м вместо 50 м. Указанные слева разности 70 м и 55 м не добавляют существенной детализации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 67,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F022_control_cable_balance:d4470ce9730307aed184",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F022_control_cable_balance:872ea17b985add42621f",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Для ШАУВ-2-К4ПЧ восемь однопарных неэкранированных строк по15м дают120м; три экранированные20+15+15 дают50м. Перечень задаёт50/105м.",
+          "verdict": "confirmed_authoritative_TEXT_and_calculation",
+          "limits": "Двухпарные и силовые линии исключены; части трассы10/5 повторно не суммируются."
+        },
+        {
+          "claim": "Причина расхождения — доказанная перестановка двух объёмов.",
+          "verdict": "not_established",
+          "limits": "120/50 против50/105 не являются точной перестановкой, как и50/35 против45/40. Заголовок «перепутаны» сильнее доказанного расхождения."
+        },
+        {
+          "claim": "Сохранить междокументную сверку и уточнить марки/длины перед пересчётом.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "Не считать журнал автоматически правильным и не выдавать разности за фактический дефицит поставки. Повтор силового кабеля не влияет на проверенные однопарные суммы."
+        },
+        {
+          "claim": "Схема независимо подтверждает те же суммы, что журнал.",
+          "verdict": "not_independently_verified_GRAPHIC_in_this_reuse",
+          "limits": "Предыдущая проверка подтверждала арифметику авторитетного TEXT. Добавленное во втором повторе упоминание схемы не получает отдельного графического подтверждения из этой проверки."
+        }
+      ],
+      "unsupported_additions": "Разности проектных количеств не доказывают фактическую закупку или монтаж. Не приписывать текущей строке предметы из более широкой прежней строки. Нормативные кандидаты отдельно не проверены.",
+      "novel_useful_content": "Сверены текущие формулировки и прежние доказательства на идентичных источниках; потеря части рекомендации и новые неподтверждённые ссылки на графику отмечены отдельно.",
+      "duplicate_burden": "Самостоятельный баланс одного шкафа; не дублировать как отдельные дефицит и избыток каждой марки.",
+      "profile_and_section": "technical_core_preserve_local_document_balance",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+          "sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53",
+          "primary_adjudication": null,
+          "limits": [
+            "Сумма выполнена только по проектным длинам11 строк системП4.1.3/П4.1.4 до перехода к Пкр4.1; разбиение трасс10/5 повторно не прибавлено. Двухпарные и силовые кабели исключены.",
+            "Замена х/x использована для сопоставления записи размерности, исходный TEXT сохранён. Экранированная и неэкранированная марки не объединены.",
+            "Повтор линииП4.1.3-9 касается ППГнг4×2,5/4×4,0. Исключение любой из этих строк не изменяет суммы контрольного кабеля; причинная оговорка исходного кандидата лишняя.",
+            "Для этого решения доказана несогласованность журнала и локального перечня. Правильность исполнения каждой линии, фактические трассы, сводный закупочный баланс и поставка не проверены. Нельзя автоматически заменить перечень числами журнала.",
+            "Самостоятельное решение инженера и нарушение конкретного пункта ГОСТ21.110 не установлены."
+          ],
+          "wording": "Для шкафа ШАУВ-2-К4ПЧ согласовать количества контрольного кабеля1×2×0,75 в перечне листа26 и КЖ листов5–6: по журналу КСПВПГнг(А)-HF —120м, КСПЭВПГнг(А)-HF —50м; в перечне соответственно50 и105м. Сверить назначения и длины линий, затем исправить соответствующий документ."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+          "sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53",
+          "primary_adjudication": null,
+          "limits": [
+            "Сумма выполнена только по проектным длинам11 строк системП4.1.3/П4.1.4 до перехода к Пкр4.1; разбиение трасс10/5 повторно не прибавлено. Двухпарные и силовые кабели исключены.",
+            "Замена х/x использована для сопоставления записи размерности, исходный TEXT сохранён. Экранированная и неэкранированная марки не объединены.",
+            "Повтор линииП4.1.3-9 касается ППГнг4×2,5/4×4,0. Исключение любой из этих строк не изменяет суммы контрольного кабеля; причинная оговорка исходного кандидата лишняя.",
+            "Для этого решения доказана несогласованность журнала и локального перечня. Правильность исполнения каждой линии, фактические трассы, сводный закупочный баланс и поставка не проверены. Нельзя автоматически заменить перечень числами журнала.",
+            "Самостоятельное решение инженера и нарушение конкретного пункта ГОСТ21.110 не установлены."
+          ],
+          "wording": "Для шкафа ШАУВ-2-К4ПЧ согласовать количества контрольного кабеля1×2×0,75 в перечне листа26 и КЖ листов5–6: по журналу КСПВПГнг(А)-HF —120м, КСПЭВПГнг(А)-HF —50м; в перечне соответственно50 и105м. Сверить назначения и длины линий, затем исправить соответствующий документ."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-017",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-019_cable_balance_or_connection_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Количество кабеля",
+        "sheet": "Лист 27",
+        "page": [
+          31,
+          64,
+          65
+        ],
+        "problem": "В ведомости ШАУВ-3-К4ПЧ 5 м кабеля отнесены к другой марке.",
+        "description": "Схема и журнал содержат 50 м неэкранированного и 35 м экранированного кабеля 1×2×0,75; ведомость — 45 и 40 м. Пять неэкранированных линий Пкр4.1-4, -5, -6, -7 и -12 имеют по 10 м. Общий метраж совпадает, распределение по маркам неверно.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить распределение количества материалов по маркам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-019",
+                "G-068",
+                "G-069"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-019"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать 50 м КСПВПГнг(А)-HF и 35 м КСПЭВПГнг(А)-HF соответствующего типоразмера.",
+        "risk": "Ошибочная закупка кабеля по маркам.",
+        "source_finding_ids": [
+          "T-019",
+          "G-068",
+          "G-069"
+        ],
+        "source_block_ids": [
+          "blk_fcd31b6618d34e0f982af6c418e3bf37"
+        ],
+        "related_block_ids": [
+          "blk_fcd31b6618d34e0f982af6c418e3bf37",
+          "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_fcd31b6618d34e0f982af6c418e3bf37",
+            "page": 31
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-068",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-069",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают недоучёт КСПВПГнг(А)-HF 1х2х0,75: 45 м вместо 50 м. Левое дополнительно указывает завышение количества КСПЭВПГнг(А)-HF 1х2х0,75: 40 м вместо 35 м.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают недоучёт КСПВПГнг(А)-HF 1х2х0,75: 45 м вместо 50 м. Левое дополнительно указывает завышение количества КСПЭВПГнг(А)-HF 1х2х0,75: 40 м вместо 35 м.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Для ШАУВ-3-К4ПЧ экранированные15+10+10 дают35м против40м перечня.",
+          "verdict": "confirmed_authoritative_TEXT_and_calculation",
+          "limits": ""
+        },
+        {
+          "claim": "Пять неэкранированных строк ШАУВ-3-К4ПЧ дают50м против45м перечня.",
+          "verdict": "confirmed_sum_with_mark_identity_caveat",
+          "limits": "Четыре строки КСПВПГнг(А)-HF дают40м; пятая Пкр4.1-12 записана КСПВПГнг(А)-НФ,10м. Сумма50 верна для группы неэкранированных записей, но тождествоНФ/HF не установлено. Не исправлять TEXT по растру."
+        },
+        {
+          "claim": "Сохранить междокументную сверку и уточнить марки/длины перед пересчётом.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "Не считать журнал автоматически правильным и не выдавать разности за фактический дефицит поставки. Повтор силового кабеля не влияет на проверенные однопарные суммы."
+        },
+        {
+          "claim": "Ровно 5 м переставлены с одной марки кабеля на другую.",
+          "verdict": "arithmetic_compatible_cause_not_established",
+          "limits": "50+35=45+40=85 м; разности ±5 м не доказывают причину. В TEXT одна из пяти строк имеет НФ вместо HF; нельзя молча заменить обозначение при пересчёте закупки."
+        },
+        {
+          "claim": "Схема независимо подтверждает те же суммы, что журнал.",
+          "verdict": "not_independently_verified_GRAPHIC_in_this_reuse",
+          "limits": "Предыдущая проверка подтверждала арифметику авторитетного TEXT. Добавленное во втором повторе упоминание схемы не получает отдельного графического подтверждения из этой проверки."
+        }
+      ],
+      "unsupported_additions": "Разности проектных количеств не доказывают фактическую закупку или монтаж. Не приписывать текущей строке предметы из более широкой прежней строки. Нормативные кандидаты отдельно не проверены.",
+      "novel_useful_content": "Сверены текущие формулировки и прежние доказательства на идентичных источниках; потеря части рекомендации и новые неподтверждённые ссылки на графику отмечены отдельно.",
+      "duplicate_burden": "Самостоятельный баланс одного шкафа; не дублировать как отдельные дефицит и избыток каждой марки.",
+      "profile_and_section": "technical_core_preserve_local_document_balance",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+          "sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53",
+          "primary_adjudication": null,
+          "limits": [
+            "Сумма выполнена только по проектным длинам11 строк системП4.1.3/П4.1.4 до перехода к Пкр4.1; разбиение трасс10/5 повторно не прибавлено. Двухпарные и силовые кабели исключены.",
+            "Замена х/x использована для сопоставления записи размерности, исходный TEXT сохранён. Экранированная и неэкранированная марки не объединены.",
+            "Повтор линииП4.1.3-9 касается ППГнг4×2,5/4×4,0. Исключение любой из этих строк не изменяет суммы контрольного кабеля; причинная оговорка исходного кандидата лишняя.",
+            "Для этого решения доказана несогласованность журнала и локального перечня. Правильность исполнения каждой линии, фактические трассы, сводный закупочный баланс и поставка не проверены. Нельзя автоматически заменить перечень числами журнала.",
+            "Самостоятельное решение инженера и нарушение конкретного пункта ГОСТ21.110 не установлены."
+          ],
+          "wording": "Для шкафа ШАУВ-2-К4ПЧ согласовать количества контрольного кабеля1×2×0,75 в перечне листа26 и КЖ листов5–6: по журналу КСПВПГнг(А)-HF —120м, КСПЭВПГнг(А)-HF —50м; в перечне соответственно50 и105м. Сверить назначения и длины линий, затем исправить соответствующий документ."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+          "sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53",
+          "primary_adjudication": null,
+          "limits": [
+            "Сумма выполнена только по проектным длинам11 строк системП4.1.3/П4.1.4 до перехода к Пкр4.1; разбиение трасс10/5 повторно не прибавлено. Двухпарные и силовые кабели исключены.",
+            "Замена х/x использована для сопоставления записи размерности, исходный TEXT сохранён. Экранированная и неэкранированная марки не объединены.",
+            "Повтор линииП4.1.3-9 касается ППГнг4×2,5/4×4,0. Исключение любой из этих строк не изменяет суммы контрольного кабеля; причинная оговорка исходного кандидата лишняя.",
+            "Для этого решения доказана несогласованность журнала и локального перечня. Правильность исполнения каждой линии, фактические трассы, сводный закупочный баланс и поставка не проверены. Нельзя автоматически заменить перечень числами журнала.",
+            "Самостоятельное решение инженера и нарушение конкретного пункта ГОСТ21.110 не установлены."
+          ],
+          "wording": "Для шкафа ШАУВ-2-К4ПЧ согласовать количества контрольного кабеля1×2×0,75 в перечне листа26 и КЖ листов5–6: по журналу КСПВПГнг(А)-HF —120м, КСПЭВПГнг(А)-HF —50м; в перечне соответственно50 и105м. Сверить назначения и длины линий, затем исправить соответствующий документ."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-017",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-020_cable_balance_or_connection_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-021",
+      "finding": {
+        "id": "F-021",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_quantity",
+        "sheet": "Лист 29",
+        "page": [
+          33
+        ],
+        "problem": "[Объединено 2 замечаний] На листе 29 в спецификации кабеля ППГнг(А)-HF 3×1,5 указано 620 м, тогда как сумма длин показанных линий составляет 640 м. Количество занижено на 20 м.",
+        "description": "1) На листе 29 в спецификации кабеля ППГнг(А)-HF 3×1,5 указано 620 м, тогда как сумма длин показанных линий составляет 640 м. Количество занижено на 20 м.\n2) На листе 29 в спецификации кабеля ППГнг(А)-HF 4×2,5 указано 290 м, тогда как сумма длин показанных линий составляет 310 м. Количество занижено на 20 м.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие марок и количества кабелей рабочим чертежам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-072",
+                "G-073"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-020"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Привести количество кабеля в спецификации в соответствие с суммой длин линий схемы — 640 м.",
+        "risk": "Недостаток 40 м силового кабеля и закупка неверного исполнения контрольной линии.",
+        "source_finding_ids": [
+          "G-072",
+          "G-073",
+          "F-020",
+          "F-073"
+        ],
+        "source_block_ids": [
+          "blk_cd9d763d198246859c3df42c18b5c3d8"
+        ],
+        "related_block_ids": [
+          "blk_cd9d763d198246859c3df42c18b5c3d8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+            "page": 33
+          },
+          {
+            "type": "image",
+            "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+            "page": 33
+          }
+        ],
+        "highlight_regions": [],
+        "source_stage": "stage01_atomicity_guard",
+        "atomicity_guard": {
+          "split_from": "F-020",
+          "reason": "distinct_nonrecommendational_candidates_same_block"
+        },
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-072",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-073",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sub_findings": [
+          {
+            "original_id": "F-020",
+            "problem": "На листе 29 в спецификации кабеля ППГнг(А)-HF 3×1,5 указано 620 м, тогда как сумма длин показанных линий составляет 640 м. Количество занижено на 20 м.",
+            "sheet": "Лист 29",
+            "page": 33,
+            "source_finding_ids": [
+              "G-072"
+            ]
+          },
+          {
+            "original_id": "F-073",
+            "problem": "На листе 29 в спецификации кабеля ППГнг(А)-HF 4×2,5 указано 290 м, тогда как сумма длин показанных линий составляет 310 м. Количество занижено на 20 м.",
+            "sheet": "Лист 29",
+            "page": 33,
+            "source_finding_ids": [
+              "G-073"
+            ]
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Ведомость ШАУВ-1-К4АС содержит 620 м 3x1,5 и 290 м 4x2,5.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Строки журнала дают 640 м 3x1,5 и 310 м 4x2,5, разность по 20 м.",
+          "verdict": "confirmed_TEXT_arithmetic",
+          "limits": "Исходные строки сохранены; x/х нормализованы только для группировки сечения."
+        },
+        {
+          "claim": "Графические участки дают 3x1,5: 20+5*120+20=640; 4x2,5: 20+2*120+2*15+20=310.",
+          "verdict": "confirmed_direct_GRAPHIC_arithmetic",
+          "limits": "Совпадение сумм не означает совпадение адресов: журнал и схема по-разному привязывают 15/120 м к участкам через ПЧ. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Для К4АС следует согласовать ведомость с показанными линиями.",
+          "verdict": "supported_technical_quantity_conflict",
+          "limits": "Нельзя доказать причинно, что забыты именно насос и резервный вентилятор, только по равной разности 20 м."
+        },
+        {
+          "claim": "Доказаны недостаток кабеля при монтаже и необходимость дополнительных закупок.",
+          "verdict": "not_established",
+          "limits": "Фактическая закупка и монтаж не проверены."
+        },
+        {
+          "claim": "Подтверждено нарушение ГОСТ 21.110-2013 п.4.1.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативный кандидат без проверенной цитаты."
+        },
+        {
+          "claim": "Рекомендация сохраняет оба объединённых расхождения.",
+          "verdict": "partial_merge_loss_in_solution",
+          "limits": "Описание содержит 3×1,5:620/640 и 4×2,5:290/310, но решение указывает только 640 м. Сохранить обе марки и обе пары значений в итоговой рекомендации; это не два разных случая одного кабеля."
+        }
+      ],
+      "unsupported_additions": "Разности проектных количеств не доказывают фактическую закупку или монтаж. Не приписывать текущей строке предметы из более широкой прежней строки. Нормативные кандидаты отдельно не проверены.",
+      "novel_useful_content": "Сверены текущие формулировки и прежние доказательства на идентичных источниках; потеря части рекомендации и новые неподтверждённые ссылки на графику отмечены отдельно.",
+      "duplicate_burden": "Две марки одного шкафа допустимо объединить, сохранив обе пары количества. К5ПЧ из предыдущей составной строки здесь отсутствует.",
+      "profile_and_section": "technical_document_coordination",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cd9d763d198246859c3df42c18b5c3d8.png",
+          "sha256": "05e8996615a803ac8aeeb4c80430160eb8954f89bc42940d73a0c5613da7b8d0",
+          "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "3x1.5 totals640 and 4x2.5 totals310; PCh motor tails15 and cabinet links120.",
+          "inspection_crops": {
+            "boxes": [
+              [
+                1050,
+                150,
+                1500,
+                620
+              ],
+              [
+                1500,
+                280,
+                2500,
+                630
+              ]
+            ],
+            "scale": 2
+          }
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+          "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pn5.1-10 toXT1 is shielded2x2x0.75 L=15m.",
+          "inspection_crops": {
+            "boxes": [
+              [
+                1650,
+                300,
+                1770,
+                620
+              ]
+            ],
+            "scale": 2
+          }
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-018",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-021_cable_balance_or_connection_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-022",
+      "finding": {
+        "id": "F-022",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Количество кабеля",
+        "sheet": "Листы 33, 16",
+        "page": [
+          37,
+          74
+        ],
+        "problem": "Для Пн5.1-10 в перечне недостаточно экранированного кабеля.",
+        "description": "В журнале длина линии кабелем 2×2×0,75 составляет 35 м, а локальный перечень предусматривает только 15 м. Расхождение — 20 м.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту количества кабеля по рабочим документам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить маршрут и увеличить количество на 20 м, если подтверждается длина журнала.",
+        "risk": "Недостаток кабеля при монтаже.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [
+          "blk_bcea3caf8104407b919f6960e2c12274",
+          "blk_af7d76cf48cd48db813eee8d44227292"
+        ],
+        "related_block_ids": [
+          "blk_bcea3caf8104407b919f6960e2c12274",
+          "blk_af7d76cf48cd48db813eee8d44227292",
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+            "page": 37
+          },
+          {
+            "type": "text",
+            "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+            "page": 74
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Для К5ПЧ журнал Пн5.1.-10 содержит 35 м 2х2х0,75, ведомость 15 м.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Схема К5ПЧ также требует 35 м; ведомость однозначно занижена.",
+          "verdict": "refuted_direct_GRAPHIC",
+          "limits": "Графическая линия Пн5.1-10 к XT1 подписана 15 м. Схема согласуется с ведомостью, а не журналом. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Следует проверить маршрут Пн5.1-10 и согласовать 15/35 м.",
+          "verdict": "supported_document_conflict",
+          "limits": "Автоматическое увеличение до 35 м не обосновано."
+        },
+        {
+          "claim": "Доказаны недостаток кабеля при монтаже и необходимость дополнительных закупок.",
+          "verdict": "not_established",
+          "limits": "Фактическая закупка и монтаж не проверены."
+        },
+        {
+          "claim": "Подтверждено нарушение ГОСТ 21.110-2013 п.4.1.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативный кандидат без проверенной цитаты."
+        },
+        {
+          "claim": "Рекомендация второго повтора безусловно увеличивает длину до 35 м.",
+          "verdict": "not_asserted_condition_is_present",
+          "limits": "Увеличение прямо обусловлено подтверждением журнала. Но заголовок о недостатке всё ещё сильнее доказательств: схема и перечень дают 15 м, журнал 35 м; верная длина пока не установлена."
+        }
+      ],
+      "unsupported_additions": "Разности проектных количеств не доказывают фактическую закупку или монтаж. Не приписывать текущей строке предметы из более широкой прежней строки. Нормативные кандидаты отдельно не проверены.",
+      "novel_useful_content": "Сверены текущие формулировки и прежние доказательства на идентичных источниках; потеря части рекомендации и новые неподтверждённые ссылки на графику отмечены отдельно.",
+      "duplicate_burden": "Один конфликт 15/35 м по Пн5.1-10, не отдельные недостаток и неверная схема. К4АС здесь не засчитывается.",
+      "profile_and_section": "technical_document_coordination",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cd9d763d198246859c3df42c18b5c3d8.png",
+          "sha256": "05e8996615a803ac8aeeb4c80430160eb8954f89bc42940d73a0c5613da7b8d0",
+          "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "3x1.5 totals640 and 4x2.5 totals310; PCh motor tails15 and cabinet links120.",
+          "inspection_crops": {
+            "boxes": [
+              [
+                1050,
+                150,
+                1500,
+                620
+              ],
+              [
+                1500,
+                280,
+                2500,
+                630
+              ]
+            ],
+            "scale": 2
+          }
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+          "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pn5.1-10 toXT1 is shielded2x2x0.75 L=15m.",
+          "inspection_crops": {
+            "boxes": [
+              [
+                1650,
+                300,
+                1770,
+                620
+              ]
+            ],
+            "scale": 2
+          }
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-018",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-022_cable_balance_or_connection_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-024",
+      "finding": {
+        "id": "F-024",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кабельные линии",
+        "sheet": "Лист 35",
+        "page": [
+          39,
+          77
+        ],
+        "problem": "Число и сечение жил По5.1-9 расходятся между схемой и журналом.",
+        "description": "Схема внешних подключений и перечень задают ППГнг(А)-HF 3×2,5 длиной 10 м, а журнал — 4×4,0 той же длины. Правильное исполнение по представленным нагрузочным данным не установлено.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить выбор сечения кабеля электронагревателя по нагрузке и нагреву.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023",
+                "G-081",
+                "G-082"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить кабель по схеме питания, мощности нагревателя и защите; согласовать схему, журнал, перечень и сводную спецификацию.",
+        "risk": "Невозможность корректного подключения или применение кабеля неподходящего сечения.",
+        "source_finding_ids": [
+          "T-023",
+          "G-081",
+          "G-082"
+        ],
+        "source_block_ids": [
+          "blk_065a335469904b2db1640b480b321503",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ],
+        "related_block_ids": [
+          "blk_065a335469904b2db1640b480b321503",
+          "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_065a335469904b2db1640b480b321503",
+            "page": 39
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+            "page": 77
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-081",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-082",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Одинаковое противоречие для По5.1-9: 3×2,5 на схеме и 4×4,0 в кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Одинаковое противоречие для По5.1-9: 3×2,5 на схеме и 4×4,0 в кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "По5.1-9 от ШАУВ-6-К5ПЧ к нагревателю:КЖ10м4×4, внешняя схема10м3×2,5.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC_same_line_conflict",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Локальный перечень содержит10м3×2,5; схема показывает L/N/PE на ветви нагревателя.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC",
+          "limits": "Это поддерживает трёхжильную запись схемы, но не доказывает её соответствие реальному оборудованию. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Различаются число жил и сечение, требуется согласованная схема питания.",
+          "verdict": "supported_technical_core",
+          "limits": ""
+        },
+        {
+          "claim": "Нужно автоматически заменить4×4 на3×2,5 либо наоборот.",
+          "verdict": "not_established",
+          "limits": "Паспорт, защита, нагрузка и допустимый ток не проверены. Ввод шкафа и отдельная ветвь — разные объекты;2кВт в шапке не приписывать автоматически нагревателю."
+        },
+        {
+          "claim": "Правильное исполнение линии установлено по большинству документов.",
+          "verdict": "not_asserted_in_r2",
+          "limits": "Второй повтор явно сохраняет неопределённость; требует проверки нагрузки и защиты. Совпадение схемы и перечня не заменяет расчёт."
+        }
+      ],
+      "unsupported_additions": "Разности проектных количеств не доказывают фактическую закупку или монтаж. Не приписывать текущей строке предметы из более широкой прежней строки. Нормативные кандидаты отдельно не проверены.",
+      "novel_useful_content": "Сверены текущие формулировки и прежние доказательства на идентичных источниках; потеря части рекомендации и новые неподтверждённые ссылки на графику отмечены отдельно.",
+      "duplicate_burden": "Same Po5.1-9 uncertainty also conditions F-020 quantity; do not count it twice as separate engineering failures.",
+      "profile_and_section": "technical_core_preserve_actual_supply_unresolved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F020_heater_cable_conflict.json",
+          "sha256": "f6dbf031fc8ba16fd61cd5ebad1825e32f84c0bd4cd39527accb1a6230d293f2",
+          "primary_adjudication": null,
+          "limits": [
+            "Сопоставлена одна линия по марке,шкафу,конечному оборудованию; одинаковая длина дополнительно согласуется, но не является единственным основанием связи.",
+            "Три клеммы L/N/PE на схеме согласуются с показанными тремя жилами, но не доказывают правильность этой схемы относительно оборудования.",
+            "Электрическая пригодность3×2,5 или4×4,0, фактическая закупка, прокладка и отказ не установлены. Нельзя автоматически заменить один кабель другим.",
+            "Общая спецификация и баланс длин относятся к отдельным случаям F019/H-AK-137; данный вывод не доказывает отсутствие позиции в СО.",
+            "Нормативное нарушение и решение инженера по кандидату не установлены."
+          ],
+          "wording": "Согласовать кабель По5.1-9 от ШАУВ-6-К5ПЧ к электронагревателю По5.1: схема внешних подключений задаёт ППГнг(А)-HF3×2,5 длиной10м, КЖ лист19 — ППГнг(A)-HF4×4,0 длиной10м. Различаются число жил и сечение; выбрать вариант по параметрам нагревателя и согласовать документы."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+          "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f",
+          "primary_adjudication": null,
+          "limits": [
+            "Прочитан весь раздел21 СО, включая продолжение лист10 до раздела22. Отсутствие позиции относится к этому разделу, а не ко всем договорам поставки.",
+            "КЖ П4.1.1-4 буквально содержит суффикс НФ; TEXT не исправлен по графике. Сечение3×2,5 и длина20м совпадают со схемой.",
+            "Равенство четырёх локальных количеств4×4 сумме60м в СО не доказывает документированного распределения сводной позиции по линиям.",
+            "30м — сумма опубликованных локальных ведомостей, не установленный объём недопоставки. Итог70м4×4 условен и не является указанием к закупке.",
+            "Фактическая закупка, поставка, пригодность сечений и обязательность нормативной ссылки не проверены.",
+            "Историческое принятие и комментарий о закупке сохранены отдельно от позднего ограниченного вывода. Для B-AK-F-019 самостоятельное решение инженера отсутствует."
+          ],
+          "wording": "Согласовать отсутствующую в разделе21 СО позицию ППГнг(А)-HF3×2,5: схема и ведомость лист28 содержат20м линии П4.1.1-4, схема и ведомость лист35 —10м По5.1-9. Для По5.1-9 предварительно разрешить конфликт с КЖ, где указано4×4,0. После выбора согласованного исполнения пересчитать сводные объёмы; не суммировать альтернативные исполнения одной линии."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+          "block_id": "blk_065a335469904b2db1640b480b321503",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Po5.1-9 3x2.5 L10m; heater L/N/PE. Cabinet heading380V and2kW are separate fields, not validated heater nameplate."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-019",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-024_cable_balance_or_connection_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
