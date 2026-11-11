@@ -1,0 +1,774 @@
+{
+  "status": "five_product_identity_output_reviews_scope_qualified",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "3f57f2190097a872457dafae7b2ed615a8a0e6808b781d595774ef4ed4a91ce1",
+  "queue_after_sha256": "08380312cf32a1c65af6765d334b07ce74fe2c08cabb73862441162bdc0df14d",
+  "reviewer": "coordinator_authoritative_TEXT_review",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектность документации",
+        "sheet": "Листы 1, 2, 3",
+        "page": [
+          37,
+          38,
+          39
+        ],
+        "problem": "В спецификации щитов не заполнены номера листов схем.",
+        "description": "Для щитового оборудования оставлена ссылка «ПД-00580716-ЭОМ 2-1, листы» без номеров. Для изделий индивидуального изготовления это не задаёт однозначно состав и исполнение, включая квартирные щиты и щиты освещения.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Идентификация оборудования и документов, определяющих его изготовление.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать для каждой позиции конкретные листы схем или опросные листы, при необходимости со ссылкой на другой комплект.",
+        "risk": "Изготовление щитов с несогласованным составом и задержки закупки.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4638622aac5646e5b61bc689463e15c2",
+            "page": 37
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+            "page": 38
+          },
+          {
+            "type": "text",
+            "block_id": "blk_af87003578d3440a9be734a66a09af90",
+            "page": 39
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 84,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Ссылки щитового оборудования содержат «ПД-00580716-ЭОМ2-1,листы» без номеров.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Проверены три полных блока щитового оборудования; обозначения самих щитов присутствуют."
+        },
+        {
+          "claim": "Однозначный состав и исполнение щитов не определены нигде.",
+          "verdict": "unsupported_global_absence",
+          "limits": "Пустые номера вСО не означают отсутствия схем или возможности сопоставления по марке. Состав во всей документации здесь не проверен."
+        },
+        {
+          "claim": "Указать номера соответствующих схем либо опросных листов.",
+          "verdict": "supported_scoped_reference_question",
+          "limits": "Не требовать иной комплект без установления его необходимости."
+        },
+        {
+          "claim": "Изготовление с несогласованным составом и задержка закупки.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативный кандидат выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Применимость и пункт не проверены; не считать нормативным нарушением."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_source_supported_question_usefulness_unestablished",
+      "duplicate_burden": "distinct_reference_product_code_or_quantity_claim_no_equivalent_same_object_in_reviewed_EOM_output",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_4638622aac5646e5b61bc689463e15c2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_af87003578d3440a9be734a66a09af90",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_unmapped_board_reference_question"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Листы 13, 15, 16, 17, 18",
+        "page": [
+          49,
+          51,
+          52,
+          53,
+          54
+        ],
+        "problem": "Один артикул присвоен перфорированному и неперфорированному лоткам.",
+        "description": "Код ДКС 3530410 указан для перфорированного лотка 200×80 и неперфорированных лотков техпространств, в том числе на отметках +38,690, +41,290 и +44,650. Разные исполнения не идентифицируются однозначно.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Соответствие наименования изделия его типу и коду в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-017"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-017"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить артикулы по документации производителя и согласовать их с принятыми исполнениями трасс.",
+        "risk": "Заказ лотков другого исполнения и последующая замена материалов.",
+        "source_finding_ids": [
+          "T-017"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+            "page": 49
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7d46590ad5b64af08f435cadad0053cd",
+            "page": 51
+          },
+          {
+            "type": "text",
+            "block_id": "blk_e106d0b41bf9480aaf187ef2259994db",
+            "page": 52
+          },
+          {
+            "type": "text",
+            "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+            "page": 53
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+            "page": 54
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 54,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F036_tray_code_description:da6b33367ef613f75477",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "3530410 указан для перфорированного200×80 первого этажа и неперфорированных на+38,690/+41,290/+44,650.",
+          "verdict": "confirmed_authoritative_TEXT_same_code_different_descriptions",
+          "limits": ""
+        },
+        {
+          "claim": "Нужно согласовать выбранное исполнение и артикул по изготовителю.",
+          "verdict": "supported_scoped_question",
+          "limits": "Какое описание либо код исправлять, без каталога и проектного решения не установлено."
+        },
+        {
+          "claim": "Артикул3530410 не существует или обязательно относится к конкретному исполнению.",
+          "verdict": "not_established_not_claimed_by_output",
+          "limits": "Не подменять конфликт описаний непроверенным каталожным утверждением."
+        },
+        {
+          "claim": "Заказано другое исполнение и нужна замена.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Заказ и фактическая поставка не проверены; различия метражей разных подразделов не доказывают дубль."
+        },
+        {
+          "claim": "Нормативный кандидат выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Применимость и пункт не проверены; не считать нормативным нарушением."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_reference_product_code_or_quantity_claim_no_equivalent_same_object_in_reviewed_EOM_output",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F036_tray_code_description.json",
+          "sha256": "4e9118267e89143c1c088e4a42e68b3b72d0bd1650e9b643f6bc1993fcf2eb85",
+          "primary_adjudication": null,
+          "limits": "Прочитаны листы СО 13, 17 и 18. На первом этаже указано 46 м, в трёх техпространствах 130/57/41 м. Эти количества относятся к разным участкам и не являются дублями. Подтверждено различие описания перфорации при одинаковом коде и поставщике, а не правильное каталоговое исполнение. Каталог, требуемое исполнение по трассам и согласованный заказ не проверены; ошибочным может быть код либо наименование. Неправильная фактическая поставка и конкретное нормативное нарушение не доказаны. Другие этажи этим решением не охвачены.",
+          "wording": "Согласовать исполнение и код лотка 200×80 L3000 толщиной 1,0 мм: артикул ДКС 3530410 указан для перфорированного лотка первого этажа и неперфорированных лотков техпространств +38,690, +41,290 и +44,650. Установить требуемое исполнение по участкам и привести наименования и коды в соответствие."
+        }
+      ],
+      "disposition": "assessed_preserve_tray_code_description_question"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Лист 18",
+        "page": 54,
+        "problem": "Код 178513 присвоен четырём разным изделиям кровельных опор.",
+        "description": "Один код поставщика указан для бетонного держателя токоотвода, шпильки М8, гайки М8 и соединителя СЛУ-50/65. Заполнение повторено для двух отметок; оформление как единого комплекта отсутствует.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Однозначная идентификация поставляемых изделий и комплектов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-019"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-019"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать отдельные коды изделий либо оформить комплект одной учётной позицией с раскрытым составом.",
+        "risk": "Ошибочная комплектация и стоимость заказа.",
+        "source_finding_ids": [
+          "T-019"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+            "page": 54
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 64,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "cost",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F029_shared_product_code:9059426853483f0c34cf",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Код178513 иBolta повторены для держателя токоотвода,шпилькиМ8,гайкиМ8,соединителяСЛУ-50/65;группы104и82шт.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Эти строки не оформлены одной учётной позицией комплекта.",
+          "verdict": "confirmed_local_table_scope",
+          "limits": "Существование комплектного артикула и его состав по изготовителю не проверены."
+        },
+        {
+          "claim": "Уточнить отдельные коды либо состав и учёт комплекта.",
+          "verdict": "supported_scoped_question",
+          "limits": "Нельзя назначать коды другого производителя или объявлять четыре строки четырьмя ошибочными заказами."
+        },
+        {
+          "claim": "Ошибочная комплектация и стоимость заказа.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативный кандидат выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Применимость и пункт не проверены; не считать нормативным нарушением."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_reference_product_code_or_quantity_claim_no_equivalent_same_object_in_reviewed_EOM_output",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json",
+          "sha256": "77e362cc528f68c54dffd966b254eb69b718ae3b96f59718c2a8d61bd6aeb2a7",
+          "primary_adjudication": null,
+          "limits": "Прочитан полный лист СО 18. Различные наименования имеют один код; это не доказывает ошибочность всех кодов, поскольку комплектность поставки не установлена. Наличие соединителя и гайки подтверждено узлом, но изображение не устанавливает их артикулы, материал опоры или размеры шпильки. Наличие отдельных кодов CM200801/CM110800 у соседних изделий ДКС не позволяет присвоить их изделиям Bolta. Каталог и закупочная документация не проверены; неправильная фактическая поставка и конкретное нормативное нарушение не установлены.",
+          "wording": "Уточнить идентификацию поставки в СО, лист 18: код 178513 Bolta указан для бетонного держателя токоотвода, шпильки М8, гайки М8 и соединителя СЛУ-50/65. Каждая позиция повторяется в группах по 104 и 82 шт. Указать, обозначает ли код комплект, с раскрытием его состава, либо привести подтверждённые коды отдельных изделий."
+        }
+      ],
+      "disposition": "assessed_preserve_shared_code_kit_question"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Комплектность материалов",
+        "sheet": "Лист 4",
+        "page": 40,
+        "problem": "Не раскрыто назначение избыточных постов рамок и установочных коробок.",
+        "description": "Для 56 розеток цвета «карбон» предусмотрены 51 однопостовая и 5 двухпостовых рамок, всего 61 пост. С шестью белыми розетками получаются 62 механизма и 67 постов, при этом подрозетников указано 72. Назначение пяти дополнительных постов и десяти коробок относительно числа механизмов не пояснено.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.85,
+            "reason": "Согласованность комплектности электроустановочных изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-020"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-020"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить комплектность с раскладкой изделий, отдельно обозначить резерв и позиции других разделов.",
+        "risk": "Лишняя закупка или неполная комплектация розеточных блоков.",
+        "source_finding_ids": [
+          "T-020"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+            "page": 40
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 54,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F039_frame_capacity:289e229897613e2cc690",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Карбон:56розеток,51однопостовая и5двухпостовых рамок=61пост;белые6розеток/6рамок.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Всего62механизма,67постов и72подрозетника:разницы5постов и10коробок относительно механизмов.",
+          "verdict": "confirmed_arithmetic_of_listed_positions",
+          "limits": "Белая группа локально совпадает; она не подтверждает всю раскладку."
+        },
+        {
+          "claim": "Пять постов и десять коробок избыточны.",
+          "verdict": "insufficient_layout_and_supply_scope",
+          "limits": "Не проверены резерв, иные механизмы, раскладкаАИ иMAF. ВСО прямо указано согласование модели и цвета сАИ/MAF."
+        },
+        {
+          "claim": "Сверить комплектность с раскладкой и отдельно обозначить резерв/позиции других разделов.",
+          "verdict": "supported_scoped_question",
+          "limits": "Число46однопостовых является лишь условной арифметикой при полном комплектовании этих56механизмов; автоматически не назначается."
+        },
+        {
+          "claim": "Лишняя закупка или неполная комплектация.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативный кандидат выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Применимость и пункт не проверены; не считать нормативным нарушением."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_reference_product_code_or_quantity_claim_no_equivalent_same_object_in_reviewed_EOM_output",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F039_frame_capacity.json",
+          "sha256": "a1d31ff9ed8eb3319579cf81a42e523bb9007502dc39096902d226b85774ebda",
+          "primary_adjudication": null,
+          "limits": "Подтверждены количества и вместимость, не фактическая компоновка. 46 однопостовых рамок требуется только при размещении десяти из этих розеток в пяти двухпостовых рамках, отсутствии других механизмов и запаса. АИ, MAF и раскладка не проверены. Белые IP44 изделия образуют отдельную группу 6 розеток/6 однопостовых рамок; смешивать её с карбоновой нельзя. 72 подрозетника также не доказывают распределение механизмов. Наименования, цвет и артикулы сохранены по TEXT без проверки каталога изготовителя. Лишняя закупка, неполная комплектация и нарушение конкретного ГОСТ не установлены.",
+          "wording": "Уточнить раскладку карбоновых электроустановочных изделий по АИ и MAF: для 56 одноместных розеток указаны 51 однопостовая и 5 двухпостовых рамок, всего 61 пост. Указать назначение остальных постов или запас перед изменением количества рамок."
+        }
+      ],
+      "disposition": "assessed_preserve_socket_layout_question_no_proven_excess"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-028",
+      "finding": {
+        "id": "F-028",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Выбор электрооборудования",
+        "sheet": "Лист 4",
+        "page": 40,
+        "problem": "Характеристики стабилизаторов недостаточны для проверки и заказа.",
+        "description": "Для двух стабилизаторов 30 кВА и двух 40 кВА указаны только мощность и поставщик. Не определены модель, фазность, диапазон входного напряжения, перегрузочная способность и условия сохранения мощности при снижении напряжения.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.1.27; ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.85,
+            "reason": "Соответствие оборудования параметрам сети и условиям работы.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-029"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-029"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.1.27",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Достаточность характеристик для однозначного выбора и поставки оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-029"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-029"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать конкретные исполнения или опросные листы и проверить работу с подключёнными нагрузками, включая пуск двигателей.",
+        "risk": "Поставка стабилизаторов, не обеспечивающих требуемую мощность или пуск электроприёмников.",
+        "source_finding_ids": [
+          "T-029"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+            "page": 40
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 66,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "ВСО две позиции стабилизаторов30/40кВА,по2шт.,поставщикНПП-ИНТЕПС;модель и остальные перечисленные параметры в строках не заполнены.",
+          "verdict": "confirmed_local_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Фазность,диапазон,перегрузка и сохранение мощности не определены во всём проекте.",
+          "verdict": "unsupported_global_absence",
+          "limits": "Проверены строкиСО; паспорта,опросные листы и связи с нагрузками не проверены. Отсутствие в строке не равно отсутствию во всей документации."
+        },
+        {
+          "claim": "Указать исполнение либо ссылку на характеристики и сверить с назначенными нагрузками.",
+          "verdict": "supported_scoped_question",
+          "limits": "Нельзя предполагать обязательный пуск двигателей через эти стабилизаторы без привязки потребителей."
+        },
+        {
+          "claim": "Стабилизаторы не обеспечат мощность или пуск.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Данные конкретных изделий и фактический режим неизвестны."
+        },
+        {
+          "claim": "Нормативный кандидат выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Применимость и пункт не проверены; не считать нормативным нарушением."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_source_supported_question_usefulness_unestablished",
+      "duplicate_burden": "distinct_reference_product_code_or_quantity_claim_no_equivalent_same_object_in_reviewed_EOM_output",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_unmapped_stabilizer_identification_question"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_4638622aac5646e5b61bc689463e15c2",
+      "authoritative_TEXT": "### BLOCK #188 [TEXT]: blk_4638622aac5646e5b61bc689463e15c2\n\n> **Created:** 2026-10-20 12:14:50 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Z--mBL37N-8-7jAvhRtA)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: П | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n|  | 1. Щитовое оборудование: |  |  |  |  |  |  |  |\n|  | Вводное распределительное устройство ВРУ-2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | компл. | 1 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Вводное распределительное устройство ВРУ-3 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | компл. | 1 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Вводное распределительное устройство ВРУ-К | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | компл. | 1 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит учета электроэнергии навесной ЗЩУЭРН2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 6 |  |  |\n|  | с автоматикой, со степенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит учета электроэнергии навесной ЗЩУЭРН7 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 3 |  |  |\n|  | с автоматикой, со степенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит учета электроэнергии навесной 2ЩУЭРН2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 9 |  |  |\n|  | с автоматикой, со степенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+      "authoritative_TEXT": "### BLOCK #190 [TEXT]: blk_7170586af51c43f79c96734a40269d7d\n\n> **Created:** 2026-10-20 12:14:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/b16VggCLHwJULG_jArTx)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1.СО | Stage: Не указано | Sheet: 2 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  |  |  |  |  |  |  |  |  |\n|  | Щит квартирный учета электроэнергии навесной 3ЩКВ | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 63 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит квартирный учета электроэнергии навесной 2ЩКВ | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 27 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит вентиляции навесной 2ЩРОВ1 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит вентиляции навесной 2ЩРОВ2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит силовой навесной 1.ЩС | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит силовой управляющей компании навесной 1.ЩС-УК | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит рабочего освещения навесной 1.ЩО-1 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит рабочего освещения управляющей компании навесной 1.ЩО-1-УК | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит слаботочных систем навесной 2ЩСС1 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 39 — Sheet 3\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_af87003578d3440a9be734a66a09af90",
+      "authoritative_TEXT": "### BLOCK #191 [TEXT]: blk_af87003578d3440a9be734a66a09af90\n\n> **Created:** 2026-10-20 12:14:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/OsLt-43At3tZvMsZ4Ti1)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 3 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | Щит вентиляции навесной ЗЩРОВ2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со степенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит аварийного освещения навесной 1ЩАО | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со степенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит механизации ЩМ со степенью защиты не менее IP31 | ПД-00580716-ЭОМ 2-1, листы |  | IЕК | шт. | 7 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 40 — Sheet 4\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+      "authoritative_TEXT": "### BLOCK #201 [TEXT]: blk_448a82ffb63145aa96b55305485c4ee5\n\n> **Created:** 2026-10-20 12:14:56 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/JdqLMpiuEwYyNCcJQBzQ)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 13 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | Шайба М6 кузовная DIN9021 |  | СМ120600 | АО ДКС | шт. | 56 |  |  |\n|  | Забивной анкер М8 |  | СМ400830 | АО ДКС | шт. | 56 |  |  |\n|  | Винт с гладкой головкой и квадратным подголовником М6х16 |  | СМ010616 | АО ДКС | шт. | 56 |  |  |\n|  | Лестничный лоток 100х200, L3000 |  | LL1020 | АО ДКС | м. | 14 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 52 |  |  |\n|  | П-образный профиль PSM, L300, толщ.2,5 мм |  | BPM2903 | АО ДКС | шт. | 14 |  |  |\n|  | Шпилька М8х1000 |  | СМ200801 | АО ДКС | м. | 28 |  |  |\n|  | Угол горизонтальный 90 градусов 100х200 R-300 в комплекте с крепежными элементами и соединительными пластинами, необходимыми для монтажа |  | LC1320K | АО ДКС | шт. | 4 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Вертикальные трассы |  |  |  |  |  |  |  |\n|  | Лестничный лоток 80х300, L3000 |  | LI8030 | АО ДКС | м. | 108 |  |  |\n|  | Лестничный лоток 80х200, L3000 |  | LI8020 | АО ДКС | м. | 72 |  |  |\n|  | Шайба стопорная М6 |  | СМ220600 | АО ДКС | шт. | 232 |  |  |\n|  | Гайка шестигранная М6 |  | СМ110600 | АО ДКС | шт. | 232 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 232 |  |  |\n|  | Лестничный лоток 80х150, L3000 |  | L09261 | СИСТЕМА КМ | м. | 36 |  |  |\n|  | Короб кабелей ПЭСПЗ Короб прямой СП 300х80 толщина 1,2 мм длина 2м нержавеющая сталь. ООО «ЗКМК» |  |  | ООО \"ЗКМК\" | м | 72 |  |  |\n|  | Профиль IBPM-41, l=1.8м |  | IBPM41180C | АО ДКС | шт. | 36 |  |  |\n|  | Профиль IBPM-41, l=1.0м |  | IBPM41100C | АО ДКС | шт. | 18 |  |  |\n|  | Профиль IBPM-41, l=0.6м |  | IBPM41060C | АО ДКС | шт. | 18 |  |  |\n|  | Профиль IBPM-41, l=0.3м |  | IBPM41030C | АО ДКС | шт. | 36 |  |  |\n|  | Уголок крепежный IBMC-10, двойной |  | IBMC1021C | АО ДКС | шт. | 72 |  |  |\n|  | Профиль IBPM-21, l=1.2м |  | IBPM21120C | АО ДКС | шт. | 18 |  |  |\n|  | Профиль IBPM-21, l=1.8м |  | IBPM21180C | АО ДКС | шт. | 18 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | 1 этаж |  |  |  |  |  |  |  |\n|  | Лоток перфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 46 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | СМ100600 | АО ДКС | шт. | 149 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 75 |  |  |\n\n## Page 50 — Sheet 14\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+      "authoritative_TEXT": "### BLOCK #205 [TEXT]: blk_79370c7a344c44559b2d828291b6a1b6\n\n> **Created:** 2026-10-20 12:14:58 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/RGirZTHpKC9sxMGdOMiv)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 17 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | Гайка шестигранная М8 |  | СМ110800 | АО ДКС | шт. | 900 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | СМ120600 | АО ДКС | шт. | 450 |  |  |\n|  | Забивной анкер М8 |  | СМ400830 | АО ДКС | шт. | 450 |  |  |\n|  | Винт с гладкой головкой и квадратным подголовником М6х16 |  | СМ010616 | АО ДКС | шт. | 450 |  |  |\n|  | Отвертитель универсальный 100х80, 1,2 мм, в комплекте с крепежными элементами и соединительными пластинами, необходимыми для монтажа |  | SFN810K | АО ДКС | шт. | 9 |  |  |\n|  | Крышка на отвертитель универсальный с основанием 100, 1,2 мм, в комплекте с крепежными элементами необходимыми для монтажа |  | SKFN100K | АО ДКС | шт. | 9 |  |  |\n|  | Горизонтальный изменяемый угол СРО 0-45 градусов 100х80, 2 мм, в комплекте с крепежными элементами необходимыми для монтажа |  | SVH810K | АО ДКС | шт. | 9 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Техпространство на отм.+38.690 |  |  |  |  |  |  |  |\n|  | Лоток неперфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 130 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | СМ100600 | АО ДКС | шт. | 80 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 203 |  |  |\n|  | Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм |  | 3552410 | АО ДКС | м. | 126 |  |  |\n|  | Винт для электрического соединения М5х8 |  | СМ030508 | АО ДКС | шт. | 45 |  |  |\n|  | П-образный профиль PSM, L300, толщ.2,5 мм |  | BPM2903 | АО ДКС | шт. | 113 |  |  |\n|  | Шпилька М8х1000 |  | СМ200801 | АО ДКС | м. | 225 |  |  |\n|  | Шайба с узкими полями М8 |  | СМ240800 | АО ДКС | шт. | 450 |  |  |\n|  | Гайка шестигранная М8 |  | СМ110800 | АО ДКС | шт. | 450 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | СМ120600 | АО ДКС | шт. | 225 |  |  |\n|  | Забивной анкер М8 |  | СМ400830 | АО ДКС | шт. | 225 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Техпространство на отм.+41.290 |  |  |  |  |  |  |  |\n|  | Лоток неперфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 57 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | СМ100600 | АО ДКС | шт. | 35 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 88 |  |  |\n|  | Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм |  | 3552410 | АО ДКС | м. | 55 |  |  |\n|  | Винт для электрического соединения М5х8 |  | СМ030508 | АО ДКС | шт. | 20 |  |  |\n\n## Page 54 — Sheet 18\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+      "authoritative_TEXT": "### BLOCK #206 [TEXT]: blk_f3f718605a024394b9026b08fa4c9b20\n\n> **Created:** 2026-10-20 12:14:58 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/0bV2dYWfFJ44vL5nhYdE)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 18 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | П-образный профиль PSM, L300, толщ.2,5 мм |  | BPM2903 | АО ДКС | шт. | 50 |  |  |\n|  | Шпилька М8x1000 |  | CM200801 | АО ДКС | м. | 98 |  |  |\n|  | Шайба с узкими полями М8 |  | CM240800 | АО ДКС | шт. | 196 |  |  |\n|  | Гайка шестигранная М8 |  | CM110800 | АО ДКС | шт. | 196 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | CM120600 | АО ДКС | шт. | 98 |  |  |\n|  | Забивной анкер М8 |  | CM400830 | АО ДКС | шт. | 98 |  |  |\n|  | Держатель токоотвода D10-12мм бетонный для плоской крыши |  | 178513 | Bolta | шт. | 104 |  |  |\n|  | Шпилька М8 |  | 178513 | Bolta | шт. | 104 |  |  |\n|  | Гайка М8 |  | 178513 | Bolta | шт. | 104 |  |  |\n|  | Соединитель лотка универсальный СЛУ-50/65(1мм) |  | 178513 | Bolta | шт. | 104 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Техпространство на отм.+44.650 |  |  |  |  |  |  |  |\n|  | Лоток неперфорированный 200x80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 41 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | CM100600 | АО ДКС | шт. | 25 |  |  |\n|  | Винт с крестообразным шлицем М6x10 |  | CM010610 | АО ДКС | шт. | 63 |  |  |\n|  | Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм |  | 3552410 | АО ДКС | м. | 40 |  |  |\n|  | Винт для электрического соединения М5x8 |  | CM030508 | АО ДКС | шт. | 15 |  |  |\n|  | П-образный профиль PSM, L300, толщ.2,5 мм |  | BPM2903 | АО ДКС | шт. | 41 |  |  |\n|  | Шпилька М8x1000 |  | CM200801 | АО ДКС | м. | 70 |  |  |\n|  | Шайба с узкими полями М8 |  | CM240800 | АО ДКС | шт. | 140 |  |  |\n|  | Гайка шестигранная М8 |  | CM110800 | АО ДКС | шт. | 140 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | CM120600 | АО ДКС | шт. | 70 |  |  |\n|  | Забивной анкер М8 |  | CM400830 | АО ДКС | шт. | 70 |  |  |\n|  | Держатель токоотвода D10-12мм бетонный для плоской крыши |  | 178513 | Bolta | шт. | 82 |  |  |\n|  | Шпилька М8 |  | 178513 | Bolta | шт. | 82 |  |  |\n|  | Гайка М8 |  | 178513 | Bolta | шт. | 82 |  |  |\n|  | Соединитель лотка универсальный СЛУ-50/65(1мм) |  | 178513 | Bolta | шт. | 82 |  |  |\n\n## Page 55 — Sheet 19\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+      "authoritative_TEXT": "### BLOCK #192 [TEXT]: blk_99cc8bf95861437186be76b36e9d446b\n\n> **Created:** 2026-10-20 12:14:52 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/zb3S0No9Em-FdUtMLIcm)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 4 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | 2. Электроустановочные изделия: |  |  |  |  |  |  |  |\n|  | Розетка одноместная с зазем. контактом, с защит. шторками, IP44, 16А, встраиваемая, белая. |  | ATN440146 | DEKraft | шт. | 6 |  |  |\n|  | Рамка однопостовая, белая. |  | ATN440101 | DEKraft | шт. | 6 |  |  |\n|  | Розетка одноместная с зазем. контактом, с защит. шторками, IP20, 16А, встраиваемая, карбон. |  | ATN001043 | DEKraft | шт. | 56 |  | Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF) |\n|  | Рамка однопостовая, карбон. |  | ATN001001 | DEKraft | шт. | 51 |  | Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF) |\n|  | Рамка двухпостовая, карбон. |  | ATN440102 | DEKraft | шт. | 5 |  | Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF) |\n|  | Коробка установочная d65 глубина 60мм подрозетник глубокий по бетону |  |  | DEKraft | шт. | 72 |  |  |\n|  | Распаячная коробка с крышкой ОП 65х65х50мм, IP54. | TDM SQ1401-0511 |  | TDM | шт. | 40 |  |  |\n|  | Клемма WAGO с рычагами 3-проводная 221-613 / 6 мм² |  |  | WAGO | шт. | 120 |  |  |\n|  | Стабилизатор напряжения на 30кВа |  |  | ООО \"НПП-ИНТЕПС\" | шт. | 2 |  |  |\n|  | Стабилизатор напряжения на 40кВа |  |  | ООО \"НПП-ИНТЕПС\" | шт. | 2 |  |  |\n|  | Труба стальная ст. ВГП Ду40 |  |  |  | м | 90 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 41 — Sheet 5\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F036_tray_code_description.json",
+      "sha256": "4e9118267e89143c1c088e4a42e68b3b72d0bd1650e9b643f6bc1993fcf2eb85",
+      "primary_adjudication": null,
+      "limits": "Прочитаны листы СО 13, 17 и 18. На первом этаже указано 46 м, в трёх техпространствах 130/57/41 м. Эти количества относятся к разным участкам и не являются дублями. Подтверждено различие описания перфорации при одинаковом коде и поставщике, а не правильное каталоговое исполнение. Каталог, требуемое исполнение по трассам и согласованный заказ не проверены; ошибочным может быть код либо наименование. Неправильная фактическая поставка и конкретное нормативное нарушение не доказаны. Другие этажи этим решением не охвачены.",
+      "wording": "Согласовать исполнение и код лотка 200×80 L3000 толщиной 1,0 мм: артикул ДКС 3530410 указан для перфорированного лотка первого этажа и неперфорированных лотков техпространств +38,690, +41,290 и +44,650. Установить требуемое исполнение по участкам и привести наименования и коды в соответствие."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json",
+      "sha256": "77e362cc528f68c54dffd966b254eb69b718ae3b96f59718c2a8d61bd6aeb2a7",
+      "primary_adjudication": null,
+      "limits": "Прочитан полный лист СО 18. Различные наименования имеют один код; это не доказывает ошибочность всех кодов, поскольку комплектность поставки не установлена. Наличие соединителя и гайки подтверждено узлом, но изображение не устанавливает их артикулы, материал опоры или размеры шпильки. Наличие отдельных кодов CM200801/CM110800 у соседних изделий ДКС не позволяет присвоить их изделиям Bolta. Каталог и закупочная документация не проверены; неправильная фактическая поставка и конкретное нормативное нарушение не установлены.",
+      "wording": "Уточнить идентификацию поставки в СО, лист 18: код 178513 Bolta указан для бетонного держателя токоотвода, шпильки М8, гайки М8 и соединителя СЛУ-50/65. Каждая позиция повторяется в группах по 104 и 82 шт. Указать, обозначает ли код комплект, с раскрытием его состава, либо привести подтверждённые коды отдельных изделий."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F039_frame_capacity.json",
+      "sha256": "a1d31ff9ed8eb3319579cf81a42e523bb9007502dc39096902d226b85774ebda",
+      "primary_adjudication": null,
+      "limits": "Подтверждены количества и вместимость, не фактическая компоновка. 46 однопостовых рамок требуется только при размещении десяти из этих розеток в пяти двухпостовых рамках, отсутствии других механизмов и запаса. АИ, MAF и раскладка не проверены. Белые IP44 изделия образуют отдельную группу 6 розеток/6 однопостовых рамок; смешивать её с карбоновой нельзя. 72 подрозетника также не доказывают распределение механизмов. Наименования, цвет и артикулы сохранены по TEXT без проверки каталога изготовителя. Лишняя закупка, неполная комплектация и нарушение конкретного ГОСТ не установлены.",
+      "wording": "Уточнить раскладку карбоновых электроустановочных изделий по АИ и MAF: для 56 одноместных розеток указаны 51 однопостовая и 5 двухпостовых рамок, всего 61 пост. Указать назначение остальных постов или запас перед изменением количества рамок."
+    }
+  ],
+  "limits": [
+    "Manufacturer catalogues, purchases, AИ/MAF layouts and stabilizer operating modes not inspected.",
+    "Local missing fields not treated as whole-project absence.",
+    "No new engineer acceptance; null preserved.",
+    "Frozen evaluator, runs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
