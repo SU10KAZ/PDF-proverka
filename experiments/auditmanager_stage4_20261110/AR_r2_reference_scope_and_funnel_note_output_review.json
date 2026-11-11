@@ -1,0 +1,518 @@
+{
+  "status": "three_AR_reference_and_scope_findings_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "e271b8007ace90f61beb56b80cc616217814392e87bfb83f01725227f8ff9f93",
+  "queue_after_sha256": "5fe095959772edb88c7f8742d0288cefa4a78ebcc406e0bec82806b74203dc62",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-003",
+      "finding": {
+        "id": "F-003",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "В общих указаниях и ведомости ссылочных документов не согласованы редакции сводов правил.",
+        "description": "Пункт 15 указаний по зимнему производству работ ссылается на СП 48.13330.2011 и СП 45.13330.2012. По сведениям входного анализа для них имеются заменяющие редакции СП 48.13330.2019 и СП 45.13330.2017. При этом ведомость уже содержит СП 48.13330.2019. Применимая нормативная основа изложена неоднозначно.",
+        "norm": "СП 48.13330.2011 (норматив-кандидат), пункт не подтверждён; СП 48.13330.2019 (норматив-кандидат), пункт не подтверждён; СП 45.13330.2012 (норматив-кандидат), пункт не подтверждён; СП 45.13330.2017 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 48.13330.2011",
+            "cited_designation": "СП 48.13330.2011",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить сведения о замене редакции, указанной в общих указаниях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 48.13330.2019",
+            "cited_designation": "СП 48.13330.2019",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить сведения о замене предыдущей редакции и согласовать ссылку с ведомостью.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 45.13330.2012",
+            "cited_designation": "СП 45.13330.2012",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить сведения о замене редакции, указанной для производства работ.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 45.13330.2017",
+            "cited_designation": "СП 45.13330.2017",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить сведения о замене редакции 2012 года и применимость требований к предусмотренным работам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подтвердить применимые редакции и изменения на дату применения, затем согласовать общие указания с ведомостью ссылочных документов.",
+        "risk": "Неоднозначное применение требований при подготовке и приёмке работ.",
+        "source_finding_ids": [
+          "T-003"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_9229dc363c184ae3abca81013e330dfa",
+          "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "blk_da80f01d01214295afe19fe6063fe5e1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 50,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F001_sp_editions:0fa6c5d50247757e829d",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AR_F001_sp_editions:8f90690c3dc52ad03760",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пункт15 о зимних работах содержитСП48.13330.2011 и45.13330.2012;переченьСП48.13330.2019.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать редакции с нормативной базой проекта.",
+          "verdict": "supported_reference_question",
+          "limits": ""
+        },
+        {
+          "claim": "Замена редакции сама доказывает техническое нарушение.",
+          "verdict": "not_established",
+          "limits": "Исторический разбор содержит первичные метаданные замен; конкретные требования, переходные положения и применимость здесь не проверены. Не переносить их на дефект работ."
+        },
+        {
+          "claim": "СП45 заведомо вне проекта кровли.",
+          "verdict": "not_established",
+          "limits": "Общий перечень относится к зимним работам; смежные работы иППР не проверены."
+        },
+        {
+          "claim": "Нормативный кандидат является проверенным пунктом нарушения.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "Указаны заменяющие редакции СП48.13330.2019 иСП45.13330.2017.",
+          "verdict": "supported_by_prior_primary_metadata_review_only",
+          "limits": "Историческое подтверждение реквизитов не доказывает применимость к проекту или необходимость изменения технических решений."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "Основной вопрос совпадает с первым повтором. Новое подтверждённое техническое нарушение не установлено.",
+      "duplicate_burden": "distinct_atomic_scope_keep_partial_supported_content",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_6ef90a858b8e47e1ac668fa68744b9f2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_2c751cd478764bae9d5e0b1df794ad89",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+          "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3",
+          "primary_adjudication": null,
+          "limits": "Пункт15 относится к зимним работам. Не проверены применимость редакций к дате/основаниям разработки, переходные положения, ППР и конкретные различия требований. Нет доказательства, что подрядчик уже применил или обязательно применит неверные требования. НаличиеСП45 в кровельном альбоме само по себе не доказывает непрофильность: ссылка находится в общем перечне, а смежные работы не проверены. Из дат официальной карточки не выводится самостоятельное юридическое заключение.",
+          "wording": "В АР6.2, лист1, п.15 о зимних работах содержит СП48.13330.2011 иСП45.13330.2012, тогда как ведомость ссылается наСП48.13330.2019. Уточнить применимые редакции и согласовать ссылки: официально подтверждены замены48.13330.2011→48.13330.2019 и45.13330.2012→45.13330.2017."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+          "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3",
+          "primary_adjudication": null,
+          "limits": "Пункт15 относится к зимним работам. Не проверены применимость редакций к дате/основаниям разработки, переходные положения, ППР и конкретные различия требований. Нет доказательства, что подрядчик уже применил или обязательно применит неверные требования. НаличиеСП45 в кровельном альбоме само по себе не доказывает непрофильность: ссылка находится в общем перечне, а смежные работы не проверены. Из дат официальной карточки не выводится самостоятельное юридическое заключение.",
+          "wording": "В АР6.2, лист1, п.15 о зимних работах содержит СП48.13330.2011 иСП45.13330.2012, тогда как ведомость ссылается наСП48.13330.2019. Уточнить применимые редакции и согласовать ссылки: официально подтверждены замены48.13330.2011→48.13330.2019 и45.13330.2012→45.13330.2017."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_identical_sources_current_wording_checked",
+          "finding_id": "F-002",
+          "limits": "No new normative applicability conclusion or engineer verdict."
+        }
+      ],
+      "disposition": "assessed_r2_SP_reference_question_without_applicability_claim"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Пожарная безопасность",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Отнесение детского клуба, подсобных и бытовых помещений к Ф3.6 требует уточнения назначения.",
+        "description": "В общих данных подсобные и бытовые помещения, а также детский клуб объединены в подкласс Ф3.6 без описания деятельности, возраста посетителей и режима пребывания. По одному наименованию помещений соответствие этому подклассу не устанавливается; однозначно назначить другой подкласс по альбому кровли нельзя.",
+        "norm": "ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить классификацию по функциональной пожарной опасности с учётом фактического назначения и контингента помещений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить технологическое назначение помещений, возраст посетителей и режим работы; согласовать классификацию с разделом пожарной безопасности и утверждёнными СТУ.",
+        "risk": "Ошибочная исходная классификация может привести к неверному выбору требований к эвакуации и противопожарному разделению помещений.",
+        "source_finding_ids": [
+          "T-010"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_9229dc363c184ae3abca81013e330dfa",
+          "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "blk_da80f01d01214295afe19fe6063fe5e1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 68,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F009_club_classification_scope:4e28ba265a83e035660e",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Общие данные относят подсобные и бытовые помещения,детский клуб кФ3.6.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Назначение и режим клуба в этом блоке не раскрыты.",
+          "verdict": "confirmed_bounded_absence",
+          "limits": ""
+        },
+        {
+          "claim": "Обоснование класса отсутствует во всём проекте либоФ3.6ошибочен.",
+          "verdict": "not_established",
+          "limits": "Блок ссылается наПД,ТЗ,СТУПБ. Эти документы, фактическая функция, режим иприменимые требования не проверены."
+        },
+        {
+          "claim": "Уточнить функцию иобоснование в пожарном профиле.",
+          "verdict": "supported_cross_profile_question",
+          "limits": "Учитывать отдельно от кровельных технических дефектов; не менять класс по слову детский."
+        },
+        {
+          "claim": "Нормативный кандидат является проверенным пунктом нарушения.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "Основной вопрос совпадает с первым повтором. Новое подтверждённое техническое нарушение не установлено.",
+      "duplicate_burden": "distinct_atomic_scope_keep_partial_supported_content",
+      "profile_and_section": "questions_and_clarifications_outside_roof_technical_profile",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F009_club_classification_scope.json",
+          "sha256": "61976229e7eab9c4d96c6917b2954409fdafba9d960a76a0583702a0b3396796",
+          "primary_adjudication": null,
+          "limits": "Полностью прочитан блок общих данных. Он ссылается на проектную документацию, техническое задание и СТУ ПБ, но не раскрывает режим работы клуба. Непроверенное обоснование в смежном разделе нельзя считать отсутствующим. Само название клуба не является достаточным доказательством другого класса. Применимые нормативные положения, технология клуба, возраст посетителей, режим пребывания, эвакуация и отделение помещения не проверены. Нормативное нарушение, необходимость изменения класса и влияние на кровельные решения не установлены.",
+          "wording": "В общих данных ПД-00580716-АР6.2 к Ф3.6 отнесены «подсобные и бытовые помещения, детский клуб». Для профильной проверки уточните назначение и режим работы клуба и ссылку на обоснование класса в проектной документации/разделе пожарной безопасности. По этому кровельному тому ошибочность класса не установлена."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_identical_sources_current_wording_checked",
+          "finding_id": "F-011",
+          "limits": "No new normative applicability conclusion or engineer verdict."
+        }
+      ],
+      "disposition": "assessed_r2_club_classification_cross_profile_question"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-013",
+      "finding": {
+        "id": "F-013",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Согласованность документации",
+        "sheet": "Лист 3",
+        "page": 5,
+        "problem": "Выноска у воронки В-1 отсылает к примечанию о лестницах.",
+        "description": "На плане финишного покрытия кровли у воронки В-1 возле деформационного шва указано «см. прим. п.2». Примечание 2 относится к металлическим лестницам ЛП и не содержит указаний по обозначенному элементу водоотведения.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к ссылкам и поясняющим надписям на рабочих чертежах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-001"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить номер примечания в выноске у воронки и проверить, что адресуемое указание действительно описывает водоотведение.",
+        "risk": "Пропуск необходимых указаний при устройстве водоприёмного узла.",
+        "source_finding_ids": [
+          "G-001"
+        ],
+        "source_block_ids": [
+          "blk_092e358681fc45ada6058a3f894b2582"
+        ],
+        "related_block_ids": [
+          "blk_092e358681fc45ada6058a3f894b2582"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "На плане листа3 возле правой воронкиВ-1 у деформационного шва показана выноска «см.прим.п.2».",
+          "verdict": "confirmed_current_direct_GRAPHIC",
+          "limits": "Проверен исходный графический блок в оригинальном разрешении."
+        },
+        {
+          "claim": "Примечание2 листа3 относится к металлическим лестницамЛП и разделуКМ6.2.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Это не указание по водоотведению."
+        },
+        {
+          "claim": "Адрес ссылки требует уточнения.",
+          "verdict": "supported_editorial_question",
+          "limits": "Правильный номер не установлен. Нельзя автоматически заменить на3: он описывает другое действие у деформационного шва."
+        },
+        {
+          "claim": "Водоотведение не разработано или технически неисправно.",
+          "verdict": "not_established",
+          "limits": "На плане присутствуютВ-1,уклоны и узлы. Ошибка ссылки не доказывает отсутствие решения."
+        },
+        {
+          "claim": "Нормативный кандидат подтверждает конкретное нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Точный применимый пункт не проверен."
+        }
+      ],
+      "unsupported_additions": "Не распространять адресную несогласованность на отсутствие или отказ водоотведения.",
+      "novel_useful_content": "Самостоятельный вопрос о конкретной выноске, отсутствовавший отдельной строкой в первом повторе. Полезность инженером не оценена.",
+      "duplicate_burden": "Не дублирует вопросF-012 о самоссылке раскладки: другое примечание и другой объект.",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "Нет установленного решения инженера по этой конкретной выноске; не приписывать историческое принятие.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_092e358681fc45ada6058a3f894b2582.png",
+          "sha256": "102c52c1d31987aebc078ec45b62cab5e3621e444917a3769dd821fb93e2d0f6",
+          "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+          "route": "current_direct_GRAPHIC_original_resolution",
+          "observation": "Синяя выноска от правой воронки возле деформационного шва к надписи см.прим.п.2."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_b29aa98eb0994f5c8f5901f9aa255c41",
+          "route": "authoritative_TEXT",
+          "observation": "Примечание2:Конструкцию металлических лестниц(ЛП),подробную спецификацию,узлы и детали см.разделКМ6.2."
+        }
+      ],
+      "disposition": "assessed_r2_funnel_note_reference_question"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
