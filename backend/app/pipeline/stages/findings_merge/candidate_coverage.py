@@ -99,6 +99,27 @@ def write_candidate_coverage(output_dir):
         sources.append({'path': str(graph_path), 'sha256': hashlib.sha256(graph_raw).hexdigest()})
     report['decision_coverage'] = reconcile_candidate_decisions(
         report, effective_candidate_decisions(payloads[-1]), set(build_block_page_index(graph)))
+    # Candidate linkage alone must not hide an unresolved part of that candidate.
+    # This is a structural ledger, not certification of model decomposition/truth.
+    from .subclaim_coverage import pending_subclaims
+    pending = pending_subclaims(payloads[-1], set(build_block_page_index(graph)))
+    effective = effective_candidate_decisions(payloads[-1])
+    with_subclaims = {(r.get('origin'), r.get('pointer')) for r in effective
+                      if isinstance(r, dict) and isinstance(r.get('origin'), str)
+                      and isinstance(r.get('pointer'), str)
+                      and isinstance(r.get('subclaims'), list) and r['subclaims']}
+    report['subclaim_coverage'] = {
+        'pending_candidates': len(pending),
+        'pending_claims': sum(len(rows) for rows in pending.values()),
+        'pending': [{'origin': key[0], 'pointer': key[1], 'claims': rows}
+                    for key, rows in pending.items()],
+        'candidates_without_current_decomposition': [
+            {'origin': c['origin'], 'pointer': c['pointer'], 'source_id': c['source_id']}
+            for c in report['candidates'] if (c['origin'], c['pointer']) not in with_subclaims],
+        'reference_validation_scope': 'document_graph block IDs; does not prove source inspection',
+        'decomposition_completeness_verified': False,
+        'semantic_verified': False,
+    }
     report.update(sources=sources, missing_inputs=missing, input_inventory_complete=not missing)
     (output_dir / '03_candidate_coverage.json').write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

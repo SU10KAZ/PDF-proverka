@@ -1,0 +1,23 @@
+{
+  "status": "implemented_structural_pending_ledger",
+  "behavior": "Post-merge coverage snapshot exposes pending subclaims across recovery history and candidates without current decomposition, even when parent is linked.",
+  "sources": [
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/candidate_coverage.py",
+      "sha256": "b5a254de0f041cf9af58ed5f59af34a5ed0c1bfae6a1fe79cfb12905a12fcc21"
+    },
+    {
+      "path": "tests/test_candidate_coverage.py",
+      "sha256": "73c728d84778db0c4cef50a086aa57dbe7df402d93d8db02b91dfc01dfd4e525"
+    }
+  ],
+  "test_command": "python -m pytest -q tests/test_candidate_coverage.py tests/test_candidate_decisions.py tests/test_candidate_recovery.py tests/test_subclaim_coverage.py",
+  "passed": 18,
+  "semantic_verified": false,
+  "limitations": [
+    "Document graph IDs validate addresses only; do not prove source inspection.",
+    "No assertion that model decomposition is complete or correct.",
+    "Does not change or delete published findings."
+  ],
+  "production_acceptance": false
+}

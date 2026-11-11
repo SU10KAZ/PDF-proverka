@@ -48,3 +48,29 @@ def test_deferred_identity_matches_compact_context_queue():
     compact = build_compact_view(data)
     assert report['candidates'][0]['source_id'] == compact['context_requests'][0]['request_id']
     assert report['candidates'][0]['status'] == 'deferred_requires_context_review'
+
+
+def test_final_snapshot_exposes_pending_part_even_after_parent_receipt_replaced(tmp_path):
+    receipt = {'origin': 'text', 'pointer': '/text_findings/0', 'decision': 'retained',
+               'reason': 'one part kept', 'source_refs': [], 'subclaims': [
+                   {'id': 'drawing', 'claim': 'check drawing range', 'decision': 'needs_data',
+                    'reason': 'drawing unavailable', 'required_source_refs': ['drawing']}]}
+    final = {'findings': [{'id': 'F-1', 'source_finding_ids': ['T-1']}],
+             'candidate_decisions': [receipt],
+             'candidate_recovery_reports': [{'candidate_decisions': [
+                 {'origin': 'text', 'pointer': '/text_findings/0', 'decision': 'duplicate',
+                  'reason': 'parent linked', 'source_refs': []}]}]}
+    inputs = {'02_text_analysis.json': {'text_findings': [{'id': 'T-1'}]},
+              '01_blocks_analysis.json': {}, '03_findings.json': final}
+    for name, data in inputs.items():
+        (tmp_path / name).write_text(json.dumps(data))
+    before = (tmp_path / '03_findings.json').read_bytes()
+    result = write_candidate_coverage(tmp_path)
+    assert result['candidates'][0]['linked_findings']
+    coverage = result['subclaim_coverage']
+    assert coverage['pending_candidates'] == 1
+    assert coverage['pending_claims'] == 1
+    assert coverage['pending'][0]['claims'][0]['claim']['id'] == 'drawing'
+    assert len(coverage['candidates_without_current_decomposition']) == 1
+    assert not coverage['semantic_verified']
+    assert (tmp_path / '03_findings.json').read_bytes() == before
