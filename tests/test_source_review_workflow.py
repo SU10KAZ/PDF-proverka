@@ -190,3 +190,38 @@ async def test_phase_opt_in_for_automatic_graphic_regions_is_forwarded_and_isola
     assert first.kwargs['auto_graphic_regions'] is False and second.kwargs['auto_graphic_regions'] is True
     assert first.args[4]!=second.args[4]
     assert json.loads((tmp_path/'03_findings.json').read_text())=={'findings':[f]}
+
+
+@pytest.mark.asyncio
+async def test_context_budget_preserves_checked_core_and_reports_unreviewed_queries(tmp_path):
+    from unittest.mock import patch
+    from backend.app.pipeline.stages.findings_verify.source_review_evidence import evidence_digest
+    md,f,q=setup_case();calls=[]
+    async def invoke(request,phase):
+        calls.append(phase);payload=json.loads(request['messages'][1]['content'])
+        if phase=='review':
+            data={k:payload[k] for k in ('finding_id','finding_sha256','source_md_sha256','context_sha256')}
+            data['claims']=[{'claim_id':'C1','claim':'Supported core','status':'supported','reason':'literal',
+                'evidence':[{'block_id':'t','quote':'Object X'}]},
+                {'claim_id':'C2','claim':'Unresolved extension','status':'needs_data','reason':'Need context',
+                 'missing_data':['Additional source'],'context_queries':['unperformed query']}]
+        else:
+            stop=payload['source_packet']['workflow_context_stop']
+            assert stop['absence_proven'] is False and stop['expanded_context_reviewed'] is False
+            assert stop['pending_queries']==['unperformed query']
+            data={'response_sha256':payload['required_response_sha256'],'origin':'explicit_source_review',
+                'reviewer':'test','reason':'Preserve only the supported core','action':'revise',
+                'claim_reviews':[{'claim_id':'C1','role':'defect_basis','verdict':'supported',
+                    'same_scope_verified':True,'evidence_sufficiency_verified':True,'reason':'source'},
+                    {'claim_id':'C2','role':'context','verdict':'needs_data',
+                    'same_scope_verified':True,'evidence_sufficiency_verified':False,'reason':'not reviewed'}],
+                'approved_fields':{'problem':'Supported core','description':'Object X','solution':'Check X'},
+                'final_wording_verified':True}
+        return {'json_data':data}
+    with patch('backend.app.pipeline.stages.findings_verify.source_review_workflow.prepare_review_followup',return_value={'status':'prepared_awaiting_dispatch_authorization','expanded_queue':q}):
+        result=await run_source_review_workflow(q,f,md,tmp_path,tmp_path/'workflow',invoke=invoke,executor_id='test')
+    assert calls==['review']*5+['adjudication']
+    assert result['status']=='candidate_ready'
+    assert result['source_review_stop']=='context_budget_exhausted'
+    assert not result['original_findings_mutated']
+    assert result['entry']['response']['claims'][1]['status']=='needs_data'

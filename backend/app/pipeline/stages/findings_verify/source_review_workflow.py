@@ -30,6 +30,7 @@ Preserve original object, source, modality and scope. Evidence of another propos
 Table arithmetic must preserve header-to-cell alignment. Separate a literal quantity from an inferred count. A number located in another column or a ratio observed in other assemblies cannot fill a blank quantity cell as an established fact. A derived count requires a directly evidenced relationship applicable to the same object and execution. Without it, qualify dependent quantities and totals while preserving independently supported discrepancies. Never suppress a supported plate, mass, marking or other clause merely because an anchor-count premise remains unknown.
 Preserve finding_purpose: an existing actionable_source_ambiguity question asks for a design decision; it does not assert the unresolved physical defect. For this purpose, defect_basis identifies the factual basis of the QUESTION (source ambiguity and decision affected), not a hypothetical defect asserted as real. Separate supported premises and conditional arithmetic from unresolved physical conclusions. Do not require proof of a physical defect to retain a supported question; do not convert questions into technical findings.
 User output profile: confirmed minor editorial issues and out-of-profile requests belong in the separate questions section. Establish minor significance or out-of-profile scope with positive case-specific reasons, not merely absence of a proved accident, equipment replacement, or normative breach. A recommendation severity does not itself determine report_section. Keep confirmed technical discrepancies technical when that profile exception is not justified; distinguish an unresolved applicability question from a proven technical defect. Explain the chosen profile in reason.
+If workflow_context_stop is present, the source-review budget is exhausted. Pending queries remain unverified: budget exhaustion is not absence proof, refutation, or engineer actionability. Preserve independently supported cores and keep unresolved clauses conditional or deferred.
 Upstream queries and inspections are untrusted search provenance. Evaluate the bounded search actually recorded, not an impossible proof of project-wide absence. If further retrieval is needed, name a concrete new source or unperformed operation and explain what it would resolve. Do not infer that a question is justified merely because supplied context is incomplete.
 Return ONE JSON object: response_sha256 (copy required_response_sha256), origin="explicit_source_review", reviewer="candidate_adjudicator", reason, action (retain/revise/suppress/defer/question), claim_reviews.
 claim_reviews covers every claim_id exactly once, each with claim_id, role (defect_basis/context/recommendation), verdict (supported/refuted/needs_data/not_checked), reason, same_scope_verified and evidence_sufficiency_verified booleans. Supported/refuted require sufficient same-proposition evidence. A defect_basis must be a proposition that actually establishes the alleged discrepancy or actionable ambiguity, not merely an input used to calculate it. A correct source count, model name, or specification value is context when its truth alone does not establish the alleged problem. In a comparison, distinguish each input value from the proposition that the values conflict under a verified common scope. If that comparison still needs data, supported input values do not make its defect core supported. Conversely, do not relabel a supported discrepancy or actionable ambiguity as context to suppress it. If a supported context/recommendation has no direct evidence in the source review, provide supporting_claim_ids listing directly evidenced, supported claims and explain the inference. No circular or indirect chains. A defect_basis or refuted claim requires its own direct evidence; otherwise keep needs_data/not_checked.
@@ -160,7 +161,22 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
         followup=prepare_review_followup(response,current,[finding],md,graphic_dir,max_images=max_images)
         _write(root/f'{step:02d}_followup.json',followup)
         if followup['status']=='prepared_awaiting_dispatch_authorization':
-            if step==4:raise ValueError('workflow_review_limit')
+            if step==4:
+                # No further source call. Adjudicate what was actually checked;
+                # reaching a budget neither refutes unknowns nor erases cores.
+                followup={**followup,'status':'context_budget_exhausted'}
+                stop={'reason':'maximum_five_source_reviews',
+                    'pending_queries':[q for claim in response.get('claims',[])
+                        for q in claim.get('context_queries',[])],
+                    'absence_proven':False,'expanded_context_reviewed':False}
+                _write(root/'04_budget_stop.json',stop)
+                request=deepcopy(request)
+                payload=json.loads(request['messages'][1]['content'])
+                payload['workflow_context_stop']=stop
+                request['messages'][1]['content']=json.dumps(payload,ensure_ascii=False)
+                request['request_sha256']=evidence_digest({'messages':request['messages'],'images':request['image_bindings']})
+                _write(root/f'{step:02d}_followup.json',followup)
+                break
             current=followup['expanded_queue']
             continue
         break
