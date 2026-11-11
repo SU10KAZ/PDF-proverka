@@ -54,6 +54,9 @@ def evaluate(root, output):
     destination = output / 'publication_projection.json'
     write(destination, projection)
     receipt.update(status='structurally_valid_requires_source_review',
+                   review_scope=projection['review_scope'],
+                   unreviewed_claim_fields=projection['unreviewed_claim_fields'],
+                   part_counts_not_finding_counts=True,
                    projection_path=str(destination), projection_sha256=sha(destination),
                    counts={key: len(projection[key]) for key in
                            ('technical_findings', 'questions', 'withdrawn', 'pending', 'history_only')})

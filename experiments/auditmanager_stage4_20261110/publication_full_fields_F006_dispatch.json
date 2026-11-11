@@ -1,0 +1,23 @@
+{
+  "status_at_observation": "running",
+  "run_directory": "/tmp/auditmanager_publication_F006_full_fields_pilot_20261112_run",
+  "preparation_path": "/tmp/auditmanager_publication_F006_full_fields_pilot_20261112/preparation.json",
+  "preparation_sha256": "ff0d84154769ce6870d49e1d663780f1b5b9460ca16b1fdb324bf749ae35b0d0",
+  "request": {
+    "path": "/tmp/auditmanager_publication_full_fields_AK_20261112/publication_reconciliation_006.json",
+    "sha256": "29fb7ab5a5bc92ec150474846ac5cecffd62e656e42db62d2d0cb5b171558569",
+    "finding_id": "F-006",
+    "input_units": 8,
+    "text_blocks": 2,
+    "images": 1,
+    "image_bytes": 406888,
+    "unavailable_linked_sources": [],
+    "transport_size_ready": true
+  },
+  "model": "codex/gpt-6-astra",
+  "pid": 1037881,
+  "session_id": 80329,
+  "contract_version": 2,
+  "production_acceptance": false,
+  "next_action": "Poll existing session, evaluate full-field response and review primary-source semantics before batch dispatch."
+}
