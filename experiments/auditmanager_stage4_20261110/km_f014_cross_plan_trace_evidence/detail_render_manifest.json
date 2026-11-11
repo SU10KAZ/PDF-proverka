@@ -1,0 +1,46 @@
+{
+  "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+  "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+  "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+  "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+  "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+  "columns": 1,
+  "rows": 1,
+  "scale": 3,
+  "overlap": 0.025,
+  "tiles": [
+    {
+      "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+      "page_index": 6,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        59.9148805886507,
+        686.9641099572182,
+        559.589242503047,
+        1018.1138743758202
+      ],
+      "grid_row": 0,
+      "grid_column": 0,
+      "path": "/tmp/km_f014_leader_trace_20261111/detail_tile_0.png",
+      "width": 1500,
+      "height": 995,
+      "sha256": "74d55e7c1054d5c19b15cfc90b7f7ec7350787c98b214df04a655a5972a9c047"
+    }
+  ],
+  "padding_page_fraction": 0.0,
+  "original_crop_points": [
+    59.9148805886507,
+    686.9641099572182,
+    559.589242503047,
+    1018.1138743758202
+  ],
+  "expanded_crop_points": [
+    59.9148805886507,
+    686.9641099572182,
+    559.589242503047,
+    1018.1138743758202
+  ],
+  "outside_original_crop": false,
+  "model_call_performed": false,
+  "semantic_verified": false
+}

@@ -1,0 +1,41 @@
+{
+  "case": "KM F-014",
+  "status": "factual_core_supported_by_cross_plan_inference_original_object_wording_refuted",
+  "model_verdict": "partially_supported",
+  "request_and_result_binding_verified": true,
+  "all_8_image_bytes_verified": true,
+  "model_graphic_hash_references_in_supplied_set": true,
+  "exact_TEXT_quotes_verified": 4,
+  "review_method": "Primary agent visually inspected plan +6.070, high-resolution plan +9.110 and full section; adjacent and typical plans were inspected during preparation. Distinguish directly visible endpoints from inferred correspondence. Model agreement is not independent ground truth.",
+  "direct_observations": [
+    "On plan +6.070 the upper-left leader is OGM3, upper-right OGM4, lower OGM2.",
+    "On plan +9.110 the upper-left leader before the break is OGM6; lower and upper-right leaders are OGM5.",
+    "The section identifies OGM4 on +6.070 to +7.270 and OGM5 on +7.270 to +9.110. Plan and section reverse A3/A5 horizontal orientation."
+  ],
+  "inference": {
+    "preferred_flight": [
+      "+6.070",
+      "+7.270"
+    ],
+    "basis": "Same position before the break as OGM3 for the previous flight on plan +6.070, consistent with the previous-flight mapping on the typical plan.",
+    "competing_flight": [
+      "+9.110",
+      "+10.630"
+    ],
+    "why_not_preferred": "Would change the preceding/next-flight correspondence to match a familiar mark; typical top level makes that assignment inconsistent.",
+    "confidence_limit": "Right-side upper OGM5 leaders remain unresolved. The mapping is reconstructed, not an explicit elevation range printed beside the leader."
+  },
+  "original_claim_parts": {
+    "standalone_landing_guardrail": "refuted as phrased; leaders refer to flight railing",
+    "cross_view_mark_difference": "supported in bounded wording by cross-plan inference",
+    "correct_replacement_mark": "not conclusively prescribed",
+    "actual_misfabrication_or_installation": "not established"
+  },
+  "bounded_wording": "На листе 5 выявлено расхождение обозначений ограждения марша +6.070 → +7.270: на разрезе 1-1 и на схеме +6.070 указано ОГМ 4, тогда как на схеме +9.110 соответствующий левый фрагмент до разрыва обозначен ОГМ 6. Соответствие установлено по осям, последовательности отметок и условности соседних планов; речь идёт об ограждении марша, а не о доказанном самостоятельном ограждении площадки +7.270. Следует уточнить принадлежность выноски и согласовать марку с границами изделия и деталями листа 6. ОГМ 4 и ОГМ 6 конструктивно различаются, поэтому неоднозначность может привести к выбору другого изделия. Правая верхняя выноска ОГМ 5 на схеме +9.110 и типовом плане остаётся отдельно неразрешённой.",
+  "disposition": "Retain/reopen the coordination finding with corrected flight terminology. Do not use F-014 as a proven false-positive filter control. No automatic production release.",
+  "evaluator_change": false,
+  "frozen_evaluator_v2": "unchanged; case remains excluded pending a separately versioned adjudication",
+  "quality_claim": "Known-candidate source investigation, not recovered blind finding and not full comparative acceptance.",
+  "new_method_candidate": "For ambiguous multi-view identity, compare adjacent plans and drafting break conventions before suppression; split wrong object wording from the factual discrepancy.",
+  "remaining": "Right-upper OGM5 correspondence and final design correction require separate review; do not multiply inferred defects."
+}
