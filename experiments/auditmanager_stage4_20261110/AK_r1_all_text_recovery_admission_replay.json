@@ -1,0 +1,497 @@
+{
+  "status": "complete_initial_text_recovery_structural_replay_not_final_quality",
+  "run": "AK_r1_classic_current",
+  "summary": {
+    "requests": 28,
+    "raw_findings": 36,
+    "admitted_findings": 7,
+    "pending_reasons": {
+      "missing_inspected_source_reference": 29
+    },
+    "context_followup_statuses": {
+      "no_explicit_context_queries": 25,
+      "no_new_context": 1,
+      "scheduled": 2
+    }
+  },
+  "rows": [
+    {
+      "request_id": "1794422216432117133",
+      "candidate_id": "T-001",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422216432117133/request.json": "e246131d88ee5a4ab28c52922416db2f2ab4268b476aef58452fa96052b25990",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422216432117133/response_1.json": "f07291180288774fa1cf93d4b20ee70bcc4f45dddd0c617ce178ecbb847261d9"
+      }
+    },
+    {
+      "request_id": "1794422236515798156",
+      "candidate_id": "T-002",
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422236515798156/request.json": "97fefba6e24eaf4a2176d8ace76baaca2409ecda602d646e4f3b93af9b9a110a",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422236515798156/response_1.json": "09bcaf375aab24320c2509efe9b0722232403bcf03e3fc24d848d48ce433e2a5"
+      }
+    },
+    {
+      "request_id": "1794422267405678037",
+      "candidate_id": "T-003",
+      "raw_findings": 3,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 3
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422267405678037/request.json": "d980376069f42d3cb809af4e2eea88412e18152f0e5c6e7ec7e91185043358d7",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422267405678037/response_1.json": "40bfd0bea29a61ea78239cd2357d049676432b72c5fce36b3ed0a85536814e80"
+      }
+    },
+    {
+      "request_id": "1794422308313421997",
+      "candidate_id": "T-004",
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422308313421997/request.json": "28e2a6f7fe56a9c01c690ee5fdd4bb7c4ab9bcce709ee268157dc1b7a57191ac",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422308313421997/response_1.json": "3aa135db161957cd571f0ecc31773ab96c544492bd888382677509417b45f941"
+      }
+    },
+    {
+      "request_id": "1794422333956348412",
+      "candidate_id": "T-005",
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "decisions": {
+        "needs_data": 1
+      },
+      "context_followup_status": "no_new_context",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422333956348412/request.json": "5ed47110f0666b358d35d59e29c88b5416770376b07f0fac5bc92b4427ea8c5a",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422333956348412/response_1.json": "a8f1681b63a79ca88ebff14dc4db7ba1960eeec8c5a7129680ad2f4e856bfafb"
+      }
+    },
+    {
+      "request_id": "1794422349956942139",
+      "candidate_id": "T-006",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422349956942139/request.json": "9b93e82a39d2f17f889cd396df2ef2f055b20c9dcd05310e4e793b29fc364282",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422349956942139/response_1.json": "ee9d036229f4288bc00d9a70df8aae5258cfbd8dbcf93bd11477bef25eae2f8a"
+      }
+    },
+    {
+      "request_id": "1794422368313283602",
+      "candidate_id": "T-007",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422368313283602/request.json": "784d298efd460dcf2e7d8d44de6ddeb5a6c3c430ad6921fefd3017ed3d1e9b8a",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422368313283602/response_1.json": "43197efc28cb0ad0f318758b46c92ca638d2466e8cccb28d830b7daa5145dbea"
+      }
+    },
+    {
+      "request_id": "1794422395095582670",
+      "candidate_id": "T-008",
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "decisions": {
+        "needs_data": 1
+      },
+      "context_followup_status": "scheduled",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422395095582670/request.json": "92970b4e03190201de3cf1d612086593aae713744c72a493b3b8ee5f2260e4f4",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422395095582670/response_1.json": "336751d8171be8bd8d24a3beb203a5e441e20d7e79ebb4d1d870d15c61bfb2e9"
+      }
+    },
+    {
+      "request_id": "1794422424588166530",
+      "candidate_id": "T-009",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422424588166530/request.json": "8e859460ab6aeed514ec54f71349f90800cdd17646c95aea9c6b31a67a9db252",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422424588166530/response_1.json": "7926db48787d115094a3ef5b3d96408a9983fab9e189b49dc414b9d1f2b180e6"
+      }
+    },
+    {
+      "request_id": "1794422444288103656",
+      "candidate_id": "T-010",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422444288103656/request.json": "db0f3890f859a38bb18ba0b220a3863696dba06c5948659b753aa50bd5591067",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422444288103656/response_1.json": "9aa2d16e2bf8dbcaf8b18894f5d8a61a0ab02cd2a2e7c8e45373ffde732f844b"
+      }
+    },
+    {
+      "request_id": "1794422466586211974",
+      "candidate_id": "T-011",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422466586211974/request.json": "f2700f12b4d974b4222017534e0cdd36d3a4accfb973c7f58988fb5d0225abec",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422466586211974/response_1.json": "06fb58bbb11425d5748ff941100e37c19df268d3ef16edab7a37f32ba0350c56"
+      }
+    },
+    {
+      "request_id": "1794422491020902680",
+      "candidate_id": "T-012",
+      "raw_findings": 2,
+      "admitted_findings": 2,
+      "pending_reasons": {},
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422491020902680/request.json": "bb5717eef2e1d7bded32a22565bce0bb3359909be9ba2c7a6c770337a4da400b",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422491020902680/response_1.json": "18994027da658a0e4625b7c23b479766ef2d97176c88f39f28185e320934b060"
+      }
+    },
+    {
+      "request_id": "1794422525727615248",
+      "candidate_id": "T-013",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422525727615248/request.json": "3a1dbd5597122c304de9320daa36201cd91af61bfdef9ac97b00dd04a2559a80",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422525727615248/response_1.json": "c6a9c955e26ea1fe62da9bdeff864fe2a08c83657e0fb28d9965f7d9f9620293"
+      }
+    },
+    {
+      "request_id": "1794422558557201143",
+      "candidate_id": "T-014",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422558557201143/request.json": "a5832c6e3b8d1a6ebe83f2ca415d9e7e83ea440883d2dbf2f1e5fde88abbfeb9",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422558557201143/response_1.json": "5918387be2925d44da0bff3d548b18df73e09f3aee7ed1fc0eb28c89e77eaa30"
+      }
+    },
+    {
+      "request_id": "1794422581264869311",
+      "candidate_id": "T-015",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422581264869311/request.json": "66330ec50d7bda5b03e80518b6e2041d6d57039c4de154bae4f9c9152b9da838",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422581264869311/response_1.json": "12f2bb8dcf142e3c17aefb696875148e5901d924129f14d1d676377b790d1f0d"
+      }
+    },
+    {
+      "request_id": "1794422599361305347",
+      "candidate_id": "T-016",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422599361305347/request.json": "f1dcc929e16183c079da84243b7ca8a957d3f85ac429d60c8499dbf884cea665",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422599361305347/response_1.json": "350f1e8ab87fa4572716df538376552be2039c03c487ca5a48a030040b5559d3"
+      }
+    },
+    {
+      "request_id": "1794422621205501175",
+      "candidate_id": "T-017",
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422621205501175/request.json": "da5325a64bb04b63c29a5598c8fbfb0c8284fbed4936e73beb781f0f80966bdd",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422621205501175/response_1.json": "fae9c156ef7c8da2df195735f1bdfc2a552e080262a64bd7d30fb9fc2b99425b"
+      }
+    },
+    {
+      "request_id": "1794422645120527745",
+      "candidate_id": "T-018",
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422645120527745/request.json": "483384b85593bfa639e7123a3751d7f3127bd7fe0c75e56ebba1bfd88d9b381d",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422645120527745/response_1.json": "991d7f266f3ecae643e53c367d2f6ddd0341a26248130c8a4e8a32aff441678c"
+      }
+    },
+    {
+      "request_id": "1794422673253363786",
+      "candidate_id": "T-019",
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422673253363786/request.json": "0d26f384d0091ea435f18d5751e362298d09d378ef87e209a706b1645bf1e92d",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422673253363786/response_1.json": "e0372fe045e941d149cc3821ffdc9c7133d9c006f1c81b929a4fc6b7c7b30024"
+      }
+    },
+    {
+      "request_id": "1794422706718100476",
+      "candidate_id": "T-020",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422706718100476/request.json": "5666224e12d77a5884bc474fc307d281f40c7a3980b4c8f1bba06a1aee3a867d",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422706718100476/response_1.json": "623284929da8ca00992c99b4b747e490cee889d23bfb80c6d7ab33c477a5a1b0"
+      }
+    },
+    {
+      "request_id": "1794422734563244548",
+      "candidate_id": "T-021",
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "decisions": {
+        "needs_data": 1
+      },
+      "context_followup_status": "scheduled",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422734563244548/request.json": "fcd3e8c81f949c391e07cbd7741b453a03019799ce8f8ddade81c99fddcfa6d4",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422734563244548/response_1.json": "f385b926ae5fa47f0738929cdfd2759e101ef5fd86fd1e432bfcd9d3d524ff79"
+      }
+    },
+    {
+      "request_id": "1794422753217124936",
+      "candidate_id": "T-022",
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422753217124936/request.json": "c31bb9fefa9ff0e32adf4d59c10e69248f5eff34b672b341f515924251026252",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422753217124936/response_1.json": "f99a7c598d05e2f1bb0b6badba9e442fbbd01f4e279733ed9cfcfb15d86083a8"
+      }
+    },
+    {
+      "request_id": "1794422775138945214",
+      "candidate_id": "T-023",
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422775138945214/request.json": "fd15b2019627de2763ed30f03ac58f00ff6a5fdc8cdcc4bb0147d30dc3fb95ea",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422775138945214/response_1.json": "7690c7bd116c8b0cfcb436520d2416f5d95c15f97bcdef86e9765c5849586e95"
+      }
+    },
+    {
+      "request_id": "1794422800145123230",
+      "candidate_id": "T-024",
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422800145123230/request.json": "1a140d07fbb44a6e21d2373ecc38a37d3ec43d4d8737010c55b69a6d8a49e8d0",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422800145123230/response_1.json": "59ae5b764220cafd4f4ce09539d38bfd033f0d54ac8164e42207718d0f8ae819"
+      }
+    },
+    {
+      "request_id": "1794422825919546772",
+      "candidate_id": "T-025",
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422825919546772/request.json": "279a6828c4240f084bbc9ef485da2d5c952c6d5cb64b378488c2aaa684cf824c",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422825919546772/response_1.json": "4f6be3533411550f63e7e76cee6e288c375b08b126921f031a9614ac3a954ae0"
+      }
+    },
+    {
+      "request_id": "1794422852672458588",
+      "candidate_id": "T-026",
+      "raw_findings": 3,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 3
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422852672458588/request.json": "b15ce9436616b3e8e861866faef3588acbe66aba24299e64c9f83f28ee6e6466",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422852672458588/response_1.json": "40d6457f707f18568e229855d475e60af0be57f148d35e634f930ad18be981be"
+      }
+    },
+    {
+      "request_id": "1794422879887227438",
+      "candidate_id": "T-027",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422879887227438/request.json": "5ddba860f4dd414f538f55afe3828d2aa83fbfe08f0e89463e0975bf5d881c3f",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422879887227438/response_1.json": "6b7c3279a0d0233789b985ac61500e97e5e953a715db596ec3e642d0a5ea5c0a"
+      }
+    },
+    {
+      "request_id": "1794422907044921894",
+      "candidate_id": "T-028",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "decisions": {
+        "retained": 1
+      },
+      "context_followup_status": "no_explicit_context_queries",
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422907044921894/request.json": "aaf90c9b3e8963e00b5a0ba5394f190ccb02e87c325bb9ada7d786e99b7c072c",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422907044921894/response_1.json": "fa3d70209a0798009c83ed32fc633521f3015dc5332a10d94a9ede97d9d93918"
+      }
+    }
+  ],
+  "validator_sources": [
+    {
+      "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/prepare/candidate_recovery.py",
+      "sha256": "e6f9ac142f19a0f16eec368e972a7fec548e1a3e6a10a3d9e29a9ab2071dd57e"
+    },
+    {
+      "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/prepare/recovery_context.py",
+      "sha256": "396ac901958da709f54ad4f391bcca369d6e68aa6e20c480ae917ec23f047346"
+    }
+  ],
+  "limits": [
+    "Admitted means structural source-reference gate passed, not engineering truth or final publication.",
+    "One candidate may produce several findings; these counts are not independent defects.",
+    "Later context, object operations and final verification can change coverage.",
+    "Read-only replay: generated follow-up descriptors were not dispatched."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
