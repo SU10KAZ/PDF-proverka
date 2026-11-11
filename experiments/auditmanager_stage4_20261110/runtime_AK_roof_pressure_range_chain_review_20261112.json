@@ -1,0 +1,75 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-039",
+      "status": "confirmed_document_conflict_with_publication_cleanup",
+      "review_reason": "На функциональной схеме Пкр4.1 прослежена линия PDS3 к позиции 12 с диапазоном 20–200 Па. Перечень PDS1–PDS3 содержит три датчика 50–500 Па. Раздел спецификации шкафа ШАУВ-3-К4ПЧ, позиция 3.3, также задаёт три датчика 50–500 Па; связь с системой подтверждается наименованием шкафа на схеме и указанием системы в соседней позиции преобразователей. Уставка PDS3 50 Па входит в оба диапазона. Конфликт документов подтверждён, непригодность прибора не доказана; примечание о ПНР не согласовывает исполнение. Внутренние ссылки parent:... и локальные F-036/G-... следует оставить в истории, а не пользовательском тексте.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+          "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+          "start": 68996,
+          "end": 70524,
+          "sha256": "625faac070b211124bd6f483123026b629ac9c41c783315534595c616c3f0b53"
+        },
+        {
+          "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+          "start": 435382,
+          "end": 438051,
+          "sha256": "d0d40e07f6210593d5e6ac1443f210cf39a811039f8ad9613f37d7a542339b78"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-044",
+      "status": "confirmed_document_conflict_with_publication_cleanup",
+      "review_reason": "На функциональной схеме Пкр5.1 прослежена линия PDS3 к позиции 12 с диапазоном 20–200 Па. Перечень PDS1–PDS3 содержит три датчика 50–500 Па. Раздел спецификации шкафа ШАУВ-2-К5ПЧ, позиция 7.3, также задаёт три датчика 50–500 Па; связь с системой подтверждается наименованием шкафа на схеме и указанием системы в соседней позиции преобразователей. Уставка PDS3 50 Па входит в оба диапазона. Конфликт документов подтверждён, непригодность прибора не доказана; примечание о ПНР не согласовывает исполнение. Внутренние ссылки parent:... и локальные F-036/G-... следует оставить в истории, а не пользовательском тексте. Дополнительно непосредственно прослежена линия Пкр5.1-7 от PDS3 к клеммам 17–18 ШАУВ-2-К5ПЧ. Начальное утверждение об отсутствии источника позиции 7.3 и решение ещё проверить её устарели после получения спецификации; итоговое описание должно отражать уже выполненную проверку.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+          "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+          "sha256": "4abaff5efb5a1c9a6466cb37fc407035b9aa2c5cb6afe3a9dfa885c05c4aff01",
+          "directly_viewed": true,
+          "detail": "original"
+        },
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_c0ed6bca935843c18344796377677f2f.png",
+          "block_id": "blk_c0ed6bca935843c18344796377677f2f",
+          "sha256": "f26dd1d18d31cb5990d87ed8aabf21c5f613e4d999eba6691f469af00408ab5c",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "start": 91955,
+          "end": 93486,
+          "sha256": "9931f4018fce25202788e97c4d8a7b61300375b0a1fc3385fd67997c9ca1d840"
+        },
+        {
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "start": 440474,
+          "end": 443052,
+          "sha256": "4bd199fa403185e3454052521bddf90fc9b96c85d9476ac86503741f51d0a4ee"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false
+}

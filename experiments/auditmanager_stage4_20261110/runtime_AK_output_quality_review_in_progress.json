@@ -418,8 +418,14 @@
       "finding_id": "F-039",
       "problem": "Для PDS3 системы Пкр4.1 указаны разные диапазоны давления.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_with_publication_cleanup",
+      "engineer_decision": null,
+      "review_reason": "На функциональной схеме Пкр4.1 прослежена линия PDS3 к позиции 12 с диапазоном 20–200 Па. Перечень PDS1–PDS3 содержит три датчика 50–500 Па. Раздел спецификации шкафа ШАУВ-3-К4ПЧ, позиция 3.3, также задаёт три датчика 50–500 Па; связь с системой подтверждается наименованием шкафа на схеме и указанием системы в соседней позиции преобразователей. Уставка PDS3 50 Па входит в оба диапазона. Конфликт документов подтверждён, непригодность прибора не доказана; примечание о ПНР не согласовывает исполнение. Внутренние ссылки parent:... и локальные F-036/G-... следует оставить в истории, а не пользовательском тексте.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_roof_pressure_range_chain_review_20261112.json",
+        "sha256": "f7a140f0fd24d687080af2365abe6e2c844b84a8c9e83fe9b375576e44b7a9fe"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-040",
@@ -477,8 +483,14 @@
       "finding_id": "F-044",
       "problem": "Для PDS3 системы Пкр5.1 различаются диапазоны в таблице сигналов и перечне элементов.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_with_publication_cleanup",
+      "engineer_decision": null,
+      "review_reason": "На функциональной схеме Пкр5.1 прослежена линия PDS3 к позиции 12 с диапазоном 20–200 Па. Перечень PDS1–PDS3 содержит три датчика 50–500 Па. Раздел спецификации шкафа ШАУВ-2-К5ПЧ, позиция 7.3, также задаёт три датчика 50–500 Па; связь с системой подтверждается наименованием шкафа на схеме и указанием системы в соседней позиции преобразователей. Уставка PDS3 50 Па входит в оба диапазона. Конфликт документов подтверждён, непригодность прибора не доказана; примечание о ПНР не согласовывает исполнение. Внутренние ссылки parent:... и локальные F-036/G-... следует оставить в истории, а не пользовательском тексте. Дополнительно непосредственно прослежена линия Пкр5.1-7 от PDS3 к клеммам 17–18 ШАУВ-2-К5ПЧ. Начальное утверждение об отсутствии источника позиции 7.3 и решение ещё проверить её устарели после получения спецификации; итоговое описание должно отражать уже выполненную проверку.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_roof_pressure_range_chain_review_20261112.json",
+        "sha256": "f7a140f0fd24d687080af2365abe6e2c844b84a8c9e83fe9b375576e44b7a9fe"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-045",
@@ -1015,14 +1027,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 66,
-  "unchecked": 19,
+  "reviewed": 68,
+  "unchecked": 17,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 66,
-  "unchecked_findings": 19
+  "reviewed_findings": 68,
+  "unchecked_findings": 17
 }
