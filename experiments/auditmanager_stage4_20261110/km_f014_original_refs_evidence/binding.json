@@ -1,0 +1,18 @@
+{
+  "baseline_sha256": "d85048316ccca845e1cac247c6896671cdd78283848f73e2ad1ecf5ed226fa02",
+  "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "source_context_ids": [
+    "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+    "blk_6d4c4daf192546de9f1dce661aafe577",
+    "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+  ],
+  "prior_responses_or_engineer_answers_supplied": false,
+  "known_candidate_control": true,
+  "source_context_selection": "Only addresses already present in original finding; additional context must be requested and retrieved by native workflow.",
+  "maximum_new_calls": 6,
+  "message_chars": 7372,
+  "images": 3,
+  "image_bytes": 859319,
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0
+}

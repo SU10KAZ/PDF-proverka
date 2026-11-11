@@ -1,0 +1,14 @@
+{
+  "status": "original_ref_workflow_deferred_after_requested_graphics_omitted",
+  "action": "defer",
+  "model_calls": 3,
+  "original_finding_full_snapshot_preserved": true,
+  "initial_graphics": 3,
+  "coordinator_added_project_sources": false,
+  "history_or_engineer_answers_supplied": false,
+  "observation": "Initial review supported discrepancy and requested details. Followup found them but sent other-sheet graphics first; requested detail images were omitted at image_limit. Later review no longer supported identity; adjudicator deferred, not suppressed.",
+  "cause_scope": "Packet construction failure verified; whether priority fix restores supported outcome awaits fresh followup. Model stochastic variation remains possible.",
+  "next_experiment": "Replay exact initial model response, change only retrieval ordering for exact document-sheet navigation, obtain fresh followup and adjudication.",
+  "full_acceptance": false,
+  "production_changed": false
+}

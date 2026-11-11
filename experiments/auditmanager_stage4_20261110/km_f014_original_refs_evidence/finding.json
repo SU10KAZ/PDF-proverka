@@ -1,0 +1,116 @@
+{
+  "id": "F-014",
+  "severity": "ЭКСПЛУАТАЦИОННОЕ",
+  "category": "documentation",
+  "sheet": "Лист 5",
+  "page": 7,
+  "problem": "Марка ограждения площадки на отметке +7,270 различается на схеме и разрезе.",
+  "description": "Промежуточная площадка на отметке +7,270 обозначена на схеме расположения секции С3 как ОГМ 6, а на разрезе 1-1 того же листа — как ОГМ 4.",
+  "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+  "norm_quote": null,
+  "candidate_norm_references": [
+    {
+      "designation": "ГОСТ 21.502-2016",
+      "cited_designation": "ГОСТ 21.502-2016",
+      "candidate_relevance": 0.8,
+      "reason": "Проверить однозначность маркировки ограждений на схемах и разрезах.",
+      "provenance": {
+        "producer": "stage03_candidate_contract",
+        "designation_source": "stage03.candidate_norm_references",
+        "source_finding_ids": [
+          "G-010"
+        ],
+        "input_provenance": {
+          "source_finding_ids": [
+            "G-010"
+          ],
+          "designation_source": "inferred from finding context"
+        }
+      },
+      "clause_candidate": null,
+      "quote_candidate": null
+    }
+  ],
+  "solution": "Определить требуемую марку по деталям листа 6 и одинаково обозначить её на схеме и разрезе.",
+  "risk": "Изготовление или монтаж ограждения другой марки.",
+  "source_finding_ids": [
+    "G-010"
+  ],
+  "source_block_ids": [
+    "blk_262b1bd1d76146e7a8e45b529a38ac2e"
+  ],
+  "related_block_ids": [
+    "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+    "blk_6d4c4daf192546de9f1dce661aafe577",
+    "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+  ],
+  "evidence_text_refs": [],
+  "evidence": [
+    {
+      "type": "image",
+      "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+      "page": 7
+    }
+  ],
+  "highlight_regions": [],
+  "provenance": {
+    "found_by": [
+      "codex"
+    ],
+    "detector_summary": "codex",
+    "detections": [
+      {
+        "detector": "codex",
+        "model": "codex/gpt-6-astra",
+        "prompt_version": "stage01-findings-evidence-v3",
+        "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+        "raw_finding_id": "G-010",
+        "mode": "independent",
+        "detected_at": "2026-11-06T23:48:47.021565+00:00",
+        "context_source": "structured_structure"
+      }
+    ]
+  },
+  "detector_summary": "codex",
+  "detector_comparison": {
+    "schema_version": 1,
+    "primary_relation": "new",
+    "relations": [
+      {
+        "relation": "new",
+        "role": "unique_detector_finding",
+        "counterpart_refs": [],
+        "confidence": 1.0,
+        "reason": "Другой независимый детектор не вернул смысловой аналог.",
+        "reviewer_model": "codex/gpt-6.1-sol",
+        "origin": "dual_comparison"
+      }
+    ],
+    "gap_search": false
+  },
+  "norm_references": [],
+  "norm_paragraph_state": "resolver_pending",
+  "quality": {
+    "practicality_score": 59,
+    "engineering_relevance": "medium",
+    "impact_axes": [
+      "construction"
+    ],
+    "formalism_flags": [],
+    "likely_formal_only": false,
+    "severity_mismatch": false,
+    "review_priority": "low"
+  },
+  "source_evidence_review_status": "pending",
+  "source_review_requests": [
+    {
+      "source_finding_id": "classic-KM-F014",
+      "source_claim": "Марка ограждения площадки на отметке +7,270 различается на схеме и разрезе.\nПромежуточная площадка на отметке +7,270 обозначена на схеме расположения секции С3 как ОГМ 6, а на разрезе 1-1 того же листа — как ОГМ 4.\nОпределить требуемую марку по деталям листа 6 и одинаково обозначить её на схеме и разрезе.",
+      "block_ids": [
+        "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+        "blk_6d4c4daf192546de9f1dce661aafe577",
+        "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1084 @@
+{
+  "status": "candidate_ready",
+  "admission_receipts": [
+    {
+      "finding_id": "F-014",
+      "status": "applied",
+      "action": "defer"
+    }
+  ],
+  "calls": [
+    {
+      "phase": "review",
+      "step": 0,
+      "reused": false
+    },
+    {
+      "phase": "review",
+      "step": 1,
+      "reused": false
+    },
+    {
+      "phase": "adjudication",
+      "step": 5,
+      "reused": false
+    }
+  ],
+  "source_review_stop": "no_search_backlog",
+  "semantic_acceptance": false,
+  "original_findings_mutated": false,
+  "entry": {
+    "queue": {
+      "packets": [
+        {
+          "finding_id": "F-014",
+          "status": "pending",
+          "semantic_verified": false,
+          "finding_snapshot": {
+            "id": "F-014",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "sheet": "Лист 5",
+            "page": 7,
+            "problem": "Марка ограждения площадки на отметке +7,270 различается на схеме и разрезе.",
+            "description": "Промежуточная площадка на отметке +7,270 обозначена на схеме расположения секции С3 как ОГМ 6, а на разрезе 1-1 того же листа — как ОГМ 4.",
+            "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+            "norm_quote": null,
+            "candidate_norm_references": [
+              {
+                "designation": "ГОСТ 21.502-2016",
+                "cited_designation": "ГОСТ 21.502-2016",
+                "candidate_relevance": 0.8,
+                "reason": "Проверить однозначность маркировки ограждений на схемах и разрезах.",
+                "provenance": {
+                  "producer": "stage03_candidate_contract",
+                  "designation_source": "stage03.candidate_norm_references",
+                  "source_finding_ids": [
+                    "G-010"
+                  ],
+                  "input_provenance": {
+                    "source_finding_ids": [
+                      "G-010"
+                    ],
+                    "designation_source": "inferred from finding context"
+                  }
+                },
+                "clause_candidate": null,
+                "quote_candidate": null
+              }
+            ],
+            "solution": "Определить требуемую марку по деталям листа 6 и одинаково обозначить её на схеме и разрезе.",
+            "risk": "Изготовление или монтаж ограждения другой марки.",
+            "source_finding_ids": [
+              "G-010"
+            ],
+            "source_block_ids": [
+              "blk_262b1bd1d76146e7a8e45b529a38ac2e"
+            ],
+            "related_block_ids": [
+              "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+              "blk_6d4c4daf192546de9f1dce661aafe577",
+              "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+            ],
+            "evidence_text_refs": [],
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                "page": 7
+              }
+            ],
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-010",
+                  "mode": "independent",
+                  "detected_at": "2026-11-06T23:48:47.021565+00:00",
+                  "context_source": "structured_structure"
+                }
+              ]
+            },
+            "detector_summary": "codex",
+            "detector_comparison": {
+              "schema_version": 1,
+              "primary_relation": "new",
+              "relations": [
+                {
+                  "relation": "new",
+                  "role": "unique_detector_finding",
+                  "counterpart_refs": [],
+                  "confidence": 1.0,
+                  "reason": "Другой независимый детектор не вернул смысловой аналог.",
+                  "reviewer_model": "codex/gpt-6.1-sol",
+                  "origin": "dual_comparison"
+                }
+              ],
+              "gap_search": false
+            },
+            "norm_references": [],
+            "norm_paragraph_state": "resolver_pending",
+            "quality": {
+              "practicality_score": 59,
+              "engineering_relevance": "medium",
+              "impact_axes": [
+                "construction"
+              ],
+              "formalism_flags": [],
+              "likely_formal_only": false,
+              "severity_mismatch": false,
+              "review_priority": "low"
+            },
+            "source_evidence_review_status": "pending",
+            "source_review_requests": [
+              {
+                "source_finding_id": "classic-KM-F014",
+                "source_claim": "Марка ограждения площадки на отметке +7,270 различается на схеме и разрезе.\nПромежуточная площадка на отметке +7,270 обозначена на схеме расположения секции С3 как ОГМ 6, а на разрезе 1-1 того же листа — как ОГМ 4.\nОпределить требуемую марку по деталям листа 6 и одинаково обозначить её на схеме и разрезе.",
+                "block_ids": [
+                  "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                  "blk_6d4c4daf192546de9f1dce661aafe577",
+                  "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+                ]
+              }
+            ]
+          },
+          "finding_sha256": "2cb3750197631ceb78b04b1e846006c0af774cc12dcee66a93d4cabc1050843b",
+          "sources": [
+            {
+              "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+              "authoritative_text": "\n\n> **Created:** 2026-10-21 13:32:37 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/50ToWxDSJHEmjYwmJRpi)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...6, 8 | Organization: GLOBUS ПРОЕКТ | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ 4 (1 шт.)\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ 4 |  | 1 | φ40x3 | Конструктивно |  |  | C245 | L=3,100м | 1 |\n|  |  | 2 | 40x3 |  |  |  | C245 | L=0,955м | 4 |\n|  |  | 3 | 25x3 |  |  |  | C245 | L=1,150м | 1 |\n|  |  | 4 | 25x3 |  |  |  | C245 | L=0,800м | 18 |\n|  |  | 5 | 25x3 |  |  |  | C245 | L=0,650м | 3 |\n|  | Лист | 6 | 10х120х120 |  |  |  | C245 |  | 4 |\n|  |  | 7 | 40x3 |  |  |  | C245 | L=0,500м | 1 |\n|  |  | 8 | 25x3 |  |  |  | C245 | L=0,650м | 1 |\n|  | Анкер |  | HSA-M10х90 |  |  |  |  |  | 16 |\n\n"
+            },
+            {
+              "block_id": "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+              "authoritative_text": "\n\n> **Created:** 2026-10-21 13:32:37 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/PG0nFrek96os1gkQSG6A)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...6, 8 | Organization: GLOBUS ПРОЕКТ | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ 6 (9 шт.)\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наименование или марка металла | Примечание | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ 6 |  | 1 | Ø40x3 | Конструктивно |  |  | C245 | L=3,480м | 1 |\n|  |  | 2 | 40x3 |  |  |  | C245 | L=0,955м | 5 |\n|  |  | 3 | 25x3 |  |  |  | C245 | L=0,855м | 1 |\n|  |  | 4 | 25x3 |  |  |  | C245 | L=0,800м | 19 |\n|  |  | 5 | 25x3 |  |  |  | C245 | L=0,650м | 4 |\n|  | Лист | 6 | 10х120х120 |  |  |  | C245 |  | 5 |\n|  |  | 7 | 40x3 |  |  |  | C245 | L=0,500м | 1 |\n|  |  | 8 | 25x3 |  |  |  | C245 | L=0,650м | 1 |\n|  | Анкер |  | HSA-M10х90 |  |  |  |  |  | 20 |\n|  |  |  |  |  |  |  |  |  |  |\n\n"
+            },
+            {
+              "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+              "authoritative_text": "\n\n> **Created:** 2026-10-21 13:32:40 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/bU6gDVKj7q5KnPll3hN2)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n###### Ведомость элементов ограждения ОГМ 4 (1шт.)\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ 4 |  | 1 | φ40x3 | Конструктивно |  |  | C245 | L=3,640м | 1 |\n|  |  | 2 | 40x3 |  |  |  | C245 | L=0,955м | 4 |\n|  |  | 3 | 40x3 |  |  |  | C245 | L=0,870м | 1 |\n|  |  | 4 | 25x3 |  |  |  | C245 | L=0,800м | 17 |\n|  |  | 5 | 25x3 |  |  |  | C245 | L=0,650м | 3 |\n|  | Лист | 6 | 10х120х120 |  |  |  | C245 |  | 5 |\n|  |  | 7 | 25x3 |  |  |  | C245 | L=0,850м | 1 |\n|  |  | 8 | 25x3 |  |  |  | C245 | L=0,380м | 1 |\n|  |  | 9 | 25x3 |  |  |  | C245 | L=0,480м | 1 |\n|  | Анкер |  | HSA-M10х90 |  |  |  |  |  | 20 |\n\n"
+            },
+            {
+              "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+              "authoritative_text": "\n\n> **Created:** 2026-10-21 13:32:40 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/onOz4-TNyJwtUpAzuak8)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n#### Ведомость элементов ограждения ОГМ 6 (8 шт.)\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ 6 | ⊙ | 1 | φ40х3 | Конструктивно |  |  | C245 | L=3,480м | 1 |\n|  | □ | 2 | 40х3 |  |  |  | C245 | L=0,955м | 5 |\n|  | □ | 3 | 25х3 |  |  |  | C245 | L=0,855м | 1 |\n|  | □ | 4 | 25х3 |  |  |  | C245 | L=0,800м | 19 |\n|  | □ | 5 | 25х3 |  |  |  | C245 | L=0,650м | 4 |\n|  | Лист | 6 | 10х120х120 |  |  |  | C245 |  | 5 |\n|  | □ | 7 | 40х3 |  |  |  | C245 | L=0,500м | 1 |\n|  | □ | 8 | 25х3 |  |  |  | C245 | L=0,650м | 1 |\n|  | Анкер |  | HSA-M10х90 |  |  |  |  |  | 20 |\n|  |  |  |  |  |  |  |  |  |  |\n\n"
+            }
+          ],
+          "unresolved_block_ids": [
+            "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "blk_6d4c4daf192546de9f1dce661aafe577",
+            "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "blk_2f7923b916294bdcac3dd9b3d5589665",
+            "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "blk_eff2811805d64c26b34d72e41ecbb194",
+            "blk_f0a5333974ac4088b7778f525922b014",
+            "blk_2f6153fc7d8243798ccea08249042194"
+          ],
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [
+            "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "blk_6d4c4daf192546de9f1dce661aafe577",
+            "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "blk_2f7923b916294bdcac3dd9b3d5589665",
+            "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "blk_eff2811805d64c26b34d72e41ecbb194",
+            "blk_f0a5333974ac4088b7778f525922b014",
+            "blk_2f6153fc7d8243798ccea08249042194"
+          ],
+          "missing_or_ambiguous_block_ids": [],
+          "reference_origins": {
+            "blk_262b1bd1d76146e7a8e45b529a38ac2e": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_6d4c4daf192546de9f1dce661aafe577": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_f8b3c96af858494c946ff4f1ceaa1fb5": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_8e8d4c0218c6473ab7885f5aed70bafd": [
+              "context_retrieval"
+            ],
+            "blk_2f7923b916294bdcac3dd9b3d5589665": [
+              "context_retrieval"
+            ],
+            "blk_9dbddaba8e334be3ab857afe48df76ec": [
+              "context_retrieval"
+            ],
+            "blk_b6c5ef9df6c74b21b52b5a9379ff0481": [
+              "context_retrieval"
+            ],
+            "blk_ddc4b49561b745ffab319ae7f3b20860": [
+              "context_retrieval"
+            ],
+            "blk_e0e6bcff961f41f3ad9620d662bd7b43": [
+              "context_retrieval"
+            ],
+            "blk_ad6205eb490d43edadcdfc3bd8c77e05": [
+              "context_retrieval"
+            ],
+            "blk_eff2811805d64c26b34d72e41ecbb194": [
+              "context_retrieval"
+            ],
+            "blk_f0a5333974ac4088b7778f525922b014": [
+              "context_retrieval"
+            ],
+            "blk_7d22d8ae35fa45cba05457d5ecb978a4": [
+              "context_retrieval"
+            ],
+            "blk_2f6153fc7d8243798ccea08249042194": [
+              "context_retrieval"
+            ],
+            "blk_6361593a2045407a94dff35af62ca5c3": [
+              "context_retrieval"
+            ]
+          },
+          "graphic_metadata": [
+            {
+              "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+              "stamp": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: Р | Sheet: 3 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 2 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+            },
+            {
+              "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+              "stamp": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: Р | Sheet: 3 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 2 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+            },
+            {
+              "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+              "stamp": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: Р | Sheet: 3 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 2 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+            },
+            {
+              "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+              "stamp": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...6, 8 | Organization: GLOBUS ПРОЕКТ | Revisions: Не указано"
+            },
+            {
+              "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+              "stamp": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...6, 8 | Organization: GLOBUS ПРОЕКТ | Revisions: Не указано"
+            },
+            {
+              "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+              "stamp": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+            },
+            {
+              "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+              "stamp": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+            },
+            {
+              "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+              "stamp": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+            },
+            {
+              "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+              "stamp": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+            },
+            {
+              "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+              "stamp": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+            },
+            {
+              "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+              "stamp": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+            }
+          ],
+          "source_context_status": "needs_data",
+          "review_instruction": "Compare original source claims in source_review_requests with the final finding and authoritative TEXT. Return supported/refuted/needs_data separately for each substantive claim, with exact evidence and reasoning. A valid source ID is not proof. For arithmetic enumerate source rows and reproduce the operation. Do not infer absence from bounded context or correct TEXT from raster. Graphics and missing linked documents require additional evidence; preserve uncertainty. For a graphic actually attached to this request, cite type=image, block_id, image_sha256, bbox_norm_xyxy=[left,top,right,bottom] in [0,1], and a concrete observation. A file listed as available but not attached is not visual evidence. Do not rewrite or remove the final finding in this review response.",
+          "context_search_receipt": {
+            "hits": [
+              {
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "kind": "IMAGE",
+                "page": 5,
+                "queries": [
+                  "ОГМ 4",
+                  "ОГМ 6"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 4": "body_token",
+                  "ОГМ 6": "body_token"
+                },
+                "start_line": 361,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "Р",
+                  "sheet": "3",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "kind": "IMAGE",
+                "page": 5,
+                "queries": [
+                  "ОГМ 4"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 4": "body_token"
+                },
+                "start_line": 393,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "Р",
+                  "sheet": "3",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+                "kind": "IMAGE",
+                "page": 5,
+                "queries": [
+                  "ОГМ 6"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 6": "body_token"
+                },
+                "start_line": 377,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "Р",
+                  "sheet": "3",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+                "kind": "IMAGE",
+                "page": 6,
+                "queries": [
+                  "ОГМ 4"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 4": "body_token"
+                },
+                "start_line": 444,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "4",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "kind": "IMAGE",
+                "page": 6,
+                "queries": [
+                  "ОГМ 6"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 6": "body_token"
+                },
+                "start_line": 547,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "4",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+                "kind": "TEXT",
+                "page": 6,
+                "queries": [
+                  "ОГМ 4"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 4": "body_token"
+                },
+                "start_line": 482,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "4",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+                "kind": "TEXT",
+                "page": 6,
+                "queries": [
+                  "ОГМ 6"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 6": "body_token"
+                },
+                "start_line": 666,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "4",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+                "kind": "IMAGE",
+                "page": 8,
+                "queries": [
+                  "ОГМ 4"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 4": "body_token"
+                },
+                "start_line": 865,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "6",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+                "kind": "IMAGE",
+                "page": 7,
+                "queries": [
+                  "ОГМ 6"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 6": "body_token"
+                },
+                "start_line": 795,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "5",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+                "kind": "TEXT",
+                "page": 8,
+                "queries": [
+                  "ОГМ 4"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 4": "body_token"
+                },
+                "start_line": 919,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "6",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+                "kind": "IMAGE",
+                "page": 8,
+                "queries": [
+                  "ОГМ 6"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 6": "body_token"
+                },
+                "start_line": 1001,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "6",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+                "kind": "TEXT",
+                "page": 8,
+                "queries": [
+                  "ОГМ 6"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 6": "body_token"
+                },
+                "start_line": 1063,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "6",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              }
+            ],
+            "backlog": [],
+            "query_hit_counts": {
+              "ПД-00580716-КМ1.2 лист 6": 0,
+              "ОГМ 4": 8,
+              "ОГМ 6": 9
+            },
+            "rejected_queries": [],
+            "deferred_queries": [],
+            "already_supplied": [
+              {
+                "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+                "kind": "IMAGE",
+                "page": 7,
+                "queries": [
+                  "ОГМ 4",
+                  "ОГМ 6"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 4": "body_token",
+                  "ОГМ 6": "body_token"
+                },
+                "start_line": 728,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "5",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+                "kind": "IMAGE",
+                "page": 7,
+                "queries": [
+                  "ОГМ 4"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 4": "body_token"
+                },
+                "start_line": 761,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "5",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                "kind": "IMAGE",
+                "page": 7,
+                "queries": [
+                  "ОГМ 6"
+                ],
+                "query_match_kinds": {
+                  "ОГМ 6": "body_token"
+                },
+                "start_line": 777,
+                "source_provenance": {
+                  "code": "ПД-00580716-КМ1.2",
+                  "stage": "П",
+                  "sheet": "5",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              }
+            ],
+            "absence_proven": false,
+            "sheet_lookup_enabled": false,
+            "boundary": "Literal MD search, numeric dimension typography navigation and optional same-version sheet lookup; navigation does not prove identity or equivalent execution. Zero matches do not establish absence.",
+            "added_block_ids": [
+              "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+              "blk_2f7923b916294bdcac3dd9b3d5589665",
+              "blk_9dbddaba8e334be3ab857afe48df76ec",
+              "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+              "blk_ddc4b49561b745ffab319ae7f3b20860",
+              "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+              "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+              "blk_eff2811805d64c26b34d72e41ecbb194",
+              "blk_f0a5333974ac4088b7778f525922b014",
+              "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+              "blk_2f6153fc7d8243798ccea08249042194",
+              "blk_6361593a2045407a94dff35af62ca5c3"
+            ],
+            "rejected_ambiguous_block_ids": []
+          },
+          "context_revision": 1,
+          "context_sha256": "45b72c9aea2d309277701b1be0e54f5b62930585dc8a895dcb4aae64f548faab",
+          "graphic_attachments": [
+            {
+              "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_262b1bd1d76146e7a8e45b529a38ac2e.png",
+              "sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+              "bytes": 178649,
+              "width": 800,
+              "height": 531,
+              "mime_type": "image/png",
+              "attached_to_model": true,
+              "visually_reviewed": false
+            },
+            {
+              "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_6d4c4daf192546de9f1dce661aafe577.png",
+              "sha256": "03f98971a897be59c307f7dfc84408102f399994764a0d5a7a20a1e6bc737bfa",
+              "bytes": 188282,
+              "width": 800,
+              "height": 514,
+              "mime_type": "image/png",
+              "attached_to_model": true,
+              "visually_reviewed": false
+            },
+            {
+              "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f8b3c96af858494c946ff4f1ceaa1fb5.png",
+              "sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+              "bytes": 492388,
+              "width": 550,
+              "height": 1920,
+              "mime_type": "image/png",
+              "attached_to_model": true,
+              "visually_reviewed": false
+            },
+            {
+              "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_8e8d4c0218c6473ab7885f5aed70bafd.png",
+              "sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+              "bytes": 499681,
+              "width": 536,
+              "height": 1991,
+              "mime_type": "image/png",
+              "attached_to_model": true,
+              "visually_reviewed": false
+            },
+            {
+              "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_2f7923b916294bdcac3dd9b3d5589665.png",
+              "sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+              "bytes": 113447,
+              "width": 428,
+              "height": 800,
+              "mime_type": "image/png",
+              "attached_to_model": true,
+              "visually_reviewed": false
+            },
+            {
+              "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_9dbddaba8e334be3ab857afe48df76ec.png",
+              "sha256": "6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b",
+              "bytes": 137829,
+              "width": 485,
+              "height": 800,
+              "mime_type": "image/png",
+              "attached_to_model": true,
+              "visually_reviewed": false
+            },
+            {
+              "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_b6c5ef9df6c74b21b52b5a9379ff0481.png",
+              "sha256": "073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018",
+              "bytes": 506845,
+              "width": 3873,
+              "height": 728,
+              "mime_type": "image/png",
+              "attached_to_model": true,
+              "visually_reviewed": false
+            },
+            {
+              "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_ddc4b49561b745ffab319ae7f3b20860.png",
+              "sha256": "a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62",
+              "bytes": 438069,
+              "width": 2818,
+              "height": 760,
+              "mime_type": "image/png",
+              "attached_to_model": true,
+              "visually_reviewed": false
+            },
+            {
+              "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_eff2811805d64c26b34d72e41ecbb194.png",
+              "sha256": "f6907f70f3d50ece52d1b7a4bb65b98f13d1a7edd9fc138fc7f48575a6c983e7",
+              "bytes": 520243,
+              "width": 3834,
+              "height": 754,
+              "mime_type": "image/png",
+              "attached_to_model": false,
+              "visually_reviewed": false
+            },
+            {
+              "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f0a5333974ac4088b7778f525922b014.png",
+              "sha256": "afe14108cef59c53cc2e0518187d711a9fce8c09552044605c99c59611221a00",
+              "bytes": 208049,
+              "width": 800,
+              "height": 532,
+              "mime_type": "image/png",
+              "attached_to_model": false,
+              "visually_reviewed": false
+            },
+            {
+              "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_2f6153fc7d8243798ccea08249042194.png",
+              "sha256": "da37fbca4a5fc6a4c22b0d146614319bcbb0de6eca5e123d0ae82c6b6c5a5513",
+              "bytes": 628783,
+              "width": 3778,
+              "height": 791,
+              "mime_type": "image/png",
+              "attached_to_model": false,
+              "visually_reviewed": false
+            }
+          ],
+          "unavailable_graphics": [],
+          "graphic_context_status": "ready_for_attachment"
+        }
+      ],
+      "pending_count": 1,
+      "completed_count": 0,
+      "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+      "automatic_dispatch": false,
+      "semantic_verified": false
+    },
+    "response": {
+      "finding_id": "F-014",
+      "finding_sha256": "2cb3750197631ceb78b04b1e846006c0af774cc12dcee66a93d4cabc1050843b",
+      "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+      "context_sha256": "45b72c9aea2d309277701b1be0e54f5b62930585dc8a895dcb4aae64f548faab",
+      "claims": [
+        {
+          "claim_id": "F-014-C1",
+          "claim": "На схеме расположения секции С3 промежуточная площадка на отметке +7,270 обозначена как ОГМ 6.",
+          "status": "refuted",
+          "reason": "Указанная исходная схема имеет заголовок «на отм. +9.110». На ней действительно присутствуют выноска ОГМ 6 и отметка плиты +7.270, но выноска направлена к ограждению вдоль марша. Совместное присутствие этих надписей не означает обозначение площадки +7,270 маркой ОГМ 6. Вторая исходная схема озаглавлена «на отм. +6.070» и содержит марки ОГМ 2, ОГМ 3 и ОГМ 4.",
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+              "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+              "bbox_norm_xyxy": [
+                0.145,
+                0.035,
+                0.72,
+                0.098
+              ],
+              "observation": "Заголовок схемы указывает отметку +9.110."
+            },
+            {
+              "type": "image",
+              "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+              "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+              "bbox_norm_xyxy": [
+                0.2,
+                0.48,
+                0.48,
+                0.723
+              ],
+              "observation": "Выноска ОГМ 6 заканчивается на продольной линии ограждения у марша. Отдельная надпись «Отм. Ж/Б плиты +7.270» обозначает плиту, а не марку всего ограждения площадки."
+            },
+            {
+              "type": "image",
+              "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+              "image_sha256": "03f98971a897be59c307f7dfc84408102f399994764a0d5a7a20a1e6bc737bfa",
+              "bbox_norm_xyxy": [
+                0.165,
+                0.01,
+                0.86,
+                0.81
+              ],
+              "observation": "Схема озаглавлена «на отм. +6.070»; показаны ОГМ 3, ОГМ 4 и ОГМ 2, а также отметки плит +4.630 и +6.070."
+            }
+          ]
+        },
+        {
+          "claim_id": "F-014-C2",
+          "claim": "На разрезе 1-1 того же листа секции С3 присутствует обозначение ОГМ 4 у участка лестницы, примыкающего к отметке +7,270.",
+          "status": "supported",
+          "reason": "На разрезе видна выноска ОГМ 4 к ограждению марша между уровнями +6,070 и +7,270. Метаданные относят разрез и исходную схему к секции 3, листу 5, стадии П. Это подтверждает наличие марки и принадлежность листу, но не обозначение всей площадки и не конфликт с ОГМ 6.",
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+              "image_sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+              "bbox_norm_xyxy": [
+                0.09,
+                0.77,
+                0.88,
+                0.828
+              ],
+              "observation": "ОГМ 4 обозначает ограждение наклонного участка между площадками с отметками +6,070 и +7,270."
+            },
+            {
+              "type": "metadata",
+              "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+              "quote": "Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5"
+            },
+            {
+              "type": "metadata",
+              "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+              "quote": "Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190"
+            },
+            {
+              "type": "metadata",
+              "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+              "quote": "Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5"
+            },
+            {
+              "type": "metadata",
+              "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+              "quote": "Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190"
+            }
+          ]
+        },
+        {
+          "claim_id": "F-014-C3",
+          "claim": "Марка одного и того же ограждения площадки +7,270 секции С3 различается на схеме и разрезе: ОГМ 6 против ОГМ 4.",
+          "status": "needs_data",
+          "reason": "Сопоставление одного физического элемента не установлено: исходная выноска ОГМ 6 взята со схемы +9,110, а ОГМ 4 на разрезе относится к другому высотному участку. Приложенная схема с заголовком +7,270 принадлежит секции 2, стадии Р, листу 3; использовать её как схему секции 3 нельзя. В секции 2 на схеме +7,270 присутствует ОГМ 4, а ОГМ 6 показано на схеме вышележащих повторяющихся этажей. Это не доказывает состояние секции 3. Заявленный конфликт не подтверждён, но отсутствие иных конфликтов на всём листе или в проекте также не установлено.",
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+              "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+              "bbox_norm_xyxy": [
+                0.145,
+                0.035,
+                0.885,
+                0.74
+              ],
+              "observation": "ОГМ 6 показано на схеме +9.110; наличие рядом отметки плиты +7.270 не устанавливает тождество с ограждением ОГМ 4 на нижележащем участке разреза."
+            },
+            {
+              "type": "image",
+              "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+              "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+              "bbox_norm_xyxy": [
+                0.11,
+                0.008,
+                0.91,
+                0.793
+              ],
+              "observation": "На приложенной схеме +7.270 видны ОГМ 2, ОГМ 4 и ОГМ 5; ОГМ 6 на этом изображении не обозначено."
+            },
+            {
+              "type": "metadata",
+              "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+              "quote": "Code: ПД-00580716-КМ1.2 | Stage: Р | Sheet: 3"
+            },
+            {
+              "type": "metadata",
+              "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+              "quote": "Наименование листа: Схема расположения ограждений лестницы секции 2 на отм. +0.550 ~ +41.190"
+            },
+            {
+              "type": "image",
+              "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+              "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+              "bbox_norm_xyxy": [
+                0.1,
+                0.745,
+                0.9,
+                0.82
+              ],
+              "observation": "На разрезе секции 2 ОГМ 4 также находится у марша между +6,070 и +7,270."
+            },
+            {
+              "type": "image",
+              "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+              "image_sha256": "6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b",
+              "bbox_norm_xyxy": [
+                0.09,
+                0.008,
+                0.915,
+                0.733
+              ],
+              "observation": "ОГМ 6 показано на отдельной схеме повторяющихся верхних уровней, начиная с +10.630; заголовок не включает +7.270."
+            }
+          ],
+          "missing_data": [
+            "Изображение схемы секции 3, показывающей соответствующий участок у +7,270, с прослеживаемыми концами выносок и границами отдельных ограждений.",
+            "Однозначное сопоставление выносок ОГМ 6 и ОГМ 4 с одним и тем же ограждением, а не с соседними маршами."
+          ]
+        },
+        {
+          "claim_id": "F-014-C4",
+          "claim": "Требуемую марку следует определить по деталям листа 6 и одинаково обозначить её на схеме и разрезе.",
+          "status": "needs_data",
+          "reason": "Согласовать обозначения одного элемента было бы обоснованно при подтверждённом конфликте. Пока конфликт не установлен, необходимость изменения марки не доказана. Текст листа 6 различает исполнения ОГМ 4 и ОГМ 6, но ведомости не устанавливают привязку конкретного ограждения к площадке +7,270. Приложенные изображения деталей относятся к листу 4, а изображения деталей листа 6 недоступны в данном наборе; подменять ими исполнение нельзя.",
+          "evidence": [
+            {
+              "type": "text",
+              "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+              "quote": "###### Ведомость элементов ограждения ОГМ 4 (1шт.)"
+            },
+            {
+              "type": "text",
+              "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+              "quote": "#### Ведомость элементов ограждения ОГМ 6 (8 шт.)"
+            },
+            {
+              "type": "image",
+              "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+              "image_sha256": "073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018",
+              "bbox_norm_xyxy": [
+                0.78,
+                0.09,
+                0.97,
+                0.9
+              ],
+              "observation": "Показана отдельная конструкция ОГМ 4 с горизонтальным участком и наклонным ограждением. Изображение само по себе не задаёт её привязку к секции 3."
+            },
+            {
+              "type": "metadata",
+              "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+              "quote": "Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 4"
+            },
+            {
+              "type": "image",
+              "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+              "image_sha256": "a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62",
+              "bbox_norm_xyxy": [
+                0.365,
+                0.12,
+                0.627,
+                0.95
+              ],
+              "observation": "ОГМ 6 показано как самостоятельное исполнение ограждения. Совпадение марки с обозначениями на другом листе не доказывает применимость этой детали к спорному месту."
+            },
+            {
+              "type": "metadata",
+              "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+              "quote": "Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 4"
+            }
+          ],
+          "missing_data": [
+            "Подтверждение конфликта обозначений одного элемента секции 3.",
+            "Графические детали листа 6 из блоков blk_eff2811805d64c26b34d72e41ecbb194 и blk_2f6153fc7d8243798ccea08249042194, указанных как недоступные из-за image_limit.",
+            "Привязка соответствующего исполнения листа 6 к проверяемому ограждению."
+          ]
+        },
+        {
+          "claim_id": "F-014-C5",
+          "claim": "Указанное расхождение создаёт риск изготовления или монтажа ограждения другой марки.",
+          "status": "needs_data",
+          "reason": "Это возможное условное последствие реального противоречия в обозначениях. В представленном случае само противоречие для одного элемента не подтверждено. Сведений о передаче ошибочной марки в изготовление или монтаж нет; фактическая ошибка также не заявлена и не установлена.",
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+              "image_sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+              "bbox_norm_xyxy": [
+                0.09,
+                0.77,
+                0.88,
+                0.828
+              ],
+              "observation": "Разрез содержит выноску ОГМ 4, но изображение не свидетельствует об ошибочном выборе марки при изготовлении или монтаже."
+            }
+          ],
+          "missing_data": [
+            "Подтверждённая неоднозначность марки одного ограждения в применимых документах, способная повлиять на выбор изделия."
+          ]
+        },
+        {
+          "claim_id": "F-014-C6",
+          "claim": "Замечание имеет эксплуатационную тяжесть.",
+          "status": "needs_data",
+          "reason": "Представлены обозначения проектных ограждений. Они не подтверждают физический дефект, изменение защитных свойств или последствие для эксплуатации. Критерии присвоения категории «ЭКСПЛУАТАЦИОННОЕ» также не приведены.",
+          "evidence": [],
+          "missing_data": [
+            "Критерии классификации тяжести замечаний.",
+            "Подтверждённое влияние рассматриваемого несоответствия на эксплуатационные свойства ограждения."
+          ]
+        },
+        {
+          "claim_id": "F-014-C7",
+          "claim": "ГОСТ 21.502-2016 является нормативным основанием замечания.",
+          "status": "needs_data",
+          "reason": "В display_fields стандарт прямо указан как норматив-кандидат с неподтверждённым пунктом. Текст требования и обоснование его применимости не представлены; нарушение этого стандарта установить нельзя.",
+          "evidence": [],
+          "missing_data": [
+            "Точный пункт и текст требования ГОСТ 21.502-2016, применимого к рассматриваемому обозначению.",
+            "Обоснование связи установленного несоответствия с этим требованием."
+          ]
+        }
+      ]
+    },
+    "decision": {
+      "response_sha256": "7cd85d592ae906202556bb0800122f3f0dd954a61259ceba08ef1aebd86ae7e8",
+      "origin": "explicit_source_review",
+      "reviewer": "candidate_adjudicator",
+      "reason": "Проверены все восемь изображений и предоставленный TEXT. Подтверждено наличие ОГМ 4 на разрезе секции 3 между отметками +6,070 и +7,270. Однако тождество этого ограждения элементу с выноской ОГМ 6 на исходной схеме не установлено. Заголовок схемы +9,110 и направление выноски сами по себе недостаточны для окончательного опровержения исходной привязки: схема содержит несколько высотных отметок. Изображения секции 2 и деталей листа 4 не разрешают спор по секции 3. Подтверждённого ядра замечания нет, но достаточного основания для его подавления также нет. Требуется внутренняя проверка полного листа 5 секции 3: проследить границы и выноски ограждений у +7,270 на планах и сопоставить их с маршами разреза. Это конкретная операция по установлению общего объекта сравнения, а не вопрос проектировщику. Оснований считать случай подтверждённой мелкой редакционной ошибкой или внепрофильным запросом нет.",
+      "action": "defer",
+      "claim_reviews": [
+        {
+          "claim_id": "F-014-C1",
+          "role": "context",
+          "verdict": "needs_data",
+          "reason": "На изображении 1 присутствуют ОГМ 6 и отметка плиты +7,270, но выноска направлена к продольному ограждению между маршами. Это не устанавливает обозначение именно ограждения площадки. Вместе с тем заголовок +9,110 не исключает изображения элементов соседних уровней, поэтому категорическое опровержение исходной привязки недостаточно обосновано. Данное утверждение является входной привязкой для сравнения, а не самостоятельно установленным расхождением.",
+          "same_scope_verified": false,
+          "evidence_sufficiency_verified": false
+        },
+        {
+          "claim_id": "F-014-C2",
+          "role": "context",
+          "verdict": "supported",
+          "reason": "На изображении 3 выноска ОГМ 4 относится к ограждению марша между +6,070 и +7,270. Метаданные подтверждают секцию 3, лист 5, стадию П и принадлежность исходных схем тому же листу. Подтверждено именно наличие этой марки у указанного участка, без вывода о конфликте обозначений.",
+          "same_scope_verified": true,
+          "evidence_sufficiency_verified": true
+        },
+        {
+          "claim_id": "F-014-C3",
+          "role": "defect_basis",
+          "verdict": "needs_data",
+          "reason": "Для расхождения ОГМ 6/ОГМ 4 необходимо доказать, что обе выноски обозначают одно ограждение. Представленные ссылки этого соответствия не устанавливают. Изображения 4–6 относятся к секции 2 и не могут подтвердить или опровергнуть конфликт секции 3. Неустановленное тождество элементов не является ни подтверждением расхождения, ни доказательством его отсутствия.",
+          "same_scope_verified": false,
+          "evidence_sufficiency_verified": false
+        },
+        {
+          "claim_id": "F-014-C4",
+          "role": "recommendation",
+          "verdict": "needs_data",
+          "reason": "Необходимость исправления обозначений зависит от подтверждения конфликта. Ведомости листа 6 различают ОГМ 4 и ОГМ 6, но не устанавливают их привязку к спорному элементу. Проверенные изображения 7–8 относятся к листу 4; использовать их вместо недоступных графических деталей листа 6 нельзя. Сначала требуется сопоставление элементов на листе 5.",
+          "same_scope_verified": false,
+          "evidence_sufficiency_verified": false
+        },
+        {
+          "claim_id": "F-014-C5",
+          "role": "context",
+          "verdict": "needs_data",
+          "reason": "Ошибочный выбор изделия является возможным условным последствием противоречивой маркировки, однако такое противоречие для рассматриваемого ограждения пока не установлено. Отсутствие сведений о фактической ошибке изготовления или монтажа не опровергает условный риск.",
+          "same_scope_verified": false,
+          "evidence_sufficiency_verified": false
+        },
+        {
+          "claim_id": "F-014-C6",
+          "role": "context",
+          "verdict": "needs_data",
+          "reason": "Для категории «ЭКСПЛУАТАЦИОННОЕ» не представлено положительного обоснования применительно к установленному несоответствию: сам конфликт и его влияние на эксплуатационные свойства остаются неподтверждёнными. Это не доказывает отсутствие потенциальных последствий.",
+          "same_scope_verified": false,
+          "evidence_sufficiency_verified": false
+        },
+        {
+          "claim_id": "F-014-C7",
+          "role": "context",
+          "verdict": "needs_data",
+          "reason": "Исходное поле называет ГОСТ 21.502-2016 только нормативом-кандидатом с неподтверждённым пунктом. Текст применимого требования отсутствует; считать стандарт установленным основанием нарушения нельзя.",
+          "same_scope_verified": false,
+          "evidence_sufficiency_verified": false
+        }
+      ]
+    }
+  }
+}
