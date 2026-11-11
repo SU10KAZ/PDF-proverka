@@ -1,0 +1,690 @@
+{
+  "status": "CO_cable_scope_review_with_rowwise_sum",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "f5ffc43a61aa8312ef549d8770c6ebc4d5cd6ff7375e53891eb76f3092d5d062",
+  "queue_after_sha256": "14d1fc3d01a080ad05295c6957ead1683cb96f4a685711549c6d50f8b213128a",
+  "reviewer": "coordinator_authoritative_TEXT_and_previously_viewed_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-007",
+      "finding": {
+        "id": "F-007",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кабельные линии",
+        "sheet": "Листы 54, 31, 32, 33, 34, 35, 10",
+        "page": [
+          58,
+          89,
+          90,
+          91,
+          92,
+          93,
+          103
+        ],
+        "problem": "Не прослеживается кабельное обеспечение цепочки сигнализаторов СО 5.",
+        "description": "Для СТГ-3-И-5.1–5.18 отсутствуют строки кабельного журнала. Учтённые 985 м интерфейсного кабеля полностью складываются из цепочек 1–4: 450 + 435 + 100 м. Дополнительные линии цепочки 5 этим объёмом не подтверждены.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), кандидат п. 4.1; ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту документации внешних проводок системы газоанализа.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить учёт кабельных материалов по всем предусмотренным линиям.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Добавить марки, маршруты и длины линий цепочки 5 либо ссылку на комплект их учёта.",
+        "risk": "Отсутствие связи с частью сигнализаторов и дефицит кабеля при монтаже.",
+        "source_finding_ids": [
+          "T-007"
+        ],
+        "source_block_ids": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "related_block_ids": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_206d5fa1055148c5b12414a2919fbe84"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+            "page": 58
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "43 строкиБПС групп1–4 дают985м: группы1+2=450, группа3=435, группа4=100.",
+          "verdict": "confirmed_authoritative_TEXT_arithmetic",
+          "limits": "Суммирована только графа длины по проекту; повтор в правой части не суммирован."
+        },
+        {
+          "claim": "СО содержит985мКИС-Пнг(А)-HF2×2×0,78.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Все43строки имеют тождественную марку указанной позицииСО.",
+          "verdict": "not_established_literal_spelling_difference",
+          "limits": "ВTEXT присутствуютHF/НФ и варианты сечения; суммирование по маркировкам линий не доказывает эквивалентность написаний."
+        },
+        {
+          "claim": "В проверенных43строках нет отдельныхБПС-5.x.",
+          "verdict": "confirmed_bounded_search",
+          "limits": "Это не доказательство отсутствия любых иных обозначений кабеля группы5 во всём комплекте."
+        },
+        {
+          "claim": "Кабельное обеспечение группы5 не показано вообще.",
+          "verdict": "refuted_graphic_scope",
+          "limits": "Схема лист45 показывает соединения5.1…5.18 и подключениеШлейф2, рамка группы отсылает ккниге1 АК1-ПА."
+        },
+        {
+          "claim": "Группа5 не покрыта данными проверенных строкКЖ и требует сверки смежного комплекта.",
+          "verdict": "supported_cross_package_question",
+          "limits": "985м не доказывают полноту АК1-ПА и не обосновывают добавление длины вАК2-ПА. Границу участка доСУ-К33 надо проверить отдельно."
+        },
+        {
+          "claim": "Подтверждено отсутствие кабеля при монтаже.",
+          "verdict": "not_established",
+          "limits": "СмежнаяСО, полный комплект кабельных данных и фактический монтаж не проверены."
+        },
+        {
+          "claim": "Нарушен конкретный нормативный пункт.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Цитата и применимость не подтверждены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "Combine with F-006 as one adjacent-package verification topic; retain distinct equipment and cable checks, not two established omissions.",
+      "profile_and_section": "questions_clarifications_cross_package_completeness",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+          "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e",
+          "primary_adjudication": null,
+          "limits": [
+            "Проверены таблица применимости, позиции19.2–19.3 СО, 43 строки БПС групп1–4, позиция интерфейсного кабеля985м и две схемы. Это не полная проверка всего кабельного журнала на отсутствие иных вариантов обозначения группы5.",
+            "Разные написания HF/НФ и символы сечения сохранены из TEXT; суммирование здесь по идентификаторам линий, не доказательство эквивалентности всех марок. Повторные значения графы проложен не суммировались.",
+            "Смежная спецификация АК1-ПА не проверена; ссылка не доказывает полноту поставки по двум комплектам. Вывод о недостаче также не доказан.",
+            "Нормативные нарушения ГОСТ21.110 и ГОСТ21.408 не проверены; не включать их в подтверждённые технические находки.",
+            "Самостоятельного решения инженера по этим blind-кандидатам не установлено. Их нельзя объявлять принятыми инженером или подтверждёнными пропусками классического метода."
+          ],
+          "wording": "При межкомплектной проверке запросить книгу1 АК1-ПА и подтвердить учёт группы5 (18 сигнализаторов, КСИ и соединительные линии до СУ-К33). Схемы АК2-ПА явно относят эту группу к АК1-ПА; добавление изделий и кабеля в АК2-ПА по одной арифметической разнице не обосновано."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_206d5fa1055148c5b12414a2919fbe84.png",
+          "sha256": "1eaedbf298530a27e8b5092fe8efae5bd4fec55ffa7c76ff671356830fe811b0",
+          "block_id": "blk_206d5fa1055148c5b12414a2919fbe84",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Group5 wired chain and connection to loop2 shown; group5 frame explicitly refers to book1 AK1-PA."
+        }
+      ],
+      "disposition": "assessed_reclassify_CO_cable_gap_as_adjacent_package_question"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+      "authoritative_TEXT": "### BLOCK #238 [TEXT]: blk_abed08ccd9a347bb9fa290fd8696b197\n\n> **Created:** 2026-09-28 07:29:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/E6kYjapBaUrlVWchuUW8)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 31 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| ВТЗ |  |  |  |  |  |  |  |  |  |\n| У4-1 | У1 | БД-Т31 | КСПВПГнг(А)-HF | 1х2х0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10 |  |\n| У4-2 | M1 | БД-Т31 | ППГнг(А)-HF | 3х1,5 | 10 | труба гофр. | ППГнг(А)-HF 3х1,5 | 10 |  |\n| У4-3 | Пульт КАТ1-П | БД-Т31 | КИС-Пнг(А)-HF | 3х2х0,78 | 30 | труба гофр. | КИС-Пнг(А)-HF 3х2х0,78 | 30 |  |\n| У4-4 | У4.3 | БД-Т31 | КСПВПГнг(А)-HF | 4х2х0,75 | 20 | труба гофр. | КСПВПГнг(А)-HF 4х2х0,75 | 20 |  |\n| У4-5 | ТС1 | БД-Т31 | КСПВПГнг(А)-HF | 1х2х0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10 |  |\n| У4-6 | SQ1 | БД-Т31 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15 |  |\n| СКЗ |  |  |  |  |  |  |  |  |  |\n| БПС-1.1 | СУ-К32 | СТГ-З-И-1.1 | КИС-Пнг(А)-HF | 2х2х0.78 | 15 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 15 |  |\n| БПС-1.2 | СТГ-З-И-1.1 | СТГ-З-И-1.2 | КИС-Пнг(А)-HF | 2х2х0.78 | 15 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 15 |  |\n| БПС-1.3 | СТГ-З-И-1.2 | СТГ-З-И-1.3 | КИС-Пнг(А)-HF | 2х2х0.78 | 35 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 35 |  |\n| БПС-1.4 | СТГ-З-И-1.3 | СТГ-З-И-1.4 | КИС-Пнг(А)-HF | 2х2х0.78 | 15 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 15 |  |\n| БПС-1.5 | СТГ-З-И-1.4 | СТГ-З-И-1.5 | КИС-Пнг(А)-HF | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 20 |  |\n| БПС-1.6 | СТГ-З-И-1.5 | СТГ-З-И-1.6 | КИС-Пнг(А)-HF | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 20 |  |\n| БПС-1.7 | СТГ-З-И-1.6 | СТГ-З-И-1.7 | КИС-Пнг(А)-HF | 2х2х0.78 | 25 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 25 |  |\n| БПС-1.8 | СТГ-З-И-1.7 | СТГ-З-И-1.8 | КИС-Пнг(А)-HF | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 20 |  |\n\n## Page 90 — Sheet 32\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+      "authoritative_TEXT": "### BLOCK #239 [TEXT]: blk_7b41b193ccad4f559ba654a2248576d5\n\n> **Created:** 2026-09-28 07:29:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/M3BIlLPgZmdtb_pUskwG)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 32 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| БПС-1.9 | СТГ-З-И-1.8 | СТГ-З-И-1.9 | КИС-Пнг(А)-НФ | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 20 |  |\n| БПС-1.10 | СТГ-З-И-1.9 | СТГ-З-И-1.10 | КИС-Пнг(А)-НФ | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 20 |  |\n| БПС-1.11 | СТГ-З-И-1.10 | СТГ-З-И-1.11 | КИС-Пнг(А)-НФ | 2x2x0.78 | 25 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 25 |  |\n| БПС-1.12 | СТГ-З-И-1.11 | СТГ-З-И-1.12 | КИС-Пнг(А)-НФ | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 20 |  |\n| БПС-1.13 | СТГ-З-И-1.12 | СТГ-З-И-1.13 | КИС-Пнг(А)-НФ | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 20 |  |\n| БПС-1.14 | СТГ-З-И-1.13 | СТГ-З-И-1.14 | КИС-Пнг(А)-НФ | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 20 |  |\n| БПС-2.1 | СУ-К32 | СТГ-З-И-2.1 | КИС-Пнг(А)-НФ | 2x2x0.78 | 90 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 90 |  |\n| БПС-2.2 | СТГ-З-И-2.1 | СТГ-З-И-2.2 | КИС-Пнг(А)-НФ | 2x2x0.78 | 15 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 15 |  |\n| БПС-2.3 | СТГ-З-И-2.2 | СТГ-З-И-2.3 | КИС-Пнг(А)-НФ | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 20 |  |\n| БПС-2.4 | СТГ-З-И-2.3 | СТГ-З-И-2.4 | КИС-Пнг(А)-НФ | 2x2x0.78 | 15 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 15 |  |\n| БПС-2.5 | СТГ-З-И-2.4 | СТГ-З-И-2.5 | КИС-Пнг(А)-НФ | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 20 |  |\n| СУК2-2 | СУ-К32 | КК1-СКЗ | КСПВПнг(А)-НФ | 1x2x0,75 | 210 | лоток 100х100, лоток 200х100, труба гофр., труба водогазопроводн ая | КСПВПнг(А)-НФ 1x2x0,75 | 90/110/5 /5 |  |\n\n## Page 91 — Sheet 33\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+      "authoritative_TEXT": "### BLOCK #240 [TEXT]: blk_3eda565e44cb443c8143585904b82ced\n\n> **Created:** 2026-09-28 07:29:52 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/F3k3dilWTWuCSYTmZRft)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 33 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| СУК1-2 | СУ-К31 | КК1-СКЗ | КСПВПГнг(А)-НФ | 1х2х0,75 | 195 | лоток 100x100, труба гофр., труба водогазопроводная | КСПВПГнг(А)-НФ 1х2х0,75 | 185/5/5 |  |\n| СУК3-2 | СУ-К33 | КК1-СКЗ | КСПВПГнг(А)-НФ | 1х2х0,75 | 230 | лоток 100x100, лоток 200x100, труба гофр., труба водогазопроводная | КСПВПГнг(А)-НФ 1х2х0,75 | 10/210/5 /5 |  |\n| HL/HA-1 | КК1-СКЗ | HL/HA1 | КСПВПГнг(А)-НФ | 2х2х0,75 | 15 | труба гофр. | КСПВПГнг(А)-НФ 2х2х0,75 | 15 |  |\n| БПС-3.1 | СУ-К31 | СТГ-З-И-3.1 | КИС-Пнг(А)-НФ | 2х2х0.78 | 30 | труба гофр. | КИС-Пнг(А)-НФ 2х2х0.78 | 30 |  |\n| БПС-3.2 | СТГ-З-И-3.1 | СТГ-З-И-3.2 | КИС-Пнг(А)-НФ | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2х2х0.78 | 20 |  |\n| БПС-3.3 | СТГ-З-И-3.2 | СТГ-З-И-3.3 | КИС-Пнг(А)-НФ | 2х2х0.78 | 25 | труба гофр. | КИС-Пнг(А)-НФ 2х2х0.78 | 25 |  |\n| БПС-3.4 | СТГ-З-И-3.3 | СТГ-З-И-3.4 | КИС-Пнг(А)-НФ | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2х2х0.78 | 20 |  |\n| БПС-3.5 | СТГ-З-И-3.4 | СТГ-З-И-3.5 | КИС-Пнг(А)-НФ | 2х2х0.78 | 25 | труба гофр. | КИС-Пнг(А)-НФ 2х2х0.78 | 25 |  |\n| БПС-3.6 | СТГ-З-И-3.5 | СТГ-З-И-3.6 | КИС-Пнг(А)-НФ | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2х2х0.78 | 20 |  |\n| БПС-3.7 | СТГ-З-И-3.6 | СТГ-З-И-3.7 | КИС-Пнг(А)-НФ | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2х2х0.78 | 20 |  |\n| БПС-3.8 | СТГ-З-И-3.7 | СТГ-З-И-3.8 | КИС-Пнг(А)-НФ | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2х2х0.78 | 20 |  |\n| БПС-3.9 | СТГ-З-И-3.8 | СТГ-З-И-3.9 | КИС-Пнг(А)-НФ | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2х2х0.78 | 20 |  |\n| БПС-3.10 | СТГ-З-И-3.9 | СТГ-З-И-3.10 | КИС-Пнг(А)-НФ | 2х2х0.78 | 25 | труба гофр. | КИС-Пнг(А)-НФ 2х2х0.78 | 25 |  |\n\n## Page 92 — Sheet 34\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+      "authoritative_TEXT": "### BLOCK #241 [TEXT]: blk_25cd2a4f5a734187897f8aba96b1dbad\n\n> **Created:** 2026-09-28 07:29:52 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/hNB3VKrh0TOofVzW_oX-)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 34 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| БПС-3.11 | СТГ-З-И-3.10 | СТГ-З-И-3.11 | КИС-Пнг(A)-HF | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 20 |  |\n| БПС-3.12 | СТГ-З-И-3.11 | СТГ-З-И-3.12 | КИС-Пнг(A)-HF | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 20 |  |\n| БПС-3.13 | СТГ-З-И-3.12 | СТГ-З-И-3.13 | КИС-Пнг(A)-HF | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 20 |  |\n| БПС-3.14 | СТГ-З-И-3.13 | СТГ-З-И-3.14 | КИС-Пнг(A)-HF | 2x2x0.78 | 30 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 30 |  |\n| БПС-3.15 | СТГ-З-И-3.14 | СТГ-З-И-3.15 | КИС-Пнг(A)-HF | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 20 |  |\n| БПС-3.16 | СТГ-З-И-3.15 | СТГ-З-И-3.16 | КИС-Пнг(A)-HF | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 20 |  |\n| БПС-3.17 | СТГ-З-И-3.16 | СТГ-З-И-3.17 | КИС-Пнг(A)-HF | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 20 |  |\n| БПС-3.18 | СТГ-З-И-3.17 | СТГ-З-И-3.18 | КИС-Пнг(A)-HF | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 20 |  |\n| БПС-3.19 | СТГ-З-И-3.18 | СТГ-З-И-3.19 | КИС-Пнг(A)-HF | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 20 |  |\n| БПС-3.20 | СТГ-З-И-3.19 | СТГ-З-И-3.20 | КИС-Пнг(A)-HF | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 20 |  |\n| СУК1-1 | СУ-КЗ1 | ШАУВ-1-К5АС | КСПВПнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 10 |  |\n| БПС-4.1 | СУ-КЗ3 | СТГ-З-И-4.1 | КИС-Пнг(A)-HF | 2x2x0.78 | 25 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 25 |  |\n| БПС-4.2 | СТГ-З-И-4.1 | СТГ-З-И-4.2 | КИС-Пнг(A)-HF | 2x2x0.78 | 25 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 25 |  |\n| БПС-4.3 | СТГ-З-И-4.2 | СТГ-З-И-4.3 | КИС-Пнг(A)-HF | 2x2x0.78 | 30 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 30 |  |\n| БПС-4.4 | СТГ-З-И-4.3 | СТГ-З-И-4.4 | КИС-Пнг(A)-HF | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 20 |  |\n\n## Page 93 — Sheet 35\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+      "authoritative_TEXT": "### BLOCK #252 [TEXT]: blk_2258a0dfd8c84b6197e4cbb4d229ea27\n\n> **Created:** 2026-09-28 07:29:58 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/KDSLsHfatgclM-H4SazG)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 10 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 21.6 | Кабель контрольный с медными жилами | КСПВПГнг(А)-HF 2x2x0,75 |  | Паритет | м | 15 |  |  |\n| 21.7 | Кабель контрольный с медными жилами, экранированный | КСПЭВПГнг(А)-HF 1x2x0,75 |  | Паритет | м | 790 |  |  |\n| 21.8 | Кабель контрольный с медными жилами, экранированный | КСПЭВПГнг(А)-HF 2x2x0,75 |  | Паритет | м | 210 |  |  |\n| 21.9 | Кабель интерфейсный | КИС-Пнг(А)-HF 2x2x0,6 |  | Паритет | м | 450 |  |  |\n| 21.10 | Кабель интерфейсный | КИС-Пнг(А)-HF 3x2x0,78 |  | Паритет | м | 30 |  |  |\n| 21.11 | Кабель контрольный с медными жилами, экранированный, огнестойкий | КСРЭПнг(А)-FRHF 2x2x1,13 |  | Паритет | м | 420 |  |  |\n| 21.10 | Кабель интерфейсный | КИС-Пнг(А)-HF 2x2x0,78 |  | Паритет | м | 985 |  |  |\n| 22 | Трубы, лотки и монтажные материалы |  |  |  |  |  |  |  |\n| 22.1 | Труба ПВХ гибкая гофрированная Ø20мм, тяжёлая, с протяжкой, цвет серый | 91520 |  | DKC | м | 5000 |  |  |\n| 22.2 | Держатель с защелкой для крепления труб Ø20мм | 51020 |  | DKC | шт. | 10000 |  |  |\n| 22.3 | Металлорукав DN 20мм в герметичной ПВХ изоляции, Dвн 20,5 мм, Dнар 25,5, с протяжкой, цвет серый | 6071R-020P |  | DKC | м | 100 |  |  |\n| 22.4 | Лоток перфорированный 100x100 L3000 | 35341 |  | DKC | шт. | 200 |  |  |\n| 22.5 | Плита трамвайная |  |  |  | шт. | 15 |  |  |\n| 22.6 | Двойной вертикальный подвес BSD-21 | BSD2120 |  | DKC | шт. | 15 |  |  |\n| 22.7 | Усиленная консоль 600 мм | BВH6060 |  | DKC | шт. | 15 |  |  |\n| 22.8 | Анкер усиленный клиновой M10x60 | CM481060 |  | DKC | шт. | 60 |  |  |\n| 22.9 | Бирки для маркировки кабелей (треугольная) | 35341 |  | DKC | шт. | 400 |  |  |\n| 22.10 | Бирки для маркировки кабелей (квадратная) | 36510 |  | DKC | шт. | 400 |  |  |\n| 22.11 | Огнестойкая двухкомпонентная пена «FIREFIX» |  |  | ООО «ТЕХСТРОНГ» | шт. | 30 |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 104 — Sheet 11\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_206d5fa1055148c5b12414a2919fbe84.png",
+      "sha256": "1eaedbf298530a27e8b5092fe8efae5bd4fec55ffa7c76ff671356830fe811b0",
+      "block_id": "blk_206d5fa1055148c5b12414a2919fbe84",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Group5 wired chain and connection to loop2 shown; group5 frame explicitly refers to book1 AK1-PA."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+      "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e",
+      "primary_adjudication": null,
+      "limits": [
+        "Проверены таблица применимости, позиции19.2–19.3 СО, 43 строки БПС групп1–4, позиция интерфейсного кабеля985м и две схемы. Это не полная проверка всего кабельного журнала на отсутствие иных вариантов обозначения группы5.",
+        "Разные написания HF/НФ и символы сечения сохранены из TEXT; суммирование здесь по идентификаторам линий, не доказательство эквивалентности всех марок. Повторные значения графы проложен не суммировались.",
+        "Смежная спецификация АК1-ПА не проверена; ссылка не доказывает полноту поставки по двум комплектам. Вывод о недостаче также не доказан.",
+        "Нормативные нарушения ГОСТ21.110 и ГОСТ21.408 не проверены; не включать их в подтверждённые технические находки.",
+        "Самостоятельного решения инженера по этим blind-кандидатам не установлено. Их нельзя объявлять принятыми инженером или подтверждёнными пропусками классического метода."
+      ],
+      "wording": "При межкомплектной проверке запросить книгу1 АК1-ПА и подтвердить учёт группы5 (18 сигнализаторов, КСИ и соединительные линии до СУ-К33). Схемы АК2-ПА явно относят эту группу к АК1-ПА; добавление изделий и кабеля в АК2-ПА по одной арифметической разнице не обосновано."
+    }
+  ],
+  "calculation": {
+    "rows": [
+      {
+        "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+        "mark": "БПС-1.1",
+        "from": "СУ-К32",
+        "to": "СТГ-З-И-1.1",
+        "literal_cable": "КИС-Пнг(А)-HF",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 15
+      },
+      {
+        "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+        "mark": "БПС-1.2",
+        "from": "СТГ-З-И-1.1",
+        "to": "СТГ-З-И-1.2",
+        "literal_cable": "КИС-Пнг(А)-HF",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 15
+      },
+      {
+        "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+        "mark": "БПС-1.3",
+        "from": "СТГ-З-И-1.2",
+        "to": "СТГ-З-И-1.3",
+        "literal_cable": "КИС-Пнг(А)-HF",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 35
+      },
+      {
+        "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+        "mark": "БПС-1.4",
+        "from": "СТГ-З-И-1.3",
+        "to": "СТГ-З-И-1.4",
+        "literal_cable": "КИС-Пнг(А)-HF",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 15
+      },
+      {
+        "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+        "mark": "БПС-1.5",
+        "from": "СТГ-З-И-1.4",
+        "to": "СТГ-З-И-1.5",
+        "literal_cable": "КИС-Пнг(А)-HF",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+        "mark": "БПС-1.6",
+        "from": "СТГ-З-И-1.5",
+        "to": "СТГ-З-И-1.6",
+        "literal_cable": "КИС-Пнг(А)-HF",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+        "mark": "БПС-1.7",
+        "from": "СТГ-З-И-1.6",
+        "to": "СТГ-З-И-1.7",
+        "literal_cable": "КИС-Пнг(А)-HF",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 25
+      },
+      {
+        "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+        "mark": "БПС-1.8",
+        "from": "СТГ-З-И-1.7",
+        "to": "СТГ-З-И-1.8",
+        "literal_cable": "КИС-Пнг(А)-HF",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+        "mark": "БПС-1.9",
+        "from": "СТГ-З-И-1.8",
+        "to": "СТГ-З-И-1.9",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+        "mark": "БПС-1.10",
+        "from": "СТГ-З-И-1.9",
+        "to": "СТГ-З-И-1.10",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+        "mark": "БПС-1.11",
+        "from": "СТГ-З-И-1.10",
+        "to": "СТГ-З-И-1.11",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 25
+      },
+      {
+        "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+        "mark": "БПС-1.12",
+        "from": "СТГ-З-И-1.11",
+        "to": "СТГ-З-И-1.12",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+        "mark": "БПС-1.13",
+        "from": "СТГ-З-И-1.12",
+        "to": "СТГ-З-И-1.13",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+        "mark": "БПС-1.14",
+        "from": "СТГ-З-И-1.13",
+        "to": "СТГ-З-И-1.14",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+        "mark": "БПС-2.1",
+        "from": "СУ-К32",
+        "to": "СТГ-З-И-2.1",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 90
+      },
+      {
+        "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+        "mark": "БПС-2.2",
+        "from": "СТГ-З-И-2.1",
+        "to": "СТГ-З-И-2.2",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 15
+      },
+      {
+        "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+        "mark": "БПС-2.3",
+        "from": "СТГ-З-И-2.2",
+        "to": "СТГ-З-И-2.3",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+        "mark": "БПС-2.4",
+        "from": "СТГ-З-И-2.3",
+        "to": "СТГ-З-И-2.4",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 15
+      },
+      {
+        "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+        "mark": "БПС-2.5",
+        "from": "СТГ-З-И-2.4",
+        "to": "СТГ-З-И-2.5",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+        "mark": "БПС-3.1",
+        "from": "СУ-К31",
+        "to": "СТГ-З-И-3.1",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 30
+      },
+      {
+        "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+        "mark": "БПС-3.2",
+        "from": "СТГ-З-И-3.1",
+        "to": "СТГ-З-И-3.2",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+        "mark": "БПС-3.3",
+        "from": "СТГ-З-И-3.2",
+        "to": "СТГ-З-И-3.3",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 25
+      },
+      {
+        "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+        "mark": "БПС-3.4",
+        "from": "СТГ-З-И-3.3",
+        "to": "СТГ-З-И-3.4",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+        "mark": "БПС-3.5",
+        "from": "СТГ-З-И-3.4",
+        "to": "СТГ-З-И-3.5",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 25
+      },
+      {
+        "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+        "mark": "БПС-3.6",
+        "from": "СТГ-З-И-3.5",
+        "to": "СТГ-З-И-3.6",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+        "mark": "БПС-3.7",
+        "from": "СТГ-З-И-3.6",
+        "to": "СТГ-З-И-3.7",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+        "mark": "БПС-3.8",
+        "from": "СТГ-З-И-3.7",
+        "to": "СТГ-З-И-3.8",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+        "mark": "БПС-3.9",
+        "from": "СТГ-З-И-3.8",
+        "to": "СТГ-З-И-3.9",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+        "mark": "БПС-3.10",
+        "from": "СТГ-З-И-3.9",
+        "to": "СТГ-З-И-3.10",
+        "literal_cable": "КИС-Пнг(А)-НФ",
+        "literal_section": "2х2х0.78",
+        "project_length_m": 25
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-3.11",
+        "from": "СТГ-З-И-3.10",
+        "to": "СТГ-З-И-3.11",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-3.12",
+        "from": "СТГ-З-И-3.11",
+        "to": "СТГ-З-И-3.12",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-3.13",
+        "from": "СТГ-З-И-3.12",
+        "to": "СТГ-З-И-3.13",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-3.14",
+        "from": "СТГ-З-И-3.13",
+        "to": "СТГ-З-И-3.14",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 30
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-3.15",
+        "from": "СТГ-З-И-3.14",
+        "to": "СТГ-З-И-3.15",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-3.16",
+        "from": "СТГ-З-И-3.15",
+        "to": "СТГ-З-И-3.16",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-3.17",
+        "from": "СТГ-З-И-3.16",
+        "to": "СТГ-З-И-3.17",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-3.18",
+        "from": "СТГ-З-И-3.17",
+        "to": "СТГ-З-И-3.18",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-3.19",
+        "from": "СТГ-З-И-3.18",
+        "to": "СТГ-З-И-3.19",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-3.20",
+        "from": "СТГ-З-И-3.19",
+        "to": "СТГ-З-И-3.20",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-4.1",
+        "from": "СУ-КЗ3",
+        "to": "СТГ-З-И-4.1",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 25
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-4.2",
+        "from": "СТГ-З-И-4.1",
+        "to": "СТГ-З-И-4.2",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 25
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-4.3",
+        "from": "СТГ-З-И-4.2",
+        "to": "СТГ-З-И-4.3",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 30
+      },
+      {
+        "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+        "mark": "БПС-4.4",
+        "from": "СТГ-З-И-4.3",
+        "to": "СТГ-З-И-4.4",
+        "literal_cable": "КИС-Пнг(A)-HF",
+        "literal_section": "2x2x0.78",
+        "project_length_m": 20
+      }
+    ],
+    "group_sums_m": {
+      "1": 290,
+      "2": 160,
+      "3": 435,
+      "4": 100
+    },
+    "total_m": 985,
+    "method": "Project length column only; no normalization of cable marks; no duplicate counting of laid column."
+  },
+  "limits": [
+    "Adjacent package completeness unresolved.",
+    "No new model calls or frozen input edits.",
+    "Missing per-device rows in this bounded selection do not establish missing cable."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
