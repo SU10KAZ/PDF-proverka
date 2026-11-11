@@ -1,0 +1,1106 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "8dc15705e998afc532385e708bd18f52790f9bd70b383ca5ad36d34aa7f28bd2",
+  "queue_after_sha256": "122168b711c1a788376d2b593cfb9edd916bec2c73bd6b448a42a3500b89e431",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-027",
+      "finding": {
+        "id": "F-027",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Спецификация",
+        "sheet": "Листы 6., 7., 8., 9., 10., 11.",
+        "page": [
+          29,
+          30,
+          31,
+          32,
+          33,
+          34
+        ],
+        "problem": "Спецификация содержит служебные значения вместо окончательных изделий.",
+        "description": "Оставлены строки «Решение не найдено», «Нет в каталоге» и многочисленные значения «варианты». Неопределённый дренажный участок имеет длину 0,4 м, неопределённая заглушка — количество 1 шт. Однозначная закупка и проверка соединений невозможны.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить требования к полноте и однозначности обозначений специфицируемых изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-027"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-027"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Заменить служебные записи согласованными типоразмерами, материалами и характеристиками; повторно проверить комплектность.",
+        "risk": "Ошибки заказа, задержка поставки и произвольные замены на монтаже.",
+        "source_finding_ids": [
+          "T-027"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_d0ef4dbea56d4b74b97a10119fbee223"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 29
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 34
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-027:4828a324071dacb9ae3d",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-027:fe51c088072cbcf15ec9",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-027:0bd4729bc0b05b923141",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В СО есть «Решение не найдено» для0,4м и «Нет в каталоге» для1шт.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Конкретные изделия недостаточно идентифицированы; не восстанавливать размер догадкой."
+        },
+        {
+          "claim": "Все строки с «варианты» исключают однозначный заказ.",
+          "verdict": "unsupported_blanket_generalization",
+          "limits": "У части строк есть размеры, коды и количества. Проверять полноту каждой позиции отдельно."
+        },
+        {
+          "claim": "Заменить служебные значения достаточными характеристиками.",
+          "verdict": "supported_scoped_question",
+          "limits": "Происхождение изBIM, фактическая задержка поставки или произвольная замена не доказаны."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены избыточная закупка, утрата листов, отсутствие дренажаDN150 и обязательность исправления158,8. Служебное значение не делает все позиции неопределёнными.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить конкретные вопросы полноты заказа, нумерации и размерностей; отделить от гипотетических монтажных последствий. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ea746747ceeb432db81d3380109e5608",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-027",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-028",
+          "route": "prior_atomic_TEXT_review_same_document_sha256",
+          "limits": "Повторныйномер89иразныеDNпроверены в прежней записи; нынешнийMDсовпадает поSHA256."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-026"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_inventory_and_drain_notes"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-029",
+      "finding": {
+        "id": "F-029",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Спецификация",
+        "sheet": "Листы 5., 6.",
+        "page": [
+          28,
+          29
+        ],
+        "problem": "Позиционные номера и отдельные итоги спецификации требуют исправления.",
+        "description": "Позиция 89 присвоена кранам DN25 в количестве 118 шт. и DN32 в количестве 2 шт. Манометров предусмотрено 179 шт., отборных устройств и закладных деталей — по 182 шт. Сумма дренажных труб 159,0 м отличается от итога 158,8 м. Разность количества комплектующих сама по себе не доказывает избыточную закупку.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить правила обозначения позиций и указания количества изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-029"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-029"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Устранить повтор номера, пояснить дополнительные комплектующие и исправить итог длины.",
+        "risk": "Неоднозначность ведомости закупки и ошибки комплектования.",
+        "source_finding_ids": [
+          "T-029"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_29a310ba9cf94b72b83f0944dfb47467",
+          "blk_a84dc3455457476dadbc35029e2e7ae8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 28
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 29
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-026:97276f557b9fbedb0bef",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-031:d7fa75e76f824fe5d722",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Позиция89 повторена уDN25/118шт иDN32/2шт.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Не удалять2шт как дубль18штDN32 позиции88 без привязки."
+        },
+        {
+          "claim": "Манометров4+175=179; устройств отбора и закладных по182.",
+          "verdict": "confirmed_TEXT_and_arithmetic",
+          "limits": "Блок56 прямо даёт182 в позициях113/118. Разность3 не доказывает лишнюю закупку; схема комплектации не установлена."
+        },
+        {
+          "claim": "Опубликованные длины дренажа суммируются в159,0 при итоге158,8.",
+          "verdict": "confirmed_numeric_difference_rounding_possible",
+          "limits": "Прежний конструктивный пример: каждую из6длин уменьшить на0,034; округлённые строки сохранятся, сумма158,796 округлится к158,8. Это не восстановленные исходные длины."
+        },
+        {
+          "claim": "Обязательно исправить итог длины.",
+          "verdict": "overstated_remedy",
+          "limits": "Сначала уточнить точность и методику итогов; разница0,2 не доказывает неверный итог."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены избыточная закупка, утрата листов, отсутствие дренажаDN150 и обязательность исправления158,8. Служебное значение не делает все позиции неопределёнными.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить конкретные вопросы полноты заказа, нумерации и размерностей; отделить от гипотетических монтажных последствий. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-026.json",
+          "sha256": "6d986df9fb3f9b2e8f000a6f33b2a535301725f63d5bc258b1d913cf3169be82",
+          "primary_adjudication": null,
+          "limits": "Округление исходных неокруглённых длин не проверено; числовое отличие0,1/0,2м само по себе не доказывает ошибку объёмов. Единицы отдельных итогов не назначать предположительно.",
+          "wording": "Уточнить назначение итогов2546/977,0 и199/158,8 в ведомости труб. Суммы опубликованных длин составляют976,9м и159,0м соответственно."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-031.json",
+          "sha256": "1e77b4c1af3d96d38544e8d299129f7e02e867812d6138b2c8ecb99817db0e26",
+          "primary_adjudication": null,
+          "limits": "Это два самостоятельных уточнения идентификации, объединённых исходной строкой. Реальная ошибочная закупка не доказана. Не заявлять, что модельRM580 не существует, без каталога; подтверждено только расхождение записей. Не удалять2кранаDn32 как дубль позиции88 и не присваивать новый номер автоматически: выноски всех чертежей не проверены.",
+          "wording": "Уточнить обозначения спецификации: в поз.19.2 приV50л/PN16 записаноRM580PN16, тогда как экспликацияК19.3 и подбор указываютRM50/16бар. Также номер89 присвоен двум кранам BVR —Dn25(118шт.) иDn32(2шт.); обеспечить однозначную связь с чертежами."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-028",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ea746747ceeb432db81d3380109e5608",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-027",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-028",
+          "route": "prior_atomic_TEXT_review_same_document_sha256",
+          "limits": "Повторныйномер89иразныеDNпроверены в прежней записи; нынешнийMDсовпадает поSHA256."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F036_gauge_range_allocation.json",
+          "sha256": "414eb7b03e2e13826337c12f9b097562f2a8efcf45dbcb35da7ab6ce225e9a83",
+          "primary_adjudication": null,
+          "limits": "Наличие преимущественно шкал до16бар не доказывает работу конкретного манометра за пределом шкалы. Четыре прибора до25бар — количество отдельной позицииСО, не доказанное число всех приборов высокого диапазона во всех комплектах. В подборе SPL RM1500 для теплоснабжения вентиляции явно указан комплектный манометр; его диапазон не указан и к третьим зонам он не относится. Это контрпример к простому подсчёту, а не объяснение достаточности четырёх приборов. Просмотрены три фрагмента схемы, не все задания автоматизации и комплектовочные ведомости.",
+          "wording": "Уточнить распределение манометров позиции111 со шкалой0–2,5МПа (4шт.) и позиции112 со шкалой0–1,6МПа (175шт.) по точкам измерения греющего контура и третьих зон. В связанных расчётах встречаются давления выше16бар; просмотренные символыP не позволяют установить, какая шкала назначена каждой точке."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-022",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-038"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "route": "direct_authoritative_TEXT",
+          "observation": "Positions113 and118 each182; count difference not proof of surplus."
+        }
+      ],
+      "disposition": "assessed_r3_ITP_inventory_and_drain_notes"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-033",
+      "finding": {
+        "id": "F-033",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Состав документации",
+        "sheet": "Листы 1, 11.2, 11, 12.1, 12, 13, 14, 1., 15., 20",
+        "page": [
+          7,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          38,
+          58
+        ],
+        "problem": "Ведомости состава комплекта не соответствуют представленным документам.",
+        "description": "Спецификация заявлена на 12 листах, но представлена до листа 15; записка заявлена на 15 листах, но представлена до листа 20. Ведомость рабочих чертежей заканчивается листом 10, хотя анализ блоков содержит листы 11, 11.2, 12, 12.1, 13 и 14.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), кандидат п. 5.2.3",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к ведомостям рабочих чертежей и прилагаемых документов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-033"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-033"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "5.2.3",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Актуализировать количество, номера и наименования листов в ведомостях.",
+        "risk": "Выдача неполного комплекта и использование устаревших документов.",
+        "source_finding_ids": [
+          "T-033"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_90da5d0d361c48008030c2bf87767ced",
+          "blk_9167c15ea57c423ea6ad708738bb420f",
+          "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "blk_94b58ecf5d404f7d90c272d267eb2e48",
+          "blk_049ee88c136045da9910995a4c44a1e8",
+          "blk_693e53fec5744b27b721eb667e933ef5",
+          "blk_981b77a31c254f73aa67261d897a2987",
+          "blk_5b07e35a49dd46e4942116281bb13d8f",
+          "blk_06029d59a01b4b779037ffcee1ae5260"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 38
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 58
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 17,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_register",
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-039:20e8e64d70bd0535ad4d",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Ведомость указываетСО12листов иПЗ15, представленыСО1–15 иПЗс листом20.",
+          "verdict": "confirmed_prepared_TEXT_inventory",
+          "limits": "Максимальный номер20 не доказывает ровно20уникальных листов; текущая формулировка «до» сохраняет ограничение."
+        },
+        {
+          "claim": "Ведомость чертежей заканчивается10, метаданные содержат11/11.2/12/12.1/13/14.",
+          "verdict": "metadata_only_for_GRAPHIC_sheet_numbers",
+          "limits": "Штампы этих графических листов независимо здесь не прочитаны. Текстовое расхождение приложений сохраняется отдельно."
+        },
+        {
+          "claim": "Актуализировать ведомость по выпускаемому комплекту.",
+          "verdict": "supported_document_question",
+          "limits": "Фактическая утрата листов или выдача неполного комплекта не установлены."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены избыточная закупка, утрата листов, отсутствие дренажаDN150 и обязательность исправления158,8. Служебное значение не делает все позиции неопределёнными.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить конкретные вопросы полноты заказа, нумерации и размерностей; отделить от гипотетических монтажных последствий. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_90da5d0d361c48008030c2bf87767ced",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_d19f9dab58774ce3a7eab9ae3d81ed83",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5e8d45b076bf429e863f27b16da7b261",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_e65f4bff781945f19da5a4ec2919b764",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f249587fe98945f7a1c5d30e102aaa68",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_29a310ba9cf94b72b83f0944dfb47467",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_d0ef4dbea56d4b74b97a10119fbee223",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_4f09992bf47245e9a6f8a27ddda67b86",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_4dfd856534c74306be925eff2ea7088a",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_50817e980a4149c59c8eeee7c97151cd",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a7ba21ea8083491389a223015720c9cb",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_68c0bbe2863c496d8bf491bcdc947351",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fd984f8c5d03427497ffd926feaf8ed5",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_033ce4c4cbae41368d96485419afe95a",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e9fdca2261a4324959220546412f377",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f409d1ebb4764f25aa0c123ad7fd22e9",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_20c9372392c34ef08a1e81d99316f0cb",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_0f2c128d5315431d8f7e8c956be02e12",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_e46d7b061235453f8917708c1387217c",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_bd870d5f6f914b7581a69d60e4ae8e72",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ec07216893c540b88b7560c80b87ecd9",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_3103f97afa7b43bb91b4360de787e6a2",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-039.json",
+          "sha256": "1db31635b83a1f4cbde483f5346662bb1f05664b507abc635a861ae5535b3a4a",
+          "primary_adjudication": null,
+          "limits": "Подтверждено расхождение ведомости с существующими листами того же шифра. Максимальный номер листа не доказывает точное количество уникальных листов или полноту комплекта; пропуск документов и технический дефект оборудования не установлены. Формулировать одним вопросом комплектации, не тремя дефектами.",
+          "wording": "Актуализировать ведомость прилагаемых документов: спецификация обозначена .С на12листах, но представлена с обозначением .СО и нумерацией до15; ПЗ указана на15листах, но в комплекте есть лист20."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-031",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-032"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_inventory_and_drain_notes"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-037",
+      "finding": {
+        "id": "F-037",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Дренаж",
+        "sheet": "Листы 11.2, 11, 18, 19",
+        "page": [
+          18,
+          19,
+          56,
+          57
+        ],
+        "problem": "Уклоны и диапазоны диаметров спускных устройств записаны неоднозначно.",
+        "description": "Уклон пола и общего сливного трубопровода записан как «0,01 мм», хотя уклон является безразмерным отношением; в другом месте указано 0,01. Примечания к спускникам охватывают трубопроводы до DN125 и свыше DN150, оставляя DN150 без решения.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), кандидат п. 5.4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к обозначению уклонов и однозначности технических указаний.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-037"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-037"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "5.4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить обозначение уклона и дополнить требования к спускным устройствам для DN150.",
+        "risk": "Разночтения при устройстве дренажа и неполное опорожнение трубопроводов.",
+        "source_finding_ids": [
+          "T-037"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_c2e6708f6356460eb04d337fd749e8c7"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 56
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 57
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-035:4868f82f52227408ecc1",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-035:6e663d7b02b8e032a0c2",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Уклон пола и слива записан0,01мм; соседнее указание пола0,01.",
+          "verdict": "confirmed_authoritative_TEXT_dimension_conflict",
+          "limits": "0,01отношения=10мм/м; это не проверка нормативной достаточности. Сливную трубу согласовать отдельно."
+        },
+        {
+          "claim": "Диапазоны доDN125 и свышеDN150 не охватываютDN150.",
+          "verdict": "confirmed_wording_gap",
+          "limits": "Но общее требование спускников во всех низших точках существует. «DN150без решения» слишком широко."
+        },
+        {
+          "claim": "Исправить размерность и уточнить размер спускникаDN150.",
+          "verdict": "supported_scoped_question",
+          "limits": "Отсутствие дренажа, выполненный неправильный уклон или невозможность опорожнения не доказаны. i=0,003 другого трубопровода не смешивать с полом/сливом."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены избыточная закупка, утрата листов, отсутствие дренажаDN150 и обязательность исправления158,8. Служебное значение не делает все позиции неопределёнными.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить конкретные вопросы полноты заказа, нумерации и размерностей; отделить от гипотетических монтажных последствий. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c2e6708f6356460eb04d337fd749e8c7",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45b27ab56b3f450a85114833e55ab137",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_8a446a40473d48d18d60edba74661d9e",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_d348bae526df42fca9f56ba8b87ce79b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-035.json",
+          "sha256": "cf7c89bf0fa2b42a1a69c07ec109e87ea4a7822255d1751f4a866ec5179c52af",
+          "primary_adjudication": null,
+          "limits": "Общее требование спускников во всех низших точках уже есть, а оба диапазона задают одинаковый диаметр25мм. Поэтому отсутствие дренажа Ду150 и ошибка монтажа не доказаны. Безразмерное0,01 соответствует10мм/м, но это не проверка нормативной достаточности уклона. Уклон0,003 трубопроводов на аксонометрии относится к иному указанию: не объявлять его противоречием уклону пола или сливной трубы. Смежные разделы и фактическая геометрия не проверены.",
+          "wording": "Уточнить примечания по дренажу: диапазоны «до Ду125» и «свыше Ду150» не охватывают Ду150; в ПЗ уклоны пола и общего сливного трубопровода записаны «0,01 мм». Для пола в соседнем пункте уже дано безразмерное 0,01; согласовать размерность записи и отдельно подтвердить значение уклона сливной трубы."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-035.json",
+          "sha256": "cf7c89bf0fa2b42a1a69c07ec109e87ea4a7822255d1751f4a866ec5179c52af",
+          "primary_adjudication": null,
+          "limits": "Общее требование спускников во всех низших точках уже есть, а оба диапазона задают одинаковый диаметр25мм. Поэтому отсутствие дренажа Ду150 и ошибка монтажа не доказаны. Безразмерное0,01 соответствует10мм/м, но это не проверка нормативной достаточности уклона. Уклон0,003 трубопроводов на аксонометрии относится к иному указанию: не объявлять его противоречием уклону пола или сливной трубы. Смежные разделы и фактическая геометрия не проверены.",
+          "wording": "Уточнить примечания по дренажу: диапазоны «до Ду125» и «свыше Ду150» не охватывают Ду150; в ПЗ уклоны пола и общего сливного трубопровода записаны «0,01 мм». Для пола в соседнем пункте уже дано безразмерное 0,01; согласовать размерность записи и отдельно подтвердить значение уклона сливной трубы."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-037",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-040"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_inventory_and_drain_notes"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Four current ITP findings reviewed against frozen prior evidence with identical source hashes. F029 combines earlier position, gauge and length reviews plus directly read block56 counts. Rounding counterexample preserved. No new graphic inspection, norm verification or engineer decision."
+}
