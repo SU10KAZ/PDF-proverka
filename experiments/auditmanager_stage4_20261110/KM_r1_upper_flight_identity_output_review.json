@@ -1,0 +1,181 @@
+{
+  "status": "upper_flight_mark_conflict_not_independently_confirmed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "8dcfeb04458a6160516f518528cf2bdc34d0dc4e8b0789590b9e146550673b75",
+  "queue_after_sha256": "7fdda8ed27a08031284c569d7a2a5de780cd43e563912d8ae8dc12108733ce11",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка изделий",
+        "sheet": "Лист 5",
+        "page": 7,
+        "problem": "Для марша между +35,990 и +37,510 указаны разные марки ограждения.",
+        "description": "На разрезе 1–1 ограждение марша обозначено ОГМ7. На схеме расположения, включающей отметку +35,990, для этого марша указано ОГМ6.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к согласованности марок конструкций на планах, разрезах и схемах расположения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-013"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить проектную марку ограждения по геометрии марша и согласовать план, разрез и количество изделий.",
+        "risk": "Изготовление или монтаж ограждения другого типоразмера.",
+        "source_finding_ids": [
+          "G-013"
+        ],
+        "source_block_ids": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+        ],
+        "related_block_ids": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "blk_f0a5333974ac4088b7778f525922b014"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "page": 7
+          },
+          {
+            "type": "image",
+            "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-013",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Разрез маркирует марш +35,990 → +37,510 как ОГМ7",
+          "verdict": "supported_by_viewed_graphic"
+        },
+        {
+          "claim": "Типовой план содержит выноску ОГМ6 и включает уровень +35,990",
+          "verdict": "supported_by_viewed_graphic"
+        },
+        {
+          "claim": "Эти выноски относятся к одному маршу +35,990 → +37,510",
+          "verdict": "not_established_due_to_conflicting_level_list",
+          "reason": "Типовой план сопоставляет правые уровни +12,470…+35,990 с левыми +10,630…+30,790,+37,510. Первые пары относятся к нижним примыкающим маршам. На разрезе нижний марш к +35,990 начинается +34,150 и имеет ОГМ6; следующий верхний к +37,510 имеет ОГМ7. Ошибка последнего элемента списка уже выделена в F-015. Нельзя одновременно исправлять её на +34,150 и считать тот же план доказательством марки ОГМ6 на верхнем марше."
+        },
+        {
+          "claim": "Неверная комплектация и монтаж другого типоразмера",
+          "verdict": "not_established_consequence"
+        }
+      ],
+      "unsupported_additions": "same_flight_identity_not_established",
+      "novel_useful_content": "related_scope_question_not_confirmed_independent_mark_defect",
+      "duplicate_burden": "depends_on_F015_level_list_conflict_do_not_count_as_independent_confirmed_defect",
+      "profile_and_section": "question_pending_object_identity",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f8b3c96af858494c946ff4f1ceaa1fb5.png",
+          "sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "directly_viewed": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f0a5333974ac4088b7778f525922b014.png",
+          "sha256": "afe14108cef59c53cc2e0518187d711a9fce8c09552044605c99c59611221a00",
+          "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+          "directly_viewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
+          "sha256": "86849d4e464c5efa654fd2e5aa1e08127b5859ee7c63a2ec2eddd62ecda17ea5",
+          "role": "frozen_related_level_list_decision"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-016"
+        }
+      ],
+      "disposition": "unresolved_object_identity_related_to_F015"
+    }
+  ],
+  "limits": [
+    "Not a technical refutation of every OGM6/OGM7 mark; only the claimed same-flight relation remains unproved.",
+    "Do not silently correct the plan level list to construct evidence.",
+    "Keep confirmed F-015 level-list discrepancy separately.",
+    "No generic filter, frozen evaluator change or runtime suppression applied."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
