@@ -13,13 +13,19 @@ DEST=Path('/tmp/auditmanager_paired_comparison_sources_20261111/classic_historic
 
 def main():
     protocol=json.loads(PROTOCOL.read_text());commit=protocol['commit']
-    raw=subprocess.check_output(['git','archive',commit,'backend/app','prompts','experiments/classic_investigator'])
+    raw=subprocess.check_output(['git','archive',commit,'backend/__init__.py','backend/app','prompts','experiments/classic_investigator'])
     archived={}
     with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
         for member in archive.getmembers():
             if member.isfile():
                 assert not Path(member.name).is_absolute() and '..' not in Path(member.name).parts
                 archived[member.name]=archive.extractfile(member).read()
+    supplemental=[]
+    for name in ('backend/__init__.py',):
+        value=archived[name];target=DEST/name;target.parent.mkdir(parents=True,exist_ok=True)
+        if target.exists():assert target.read_bytes()==value
+        else:target.write_bytes(value)
+        supplemental.append({'path':name,'sha256':hashlib.sha256(value).hexdigest(),'origin':'Same historical commit; package marker outside original freeze glob.'})
     rows=[];missing=[];mismatched=[]
     for name,expected in protocol['source_files'].items():
         value=archived.get(name)
@@ -34,7 +40,7 @@ def main():
         rows.append({'path':name,'sha256':actual})
     report={'status':'source_capsule_verified' if not missing and not mismatched else 'historical_commit_incomplete_for_frozen_protocol',
         'historical_commit':commit,'protocol_sha256':hashlib.sha256(PROTOCOL.read_bytes()).hexdigest(),
-        'root':str(DEST),'expected_files':len(protocol['source_files']),'verified_files':len(rows),
+        'root':str(DEST),'runtime_package_files':supplemental,'expected_files':len(protocol['source_files']),'verified_files':len(rows),
         'missing_from_commit':missing,'different_from_protocol':mismatched,'files':rows,
         'boundary':'Exact historical source bytes only. Not a runnable matched-Astra freeze: common transport/leg-identity compatibility overlay and full runner checks still required.',
         'branch_or_worktree_created':False,'model_calls':0,'production_changed':False}

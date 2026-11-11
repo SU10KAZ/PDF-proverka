@@ -3,6 +3,13 @@
   "historical_commit": "9076439437baf19aa5bb3c1e2ba55ff2642a7c78",
   "protocol_sha256": "3312f980d860c90851b07e6811766c4cd6bc07fe7b4018a7dabd3926ccba5d1f",
   "root": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_historical",
+  "runtime_package_files": [
+    {
+      "path": "backend/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "Same historical commit; package marker outside original freeze glob."
+    }
+  ],
   "expected_files": 896,
   "verified_files": 896,
   "missing_from_commit": [],

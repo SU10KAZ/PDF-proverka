@@ -27,6 +27,11 @@ def main():
     if not DEST.exists():
         shutil.copytree(source,DEST)
         subprocess.run(['patch','--batch','--fuzz=0','-p1','-d',str(DEST),'-i',str(patch_path.resolve())],check=True)
+    for row in capsule.get('runtime_package_files',[]):
+        assert sha(source/row['path'])==row['sha256']
+        target=DEST/row['path']
+        if target.exists():assert sha(target)==row['sha256']
+        else:target.write_bytes((source/row['path']).read_bytes())
     # Reconstruct expected changed bytes on every run; an existing destination
     # is not trusted merely because changes are confined to these two files.
     with tempfile.TemporaryDirectory(prefix='astra-compatibility-') as temporary:
@@ -60,6 +65,7 @@ print(json.dumps({'import_root':str(root),'findings_preserved':2,'matches':1,'mo
     check=subprocess.run(['python','-c',code],cwd=DEST,env=env,capture_output=True,text=True,check=True)
     report={'status':'historical_source_with_shared_astra_leg_compatibility','root':str(DEST),
         'historical_commit':capsule['historical_commit'],'original_files':len(capsule['files']),
+        'runtime_package_files':capsule.get('runtime_package_files',[]),
         'unchanged_files':len(capsule['files'])-len(changed),'changed_files':changed,
         'patch':str(patch_path),'patch_sha256':sha(patch_path),'compatibility_commit':'ae11b117',
         'local_check':json.loads(check.stdout.splitlines()[-1]),
