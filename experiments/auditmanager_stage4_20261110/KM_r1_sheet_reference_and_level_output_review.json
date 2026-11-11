@@ -1,0 +1,375 @@
+{
+  "status": "two_mapped_findings_additional_claim_review_complete",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "e953b65d40edaf048b993b8c47ffe56908e0396832748e0e470976935420e071",
+  "queue_after_sha256": "844f43164bcfbfa9b4eb15f9c19828a5772a38e9e19b43389d9ffce7758d5443",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Документация",
+        "sheet": "Листы 1, 4",
+        "page": [
+          3,
+          6
+        ],
+        "problem": "Примечание к изделиям секции С2 содержит неверную ссылку на схему расположения.",
+        "description": "Примечание 5 листа 4 направляет к схеме расположения ограждений на том же листе 4. По ведомости рабочих чертежей схема секции С2 находится на листе 3, а лист 4 содержит изделия и узлы.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к ссылкам и согласованности листов рабочей документации металлических конструкций.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить ссылку в примечании 5 на лист 3.",
+        "risk": "Ошибки поиска монтажной схемы и задержка подготовки работ.",
+        "source_finding_ids": [
+          "T-010"
+        ],
+        "source_block_ids": [
+          "blk_02786cefba4641928c7e149eda44f872",
+          "blk_5e4c3725456d4cafa74220f8a1fad14c"
+        ],
+        "related_block_ids": [
+          "blk_02786cefba4641928c7e149eda44f872",
+          "blk_5e4c3725456d4cafa74220f8a1fad14c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_02786cefba4641928c7e149eda44f872",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+            "page": 3
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F009_sheet_cross_reference:01c2e819a95b8ab792a2",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Примечание 5 листа 4 направляет к схеме расположения ограждений на том же листе 4. По ведомости рабочих чертежей схема секции С2 находится на листе 3, а лист 4 содержит изделия и узлы.",
+          "verdict": "supported_in_reviewed_source_scope",
+          "limits": "Подтверждено расхождение перекрёстной ссылки и ведомости, не отсутствие самой схемы. Правильный адрес есть в ведомости; нормативное нарушение, задержка изготовления, ошибка монтажа и ущерб не доказаны. Использованы номера листов по штампу и ведомости, не номера страницPDF. Не требуется спрашивать инженера о гипотетическом ущербе для исправления ссылки."
+        },
+        {
+          "claim": "Исправить ссылку в примечании 5 на лист 3.",
+          "verdict": "scoped_correction_supported"
+        },
+        {
+          "claim": "Ошибки поиска монтажной схемы и задержка подготовки работ.",
+          "verdict": "hypothetical_not_observed"
+        }
+      ],
+      "unsupported_additions": "no_additional_failure_established_risk_not_factual_outcome",
+      "novel_useful_content": "historical_target_preserved_not_new_discovery",
+      "duplicate_burden": "separate_sheet_reference_from_cap_reference",
+      "profile_and_section": "editorial_question_missing_explicit_question_section",
+      "engineer_reuse": "no_independent_same_claim_engineer_decision_in_frozen_record",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F009_sheet_cross_reference.json",
+          "sha256": "7fbdfa43cd59998b7eba82f63bed364033f257914b0db60f482280b24d7def1e",
+          "role": "frozen_source_adjudication_not_new_engineer_decision"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-010"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_02786cefba4641928c7e149eda44f872",
+          "authoritative_TEXT": "### BLOCK #30 [TEXT]: blk_02786cefba4641928c7e149eda44f872\n\n> **Created:** 2026-10-21 13:32:37 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/HX-ErnWgMKW11FPba0Ng)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...6, 8 | Organization: GLOBUS ПРОЕКТ | Revisions: Не указано\n\n1. Размеры и отметки высот в метрах, остальные в миллиметрах.\n\n2. Сварные швы выполнять полуавтоматической по ГОСТ 14771-76 или ручной дуговой сваркой по ГОСТ 5264-80* электродами Э42 по ГОСТ 9467-75*.\n\n3. Катеты сварных швов выполнять по наименьшей толщине свариваемых элементов, но не более 1,2Т, где Т - наименьшая толщина свариваемых элементов.\n\n4. Заглушки устанавливать при помощи сварки на торцах поручней, если нет примыкающих ограждений и на концах стоек, листом толщиной 3мм.\n\n5. Схему расположения ограждений см. л.4.\n\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "authoritative_TEXT": "### BLOCK #5 [TEXT]: blk_5e4c3725456d4cafa74220f8a1fad14c\n\n> **Created:** 2026-10-21 13:32:33 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/l5kRG213jcI31jJ3sBJk)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Общие данные | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость рабочих чертежей основного комплекса ПД-00580716-КМ1.2\n\n| Лист | Наименование | Примечание |\n|---|---|---|\n| 1 | Общие данные |  |\n| 2 | Техническая спецификация металлопроката |  |\n| 3 | Схема расположения ограждений лестницы секции 2 на отм. +0.550 ~ +41.190 |  |\n| 4 | Ограждения ОГМ 1...6, 8 |  |\n| 5 | Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 |  |\n| 6 | Ограждения ОГМ 1...8 |  |\n| 7 | Схема расположения ограждений лестниц ЛК1.1, ЛК3.1, ЛК4.1, ЛК5, ЛК6 на отм. -9.300 ~ +2.100 |  |\n| 8 | Ограждения ОГМ 1...8 |  |\n| 9 | Ограждения ОГМ 9...16 |  |\n| 10 | Ограждения ОГМ 17...25 |  |\n\n##### Ведомость спецификаций\n\n| Лист | Наименование | Примечание |\n|---|---|---|\n| 2 | Техническая спецификация металлопроката |  |\n| 4 | Ведомость элементов ограждений ОГМ 1...6, ОГМ 8 |  |\n| 6 | Ведомость элементов ограждений ОГМ 1...8 |  |\n| 7 | Спецификация к схемам расположения металлических ограждений |  |\n| 8 | Ведомость элементов ограждений ОГМ 1...8 |  |\n| 9 | Ведомость элементов ограждений ОГМ 9...16 |  |\n| 10 | Ведомость элементов ограждений ОГМ 17...25 |  |\n|  |  |  |\n\n##### Ведомость ссылочных и прилагаемых документов\n\n| Обозначение | Наименование | Примечание |\n|---|---|---|\n| ГОСТ 27772-2021 | Прокат для строительных стальных конструкций |  |\n| ГОСТ 8732-2025 | Трубы стальные бесшовные горячедеформированные. Сортамент |  |\n| ГОСТ 8639-82 | Трубы стальные квадратные. Сортамент |  |\n| ГОСТ 19903-2015 | Лист стальной горячекатаный. Сортамент |  |\n| ГОСТ 56731-2023 | Анкеры механические для крепления в бетоне |  |\n\n##### Ведомость основных комплектов рабочих чертежей марки КМ\n\n| Обозначение | Наименование | Примечание |\n|---|---|---|\n| ПД-00580716-КМ1.1 | Ограждения лестниц. Секция С1. |  |\n| ПД-00580716-КМ1.2 | Ограждения лестниц. Секция С2, С3. |  |\n| ПД-00580716-КМ2 | Ограждения МХМС (кладовок), металлоконструкции для установки оборудования, лестницы в приямки, перемычки и конструкции для крепления противопожарных ворот и прочие конструкции |  |\n| ПД-00580716-КМ3.1 | Ограждение лоджий, балконов, корзин сплит-систем. Конструкции крылец, рекламных конструкций, архитектурных декоративных элементов, элементов и подконструкций фасада. Секция С1. |  |\n| ПД-00580716-КМ3.2 | Ограждение лоджий, балконов, корзин сплит-систем. Конструкции крылец, рекламных конструкций, архитектурных декоративных элементов, элементов и подконструкций фасада. Секция С2, С3. |  |\n| ПД-00580716-КМ4 | Конструктивные элементы стен, перегородок, перекрытий, фахверковые стойки. Спецификации. |  |\n| ПД-00580716-КМ5.1 | Ограждение паралпетов кровли. Секция С1. |  |\n| ПД-00580716-КМ5.2 | Ограждение паралпетов кровли. Секция С2, С3. |  |\n| ПД-00580716-КМ6.1 | Лестницы, стремянки на кровле. Секция С1. |  |\n| ПД-00580716-КМ6.2 | Лестницы, стремянки на кровле. Секция С2, С3. |  |\n| ПД-00580716-КМ7 | Ограждение территории (включая решения по фундаментам, узлы и детали). |  |\n| ПД-00580716-КМ8 | Конструктивные расчеты и обоснования (отдельные элементы, узлы и детали, при необходимости) |  |\n| ПД-00580716-КМ9.1 | Проект обслуживания фасада, в том числе проект на установку закладных деталей для крепления механизмов по обслуживанию фасадов (монтажных крепок для альпинистов, люлек и т.п.). Секция С1. |  |\n| ПД-00580716-КМ9.2 | Проект обслуживания фасада, в том числе проект на установку закладных деталей для крепления механизмов по обслуживанию фасадов (монтажных крепок для альпинистов, люлек и т.п.). Секция С2, С3. |  |\n| ПД-00580716-КМ10.1 | Рабочий проект по конструкциям шумоизоляционных и декоративных элементов кровли. Секция С1. |  |\n| ПД-00580716-КМ10.2 | Рабочий проект по конструкциям шумоизоляционных и декоративных элементов кровли. Секция С2, С3. |  |\n| ПД-00580716-КМ11 | Конструктивные решения козырьков. |  |\n\n"
+        }
+      ],
+      "disposition": "source_supported_editorial_question"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Геометрия и привязки",
+        "sheet": "Лист 5",
+        "page": 7,
+        "problem": "На типовой схеме секции С3 неверно согласована отметка площадки перед уровнем +35,990.",
+        "description": "На типовой схеме для отметок +12,470…+35,990 последняя отметка левой, нижней смежной площадки указана +37,510. На разрезе 1–1 соответствующая площадка имеет отметку +34,150. Отметка +37,510 относится к следующему участку с ограждением ОГМ7. Разница отметок составляет 3,360 м.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованности высотных отметок на схемах и разрезах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-012",
+                "G-016",
+                "G-017"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-012",
+                  "G-016",
+                  "G-017"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать типовую схему с разрезом 1–1, указав для нижней смежной площадки уровня +35,990 отметку +34,150 после проверки проектной геометрии.",
+        "risk": "Ошибочная высотная привязка и применение ограждения к другому участку лестницы.",
+        "source_finding_ids": [
+          "G-012",
+          "G-016",
+          "G-017"
+        ],
+        "source_block_ids": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "blk_f0a5333974ac4088b7778f525922b014"
+        ],
+        "related_block_ids": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "blk_f0a5333974ac4088b7778f525922b014"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "page": 7
+          },
+          {
+            "type": "image",
+            "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-012",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают одну ошибку: отметка +37.510 вместо +34.150 у последней левой площадки на схеме +12.470…+35.990, вопреки разрезу 1-1. Упоминание ОГМ 7 справа дополнительно поясняет несоответствие, не меняя объём замечания.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают одну ошибку: отметка +37.510 вместо +34.150 у последней левой площадки на схеме +12.470…+35.990, вопреки разрезу 1-1. Упоминание ОГМ 7 справа дополнительно поясняет несоответствие, не меняя объём замечания.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F015_typical_level_list:bce51ca28ffba3fa98c3",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На типовой схеме для отметок +12,470…+35,990 последняя отметка левой, нижней смежной площадки указана +37,510. На разрезе 1–1 соответствующая площадка имеет отметку +34,150. Отметка +37,510 относится к следующему участку с ограждением ОГМ7. Разница отметок составляет 3,360 м.",
+          "verdict": "supported_in_reviewed_source_scope",
+          "limits": [
+            "Подтверждено противоречие документов, но приоритет разреза перед схемой не устанавливался поАР/КЖ.",
+            "Нельзя автоматически заменять любое37.510 на34.150:37.510 является реальным уровнем следующего марша.",
+            "Не подтверждены фактическая ошибка комплектации/монтажа и эксплуатационные последствия."
+          ]
+        },
+        {
+          "claim": "Согласовать типовую схему с разрезом 1–1, указав для нижней смежной площадки уровня +35,990 отметку +34,150 после проверки проектной геометрии.",
+          "verdict": "conditional_coordination_supported_no_automatic_priority_of_section"
+        },
+        {
+          "claim": "Ошибочная высотная привязка и применение ограждения к другому участку лестницы.",
+          "verdict": "hypothetical_not_observed"
+        }
+      ],
+      "unsupported_additions": "no_additional_failure_established_risk_not_factual_outcome",
+      "novel_useful_content": "historical_target_preserved_not_new_discovery",
+      "duplicate_burden": "keep_confirmed_level_list_conflict_F016_identity_depends_on_it",
+      "profile_and_section": "technical_document_conflict_legacy_main_route",
+      "engineer_reuse": "no_independent_same_claim_engineer_decision_in_frozen_record",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
+          "sha256": "86849d4e464c5efa654fd2e5aa1e08127b5859ee7c63a2ec2eddd62ecda17ea5",
+          "role": "frozen_source_adjudication_not_new_engineer_decision"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-015"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f8b3c96af858494c946ff4f1ceaa1fb5.png",
+          "sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "directly_viewed": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f0a5333974ac4088b7778f525922b014.png",
+          "sha256": "afe14108cef59c53cc2e0518187d711a9fce8c09552044605c99c59611221a00",
+          "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+          "directly_viewed": true
+        }
+      ],
+      "disposition": "source_supported_preservation_candidate"
+    }
+  ],
+  "limits": [
+    "Historical target match did not substitute for checking remedy and risk.",
+    "No engineer time or new engineer acceptance established.",
+    "Frozen audit outputs unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
