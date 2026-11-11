@@ -1,0 +1,330 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "49974a23826cb0cecbd305983c05d1323b790d322d828a7e7add9cc2837cb1e3",
+  "queue_after_sha256": "7664375fc73209e7513e709e56a5504b304d5eabecfeb4e3891288685115fbae",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-037",
+      "finding": {
+        "id": "F-037",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Заказные характеристики приборов",
+        "sheet": "Листы 1, 2, 3, 4, 5, 6, 7, 8",
+        "page": [
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101
+        ],
+        "problem": "Для части приборов недостаточно данных для однозначного заказа.",
+        "description": "Дифференциальные реле давления, наружные датчики температуры и большинство капиллярных термостатов описаны общими наименованиями или диапазонами без типа, артикула либо определяющего опросного листа. Выходные сигналы и совместимость с контроллером однозначно не устанавливаются.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Достаточность сведений спецификации для заказа оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-036"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-036"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать исполнения приборов либо приложить технические требования с интерфейсами и условиями эксплуатации.",
+        "risk": "Поставка несовместимых приборов и дополнительные согласования при монтаже.",
+        "source_finding_ids": [
+          "T-036"
+        ],
+        "source_block_ids": [
+          "blk_192d323532434ee1aba250ffaac80b47",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_667249cd697c45c3ab985e7d75d15655",
+          "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "blk_88d8dd46122c41148a81ba6b14c890eb",
+          "blk_79d9e78b69fa43249052446c07dff8c0",
+          "blk_5b5187b5afb740efb6423fa40c399349",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
+        ],
+        "related_block_ids": [
+          "blk_192d323532434ee1aba250ffaac80b47",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_667249cd697c45c3ab985e7d75d15655",
+          "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "blk_88d8dd46122c41148a81ba6b14c890eb",
+          "blk_79d9e78b69fa43249052446c07dff8c0",
+          "blk_5b5187b5afb740efb6423fa40c399349",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_192d323532434ee1aba250ffaac80b47",
+            "page": 94
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+            "page": 101
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "СО задаёт приборы без типа/артикула/опросного листа: например давление1.5/2.3/2.4, наружные2.5/2.7/3.4, термостаты3.7/4.9.",
+          "verdict": "confirmed_authoritative_TEXT_local_rows",
+          "limits": "Указаны диапазоны давления и поставщик, но поля идентификации перечисленных строк пусты. Канальные и накладные датчики рядом имеют DT-K2/Pt и DT-H2/Pt; не распространять пробел на все приборы."
+        },
+        {
+          "claim": "Большинство капиллярных термостатов указаны общим названием.",
+          "verdict": "confirmed_bounded_TEXT_search",
+          "limits": "Прочитаны строки СО3.7,4.9,5.8,7.7,8.8,9.8,12.8,14.8,15.9,16.8 и локальные перечни. Это группа общих обозначений; не доказано отсутствие иных требований в смежных/заводских документах."
+        },
+        {
+          "claim": "Выходные сигналы и совместимость однозначно не устанавливаются.",
+          "verdict": "supported_procurement_clarification_not_incompatibility_proof",
+          "limits": "Пустой артикул сам по себе не означает отсутствие определения функции на схемах; изготовитель и диапазоны частично заданы. Нужны конкретные исполнения или адресные технические требования."
+        },
+        {
+          "claim": "Поставка несовместимых приборов.",
+          "verdict": "risk_not_observed_supply_failure",
+          "limits": "Заказ, поставка и входы фактических шкафов не проверены. Сохранять вопрос идентификации исполнения, не считать каждую пустую ячейку отдельным дефектом."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая несовместимость, отказ оборудования, нарушение проверенного нормативного пункта или неправильный монтаж.",
+      "novel_useful_content": "Сохранена адресная основа уточнения; новое инженерное принятие и прирост качества относительно классического метода не доказаны.",
+      "duplicate_burden": "F037: один вопрос исполнения группы приборов, не по дефекту на пустое поле. F057: самостоятельный символ электронагревателя, не смешивать с опровергнутым F050 о водяном нагревателе.",
+      "profile_and_section": "Вопросы и уточнения по исполнению приборов и условному обозначению; фактические разделы выдачи здесь не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; оценка основана на текущих источниках.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_ids": [
+            "blk_192d323532434ee1aba250ffaac80b47",
+            "blk_3dfcda405820460b84179ebf65d182d1",
+            "blk_667249cd697c45c3ab985e7d75d15655",
+            "blk_576ad6ac1cff48f79ac223f56ba405ae",
+            "blk_88d8dd46122c41148a81ba6b14c890eb",
+            "blk_79d9e78b69fa43249052446c07dff8c0",
+            "blk_5b5187b5afb740efb6423fa40c399349",
+            "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
+          ],
+          "route": "authoritative_TEXT_rows_and_bounded_text_search"
+        }
+      ],
+      "disposition": "assessed_direct_r3_procurement_and_symbol_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-057",
+      "finding": {
+        "id": "F-057",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Условные обозначения",
+        "sheet": "Лист 34",
+        "page": 38,
+        "problem": "Электронагреватель Пу5.1 изображён символом электродвигателя.",
+        "description": "На схеме внешних подключений ШАУВ-5-К5ПЧ электронагревателю соответствует окружность с буквой «М» и выводами U, V, W, PE. Символ не соответствует указанному назначению оборудования.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.8,
+            "reason": "Корректность обозначения оборудования на схеме внешних подключений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-079",
+                "G-080"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-079",
+                  "G-080"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Применить обозначение электронагревателя и согласовать выводы с заводской схемой.",
+        "risk": "Неверная интерпретация подключения и состава нагрузки.",
+        "source_finding_ids": [
+          "G-079",
+          "G-080"
+        ],
+        "source_block_ids": [
+          "blk_a2c817786b3a459fb5fa2667d9492450"
+        ],
+        "related_block_ids": [
+          "blk_a2c817786b3a459fb5fa2667d9492450"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_a2c817786b3a459fb5fa2667d9492450",
+            "page": 38
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-079",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-080",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно несоответствие на листе 34: электронагреватель Пу5.1 обозначен окружностью с буквой «М» при выводах U V W PE. Различия в категории и формулировке рекомендации не меняют сути и детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно несоответствие на листе 34: электронагреватель Пу5.1 обозначен окружностью с буквой «М» при выводах U V W PE. Различия в категории и формулировке рекомендации не меняют сути и детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "В графическом блоке внешних подключений ШАУВ-5-К5ПЧ столбец электронагревателя Пу5.1 содержит круг М и выводы U,V,W,PE.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "В соседних столбцах вентиляторов также круг М. Ветвь нагревателя обозначена Пу5.1-7,4×4,L15м; факт символа локализован именно в столбце нагревателя."
+        },
+        {
+          "claim": "Обозначение не согласовано с назначением электронагревателя.",
+          "verdict": "supported_document_symbol_question",
+          "limits": "Это конфликт подписи назначения и символа, не доказательство физического двигателя вместо нагревателя."
+        },
+        {
+          "claim": "Заменить символ и согласовать выводы с заводской схемой.",
+          "verdict": "supported_scoped_remedy",
+          "limits": "Обозначения U,V,W сами по себе не доказывают неправильное трёхфазное питание. Заводская схема, требуемая нагрузка и монтаж не проверены."
+        },
+        {
+          "claim": "Неверная интерпретация состава нагрузки или подключения.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Нормативный пункт и реальная ошибка монтажа не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая несовместимость, отказ оборудования, нарушение проверенного нормативного пункта или неправильный монтаж.",
+      "novel_useful_content": "Сохранена адресная основа уточнения; новое инженерное принятие и прирост качества относительно классического метода не доказаны.",
+      "duplicate_burden": "F037: один вопрос исполнения группы приборов, не по дефекту на пустое поле. F057: самостоятельный символ электронагревателя, не смешивать с опровергнутым F050 о водяном нагревателе.",
+      "profile_and_section": "Вопросы и уточнения по исполнению приборов и условному обозначению; фактические разделы выдачи здесь не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; оценка основана на текущих источниках.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_a2c817786b3a459fb5fa2667d9492450.png",
+          "sha256": "292eaec8678f1e4bbf28d2348b8661424e121d4b0e7182c425db37d9682e835a",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Heater Pu5.1 column: circle M, U/V/W/PE, Pu5.1-7 cable. No manufacturer or installation check."
+        }
+      ],
+      "disposition": "assessed_direct_r3_procurement_and_symbol_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Direct authoritative TEXT row checks and direct external connection GRAPHIC inspection. No PDF text extraction, new law assertion or engineer decision."
+}

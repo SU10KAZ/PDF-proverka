@@ -1,0 +1,238 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "7664375fc73209e7513e709e56a5504b304d5eabecfeb4e3891288685115fbae",
+  "queue_after_sha256": "5de490159899b2772edf4ca0b8961f74e3f0e6300417eb06aad32344fd797f56",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-046",
+      "finding": {
+        "id": "F-046",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Подключение реле давления",
+        "sheet": "Листы 15, 18",
+        "page": [
+          19,
+          22
+        ],
+        "problem": "У реле вытяжных вентиляторов показана обратная полярность отбора давления.",
+        "description": "Для PDS4/PDS5 системы Вн5.1 и PDS3/PDS4 систем Ва4.1/Ва4.1р «+» подключён к всасыванию, «−» — к нагнетанию. При показанном направлении потока перепад имеет обратный знак относительно положительной уставки 100 Па.",
+        "norm": "СП 77.13330.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 77.13330.2016",
+            "cited_designation": "СП 77.13330.2016",
+            "candidate_relevance": 0.8,
+            "reason": "Правильность монтажа измерительных линий и подключения приборов по рабочей документации и требованиям изготовителя.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-029",
+                "G-030",
+                "G-041",
+                "G-042"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-029",
+                  "G-030",
+                  "G-041",
+                  "G-042"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Показать «+» со стороны нагнетания и «−» со стороны всасывания, сверив обозначения с паспортом реле.",
+        "risk": "Отсутствие подтверждения работы вентилятора и ложные аварийные сигналы.",
+        "source_finding_ids": [
+          "G-029",
+          "G-030",
+          "G-041",
+          "G-042"
+        ],
+        "source_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc",
+          "blk_560cb89105bd46158749d4d59c9e52f9"
+        ],
+        "related_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc",
+          "blk_560cb89105bd46158749d4d59c9e52f9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "page": 19
+          },
+          {
+            "type": "text",
+            "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+            "page": 22
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-029",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-030",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-041",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-042",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на обратную полярность PDS4 и PDS5 системы Вн5.1 при уставке ΔP=100 Па и требуют поменять подключения местами.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на обратную полярность PDS4 и PDS5 системы Вн5.1 при уставке ΔP=100 Па и требуют поменять подключения местами.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковую перепутанную полярность PDS3 и PDS4 систем Ва4.1 и Ва4.1р при ΔP=100 Па и предлагают одинаковое исправление подключения.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Вн5.1/Вн5.1р PDS4/5: поток от помещения справа к выбросу слева, плюс справа, минус слева.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Проверена трассировка обеих пар отборов и уставки100Па на первом изображении."
+        },
+        {
+          "claim": "Ва4.1/Ва4.1р PDS3/4: поток справа налево, плюс на всасывании справа, минус на нагнетании слева.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Проверены обе ветви на втором изображении; не переносить расположение знаков с приточного вентилятора."
+        },
+        {
+          "claim": "Знак перепада противоположен положительной уставке100Па при таком изображении.",
+          "verdict": "supported_schematic_polarity_conflict",
+          "limits": "Вывод зависит от показанного направления и отбора, не от универсального положения плюса на листе. Фактические давления не измерены."
+        },
+        {
+          "claim": "Показать плюс на нагнетании и минус на всасывании со сверкой паспорта.",
+          "verdict": "supported_scoped_drawing_remedy",
+          "limits": "Паспорт, физический монтаж и контакты реле не проверены. Не объявлять фактический отказ защиты или четыре независимых нарушения без привязки к объектам."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая несовместимость, отказ оборудования, нарушение проверенного нормативного пункта или неправильный монтаж.",
+      "novel_useful_content": "Сохранена адресная основа уточнения; новое инженерное принятие и прирост качества относительно классического метода не доказаны.",
+      "duplicate_burden": "Четыре адресные пары отборов объединены в одну строку; F051 относится к другой системе Ва5.1. Не удалять различающиеся объектные привязки как текстовый дубль.",
+      "profile_and_section": "Технический конфликт полярности на схемах подтверждён в пределах четырёх ветвей; фактический отказ и раздел выдачи не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; оценка основана на текущих источниках.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Exhaust flow from room at right to discharge at left; plus tap at right suction, minus at left discharge, setpoint100Pa."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+          "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+          "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Exhaust flow from room at right to discharge at left; plus tap at right suction, minus at left discharge, setpoint100Pa."
+        }
+      ],
+      "disposition": "assessed_direct_r3_four_exhaust_pressure_taps"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Direct inspection of two functional GRAPHIC blocks and four exhaust pressure tap pairs. No TEXT reinterpretation, manufacturer check, actual installation verification or new engineer decision."
+}
