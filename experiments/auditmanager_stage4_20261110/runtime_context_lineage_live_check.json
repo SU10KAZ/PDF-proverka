@@ -1,0 +1,116 @@
+{
+  "status": "live_context_lineage_verified_first_two_responses",
+  "snapshot": "/tmp/auditmanager_context_lineage_snapshot_20261112.json",
+  "snapshot_sha256": "4f6092f0f63bcbabd842083636bced115cae353328668fdb50862521127cb0e3",
+  "summary": {
+    "successful_packets_replayed": 47,
+    "base_findings": 35,
+    "merged_findings": 83,
+    "pending_candidates": 22,
+    "pending_subclaims": 27,
+    "pending_reasons": {
+      "needs_data": 27
+    },
+    "published_addenda": 134,
+    "target_binding_repairs": 169,
+    "unresolved_target_bindings": 0
+  },
+  "verified_parent_bindings": [
+    {
+      "stage": "candidate_recovery_9abbe90f57edee78_context",
+      "binding": {
+        "resolved": {
+          "parent:candidate_recovery_9abbe90f57edee78:F-036": "F-039"
+        },
+        "pending": [],
+        "semantic_verified": false
+      }
+    },
+    {
+      "stage": "candidate_recovery_8e1933d07700e1d1_context",
+      "binding": {
+        "resolved": {
+          "parent:candidate_recovery_8e1933d07700e1d1:F-036": "F-044"
+        },
+        "pending": [],
+        "semantic_verified": false
+      }
+    }
+  ],
+  "remaining_context_queue": {
+    "preparation": "/tmp/auditmanager_remaining_context_followups_20261112/preparation.json",
+    "sha256": "beb5210b65f217755de0ca95e569064142ad6d0c7c6e5cf61fb1e2c0d440d8e7",
+    "pid": 992152,
+    "ready": 8,
+    "held": [
+      {
+        "path": "/tmp/auditmanager_remaining_context_followups_20261112/requests/candidate_recovery_a3da27e91b027081_part02_context.json",
+        "image_bytes": 18133531,
+        "image_budget": 16000000
+      },
+      {
+        "path": "/tmp/auditmanager_remaining_context_followups_20261112/requests/candidate_recovery_5e5e5b6685948eff_context.json",
+        "image_bytes": 16827311,
+        "image_budget": 16000000
+      }
+    ],
+    "not_scheduled": [
+      {
+        "parent": {
+          "stage": "candidate_recovery_3920b0dedd93a8de",
+          "attempt": 1,
+          "request_path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/requests/candidate_recovery_3920b0dedd93a8de.json",
+          "request_sha256": "6195158bb7e9f9b5d7fcddc11c49d316f51673085236f37295171ac14c965123",
+          "response_path": "/tmp/auditmanager_primary_text_runtime_recovery_results_20261112/candidate_recovery_3920b0dedd93a8de_attempt_1.json",
+          "response_sha256": "acae797334ae0e709686e0b167ce65623b09f3a59d68bd231bb5d23cd5b2cebd",
+          "success": true,
+          "duration_ms": 17726
+        },
+        "receipt": {
+          "status": "no_new_context",
+          "search": {
+            "hits": [],
+            "backlog": [],
+            "query_hit_counts": {
+              "ГН 2.2.5.1313-03": 1,
+              "утратил силу": 0,
+              "СанПиН 1.2.3685-21": 0
+            },
+            "rejected_queries": [],
+            "deferred_queries": [],
+            "already_supplied": [
+              {
+                "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+                "kind": "TEXT",
+                "page": 8,
+                "queries": [
+                  "ГН 2.2.5.1313-03"
+                ],
+                "query_match_kinds": {
+                  "ГН 2.2.5.1313-03": "body_token"
+                },
+                "start_line": 707,
+                "source_provenance": {
+                  "code": "13АВ-РД-АК2-ПА",
+                  "stage": "Р",
+                  "sheet": "4",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              }
+            ],
+            "absence_proven": false,
+            "sheet_lookup_enabled": false,
+            "boundary": "Literal MD search, numeric dimension typography navigation and optional same-version sheet lookup; navigation does not prove identity or equivalent execution. Zero matches do not establish absence."
+          }
+        }
+      }
+    ]
+  },
+  "production_acceptance": false,
+  "limits": [
+    "Only first two of four lineage reruns completed at snapshot time.",
+    "Correct identity and publication are not factual certification.",
+    "Two image-heavy context packets and one no-query graphic candidate still need preparation."
+  ]
+}
