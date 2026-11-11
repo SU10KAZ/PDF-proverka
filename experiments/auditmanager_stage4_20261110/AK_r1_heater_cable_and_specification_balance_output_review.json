@@ -1,0 +1,2042 @@
+{
+  "status": "three_linked_cable_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "1a602049655b564498ec4720fc16b295d586a8270ad670c26dfe424fc0c5938d",
+  "queue_after_sha256": "a0bce44d80f2f6597d1116708b8772f7bc5925537698fd87c80126c27062c24a",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_calculation_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Сечения кабелей",
+        "sheet": "Листы 26, 5, 6",
+        "page": [
+          30,
+          63,
+          64
+        ],
+        "problem": "Для одного кабеля электронагревателя указаны два разных сечения.",
+        "description": "П4.1.3-9 указан в журнале дважды длиной 15 м: 4×2,5 и 4×4 мм². Локальный перечень предусматривает 4×4 мм². Данных для самостоятельного выбора окончательного сечения недостаточно.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.3.2; ГОСТ 21.408-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить выбор проводников по нагреву и расчётной нагрузке.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-015"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность данных одной кабельной линии.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-015"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Выбрать сечение по нагрузке, защите и прокладке, оставить одну согласованную строку.",
+        "risk": "Ошибочная закупка или монтаж кабеля с неподходящим сечением.",
+        "source_finding_ids": [
+          "T-015"
+        ],
+        "source_block_ids": [
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396"
+        ],
+        "related_block_ids": [
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "blk_b2b11f12b2c24e10bebb7fb32c3680f5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+            "page": 63
+          },
+          {
+            "type": "text",
+            "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+            "page": 64
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 87,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "КЖ дважды задаёт П4.1.3-9 от ШАУВ-2-К4ПЧ к электронагревателю:15м4×2,5 и15м4×4.",
+          "verdict": "confirmed_authoritative_TEXT_same_line_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Локальный перечень содержит15м4×4; внешняя схема показывает П4.1.3-9 4×4,0 L15м.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "4×4 электрически достаточно, а4×2,5 недопустимо.",
+          "verdict": "not_established",
+          "limits": "Не проверены нагрузка самого нагревателя, защита, допустимый ток и условия прокладки. Совпадение со схемой не заменяет расчёт."
+        },
+        {
+          "claim": "Согласовать исполнение и устранить альтернативные записи одной линии.",
+          "verdict": "supported_technical_core",
+          "limits": "Не доказано, что обе записи попали в заказ или что фактически проложены два кабеля."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One line with alternative records; not two independent shortages or observed cables.",
+      "profile_and_section": "technical_core_preserve_electrical_sizing_unverified",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F012_cable_section_conflict.json",
+          "sha256": "adda5976fdc931fee477376e4e53dc398de605c62cba05511adc92776b58090d",
+          "primary_adjudication": null,
+          "limits": [
+            "Две самостоятельные проектные строки журнала, не повтор чисел в графах по проекту и проложен. Начало и назначение совпадают; промежуточные концы для разных участков не указаны.",
+            "Локальный перечень соответствует двум двигательным кабелям по15м и одному нагревательному15м. Перенос второй записи журнала в закупочные объёмы этим не подтверждён. Полный баланс сводной спецификации здесь не проверен.",
+            "Правильность сечения4×4,0 по нагрузке, защите и условиям прокладки не рассчитана. Совпадение со схемой не доказывает электрическую достаточность.",
+            "Фактическая поставка, монтаж и нарушение пункта1.3.2 ПУЭ не установлены. Решение инженера по blind-кандидату не найдено."
+          ],
+          "wording": "Согласовать запись линии П4.1.3-9 в кабельном журнале: на листах5 и6 она задана от одного шкафа к электронагревателю с разными сечениями —4×2,5 и4×4,0, обе длиной15м. Схема внешних подключений листа26 задаёт одну линию4×4,0. Устранить противоречивые записи после проверки принятого решения."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b2b11f12b2c24e10bebb7fb32c3680f5.png",
+          "sha256": "152537eff5e3477a461f86fc4fdafc54ba9263ebc2c6808265bf971fcf635e3f",
+          "block_id": "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Heater branch P4.1.3-9:4x4.0 L15m; U/V/W/PE terminals. Not ampacity verification."
+        }
+      ],
+      "disposition": "assessed_preserve_same_line_section_conflict"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Сечения кабелей",
+        "sheet": "Лист 35",
+        "page": [
+          39,
+          77
+        ],
+        "problem": "Не согласованы число жил и сечение кабеля электронагревателя По5.1.",
+        "description": "Для линии По5.1-9 длиной 10 м схема внешних подключений и локальный перечень задают ППГнг(А)-HF 3×2,5 мм², кабельный журнал — 4×4 мм². Одновременно различаются схема питания и сечение проводников.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.3.2; ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить выбор сечения по нагрузке и условиям прокладки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-018",
+                "G-074",
+                "G-075"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-018"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность исполнения закупаемого кабеля.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-018",
+                "G-074",
+                "G-075"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-018"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить исполнение линии по паспорту нагревателя, схеме питания и защите; исправить все ведомости.",
+        "risk": "Невозможность подключения или применение кабеля с неподходящими параметрами.",
+        "source_finding_ids": [
+          "T-018",
+          "G-074",
+          "G-075"
+        ],
+        "source_block_ids": [
+          "blk_065a335469904b2db1640b480b321503",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ],
+        "related_block_ids": [
+          "blk_065a335469904b2db1640b480b321503",
+          "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_065a335469904b2db1640b480b321503",
+            "page": 39
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+            "page": 77
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-074",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-075",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют для По5.1-9 одинаковое расхождение: ППГнг(А)-HF 3×2,5 на схеме и 4×4,0 в кабельном журнале. Существенных дополнений нет.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют для По5.1-9 одинаковое расхождение: ППГнг(А)-HF 3×2,5 на схеме и 4×4,0 в кабельном журнале. Существенных дополнений нет.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 53,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "По5.1-9 от ШАУВ-6-К5ПЧ к нагревателю:КЖ10м4×4, внешняя схема10м3×2,5.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC_same_line_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Локальный перечень содержит10м3×2,5; схема показывает L/N/PE на ветви нагревателя.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC",
+          "limits": "Это поддерживает трёхжильную запись схемы, но не доказывает её соответствие реальному оборудованию."
+        },
+        {
+          "claim": "Различаются число жил и сечение, требуется согласованная схема питания.",
+          "verdict": "supported_technical_core",
+          "limits": ""
+        },
+        {
+          "claim": "Нужно автоматически заменить4×4 на3×2,5 либо наоборот.",
+          "verdict": "not_established",
+          "limits": "Паспорт, защита, нагрузка и допустимый ток не проверены. Ввод шкафа и отдельная ветвь — разные объекты;2кВт в шапке не приписывать автоматически нагревателю."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "Same Po5.1-9 uncertainty also conditions F-020 quantity; do not count it twice as separate engineering failures.",
+      "profile_and_section": "technical_core_preserve_actual_supply_unresolved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F020_heater_cable_conflict.json",
+          "sha256": "f6dbf031fc8ba16fd61cd5ebad1825e32f84c0bd4cd39527accb1a6230d293f2",
+          "primary_adjudication": null,
+          "limits": [
+            "Сопоставлена одна линия по марке,шкафу,конечному оборудованию; одинаковая длина дополнительно согласуется, но не является единственным основанием связи.",
+            "Три клеммы L/N/PE на схеме согласуются с показанными тремя жилами, но не доказывают правильность этой схемы относительно оборудования.",
+            "Электрическая пригодность3×2,5 или4×4,0, фактическая закупка, прокладка и отказ не установлены. Нельзя автоматически заменить один кабель другим.",
+            "Общая спецификация и баланс длин относятся к отдельным случаям F019/H-AK-137; данный вывод не доказывает отсутствие позиции в СО.",
+            "Нормативное нарушение и решение инженера по кандидату не установлены."
+          ],
+          "wording": "Согласовать кабель По5.1-9 от ШАУВ-6-К5ПЧ к электронагревателю По5.1: схема внешних подключений задаёт ППГнг(А)-HF3×2,5 длиной10м, КЖ лист19 — ППГнг(A)-HF4×4,0 длиной10м. Различаются число жил и сечение; выбрать вариант по параметрам нагревателя и согласовать документы."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+          "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f",
+          "primary_adjudication": null,
+          "limits": [
+            "Прочитан весь раздел21 СО, включая продолжение лист10 до раздела22. Отсутствие позиции относится к этому разделу, а не ко всем договорам поставки.",
+            "КЖ П4.1.1-4 буквально содержит суффикс НФ; TEXT не исправлен по графике. Сечение3×2,5 и длина20м совпадают со схемой.",
+            "Равенство четырёх локальных количеств4×4 сумме60м в СО не доказывает документированного распределения сводной позиции по линиям.",
+            "30м — сумма опубликованных локальных ведомостей, не установленный объём недопоставки. Итог70м4×4 условен и не является указанием к закупке.",
+            "Фактическая закупка, поставка, пригодность сечений и обязательность нормативной ссылки не проверены.",
+            "Историческое принятие и комментарий о закупке сохранены отдельно от позднего ограниченного вывода. Для B-AK-F-019 самостоятельное решение инженера отсутствует."
+          ],
+          "wording": "Согласовать отсутствующую в разделе21 СО позицию ППГнг(А)-HF3×2,5: схема и ведомость лист28 содержат20м линии П4.1.1-4, схема и ведомость лист35 —10м По5.1-9. Для По5.1-9 предварительно разрешить конфликт с КЖ, где указано4×4,0. После выбора согласованного исполнения пересчитать сводные объёмы; не суммировать альтернативные исполнения одной линии."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+          "block_id": "blk_065a335469904b2db1640b480b321503",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Po5.1-9 3x2.5 L10m; heater L/N/PE. Cabinet heading380V and2kW are separate fields, not validated heater nameplate."
+        }
+      ],
+      "disposition": "assessed_preserve_heater_supply_conflict"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Комплектность материалов",
+        "sheet": "Листы 28, 35, 9, 10",
+        "page": [
+          32,
+          39,
+          102,
+          103
+        ],
+        "problem": "В спецификации отсутствует кабель 3×2,5 мм², указанный в локальных перечнях.",
+        "description": "Локальные перечни содержат 20 и 10 м ППГнг(А)-HF 3×2,5 мм². Разность общих объёмов перечней 16055 м и спецификации 16025 м составляет 30 м. Часть объёма 10 м относится к спорному исполнению питания По5.1 и не должна добавляться без согласования.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту учёта кабеля по согласованным проектным решениям.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-019"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-019"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "После согласования линии По5.1 включить подтверждённый объём кабеля в спецификацию и пересчитать итог.",
+        "risk": "Недостаток кабеля либо ошибочная закупка спорного исполнения.",
+        "source_finding_ids": [
+          "T-019"
+        ],
+        "source_block_ids": [
+          "blk_45a5493bf459424ea614bc2de6d6e514",
+          "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "related_block_ids": [
+          "blk_45a5493bf459424ea614bc2de6d6e514",
+          "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+            "page": 32
+          },
+          {
+            "type": "text",
+            "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+            "page": 39
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 83,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Локальные перечни дают20м и10м ППГнг(A)-HF3×2,5; весь раздел21СО не содержит отдельной такой позиции.",
+          "verdict": "confirmed_authoritative_TEXT_local_absence",
+          "limits": "Отсутствие относится к разделу21, не ко всем договорам и поставкам."
+        },
+        {
+          "claim": "Сумма90 строк локальных перечней16055м,12 кабельных строкСО16025м; разность30м.",
+          "verdict": "confirmed_independent_calculation",
+          "limits": "Учтена строка435м с единицейМ; это сумма записей разных марок, не доказательство поимённого соответствия всех остальных линий."
+        },
+        {
+          "claim": "Все30м являются подтверждённой недопоставкой и должны быть добавлены.",
+          "verdict": "not_established",
+          "limits": "10м относится к По5.1-9 с конфликтом3×2,5/4×4. Нельзя суммировать альтернативные исполнения или переносить разность документации на закупку."
+        },
+        {
+          "claim": "Согласовать спорную линию, включить подтверждённые позиции и пересчитать итог.",
+          "verdict": "supported_technical_document_scope",
+          "limits": "Сохранить находку и условие исходной выдачи; арифметическое совпадение не доказывает отсутствие других компенсирующих расхождений."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "Specification scope distinct from line conflict F-019, but its10m component is the same unresolved line; no double credit for defect count.",
+      "profile_and_section": "technical_core_preserve_no_automatic_30m_order",
+      "engineer_reuse": "Historical contexts retained verbatim with original adjudication fields; no new engineer decision or observed procurement outcome inferred.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_13604b1cfe21408f85c2bc28e358b012",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_9452de6a38544362a666f8840bac39f0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_e178b622d57744289e5dc16b07c095ea",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f3174d2279ab4a0489629cf4e2e586c2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_00e0c797491740a0bd6b3608d9929284",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a3ebf964570e4e669569795872f6001b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6bbabd59d82d4e83b042b44cd3c88b3c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_61196f6075564ba4bd4091b481cae12c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_82df3363fc824144b9390f2cd6635937",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_419647cb4cd74c26b4c46942b49756e7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c1399ff966ec45aa94b7a3724d717361",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_ccdbdf2f95244267b70dfeb983accd44",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_007f9aae26ea48a897d8a356ff7ca895",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_57ebcc215b52427c8b10b61a7202b14d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+          "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f",
+          "primary_adjudication": null,
+          "limits": [
+            "Прочитан весь раздел21 СО, включая продолжение лист10 до раздела22. Отсутствие позиции относится к этому разделу, а не ко всем договорам поставки.",
+            "КЖ П4.1.1-4 буквально содержит суффикс НФ; TEXT не исправлен по графике. Сечение3×2,5 и длина20м совпадают со схемой.",
+            "Равенство четырёх локальных количеств4×4 сумме60м в СО не доказывает документированного распределения сводной позиции по линиям.",
+            "30м — сумма опубликованных локальных ведомостей, не установленный объём недопоставки. Итог70м4×4 условен и не является указанием к закупке.",
+            "Фактическая закупка, поставка, пригодность сечений и обязательность нормативной ссылки не проверены.",
+            "Историческое принятие и комментарий о закупке сохранены отдельно от позднего ограниченного вывода. Для B-AK-F-019 самостоятельное решение инженера отсутствует."
+          ],
+          "wording": "Согласовать отсутствующую в разделе21 СО позицию ППГнг(А)-HF3×2,5: схема и ведомость лист28 содержат20м линии П4.1.1-4, схема и ведомость лист35 —10м По5.1-9. Для По5.1-9 предварительно разрешить конфликт с КЖ, где указано4×4,0. После выбора согласованного исполнения пересчитать сводные объёмы; не суммировать альтернативные исполнения одной линии."
+        }
+      ],
+      "disposition": "assessed_preserve_missing_spec_position_conditioned_on_supply_choice"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+      "authoritative_TEXT": "### BLOCK #212 [TEXT]: blk_3efc4048723143beaeb20fa1792f1776\n\n> **Created:** 2026-09-28 07:29:37 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/e1ZvKQhWk_5y0_wWnh8M)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 5 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Системы П4.1.3 и П4.1.4 |  |  |  |  |  |  |  |  |  |\n| П4.1.3-1 | ШАУВ-2-К4ПЧ | ТЕ1 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 10/10 |  |\n| П4.1.3-2 | ШАУВ-2-К4ПЧ | ТЕ2 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.3-3 | ШАУВ-2-К4ПЧ | ТС1 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.3-4 | ШАУВ-2-К4ПЧ | PDS1 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.3-5 | ШАУВ-2-К4ПЧ | PDS2 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.3-6 | ШАУВ-2-К4ПЧ | M1 | ППГнг(А)-HF | 4х2,5 | 15 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 10/5 |  |\n| П4.1.3-7 | ШАУВ-2-К4ПЧ | XТ1 | ППГнг(А)-HF | 3х1,5 | 15 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 10/5 |  |\n| П4.1.3-8 | ШАУВ-2-К4ПЧ | XТ1 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.3-9 | ШАУВ-2-К4ПЧ | Электронагреватель | ППГнг(А)-HF | 4х2,5 | 15 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 10/5 |  |\n| П4.1.4-1 | ШАУВ-2-К4ПЧ | ТЕ3 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.4-2 | ШАУВ-2-К4ПЧ | PDS3 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.4-3 | ШАУВ-2-К4ПЧ | PDS4 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.4-4 | ШАУВ-2-К4ПЧ | M2 | ППГнг(А)-HF | 4х2,5 | 15 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 10/5 |  |\n| П4.1.4-5 | ШАУВ-2-К4ПЧ | XТ2 | КСПЭВПГнг(А)-HF | 2х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 2х2х0,75 | 10/5 |  |\n|  |  |  |  |  |  |  |  |  |  |\n\n## Page 64 — Sheet 6\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+      "authoritative_TEXT": "### BLOCK #213 [TEXT]: blk_13738f8bb6f840fcb0cb37491b612396\n\n> **Created:** 2026-09-28 07:29:37 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/YsPLOGCcJo8kryQrQduX)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 6 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| П4.1.4-6 | ШАУВ-2-К4ПЧ | ХТ2 | КСПВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| П4.1.4-7 | ШАУВ-2-К4ПЧ | ХТ3 | КСПЭВПГнг(А)-HF | 2x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(А)-HF 2x2x0,75 | 10/5 |  |\n| П4.1.4-8 | ШАУВ-2-К4ПЧ | ХТ3 | КСПВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| П4.1.3-9 | ШАУВ-2-К4ПЧ | Электронагреватель системы П4.1.3 | ППГнг(А)-HF | 4x4,0 | 15 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x4,0 | 10/5 |  |\n| Система Пкр4.1 |  |  |  |  |  |  |  |  |  |\n| Пкр4.1-1 | ШАУВ-3-К4ПЧ | ТЕ1 | КСПЭВПГнг(А)-HF | 1x2x0,75 | 15 | труба гофр. | КСПЭВПГнг(А)-HF 1x2x0,75 | 15 |  |\n| Пкр4.1-2 | ШАУВ-3-К4ПЧ | ТЕ2 | КСПЭВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПЭВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-3 | ШАУВ-3-К4ПЧ | ТЕ3 | КСПЭВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПЭВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-4 | ШАУВ-3-К4ПЧ | ТС1 | КСПВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-5 | ШАУВ-3-К4ПЧ | PDS1 | КСПВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-6 | ШАУВ-3-К4ПЧ | PDS2 | КСПВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-7 | ШАУВ-3-К4ПЧ | PDS3 | КСПВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-8 | ШАУВ-3-К4ПЧ | M1 | ППГнг(А)-HF | 4x2,5 | 10 | труба гофр. | ППГнг(А)-HF 4x2,5 | 10 |  |\n| Пкр4.1-9 | ШАУВ-3-К4ПЧ | M2 | ППГнг(А)-HF | 4x2,5 | 10 | труба гофр. | ППГнг(А)-HF 4x2,5 | 10 |  |\n| Пкр4.1-10 | ШАУВ-3-К4ПЧ | ХТ1 | КСПЭВПГнг(А)-HF | 2x2x0,75 | 10 | труба гофр. | КСПЭВПГнг(А)-HF 2x2x0,75 | 10 |  |\n| Пкр4.1-11 | ШАУВ-3-К4ПЧ | ХТ2 | ППГнг(А)-HF | 3x1,5 | 10 | труба гофр. | ППГнг(А)-HF 3x1,5 | 10 |  |\n|  |  |  |  |  |  |  |  |  |  |\n\n## Page 65 — Sheet 7\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+      "authoritative_TEXT": "### BLOCK #97 [TEXT]: blk_c5ecdd6fe0d145118c604b663f84bba8\n\n> **Created:** 2026-09-28 07:29:02 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/omFFKlUZKnU9K833uAIH)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 26 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-2-К4ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 50 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 105 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 30 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 15 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 30 | м |\n|  | Кабель ППГнг(A)-HF 4x4,0мм² | 15 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+      "authoritative_TEXT": "### BLOCK #124 [TEXT]: blk_43571d7cab5b47d2b07660a9e43a42c9\n\n> **Created:** 2026-09-28 07:29:11 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/5H-tk9PHDreo7zx0bRx_)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 35 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-6-К5ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 110 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 10 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 40 | м |\n|  | Кабель ППГнг(A)-HF 3x2,5мм² | 10 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 40 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+      "authoritative_TEXT": "### BLOCK #226 [TEXT]: blk_c63456cda51644db9470fb57f29b27de\n\n> **Created:** 2026-09-28 07:29:44 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/FwmYFO-VxWPrK7fCBQHU)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 19 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Системы По5.1, Во5.1 и Вос5.1 |  |  |  |  |  |  |  |  |  |\n| По5.1-1 | ШАУВ-6-К5ПЧ | ТЕ1 | КСПЭВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПЭВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-2 | ШАУВ-6-К5ПЧ | ТС1 | КСПВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-3 | ШАУВ-6-К5ПЧ | PDS1 | КСПВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-4 | ШАУВ-6-К5ПЧ | PDS2 | КСПВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-5 | ШАУВ-6-К5ПЧ | PDS3 | КСПВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-6 | ШАУВ-6-К5ПЧ | M1 | ППГнг(A)-HF | 4x2,5 | 10 | труба гофр. | ППГнг(A)-HF 4x2,5 | 10 |  |\n| По5.1-7 | ШАУВ-6-К5ПЧ | XТ1 | ППГнг(A)-HF | 3x1,5 | 10 | труба гофр. | ППГнг(A)-HF 3x1,5 | 10 |  |\n| По5.1-8 | ШАУВ-6-К5ПЧ | XТ1 | КСПВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-9 | ШАУВ-6-К5ПЧ | Электронагреватель системы По5.1 | ППГнг(A)-HF | 4x4,0 | 10 | труба гофр. | ППГнг(A)-HF 4x4,0 | 10 |  |\n| Во5.1-1 | ШАУВ-6-К5ПЧ | PDS4 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 15 |  |\n| Во5.1-2 | ШАУВ-6-К5ПЧ | M2 | ППГнг(A)-HF | 4x2,5 | 15 | труба гофр. | ППГнг(A)-HF 4x2,5 | 15 |  |\n| Во5.1-3 | ШАУВ-6-К5ПЧ | XТ2 | ППГнг(A)-HF | 3x1,5 | 15 | труба гофр. | ППГнг(A)-HF 3x1,5 | 15 |  |\n| Во5.1-4 | ШАУВ-6-К5ПЧ | XТ2 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 15 |  |\n| Вос5.1-1 | ШАУВ-6-К5ПЧ | PDS45 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 400х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Вос5.1-2 | ШАУВ-6-К5ПЧ | M3 | ППГнг(A)-HF | 4x2,5 | 15 | лоток 400х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 10/5 |  |\n\n## Page 78 — Sheet 20\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_13604b1cfe21408f85c2bc28e358b012",
+      "authoritative_TEXT": "### BLOCK #94 [TEXT]: blk_13604b1cfe21408f85c2bc28e358b012\n\n> **Created:** 2026-09-28 07:29:02 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/7f_U1rq1PcGKQC575uDX)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 25 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-1-К4ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 310 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 155 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 155 | м |\n|  |  |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+      "authoritative_TEXT": "### BLOCK #100 [TEXT]: blk_52d321bfadad4fdca6120d87c3bb2ef4\n\n> **Created:** 2026-09-28 07:29:03 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/RjItrm5fCBAhhSBKE6FX)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 27 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-3-К4ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 45 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 40 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 10 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 20 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 20 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+      "authoritative_TEXT": "### BLOCK #103 [TEXT]: blk_45a5493bf459424ea614bc2de6d6e514\n\n> **Created:** 2026-09-28 07:29:04 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/R65jAloeUvCuzRMU7syb)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 28 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.П.24-П.П.48 | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 160 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 100 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 25 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 70 | м |\n|  | Кабель ППГнг(A)-HF 3x2,5мм² | 20 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 45 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+      "authoritative_TEXT": "### BLOCK #106 [TEXT]: blk_94e2f96d2883406394e0ebcbbf3cbbd7\n\n> **Created:** 2026-09-28 07:29:05 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/YWdvOl8hRA1-oG6Y1dx5)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 29 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Шкаф автоматики и управления ШАУВ-1-К4АС. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 930 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 65 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 20 | м |\n|  | Кабель КИС-Пнг(A)-HF 2x2x0,60 мм² | 120 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 620 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 290 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_9452de6a38544362a666f8840bac39f0",
+      "authoritative_TEXT": "### BLOCK #110 [TEXT]: blk_9452de6a38544362a666f8840bac39f0\n\n> **Created:** 2026-09-28 07:29:06 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/LfSzUTe20bsPNmpo-BIb)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 30 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-1-К5ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 180 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 90 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 90 | м |\n|  |  |  |  |\n\n## Page 35 — Sheet 31 — Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-2-К5ПЧ. Схема внешних подключений\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_e178b622d57744289e5dc16b07c095ea",
+      "authoritative_TEXT": "### BLOCK #112 [TEXT]: blk_e178b622d57744289e5dc16b07c095ea\n\n> **Created:** 2026-09-28 07:29:07 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/gIxG2imkl-iAbWocQ5fI)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 31 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-2-К5ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 150 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 90 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 30 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 60 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 60 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_f3174d2279ab4a0489629cf4e2e586c2",
+      "authoritative_TEXT": "### BLOCK #115 [TEXT]: blk_f3174d2279ab4a0489629cf4e2e586c2\n\n> **Created:** 2026-09-28 07:29:08 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/dg9qHoAe05aqDQ7n6f8z)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 32 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-З-К5ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 135 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 60 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 15 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 45 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 30 | м |\n|  | Кабель ППГнг(A)-HF 4x4,0мм² | 15 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+      "authoritative_TEXT": "### BLOCK #118 [TEXT]: blk_bcea3caf8104407b919f6960e2c12274\n\n> **Created:** 2026-09-28 07:29:09 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/PWWfKwAjC-sMb8ev5Q6O)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 33 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-4-К5ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 595 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 85 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 15 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 410 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 150 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_00e0c797491740a0bd6b3608d9929284",
+      "authoritative_TEXT": "### BLOCK #121 [TEXT]: blk_00e0c797491740a0bd6b3608d9929284\n\n> **Created:** 2026-09-28 07:29:10 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/8CmZPkMNzKJBl1DhIJGn)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 34 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-5-К5ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 125 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 15 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 55 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 55 | м |\n|  | Кабель ППГнг(A)-HF 4x4,0мм² | 15 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+      "authoritative_TEXT": "### BLOCK #127 [TEXT]: blk_96a99d46f82645bebdf992507a3e3ec6\n\n> **Created:** 2026-09-28 07:29:12 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/YGHID5cOveuY6BVBVvpi)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 36 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-1-К5АС. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 2400 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 55 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 20 | м |\n|  | Кабель КИС-Пнг(A)-HF 2x2x0,60 мм² | 330 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 1690 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 700 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_a3ebf964570e4e669569795872f6001b",
+      "authoritative_TEXT": "### BLOCK #131 [TEXT]: blk_a3ebf964570e4e669569795872f6001b\n\n> **Created:** 2026-09-28 07:29:12 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/FzIniaUQv1Dvgt6PBZj8)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 37 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-1-К6ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 180 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 90 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 90 | м |\n|  |  |  |  |\n\n## Page 42 — Sheet 38 — Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-2-КБПЧ. Схема внешних подключений\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_6bbabd59d82d4e83b042b44cd3c88b3c",
+      "authoritative_TEXT": "### BLOCK #133 [TEXT]: blk_6bbabd59d82d4e83b042b44cd3c88b3c\n\n> **Created:** 2026-09-28 07:29:13 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/yRE-LkspwHB5vMcY_0X8)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 38 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-2-КБПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 135 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 65 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 15 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 45 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 30 | м |\n|  | Кабель ППГнг(A)-HF 4x4,0мм² | 15 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_61196f6075564ba4bd4091b481cae12c",
+      "authoritative_TEXT": "### BLOCK #136 [TEXT]: blk_61196f6075564ba4bd4091b481cae12c\n\n> **Created:** 2026-09-28 07:29:14 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/R9G6RKZRfT2RB_14xICX)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 39 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Шкаф автоматики и управления ШАУВ-З-К6ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 165 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 50 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 15 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 75 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 75 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_82df3363fc824144b9390f2cd6635937",
+      "authoritative_TEXT": "### BLOCK #139 [TEXT]: blk_82df3363fc824144b9390f2cd6635937\n\n> **Created:** 2026-09-28 07:29:15 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Sofwd_fALuVX_zfA_cPj)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 40 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Шкаф автоматики и управления ШАУВ-1-К6АС. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 700 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 50 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 15 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 455 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 200 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_419647cb4cd74c26b4c46942b49756e7",
+      "authoritative_TEXT": "### BLOCK #142 [TEXT]: blk_419647cb4cd74c26b4c46942b49756e7\n\n> **Created:** 2026-09-28 07:29:16 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/0WznI4sDVAPX6vpksC6z)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 41 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: БД-ТЗ1 воздушно-тепловых завес У4.3, У4.4, У4.5, У4.6.Схема внешних подключений. | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 35 | м |\n|  | Кабель КСПВПГнг(A)-HF 4x2x0,75 мм² | 20 | м |\n|  | Кабель КИС-Пнг(A)-HF 3x2x0,78 мм² | 30 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 10 | м |\n|  |  |  |  |\n|  |  |  |  |\n\n## Page 46 — Sheet 42 — Схема внешних подключений согласователя работы кондиционеров\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_c1399ff966ec45aa94b7a3724d717361",
+      "authoritative_TEXT": "### BLOCK #149 [TEXT]: blk_c1399ff966ec45aa94b7a3724d717361\n\n> **Created:** 2026-09-28 07:29:18 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/4feSKbFE1JCu45vMcuZD)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 43 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Схема внешних подключений системы управления и контроля загазованности СУ-К32 | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 635 | м |\n|  | Кабель КСПВПГнг(A)-HF 2x2x0,75 мм² | 15 | м |\n|  | Кабель КИС-Пнг(A)-HF 2x2x0,78 | 450 | м |\n|  |  |  |  |\n\n## Page 48 — Sheet 44 — Схема внешних подключений системы управления и контроля загазованности СУ-К31\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_ccdbdf2f95244267b70dfeb983accd44",
+      "authoritative_TEXT": "### BLOCK #151 [TEXT]: blk_ccdbdf2f95244267b70dfeb983accd44\n\n> **Created:** 2026-09-28 07:29:18 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/qe4Iw_6753uGJ_IkIO4d)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 44 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Схема внешних подключений системы управления и контроля загазованности СУ-К31 | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КИС-Пнг(А)-НФ 2x2x0,78 | 435 | М |\n|  |  |  |  |\n|  |  |  |  |\n\n## Page 49 — Sheet 45 — Схема внешних подключений системы управления и контроля загазованности СУ-КЗЗ\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_007f9aae26ea48a897d8a356ff7ca895",
+      "authoritative_TEXT": "### BLOCK #153 [TEXT]: blk_007f9aae26ea48a897d8a356ff7ca895\n\n> **Created:** 2026-09-28 07:29:19 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/_jgyfVumoPXFT0TImAcu)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 45 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Схема внешних подключений системы управления и контроля загазованности СУ-КЗЗ | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КИС-Пнг(А)-НФ 2x2x0,78 | 100 | м |\n|  |  |  |  |\n\n## Page 50 — Sheet 46 — Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_57ebcc215b52427c8b10b61a7202b14d",
+      "authoritative_TEXT": "### BLOCK #160 [TEXT]: blk_57ebcc215b52427c8b10b61a7202b14d\n\n> **Created:** 2026-09-28 07:29:21 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/mOLIIKurtRlmoGFcq2QY)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 47 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Противодымная приточная система ПД4.1.4, ПД4.1.21.2, ПД 5.1.4, ПД5.1.21.2, ПД 6.1.4, ПД6.1.21.2. Схема внешних подключений. | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСРЭПнг(A)-FRHF 2x2x1,13 | 420 | м |\n|  |  |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+      "authoritative_TEXT": "### BLOCK #251 [TEXT]: blk_b8f98350127c4603bb6811846ec13309\n\n> **Created:** 2026-09-28 07:29:57 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/JD825dNrJgioLdV32EKM)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 9 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 17 | Тепловые завесы |  |  |  |  |  |  |  |\n| 17.1 | Концевой выключатель | ВП15К21 |  | АО «НПО «Тепломаш» | шт. | 1 |  |  |\n| 17.2 | Блок диспетчеризации МК | КЭВ-Б/ЛОК-МК |  | АО «НПО «Тепломаш» | шт. | 1 |  |  |\n| 18 | Основное оборудование сплин систем |  |  |  |  |  |  |  |\n| 18.1 | Согласователь работы 2-х кондиционеров | TD0027170RU | БУРР | Haier | шт. | 3 |  |  |\n| 18.2 | Адаптер |  |  | Haier | шт. | 6 |  |  |\n| 19 | Система контроля загазованности |  |  |  |  |  |  |  |\n| 19.1 | Блок питания и сигнализации БПС-3-И | ИБЯЛ.426479.046-01 |  | Аналитприбор | шт. | 3 |  |  |\n| 19.2 | Сигнализатор загазованности СТГ-3-И-СО | ИБЯЛ 413411051-20 |  | Аналитприбор | шт. | 43 |  |  |\n| 19.3 | Коробка соединительная КСИ | ИБЯЛ 413411051-20 |  | Аналитприбор | шт. | 43 |  |  |\n| 19.4 | Светозвуковой оповещатель \"Внимание! Загазованность!\" | \"ЛЮКС-24-К МС\" |  | Электротехника и Автоматика | шт. | 1 |  |  |\n| 20 | Система противодымной вентиляции |  |  |  |  |  |  |  |\n| 20.1 | Термопреобразователь сопротивления канальный, чувствительный элемент NTC10К, длина погружной части датчика 200 мм | МВТ 3280 | 097У0112 | Ридан | шт. | 6 |  |  |\n| 21 | Кабели и провода |  |  |  |  |  |  |  |\n| 21.1 | Кабель силовой с медными жилами | ППГнг(А)-HF 3x1,5 |  | Ивановский кабельный завод | м | 3945 |  |  |\n| 21.2 | Кабель силовой с медными жилами | ППГнг(А)-HF 4x2,5 |  | Ивановский кабельный завод | м | 2060 |  |  |\n| 21.3 | Кабель силовой с медными жилами | ППГнг(А)-HF 4x4,0 |  | Ивановский кабельный завод | м | 60 |  |  |\n| 21.4 | Кабель контрольный с медными жилами | КСПВППГнг(А)-HF 1x2x0,75 |  | Паритет | м | 7040 |  |  |\n| 21.5 | Кабель контрольный с медными жилами | КСПВППГнг(А)-HF 4x2x0,75 |  | Паритет | м | 20 |  |  |\n\n## Page 103 — Sheet 10\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+      "authoritative_TEXT": "### BLOCK #252 [TEXT]: blk_2258a0dfd8c84b6197e4cbb4d229ea27\n\n> **Created:** 2026-09-28 07:29:58 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/KDSLsHfatgclM-H4SazG)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 10 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 21.6 | Кабель контрольный с медными жилами | КСПВПГнг(А)-HF 2x2x0,75 |  | Паритет | м | 15 |  |  |\n| 21.7 | Кабель контрольный с медными жилами, экранированный | КСПЭВПГнг(А)-HF 1x2x0,75 |  | Паритет | м | 790 |  |  |\n| 21.8 | Кабель контрольный с медными жилами, экранированный | КСПЭВПГнг(А)-HF 2x2x0,75 |  | Паритет | м | 210 |  |  |\n| 21.9 | Кабель интерфейсный | КИС-Пнг(А)-HF 2x2x0,6 |  | Паритет | м | 450 |  |  |\n| 21.10 | Кабель интерфейсный | КИС-Пнг(А)-HF 3x2x0,78 |  | Паритет | м | 30 |  |  |\n| 21.11 | Кабель контрольный с медными жилами, экранированный, огнестойкий | КСРЭПнг(А)-FRHF 2x2x1,13 |  | Паритет | м | 420 |  |  |\n| 21.10 | Кабель интерфейсный | КИС-Пнг(А)-HF 2x2x0,78 |  | Паритет | м | 985 |  |  |\n| 22 | Трубы, лотки и монтажные материалы |  |  |  |  |  |  |  |\n| 22.1 | Труба ПВХ гибкая гофрированная Ø20мм, тяжёлая, с протяжкой, цвет серый | 91520 |  | DKC | м | 5000 |  |  |\n| 22.2 | Держатель с защелкой для крепления труб Ø20мм | 51020 |  | DKC | шт. | 10000 |  |  |\n| 22.3 | Металлорукав DN 20мм в герметичной ПВХ изоляции, Dвн 20,5 мм, Dнар 25,5, с протяжкой, цвет серый | 6071R-020P |  | DKC | м | 100 |  |  |\n| 22.4 | Лоток перфорированный 100x100 L3000 | 35341 |  | DKC | шт. | 200 |  |  |\n| 22.5 | Плита трамвайная |  |  |  | шт. | 15 |  |  |\n| 22.6 | Двойной вертикальный подвес BSD-21 | BSD2120 |  | DKC | шт. | 15 |  |  |\n| 22.7 | Усиленная консоль 600 мм | BВH6060 |  | DKC | шт. | 15 |  |  |\n| 22.8 | Анкер усиленный клиновой M10x60 | CM481060 |  | DKC | шт. | 60 |  |  |\n| 22.9 | Бирки для маркировки кабелей (треугольная) | 35341 |  | DKC | шт. | 400 |  |  |\n| 22.10 | Бирки для маркировки кабелей (квадратная) | 36510 |  | DKC | шт. | 400 |  |  |\n| 22.11 | Огнестойкая двухкомпонентная пена «FIREFIX» |  |  | ООО «ТЕХСТРОНГ» | шт. | 30 |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 104 — Sheet 11\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b2b11f12b2c24e10bebb7fb32c3680f5.png",
+      "sha256": "152537eff5e3477a461f86fc4fdafc54ba9263ebc2c6808265bf971fcf635e3f",
+      "block_id": "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Heater branch P4.1.3-9:4x4.0 L15m; U/V/W/PE terminals. Not ampacity verification."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+      "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+      "block_id": "blk_065a335469904b2db1640b480b321503",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Po5.1-9 3x2.5 L10m; heater L/N/PE. Cabinet heading380V and2kW are separate fields, not validated heater nameplate."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F012_cable_section_conflict.json",
+      "sha256": "adda5976fdc931fee477376e4e53dc398de605c62cba05511adc92776b58090d",
+      "primary_adjudication": null,
+      "limits": [
+        "Две самостоятельные проектные строки журнала, не повтор чисел в графах по проекту и проложен. Начало и назначение совпадают; промежуточные концы для разных участков не указаны.",
+        "Локальный перечень соответствует двум двигательным кабелям по15м и одному нагревательному15м. Перенос второй записи журнала в закупочные объёмы этим не подтверждён. Полный баланс сводной спецификации здесь не проверен.",
+        "Правильность сечения4×4,0 по нагрузке, защите и условиям прокладки не рассчитана. Совпадение со схемой не доказывает электрическую достаточность.",
+        "Фактическая поставка, монтаж и нарушение пункта1.3.2 ПУЭ не установлены. Решение инженера по blind-кандидату не найдено."
+      ],
+      "wording": "Согласовать запись линии П4.1.3-9 в кабельном журнале: на листах5 и6 она задана от одного шкафа к электронагревателю с разными сечениями —4×2,5 и4×4,0, обе длиной15м. Схема внешних подключений листа26 задаёт одну линию4×4,0. Устранить противоречивые записи после проверки принятого решения."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F020_heater_cable_conflict.json",
+      "sha256": "f6dbf031fc8ba16fd61cd5ebad1825e32f84c0bd4cd39527accb1a6230d293f2",
+      "primary_adjudication": null,
+      "limits": [
+        "Сопоставлена одна линия по марке,шкафу,конечному оборудованию; одинаковая длина дополнительно согласуется, но не является единственным основанием связи.",
+        "Три клеммы L/N/PE на схеме согласуются с показанными тремя жилами, но не доказывают правильность этой схемы относительно оборудования.",
+        "Электрическая пригодность3×2,5 или4×4,0, фактическая закупка, прокладка и отказ не установлены. Нельзя автоматически заменить один кабель другим.",
+        "Общая спецификация и баланс длин относятся к отдельным случаям F019/H-AK-137; данный вывод не доказывает отсутствие позиции в СО.",
+        "Нормативное нарушение и решение инженера по кандидату не установлены."
+      ],
+      "wording": "Согласовать кабель По5.1-9 от ШАУВ-6-К5ПЧ к электронагревателю По5.1: схема внешних подключений задаёт ППГнг(А)-HF3×2,5 длиной10м, КЖ лист19 — ППГнг(A)-HF4×4,0 длиной10м. Различаются число жил и сечение; выбрать вариант по параметрам нагревателя и согласовать документы."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+      "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f",
+      "primary_adjudication": null,
+      "limits": [
+        "Прочитан весь раздел21 СО, включая продолжение лист10 до раздела22. Отсутствие позиции относится к этому разделу, а не ко всем договорам поставки.",
+        "КЖ П4.1.1-4 буквально содержит суффикс НФ; TEXT не исправлен по графике. Сечение3×2,5 и длина20м совпадают со схемой.",
+        "Равенство четырёх локальных количеств4×4 сумме60м в СО не доказывает документированного распределения сводной позиции по линиям.",
+        "30м — сумма опубликованных локальных ведомостей, не установленный объём недопоставки. Итог70м4×4 условен и не является указанием к закупке.",
+        "Фактическая закупка, поставка, пригодность сечений и обязательность нормативной ссылки не проверены.",
+        "Историческое принятие и комментарий о закупке сохранены отдельно от позднего ограниченного вывода. Для B-AK-F-019 самостоятельное решение инженера отсутствует."
+      ],
+      "wording": "Согласовать отсутствующую в разделе21 СО позицию ППГнг(А)-HF3×2,5: схема и ведомость лист28 содержат20м линии П4.1.1-4, схема и ведомость лист35 —10м По5.1-9. Для По5.1-9 предварительно разрешить конфликт с КЖ, где указано4×4,0. После выбора согласованного исполнения пересчитать сводные объёмы; не суммировать альтернативные исполнения одной линии."
+    }
+  ],
+  "calculations": {
+    "local_rows": [
+      {
+        "block_id": "blk_13604b1cfe21408f85c2bc28e358b012",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "310",
+          "м"
+        ],
+        "length": 310.0
+      },
+      {
+        "block_id": "blk_13604b1cfe21408f85c2bc28e358b012",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "155",
+          "м"
+        ],
+        "length": 155.0
+      },
+      {
+        "block_id": "blk_13604b1cfe21408f85c2bc28e358b012",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "155",
+          "м"
+        ],
+        "length": 155.0
+      },
+      {
+        "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "50",
+          "м"
+        ],
+        "length": 50.0
+      },
+      {
+        "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "105",
+          "м"
+        ],
+        "length": 105.0
+      },
+      {
+        "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм²",
+          "30",
+          "м"
+        ],
+        "length": 30.0
+      },
+      {
+        "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "30",
+          "м"
+        ],
+        "length": 30.0
+      },
+      {
+        "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x4,0мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "45",
+          "м"
+        ],
+        "length": 45.0
+      },
+      {
+        "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "40",
+          "м"
+        ],
+        "length": 40.0
+      },
+      {
+        "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм²",
+          "10",
+          "м"
+        ],
+        "length": 10.0
+      },
+      {
+        "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "20",
+          "м"
+        ],
+        "length": 20.0
+      },
+      {
+        "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "20",
+          "м"
+        ],
+        "length": 20.0
+      },
+      {
+        "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "160",
+          "м"
+        ],
+        "length": 160.0
+      },
+      {
+        "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "100",
+          "м"
+        ],
+        "length": 100.0
+      },
+      {
+        "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм²",
+          "25",
+          "м"
+        ],
+        "length": 25.0
+      },
+      {
+        "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "70",
+          "м"
+        ],
+        "length": 70.0
+      },
+      {
+        "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x2,5мм²",
+          "20",
+          "м"
+        ],
+        "length": 20.0
+      },
+      {
+        "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "45",
+          "м"
+        ],
+        "length": 45.0
+      },
+      {
+        "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "930",
+          "м"
+        ],
+        "length": 930.0
+      },
+      {
+        "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "65",
+          "м"
+        ],
+        "length": 65.0
+      },
+      {
+        "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм²",
+          "20",
+          "м"
+        ],
+        "length": 20.0
+      },
+      {
+        "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+        "row": [
+          "",
+          "Кабель КИС-Пнг(A)-HF 2x2x0,60 мм²",
+          "120",
+          "м"
+        ],
+        "length": 120.0
+      },
+      {
+        "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "620",
+          "м"
+        ],
+        "length": 620.0
+      },
+      {
+        "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "290",
+          "м"
+        ],
+        "length": 290.0
+      },
+      {
+        "block_id": "blk_9452de6a38544362a666f8840bac39f0",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "180",
+          "м"
+        ],
+        "length": 180.0
+      },
+      {
+        "block_id": "blk_9452de6a38544362a666f8840bac39f0",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "90",
+          "м"
+        ],
+        "length": 90.0
+      },
+      {
+        "block_id": "blk_9452de6a38544362a666f8840bac39f0",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "90",
+          "м"
+        ],
+        "length": 90.0
+      },
+      {
+        "block_id": "blk_e178b622d57744289e5dc16b07c095ea",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "150",
+          "м"
+        ],
+        "length": 150.0
+      },
+      {
+        "block_id": "blk_e178b622d57744289e5dc16b07c095ea",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "90",
+          "м"
+        ],
+        "length": 90.0
+      },
+      {
+        "block_id": "blk_e178b622d57744289e5dc16b07c095ea",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм²",
+          "30",
+          "м"
+        ],
+        "length": 30.0
+      },
+      {
+        "block_id": "blk_e178b622d57744289e5dc16b07c095ea",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "60",
+          "м"
+        ],
+        "length": 60.0
+      },
+      {
+        "block_id": "blk_e178b622d57744289e5dc16b07c095ea",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "60",
+          "м"
+        ],
+        "length": 60.0
+      },
+      {
+        "block_id": "blk_f3174d2279ab4a0489629cf4e2e586c2",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "135",
+          "м"
+        ],
+        "length": 135.0
+      },
+      {
+        "block_id": "blk_f3174d2279ab4a0489629cf4e2e586c2",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "60",
+          "м"
+        ],
+        "length": 60.0
+      },
+      {
+        "block_id": "blk_f3174d2279ab4a0489629cf4e2e586c2",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_f3174d2279ab4a0489629cf4e2e586c2",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "45",
+          "м"
+        ],
+        "length": 45.0
+      },
+      {
+        "block_id": "blk_f3174d2279ab4a0489629cf4e2e586c2",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "30",
+          "м"
+        ],
+        "length": 30.0
+      },
+      {
+        "block_id": "blk_f3174d2279ab4a0489629cf4e2e586c2",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x4,0мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "595",
+          "м"
+        ],
+        "length": 595.0
+      },
+      {
+        "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "85",
+          "м"
+        ],
+        "length": 85.0
+      },
+      {
+        "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "410",
+          "м"
+        ],
+        "length": 410.0
+      },
+      {
+        "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "150",
+          "м"
+        ],
+        "length": 150.0
+      },
+      {
+        "block_id": "blk_00e0c797491740a0bd6b3608d9929284",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "125",
+          "м"
+        ],
+        "length": 125.0
+      },
+      {
+        "block_id": "blk_00e0c797491740a0bd6b3608d9929284",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_00e0c797491740a0bd6b3608d9929284",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "55",
+          "м"
+        ],
+        "length": 55.0
+      },
+      {
+        "block_id": "blk_00e0c797491740a0bd6b3608d9929284",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "55",
+          "м"
+        ],
+        "length": 55.0
+      },
+      {
+        "block_id": "blk_00e0c797491740a0bd6b3608d9929284",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x4,0мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "110",
+          "м"
+        ],
+        "length": 110.0
+      },
+      {
+        "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "10",
+          "м"
+        ],
+        "length": 10.0
+      },
+      {
+        "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "40",
+          "м"
+        ],
+        "length": 40.0
+      },
+      {
+        "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x2,5мм²",
+          "10",
+          "м"
+        ],
+        "length": 10.0
+      },
+      {
+        "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "40",
+          "м"
+        ],
+        "length": 40.0
+      },
+      {
+        "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "2400",
+          "м"
+        ],
+        "length": 2400.0
+      },
+      {
+        "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "55",
+          "м"
+        ],
+        "length": 55.0
+      },
+      {
+        "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм²",
+          "20",
+          "м"
+        ],
+        "length": 20.0
+      },
+      {
+        "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+        "row": [
+          "",
+          "Кабель КИС-Пнг(A)-HF 2x2x0,60 мм²",
+          "330",
+          "м"
+        ],
+        "length": 330.0
+      },
+      {
+        "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "1690",
+          "м"
+        ],
+        "length": 1690.0
+      },
+      {
+        "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "700",
+          "м"
+        ],
+        "length": 700.0
+      },
+      {
+        "block_id": "blk_a3ebf964570e4e669569795872f6001b",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "180",
+          "м"
+        ],
+        "length": 180.0
+      },
+      {
+        "block_id": "blk_a3ebf964570e4e669569795872f6001b",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "90",
+          "м"
+        ],
+        "length": 90.0
+      },
+      {
+        "block_id": "blk_a3ebf964570e4e669569795872f6001b",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "90",
+          "м"
+        ],
+        "length": 90.0
+      },
+      {
+        "block_id": "blk_6bbabd59d82d4e83b042b44cd3c88b3c",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "135",
+          "м"
+        ],
+        "length": 135.0
+      },
+      {
+        "block_id": "blk_6bbabd59d82d4e83b042b44cd3c88b3c",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "65",
+          "м"
+        ],
+        "length": 65.0
+      },
+      {
+        "block_id": "blk_6bbabd59d82d4e83b042b44cd3c88b3c",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_6bbabd59d82d4e83b042b44cd3c88b3c",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "45",
+          "м"
+        ],
+        "length": 45.0
+      },
+      {
+        "block_id": "blk_6bbabd59d82d4e83b042b44cd3c88b3c",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "30",
+          "м"
+        ],
+        "length": 30.0
+      },
+      {
+        "block_id": "blk_6bbabd59d82d4e83b042b44cd3c88b3c",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x4,0мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_61196f6075564ba4bd4091b481cae12c",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "165",
+          "м"
+        ],
+        "length": 165.0
+      },
+      {
+        "block_id": "blk_61196f6075564ba4bd4091b481cae12c",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "50",
+          "м"
+        ],
+        "length": 50.0
+      },
+      {
+        "block_id": "blk_61196f6075564ba4bd4091b481cae12c",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_61196f6075564ba4bd4091b481cae12c",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "75",
+          "м"
+        ],
+        "length": 75.0
+      },
+      {
+        "block_id": "blk_61196f6075564ba4bd4091b481cae12c",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "75",
+          "м"
+        ],
+        "length": 75.0
+      },
+      {
+        "block_id": "blk_82df3363fc824144b9390f2cd6635937",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "700",
+          "м"
+        ],
+        "length": 700.0
+      },
+      {
+        "block_id": "blk_82df3363fc824144b9390f2cd6635937",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм²",
+          "50",
+          "м"
+        ],
+        "length": 50.0
+      },
+      {
+        "block_id": "blk_82df3363fc824144b9390f2cd6635937",
+        "row": [
+          "",
+          "Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_82df3363fc824144b9390f2cd6635937",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "455",
+          "м"
+        ],
+        "length": 455.0
+      },
+      {
+        "block_id": "blk_82df3363fc824144b9390f2cd6635937",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 4x2,5мм²",
+          "200",
+          "м"
+        ],
+        "length": 200.0
+      },
+      {
+        "block_id": "blk_419647cb4cd74c26b4c46942b49756e7",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "35",
+          "м"
+        ],
+        "length": 35.0
+      },
+      {
+        "block_id": "blk_419647cb4cd74c26b4c46942b49756e7",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 4x2x0,75 мм²",
+          "20",
+          "м"
+        ],
+        "length": 20.0
+      },
+      {
+        "block_id": "blk_419647cb4cd74c26b4c46942b49756e7",
+        "row": [
+          "",
+          "Кабель КИС-Пнг(A)-HF 3x2x0,78 мм²",
+          "30",
+          "м"
+        ],
+        "length": 30.0
+      },
+      {
+        "block_id": "blk_419647cb4cd74c26b4c46942b49756e7",
+        "row": [
+          "",
+          "Кабель ППГнг(A)-HF 3x1,5мм²",
+          "10",
+          "м"
+        ],
+        "length": 10.0
+      },
+      {
+        "block_id": "blk_c1399ff966ec45aa94b7a3724d717361",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²",
+          "635",
+          "м"
+        ],
+        "length": 635.0
+      },
+      {
+        "block_id": "blk_c1399ff966ec45aa94b7a3724d717361",
+        "row": [
+          "",
+          "Кабель КСПВПГнг(A)-HF 2x2x0,75 мм²",
+          "15",
+          "м"
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_c1399ff966ec45aa94b7a3724d717361",
+        "row": [
+          "",
+          "Кабель КИС-Пнг(A)-HF 2x2x0,78",
+          "450",
+          "м"
+        ],
+        "length": 450.0
+      },
+      {
+        "block_id": "blk_ccdbdf2f95244267b70dfeb983accd44",
+        "row": [
+          "",
+          "Кабель КИС-Пнг(А)-НФ 2x2x0,78",
+          "435",
+          "М"
+        ],
+        "length": 435.0
+      },
+      {
+        "block_id": "blk_007f9aae26ea48a897d8a356ff7ca895",
+        "row": [
+          "",
+          "Кабель КИС-Пнг(А)-НФ 2x2x0,78",
+          "100",
+          "м"
+        ],
+        "length": 100.0
+      },
+      {
+        "block_id": "blk_57ebcc215b52427c8b10b61a7202b14d",
+        "row": [
+          "",
+          "Кабель КСРЭПнг(A)-FRHF 2x2x1,13",
+          "420",
+          "м"
+        ],
+        "length": 420.0
+      }
+    ],
+    "spec_rows": [
+      {
+        "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+        "row": [
+          "21.1",
+          "Кабель силовой с медными жилами",
+          "ППГнг(А)-HF 3x1,5",
+          "",
+          "Ивановский кабельный завод",
+          "м",
+          "3945",
+          "",
+          ""
+        ],
+        "length": 3945.0
+      },
+      {
+        "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+        "row": [
+          "21.2",
+          "Кабель силовой с медными жилами",
+          "ППГнг(А)-HF 4x2,5",
+          "",
+          "Ивановский кабельный завод",
+          "м",
+          "2060",
+          "",
+          ""
+        ],
+        "length": 2060.0
+      },
+      {
+        "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+        "row": [
+          "21.3",
+          "Кабель силовой с медными жилами",
+          "ППГнг(А)-HF 4x4,0",
+          "",
+          "Ивановский кабельный завод",
+          "м",
+          "60",
+          "",
+          ""
+        ],
+        "length": 60.0
+      },
+      {
+        "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+        "row": [
+          "21.4",
+          "Кабель контрольный с медными жилами",
+          "КСПВППГнг(А)-HF 1x2x0,75",
+          "",
+          "Паритет",
+          "м",
+          "7040",
+          "",
+          ""
+        ],
+        "length": 7040.0
+      },
+      {
+        "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+        "row": [
+          "21.5",
+          "Кабель контрольный с медными жилами",
+          "КСПВППГнг(А)-HF 4x2x0,75",
+          "",
+          "Паритет",
+          "м",
+          "20",
+          "",
+          ""
+        ],
+        "length": 20.0
+      },
+      {
+        "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+        "row": [
+          "21.6",
+          "Кабель контрольный с медными жилами",
+          "КСПВПГнг(А)-HF 2x2x0,75",
+          "",
+          "Паритет",
+          "м",
+          "15",
+          "",
+          ""
+        ],
+        "length": 15.0
+      },
+      {
+        "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+        "row": [
+          "21.7",
+          "Кабель контрольный с медными жилами, экранированный",
+          "КСПЭВПГнг(А)-HF 1x2x0,75",
+          "",
+          "Паритет",
+          "м",
+          "790",
+          "",
+          ""
+        ],
+        "length": 790.0
+      },
+      {
+        "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+        "row": [
+          "21.8",
+          "Кабель контрольный с медными жилами, экранированный",
+          "КСПЭВПГнг(А)-HF 2x2x0,75",
+          "",
+          "Паритет",
+          "м",
+          "210",
+          "",
+          ""
+        ],
+        "length": 210.0
+      },
+      {
+        "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+        "row": [
+          "21.9",
+          "Кабель интерфейсный",
+          "КИС-Пнг(А)-HF 2x2x0,6",
+          "",
+          "Паритет",
+          "м",
+          "450",
+          "",
+          ""
+        ],
+        "length": 450.0
+      },
+      {
+        "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+        "row": [
+          "21.10",
+          "Кабель интерфейсный",
+          "КИС-Пнг(А)-HF 3x2x0,78",
+          "",
+          "Паритет",
+          "м",
+          "30",
+          "",
+          ""
+        ],
+        "length": 30.0
+      },
+      {
+        "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+        "row": [
+          "21.11",
+          "Кабель контрольный с медными жилами, экранированный, огнестойкий",
+          "КСРЭПнг(А)-FRHF 2x2x1,13",
+          "",
+          "Паритет",
+          "м",
+          "420",
+          "",
+          ""
+        ],
+        "length": 420.0
+      },
+      {
+        "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+        "row": [
+          "21.10",
+          "Кабель интерфейсный",
+          "КИС-Пнг(А)-HF 2x2x0,78",
+          "",
+          "Паритет",
+          "м",
+          "985",
+          "",
+          ""
+        ],
+        "length": 985.0
+      }
+    ],
+    "local_sum": 16055,
+    "spec_sum": 16025,
+    "difference": 30
+  },
+  "limits": [
+    "Arithmetic does not prove procurement deficit or electrical adequacy.",
+    "No automatic choice between alternative cable executions.",
+    "Frozen evaluator and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
