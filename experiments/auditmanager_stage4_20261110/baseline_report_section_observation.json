@@ -1,0 +1,251 @@
+{
+  "status": "baseline_renderer_observed_no_trial_acceptance",
+  "renderer_path": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_with_catalog/backend/app/pipeline/stages/report/generate_excel_report.py",
+  "renderer_sha256": "0144ab5f4db9e0795bf833db84ebe78c0aaf7a2cd2ac2137c1d498f5255cb2b0",
+  "workbook_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_report_sections/baseline_18_reports.xlsx",
+  "workbook_sha256": "fe62bb4e62bcb4652113e4278592b22a0a44a2c82806304d40fa07a02dcf01d6",
+  "runs": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+      "finding_count": 66,
+      "explicit_routes": {
+        "missing": 66
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "AK_r1",
+      "worksheet_rows": 69
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+      "finding_count": 57,
+      "explicit_routes": {
+        "missing": 57
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "ITP_r1",
+      "worksheet_rows": 60
+    },
+    {
+      "discipline": "AR",
+      "repeat": 1,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d",
+      "finding_count": 21,
+      "explicit_routes": {
+        "missing": 21
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "AR_r1",
+      "worksheet_rows": 24
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+      "finding_count": 27,
+      "explicit_routes": {
+        "missing": 27
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "KM_r1",
+      "worksheet_rows": 30
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8",
+      "finding_count": 26,
+      "explicit_routes": {
+        "missing": 26
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "VK_r1",
+      "worksheet_rows": 29
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386",
+      "finding_count": 48,
+      "explicit_routes": {
+        "missing": 48
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "EOM_r1",
+      "worksheet_rows": 51
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "23f2f26b2037210e7d364cf48c55d42f62832e649a25b10b0f3eb4f1ab8a8c3b",
+      "finding_count": 74,
+      "explicit_routes": {
+        "missing": 74
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "AK_r2",
+      "worksheet_rows": 77
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027",
+      "finding_count": 57,
+      "explicit_routes": {
+        "missing": 57
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "ITP_r2",
+      "worksheet_rows": 60
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "19945dcbf049ddaac4c873aa6699b58b1a2bc9085e4788efc9b9d43cd73eda3e",
+      "finding_count": 21,
+      "explicit_routes": {
+        "missing": 21
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "AR_r2",
+      "worksheet_rows": 24
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "d93486c6a6510ae841be839873e137a44c3241005e6060361017dce855a3e5d1",
+      "finding_count": 25,
+      "explicit_routes": {
+        "missing": 25
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "KM_r2",
+      "worksheet_rows": 28
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "6182e5efe3cb42c6924c22aec4caa065ddd49a6e1130d44dc73a157477cbd9cd",
+      "finding_count": 28,
+      "explicit_routes": {
+        "missing": 28
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "VK_r2",
+      "worksheet_rows": 31
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "4b6101d8efa69bb635f953a84ce8d301b3ab5d0fca05ea0c7263afe52bcc54ca",
+      "finding_count": 48,
+      "explicit_routes": {
+        "missing": 48
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "EOM_r2",
+      "worksheet_rows": 51
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34",
+      "finding_count": 65,
+      "explicit_routes": {
+        "missing": 65
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "AK_r3",
+      "worksheet_rows": 68
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+      "finding_count": 20,
+      "explicit_routes": {
+        "missing": 20
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "AR_r3",
+      "worksheet_rows": 23
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "aa76592c061f7c75196ee2c35c606de32dd98c383243ddb22357d35dde54c89b",
+      "finding_count": 54,
+      "explicit_routes": {
+        "missing": 54
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "ITP_r3",
+      "worksheet_rows": 57
+    },
+    {
+      "discipline": "KM",
+      "repeat": 3,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "24144ca36a134832df47be32c1b795fc8923515017c46a3e07296ab7380ce60f",
+      "finding_count": 25,
+      "explicit_routes": {
+        "missing": 25
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "KM_r3",
+      "worksheet_rows": 28
+    },
+    {
+      "discipline": "VK",
+      "repeat": 3,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+      "finding_count": 22,
+      "explicit_routes": {
+        "missing": 22
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "VK_r3",
+      "worksheet_rows": 25
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+      "finding_count": 46,
+      "explicit_routes": {
+        "missing": 46
+      },
+      "rendered_questions_header_rows": [],
+      "worksheet": "EOM_r3",
+      "worksheet_rows": 49
+    }
+  ],
+  "production_acceptance": false,
+  "limits": [
+    "Rendered with frozen baseline code, no engineer feedback loaded and no finding content altered.",
+    "Harness originally stops at findings_verify; this is evaluator-side export after sealing.",
+    "Missing report_section does not classify a finding as technical or prove severity is correct.",
+    "Candidate renderer supports explicit questions but still needs its own sealed-output rendering test.",
+    "No coverage ledger was modified; report-section scoring remains a separate step."
+  ]
+}
