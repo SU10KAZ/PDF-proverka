@@ -60,9 +60,14 @@ def collect(base_review, result_roots, output):
     merged = combine_findings_with_targeted(final, payloads)
     pending = pending_subclaims(merged, known, base['coverage'])
     reports = merged.get('candidate_recovery_reports', [])
+    candidate_keys = {(c['origin'], c['pointer']) for c in base['coverage']['candidates']}
+    unmatched = {key: claims for key, claims in pending.items() if key not in candidate_keys}
     summary = {'successful_packets_replayed': len(payloads), 'base_findings': len(final.get('findings', [])),
         'merged_findings': len(merged['findings']), 'pending_candidates': len(pending),
         'pending_subclaims': sum(map(len, pending.values())),
+        'pending_subclaims_on_known_candidates': sum(len(v) for k, v in pending.items() if k in candidate_keys),
+        'unmatched_pending_receipts': len(unmatched),
+        'unmatched_pending_subclaims': sum(map(len, unmatched.values())),
         'pending_reasons': dict(Counter(r['reason'] for rows in pending.values() for r in rows)),
         'published_addenda': sum(len(r.get('addenda_publication', {}).get('applied', [])) for r in reports),
         'target_binding_repairs': sum(len(r.get('finding_target_binding', {}).get('repairs', [])) for r in reports),
@@ -72,6 +77,7 @@ def collect(base_review, result_roots, output):
         'base_review': str(base_review), 'base_review_sha256': sha(base_review),
         'queue_snapshots': snapshots, 'sources': sources, 'combined': merged,
         'pending_subclaims': [{'origin': k[0], 'pointer': k[1], 'claims': v} for k, v in pending.items()],
+        'unmatched_pending_receipts': [{'origin': k[0], 'pointer': k[1], 'claims': v} for k, v in unmatched.items()],
         'production_acceptance': False, 'limits': [
             'Running queues contribute only the completed prefix, not a complete project result.',
             'Publication and address checks do not establish factual truth or engineering usefulness.',

@@ -1,0 +1,78 @@
+{
+  "status": "full_graphic_context_dispatched_and_pending_addresses_separated",
+  "snapshot": "/tmp/auditmanager_context_all_snapshot_20261112_01.json",
+  "snapshot_sha256": "2939ea3fe571ee8deb2faa9a483d072b2be8bdfa629040034100367429d033d1",
+  "summary": {
+    "successful_packets_replayed": 54,
+    "base_findings": 35,
+    "merged_findings": 83,
+    "pending_candidates": 16,
+    "pending_subclaims": 21,
+    "pending_subclaims_on_known_candidates": 19,
+    "unmatched_pending_receipts": 1,
+    "unmatched_pending_subclaims": 2,
+    "pending_reasons": {
+      "needs_data": 21
+    },
+    "published_addenda": 146,
+    "target_binding_repairs": 169,
+    "unresolved_target_bindings": 0
+  },
+  "queues": [
+    {
+      "root": "/tmp/auditmanager_primary_text_runtime_recovery_results_20261112",
+      "status": "ready_packets_completed_held_pending",
+      "completed_packets": 42,
+      "planned_ready": 42
+    },
+    {
+      "root": "/tmp/auditmanager_primary_text_runtime_recovery_split_results_20261112",
+      "status": "completed_unadjudicated",
+      "completed_packets": 2,
+      "planned_ready": 2
+    },
+    {
+      "root": "/tmp/auditmanager_runtime_recovery_graphic_detail_results_20261112",
+      "status": "completed_unadjudicated",
+      "completed_packets": 1,
+      "planned_ready": 1
+    },
+    {
+      "root": "/tmp/auditmanager_context_lineage_fixed_results_20261112",
+      "status": "completed_unadjudicated",
+      "completed_packets": 4,
+      "planned_ready": 4
+    },
+    {
+      "root": "/tmp/auditmanager_remaining_context_results_20261112",
+      "status": "running",
+      "completed_packets": 4,
+      "planned_ready": 8
+    },
+    {
+      "root": "/tmp/auditmanager_sheet54_tiled_context_results_20261112",
+      "status": "running",
+      "completed_packets": 1,
+      "planned_ready": 2
+    }
+  ],
+  "tiles": {
+    "manifest": "/tmp/auditmanager_sheet54_full_graphic_tiles_20261112/manifest.json",
+    "sha256": "4da91e0d6291b463a6a8a83115b931181917524073b5b4200963b4035bc00f63",
+    "preparation": "/tmp/auditmanager_sheet54_tiled_context_20261112/preparation.json",
+    "preparation_sha256": "028e24d228af612e7dc66c63692965b52b583ed438a46b057202dfb7445ce45e",
+    "coverage": "All 15 cells of a 5-by-3 full-block grid, with overlap; no historical answer coordinates used."
+  },
+  "unmatched_receipt": {
+    "pointer": "/block_analyses/67/deferred_findings/0",
+    "status": "unknown_candidate_address",
+    "actual_deferred_candidate": "/block_analyses/68/deferred_findings/0",
+    "actual_candidate_review_stage": "candidate_recovery_0e920a705ba2ab51",
+    "boundary": "Similar wording identifies a possible relationship, not an automatic ID repair. Preserve unmatched receipt separately; do not count it as a new unreviewed source candidate."
+  },
+  "no_new_context_case": {
+    "stage": "candidate_recovery_3920b0dedd93a8de",
+    "issue": "Legal status of ГН 2.2.5.1313-03 cannot be established merely by searching the project MD. Requires external authoritative normative evidence, not more graphics."
+  },
+  "production_acceptance": false
+}
