@@ -2,8 +2,27 @@
   "status": "shared_transport_preflight_passed",
   "source_root": "/home/coder/projects/PDF-proverka",
   "algorithm_module": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
-  "backend_imports_verified": 41,
+  "backend_imports_verified": 59,
   "cross_arm_imports": {},
+  "variant": "candidate",
+  "method_config": {
+    "inventory_max_packets": 128,
+    "inventory_max_source_chars": 60000,
+    "inventory_max_images": 4,
+    "source_review_max_findings": 256,
+    "source_review_auto_graphic_regions": true
+  },
+  "context_option_keys": [
+    "inventory_executor_id",
+    "inventory_invoke",
+    "inventory_max_images",
+    "inventory_max_packets",
+    "inventory_max_source_chars",
+    "source_review_auto_graphic_regions",
+    "source_review_executor_id",
+    "source_review_invoke",
+    "source_review_max_findings"
+  ],
   "stage_models": {
     "text_analysis": "codex/gpt-6-astra",
     "block_batch": "ensemble/codex-only",
@@ -26,7 +45,11 @@
     "STAGE01_CODEX_ONLY_JUDGE_EFFORT": "high",
     "STAGE01_NEIGHBOR_COORD_TEXT_ENABLED": "false",
     "MD_MIRROR_RECONCILE_ENABLED": "false",
-    "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false"
+    "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false",
+    "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": "1",
+    "AUDIT_OBJECT_GRAPHIC_DETAILS": "1",
+    "AUDIT_OBJECT_TERMINAL_DISPOSITION": "1",
+    "AUDIT_OBJECT_OPERATION_MAX_REQUESTS": "128"
   },
   "reasoning_effort": "high",
   "max_request_attempts": 3,

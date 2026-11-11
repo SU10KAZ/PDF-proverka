@@ -18,6 +18,7 @@ MODELS = {'text_analysis':'codex/gpt-6.1-sol','block_batch':'ensemble/codex-only
 ALLOWED = {'gpt-6-astra','gpt-6-sol','gpt-6.1-sol'}
 REASONING_EFFORT = 'medium'
 MAX_REQUEST_ATTEMPTS = None
+METHOD_CONFIG = {}
 ENV = {'STAGE01_CLAUDE_LEG_ENABLED':'false','STAGE01_THIRD_LEG_ENABLED':'false',
        'STAGE01_CODEX_ONLY_LEG_MODELS':'codex/gpt-6-astra,codex/gpt-6-sol',
        'STAGE01_CODEX_ONLY_LEG_EFFORT':'medium','STAGE01_CODEX_ONLY_JUDGE_MODEL':'codex/gpt-6.1-sol',
@@ -28,6 +29,27 @@ ENV = {'STAGE01_CLAUDE_LEG_ENABLED':'false','STAGE01_THIRD_LEG_ENABLED':'false',
 def validate_model(model):
     if str(model).removeprefix('codex/') not in ALLOWED:
         raise RuntimeError(f'Model outside frozen Codex control: {model}')
+
+
+def method_context_options(project_id):
+    """Explicit opt-in only; no callback means no extra calls in the baseline."""
+    if not METHOD_CONFIG:
+        return {}
+    required={'inventory_max_packets','inventory_max_source_chars','inventory_max_images',
+              'source_review_max_findings','source_review_auto_graphic_regions'}
+    if set(METHOD_CONFIG)!=required:
+        raise ValueError('Unknown or missing method configuration fields')
+    for key in required-{'source_review_auto_graphic_regions'}:
+        value=METHOD_CONFIG[key]
+        if type(value) is not int or value<1:
+            raise ValueError('Positive explicit method budget required: '+key)
+    if type(METHOD_CONFIG['source_review_auto_graphic_regions']) is not bool:
+        raise ValueError('Explicit graphic mode required')
+    from backend.app.pipeline.stages.findings_verify.source_review_workflow import direct_cli_executor
+    invoke=direct_cli_executor('codex/gpt-6-astra',project_id=project_id,reasoning_effort=REASONING_EFFORT)
+    identity='codex/gpt-6-astra:'+REASONING_EFFORT+':paired-methods-v1'
+    return {**METHOD_CONFIG,'inventory_invoke':invoke,'inventory_executor_id':identity,
+            'source_review_invoke':invoke,'source_review_executor_id':identity}
 
 
 def process_guard(event, args):
@@ -49,7 +71,7 @@ def freeze(work):
         'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
         'source_files':{str(p.relative_to(ROOT)):sha(p) for p in files},
         'input_manifest_sha256':sha(root/'input_manifest.json'),'stage_models':MODELS,'environment':ENV,
-        'reasoning_effort':REASONING_EFFORT,'max_request_attempts':MAX_REQUEST_ATTEMPTS,'graphic_parallelism':2,
+        'method_config':METHOD_CONFIG,'reasoning_effort':REASONING_EFFORT,'max_request_attempts':MAX_REQUEST_ATTEMPTS,'graphic_parallelism':2,
         'scope':'graphic detector ensemble + full authoritative MD + merge + structural/absence verification',
         'excluded':'optimization and external normative vault verification; experimental operation injection',
         'blindness':'Source-only inputs. Known development projects, not unseen validation.',
@@ -103,7 +125,8 @@ async def run(work,disc):
     root=work/'classic_control';protocol=read(root/'protocol.json')
     if (protocol['stage_models']!=MODELS or protocol['environment']!=ENV
             or protocol['reasoning_effort']!=REASONING_EFFORT
-            or protocol.get('max_request_attempts')!=MAX_REQUEST_ATTEMPTS):
+            or protocol.get('max_request_attempts')!=MAX_REQUEST_ATTEMPTS
+            or protocol.get('method_config',{})!=METHOD_CONFIG):
         raise ValueError('Execution settings differ from frozen protocol')
     for name,digest in protocol['source_files'].items():
         if sha(ROOT/name)!=digest:raise ValueError(f'Frozen implementation changed: {name}')
@@ -140,7 +163,8 @@ async def run(work,disc):
     pid=f'classic-control-{disc}'
     ctx=PipelineStageContext(project_dir=version,project_id=pid,output_dir=out,log=log,check_before_launch=yes,
         check_pause=yes,wait_for_rate_limit=no,record_cli_usage=usage,update_pipeline_log=update,
-        run_subprocess=deny,project_info=read(version/'01_input/project_info.json'),version_id=version.name)
+        run_subprocess=deny,project_info=read(version/'01_input/project_info.json'),version_id=version.name,
+        **method_context_options(pid))
     save()
     try:
         with audit_scope.bind_audit_scope(output_dir=out,version_dir=version,project_id=pid,version_id=version.name):

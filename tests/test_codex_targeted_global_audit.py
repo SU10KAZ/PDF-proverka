@@ -346,3 +346,15 @@ def test_dimension_receipt_requires_explicit_length_equation():
                   "Ру=5,4 кВт; Кс=1,00; Рр=5,4 кВт; 0,40+0,40+0,20 кВт",
                   "0,40 кВт + 0,20 кВт = 0,60 кВт", "ЩС1 2×40 мм; общий 200 мм"):
         assert targeted._dimension_receipt({"finding": "Сумма цепочки не сходится", "value_found": value}) == ""
+
+
+def test_object_operation_budget_is_explicitly_forwarded(monkeypatch,tmp_path):
+    from backend.app.pipeline.stages.prepare import object_operation_passes
+    md=_write_md(tmp_path);seen=[]
+    monkeypatch.setattr(targeted,'_get_md_file_path',lambda *_:str(md))
+    monkeypatch.setattr(targeted,'_read_existing_findings',lambda *a,**k:'{"findings":[]}')
+    monkeypatch.setattr(targeted,'_version_output_dir',lambda *_:tmp_path)
+    monkeypatch.setattr(object_operation_passes,'build_object_operation_passes',lambda *args,**kwargs:seen.append(kwargs) or [])
+    monkeypatch.setenv('AUDIT_OBJECT_OPERATION_MAX_REQUESTS','128')
+    targeted.build_targeted_findings_passes({'section':'KM'},'doc')
+    assert seen[0]['max_requests']==128

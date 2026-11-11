@@ -1,0 +1,37 @@
+{
+  "status": "method_wiring_preflight_passed_not_comparison_freeze",
+  "shared_model": "codex/gpt-6-astra",
+  "shared_effort": "high",
+  "method_environment_differences": {
+    "AUDIT_OBJECT_GRAPHIC_DETAILS": {
+      "classic": "0",
+      "candidate": "1"
+    },
+    "AUDIT_OBJECT_OPERATION_MAX_REQUESTS": {
+      "classic": "8",
+      "candidate": "128"
+    },
+    "AUDIT_OBJECT_TERMINAL_DISPOSITION": {
+      "classic": "0",
+      "candidate": "1"
+    },
+    "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": {
+      "classic": "0",
+      "candidate": "1"
+    }
+  },
+  "candidate_context": {
+    "inventory_max_packets": 128,
+    "inventory_max_source_chars": 60000,
+    "inventory_max_images": 4,
+    "source_review_max_findings": 256,
+    "source_review_auto_graphic_regions": true
+  },
+  "limitations": [
+    "Budgets are draft upper bounds, not evidence of completed source coverage or acceptable cost.",
+    "Source-review candidates still require a separate acceptance path; no automatic copy to the reviewed inbox.",
+    "Grouping, unresolved original controls, evaluator freeze and full comparative runs remain pending."
+  ],
+  "new_model_calls": 0,
+  "full_six_comparison_started": false
+}

@@ -752,7 +752,11 @@ def build_targeted_findings_passes(project_info: dict[str, Any], project_id: str
     passes.extend(build_recovery_passes(_version_output_dir(project_id), md_path))
     from .object_operation_passes import build_object_operation_passes
     import os
+    operation_budget = int(os.environ.get("AUDIT_OBJECT_OPERATION_MAX_REQUESTS", "8"))
+    if not 1 <= operation_budget <= 1024:
+        raise ValueError("AUDIT_OBJECT_OPERATION_MAX_REQUESTS must be between 1 and 1024")
     passes.extend(build_object_operation_passes(_version_output_dir(project_id), md_path,
+        max_requests=operation_budget,
         enable_followup=os.environ.get("AUDIT_OBJECT_CONTEXT_FOLLOWUPS", "0") == "1",
         enable_graphic_details=os.environ.get("AUDIT_OBJECT_GRAPHIC_DETAILS", "0") == "1"))
     return passes

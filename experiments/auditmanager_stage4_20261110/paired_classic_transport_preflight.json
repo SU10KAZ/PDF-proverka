@@ -2,8 +2,11 @@
   "status": "shared_transport_preflight_passed",
   "source_root": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_compatible",
   "algorithm_module": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_compatible/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
-  "backend_imports_verified": 41,
+  "backend_imports_verified": 42,
   "cross_arm_imports": {},
+  "variant": "classic",
+  "method_config": {},
+  "context_option_keys": [],
   "stage_models": {
     "text_analysis": "codex/gpt-6-astra",
     "block_batch": "ensemble/codex-only",
@@ -26,7 +29,11 @@
     "STAGE01_CODEX_ONLY_JUDGE_EFFORT": "high",
     "STAGE01_NEIGHBOR_COORD_TEXT_ENABLED": "false",
     "MD_MIRROR_RECONCILE_ENABLED": "false",
-    "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false"
+    "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false",
+    "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": "0",
+    "AUDIT_OBJECT_GRAPHIC_DETAILS": "0",
+    "AUDIT_OBJECT_TERMINAL_DISPOSITION": "0",
+    "AUDIT_OBJECT_OPERATION_MAX_REQUESTS": "8"
   },
   "reasoning_effort": "high",
   "max_request_attempts": 3,
