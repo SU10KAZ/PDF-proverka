@@ -1,0 +1,56 @@
+{
+  "source_root": "/tmp/auditmanager_corrected_comparison_sources_20261111/candidate_3fcd976e1014_with_catalog",
+  "projects": [
+    {
+      "discipline": "AK",
+      "status": "passed",
+      "blocks": 254,
+      "packets": 21,
+      "model_calls": 0
+    },
+    {
+      "discipline": "ITP",
+      "status": "passed",
+      "blocks": 210,
+      "packets": 15,
+      "model_calls": 0
+    },
+    {
+      "discipline": "AR",
+      "status": "passed",
+      "blocks": 76,
+      "packets": 11,
+      "model_calls": 0
+    },
+    {
+      "discipline": "KM",
+      "status": "passed",
+      "blocks": 111,
+      "packets": 14,
+      "model_calls": 0
+    },
+    {
+      "discipline": "VK",
+      "status": "passed",
+      "blocks": 102,
+      "packets": 9,
+      "model_calls": 0
+    },
+    {
+      "discipline": "EOM",
+      "status": "passed",
+      "blocks": 208,
+      "packets": 23,
+      "model_calls": 0
+    }
+  ],
+  "scope": "Local source/budget preflight only; no model calls or semantic acceptance.",
+  "shared_executor_files": {
+    "experiments/auditmanager_stage4_20261110/paired_protocol.py": "7f38a741bd0300e7b60876e1b297485f7a6aca57453eb75c8209746e292bdc9c",
+    "experiments/auditmanager_stage4_20261110/paired_runner.py": "f0e60a81f9302b5b5a5179917eab315d4100853406a8155417b602bf4331100e",
+    "experiments/classic_investigator/classic_control.py": "ef7e28d8f94fe098df23aba7a3f9e51f1f0052ea52c80c2ca5f37cdff5a1f997",
+    "experiments/classic_investigator/investigate.py": "cd7eeefb15f4bdddb4536c7affb0ed59f31e0542d8034de6db88662186792334",
+    "experiments/classic_investigator/subscription_retry.py": "0ffc4732ea43cd257af12c9e31fff2d50227f7acaa58fda2b2caf25fcf27addb",
+    "experiments/classic_investigator/execution_receipts.py": "adeaa6bcd6404e01f9510fd26fc0b5c5c8130ab789f9d4138de6940fbe99b534"
+  }
+}
