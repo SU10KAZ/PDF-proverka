@@ -1,0 +1,9 @@
+{
+  "status": "reached_actual_detector_startup",
+  "model_calls": 0,
+  "blocks_total": 70,
+  "model": "ensemble/codex-only",
+  "source_counts": {
+    "raw_vector": 70
+  }
+}
