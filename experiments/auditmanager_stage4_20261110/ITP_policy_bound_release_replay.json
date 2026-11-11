@@ -1,0 +1,22 @@
+{
+  "status": "runtime_final_release_and_excel_passed",
+  "baseline_rows": 53,
+  "output_rows": 54,
+  "all_baseline_findings_unchanged": true,
+  "all_visible_claim_fields_checked": true,
+  "rerun_idempotent": true,
+  "new_model_calls": 0,
+  "recorded_calls_replayed": [
+    "final_release_check"
+  ],
+  "original_wall_control_recovered": false,
+  "whole_audit_discovery": false,
+  "full_stage4_acceptance": false,
+  "output_sha256": "e9fb80bfca2aa3b9df4a6fb1211930e1dccedf11fa7bcd41b8be4eb898e7502f",
+  "xlsx_sha256": "0f3044accd1843347eb04288e3d8bd4fd6f27e105e76ae7d348b81dfe98b02ff",
+  "review_policy_sha256": "c5a42b2230e413b9fa53de578d5d777d1dd2b4abb086e6f789fa143391adecfd",
+  "request_sha256": "2d2c6132945cf6779d3e92f2cbe78b593d7aa3610dbfa327c445f0a7656e09c9",
+  "result_sha256": "486374b9644af504098ccc670b6f6d077033fcfdd4bc7593650bc70d0e1c20b4",
+  "source_run": "/tmp/auditmanager_itp_velocity_policy_bound_replay_20261111",
+  "prior_evidence": "itp_velocity_released_evidence/assessment.json"
+}
