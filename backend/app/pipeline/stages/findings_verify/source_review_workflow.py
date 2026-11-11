@@ -254,7 +254,11 @@ async def run_source_review_workflow_phase(output_dir, md, *, invoke, executor_i
     summary={'status':'finished','reports':reports,'semantic_acceptance':False,
         'candidate_ready':sum(r['status']=='candidate_ready' for r in reports),
         'not_completed':sum(r['status']=='not_completed' for r in reports),
-        'not_attempted':len(packets)-len(reports),'original_findings_mutated':False}
+        'candidate_rejected':sum(r['status']=='candidate_rejected' for r in reports),
+        'cancelled':sum(r['status']=='cancelled' for r in reports),
+        'attempted':sum(r['status']!='cancelled' for r in reports),
+        'not_attempted':len(packets)-sum(r['status']!='cancelled' for r in reports),
+        'original_findings_mutated':False}
     _write(target,summary)
     return summary
 

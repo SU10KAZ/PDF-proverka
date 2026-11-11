@@ -225,3 +225,25 @@ async def test_context_budget_preserves_checked_core_and_reports_unreviewed_quer
     assert result['source_review_stop']=='context_budget_exhausted'
     assert not result['original_findings_mutated']
     assert result['entry']['response']['claims'][1]['status']=='needs_data'
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('mode',['cancelled','budget','rejected'])
+async def test_phase_reports_unperformed_or_rejected_work_without_mutating_report(tmp_path,monkeypatch,mode):
+    from copy import deepcopy
+    from backend.app.pipeline.stages.findings_verify import source_review_workflow as workflow
+    md,f,q=setup_case();other=deepcopy(f);other['id']='F2'
+    path=tmp_path/'03_findings.json';path.write_text(json.dumps({'findings':[f,other]}));before=path.read_bytes()
+    calls=[]
+    async def stub(*args,**kwargs):
+        calls.append(1)
+        return {'status':'candidate_rejected' if mode=='rejected' else 'candidate_ready'}
+    monkeypatch.setattr(workflow,'run_source_review_workflow',stub)
+    result=await workflow.run_source_review_workflow_phase(tmp_path,md,invoke=provider([]),executor_id='test',max_findings=1,is_cancelled=lambda:mode=='cancelled')
+    assert path.read_bytes()==before
+    if mode=='cancelled':
+        assert not calls and result['attempted']==0 and result['not_attempted']==2 and result['cancelled']==1
+    else:
+        assert len(calls)==1 and result['attempted']==1 and result['not_attempted']==1
+        assert result['candidate_rejected']==(1 if mode=='rejected' else 0)
+        assert result['candidate_ready']==(0 if mode=='rejected' else 1)

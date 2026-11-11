@@ -70,6 +70,9 @@ class FindingsVerifyResult:
     source_followups_prepared: int = 0
     source_review_candidates_ready: int = 0
     source_review_workflows_failed: int = 0
+    source_review_candidates_rejected: int = 0
+    source_review_not_attempted: int = 0
+    source_review_cancelled: int = 0
     source_review_applied: int = 0
     source_review_not_applied: int = 0
     final_release_applied: int = 0
@@ -288,7 +291,10 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
             )
             result.source_review_candidates_ready = workflow['candidate_ready']
             result.source_review_workflows_failed = workflow['not_completed']
-            await ctx.log(f"Проверка источников: кандидатов решений {workflow['candidate_ready']}, незавершённых {workflow['not_completed']}; требуется смысловая приёмка")
+            result.source_review_candidates_rejected = workflow['candidate_rejected']
+            result.source_review_not_attempted = workflow['not_attempted']
+            result.source_review_cancelled = workflow['cancelled']
+            await ctx.log(f"Проверка источников: кандидатов решений {workflow['candidate_ready']}, незавершённых {workflow['not_completed']}, отклонённых кандидатов {workflow['candidate_rejected']}, не запускалось {workflow['not_attempted']}; требуется смысловая приёмка")
         except Exception as exc:
             await ctx.log(f"Последовательная проверка источников не завершена: {exc}", 'warn')
             result.error = (result.error + f"; source_workflow: {exc}") if result.error else f"source_workflow: {exc}"
@@ -396,6 +402,12 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
             "source_followups_prepared": result.source_followups_prepared,
             "source_review_candidates_ready": result.source_review_candidates_ready,
             "source_review_workflows_failed": result.source_review_workflows_failed,
+            "source_review_candidates_rejected": result.source_review_candidates_rejected,
+            "source_review_not_attempted": result.source_review_not_attempted,
+            "source_review_cancelled": result.source_review_cancelled,
+            "final_release_applied": result.final_release_applied,
+            "final_release_held": result.final_release_held,
+            "final_release_not_completed": result.final_release_not_completed,
             "source_review_applied": result.source_review_applied,
             "source_review_not_applied": result.source_review_not_applied,
             "reviewed_groups_applied": result.reviewed_groups_applied,
