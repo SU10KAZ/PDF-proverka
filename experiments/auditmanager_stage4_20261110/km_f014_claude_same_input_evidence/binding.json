@@ -1,0 +1,67 @@
+{
+  "request_sha256": "4d185a5790b64ade969500ac351b24119e6aa3815c68ab00c6392b91434cdb5c",
+  "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "source_report_sha256": "5cc411cb487bc27ebe24c9b7329376e90938dbf2de52ad2898b83e5f3263e866",
+  "images": [
+    {
+      "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_262b1bd1d76146e7a8e45b529a38ac2e.png",
+      "sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+      "metadata": [
+        "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+      ]
+    },
+    {
+      "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f8b3c96af858494c946ff4f1ceaa1fb5.png",
+      "sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+      "metadata": [
+        "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+      ]
+    },
+    {
+      "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_eff2811805d64c26b34d72e41ecbb194.png",
+      "sha256": "f6907f70f3d50ece52d1b7a4bb65b98f13d1a7edd9fc138fc7f48575a6c983e7",
+      "metadata": [
+        "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+      ]
+    },
+    {
+      "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_2f6153fc7d8243798ccea08249042194.png",
+      "sha256": "da37fbca4a5fc6a4c22b0d146614319bcbb0de6eca5e123d0ae82c6b6c5a5513",
+      "metadata": [
+        "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+      ]
+    },
+    {
+      "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+      "page_index": 6,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        777.185165181756,
+        1018.0169078588485,
+        1172.6469135135412,
+        1398.1722581386566
+      ],
+      "grid_row": 3,
+      "grid_column": 0,
+      "path": "/tmp/auditmanager_km_adjacent_flights_source_20261110/detail_tile_3.png",
+      "width": 1187,
+      "height": 1141,
+      "sha256": "b93a757c4bd7764393d8e697849311c9c6066f1c83ea1b984c4ff3be7a43341c",
+      "role": "additional_detail_of_same_graphic_not_new_instance"
+    }
+  ],
+  "message_chars": 9032,
+  "image_bytes": 2090713,
+  "model": "claude/claude-sonnet-5-5",
+  "effort": "high",
+  "maximum_new_calls": 1,
+  "automatic_retries": 0,
+  "history_and_engineer_answers_supplied": false,
+  "automatic_evaluator_change": false,
+  "comparison": "same supplied request and images as Astra; known-candidate control",
+  "subscription_cost": "quota; monetary maximum unknown"
+}
