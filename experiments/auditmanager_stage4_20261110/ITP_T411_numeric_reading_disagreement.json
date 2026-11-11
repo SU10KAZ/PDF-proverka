@@ -8,6 +8,7 @@
   "source_render_provenance": "ITP_T411_literal_source_detail.json",
   "core_discrepancy_preserved": true,
   "accepted_exact_candidate_wording": false,
-  "independent_literal_readback": "Claude source-only request prepared; no prior answers or expected value supplied.",
-  "full_acceptance": false
+  "independent_literal_readback": "Claude read G=2,73 м³/ч without prior answers or expected value. Result archived in ITP_T411_literal_readback_result.json.",
+  "full_acceptance": false,
+  "comparison_boundary": "Claude saw a small rotated detail; Astra saw larger unrotated multi-image context. This is not an equal-input model-quality comparison."
 }

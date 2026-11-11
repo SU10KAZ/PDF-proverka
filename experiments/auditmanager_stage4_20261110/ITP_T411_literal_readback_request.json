@@ -1,0 +1,15 @@
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "Transcribe only the attached project drawing annotation. Do not use tools, outside sources, expected values or engineering inference. Return JSON with verbatim_annotation, object_mark, diameter_literal, service_literal, temperature_literal, flow_literal, pressure_literal and reading_uncertainties. Preserve printed digits and units exactly. If any character is unreadable, state that uncertainty rather than guessing. This is literal reading, not a defect verdict."
+    },
+    {
+      "role": "user",
+      "content": "Read the single annotation in the supplied image. The image was rendered directly from its PDF graphic and rotated for legibility; no OCR text is supplied."
+    }
+  ],
+  "image_paths": [
+    "/tmp/itp_t411_numeric_source_detail.png"
+  ]
+}
