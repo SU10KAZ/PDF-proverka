@@ -1,0 +1,1172 @@
+{
+  "status": "eight_graphic_text_reviews_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/experimental/AK_r1_classic_current/output_review_queue.json",
+  "queue_before_sha256": "652d5bc8a67513d1c189762719ab11f323b757a53b594b885568efc5f28adff9",
+  "queue_after_sha256": "ffad56fb1e8b54aa1dc23cd3057bd25e540f76a189c1522811ba2dacd6789582",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "pressure_range_mismatch",
+        "finding": "На листе 9 для PDS3 системы Пкр4.1 заданы разные диапазоны: в таблице сигналов, позиция 12 «Перепад давления на вентиляторе системы», указан диапазон 20–200 Па, а в перечне элементов, строка PDS1–PDS3, — 50–500 Па. Требуется согласовать диапазон PDS3 в схеме и перечне элементов. Указанная возле PDS3 уставка ΔP=50 Па входит в оба диапазона; невозможность работы с этой уставкой не установлена. Участок 20–50 Па не охватывается диапазоном из перечня, однако необходимость настройки на этом участке представленными источниками не подтверждена.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_28e6a3fa2bff45aabce4aed90feff741",
+        "value_found": "Таблица сигналов, позиция 12: «Перепад давления на вентиляторе системы (20...200 Па)»; перечень элементов, PDS1–PDS3: «Датчик давления дифференциальный 50-500 Па»; возле PDS3: «ΔP=50Па».",
+        "location": "Страница 13, лист 9 «Приточная система Пкр4.1. Функциональная схема автоматизации»: позиция 12 таблицы сигналов, обозначение PDS3 над вентилятором и строка PDS1–PDS3 перечня элементов.",
+        "highlight_regions": [],
+        "source_finding_ids": [
+          "G-009",
+          "G-010"
+        ],
+        "source_refs": [
+          "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "blk_6414183ffe264f65a253b3d6a5155da1"
+        ],
+        "report_section": "technical_findings",
+        "evidence": [
+          {
+            "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+            "type": "text",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_9abbe90f57edee78",
+        "problem": "На листе 9 для PDS3 системы Пкр4.1 заданы разные диапазоны: в таблице сигналов, позиция 12 «Перепад давления на вентиляторе системы», указан диапазон 20–200 Па, а в перечне элементов, строка PDS1–PDS3, — 50–500 Па. Требуется согласовать диапазон PDS3 в схеме и перечне элементов. Указанная возле PDS3 уставка ΔP=50 Па входит в оба диапазона; невозможность работы с этой уставкой не установлена. Участок 20–50 Па не охватывается диапазоном из перечня, однако необходимость настройки на этом участке представленными источниками не подтверждена.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие: диапазон PDS3 на схеме 20–200 Па, в перечне элементов 50–500 Па. Указание слева на неохваченный участок 20–50 Па является прямым следствием этого расхождения.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие: диапазон PDS3 на схеме 20–200 Па, в перечне элементов 50–500 Па. Указание слева на неохваченный участок 20–50 Па является прямым следствием этого расхождения.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 9",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 52,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "PDS3 Пкр4.1 threshold50Pa; signalcolumn12 range20–200Pa; elementlistPDS1–3 range50–500Pa.",
+          "assessment": "confirmed_range_wording_difference",
+          "limits": "50Pa lies in both; commissioning note present. No proved unsuitable device or requirement for20–50Pa."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_drawing_claim",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "different_addresses_or_claims",
+      "profile_and_section": "technical_document_consistency_section_appropriate",
+      "engineer_reuse": "no_new_engineer_verdict_direct_source_review",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+          "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0",
+          "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "route": "direct_GRAPHIC_inspection_current_review",
+          "observation": "PDS3 Пкр4.1 threshold50Pa; signalcolumn12 range20–200Pa; elementlistPDS1–3 range50–500Pa."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #32 [TEXT]: blk_6414183ffe264f65a253b3d6a5155da1\n\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS1-PDS3 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| Y1 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В DA5FU230-DS | 1 |  |\n| Y2 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1, M2 | Электродвигатель вентилятора | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M3 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ1, SC UZ2 | Преобразователь частоты 3,7 кВт 380В, E5-MINI-005H | 2 |  |\n\nПримечание:\n\n. Пределные рабочие значения измеряемых величин уточняются при ПНР\n\n## Page 14 — Sheet 10 — Приточные системы П4.1.1, Пм4.1 Функциональная схема автоматизации\n"
+        }
+      ],
+      "disposition": "assessed_preserve_bounded_range_consistency"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "pressure_range",
+        "finding": "На листе 13 для PDS3 системы Пкр5.1 приведены разные диапазоны перепада давления: в таблице сигналов функциональной схемы, колонка 12 «Перепад давления на вентиляторе системы», указан диапазон 20–200 Па, а в перечне элементов, строка PDS1-PDS3, — 50–500 Па. Требуется согласовать диапазон PDS3 в этих двух представлениях. Уставка ΔP=50 Па возле PDS3 входит в оба диапазона и сама по себе противоречия не образует. Указание о проверке позиции 7.3 спецификации не включено в подтвержденное замечание: эта позиция в предоставленных источниках отсутствует.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_4e142b330766407099c7d561f0a8eb6a",
+        "value_found": "Таблица сигналов, колонка 12: «Перепад давления на вентиляторе системы (20-200 Па)»; перечень элементов, PDS1-PDS3: «Датчик давления дифференциальный 50-500 Па».",
+        "highlight_regions": [],
+        "source_finding_ids": [
+          "G-021",
+          "G-022"
+        ],
+        "source_refs": [
+          "blk_4e142b330766407099c7d561f0a8eb6a",
+          "blk_08e6971dafd541b2a40e0aa270404a4e"
+        ],
+        "report_section": "technical_findings",
+        "evidence": [
+          {
+            "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+            "type": "text",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_8e1933d07700e1d1",
+        "problem": "На листе 13 для PDS3 системы Пкр5.1 приведены разные диапазоны перепада давления: в таблице сигналов функциональной схемы, колонка 12 «Перепад давления на вентиляторе системы», указан диапазон 20–200 Па, а в перечне элементов, строка PDS1-PDS3, — 50–500 Па. Требуется согласовать диапазон PDS3 в этих двух представлениях. Уставка ΔP=50 Па возле PDS3 входит в оба диапазона и сама по себе противоречия не образует. Указание о проверке позиции 7.3 спецификации не включено в подтвержденное замечание: эта позиция в предоставленных источниках отсутствует.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-022",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие диапазона PDS3: 20–200 Па на функциональной схеме листа 13 и 50–500 Па в перечне элементов и позиции 7.3 спецификации. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие диапазона PDS3: 20–200 Па на функциональной схеме листа 13 и 50–500 Па в перечне элементов и позиции 7.3 спецификации. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 13",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 44,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "PDS3 Пкр5.1 threshold50Pa; signalcolumn12 range20–200Pa; elementlistPDS1–3 range50–500Pa.",
+          "assessment": "confirmed_range_wording_difference",
+          "limits": "50Pa lies in both; commissioning note present. SO7.3 claim was not established by this local review; remove packet-processing explanation from user-facing finding."
+        }
+      ],
+      "unsupported_additions": "internal_packet_scope_comment_should_not_enter_engineer_report",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "different_addresses_or_claims",
+      "profile_and_section": "technical_document_consistency_section_appropriate",
+      "engineer_reuse": "no_new_engineer_verdict_direct_source_review",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+          "sha256": "4abaff5efb5a1c9a6466cb37fc407035b9aa2c5cb6afe3a9dfa885c05c4aff01",
+          "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+          "route": "direct_GRAPHIC_inspection_current_review",
+          "observation": "PDS3 Пкр5.1 threshold50Pa; signalcolumn12 range20–200Pa; elementlistPDS1–3 range50–500Pa."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #48 [TEXT]: blk_08e6971dafd541b2a40e0aa270404a4e\n\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-Н2/Pt | 1 |  |\n| ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS1-PDS3 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| Y1 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В DA5FU230-DS | 1 |  |\n| Y2 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1, M3 | Электродвигатель вентилятора | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M2 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ1, SC UZ2 | Преобразователь частоты 3,7 кВт 380В, E5-MINI-005H | 2 |  |\n\nПримечание:\n\n1. Предельные рабочие значения измеряемых величин уточняются при ПНР\n\n## Page 18 — Sheet 14 — Приточные системы П5.1.1, П5.1.3 Функциональная схема автоматизации\n"
+        }
+      ],
+      "disposition": "assessed_preserve_bounded_range_consistency_remove_internal_review_comment"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_identification",
+        "report_section": "technical_findings",
+        "finding": "На листе 15 в таблице сигналов систем Пн5.1 и Вн5.1 переставлены наименования состояния основных и резервных вентиляторов. Линии 11 и 26 связаны с двигателями М1 и М3 вентиляторов Пн5.1 и Вн5.1, но подписаны «Состояние рез. вентилятора (работа/авария)». Линии 14 и 29 связаны с М2 и М4 вентиляторов Пн5.1 рез и Вн5.1р, но подписаны «Состояние осн. вентилятора (работа/авария)».\n\nРекомендация: Согласовать подписи сигналов 11, 14, 26 и 29 с принадлежностью двигателей основным и резервным вентиляторам.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_1421872a752e4019a31247d056c0e9bc",
+        "value_found": "11, 26 — состояние резервного вентилятора при связи с М1, М3; 14, 29 — состояние основного вентилятора при связи с М2, М4.",
+        "source_finding_ids": [
+          "G-028",
+          "G-030"
+        ],
+        "source_refs": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "highlight_regions": [],
+        "evidence": [
+          {
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_8a66131b1f217809",
+        "problem": "На листе 15 в таблице сигналов систем Пн5.1 и Вн5.1 переставлены наименования состояния основных и резервных вентиляторов. Линии 11 и 26 связаны с двигателями М1 и М3 вентиляторов Пн5.1 и Вн5.1, но подписаны «Состояние рез. вентилятора (работа/авария)». Линии 14 и 29 связаны с М2 и М4 вентиляторов Пн5.1 рез и Вн5.1р, но подписаны «Состояние осн. вентилятора (работа/авария)».\n\nРекомендация: Согласовать подписи сигналов 11, 14, 26 и 29 с принадлежностью двигателей основным и резервным вентиляторам.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-028",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-030",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковую перестановку подписей: сигналы 11 и 26 основных М1 и М3 названы резервными, а 14 и 29 резервных М2 и М4 — основными.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковую перестановку подписей: сигналы 11 и 26 основных М1 и М3 названы резервными, а 14 и 29 резервных М2 и М4 — основными.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 15",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 68,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Sheet15 main/reserve system branches and status labels11/14 and26/29 are reversed.",
+          "assessment": "confirmed_graphic_label_conflict",
+          "limits": "No actual controller program, wiring or operation verified."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_drawing_claim",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "different_addresses_or_claims",
+      "profile_and_section": "technical_document_consistency_section_appropriate",
+      "engineer_reuse": "no_new_engineer_verdict_direct_source_review",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "direct_GRAPHIC_inspection_current_review",
+          "observation": "Sheet15 main/reserve system branches and status labels11/14 and26/29 are reversed."
+        }
+      ],
+      "disposition": "assessed_preserve_label_conflict"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-013",
+      "finding": {
+        "id": "F-013",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_identification",
+        "report_section": "technical_findings",
+        "finding": "На листе 15 в строке «Приборы по месту» четырём преобразователям частоты систем Пн5.1 и Вн5.1 присвоены повторяющиеся обозначения: SC UZ2, SC UZ3, SC UZ2, SC UZ3. В перечне элементов этого же листа предусмотрены четыре отдельные позиции SCUZ1–SCUZ4. Обозначения схемы не обеспечивают однозначного соответствия перечню.\n\nРекомендация: Присвоить четырём преобразователям отдельные позиционные обозначения и согласовать их с перечнем элементов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_1421872a752e4019a31247d056c0e9bc",
+        "value_found": "На схеме — SC UZ2, SC UZ3, SC UZ2, SC UZ3; в перечне — «SCUZ1 -SCUZ4», количество 4.",
+        "source_finding_ids": [
+          "G-029",
+          "G-031"
+        ],
+        "source_refs": [
+          "blk_1421872a752e4019a31247d056c0e9bc",
+          "blk_83ff7d2544fe4ddd843f3c1ec01c7087"
+        ],
+        "highlight_regions": [],
+        "evidence": [
+          {
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+            "type": "text",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_8a66131b1f217809",
+        "problem": "На листе 15 в строке «Приборы по месту» четырём преобразователям частоты систем Пн5.1 и Вн5.1 присвоены повторяющиеся обозначения: SC UZ2, SC UZ3, SC UZ2, SC UZ3. В перечне элементов этого же листа предусмотрены четыре отдельные позиции SCUZ1–SCUZ4. Обозначения схемы не обеспечивают однозначного соответствия перечню.\n\nРекомендация: Присвоить четырём преобразователям отдельные позиционные обозначения и согласовать их с перечнем элементов.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-029",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-031",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на повторение SC UZ2 и SC UZ3 у четырёх преобразователей и несоответствие перечню SCUZ1–SCUZ4.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на повторение SC UZ2 и SC UZ3 у четырёх преобразователей и несоответствие перечню SCUZ1–SCUZ4.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 15",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 40,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Sheet15 four distinct drive symbols UZ2/UZ3/UZ2/UZ3 versus four listitems UZ1–UZ4.",
+          "assessment": "confirmed_graphic_and_list_identity_conflict",
+          "limits": "Same sheet and cabinet; no claim of shortage of actual drives."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_drawing_claim",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "different_addresses_or_claims",
+      "profile_and_section": "technical_document_consistency_section_appropriate",
+      "engineer_reuse": "no_new_engineer_verdict_direct_source_review",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "direct_GRAPHIC_inspection_current_review",
+          "observation": "Sheet15 four distinct drive symbols UZ2/UZ3/UZ2/UZ3 versus four listitems UZ1–UZ4."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #56 [TEXT]: blk_83ff7d2544fe4ddd843f3c1ec01c7087\n\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS2-PDS5 | Датчик давления дифференциальный 20-200 Па | 4 |  |\n| PDS1 | Датчик давления дифференциальный 50-500 Па | 1 |  |\n| Y1-Y10 | Электропривод воздушной заслонки | 10 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| Y11 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M4 | Электродвигатель вентилятора | 4 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M5 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SCUZ1 -SCUZ4 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001H | 4 |  |\n\nПримечание:\n\n1. Предельные рабочие значения измеряемых величин уточняются при ПНР\n\n## Page 20 — Sheet 16 — Приточная система Пл3.1, вытяжные системы Вк3.1, Всу3.1. Функциональная схема автоматизации\n"
+        }
+      ],
+      "disposition": "assessed_preserve_identity_conflict"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_type",
+        "report_section": "technical_findings",
+        "finding": "В таблице сигналов шкафа ШАУВ-5-К5ПЧ команда «Электр. воздухонагреватель пуск/стоп» системы Пу5.1, столбец 4, отнесена к дискретным входам DI. Выдача команды пуска/останова требует выходного сигнала; распределение противоречит указанному назначению сигнала.",
+        "recommendation": "Отнести команду пуска/останова электронагревателя к DO и скорректировать итоговое количество DI и DO.",
+        "norm": null,
+        "norm_quote": null,
+        "value_found": "Столбец 4: точка в строке DI, в строке DO точки нет; итоги DI — 9, DO — 6.",
+        "evidence_quote": "«Электр. воздухонагреватель пуск/стоп»; отметка подключения в строке DI.",
+        "evidence_kind": "block_image",
+        "location": "Лист 16, нижняя таблица сигналов шкафа ШАУВ-5-К5ПЧ, столбец 4, строки DI и DO.",
+        "block_evidence": "blk_6995cff7e34a4a41b99ec565101c4e02",
+        "source_refs": [
+          "blk_6995cff7e34a4a41b99ec565101c4e02"
+        ],
+        "source_finding_ids": [
+          "G-033",
+          "D-fb673cefb3898638861f1299"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_d6b9d85471e11d80",
+        "problem": "В таблице сигналов шкафа ШАУВ-5-К5ПЧ команда «Электр. воздухонагреватель пуск/стоп» системы Пу5.1, столбец 4, отнесена к дискретным входам DI. Выдача команды пуска/останова требует выходного сигнала; распределение противоречит указанному назначению сигнала.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-033",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочное отнесение команды «Электр. воздухонагреватель пуск/стоп» к DI шкафа ШАУВ-5-К5ПЧ и требуют переноса в DO с пересчётом сигналов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 16",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 40,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пу5.1 heater start/stop column4 has DI dot and no DO dot.",
+          "assessment": "confirmed_graphic_assignment_with_unresolved_signal_semantics",
+          "limits": "DI could describe an incoming command or status. Drawing label alone does not establish that this is an outgoing controller command; ask interface clarification before declaring implementation failure."
+        }
+      ],
+      "unsupported_additions": "outgoing_command_interpretation_not_proven",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "different_addresses_or_claims",
+      "profile_and_section": "requires_questions_section_until_interface_semantics_confirmed",
+      "engineer_reuse": "no_new_engineer_verdict_direct_source_review",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png",
+          "sha256": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609",
+          "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "route": "direct_GRAPHIC_inspection_current_review",
+          "observation": "Пу5.1 heater start/stop column4 has DI dot and no DO dot."
+        }
+      ],
+      "disposition": "assessed_preserve_as_question_pending_interface_context"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "device_identification",
+        "report_section": "technical_findings",
+        "finding": "На функциональной схеме термостат защиты электронагревателя Пу5.1 обозначен TS2, а в перечне приборов того же листа единственный термостат, поставляемый комплектно с электронагревателем, обозначен ТС1. Позиционные обозначения прибора не согласованы.",
+        "recommendation": "Согласовать позиционное обозначение термостата на функциональной схеме и в перечне приборов.",
+        "norm": null,
+        "norm_quote": null,
+        "value_found": "На схеме — TS 2; в перечне приборов — ТС1.",
+        "evidence_quote": "На изображении над нагревателем Пу5.1: «TS 2». В таблице перечня: «ТС1 | Термостат | 1 | (комплектно с электронагревателем)».",
+        "evidence_kind": "block_image_and_md_text",
+        "location": "Лист 16: верхняя левая часть функциональной схемы, термостат над электронагревателем Пу5.1; перечень приборов, строка ТС1.",
+        "block_evidence": "blk_6995cff7e34a4a41b99ec565101c4e02",
+        "source_refs": [
+          "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "blk_183b00bc56b74dc4b19072a6f269822e",
+          "blk_e8bf19ac20234427aa1d48bfcac87193"
+        ],
+        "source_finding_ids": [
+          "G-034",
+          "G-035"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_183b00bc56b74dc4b19072a6f269822e",
+            "type": "text",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_e8bf19ac20234427aa1d48bfcac87193",
+            "type": "text",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_d6b9d85471e11d80",
+        "problem": "На функциональной схеме термостат защиты электронагревателя Пу5.1 обозначен TS2, а в перечне приборов того же листа единственный термостат, поставляемый комплектно с электронагревателем, обозначен ТС1. Позиционные обозначения прибора не согласованы.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-034",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-035",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно несоответствие обозначений термостата Пу5.1: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно несоответствие обозначений термостата Пу5.1: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 16",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 58,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пу5.1 heater TS2 graphic versus single комплектно с электронагревателем ТС1 list.",
+          "assessment": "confirmed_same_function_tag_conflict",
+          "limits": "Factory-supplied equipment can still have inconsistent document tags; no missing device or field wiring claim. Does not cover journal endpoint."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_drawing_claim",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "different_addresses_or_claims",
+      "profile_and_section": "technical_document_consistency_section_appropriate",
+      "engineer_reuse": "no_new_engineer_verdict_direct_source_review",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png",
+          "sha256": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609",
+          "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "route": "direct_GRAPHIC_inspection_current_review",
+          "observation": "Пу5.1 heater TS2 graphic versus single комплектно с электронагревателем ТС1 list."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_183b00bc56b74dc4b19072a6f269822e",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #58 [TEXT]: blk_183b00bc56b74dc4b19072a6f269822e\n\n\n##### Условные обозначения:\n\nП – Приточная система\n\nВ – Вытяжная система\n\nТЕ – Датчик температуры\n\nTS – Термостат защиты от перегрева\n\nУ – Электропривод воздушной заслонки\n\nPDS – Дифференциальное реле давления на вентиляторе\n\nМ – Двигатель вентилятора\n\nSC UZ – Частотный преобразователь\n\n– Вентилятор канальный;\n\n– Электродвигатель\nвентилятора;\n\n– Фильтр воздушный;\n\n– Заслонка с электроприводом\nс возвратной пружиной;\n\n– Нагревательная секция\nэлектрического нагревателя.\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_e8bf19ac20234427aa1d48bfcac87193",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #59 [TEXT]: blk_e8bf19ac20234427aa1d48bfcac87193\n\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1 |  |\n| ТС1 | Термостат | 1 | (комплектно с электронагревателем) |\n| PDS1-PDS3 | Датчик давления дифференциальный 20-200 Па | 3 |  |\n| Y1-Y3 | Электропривод воздушной заслонки | 3 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M1-M3 | Электродвигатель вентилятора | 3 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| SC UZ1- SC UZ3 | Регулятор скорости, СИ-РСY10 | 3 |  |\n"
+        }
+      ],
+      "disposition": "assessed_preserve_tag_conflict"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-017",
+      "finding": {
+        "id": "F-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_type",
+        "finding": "На листе 17 функциональной схемы системы По5.1 сигнал 7 «Электр. воздухонагреватель пуск/стоп» отмечен в строке дискретных входов DI шкафа ШАУВ-6-К5ПЧ. В строке DO для этого сигнала отметка отсутствует. Указанный тип сигнала не соответствует назначению команды управления нагревателем.",
+        "recommendation": "Предусмотреть дискретный выход для команды пуска/останова электронагревателя и согласовать назначение сигнала 7 с таблицей сигналов и схемой подключений шкафа.",
+        "norm": null,
+        "norm_quote": null,
+        "value_found": "Сигнал 7 «Электр. воздухонагреватель пуск/стоп»: отметка DI, отметка DO отсутствует.",
+        "evidence_quote": "В таблице под схемой столбец 7 подписан «Электр. воздухонагреватель пуск/стоп»; точка подключения расположена в строке DI.",
+        "location": "Лист 17, функциональная схема По5.1, нижняя таблица сигналов шкафа ШАУВ-6-К5ПЧ, столбец 7, строки DI и DO.",
+        "block_evidence": "blk_66980560083f4bb483d5ce1f9c8156e2",
+        "source_refs": [
+          "blk_66980560083f4bb483d5ce1f9c8156e2"
+        ],
+        "source_finding_ids": [
+          "G-036",
+          "G-037"
+        ],
+        "report_section": "technical_findings",
+        "evidence": [
+          {
+            "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_462b47d52cd1cc17",
+        "problem": "На листе 17 функциональной схемы системы По5.1 сигнал 7 «Электр. воздухонагреватель пуск/стоп» отмечен в строке дискретных входов DI шкафа ШАУВ-6-К5ПЧ. В строке DO для этого сигнала отметка отсутствует. Указанный тип сигнала не соответствует назначению команды управления нагревателем.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-036",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-037",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на отнесение команды 7 «Электр. воздухонагреватель пуск/стоп» к DI вместо необходимого DO.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на отнесение команды 7 «Электр. воздухонагреватель пуск/стоп» к DI вместо необходимого DO.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 17",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 32,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "По5.1 heater start/stop column7 has DI dot and no DO dot.",
+          "assessment": "confirmed_graphic_assignment_with_unresolved_signal_semantics",
+          "limits": "Incoming command/status interpretation has not been excluded by interface evidence. Do not conclude output implementation failure from this label alone."
+        }
+      ],
+      "unsupported_additions": "outgoing_command_interpretation_not_proven",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "different_addresses_or_claims",
+      "profile_and_section": "requires_questions_section_until_interface_semantics_confirmed",
+      "engineer_reuse": "no_new_engineer_verdict_direct_source_review",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_66980560083f4bb483d5ce1f9c8156e2.png",
+          "sha256": "dabee90e19aaa31be7c58c1521a95a878bacbb4d195f4173824eddcca53e435c",
+          "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "route": "direct_GRAPHIC_inspection_current_review",
+          "observation": "По5.1 heater start/stop column7 has DI dot and no DO dot."
+        }
+      ],
+      "disposition": "assessed_preserve_as_question_pending_interface_context"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_identification",
+        "finding": "На листе 17 термостат защиты электронагревателя системы По5.1 обозначен на функциональной схеме как TS 2, а в перечне приборов этого листа единственный термостат, комплектный с электронагревателем, обозначен ТС1. Позиционные обозначения прибора на схеме и в перечне не согласованы.",
+        "recommendation": "Согласовать позиционное обозначение термостата защиты электронагревателя на функциональной схеме и в перечне приборов.",
+        "norm": null,
+        "norm_quote": null,
+        "value_found": "На схеме — TS 2; в перечне приборов — ТС1.",
+        "evidence_quote": "На схеме над электронагревателем По5.1 показан прибор «TS 2», связанный с сигналом 6 термостата защиты от перегрева. В перечне: «ТС1 | Термостат | 1 | (комплектно с электронагревателем)».",
+        "location": "Лист 17, ветка По5.1, термостат над электронагревателем и строка ТС1 перечня приборов.",
+        "block_evidence": "blk_66980560083f4bb483d5ce1f9c8156e2",
+        "source_refs": [
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f"
+        ],
+        "source_finding_ids": [
+          "G-039",
+          "G-040"
+        ],
+        "report_section": "technical_findings",
+        "evidence": [
+          {
+            "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+            "type": "text",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_462b47d52cd1cc17",
+        "problem": "На листе 17 термостат защиты электронагревателя системы По5.1 обозначен на функциональной схеме как TS 2, а в перечне приборов этого листа единственный термостат, комплектный с электронагревателем, обозначен ТС1. Позиционные обозначения прибора на схеме и в перечне не согласованы.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-039",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-040",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение обозначений термостата: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение обозначений термостата: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 17",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 58,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "По5.1 heater TS2 graphic versus single комплектно с электронагревателем ТС1 list.",
+          "assessment": "confirmed_same_function_tag_conflict",
+          "limits": "No missing device or installed wiring failure demonstrated; journal/external endpoint not covered by final wording."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_drawing_claim",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "different_addresses_or_claims",
+      "profile_and_section": "technical_document_consistency_section_appropriate",
+      "engineer_reuse": "no_new_engineer_verdict_direct_source_review",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_66980560083f4bb483d5ce1f9c8156e2.png",
+          "sha256": "dabee90e19aaa31be7c58c1521a95a878bacbb4d195f4173824eddcca53e435c",
+          "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "route": "direct_GRAPHIC_inspection_current_review",
+          "observation": "По5.1 heater TS2 graphic versus single комплектно с электронагревателем ТС1 list."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #63 [TEXT]: blk_1bbcbe84761b4011af6e39b8fbbc3f3f\n\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1 |  |\n| ТС1 | Термостат | 1 | (комплектно с электронагревателем) |\n| PDS1, PDS2 | Датчик давления дифференциальный 50-500 Па | 2 |  |\n| PDS3-PDS5 | Датчик давления дифференциальный 20-200 Па | 3 |  |\n| Y1-Y3 | Электропривод воздушной заслонки | 3 | Учтено в разделе 1ЗАВ-РД-ОВ2.2-ПА |\n| M1-M3 | Электродвигатель вентилятора | 3 | Учтено в разделе 1ЗАВ-РД-ОВ2.2-ПА |\n| SC UZ1- SC UZ3 | Регулятор скорости, СИ-PCY10 | 3 |  |\n"
+        }
+      ],
+      "disposition": "assessed_preserve_tag_conflict"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
