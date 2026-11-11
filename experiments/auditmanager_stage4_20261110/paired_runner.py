@@ -74,6 +74,11 @@ def preflight(source_root,work,variant="classic"):
     from backend.app.pipeline.stages.block_analysis import gemma_findings_only as graphics
     from backend.app.core import config
     from backend.app.pipeline.context import PipelineStageContext
+    # Import every stage used by run() now, before any expensive detector call.
+    from backend.app.pipeline.stages.block_analysis.blocks_for_text import write_blocks_for_text_compact
+    from backend.app.pipeline.stages.text_analysis.runner import run_text_analysis
+    from backend.app.pipeline.stages.findings_merge.runner import run_findings_merge
+    from backend.app.pipeline.stages.findings_verify.runner import run_findings_verify
     options=harness.method_context_options('PREFLIGHT')
     assert set(options)<=set(PipelineStageContext.__dataclass_fields__)
     if not Path(graphics.__file__).resolve().is_relative_to(harness.ROOT):
