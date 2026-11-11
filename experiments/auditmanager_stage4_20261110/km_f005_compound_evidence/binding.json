@@ -1,0 +1,30 @@
+{
+  "baseline_sha256": "d85048316ccca845e1cac247c6896671cdd78283848f73e2ad1ecf5ed226fa02",
+  "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "source_context_ids": [
+    "blk_7b0802767f0147c197b0a35334b4a7ae",
+    "blk_b9096ac74f95416da66cc607a9828c3f",
+    "blk_b2ea5b80b2d4480e907cb019c19a01f0",
+    "blk_a691961445f147298f9cdc1cb0d29fce",
+    "blk_4e4e96f61e414814a73cc4d46c2d0ffa",
+    "blk_ba972bbe49b944208eba2b5a9161faa9",
+    "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+    "blk_40c82b814ff7491eae9f712e2b0c108f",
+    "blk_e587f49a7bce4c7bac350d00c17ba616",
+    "blk_1ab59db7d11b4521a1cd065b1ff8812b",
+    "blk_5e4c3725456d4cafa74220f8a1fad14c",
+    "blk_441423dd5fb448c89a33b610c54783ba",
+    "blk_1849759086c445e687f8c0e2b424250b",
+    "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+    "blk_a454c3538d6d4b3eafc59261d7229c42",
+    "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+    "blk_09df648d1b4d4cc097ea6f0e25ceef52"
+  ],
+  "prior_responses_or_engineer_answers_supplied": false,
+  "known_candidate_control": true,
+  "message_chars": 30097,
+  "images": 6,
+  "image_bytes": 2814102,
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0
+}

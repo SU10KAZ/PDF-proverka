@@ -1,0 +1,145 @@
+{
+  "files": [
+    {
+      "path": "binding.json",
+      "sha256": "14b3189cc477a85fb8852afda9a562b35919b530306011dd620b9a69e824905f"
+    },
+    {
+      "path": "finding.json",
+      "sha256": "4a29cb94dffb14d758434bd66d80e8633fe8ec527b9d111d4ccb2b84365b02de"
+    },
+    {
+      "path": "queue.json",
+      "sha256": "63ac4c6a8ba12d890151f23a8e5cbf17702f2f76cea2590596a0b81300dec027"
+    },
+    {
+      "path": "request.json",
+      "sha256": "07ffd37baddee6b40340c9cbc05ddd0830818d5b682b03660dcb57c863a53124"
+    },
+    {
+      "path": "workflow/00_followup.json",
+      "sha256": "5b08d3e9f8c4129a136290fbbcd9fffdbfd11a367a2bea59e58a035e409db22e"
+    },
+    {
+      "path": "workflow/00_review/attempt.json",
+      "sha256": "37b4fa0fef654b3dc5fe1ffba5ff149b9deaa08c0bbe041bffc42618ea091633"
+    },
+    {
+      "path": "workflow/00_review/request.json",
+      "sha256": "ebe23f59ab0285804b663ac312a1993411611ae88b83cfb851ab2a378b5bdaac"
+    },
+    {
+      "path": "workflow/00_review/result.json",
+      "sha256": "e3ba6d6fcf0d276f20083f16c6e0fb3c26c5e03f34d2d6fa05d6b002fb4ea122"
+    },
+    {
+      "path": "workflow/00_validation.json",
+      "sha256": "0628b0dc383bda9dc2173411c8bafe6650866334518f046c46c7688f781c22eb"
+    },
+    {
+      "path": "workflow/01_followup.json",
+      "sha256": "872779d4796acfe5ec1cfa1568e4034977044304fde1873226bd7c80fb5cfb7d"
+    },
+    {
+      "path": "workflow/01_review/attempt.json",
+      "sha256": "d49b3f90cfb317913f876aaaedb5171d2975418322166c7699fe156701d8bff3"
+    },
+    {
+      "path": "workflow/01_review/request.json",
+      "sha256": "07796dffa067c07f55f21d5597e4f3bc66b87714707fb9985594e3da8bdb1275"
+    },
+    {
+      "path": "workflow/01_review/result.json",
+      "sha256": "86d285d344045bd92617d679b4ac4ccdc5e766d853d5cc3a7e6a625c9fad05f7"
+    },
+    {
+      "path": "workflow/01_validation.json",
+      "sha256": "b45ae876334d9fceb0dc2391bdbda7321450f1c71b903079a80959a64ad62e2a"
+    },
+    {
+      "path": "workflow/02_followup.json",
+      "sha256": "2b775b10c22f74ad420998bda2adb1c221f3a9334f5121f36e9baf50d4058307"
+    },
+    {
+      "path": "workflow/02_review/attempt.json",
+      "sha256": "3a36a17365ca6ec255661c27fbe03caaa072e503fc97c0cf2e26ca514684d42a"
+    },
+    {
+      "path": "workflow/02_review/request.json",
+      "sha256": "045c605704ce82a91ba396fbc35f6200ae6036b467139acebae7b786c8052df6"
+    },
+    {
+      "path": "workflow/02_review/result.json",
+      "sha256": "79bf6f94e1224afc25be65e8475530289716de2d47a79d30903053ebea113107"
+    },
+    {
+      "path": "workflow/02_validation.json",
+      "sha256": "16f7631a52b9a63479db04cae81c6efc5b114296df6e63cc3a75a7a7a4b86275"
+    },
+    {
+      "path": "workflow/03_followup.json",
+      "sha256": "f649a3caf8e01edc9a8bff82521c5042e762ad62bfe50316afb4a4477ae7f08c"
+    },
+    {
+      "path": "workflow/03_review/attempt.json",
+      "sha256": "1a298a62eeb04e5769b93819318f99aa953b6f263be3791d72008fa90df239b8"
+    },
+    {
+      "path": "workflow/03_review/request.json",
+      "sha256": "e3607ed8a7aa32de35a579e46d1defb5e754d830acfe8ce61f1e85fab656dca4"
+    },
+    {
+      "path": "workflow/03_review/result.json",
+      "sha256": "cab71fb8b1d48b4d07e1a428c795bb09ba15c9cc3b3ec44037c47108d1867c84"
+    },
+    {
+      "path": "workflow/03_validation.json",
+      "sha256": "ecaa7d50b367910dedc169c7a518de4779c884965c795ea573a008ac434bbb4e"
+    },
+    {
+      "path": "workflow/04_followup.json",
+      "sha256": "2c70085f4a924676260febd80e827d7cb02ec4298499aaf7712fadd5984c5761"
+    },
+    {
+      "path": "workflow/04_review/attempt.json",
+      "sha256": "b8fc80f9bcaf748bd6b210bf47515f502e221739ff0459c0dd1e53489e0cbf93"
+    },
+    {
+      "path": "workflow/04_review/request.json",
+      "sha256": "1ae6722f664be43b8310c040cab864cab605649e8084874353bd5ce020aff217"
+    },
+    {
+      "path": "workflow/04_review/result.json",
+      "sha256": "f920f9513e7597d275a8b931a29f23510079e89cc7e6b36c6adbd414002b6a01"
+    },
+    {
+      "path": "workflow/04_validation.json",
+      "sha256": "0887dccbb00813d4150a31cfd61767289cb0e4b3d26b70665c6ed91003b070e2"
+    },
+    {
+      "path": "workflow/05_adjudication/attempt.json",
+      "sha256": "6489377568d7ae66ddfd7405fc442b73b060ec6e1f6e2c91016d8a3a22cc6fb5"
+    },
+    {
+      "path": "workflow/05_adjudication/request.json",
+      "sha256": "1f45aff6ddda20e3a60340b49fa98ad54d072d97959a3ef2619308920afec947"
+    },
+    {
+      "path": "workflow/05_adjudication/result.json",
+      "sha256": "5d8c7bd3481be8493243f64027880c199b1194b362d36a673f6519e1c39e0377"
+    },
+    {
+      "path": "workflow/binding.json",
+      "sha256": "92cd05cef41b26c737d86b3ce7ceb38560f335a300697c8e19f4e760b8cc7349"
+    },
+    {
+      "path": "workflow/candidate.json",
+      "sha256": "2aaa54d769cb5bd7405787acf3d890f6e7db72d9c3cbab07ebbc35d50fbd0599"
+    }
+  ],
+  "scope": "Known classical F005 source review, original rule version; not accepted final output.",
+  "status": "unconditional_anchor_counts_not_accepted",
+  "reason": "Final model interpretation uses numbers from other table columns as quantities without establishing a same-object relationship. Separate plate arithmetic is not thereby refuted.",
+  "next": "Independent adjudication with generic literal/derived quantity distinction; prior decision and evaluator answers withheld.",
+  "full_acceptance": false
+}

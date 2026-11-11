@@ -1,0 +1,11 @@
+{
+  "source_candidate_sha256": "794648ca1823b5ddb15acd8caa61fa06a8e6be809c61ec9e0ac6a9b4df52af91",
+  "request_sha256": "fa34fe5607936399656a7b3f9e9d101e6f010be044f3f1070d25bb2a23efd37f",
+  "model": "codex/gpt-6-astra",
+  "previous_adjudication_supplied": false,
+  "history_or_engineer_answers_supplied": false,
+  "automatic_retries": 0,
+  "message_chars": 118562,
+  "images": 16,
+  "reason": "Clarify generic distinction between supported comparison inputs and a supported defect proposition."
+}

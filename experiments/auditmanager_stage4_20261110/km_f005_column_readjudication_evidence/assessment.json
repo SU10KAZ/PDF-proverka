@@ -1,0 +1,68 @@
+{
+  "status": "bounded_column_correction_confirmed_output_integration_pending",
+  "files": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/km_f005_column_readjudication_evidence/attempt.json",
+      "sha256": "b37dd94ab5192f67133da0327cfcd7db5613677b7650435571518a14c7da8d34"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/km_f005_column_readjudication_evidence/binding.json",
+      "sha256": "0c84ee7692921d13233ee883929563ee8e24fd428029f89c989e82b751d3f92f"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/km_f005_column_readjudication_evidence/candidate.json",
+      "sha256": "4a9d8af9aabc95cacf47403054b5bc6b8bc489f4570456a3427584d10a09ed6b"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/km_f005_column_readjudication_evidence/local_output.json",
+      "sha256": "56a8b04c75a651ae09b9f7e66ced847d04ec867b39e13a94b05c242b8c94e3c0"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/km_f005_column_readjudication_evidence/request.json",
+      "sha256": "25449bc2f09303327cb3db3470216a485862f0ecbeb3c5dca919399762d1b30d"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/km_f005_column_readjudication_evidence/result.json",
+      "sha256": "1bdd143c7e21e193884b15f5091d25275cd839503cae918c217bebc42149f829"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "claim_verdicts": {
+    "F-005-C1": "needs_data",
+    "F-005-C2": "supported",
+    "F-005-C3": "supported",
+    "F-005-C4": "needs_data",
+    "F-005-C5": "supported",
+    "F-005-C6": "supported",
+    "F-005-C7": "supported",
+    "F-005-C8": "supported",
+    "F-005-C9": "supported",
+    "F-005-C10": "needs_data"
+  },
+  "confirmed_changes": [
+    "LK6 228 and overall 1748 anchor counts are conditional, not established deficits.",
+    "57 LK6 plates and 437 total plates retained; mass calculation explicitly assumes density and solid rectangular blanks.",
+    "Unknown normative applicability remains explicit."
+  ],
+  "remaining_output_issues": [
+    {
+      "finding_id": "F-004",
+      "issue": "New F005 repeats existing S2 488/448 anchor discrepancy; do not count as a newly recovered finding."
+    },
+    {
+      "finding_id": "F-017",
+      "issue": "OGM26 identity appears as context in F005 and is already an independent finding; preserve the identity question without counting it twice."
+    },
+    {
+      "finding_id": "F-005",
+      "issue": "Technical routing depends partly on the duplicated S2 core; standalone plate-balance routing still requires a scoped decision, not automatic agreement with either old benchmark or new model."
+    },
+    {
+      "finding_id": "F-005",
+      "issue": "Revised text cites S2 sheet 4 but inherited page/sheet/evidence display fields still list only original sheets 2,7,9,10. Integrate source references before final export."
+    }
+  ],
+  "full_project_output_changed": false,
+  "independent_project_acceptance": false,
+  "next_action": "Review overlap and source-reference coverage against the complete current KM findings before applying the revision."
+}
