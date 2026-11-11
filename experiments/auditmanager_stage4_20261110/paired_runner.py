@@ -12,10 +12,35 @@ import sys
 
 REPOSITORY=Path(__file__).resolve().parents[2]
 MODEL='codex/gpt-6-astra'
+VARIANTS=('classic','classic_current','inventory','source_review','candidate')
+
+
+def method_profile(variant):
+    """Switch isolation only; not proof of equivalence to historical classic.
+
+    Inventory includes its dependent object operations and context retrieval.
+    Source review includes its mandatory independent release check. Neither is
+    enabled alone without its safety dependencies. Candidate is their union.
+    classic_current provides an all-off control on the same candidate source.
+    """
+    if variant not in VARIANTS:raise ValueError('Unknown comparison variant')
+    inventory=variant in ('inventory','candidate')
+    review=variant in ('source_review','candidate')
+    config={}
+    if inventory:
+        config.update(inventory_max_packets=128,inventory_max_source_chars=60000,inventory_max_images=4)
+    if review:
+        config.update(source_review_max_findings=256,source_review_auto_graphic_regions=True,
+                      source_final_check_max_findings=256,source_final_check_complete_citations=True)
+    enabled='1' if inventory else '0'
+    env=dict(AUDIT_OBJECT_CONTEXT_FOLLOWUPS=enabled,AUDIT_OBJECT_GRAPHIC_DETAILS=enabled,
+             AUDIT_OBJECT_TERMINAL_DISPOSITION=enabled,
+             AUDIT_OBJECT_OPERATION_MAX_REQUESTS='128' if inventory else '8')
+    return config,env
 
 
 def load_harness(source_root, variant="classic"):
-    if variant not in ("classic", "candidate"):
+    if variant not in VARIANTS:
         raise ValueError("Unknown comparison variant")
     source_root=Path(source_root).resolve()
     if any(name=='backend' or name.startswith('backend.') for name in sys.modules):
@@ -37,15 +62,8 @@ def load_harness(source_root, variant="classic"):
     classic_control.ENV.update(STAGE01_CODEX_ONLY_LEG_MODELS=MODEL+','+MODEL,
         STAGE01_CODEX_ONLY_LEG_EFFORT='high',STAGE01_CODEX_ONLY_JUDGE_MODEL=MODEL,
         STAGE01_CODEX_ONLY_JUDGE_EFFORT='high')
-    classic_control.METHOD_CONFIG=({
-        'inventory_max_packets':128,'inventory_max_source_chars':60000,'inventory_max_images':4,
-        'source_review_max_findings':256,'source_review_auto_graphic_regions':True,
-        'source_final_check_max_findings':256,'source_final_check_complete_citations':True,
-    } if variant=='candidate' else {})
-    enabled='1' if variant=='candidate' else '0'
-    classic_control.ENV.update(AUDIT_OBJECT_CONTEXT_FOLLOWUPS=enabled,
-        AUDIT_OBJECT_GRAPHIC_DETAILS=enabled,AUDIT_OBJECT_TERMINAL_DISPOSITION=enabled,
-        AUDIT_OBJECT_OPERATION_MAX_REQUESTS='128' if variant=='candidate' else '8')
+    classic_control.METHOD_CONFIG, method_env=method_profile(variant)
+    classic_control.ENV.update(method_env)
     return classic_control
 
 
@@ -83,7 +101,7 @@ def preflight(source_root,work,variant="classic"):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('command',choices=['preflight','run'])
     p.add_argument('--source-root',type=Path,required=True);p.add_argument('--work',type=Path,required=True)
-    p.add_argument('--variant',choices=['classic','candidate'],required=True)
+    p.add_argument('--variant',choices=VARIANTS,required=True)
     p.add_argument('--discipline',choices=['AK','ITP','AR','KM','VK','EOM'])
     a=p.parse_args()
     if a.command=='preflight':preflight(a.source_root,a.work,a.variant)

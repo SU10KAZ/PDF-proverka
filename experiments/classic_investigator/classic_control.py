@@ -37,24 +37,37 @@ def method_context_options(project_id):
     """Explicit opt-in only; no callback means no extra calls in the baseline."""
     if not METHOD_CONFIG:
         return {}
-    required={'inventory_max_packets','inventory_max_source_chars','inventory_max_images',
-              'source_review_max_findings','source_review_auto_graphic_regions',
-              'source_final_check_max_findings','source_final_check_complete_citations'}
-    if set(METHOD_CONFIG)!=required:
-        raise ValueError('Unknown or missing method configuration fields')
-    for key in required-{'source_review_auto_graphic_regions','source_final_check_complete_citations'}:
-        value=METHOD_CONFIG[key]
-        if type(value) is not int or value<1:
+    groups={
+        'inventory': {'inventory_max_packets','inventory_max_source_chars','inventory_max_images'},
+        'source_review': {'source_review_max_findings','source_review_auto_graphic_regions',
+                          'source_final_check_max_findings','source_final_check_complete_citations'},
+    }
+    allowed=set().union(*groups.values())
+    if set(METHOD_CONFIG)-allowed:
+        raise ValueError('Unknown method configuration fields')
+    enabled=[]
+    for name, fields in groups.items():
+        present=set(METHOD_CONFIG)&fields
+        if present and present!=fields:
+            raise ValueError('Incomplete method configuration: '+name)
+        if present:enabled.append(name)
+    booleans={'source_review_auto_graphic_regions','source_final_check_complete_citations'}
+    for key,value in METHOD_CONFIG.items():
+        if key in booleans:
+            if type(value) is not bool:raise ValueError('Explicit method mode required: '+key)
+        elif type(value) is not int or value<1:
             raise ValueError('Positive explicit method budget required: '+key)
-    for key in ('source_review_auto_graphic_regions','source_final_check_complete_citations'):
-        if type(METHOD_CONFIG[key]) is not bool:
-            raise ValueError('Explicit method mode required: '+key)
     from backend.app.pipeline.stages.findings_verify.source_review_workflow import direct_cli_executor
     invoke=direct_cli_executor('codex/gpt-6-astra',project_id=project_id,reasoning_effort=REASONING_EFFORT)
-    identity='codex/gpt-6-astra:'+REASONING_EFFORT+':paired-methods-v1'
-    return {**METHOD_CONFIG,'inventory_invoke':invoke,'inventory_executor_id':identity,
-            'source_review_invoke':invoke,'source_review_executor_id':identity,
-            'source_final_check_invoke':invoke,'source_final_check_executor_id':identity}
+    identity='codex/gpt-6-astra:'+REASONING_EFFORT+':paired-methods-v2'
+    options=dict(METHOD_CONFIG)
+    for name in enabled:
+        options[name+'_invoke']=invoke
+        options[name+'_executor_id']=identity
+        if name=='source_review':
+            options['source_final_check_invoke']=invoke
+            options['source_final_check_executor_id']=identity
+    return options
 
 
 def process_guard(event, args):
