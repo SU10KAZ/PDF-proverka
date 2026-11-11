@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "discipline": "EOM",
+  "status": "partial_coverage_review",
+  "entire_output_reviewed": false,
+  "reviewed_targets": 7,
+  "total_targets": 72,
+  "remaining_targets": 65,
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "findings_sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386",
+  "reviewer": "coordinator_source_bound_review_not_new_engineer_acceptance",
+  "targets": [
+    {
+      "target_id": "B-EOM-F-002:589046b033f782342a04",
+      "route": "question",
+      "source_atom": {
+        "claim": "ВРП2 формула180×0,32=57,6 отличается от таблицы240/69,6",
+        "verdict": "confirmed_authoritative_TEXT"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-001"
+      ],
+      "reason": "Формула180×0,32=57,6, таблица240/69,6 и необходимость согласования сохранены. 0,29 и76,8 приведены как арифметические варианты; правильное проектное значение не установлено.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            384,
+            385
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-002.json",
+          "sha256": "2851662c79803e5a4e8d362f3c73fee55915522fab48395fe380e426b4dd512d"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-003:26a778e20220ace19772",
+      "route": "question",
+      "source_atom": {
+        "claim": "Опубликованные строки даютPy94,5 иPp89,9 против94,1/89,5",
+        "verdict": "confirmed_decimal_sum"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-002"
+      ],
+      "reason": "Обе суммы94,5/89,9 против94,1/89,5 сохранены. Это покрытие опубликованного расхождения, не подтверждение ошибки исходного расчёта. Модель допускает иной состав точных мощностей; единица Ip в TEXT остаётся кВт, автоматическое исправление её на А требует отдельной оценки.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            422,
+            447
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+          "sha256": "0577c89529c7aadb1f5f57385d56f6cf8748477b1df25539747380ce45aca248"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-004:90fc50f60a8f39d5e2cb",
+      "route": "question",
+      "source_atom": {
+        "claim": "Для C2520 опубликованы 6 кВт в таблице и 5,5 кВт на схеме",
+        "verdict": "supported_same_line"
+      },
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-002"
+      ],
+      "reason": "C2520 и таблица6кВт/6,88кВА найдены. Значение5,5 в выдаче выведено из таблицы, а сравнение с подписью5,5 на схеме явно не выполнено. Обнаружение междокументной связи не засчитывается полностью; изображения в этом пакете не перепроверялись.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            440,
+            443
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json",
+          "sha256": "6ec81943e3282643c6afdba57f11970e973a2a86b2afb5d28ca09687c5194b16"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-005:a26fcc71b65fb1e5cfa1",
+      "route": "question",
+      "source_atom": {
+        "claim": "Компенсированный ввод2:121,6кВт,cosφ0,97,123,2кВА; расчётТТ использует125,4кВА",
+        "verdict": "confirmed_authoritative_TEXT"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-003"
+      ],
+      "reason": "Ввод2 ВРУ-3, режим с компенсацией,121,6/0,97,123,2 и125,4 в проверке ТТ названы. Категоричность слова «ошибочные» и распространение на итог295,9 требуют отдельной оценки; покрытие узкого конфликта не подтверждает все расширения.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            655,
+            661,
+            691,
+            693
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json",
+          "sha256": "9b98c505b2fdb2cbc3f9bff2b6489f30e19884381c8eec62cf2515fbd5ae81d8"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-006:70a5bb3630cd86d67bdf",
+      "route": "question",
+      "source_atom": {
+        "claim": "Пять слагаемых25 дают125, а не100",
+        "verdict": "confirmed_arithmetic"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "reason": "Сумма пяти25=125 против записанных100 явно указана;125не назначено правильной проектной нагрузкой.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            805,
+            805
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-006:9b2481431ea0814f9774",
+      "route": "question",
+      "source_atom": {
+        "claim": "Формулы вводов125,1/100 отличаются от табличных100/83,2",
+        "verdict": "confirmed_authoritative_TEXT"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "reason": "Формулы вводов125,1/100 сопоставлены с100/83,2. Требуется согласование исходных нагрузок, а не автоматическая замена оборудования.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            804,
+            805
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-006:50e2ed9a377d8e0af479",
+      "route": "question",
+      "source_atom": {
+        "claim": "Послеаварийная формула225,1 отличается от табличной суммы183,2",
+        "verdict": "confirmed_arithmetic_and_TEXT"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "reason": "Послеаварийные225,1 и183,2 сопоставлены;225,1 не объявлено обязательной мощностью.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            806,
+            806
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4"
+        }
+      ],
+      "section_assessment": "unchecked"
+    }
+  ],
+  "arithmetic_check": {
+    "published_RP5_row_count": 24,
+    "Py_sum": "94.5",
+    "Pp_sum": "89.9",
+    "limitations": "Суммы опубликованных строк; точность исходных значений и состав режима не установлены."
+  },
+  "limits": [
+    "Не итоговый coverage ledger; не использовать для сводных метрик или добавления ЭОМ в очередь до завершения всех72целей.",
+    "Шесть full и один partial характеризуют обнаружение узких тезисов, а не техническую корректность всего замечания.",
+    "Все семь целей относятся к вопросам/уточнениям. Техническое улучшение не установлено.",
+    "Нет новых решений инженеров. История не передавалась исполнителям прогонов."
+  ]
+}
