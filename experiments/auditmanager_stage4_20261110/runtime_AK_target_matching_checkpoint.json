@@ -1,0 +1,36 @@
+{
+  "status": "provisional_semantic_matching_not_trial_acceptance",
+  "review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_atomic_review_in_progress.json",
+  "review_sha256": "f91f65e96f6d54f3134e1c1842923c189606018db22974699a5889f73b03e848",
+  "reviewed_targets": 100,
+  "output_findings": 85,
+  "counts": {
+    "technical": {
+      "partial": 8,
+      "absent": 3,
+      "full": 44
+    },
+    "question": {
+      "partial": 5,
+      "full": 12,
+      "absent": 6
+    },
+    "negative": {
+      "absent": 22
+    }
+  },
+  "observations": [
+    "44/55 technical atoms fully covered,8 partly,3 absent. Coverage does not imply correct report section or supported recommendations.",
+    "12/23 question atoms fully covered,5 partly,6 absent.",
+    "22 narrow historical negative atoms not reproduced as written; this is not zero false positives. F-013 has an unsupported package-boundary assertion; F-040 has a separately confirmed graphic-reading error.",
+    "F-068/F-069 overlap technical AK14 and question F054/F055 targets. Their section accuracy remains subject to evaluator reconciliation."
+  ],
+  "next_steps": [
+    "Resolve route assessment schema and overlapping gold routes without changing sealed model output.",
+    "Finish per-finding source-quality review, including new findings and unsupported additions.",
+    "Compare with baseline at equal atom scope and include runtime cost before candidate acceptance."
+  ],
+  "engineer_acceptance": false,
+  "production_acceptance": false,
+  "filter_effectiveness": null
+}
