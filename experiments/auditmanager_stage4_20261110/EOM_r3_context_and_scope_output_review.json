@@ -1,0 +1,1006 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/EOM_output_review_queue.json",
+  "queue_before_sha256": "2202ea6e351e0788c0e24c437f699c75c676af3ebd45f9ecea8401142f1485c7",
+  "queue_after_sha256": "e6b4a69d2ec33296bb49708178d45e952d8f75918240adb7c76619a272a33049",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт нагрузок",
+        "sheet": "Листы 4, 16, 26",
+        "page": [
+          7,
+          19,
+          28
+        ],
+        "problem": "Нагрузка ЩМ7 и исходные площади коммерческих помещений не согласованы между схемой, расчётом и экспликациями.",
+        "description": "На схеме ВРУ-К для ЩМ7 помещения 7Н указаны Ру и Рр по 20,0 кВт, в таблице — по 23,2 кВт; итог РП2 83,2 кВт учитывает табличную нагрузку. По текстовому анализу расчёт использует площадь 7Н 105,4 м² вместо 108,1 м² в экспликации, а для 8Н — 68,6 вместо 63,0 м². При 0,22 кВт/м² площадь 108,1 м² даёт 23,78 кВт. Правило минимальной мощности 20 кВт не раскрыто.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить исходные показатели и метод определения нагрузки коммерческих помещений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013",
+                "G-012",
+                "G-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать площади с архитектурными данными, обосновать удельную и минимальную нагрузки, затем обновить ЩМ7, итоги ВРУ-К и подписи схемы.",
+        "risk": "Выбор питания коммерческих помещений по устаревшим или противоречивым нагрузкам.",
+        "source_finding_ids": [
+          "T-013",
+          "G-012",
+          "G-015"
+        ],
+        "source_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "related_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "page": 19
+          },
+          {
+            "type": "text",
+            "page": 28
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-012",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-015",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "image_only"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:006"
+              ],
+              "confidence": 0.99,
+              "reason": "Одна проблема: мощность ЩМ7 помещения 7Н на схеме составляет 20,0 кВт, а в таблице — 23,2 кВт. Упоминание итога РП2 в левом замечании подтверждает то же расхождение.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Одна проблема: мощность ЩМ7 помещения 7Н на схеме составляет 20,0 кВт, а в таблице — 23,2 кВт. Упоминание итога РП2 в левом замечании подтверждает то же расхождение.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 65,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM70_F008_consumer_power:d74160d19f75fda36950",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "EOM_F032_commercial_area_inputs:16faed04bf572c1876a5",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "EOM_F032_commercial_area_inputs:147160644f952ff76e59",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ЩМ7/7Н:20,0 на схеме против23,2 в таблице;83,2 согласуется с23,2+3×20.",
+          "verdict": "confirmed_same_object_conflict",
+          "limits": "Правильная мощность не назначена."
+        },
+        {
+          "claim": "7Н105,4/108,1;8Н68,6/63,0.",
+          "verdict": "confirmed_same_room_TEXT_difference",
+          "limits": "Актуальная архитектурная версия и граница расчётной площади не установлены. Единицы столбцов Площадь/Кэф. не указаны."
+        },
+        {
+          "claim": "108,1×0,22=23,782; минимум20 не раскрыт.",
+          "verdict": "conditional_arithmetic_and_table_pattern",
+          "limits": "105,4×0,22=23,188 округляется до23,2: ошибки умножения нет. Для6Н коэффициент0,25. Не переносить0,22 или20 как универсальную норму."
+        },
+        {
+          "claim": "Согласовать площади, нагрузки и подписи.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не назначать23,782 автоматически; недостаточность питания не установлена."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Не выводить глобальное отсутствие документов из неполной ссылки или отдельных листов СО. EI180, площади и мощности имеют локальную область применения.",
+      "novel_useful_content": "Сохраняются адресные вопросы нагрузок, комплектации и ссылок. Ни один новый физический отказ или инженерное принятие не установлены.",
+      "duplicate_burden": "F012 объединяет площадь и мощность одного помещения; составные тезисы оценены отдельно. Неполные ссылки не считаются отдельными отсутствующими схемами.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_fb5f780dae7a475ca6c249f62b64771e",
+            "blk_f2b273baee994702906a6e5d94a43063",
+            "blk_29be4ff018f040daaa2000c0a3ebde08"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-008",
+          "source": "frozen_r2_atomic_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+          "route": "same_version_bound_prior_evidence",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_919370cbd72648128e20ab1e54cc8be6",
+          "route": "same_version_bound_prior_evidence",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f2c7e53dd8e74a56bd148d84acd8589b",
+          "route": "same_version_bound_prior_evidence",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F007_phase_and_temporary_load.json",
+          "sha256": "1c27b242ec894d3038ec6afb0afb4a727801b04675928076ed2d19c28944fed1",
+          "primary_adjudication": null,
+          "limits": "107 А воспроизводится как 20 кВт/(220 В×0,85); около 35,75 А — как 20 кВт/(√3×380 В×0,85). Это показывает возможное различие режимов, но не доказывает, что автор проекта именно так получил все подписи. Для 23,2 кВт получается около 41,47 А при симметричном трёхфазном режиме. Табличный заголовок Ip буквально имеет единицу кВт; её нельзя незаметно заменить на А. Значение 35,8 близко условному расчёту, но его точное округление по неизвестным исходным данным не подтверждено. Не установлено, предполагается ли одновременная временная нагрузка 20 кВт. Номиналы автоматов сами по себе не доказывают необходимость замены, отказ или опасность. Разницу 20/23,2 для ЩМ7 рассматривать совместно с H-EOM-70/B-EOM-F-008, не теряя отдельного вопроса о фазности.",
+          "wording": "Уточнить расчётную нагрузку и ток временного однофазного питания ЩМ2–ЩМ10, отдельно от постоянного режима: схема содержит 20,0 кВт и 107,0 А при автоматах C40/C50, а таблица — значения Ip 35,8 и 41,5. Примечание предусматривает временное питание однофазного оборудования с изоляцией двух оставшихся фаз. Указать допустимую временную нагрузку и согласовать подписи с назначением защиты.",
+          "route": "same_version_bound_prior_evidence",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F007_phase_and_temporary_load.json"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "route": "same_version_bound_prior_evidence",
+          "observation": "На схемеЩМ10 связан с10Н; девять отходящих линий107А; у обоих счётчиков250/5; отдельная левая измерительная группа1ТТ4…1ТТ6 имеет200/5.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM70_F008_consumer_power.json",
+          "sha256": "4f491caf2dcbd75d1512da43f998abe388b1f23f0362d570367c25c0c8a59887",
+          "route": "frozen_same_object_power_adjudication"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-032",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_context_and_scope"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Пожарная безопасность",
+        "sheet": "Листы 1, 25, 20",
+        "page": [
+          3,
+          27,
+          56
+        ],
+        "problem": "Материал защиты подвесов ОСК-180 не отражён в общей спецификации.",
+        "description": "Локальный состав огнезащитной конструкции предусматривает МБОР толщиной 10 мм для подвесов. В общей спецификации его наименование и количество отсутствуют. Утеплитель толщиной 50 мм не обозначен как замена или комплектная поставка МБОР. Общими указаниями установлен предел EI 180.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить полноту спецификации материалов принятой огнезащитной конструкции.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-020"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-020"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Включить МБОР с расчётным количеством либо явно указать его поставку в составе подтверждённого решения ОСК-180.",
+        "risk": "Выполнение огнезащиты без предусмотренной защиты подвесов и неподтверждённость проектного предела огнестойкости.",
+        "source_finding_ids": [
+          "T-020"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "page": 27
+          },
+          {
+            "type": "text",
+            "page": 56
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 96,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F043_hanger_fireproofing_supply:2828cd141e6335bf59ca",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Локальный перечень:МБОР10мм для подвесов; отдельной строки нет в прочитанных СО19–20.",
+          "verdict": "confirmed_bounded_TEXT_absence",
+          "limits": "Глобальное отсутствие во всей документации не установлено. Утеплитель50мм не доказанная замена10ммМБОР."
+        },
+        {
+          "claim": "Общие данные задаютEI180.",
+          "verdict": "confirmed_project_requirement_scoped",
+          "limits": "TEXTстрока209 задаётEI180 для изоляции линий ГРЩ–ВРУ плитами2Ф или аналогом; это не универсальный предел для всех трасс. Графическая связь с ОСК180 заново не проверена."
+        },
+        {
+          "claim": "Раскрыть количество или комплектную поставку.",
+          "verdict": "supported_scoped_question",
+          "limits": "Фактическое отсутствие защиты и недостижение огнестойкости не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Не выводить глобальное отсутствие документов из неполной ссылки или отдельных листов СО. EI180, площади и мощности имеют локальную область применения.",
+      "novel_useful_content": "Сохраняются адресные вопросы нагрузок, комплектации и ссылок. Ни один новый физический отказ или инженерное принятие не установлены.",
+      "duplicate_burden": "F012 объединяет площадь и мощность одного помещения; составные тезисы оценены отдельно. Неполные ссылки не считаются отдельными отсутствующими схемами.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+            "blk_82bd0b6201d04037beca3195d87933ce",
+            "blk_8a5db6616dac4b8bbe73c13b7c54a140"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-017",
+          "source": "frozen_r2_atomic_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "line": 209,
+          "route": "authoritative_TEXT_direct_scope_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_context_and_scope"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Оформление документации",
+        "sheet": "Листы 1, 2, 3",
+        "page": [
+          37,
+          38,
+          39
+        ],
+        "problem": "В спецификации щитов не завершены ссылки на документы изготовления.",
+        "description": "Запись «ПД-00580716-ЭОМ 2-1, листы» оставлена без номеров листов. Для индивидуально изготавливаемых щитов не определены конкретная схема и состав аппаратов.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить заполнение обозначения документа или опросного листа для изготовления оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Для каждого щита указать конкретные листы схем или обозначение опросного листа; для смежных комплектов дать точные ссылки.",
+        "risk": "Изготовление щитов с неверным составом и задержка заказа.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 37
+          },
+          {
+            "type": "text",
+            "page": 38
+          },
+          {
+            "type": "text",
+            "page": 39
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 84,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Ссылки заканчиваются словом листы без номеров.",
+          "verdict": "confirmed_bounded_TEXT",
+          "limits": "Марки щитов присутствуют; отсутствие самих схем не доказано."
+        },
+        {
+          "claim": "Конкретная схема и состав аппаратов не определены.",
+          "verdict": "overbroad_from_missing_reference",
+          "limits": "Подтверждена неполная ссылка, но схемы могут находиться по марке. Не превращать редакционную неполноту в отсутствие проектного решения."
+        },
+        {
+          "claim": "Заполнить адресные ссылки.",
+          "verdict": "supported_editorial_question",
+          "limits": "Ошибки изготовления и задержки заказа не наблюдались."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Не выводить глобальное отсутствие документов из неполной ссылки или отдельных листов СО. EI180, площади и мощности имеют локальную область применения.",
+      "novel_useful_content": "Сохраняются адресные вопросы нагрузок, комплектации и ссылок. Ни один новый физический отказ или инженерное принятие не установлены.",
+      "duplicate_burden": "F012 объединяет площадь и мощность одного помещения; составные тезисы оценены отдельно. Неполные ссылки не считаются отдельными отсутствующими схемами.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_4638622aac5646e5b61bc689463e15c2",
+            "blk_7170586af51c43f79c96734a40269d7d",
+            "blk_af87003578d3440a9be734a66a09af90"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-027",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_context_and_scope"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-022",
+      "finding": {
+        "id": "F-022",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Силовое оборудование",
+        "sheet": "Лист 4",
+        "page": 40,
+        "problem": "Стабилизаторы напряжения не определены достаточными техническими характеристиками.",
+        "description": "Для двух стабилизаторов по 30 кВА и двух по 40 кВА указаны мощности и изготовитель. Модели или опросные листы, фазность, диапазон входного напряжения и перегрузочная способность отсутствуют; питаемые потребители не обозначены.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён; ПУЭ (норматив-кандидат), кандидат п. 1.1.19",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить достаточность характеристик для однозначного заказа оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить соответствие оборудования параметрам сети и условиям работы.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.1.19",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать модели или опросные листы, основные параметры и нагрузку каждого стабилизатора; проверить работу при пусковых токах.",
+        "risk": "Поставка несовместимого оборудования или отключение нагрузки при перегрузке.",
+        "source_finding_ids": [
+          "T-023"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 40
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 66,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Два30кВА и два40кВА без моделей и диапазонов в строках листа4.",
+          "verdict": "confirmed_bounded_TEXT",
+          "limits": "Источник называет поставщика; статус изготовителя не проверен. Глобальное отсутствие паспортов, привязок и опросных листов не доказано."
+        },
+        {
+          "claim": "Уточнить характеристики и потребителей.",
+          "verdict": "supported_scoped_question",
+          "limits": "Пусковой режим зависит от нагрузки: обязательность моторной проверки не установлена. Несовместимость поставки и отключение не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Не выводить глобальное отсутствие документов из неполной ссылки или отдельных листов СО. EI180, площади и мощности имеют локальную область применения.",
+      "novel_useful_content": "Сохраняются адресные вопросы нагрузок, комплектации и ссылок. Ни один новый физический отказ или инженерное принятие не установлены.",
+      "duplicate_burden": "F012 объединяет площадь и мощность одного помещения; составные тезисы оценены отдельно. Неполные ссылки не считаются отдельными отсутствующими схемами.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_99cc8bf95861437186be76b36e9d446b"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-026",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_context_and_scope"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-027",
+      "finding": {
+        "id": "F-027",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация кабельных трасс",
+        "sheet": "Листы 1, 15, 18, 19, 20, 21, 6",
+        "page": [
+          3,
+          18,
+          20,
+          21,
+          22,
+          23,
+          42
+        ],
+        "problem": "Материал и исполнение труб различаются в монтажных указаниях и спецификации.",
+        "description": "Монтажные указания предусматривают ПВХ-трубы, в том числе гладкие. Спецификация содержит только гибкие гофрированные безгалогенные трубы диаметром 25 и 32 мм. Различие само по себе не доказывает недопустимость ПВХ, но не определяет однозначный состав поставки.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить соответствие типа, технической характеристики и количества материалов монтажным решениям.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-028"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-028"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать материал и исполнение труб по участкам, отразить нужные типоразмеры и объёмы в спецификации.",
+        "risk": "Закупка неподходящих труб и изменение стоимости монтажа.",
+        "source_finding_ids": [
+          "T-028"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "page": 18
+          },
+          {
+            "type": "text",
+            "page": 20
+          },
+          {
+            "type": "text",
+            "page": 21
+          },
+          {
+            "type": "text",
+            "page": 22
+          },
+          {
+            "type": "text",
+            "page": 23
+          },
+          {
+            "type": "text",
+            "page": 42
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 94,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Указания:ПВХ; лист6СО:безгалогенные гибкие25/32.",
+          "verdict": "confirmed_bounded_TEXT_difference",
+          "limits": "Утверждение только такие трубы во всей СО опровергается наличием стальнойВГПДу40 на листе4."
+        },
+        {
+          "claim": "Указания предусматривают гладкие трубы.",
+          "verdict": "alternative_not_mandatory_addition",
+          "limits": "В примечании гофрированная ИЛИ гладкаяПВХ. Отсутствие гладкой позиции не доказывает недостачу."
+        },
+        {
+          "claim": "Согласовать материал и способ по участкам.",
+          "verdict": "supported_scoped_question",
+          "limits": "НедопустимостьПВХ, пожарные свойства и фактическая поставка не установлены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Не выводить глобальное отсутствие документов из неполной ссылки или отдельных листов СО. EI180, площади и мощности имеют локальную область применения.",
+      "novel_useful_content": "Сохраняются адресные вопросы нагрузок, комплектации и ссылок. Ни один новый физический отказ или инженерное принятие не установлены.",
+      "duplicate_burden": "F012 объединяет площадь и мощность одного помещения; составные тезисы оценены отдельно. Неполные ссылки не считаются отдельными отсутствующими схемами.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_76d1760dd5b34882a0df18538f78e39b",
+            "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+            "blk_628818db493e46e7bdccc75b01afbd16",
+            "blk_1da24da5ad594599aa59defe9fde265b",
+            "blk_99cc8bf95861437186be76b36e9d446b"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-028",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_context_and_scope"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-028",
+      "finding": {
+        "id": "F-028",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Оформление документации",
+        "sheet": "Лист 3",
+        "page": 6,
+        "problem": "Монтажное указание схемы ВРУ-3 ошибочно относится к ВРУ-1.",
+        "description": "В примечании 10 указано: «Вывод распределительных линий от панелей ВРУ-1 осуществить сверху». Изображённая сборка и наименование схемы относятся к ВРУ-3.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Найти требования к однозначности обозначений и согласованности указаний рабочего чертежа.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-005"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить марку оборудования в примечании 10 на ВРУ-3 и проверить применимость самого указания.",
+        "risk": "Неоднозначное выполнение вывода распределительных линий.",
+        "source_finding_ids": [
+          "G-005"
+        ],
+        "source_block_ids": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "related_block_ids": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-005",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:006"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания выявляют обозначение ВРУ-1 вместо ВРУ-3 в примечании 10; различие оценки серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Примечание10 листа3 называетВРУ1; заголовок относитсякВРУ3.",
+          "verdict": "confirmed_TEXT_label_conflict",
+          "limits": "Изображённая сборка заново не просмотрена; текстовый конфликт самостоятелен."
+        },
+        {
+          "claim": "Согласовать марку и применимость вывода сверху.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не исправлять указание механически без проверки объекта; фактический неверный монтаж не установлен."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Не выводить глобальное отсутствие документов из неполной ссылки или отдельных листов СО. EI180, площади и мощности имеют локальную область применения.",
+      "novel_useful_content": "Сохраняются адресные вопросы нагрузок, комплектации и ссылок. Ни один новый физический отказ или инженерное принятие не установлены.",
+      "duplicate_burden": "F012 объединяет площадь и мощность одного помещения; составные тезисы оценены отдельно. Неполные ссылки не считаются отдельными отсутствующими схемами.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957",
+            "blk_54ee6784647e49ae86ad9fd46e7082e3",
+            "blk_4efb5f71075b46c9a256fdebb447e338"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-015",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_context_and_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Six current context findings independently assessed against identical authoritative source bytes and frozen prior reviews. No new norm validation, raster correction or engineer acceptance."
+}
