@@ -1,33 +1,33 @@
 {
   "scope": "Archived stage4 development results only; not a full-project A/B measurement.",
   "source_directory": "experiments/auditmanager_stage4_20261110",
-  "provider_result_files": 189,
-  "unique_responses": 185,
-  "duplicate_copies_removed": 4,
+  "provider_result_files": 212,
+  "unique_responses": 206,
+  "duplicate_copies_removed": 6,
   "conflicting_response_ids": [],
   "files_without_response_id": [],
   "totals_by_model": {
     "codex/gpt-6-astra": {
-      "unique_responses": 151,
+      "unique_responses": 171,
       "errors": 4,
-      "input_tokens": 6131009,
-      "output_tokens": 1016824,
-      "cached_tokens": 1063040,
-      "reasoning_tokens": 72979,
-      "summed_provider_duration_ms": 24523189,
-      "subscription_responses": 151,
+      "input_tokens": 6929506,
+      "output_tokens": 1071673,
+      "cached_tokens": 1241216,
+      "reasoning_tokens": 81275,
+      "summed_provider_duration_ms": 25886415,
+      "subscription_responses": 171,
       "non_subscription_reported_cost_usd": 0,
       "missing_measurements": {}
     },
     "claude/claude-sonnet-5-5": {
-      "unique_responses": 34,
+      "unique_responses": 35,
       "errors": 0,
-      "input_tokens": 1337557,
-      "output_tokens": 437131,
+      "input_tokens": 1338558,
+      "output_tokens": 438169,
       "cached_tokens": 7427,
-      "reasoning_tokens": 221103,
-      "summed_provider_duration_ms": 3222616,
-      "subscription_responses": 34,
+      "reasoning_tokens": 221525,
+      "summed_provider_duration_ms": 3232112,
+      "subscription_responses": 35,
       "non_subscription_reported_cost_usd": 0,
       "missing_measurements": {}
     }
@@ -2940,6 +2940,78 @@
         "cache_write_tokens": 0,
         "reasoning_tokens": 2070,
         "duration_ms": 422439,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c830-1d88-7252-8643-058392e37805",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/ITP_T411_literal_astra_result.json",
+          "sha256": "a3698f42bb635660847b58573c8211cdf200a1bcfa44bf6b1ff2c843c70f95b5",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c830-1d88-7252-8643-058392e37805",
+            "input_tokens": 10940,
+            "output_tokens": 410,
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 282,
+            "duration_ms": 17451,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c830-1d88-7252-8643-058392e37805",
+        "input_tokens": 10940,
+        "output_tokens": 410,
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 282,
+        "duration_ms": 17451,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "claude/claude-sonnet-5-5",
+      "response_id": "93ec6d56-faab-4167-8f6f-e9c194c67e67",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/ITP_T411_literal_readback_result.json",
+          "sha256": "93c5d123bc2ebeb3a0418b854a8d60bd9f0a4ad98bad4073a0fa907e9d2333e5",
+          "usage": {
+            "model": "claude/claude-sonnet-5-5",
+            "response_id": "93ec6d56-faab-4167-8f6f-e9c194c67e67",
+            "input_tokens": 1001,
+            "output_tokens": 1038,
+            "cached_tokens": 0,
+            "cache_write_tokens": 999,
+            "reasoning_tokens": 422,
+            "duration_ms": 9496,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "claude/claude-sonnet-5-5",
+        "response_id": "93ec6d56-faab-4167-8f6f-e9c194c67e67",
+        "input_tokens": 1001,
+        "output_tokens": 1038,
+        "cached_tokens": 0,
+        "cache_write_tokens": 999,
+        "reasoning_tokens": 422,
+        "duration_ms": 9496,
         "cost_usd": 0.0,
         "cost_source": "subscription",
         "is_error": false
@@ -6511,6 +6583,419 @@
     },
     {
       "model": "codex/gpt-6-astra",
+      "response_id": "01a1c83a-c961-72c1-bf1d-86d04bb6a6bc",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_auto_region_workflow_evidence/00_region_literal_0/result.json",
+          "sha256": "e71c7a22f76c2d49cc5c128661b2779ecc53769d4c2c8105c1a00bb8f23ab988",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c83a-c961-72c1-bf1d-86d04bb6a6bc",
+            "input_tokens": 10961,
+            "output_tokens": 464,
+            "cached_tokens": 8192,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 251,
+            "duration_ms": 18927,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c83a-c961-72c1-bf1d-86d04bb6a6bc",
+        "input_tokens": 10961,
+        "output_tokens": 464,
+        "cached_tokens": 8192,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 251,
+        "duration_ms": 18927,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c83b-13d6-75a3-ad4c-4a6787aafc6e",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_auto_region_workflow_evidence/00_region_literal_1/result.json",
+          "sha256": "167cbb2ddbc4490f66b6c240eb35e50eedde612001509005b4d467400d986a60",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c83b-13d6-75a3-ad4c-4a6787aafc6e",
+            "input_tokens": 10954,
+            "output_tokens": 943,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 647,
+            "duration_ms": 44658,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c83b-13d6-75a3-ad4c-4a6787aafc6e",
+        "input_tokens": 10954,
+        "output_tokens": 943,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 647,
+        "duration_ms": 44658,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c83b-c309-7f91-b6eb-b8ac64926f52",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_auto_region_workflow_evidence/00_region_review/result.json",
+          "sha256": "7ab8abd454c2b1240e68191db02dd5f9ab675bfc5a08208d175949a7fa9fa47b",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c83b-c309-7f91-b6eb-b8ac64926f52",
+            "input_tokens": 69401,
+            "output_tokens": 4306,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 477,
+            "duration_ms": 97303,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c83b-c309-7f91-b6eb-b8ac64926f52",
+        "input_tokens": 69401,
+        "output_tokens": 4306,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 477,
+        "duration_ms": 97303,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c81e-fe7e-7fa0-beb3-4579422d8d6d",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_auto_region_workflow_evidence/00_review/result.json",
+          "sha256": "9f1b4b752a09800dd53493d3486afe8608f39aaf3d9ec109177a8d871dcea04e",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c81e-fe7e-7fa0-beb3-4579422d8d6d",
+            "input_tokens": 67095,
+            "output_tokens": 4285,
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 385,
+            "duration_ms": 96617,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_automatic_t411_source_evidence/workflow/00_review/result.json",
+          "sha256": "9f1b4b752a09800dd53493d3486afe8608f39aaf3d9ec109177a8d871dcea04e",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c81e-fe7e-7fa0-beb3-4579422d8d6d",
+            "input_tokens": 67095,
+            "output_tokens": 4285,
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 385,
+            "duration_ms": 96617,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c81e-fe7e-7fa0-beb3-4579422d8d6d",
+        "input_tokens": 67095,
+        "output_tokens": 4285,
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 385,
+        "duration_ms": 96617,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c83d-3fcb-7581-8061-d0b56dda2d89",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_auto_region_workflow_evidence/05_adjudication/result.json",
+          "sha256": "bfbe2993d13205880332717c9cabf5b4373d889d990c2a924a853d49c81f50a6",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c83d-3fcb-7581-8061-d0b56dda2d89",
+            "input_tokens": 73613,
+            "output_tokens": 2793,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 381,
+            "duration_ms": 74018,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c83d-3fcb-7581-8061-d0b56dda2d89",
+        "input_tokens": 73613,
+        "output_tokens": 2793,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 381,
+        "duration_ms": 74018,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c833-0b42-7281-95d4-772c04681dc3",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_automatic_literal_workflow_evidence/workflow/00_literal_reading/result.json",
+          "sha256": "322b5b4e6b67dfd442be173a5da38cfe36cc3c5569c384fbd5a7966cc7792903",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c833-0b42-7281-95d4-772c04681dc3",
+            "input_tokens": 10964,
+            "output_tokens": 389,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 280,
+            "duration_ms": 17632,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c833-0b42-7281-95d4-772c04681dc3",
+        "input_tokens": 10964,
+        "output_tokens": 389,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 280,
+        "duration_ms": 17632,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c833-50df-7ef1-89bf-7001550b10fb",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_automatic_literal_workflow_evidence/workflow/00_review/result.json",
+          "sha256": "3026ed639222000a27f3d7b5110978eb4432e784e6a3f2427666051b4d49f1e9",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c833-50df-7ef1-89bf-7001550b10fb",
+            "input_tokens": 67999,
+            "output_tokens": 3902,
+            "cached_tokens": 8192,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 168,
+            "duration_ms": 88715,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c833-50df-7ef1-89bf-7001550b10fb",
+        "input_tokens": 67999,
+        "output_tokens": 3902,
+        "cached_tokens": 8192,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 168,
+        "duration_ms": 88715,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c834-ac19-7ef2-9d02-e25afaeac719",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_automatic_literal_workflow_evidence/workflow/05_adjudication/result.json",
+          "sha256": "9997d77f722f8feb0cddb97950ce2d6efa8777dc988a22f8d4839488abd24cff",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c834-ac19-7ef2-9d02-e25afaeac719",
+            "input_tokens": 72112,
+            "output_tokens": 2319,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 284,
+            "duration_ms": 60044,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c834-ac19-7ef2-9d02-e25afaeac719",
+        "input_tokens": 72112,
+        "output_tokens": 2319,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 284,
+        "duration_ms": 60044,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c828-ac47-7832-96c4-ae7ece934e44",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_automatic_t411_detail_evidence/workflow/00_review/result.json",
+          "sha256": "b9327e45fa3e2bc3cc22bc5df621ec193200a5ff575226d073baf8b60e7d125e",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c828-ac47-7832-96c4-ae7ece934e44",
+            "input_tokens": 67584,
+            "output_tokens": 4906,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 385,
+            "duration_ms": 108570,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c828-ac47-7832-96c4-ae7ece934e44",
+        "input_tokens": 67584,
+        "output_tokens": 4906,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 385,
+        "duration_ms": 108570,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c82a-5518-7773-9b00-4afd45e45471",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_automatic_t411_detail_evidence/workflow/05_adjudication/result.json",
+          "sha256": "e39c2a410ccdfa7be4b775923b3d4f4d45d5e80ac04fb21ae574582a6ace0395",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c82a-5518-7773-9b00-4afd45e45471",
+            "input_tokens": 72494,
+            "output_tokens": 2725,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 449,
+            "duration_ms": 75433,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c82a-5518-7773-9b00-4afd45e45471",
+        "input_tokens": 72494,
+        "output_tokens": 2725,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 449,
+        "duration_ms": 75433,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c820-78b9-7172-a0a4-212cd9862d97",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_automatic_t411_source_evidence/workflow/05_adjudication/result.json",
+          "sha256": "5603a0ff7c752ab49e1c38f2bee40fbff0cb6ed941405771e2ed1d7c2324a19e",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c820-78b9-7172-a0a4-212cd9862d97",
+            "input_tokens": 71319,
+            "output_tokens": 2694,
+            "cached_tokens": 8192,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 328,
+            "duration_ms": 73548,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c820-78b9-7172-a0a4-212cd9862d97",
+        "input_tokens": 71319,
+        "output_tokens": 2694,
+        "cached_tokens": 8192,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 328,
+        "duration_ms": 73548,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
       "response_id": "01a1c7fe-4f2d-77a0-8a98-8a1dd7fb2cc7",
       "source_copies": [
         {
@@ -6655,6 +7140,78 @@
     },
     {
       "model": "codex/gpt-6-astra",
+      "response_id": "01a1c837-f191-7411-9c4e-1518c815e675",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_model_region_reading_evidence/read_00/result.json",
+          "sha256": "e82c7911895b1aeaa5fd74c003e1ed824c44c818b8da77c9c26c98074e7ef7ef",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c837-f191-7411-9c4e-1518c815e675",
+            "input_tokens": 10943,
+            "output_tokens": 568,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 318,
+            "duration_ms": 21053,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c837-f191-7411-9c4e-1518c815e675",
+        "input_tokens": 10943,
+        "output_tokens": 568,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 318,
+        "duration_ms": 21053,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c838-43d4-74d0-a90d-c6b75e5653ed",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_model_region_reading_evidence/read_01/result.json",
+          "sha256": "bdb46b784febf040fe58e4527d20baa04baab1857ad0a858e777d87583feb507",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c838-43d4-74d0-a90d-c6b75e5653ed",
+            "input_tokens": 10936,
+            "output_tokens": 856,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 487,
+            "duration_ms": 34312,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c838-43d4-74d0-a90d-c6b75e5653ed",
+        "input_tokens": 10936,
+        "output_tokens": 856,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 487,
+        "duration_ms": 34312,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
       "response_id": "01a1c7f9-2ce4-73d3-83b0-18c4e05faffd",
       "source_copies": [
         {
@@ -6727,6 +7284,131 @@
     },
     {
       "model": "codex/gpt-6-astra",
+      "response_id": "01a1c819-8d2c-7d90-88a8-ba47dda1d1e1",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/km_lk6_quantity_full_context_evidence/workflow/00_review/result.json",
+          "sha256": "7b30f768cf5664b7a30baf5ec2739a065778b69872f13655c5f8109c0338c2ea",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c819-8d2c-7d90-88a8-ba47dda1d1e1",
+            "input_tokens": 19631,
+            "output_tokens": 4398,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 170,
+            "duration_ms": 91585,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/km_lk6_quantity_source_evidence/retry1_workflow/00_review/result.json",
+          "sha256": "7b30f768cf5664b7a30baf5ec2739a065778b69872f13655c5f8109c0338c2ea",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c819-8d2c-7d90-88a8-ba47dda1d1e1",
+            "input_tokens": 19631,
+            "output_tokens": 4398,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 170,
+            "duration_ms": 91585,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c819-8d2c-7d90-88a8-ba47dda1d1e1",
+        "input_tokens": 19631,
+        "output_tokens": 4398,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 170,
+        "duration_ms": 91585,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c82a-93a7-71e0-9d7a-96a02cc8a10f",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/km_lk6_quantity_full_context_evidence/workflow/01_review/result.json",
+          "sha256": "5107464df49ac4524fc1fd6606c41c9e5b83f99a9b06ad51f7cae271813aa06f",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c82a-93a7-71e0-9d7a-96a02cc8a10f",
+            "input_tokens": 33680,
+            "output_tokens": 6322,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 459,
+            "duration_ms": 132477,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c82a-93a7-71e0-9d7a-96a02cc8a10f",
+        "input_tokens": 33680,
+        "output_tokens": 6322,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 459,
+        "duration_ms": 132477,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c82c-9956-7ec0-b51c-9ff1de15b101",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/km_lk6_quantity_full_context_evidence/workflow/05_adjudication/result.json",
+          "sha256": "e5715b866fca9d6b81610ca4f11bc40e71a65b9cd826e66926b6698839ab5e2e",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c82c-9956-7ec0-b51c-9ff1de15b101",
+            "input_tokens": 39825,
+            "output_tokens": 3714,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 1353,
+            "duration_ms": 102376,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c82c-9956-7ec0-b51c-9ff1de15b101",
+        "input_tokens": 39825,
+        "output_tokens": 3714,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 1353,
+        "duration_ms": 102376,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
       "response_id": "01a1c816-e036-7633-af50-2b1e4cd744d2",
       "source_copies": [
         {
@@ -6756,6 +7438,114 @@
         "cache_write_tokens": 0,
         "reasoning_tokens": 380,
         "duration_ms": 89803,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c827-49cc-76a2-8c63-d00294a65c5b",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/km_lk6_quantity_source_evidence/readjudication/result.json",
+          "sha256": "4a30d6b4990530dff7c95b7868a28b03a0f7e1e5e759828e46ef9f896e5fbdc6",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c827-49cc-76a2-8c63-d00294a65c5b",
+            "input_tokens": 27671,
+            "output_tokens": 1679,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 158,
+            "duration_ms": 41460,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c827-49cc-76a2-8c63-d00294a65c5b",
+        "input_tokens": 27671,
+        "output_tokens": 1679,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 158,
+        "duration_ms": 41460,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c81e-fd4d-7560-9a38-da219fb525d3",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/km_lk6_quantity_source_evidence/retry1_workflow/01_review/result.json",
+          "sha256": "45fe4c0aa21f5c87043d945468ea8e68cd542000128e614ae3b556a2a43830bd",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c81e-fd4d-7560-9a38-da219fb525d3",
+            "input_tokens": 22799,
+            "output_tokens": 4857,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 354,
+            "duration_ms": 102358,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c81e-fd4d-7560-9a38-da219fb525d3",
+        "input_tokens": 22799,
+        "output_tokens": 4857,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 354,
+        "duration_ms": 102358,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "is_error": false
+      }
+    },
+    {
+      "model": "codex/gpt-6-astra",
+      "response_id": "01a1c820-8d36-74c1-adbd-a882c5ef2b4d",
+      "source_copies": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/km_lk6_quantity_source_evidence/retry1_workflow/05_adjudication/result.json",
+          "sha256": "aaf6baab28cb392a87a26fddca7ed946ea1d2e9550c1fa0d49febaee4c161039",
+          "usage": {
+            "model": "codex/gpt-6-astra",
+            "response_id": "01a1c820-8d36-74c1-adbd-a882c5ef2b4d",
+            "input_tokens": 27576,
+            "output_tokens": 2319,
+            "cached_tokens": 10240,
+            "cache_write_tokens": 0,
+            "reasoning_tokens": 680,
+            "duration_ms": 64689,
+            "cost_usd": 0.0,
+            "cost_source": "subscription",
+            "is_error": false
+          }
+        }
+      ],
+      "usage": {
+        "model": "codex/gpt-6-astra",
+        "response_id": "01a1c820-8d36-74c1-adbd-a882c5ef2b4d",
+        "input_tokens": 27576,
+        "output_tokens": 2319,
+        "cached_tokens": 10240,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 680,
+        "duration_ms": 64689,
         "cost_usd": 0.0,
         "cost_source": "subscription",
         "is_error": false
