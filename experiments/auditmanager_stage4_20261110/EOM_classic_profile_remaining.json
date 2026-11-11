@@ -1,0 +1,12 @@
+{
+  "control": "H01-P02",
+  "completed": [
+    "F001 and F030 preserved in separate question output by explicit local profile decisions.",
+    "F032 corrected wording and sources preserved through Excel."
+  ],
+  "remaining": [
+    "F032 currently technical_findings; benchmark expects clarification. Source area discrepancy is supported but its impact and authoritative calculation boundary remain unresolved. Need explicit justified profile decision, not automatic demotion merely because equipment failure is unproven.",
+    "General automatic profile routing not demonstrated by these local decisions."
+  ],
+  "full_acceptance": false
+}

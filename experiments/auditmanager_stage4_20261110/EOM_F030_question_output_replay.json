@@ -1,0 +1,26 @@
+{
+  "status": "bounded_local_profile_control",
+  "receipts": [
+    {
+      "finding_id": "F-030",
+      "status": "applied",
+      "action": "question"
+    }
+  ],
+  "prior_other_findings_preserved": 50,
+  "final_findings": 51,
+  "question_exported_separately": true,
+  "approved_model_wording_unchanged": true,
+  "original_archived": true,
+  "model_decision_sha256": "5fef42f179ef8c21782776dcef2090e7a06c3329fa10fb007637978cda44e1ca",
+  "source_candidate_sha256": "ba746d83b1ea167d6d405920212f3c9afa60c180401408975064c9dc668cd954",
+  "baseline_sha256": "3eb29b489f0c7934afceb538458692ad645f9913ce2500a266912cf79b84ad5d",
+  "autonomous_model_profile_routing": false,
+  "new_model_calls": 0,
+  "full_acceptance": false,
+  "limitations": [
+    "Local profile decision is not proof of general automatic routing.",
+    "Actual meter accuracy, equipment suitability and normative threshold applicability remain unestablished.",
+    "No independent historical positive-negative pair."
+  ]
+}

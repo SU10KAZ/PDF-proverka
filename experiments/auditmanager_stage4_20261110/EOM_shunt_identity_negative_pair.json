@@ -1,0 +1,49 @@
+{
+  "scope": "Known-source circuit identity and manufacturer-scope negative control, not an injected false-finding filter test.",
+  "model": "codex/gpt-6-astra",
+  "graphic_records": 68,
+  "actual_vru3_object": {
+    "id": "rp3_c17",
+    "identity": "РП3, QF3.17 с независимым расцепителем",
+    "scope": "Фанкойлы квартирных коридоров МОП С3",
+    "kind": "сборка_выключателя_и_расцепителя",
+    "source_refs": [
+      "blk_513e35c4f8a7432986e9a498d4573996"
+    ],
+    "observed_parameters": [
+      {
+        "name": "Маркировка выключателя",
+        "value": "QF3.17; C16A; ВА-303; 20kA",
+        "unit": null,
+        "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+        "graphic_observation": "Отходящая линия идёт вверх к двум прямоугольным символам фанкойлов."
+      },
+      {
+        "name": "Дополнительный расцепитель",
+        "value": "НЕЗ.РАСЦ.; C2; C1",
+        "unit": null,
+        "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+        "graphic_observation": "Справа от выключателя виден прямоугольный символ с обозначениями двух выводов и короткой связью к аппарату."
+      }
+    ]
+  },
+  "vru2_source": "EOM_shunt_graphic_result.json",
+  "distinct_addresses": [
+    "ВРУ-2 / РП3 / QF3.20 / ВА-301",
+    "ВРУ-3 / РП3 / QF3.17 / ВА-303"
+  ],
+  "root_observation": {
+    "path": "/tmp/auditmanager_eom_shunt_vru3_graphic_control_20261111/tiles/detail_tile_4.png",
+    "sha256": "8b6d78b70ae0aba97b806e387f83f5802769e66ab554294c5d077bdd1038a9e8",
+    "directly_viewed": true,
+    "observation": "QF3.17 C16A ВА-303 and independent release visible. Pole count not independently certified by this observation."
+  },
+  "manufacturer_scope_evidence": "EOM_manufacturer_applicability_result.json",
+  "conclusion": "Do not identify devices by the suffix 3.17 across different VRUs. VA301 series does not by itself establish 1P; RN300-2P conditions are not proof of a VA303 or EKF defect.",
+  "limitations": [
+    "This control preserves device identity, not proof of overall compatibility.",
+    "Actual filter against a preexisting false finding not exercised.",
+    "The QF3.20 question remains a candidate, not full-report admission."
+  ],
+  "full_acceptance": false
+}

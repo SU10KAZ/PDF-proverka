@@ -8,6 +8,8 @@ OUT=Path(__file__).parent
 # Explicit evidence mappings only. Unmapped controls are review work, not proof
 # that no evidence exists anywhere in the historical research corpus.
 EVIDENCE={
+ ('H01','positive_controls',1):('partial_control_pending_F032_profile',['EOM_F001_question_output_replay.json','EOM_F030_question_output_replay.json','EOM_F032_output_replay.json','EOM_classic_profile_remaining.json']),
+ ('H06','negative_controls_and_limits',0):('bounded_control_recorded',['EOM_shunt_identity_negative_pair.json','EOM_manufacturer_applicability_assessment.json']),
  ('H03','positive_controls',1):('partial_instance_identity_question_preserved',['EOM_instance_question_output_replay.json','EOM_instance_followup2_validated.json']),
  ('H03','negative_controls_and_limits',1):('explicit_evidence_limit',['EOM_instance_question_output_replay.json']),
  ('H06','negative_controls_and_limits',2):('bounded_control_recorded',['AR_rope_strength_inference_pair.json','AR_rope_reviewed_question_replay.json']),

@@ -26,8 +26,25 @@
       "hypothesis": "H01",
       "kind": "positive_controls",
       "original_control": "ЭОМ F001/F030/F032: сохранить релевантные источники и уточнённый смысл эталонного вопроса.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "partial_control_pending_F032_profile",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_F001_question_output_replay.json",
+          "sha256": "e1fbac27655c5eea5e250061071926bdcc22195b83bbc26522a52f8d4332920c"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_F030_question_output_replay.json",
+          "sha256": "1e4c39094568c4570c1d18c5257256d70034021fea865738a6ea1e8282f12630"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_F032_output_replay.json",
+          "sha256": "d5063f39edd4db71c21ff006e5f20d3c74bf317be2a06c4a18122e834a52b1a7"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_classic_profile_remaining.json",
+          "sha256": "3cecfd17b5ef682edf134edc6c328e1353dee207bc795efb987f692f017ad04c"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -513,8 +530,17 @@
       "hypothesis": "H06",
       "kind": "negative_controls_and_limits",
       "original_control": "ВА-301 само по себе не1P; QF3.17 не переносить в тезисQF3.20.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_shunt_identity_negative_pair.json",
+          "sha256": "05b8365fc77f5c8d0a2f8c0cb3948bd30c4f8481963804de5436e6a62ea3dd3c"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_manufacturer_applicability_assessment.json",
+          "sha256": "f90a29b5f15f91b3d754a462e0a29f585c2cde8e0e3a2f8746274be2e5a87979"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -602,15 +628,16 @@
     }
   ],
   "counts": {
-    "bounded_control_recorded": 21,
+    "bounded_control_recorded": 22,
     "bounded_known_candidate_control": 1,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
+    "partial_control_pending_F032_profile": 1,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
     "partial_instance_identity_question_preserved": 1,
-    "requires_explicit_evidence_review": 5,
+    "requires_explicit_evidence_review": 3,
     "synthetic_contract_only": 1
   },
   "boundaries": [
