@@ -1,0 +1,375 @@
+{
+  "status": "support_mark_confirmed_quantity_conditional_graphic_followup",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "14d1fc3d01a080ad05295c6957ead1683cb96f4a685711549c6d50f8b213128a",
+  "queue_after_sha256": "a468474be3f34715b07f53c1301a2222873396db0ed5a2646ef13136f865ccb0",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-026",
+      "finding": {
+        "id": "F-026",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Крепления кабельных трасс",
+        "sheet": "Лист 53",
+        "page": [
+          52,
+          54,
+          57,
+          103
+        ],
+        "problem": "Количество консолей и марка подвеса не соответствуют ведомости кровельной опоры.",
+        "description": "Одна опора содержит плиту, подвес BSD4120, четыре консоли и четыре анкера. Для 15 плит и 60 анкеров спецификация предусматривает только 15 консолей вместо 60: разность 45 шт. В позиции 22.6 подвес обозначен BSD2120 вместо BSD4120.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие состава и количества креплений монтажному решению.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-025",
+                "G-100",
+                "G-101"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-025"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать конструкцию опоры и марку подвеса; при сохранении ведомости добавить 45 консолей.",
+        "risk": "Недостаток деталей и сборка опор по непредусмотренной конструкции.",
+        "source_finding_ids": [
+          "T-025",
+          "G-100",
+          "G-101"
+        ],
+        "source_block_ids": [
+          "blk_978fa763ed7e4a39977b35b866485e2e",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "related_block_ids": [
+          "blk_978fa763ed7e4a39977b35b866485e2e",
+          "blk_56331ec5845f4d73be99b93df1faec9c",
+          "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_98835baf7fed4bf1934dc55088895af9",
+          "blk_6e1b1e0631904e1c8330bf2c4f47744c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+            "page": 57
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-100",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-101",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение марки подвеса: BSD4120 в ведомости листа 53 и BSD2120 (BSD-21) в позиции 22.6 спецификации листа 10. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение марки подвеса: BSD4120 в ведомости листа 53 и BSD2120 (BSD-21) в позиции 22.6 спецификации листа 10. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 35,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F023_support_type:58cbd95ce44a50b86573",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Таблицы лист48/50/53: плита1, подвесBSD4120 1, консольВВН-60 4, анкерМ10×60 4.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "СО22.5–22.8:15плит,15подвесовBSD2120,15консолейBВH6060,60анкеров.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Марки подвесаBSD4120/BSD2120 не согласованы.",
+          "verdict": "supported_document_identity_conflict",
+          "limits": "Пригодность, взаимозаменяемость и окончательная марка не установлены."
+        },
+        {
+          "claim": "Графика каждого типового узла подтверждает четыре консоли на плиту.",
+          "verdict": "not_supported_direct_GRAPHIC",
+          "limits": "На каждом из трёх рисунков показана одна консоль под лотком; четырёх явно изображённых консолей нет. Проекция не устанавливает окончательный состав узла."
+        },
+        {
+          "claim": "4×15=60, разница60−15=45.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "При условии применения табличного состава ко всем15опорам. Раскладка всех опор и соответствиеВВН-60/BВH6060 здесь не проверены."
+        },
+        {
+          "claim": "Подтверждена недостача45консолей, нужно их дозаказать.",
+          "verdict": "not_established",
+          "limits": "Сначала согласовать графику и локальную ведомость, затем применимость к15плитам. Нельзя считать1 на рисунке автоматическим исправлением авторитетногоTEXT4."
+        },
+        {
+          "claim": "Объединённое замечание целиком является формальностью.",
+          "verdict": "overbroad_profile",
+          "limits": "Конфликт марки сохраняется техническим документным вопросом; число45 — условная количественная гипотеза, не доказанный ущерб."
+        },
+        {
+          "claim": "Нарушен ГОСТ21.110-2013п.4.1.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; точное требование не проверено."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One support mark conflict and one quantity/design reconciliation question; not45 separate deficiencies. Cross-reference F-027 BSD2120 misuse without duplicate generic issue.",
+      "profile_and_section": "technical_mark_conflict_plus_questions_quantity_scope",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_56331ec5845f4d73be99b93df1faec9c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F023_support_type.json",
+          "sha256": "b33ca81b4392fa59b48a45050d3def13fa4f6e75038357b77ec7daf6aa63d753",
+          "primary_adjudication": null,
+          "limits": [
+            "Сопоставлены полные TEXT-таблицы одного комплекта. Не доказаны взаимозаменяемость, несущая способность или техническая непригодность какой-либо марки.",
+            "Различие количества1 в локальной таблице и15 в СО само по себе не дефект: возможны повторяющиеся узлы.",
+            "Фактический заказ, недопоставка и задержка монтажа не установлены. Решение инженера для этого кандидата отсутствует.",
+            "Сходные обозначения не являются достаточным основанием признать изделия одинаковыми или автоматически выбрать одно из них."
+          ],
+          "wording": "Согласовать марку подвеса для крепления к кровле: таблица листа53 содержит двойной подвес ДКС BSD4120, позиция22.6 СО — двойной вертикальный подвес BSD-21, BSD2120. Уточнить предусмотренное изделие и привести документы в соответствие."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F024_support_console_scope.json",
+          "sha256": "44adf7ab3a2842d4508f92cfecd4e56fdbb8cc303ab691a43f4e8ff0d0024ec9",
+          "primary_adjudication": null,
+          "limits": [
+            "Соотношения1:4 и15:15 подтверждены авторитетным TEXT; число60 является условным расчётом, а не установленным объёмом закупки.",
+            "Не проверены размещение всех опор, другие типы узлов и область применения каждой из15 плит. Не доказано, что все15 относятся именно к узлу листа53.",
+            "В таблице указана Консоль ВВН-60, в СО Усиленная консоль600мм BВH6060; точная эквивалентность изделий не проверена.",
+            "Текстовая таблица не доказывает фактический состав изображённого узла; графика этого крепления здесь не проверена.",
+            "Недостача45 консолей и последствия для монтажа не установлены. Проектный коэффициент4 нельзя превращать в универсальное правило крепления."
+          ],
+          "wording": "Уточнить количество консолей для кровельных опор: таблица листа53 задаёт4 консоли на1 плиту, СО содержит15 плит и15 консолей. Если все15 опор выполняются по этому узлу, расчётное количество составляет60 консолей; требуется подтвердить применимость узла и согласовать ведомости."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_978fa763ed7e4a39977b35b866485e2e.png",
+          "sha256": "dd1639fcbd7fab08dc46cb0b59a93fe616bd296a1abbf52a76491d68383ef783",
+          "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_98835baf7fed4bf1934dc55088895af9.png",
+          "sha256": "e70ffed5f0ab39b6c0bec139a21a1758c2d20ce9aeec0e0c30c71e5208bc5f72",
+          "block_id": "blk_98835baf7fed4bf1934dc55088895af9",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6e1b1e0631904e1c8330bf2c4f47744c.png",
+          "sha256": "4584454d0b6f655ff0797a4c7526f42439f19861f5c5607f9b141904d98a4481",
+          "block_id": "blk_6e1b1e0631904e1c8330bf2c4f47744c",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+        }
+      ],
+      "disposition": "assessed_split_support_mark_conflict_and_conditional_console_question"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_56331ec5845f4d73be99b93df1faec9c",
+      "authoritative_TEXT": "### BLOCK #166 [TEXT]: blk_56331ec5845f4d73be99b93df1faec9c\n\n> **Created:** 2026-09-28 07:29:22 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/rV64BZqUsonvaNKwceXT)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 48 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: План расположения оборудования и кабельных трасс. Кровля. Корпус 4 | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Наименование | ед.изм. | Кол-во |\n|---|---|---|\n| Крепление к кровле |  |  |\n| Плита трамвайная | шт. | 1 |\n| Подвес ДКС BSD4120 двойной | шт. | 1 |\n| Консоль ВВН-60 | шт. | 4 |\n| Анкер М10х60 | шт. | 4 |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_39fda1bca4154e719671c8db8fa6eeed",
+      "authoritative_TEXT": "### BLOCK #181 [TEXT]: blk_39fda1bca4154e719671c8db8fa6eeed\n\n> **Created:** 2026-09-28 07:29:26 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/25xhc12KhP5XefaqSClb)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 50 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: План расположения оборудования и кабельных трасс. Кровля. Корпус 5 | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Наименование | ед.изм. | Кол-во |\n|---|---|---|\n| Крепление к кровле |  |  |\n| Плита трамвайная | шт. | 1 |\n| Подвес ДКС BSD4120 двойной | шт. | 1 |\n| Консоль ВВН-60 | шт. | 4 |\n| Анкер М10х60 | шт. | 4 |\n\n## Page 55 — Sheet 51 — План расположения оборудования и кабельных трасс. 15 этаж. Корпус 5\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_6136fac6ecc947f49aa62c1e5803f276",
+      "authoritative_TEXT": "### BLOCK #197 [TEXT]: blk_6136fac6ecc947f49aa62c1e5803f276\n\n> **Created:** 2026-09-28 07:29:31 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/YcIMOFBNYNyh29yjCTH_)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 53 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: План расположения оборудования и кабельных трасс. Кровля. Корпус 6 | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Наименование | ед.изм. | Кол-во |\n|---|---|---|\n| Крепление к кровле |  |  |\n| Плита трамвайная | шт. | 1 |\n| Подвес ДКС BSD4120 двойной | шт. | 1 |\n| Консоль ВВН-60 | шт. | 4 |\n| Анкер М10х60 | шт. | 4 |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+      "authoritative_TEXT": "### BLOCK #252 [TEXT]: blk_2258a0dfd8c84b6197e4cbb4d229ea27\n\n> **Created:** 2026-09-28 07:29:58 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/KDSLsHfatgclM-H4SazG)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 10 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 21.6 | Кабель контрольный с медными жилами | КСПВПГнг(А)-HF 2x2x0,75 |  | Паритет | м | 15 |  |  |\n| 21.7 | Кабель контрольный с медными жилами, экранированный | КСПЭВПГнг(А)-HF 1x2x0,75 |  | Паритет | м | 790 |  |  |\n| 21.8 | Кабель контрольный с медными жилами, экранированный | КСПЭВПГнг(А)-HF 2x2x0,75 |  | Паритет | м | 210 |  |  |\n| 21.9 | Кабель интерфейсный | КИС-Пнг(А)-HF 2x2x0,6 |  | Паритет | м | 450 |  |  |\n| 21.10 | Кабель интерфейсный | КИС-Пнг(А)-HF 3x2x0,78 |  | Паритет | м | 30 |  |  |\n| 21.11 | Кабель контрольный с медными жилами, экранированный, огнестойкий | КСРЭПнг(А)-FRHF 2x2x1,13 |  | Паритет | м | 420 |  |  |\n| 21.10 | Кабель интерфейсный | КИС-Пнг(А)-HF 2x2x0,78 |  | Паритет | м | 985 |  |  |\n| 22 | Трубы, лотки и монтажные материалы |  |  |  |  |  |  |  |\n| 22.1 | Труба ПВХ гибкая гофрированная Ø20мм, тяжёлая, с протяжкой, цвет серый | 91520 |  | DKC | м | 5000 |  |  |\n| 22.2 | Держатель с защелкой для крепления труб Ø20мм | 51020 |  | DKC | шт. | 10000 |  |  |\n| 22.3 | Металлорукав DN 20мм в герметичной ПВХ изоляции, Dвн 20,5 мм, Dнар 25,5, с протяжкой, цвет серый | 6071R-020P |  | DKC | м | 100 |  |  |\n| 22.4 | Лоток перфорированный 100x100 L3000 | 35341 |  | DKC | шт. | 200 |  |  |\n| 22.5 | Плита трамвайная |  |  |  | шт. | 15 |  |  |\n| 22.6 | Двойной вертикальный подвес BSD-21 | BSD2120 |  | DKC | шт. | 15 |  |  |\n| 22.7 | Усиленная консоль 600 мм | BВH6060 |  | DKC | шт. | 15 |  |  |\n| 22.8 | Анкер усиленный клиновой M10x60 | CM481060 |  | DKC | шт. | 60 |  |  |\n| 22.9 | Бирки для маркировки кабелей (треугольная) | 35341 |  | DKC | шт. | 400 |  |  |\n| 22.10 | Бирки для маркировки кабелей (квадратная) | 36510 |  | DKC | шт. | 400 |  |  |\n| 22.11 | Огнестойкая двухкомпонентная пена «FIREFIX» |  |  | ООО «ТЕХСТРОНГ» | шт. | 30 |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 104 — Sheet 11\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_978fa763ed7e4a39977b35b866485e2e.png",
+      "sha256": "dd1639fcbd7fab08dc46cb0b59a93fe616bd296a1abbf52a76491d68383ef783",
+      "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_98835baf7fed4bf1934dc55088895af9.png",
+      "sha256": "e70ffed5f0ab39b6c0bec139a21a1758c2d20ce9aeec0e0c30c71e5208bc5f72",
+      "block_id": "blk_98835baf7fed4bf1934dc55088895af9",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6e1b1e0631904e1c8330bf2c4f47744c.png",
+      "sha256": "4584454d0b6f655ff0797a4c7526f42439f19861f5c5607f9b141904d98a4481",
+      "block_id": "blk_6e1b1e0631904e1c8330bf2c4f47744c",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F023_support_type.json",
+      "sha256": "b33ca81b4392fa59b48a45050d3def13fa4f6e75038357b77ec7daf6aa63d753",
+      "primary_adjudication": null,
+      "limits": [
+        "Сопоставлены полные TEXT-таблицы одного комплекта. Не доказаны взаимозаменяемость, несущая способность или техническая непригодность какой-либо марки.",
+        "Различие количества1 в локальной таблице и15 в СО само по себе не дефект: возможны повторяющиеся узлы.",
+        "Фактический заказ, недопоставка и задержка монтажа не установлены. Решение инженера для этого кандидата отсутствует.",
+        "Сходные обозначения не являются достаточным основанием признать изделия одинаковыми или автоматически выбрать одно из них."
+      ],
+      "wording": "Согласовать марку подвеса для крепления к кровле: таблица листа53 содержит двойной подвес ДКС BSD4120, позиция22.6 СО — двойной вертикальный подвес BSD-21, BSD2120. Уточнить предусмотренное изделие и привести документы в соответствие."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F024_support_console_scope.json",
+      "sha256": "44adf7ab3a2842d4508f92cfecd4e56fdbb8cc303ab691a43f4e8ff0d0024ec9",
+      "primary_adjudication": null,
+      "limits": [
+        "Соотношения1:4 и15:15 подтверждены авторитетным TEXT; число60 является условным расчётом, а не установленным объёмом закупки.",
+        "Не проверены размещение всех опор, другие типы узлов и область применения каждой из15 плит. Не доказано, что все15 относятся именно к узлу листа53.",
+        "В таблице указана Консоль ВВН-60, в СО Усиленная консоль600мм BВH6060; точная эквивалентность изделий не проверена.",
+        "Текстовая таблица не доказывает фактический состав изображённого узла; графика этого крепления здесь не проверена.",
+        "Недостача45 консолей и последствия для монтажа не установлены. Проектный коэффициент4 нельзя превращать в универсальное правило крепления."
+      ],
+      "wording": "Уточнить количество консолей для кровельных опор: таблица листа53 задаёт4 консоли на1 плиту, СО содержит15 плит и15 консолей. Если все15 опор выполняются по этому узлу, расчётное количество составляет60 консолей; требуется подтвердить применимость узла и согласовать ведомости."
+    }
+  ],
+  "limits": [
+    "New graphic review addresses prior unviewed-node gap but not complete15-support layout.",
+    "One drawn console does not override TEXT quantity4 or prove actual assembly.",
+    "Frozen evaluator and independent inputs unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
