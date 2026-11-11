@@ -20,6 +20,9 @@ def collect(root, output):
         raise ValueError('Pilot process has not exited')
     preparation_path = HERE/'merge_primary_text_pilot_preparation.json'
     preparation = json.loads(preparation_path.read_text())
+    started = json.loads((root/'pilot_started.json').read_text())
+    if sha(preparation_path) != started['preparation_sha256']:
+        raise ValueError('Preparation differs from dispatched pilot')
     from backend.app.pipeline.stages.findings_merge.candidate_coverage import build_candidate_coverage
     from backend.app.pipeline.stages.findings_merge.candidate_decisions import reconcile_candidate_decisions
     source_ids = {re.search(r'\]:\s*(\S+)', row['heading'])[1] for row in preparation['text_spans']}
@@ -47,7 +50,9 @@ def collect(root, output):
     rows, summaries = {}, {}
     for arm, (binding, response) in responses.items():
         final = response['json_data']
-        coverage = build_candidate_coverage(text, graphic, final)
+        # The model cannot enlarge the expected input population by inventing
+        # object-operation reports in its response.
+        coverage = build_candidate_coverage(text, graphic, {'findings':final.get('findings', [])})
         # Only actually supplied primary blocks qualify as inspected references.
         # Prior detector references do not become primary evidence in the control.
         checked = reconcile_candidate_decisions(coverage, final.get('candidate_decisions'),
