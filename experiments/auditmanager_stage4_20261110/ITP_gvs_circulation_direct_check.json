@@ -1,0 +1,23 @@
+{
+  "observations": [
+    {
+      "path": "/tmp/auditmanager_itp_gvs_graphic_window_20261111/tiles_0/detail_tile_3.png",
+      "sha256": "43bec02c06527572fef726adf99de9da71a3f7c30807c58dc74ccec14b0a841e",
+      "directly_viewed": true,
+      "observation": "Т411 и Т412 объединяются в Т41 перед насосной парой К15; рядом G=4,31 м³/ч и H=18,57 м."
+    },
+    {
+      "path": "/tmp/auditmanager_itp_gvs_graphic_window_20261111/tiles_2/detail_tile_0.png",
+      "sha256": "0d94c9694f57b7435aef826445ab1231f5588431a6534bb540f49a5c04f14af9",
+      "directly_viewed": true,
+      "observation": "На разрезе К15 подписан ГВС 1-зоны, G=4,31 м³/ч, H=18,57 м."
+    }
+  ],
+  "arithmetic": [
+    "2.73+1.57=4.30",
+    "5.89+3.13=9.02"
+  ],
+  "scope": "Graphic connectivity and labelled duty point; not pump curve or proof of insufficiency.",
+  "source_review_pending": true,
+  "full_acceptance": false
+}

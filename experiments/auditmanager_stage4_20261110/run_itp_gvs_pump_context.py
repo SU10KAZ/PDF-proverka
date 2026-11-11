@@ -15,6 +15,7 @@ from backend.app.pipeline.stages.prepare.object_operation_followup import verify
 from backend.app.pipeline.stages.findings_verify.source_review_evidence import evidence_digest
 ROOT=Path('/tmp/auditmanager_itp_gvs_pump_context_20261111')
 SOURCE=Path('/tmp/auditmanager_itp_gvs_graphic_window_20261111')
+OBJECT_ID='k15_view'
 INVENTORY=Path('/tmp/auditmanager_itp_gvs_source_inventory_20261111/ITP/execution/object_inventory_000/result.json')
 
 
@@ -22,7 +23,7 @@ def prepare():
     ROOT.mkdir(exist_ok=True)
     _,context,parent=load_frozen_operation(SOURCE,BASE/'02_work/document.md')
     inventory=json.loads(INVENTORY.read_text());assert not inventory['is_error']
-    objects=inventory['json_data']['object_registry'];target,=[o for o in objects if o['id']=='k15_view']
+    objects=inventory['json_data']['object_registry'];target,=[o for o in objects if o['id']==OBJECT_ID]
     immutable(ROOT/'02_text_analysis.json',{'object_registry':[target]+[o for o in objects if o['id']!=target['id']], 'text_findings':[]})
     crops=ROOT/'blocks_stage02_100'
     if not crops.exists():crops.symlink_to(BASE/'03_analysis/runs/control/blocks_stage02_100',target_is_directory=True)
@@ -39,7 +40,7 @@ def prepare():
     wire={'messages':messages,'image_paths':[str(p) for p in request.image_paths]}
     immutable(ROOT/'request.json',wire)
     immutable(ROOT/'binding.json',{'request_sha256':evidence_digest(wire),'source_binding':request.continuation_source,
-        'context_parent_sha256':parent['request_sha256'],'actual_inventory_object_id':'k15_view',
+        'context_parent_sha256':parent['request_sha256'],'actual_inventory_object_id':OBJECT_ID,
         'model':'codex/gpt-6-astra','previous_operation_answers_supplied':False,
         'history_or_engineer_answers_supplied':False,'automatic_retries':0,'known_source_control':True})
     print('PREPARED',sum(len(m['content']) for m in messages),len(request.image_paths),'images',flush=True)
@@ -61,4 +62,7 @@ async def main(execute):
     print('COMPLETE',flush=True)
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true');asyncio.run(main(p.parse_args().execute))
+    p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true')
+    p.add_argument('--object-id',default=OBJECT_ID);p.add_argument('--output-root',default=str(ROOT))
+    args=p.parse_args();OBJECT_ID=args.object_id;ROOT=Path(args.output_root)
+    asyncio.run(main(args.execute))
