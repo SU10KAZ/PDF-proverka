@@ -1,0 +1,262 @@
+{
+  "status": "partial_coordinator_coverage_review",
+  "discipline": "VK",
+  "repeat": 1,
+  "mapped_atoms": [
+    {
+      "target_id": "VK35_B-VK-F-010:3dfbbec7f05abd4276e4",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-012"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK35_B-VK-F-010.json",
+          "sha256": "b175eeb75cd23a55a2ea601623e65898bc8dd4756c4fe16cf2e8aa8ad3e83f72"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Строка креплений К1.1 Ø100 с пустым количеством сохранена. Число не вычислено автоматически из63,2м; предложено проверить учёт в другой позиции.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F003_reinforcement_counts:7ad222ee93fc76cab7bc",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F003_reinforcement_counts.json",
+          "sha256": "e9e6f6cdb5f27558c3a138869ea0665a50d8d8baa273e180a4a9b9fcd9542f53"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Все пары7/4,33/18,26/26 и проектное требование усиления сохранены. Однако3+15 названы недостающими изделиями без явного условия одного усилителя на соединитель и проверки комплектной поставки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F004_insulation_scope:02bb3aef959f1c658194",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F004_insulation_scope.json",
+          "sha256": "1aee463c39c642ce1ee9ae8c8f9995e6a86275fba0dbfc86edd2668bb7cc0d39"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Требование9мм/Г1, отсутствие отдельной позиции К2, сумма258,7м и отличие100×40мм других систем сохранены. Количество предлагается уточнять по диаметрам и фасонным частям; последствия и отдельная поставка проверяются дополнительно.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK20_sensor_count_identity:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",
+          "sha256": "3578c3e05b80511d0099d88947437916b5e5a6ebf51ecb954e5a6a3864d79ea7"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "25датчиков и30стояков сохранены с запросом поимённого перечня. Нет22выносок ДЗ и увязки продолжений; заголовок утверждает необеспеченность, хотя недостаток пяти ещё не доказан.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F002_revision_compensator_inventory:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F002_revision_compensator_inventory.json",
+          "sha256": "37e68f7608b3f3fadbc1ff458cf06e0a66ab06ee536959a3ee17a0acbe076489"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "7ревизий,30стояков и условные90мест сохранены, окончательный итог зависит от протяжённости/материала. Не названы этажи2/6/10 в самой строке и отдельные чугунные ревизии К1; полный состав не увязан.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F002_revision_compensator_inventory:composite:2",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F002_revision_compensator_inventory.json",
+          "sha256": "37e68f7608b3f3fadbc1ff458cf06e0a66ab06ee536959a3ee17a0acbe076489"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "17компенсационных патрубков сопоставлены с поэтажным требованием, запрошена ведомость по стояку и этажу. Учетверённая длина не превратилась в68изделий; точный дефицит не назначен.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F009_pipe_125_inventory:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F009_pipe_125_inventory.json",
+          "sha256": "841874d6b0fce166bb0a0222ebc8cfe4a015cd33e59413d62f02186a20fbede9"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "495,5м,250креплений,один отвод и отсутствие соединителей сохранены с проверкой трасс. Наружное125×5 названо DN125 без подтверждения; необходимость переходов к DN100 предполагается до проверки топологии.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/VK_review.json",
+  "review_ledger_sha256": "0c3a2ececcc31ca023620eab7a6964dc12eb8a6bc4cfdbfe010aec916fa8817a",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "VK",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 2,
+          "availability_available": 2,
+          "partial": 1,
+          "full": 1
+        },
+        "review_complete": true,
+        "full_match_rate": 0.5,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 26,
+          "availability_available": 8,
+          "full": 4,
+          "partial": 4,
+          "availability_unchecked": 18,
+          "unchecked": 18
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 11,
+          "availability_unchecked": 11,
+          "unchecked": 11
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 5
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "limits": [
+    "Сопоставлены10из39целей; итоговая полнота ещё не вычисляется.",
+    "Количество выносок, приборов и стояков не смешивается.",
+    "Условная арифметика не подтверждает закупочный дефицит.",
+    "Покрытие не является приёмкой последствий и новых утверждений."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
