@@ -1,0 +1,337 @@
+{
+  "status": "motor_register_output_review",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "61fb374ffffd28d9031f8a311c826ba2d62ef1522ab8402b222a549d1ea0e060",
+  "queue_after_sha256": "7b75d49906729de54d4ceff97c98135e33bc3de53040db8418784942f767c346",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-022",
+      "finding": {
+        "id": "F-022",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Состав и маркировка оборудования",
+        "sheet": "Лист 11",
+        "page": [
+          15,
+          67
+        ],
+        "problem": "Перечень двигателей Па3.1/Ва3.1 противоречит схеме и кабельному журналу.",
+        "description": "Перечень содержит три вентилятора М1–М3 и насос М4. На функциональной схеме М2 относится к насосу, М4 — к резервному вентилятору, дополнительно показан М5. Журнал содержит четыре четырёхжильные линии к М1, М3, М4, М5 и трёхжильную к М2.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), кандидат п. 4.1; ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие позиций схемы адресам подключений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021",
+                "G-014",
+                "G-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить полноту и количество двигателей в перечне.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021",
+                "G-014",
+                "G-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить состав рабочих и резервных вентиляторов, исправить назначение М2/М4 и учесть М5.",
+        "risk": "Неполная комплектация и подключение двигателей к неверным цепям.",
+        "source_finding_ids": [
+          "T-021",
+          "G-014",
+          "G-015"
+        ],
+        "source_block_ids": [
+          "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6"
+        ],
+        "related_block_ids": [
+          "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_cd9d763d198246859c3df42c18b5c3d8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+            "page": 15
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+            "page": 67
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-014",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-015",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковые расхождения схемы и перечня: М2 — насос вместо вентилятора, М4 — резервный вентилятор вместо насоса, М5 отсутствует в перечне.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковые расхождения схемы и перечня: М2 — насос вместо вентилятора, М4 — резервный вентилятор вместо насоса, М5 отсутствует в перечне.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Перечень листа 11 содержит М1–М3 как три двигателя вентиляторов и М4 как двигатель насоса.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Оборудование отнесено к разделам ОВ; поставка не проверена."
+        },
+        {
+          "claim": "На функциональной схеме М2 подписан у насоса, М4 у резервного вытяжного вентилятора; М5 показан рядом с М1 у приточного вентилятора.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Не выводить отдельный дополнительный вентилятор только из второго обозначения двигателя у одного символа."
+        },
+        {
+          "claim": "Журнал содержит четыре линии 4х2,5 к М1, М5, М3, М4 и линию 3х1,5 к М2.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Это записи адресов кабелей, а не доказательство фактического монтажа или количества поставленных двигателей."
+        },
+        {
+          "claim": "Состав и адреса двигателей в перечне необходимо согласовать со схемой и журналом.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "Сохранить конфликт М2/М4 и неучтённое в перечне обозначение М5; окончательный состав сверить с ОВ."
+        },
+        {
+          "claim": "Доказана неполная комплектация или подключение к неверным цепям.",
+          "verdict": "not_established",
+          "limits": "Риски условные; данные закупки, монтажа и исполнения оборудования отсутствуют."
+        },
+        {
+          "claim": "Подтверждено нарушение конкретных пунктов ГОСТ.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативные кандидаты и отсутствие цитаты не заменяют проверку применимого пункта."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_technical_core_preserved_no_new_engineer_acceptance",
+      "duplicate_burden": "One grouped motor-register conflict for Pa3.1/Va3.1; do not multiply by cable rows. Cable quantity findings require separate arithmetic evidence.",
+      "profile_and_section": "technical_document_coordination",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25",
+          "primary_adjudication": null,
+          "limits": [
+            "Полностью проверен перечень листа11: двигатели M1–M3 количеством3 и M4 количеством1; M5 не входит в эти позиции. Отсутствие ограничено этим перечнем, не всем проектом.",
+            "КЖ лист9 содержит M1, M2, M5 для Па3.1 и M3/M4 для Ва3.1. Сечения кабелей подтверждают записи трасс, но сами по себе не доказывают назначение двигателей или правильность выбора сечения.",
+            "Фактическая поставка, монтаж, ПНР, спецификации ОВ и заводские документы не проверены. Двигатели перечня отнесены к смежным разделам ОВ; недопоставка не установлена.",
+            "Какой документ требуется исправить и какова окончательная нумерация, не установлено; нельзя автоматически перенумеровать устройства по одной схеме.",
+            "Нет установленного решения инженера по этим blind-кандидатам и подтверждения конкретного нормативного нарушения."
+          ],
+          "wording": "Согласовать перечень элементов листа11 с функциональной схемой Па3.1/Ва3.1 и КЖ: на схеме M2 — насос, M4 — вентилятор, M5 — дополнительный двигатель приточной установки; перечень относит M2 к вентиляторам, M4 к насосу и не содержит M5. В КЖ лист9 для M5 предусмотрен кабель Па3.1-12 от ШАУВ-1-К4АС."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25",
+          "primary_adjudication": null,
+          "limits": [
+            "Полностью проверен перечень листа11: двигатели M1–M3 количеством3 и M4 количеством1; M5 не входит в эти позиции. Отсутствие ограничено этим перечнем, не всем проектом.",
+            "КЖ лист9 содержит M1, M2, M5 для Па3.1 и M3/M4 для Ва3.1. Сечения кабелей подтверждают записи трасс, но сами по себе не доказывают назначение двигателей или правильность выбора сечения.",
+            "Фактическая поставка, монтаж, ПНР, спецификации ОВ и заводские документы не проверены. Двигатели перечня отнесены к смежным разделам ОВ; недопоставка не установлена.",
+            "Какой документ требуется исправить и какова окончательная нумерация, не установлено; нельзя автоматически перенумеровать устройства по одной схеме.",
+            "Нет установленного решения инженера по этим blind-кандидатам и подтверждения конкретного нормативного нарушения."
+          ],
+          "wording": "Согласовать перечень элементов листа11 с функциональной схемой Па3.1/Ва3.1 и КЖ: на схеме M2 — насос, M4 — вентилятор, M5 — дополнительный двигатель приточной установки; перечень относит M2 к вентиляторам, M4 к насосу и не содержит M5. В КЖ лист9 для M5 предусмотрен кабель Па3.1-12 от ШАУВ-1-К4АС."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25",
+          "primary_adjudication": null,
+          "limits": [
+            "Полностью проверен перечень листа11: двигатели M1–M3 количеством3 и M4 количеством1; M5 не входит в эти позиции. Отсутствие ограничено этим перечнем, не всем проектом.",
+            "КЖ лист9 содержит M1, M2, M5 для Па3.1 и M3/M4 для Ва3.1. Сечения кабелей подтверждают записи трасс, но сами по себе не доказывают назначение двигателей или правильность выбора сечения.",
+            "Фактическая поставка, монтаж, ПНР, спецификации ОВ и заводские документы не проверены. Двигатели перечня отнесены к смежным разделам ОВ; недопоставка не установлена.",
+            "Какой документ требуется исправить и какова окончательная нумерация, не установлено; нельзя автоматически перенумеровать устройства по одной схеме.",
+            "Нет установленного решения инженера по этим blind-кандидатам и подтверждения конкретного нормативного нарушения."
+          ],
+          "wording": "Согласовать перечень элементов листа11 с функциональной схемой Па3.1/Ва3.1 и КЖ: на схеме M2 — насос, M4 — вентилятор, M5 — дополнительный двигатель приточной установки; перечень относит M2 к вентиляторам, M4 к насосу и не содержит M5. В КЖ лист9 для M5 предусмотрен кабель Па3.1-12 от ШАУВ-1-К4АС."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+          "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "M2 at water pump; M3 exhaust and M4 reserve exhaust; M1 and M5 adjacent to supply fan symbol. This establishes label conflict, not actual equipment or wiring."
+        }
+      ],
+      "disposition": "assessed_preserve_motor_register_conflict_no_installation_inference"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+      "authoritative_TEXT": "### BLOCK #40 [TEXT]: blk_4b31b3207abe4695bdb1d9d9c4b5df2f\n\n> **Created:** 2026-09-28 07:28:45 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/aG9BbrF5tzm6V1LrU5t8)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 11 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточная система Па3.1, вытяжная система Ва3.1. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS1-PDS4 | Датчик давления дифференциальный 50-500 Па | 4 |  |\n| Y1-Y6 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В DA5FU230-DS | 6 |  |\n| Y7 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M3 | Электродвигатель вентилятора | 3 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M4 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SCUZ1, SCUZ4 | Преобразователь частоты 5,5 кВт 380В, E5-MINI-007H | 2 |  |\n| SCUZ2, SCUZ3 | Преобразователь частоты 3,7 кВт 380В, E5-MINI-005H | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+      "authoritative_TEXT": "### BLOCK #216 [TEXT]: blk_2ad1534d9efb41548a02a2b2a6020ba6\n\n> **Created:** 2026-09-28 07:29:39 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Er7OMfl801QYJoPYPSRF)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 9 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Па3.1-2 | ШАУВ-1-К4АС | ТЕ2 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-3 | ШАУВ-1-К4АС | ТЕ3 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-4 | ШАУВ-1-К4АС | ТС1 | КСПВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-5 | ШАУВ-1-К4АС | PDS1 | КСПВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-6 | ШАУВ-1-К4АС | PDS2 | КСПВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-7 | ШАУВ-1-К4АС | M1 | ППГнг(А)-HF | 4х2,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 15/5 |  |\n| Па3.1-8 | ШАУВ-1-К4АС | XТ1 | КСПВПГнг(А)-HF | 2х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 2х2х0,75 | 15/5 |  |\n| Па3.1-9 | ШАУВ-1-К4АС | XТ2 | ППГнг(А)-HF | 3х1,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 15/5 |  |\n| Па3.1-10 | ШАУВ-1-К4АС | XТ2 | КСПВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-11 | ШАУВ-1-К4АС | M2 | ППГнг(А)-HF | 3х1,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 15/5 |  |\n| Па3.1-12 | ШАУВ-1-К4АС | M5 | ППГнг(А)-HF | 4х2,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 15/5 |  |\n| Ва3.1-1 | ШАУВ-1-К4АС | PDS3 | КСПВПГнг(А)-HF | 1х2х0,75 | 120 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 110/10 |  |\n| Ва3.1-2 | ШАУВ-1-К4АС | PDS4 | КСПВПГнг(А)-HF | 1х2х0,75 | 120 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 110/10 |  |\n| Ва3.1-3 | ШАУВ-1-К4АС.ПЧ | M3 | ППГнг(А)-HF | 4х2,5 | 120 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 110/10 |  |\n| Ва3.1-4 | ШАУВ-1-К4АС.ПЧ | M4 | ППГнг(А)-HF | 4х2,5 | 120 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 110/10 |  |\n\n## Page 68 — Sheet 10\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+      "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+      "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "M2 at water pump; M3 exhaust and M4 reserve exhaust; M1 and M5 adjacent to supply fan symbol. This establishes label conflict, not actual equipment or wiring."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+      "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25",
+      "primary_adjudication": null,
+      "limits": [
+        "Полностью проверен перечень листа11: двигатели M1–M3 количеством3 и M4 количеством1; M5 не входит в эти позиции. Отсутствие ограничено этим перечнем, не всем проектом.",
+        "КЖ лист9 содержит M1, M2, M5 для Па3.1 и M3/M4 для Ва3.1. Сечения кабелей подтверждают записи трасс, но сами по себе не доказывают назначение двигателей или правильность выбора сечения.",
+        "Фактическая поставка, монтаж, ПНР, спецификации ОВ и заводские документы не проверены. Двигатели перечня отнесены к смежным разделам ОВ; недопоставка не установлена.",
+        "Какой документ требуется исправить и какова окончательная нумерация, не установлено; нельзя автоматически перенумеровать устройства по одной схеме.",
+        "Нет установленного решения инженера по этим blind-кандидатам и подтверждения конкретного нормативного нарушения."
+      ],
+      "wording": "Согласовать перечень элементов листа11 с функциональной схемой Па3.1/Ва3.1 и КЖ: на схеме M2 — насос, M4 — вентилятор, M5 — дополнительный двигатель приточной установки; перечень относит M2 к вентиляторам, M4 к насосу и не содержит M5. В КЖ лист9 для M5 предусмотрен кабель Па3.1-12 от ШАУВ-1-К4АС."
+    }
+  ],
+  "limits": [
+    "No actual installation or procurement checked.",
+    "No frozen evaluator or runtime changed.",
+    "No new engineer acceptance inferred."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
