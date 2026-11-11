@@ -246,3 +246,21 @@ Detail
     # Latin KM and Cyrillic КМ remain different; no transcription repair.
     assert search_md_context(md, ['DOC-KM1 лист 6'])['hits'] == []
     assert search_md_context(md, ['DOC-КМ1 лист 60'])['hits'] == []
+
+
+def test_retained_parent_still_retrieves_context_for_unresolved_child(tmp_path):
+    path = tmp_path / 'document.md'; path.write_text(MD)
+    candidate = {'origin': 'text', 'pointer': '/text_findings/0'}
+    packet = {'candidate': candidate, 'authoritative_md': '', 'allowed_source_refs': [],
+              'md_source': {'path': str(path), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}}
+    request = CodexTargetedPass('candidate_recovery_parts', 'x.json', [
+        {'role': 'system', 'content': 'review'}, {'role': 'user', 'content': json.dumps(packet)}])
+    decision = {**candidate, 'decision': 'retained', 'subclaims': [
+        {'id': 'done', 'decision': 'retained', 'context_queries': ['ignore this']},
+        {'id': 'open', 'decision': 'needs_data', 'context_queries': ['U1.1', None, {}]}]}
+    followup, receipt = build_context_followup(request, {'candidate_decisions': [decision]})
+    assert receipt['status'] == 'scheduled'
+    assert set(receipt['search']['query_hit_counts']) == {'U1.1'}
+    assert json.loads(followup.messages[-1]['content'])['previous_decisions'] == [decision]
+    decision['pointer'] = '/unknown'
+    assert build_context_followup(request, {'candidate_decisions': [decision]})[1]['status'] == 'no_explicit_context_queries'

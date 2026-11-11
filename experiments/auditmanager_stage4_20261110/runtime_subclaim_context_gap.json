@@ -1,0 +1,269 @@
+{
+  "status": "local_source_search_replay",
+  "affected_packets": 4,
+  "packets": [
+    {
+      "stage": "candidate_recovery_9abbe90f57edee78",
+      "source_request_sha256": "f63046c054dfc3d6acb08cec683be377a3e56acfadd46f006058de0c8e1bf9f9",
+      "source_response_sha256": "eb325719224c17349ba8e33db2c844124037b631e97fcf4b209d068551518288",
+      "previously_unsearched_child_queries": [
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/4/findings/1",
+          "parent_decision": "retained",
+          "claims": [
+            {
+              "id": "2",
+              "claim": "Неохваченный участок 20–50 Па имеет техническое значение.",
+              "decision": "needs_data",
+              "reason": "Диапазон 50–500 Па не охватывает значения от 20 до менее 50 Па, однако на схеме возле PDS3 указано ΔP=50 Па. Необходимость работы или настройки ниже 50 Па не доказана. Примечание предусматривает уточнение рабочих значений при ПНР; данных о выбранном исполнении, точности и требуемых условиях срабатывания нет.",
+              "source_refs": [
+                "blk_28e6a3fa2bff45aabce4aed90feff741",
+                "blk_6414183ffe264f65a253b3d6a5155da1"
+              ],
+              "required_source_refs": [],
+              "required_context": [
+                "Требуемая уставка и условия срабатывания PDS3 системы Пкр4.1.",
+                "Выбранное исполнение PDS3 с диапазоном настройки, точностью и дифференциалом переключения."
+              ],
+              "context_queries": [
+                "Пкр4.1",
+                "PDS3",
+                "ШАУВ-3-К4ПЧ",
+                "уставка",
+                "перепад давления"
+              ],
+              "target_finding_ids": []
+            }
+          ]
+        }
+      ],
+      "retrieval_status": "scheduled",
+      "new_source_blocks": [
+        "blk_6e394962eb18407fb17b09f063c30a5c",
+        "blk_0457419703024673bb4328b18d47501e",
+        "blk_f30f5e10b54f415392e7e149a87dae24",
+        "blk_adc4052a68344abf9c8f56861b9294d1",
+        "blk_47212e9079d1485c9c43fc3d1e9cd108",
+        "blk_13738f8bb6f840fcb0cb37491b612396",
+        "blk_aa15c30f0e7e48988cadcac795e1ccff",
+        "blk_08e6971dafd541b2a40e0aa270404a4e",
+        "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+        "blk_2aeda93ede5444ebb33f638cd45586f2",
+        "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+        "blk_3dfcda405820460b84179ebf65d182d1"
+      ],
+      "model_dispatched": false
+    },
+    {
+      "stage": "candidate_recovery_8e1933d07700e1d1",
+      "source_request_sha256": "32f76d5a5a45200ed502c467676676047342f477f8d8cb69f9781e40a34e59fd",
+      "source_response_sha256": "b56110ebc5803ed628e324e39406830c24f7f1360326253aa054a93b452eccb8",
+      "previously_unsearched_child_queries": [
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/8/findings/0",
+          "parent_decision": "retained",
+          "claims": [
+            {
+              "id": "2",
+              "claim": "Позиция 7.3 спецификации шкафа ШАУВ-2-К5ПЧ предусматривает для PDS3 диапазон 50–500 Па.",
+              "decision": "needs_data",
+              "reason": "Текст позиции 7.3 не предоставлен. Ссылка и вывод предыдущего анализа не заменяют первичный источник.",
+              "source_refs": [],
+              "required_source_refs": [
+                "blk_576ad6ac1cff48f79ac223f56ba405ae"
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "ШАУВ-2-К5ПЧ",
+                "7.3",
+                "Датчик давления дифференциальный"
+              ]
+            }
+          ]
+        },
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/8/findings/1",
+          "parent_decision": "retained",
+          "claims": [
+            {
+              "id": "2",
+              "claim": "Диапазон PDS3 Пкр5.1 в таблице сигналов отличается от диапазона 50–500 Па в позиции 7.3 спецификации.",
+              "decision": "needs_data",
+              "reason": "Сторона схемы проверена, но первичный текст позиции 7.3 спецификации отсутствует в предоставленном контексте.",
+              "source_refs": [
+                "blk_4e142b330766407099c7d561f0a8eb6a"
+              ],
+              "required_source_refs": [
+                "blk_576ad6ac1cff48f79ac223f56ba405ae"
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "ШАУВ-2-К5ПЧ",
+                "7.3",
+                "Датчик давления дифференциальный"
+              ]
+            }
+          ]
+        }
+      ],
+      "retrieval_status": "scheduled",
+      "new_source_blocks": [
+        "blk_6e394962eb18407fb17b09f063c30a5c",
+        "blk_576ad6ac1cff48f79ac223f56ba405ae",
+        "blk_a521a0aefc0949a6af0254d2bd39cf98",
+        "blk_c0ed6bca935843c18344796377677f2f",
+        "blk_0457419703024673bb4328b18d47501e",
+        "blk_ba2cc771448645a5b9a7203af971680b",
+        "blk_6414183ffe264f65a253b3d6a5155da1",
+        "blk_611c64e52f5d4223aaee5cf72c58e34e",
+        "blk_47212e9079d1485c9c43fc3d1e9cd108",
+        "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+        "blk_5e8ebcccd12f463bb43000ffadc8fab4",
+        "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d"
+      ],
+      "model_dispatched": false
+    },
+    {
+      "stage": "candidate_recovery_d6b9d85471e11d80",
+      "source_request_sha256": "dc0a3d0c00a03839dc89bd87c3b701e195ce6373d775b8350b212934e556486b",
+      "source_response_sha256": "2dadf4ab380bff56b3d4ebe50d8b43d2f75258e5f92f8dca9807475ea51fe785",
+      "previously_unsearched_child_queries": [
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/11/findings/1",
+          "parent_decision": "retained",
+          "claims": [
+            {
+              "id": "2",
+              "claim": "Кабельный журнал адресует термостат электронагревателя Пу5.1 обозначению ТС1.",
+              "decision": "needs_data",
+              "reason": "Исходная строка кабельного журнала не предоставлена. Ссылка из предыдущего анализа не заменяет её содержание.",
+              "source_refs": [],
+              "required_source_refs": [
+                "blk_5d9307558672478196f75e1763b09764"
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "Пу5.1",
+                "ШАУВ-5-К5ПЧ",
+                "ТС1"
+              ]
+            }
+          ]
+        },
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/11/findings/2",
+          "parent_decision": "retained",
+          "claims": [
+            {
+              "id": "2",
+              "claim": "В кабельном журнале термостат Пу5.1 обозначен ТС1.",
+              "decision": "needs_data",
+              "reason": "Текст кабельного журнала отсутствует в предоставленных источниках; утверждение детектора не является независимым подтверждением.",
+              "source_refs": [],
+              "required_source_refs": [
+                "blk_5d9307558672478196f75e1763b09764"
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "Пу5.1",
+                "ШАУВ-5-К5ПЧ",
+                "ТС1"
+              ]
+            }
+          ]
+        }
+      ],
+      "retrieval_status": "scheduled",
+      "new_source_blocks": [
+        "blk_6e394962eb18407fb17b09f063c30a5c",
+        "blk_c68be533b2c24e4799dde6fb256694f4",
+        "blk_0457419703024673bb4328b18d47501e",
+        "blk_adc4052a68344abf9c8f56861b9294d1",
+        "blk_5d9307558672478196f75e1763b09764",
+        "blk_6414183ffe264f65a253b3d6a5155da1",
+        "blk_a2c817786b3a459fb5fa2667d9492450",
+        "blk_88d8dd46122c41148a81ba6b14c890eb",
+        "blk_47212e9079d1485c9c43fc3d1e9cd108",
+        "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+        "blk_08e6971dafd541b2a40e0aa270404a4e",
+        "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d"
+      ],
+      "model_dispatched": false
+    },
+    {
+      "stage": "candidate_recovery_462b47d52cd1cc17",
+      "source_request_sha256": "f74e8cc99fee408fa67bd5bc6173b4bc6a3bd377125c1bc2157010a06d058d21",
+      "source_response_sha256": "81b56729e6fde11fd71bb9be637044b3fde6eeb5f56a6c884c75e5fbc0e451e0",
+      "previously_unsearched_child_queries": [
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/12/findings/3",
+          "parent_decision": "retained",
+          "claims": [
+            {
+              "id": "2",
+              "claim": "В кабельном журнале термостат электронагревателя По5.1 обозначен ТС1.",
+              "decision": "needs_data",
+              "reason": "Первичный TEXT кабельного журнала в пакет не включён. Предыдущее утверждение детектора не заменяет проверку строки журнала.",
+              "source_refs": [],
+              "required_source_refs": [
+                "blk_c63456cda51644db9470fb57f29b27de"
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "По5.1",
+                "ТС1",
+                "ШАУВ-6-К5ПЧ"
+              ]
+            }
+          ]
+        },
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/12/findings/4",
+          "parent_decision": "retained",
+          "claims": [
+            {
+              "id": "2",
+              "claim": "Кабельный журнал также обозначает термостат По5.1 как ТС1.",
+              "decision": "needs_data",
+              "reason": "Текст соответствующей строки кабельного журнала не представлен; наличие ссылки на него в прежнем анализе не подтверждает содержание.",
+              "source_refs": [],
+              "required_source_refs": [
+                "blk_c63456cda51644db9470fb57f29b27de"
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "По5.1",
+                "ТС1",
+                "ШАУВ-6-К5ПЧ"
+              ]
+            }
+          ]
+        }
+      ],
+      "retrieval_status": "scheduled",
+      "new_source_blocks": [
+        "blk_6e394962eb18407fb17b09f063c30a5c",
+        "blk_0457419703024673bb4328b18d47501e",
+        "blk_c68be533b2c24e4799dde6fb256694f4",
+        "blk_adc4052a68344abf9c8f56861b9294d1",
+        "blk_6414183ffe264f65a253b3d6a5155da1",
+        "blk_065a335469904b2db1640b480b321503",
+        "blk_c63456cda51644db9470fb57f29b27de",
+        "blk_47212e9079d1485c9c43fc3d1e9cd108",
+        "blk_79d9e78b69fa43249052446c07dff8c0",
+        "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+        "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+        "blk_08e6971dafd541b2a40e0aa270404a4e"
+      ],
+      "model_dispatched": false
+    }
+  ],
+  "production_acceptance": false
+}

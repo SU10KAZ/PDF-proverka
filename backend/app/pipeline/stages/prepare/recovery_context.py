@@ -173,15 +173,22 @@ def build_context_followup(request, payload):
     known = {(c.get('origin'), c.get('pointer')): c for c in group}
     unresolved = []
     for decision in decisions if isinstance(decisions, list) else []:
-        if isinstance(decision, dict) and decision.get('decision') == 'needs_data':
-            key = (decision.get('origin'), decision.get('pointer'))
-            if not all(isinstance(k, str) for k in key) or key not in known:
-                continue
-            if known[key] not in unresolved:
-                unresolved.append(known[key])
-            values = decision.get('context_queries', [])
+        if not isinstance(decision, dict):
+            continue
+        key = (decision.get('origin'), decision.get('pointer'))
+        if not all(isinstance(k, str) for k in key) or key not in known:
+            continue
+        claims = decision.get('subclaims', [])
+        records = [decision, *(c for c in claims if isinstance(c, dict))] if isinstance(claims, list) else [decision]
+        missing = [r for r in records if r.get('decision') == 'needs_data']
+        if not missing:
+            continue
+        if known[key] not in unresolved:
+            unresolved.append(known[key])
+        for record in missing:
+            values = record.get('context_queries', [])
             if isinstance(values, list):
-                queries.extend(values)
+                queries.extend(q for q in values if isinstance(q, str) and q.strip())
     if not queries:
         return None, {'status': 'no_explicit_context_queries'}
     source = packet.get('md_source', {})
