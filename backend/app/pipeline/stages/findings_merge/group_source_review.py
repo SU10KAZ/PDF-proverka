@@ -13,7 +13,7 @@ from backend.app.services.findings.report_routing import report_section_key
 CHECKS=('shared_issue','corrective_action','individual_scopes','uncertainty_and_quantities','source_scope_and_identity')
 
 
-def prepare_group_review(document,proposal,md,graphic_dir,*,max_images=12):
+def prepare_group_review(document,proposal,md,graphic_dir,*,max_images=12,extra_text_block_ids=()):
     findings=document['findings'];ids=[f['id'] for f in findings]
     requested=proposal.get('member_ids')
     if len(set(ids))!=len(ids) or not isinstance(requested,list) or len(requested)<2 or len(set(requested))!=len(requested) or any(i not in ids for i in requested):
@@ -28,17 +28,23 @@ def prepare_group_review(document,proposal,md,graphic_dir,*,max_images=12):
         raise ValueError('group_source_refs_not_member_evidence')
     if any(not isinstance(proposal.get(k),str) or not proposal[k].strip() for k in ('shared_issue','common_corrective_action')):
         raise ValueError('group_wording_required')
+    from backend.app.pipeline.stages.text_analysis.requirement_checks import authoritative_text_blocks
+    texts=authoritative_text_blocks(md)
+    if not isinstance(extra_text_block_ids,(list,tuple)) or any(not isinstance(b,str) or b not in texts for b in extra_text_block_ids):
+        raise ValueError('extra_group_context_requires_authoritative_text')
+    extra_text_block_ids=list(dict.fromkeys(extra_text_block_ids))
     # Temporary packet identity only; never insert this aggregate into the report.
     synthetic={'id':'group-source-review','problem':proposal['shared_issue'],
         'description':'Proposed presentation grouping; individual propositions are supplied separately.',
         'solution':proposal['common_corrective_action'],'evidence':[deepcopy(e) for f in members for e in f.get('evidence',[])],
-        'source_evidence_review_status':'pending','source_review_requests':[{'block_ids':refs}]}
+        'source_evidence_review_status':'pending','source_review_requests':[{'block_ids':list(dict.fromkeys(refs+extra_text_block_ids))}]}
     queue=build_source_review_queue([synthetic],md)
     attach_graphic_receipts(queue,md,graphic_dir)
     source=prepare_source_review_request(queue,synthetic,md,max_images=max_images)
     data=json.loads(source['messages'][1]['content'])
     binding={'proposal_sha256':evidence_digest(proposal),'members_sha256':evidence_digest(members),
         'document_sha256':evidence_digest(document),'source_md_sha256':hashlib.sha256(md.encode()).hexdigest()}
+    if extra_text_block_ids:binding['extra_text_block_ids']=extra_text_block_ids
     payload={'binding':binding,'required_checks':list(CHECKS),
         'proposal':{k:proposal[k] for k in ('member_ids','shared_issue','common_corrective_action','source_refs')},
         'members':[{k:deepcopy(f[k]) for k in FIELDS if k in f} for f in members],
@@ -54,8 +60,8 @@ Use group only if every check passes. Otherwise preserve separate findings and s
     return {'request':request,'binding':binding,'queue':queue,'synthetic':synthetic}
 
 
-def validate_group_review(document,proposal,md,graphic_dir,result,*,max_images=12):
-    prepared=prepare_group_review(document,proposal,md,graphic_dir,max_images=max_images)
+def validate_group_review(document,proposal,md,graphic_dir,result,*,max_images=12,extra_text_block_ids=()):
+    prepared=prepare_group_review(document,proposal,md,graphic_dir,max_images=max_images,extra_text_block_ids=extra_text_block_ids)
     if not isinstance(result,dict) or result.get('binding')!=prepared['binding']:
         raise ValueError('stale_group_source_review')
     checks=result.get('checks');seen=set();evidence=[]

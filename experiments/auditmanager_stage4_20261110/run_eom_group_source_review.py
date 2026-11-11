@@ -21,15 +21,21 @@ def immutable(path,value):
         with path.open('x') as f:json.dump(value,f,ensure_ascii=False,indent=2)
 
 
-async def main(execute):
+async def main(execute,work_root=ROOT,context_queries=()):
     os.environ['CODEX_TRANSIENT_RETRIES']='0'
     document=json.loads(SOURCE.read_text());md=(BASE/'02_work/document.md').read_text()
     proposals=json.loads((PROPOSAL_ROOT/'result.json').read_text())['json_data']['groups']
     graphics=BASE/'03_analysis/runs/control/blocks_stage02_100'
-    ROOT.mkdir(exist_ok=True);reports=[]
+    from backend.app.pipeline.stages.text_analysis.requirement_checks import authoritative_text_blocks
+    texts=authoritative_text_blocks(md)
+    if len(context_queries)>5 or any(not isinstance(q,str) or not q.strip() for q in context_queries):raise ValueError('Invalid context queries')
+    extra_refs=[bid for bid,text in texts.items() if any(q.casefold() in text.casefold() for q in context_queries)]
+    if len(extra_refs)>20:raise ValueError('Context search exceeds explicit 20-block budget')
+    work_root.mkdir(exist_ok=True);reports=[]
+    if context_queries:immutable(work_root/'context_search.json',{'queries':list(context_queries),'matching_text_block_ids':extra_refs,'source_only':True,'known_development_navigation':True})
     for index,proposal in enumerate(proposals):
-        root=ROOT/f'group_{index:02d}';root.mkdir(exist_ok=True)
-        try:prepared=prepare_group_review(document,proposal,md,graphics)
+        root=work_root/f'group_{index:02d}';root.mkdir(exist_ok=True)
+        try:prepared=prepare_group_review(document,proposal,md,graphics,extra_text_block_ids=extra_refs)
         except ValueError as exc:
             report={'member_ids':proposal['member_ids'],'status':'not_eligible','reason':str(exc),'model_calls':0}
             immutable(root/'preparation.json',report);reports.append(report);print('SKIPPED',json.dumps(report),flush=True);continue
@@ -50,13 +56,14 @@ async def main(execute):
             result=await direct_cli_executor('codex/gpt-6-astra',project_id='EOM-group-source-review')(request,'grouping_review')
             immutable(result_path,result);immutable(root/'result_binding.json',{'request':manifest['request_sha256'],'result':evidence_digest(result)})
         if result.get('is_error') or not isinstance(result.get('json_data'),dict):raise ValueError('Unusable provider result')
-        if evidence_digest(prepare_group_review(document,proposal,md,graphics)['request'])!=manifest['request_sha256']:raise ValueError('Source images changed during dispatch')
-        decision=validate_group_review(document,proposal,md,graphics,result['json_data'])
+        if evidence_digest(prepare_group_review(document,proposal,md,graphics,extra_text_block_ids=extra_refs)['request'])!=manifest['request_sha256']:raise ValueError('Source images changed during dispatch')
+        decision=validate_group_review(document,proposal,md,graphics,result['json_data'],extra_text_block_ids=extra_refs)
         after,receipt=apply_reviewed_group(document,proposal,decision,md)
         immutable(root/'decision.json',decision);immutable(root/'output_preview.json',after);immutable(root/'receipt.json',receipt)
         reports.append({'member_ids':proposal['member_ids'],'status':receipt['status'],'model_action':decision['action']})
         print('COMPLETE',index,receipt['status'],decision['action'],flush=True)
-    if execute:immutable(ROOT/'summary.json',{'reports':reports,'full_project_acceptance':False,'original_report_mutated':False})
+    if execute:immutable(work_root/'summary.json',{'reports':reports,'full_project_acceptance':False,'original_report_mutated':False})
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true');asyncio.run(main(p.parse_args().execute))
+    p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true');p.add_argument('--work',type=Path,default=ROOT);p.add_argument('--context-query',action='append',default=[])
+    a=p.parse_args();asyncio.run(main(a.execute,a.work,a.context_query))

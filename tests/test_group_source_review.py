@@ -64,3 +64,17 @@ def test_only_exact_attached_graphic_receipt_is_eligible(tmp_path):
     assert validate_group_review(doc,proposal,md,tmp_path,result)['action']=='group'
     result['checks'][0]['evidence'][0]['image_sha256']='different-image'
     with pytest.raises(ValueError,match='group_image_not_attached'):validate_group_review(doc,proposal,md,tmp_path,result)
+
+
+def test_retrieved_context_is_authoritative_and_invalidates_old_verdict(tmp_path):
+    doc,proposal,md,result=setup(tmp_path)
+    md+='\n### BLOCK #3 [TEXT]: index\nIndex links two drawing sheets\n'
+    initial=prepare_group_review(doc,proposal,md,tmp_path)
+    result['binding']=initial['binding']
+    expanded=prepare_group_review(doc,proposal,md,tmp_path,extra_text_block_ids=['index'])
+    wire=json.loads(expanded['request']['messages'][1]['content'])
+    assert 'index' in {b['block_id'] for b in wire['sources']['authoritative_text']}
+    with pytest.raises(ValueError,match='stale_group_source_review'):
+        validate_group_review(doc,proposal,md,tmp_path,result,extra_text_block_ids=['index'])
+    with pytest.raises(ValueError,match='requires_authoritative_text'):
+        prepare_group_review(doc,proposal,md,tmp_path,extra_text_block_ids=['unknown'])
