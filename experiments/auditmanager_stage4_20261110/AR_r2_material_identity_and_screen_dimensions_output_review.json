@@ -1,0 +1,946 @@
+{
+  "status": "four_AR_material_and_dimension_findings_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "8786886fa75d3e490790135a92acd25373e7eb4f7c5546f577b9610cd141e10f",
+  "queue_after_sha256": "e271b8007ace90f61beb56b80cc616217814392e87bfb83f01725227f8ff9f93",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Теплоизоляция",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Утеплитель LOGICPIR PROF Ф/Ф ошибочно назван экструзионным пенополистиролом.",
+        "description": "В слое 6 покрытия К-3 указано «Экструзионный пенополистирол Технониколь LOGICPIR PROF Ф/Ф (или аналог) — 130 мм». Марка LOGICPIR относится к пенополиизоциануратным плитам. Родовое наименование материала противоречит торговой марке, поэтому требования к допустимому аналогу неоднозначны.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить принятый тип теплоизоляции, исправить наименование и задать согласованные требования к теплотехническим, прочностным и пожарным характеристикам аналога.",
+        "risk": "Замена утеплителя материалом с иными характеристиками и несоответствие принятой конструкции покрытия.",
+        "source_finding_ids": [
+          "G-005"
+        ],
+        "source_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645"
+        ],
+        "related_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-005",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 93,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "schedule"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F014_insulation_identity:20063319c847e004daca",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В одном слоеК-3 одновременно названы экструзионный пенополистирол иLOGICPIR PROF Ф/Ф130мм.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Производитель относит LOGICPIR PROF Ф/Ф кPIR.",
+          "verdict": "confirmed_primary_manufacturer_identity",
+          "limits": ""
+        },
+        {
+          "claim": "Общее название и марка материала требуют согласования.",
+          "verdict": "confirmed_material_identity_conflict",
+          "limits": "Или аналог не снимает противоречие названия и марки; повтор марки вматериалах не устанавливает окончательный выбор."
+        },
+        {
+          "claim": "Неверная поставка, теплотехническое или пожарное нарушение, необходимость менять130мм.",
+          "verdict": "not_established",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "Фраза «или аналог» разрешает любую замену XPS/PIR либо доказывает неверную поставку.",
+          "verdict": "not_established",
+          "limits": "Конфликт родового названия и марки подтверждён; выбранный материал и требования к аналогу нужно согласовать. Толщину 130 мм автоматически не менять."
+        }
+      ],
+      "unsupported_additions": "Фактическая неверная поставка, переделка и нарушение безопасности не установлены. Риски остаются условными. Нормативы-кандидаты не подтверждают конкретное нарушение.",
+      "novel_useful_content": "Основной тезис совпадает с проверенным первым повтором; дополнительные формулировки оценены отдельно.",
+      "duplicate_burden": "distinct_roof_layer_or_material_atom_group_related_clarifications_without_losing_claims",
+      "profile_and_section": "technical_document_conflict_core_preserved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F014_insulation_identity.json",
+          "sha256": "c99e19d272729607a77cc1d3873ca5be57009c2c5bd329ffa7cca5d64fc4b181",
+          "primary_adjudication": null,
+          "limits": "Подтверждено противоречие наименования и марки одного слоя. Не доказаны неверная поставка, недостаточная теплоизоляция, пожарное нарушение или необходимость менять толщину130 мм. «Или аналог» не снимает противоречие исходного описания и не разрешает любую взаимозаменяемость XPS/PIR. Повтор марки в ведомости не доказывает окончательный замысел проектировщика. Норматив-кандидат СП17 без подтверждённого пункта не используется как основание обвинения.",
+          "wording": "Согласовать материал слоя К-3 толщиной 130 мм: ведомость покрытий одновременно называет экструзионный пенополистирол и LOGICPIR PROF Ф/Ф, который производитель относит к PIR. В ведомости материалов также указана марка LOGICPIR PROF Ф/Ф. Уточнить выбранный материал и привести общее наименование и марку в соответствие."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "route": "prior_direct_GRAPHIC_review_reused_after_identical_r2_image_hash_verification",
+          "observation": "СтрокаК-3 слой6: экструзионный пенополистиролLOGICPIR PROF Ф/Ф(илианалог),130мм."
+        },
+        {
+          "url": "https://www.tn.ru/catalogue/teploizolyatsionnye-plity-pir/plity-teploizolyatsionnye-logicpir-prof-f-f/",
+          "source": "ТЕХНОНИКОЛЬ, карточка производителя LOGICPIR PROF Ф/Ф",
+          "checked": "2026-11-11",
+          "fact": "Материал плит — полиизоцианурат; двусторонняя фольгированная обкладка.",
+          "limits": "Текущая идентификация семейства продукта; не паспорт поставленной партии и не проверка всей кровельной системы."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_with_identical_source_hashes_and_current_wording_review",
+          "finding_id": "F-015",
+          "limits": "No new engineer verdict. Manufacturer identity evidence reused from prior same-day primary-source check; no new certification of supplied product."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_insulation_material_identity_conflict"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Шумозащитные экраны",
+        "sheet": "Лист 8",
+        "page": 10,
+        "problem": "Высоты ОГШ-1, ОГШ-2 и ОГШ-3 на видах отличаются от ведомости на 200–210 мм.",
+        "description": "Для ОГШ-1 виды В.1–В.3 показывают 5700 мм; на В.7 и В.8 эта высота получается как 2600 + 3100 мм, а на В.7 также как 1700 + 4000 мм. Ведомость задаёт 5900 мм. Для ОГШ-2 виды В.7–В.9 показывают 2600 мм при 2800 мм в ведомости. Для ОГШ-3 на В.4 указано 1690 мм, на В.5–В.7 — 1700 мм, в ведомости — 1900 мм. Повторяется разница 200 мм, для В.4 — 210 мм; дополнительно высота ОГШ-3 на В.4 отличается от В.5 и В.6 на 10 мм. Разные уровни отсчёта или включение основания могут объяснять часть расхождений, но такое объяснение в переданных данных не установлено.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованности размеров конструкций на видах и в ведомостях, а также однозначности уровней отсчёта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-010",
+                "G-011",
+                "G-014",
+                "G-015",
+                "G-016",
+                "G-017",
+                "G-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-010",
+                  "G-011",
+                  "G-014",
+                  "G-015",
+                  "G-016",
+                  "G-017",
+                  "G-018"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Для каждой марки указать уровни нижней и верхней границ измерения, отдельно обозначить основание и заполнение. Согласовать виды В.1–В.9 и ведомость с конструктивными и акустическими решениями до изготовления.",
+        "risk": "Изготовление экранов неверного размера, изменение расхода материалов и переделки; при фактическом уменьшении проектной высоты возможное снижение шумозащиты.",
+        "source_finding_ids": [
+          "G-010",
+          "G-011",
+          "G-014",
+          "G-015",
+          "G-016",
+          "G-017",
+          "G-018"
+        ],
+        "source_block_ids": [
+          "blk_3d63e546cfb54b108a681fffc5c2e192",
+          "blk_622df5aee83e4bb09a3944020fb92380",
+          "blk_c52dea9d372c4c468025a641ffac8192",
+          "blk_fc7a4e61819c4c0ca3606d47a0282ae6"
+        ],
+        "related_block_ids": [
+          "blk_3d63e546cfb54b108a681fffc5c2e192",
+          "blk_622df5aee83e4bb09a3944020fb92380",
+          "blk_c52dea9d372c4c468025a641ffac8192",
+          "blk_fc7a4e61819c4c0ca3606d47a0282ae6"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_3d63e546cfb54b108a681fffc5c2e192",
+            "page": 10
+          },
+          {
+            "type": "image",
+            "block_id": "blk_622df5aee83e4bb09a3944020fb92380",
+            "page": 10
+          },
+          {
+            "type": "image",
+            "block_id": "blk_c52dea9d372c4c468025a641ffac8192",
+            "page": 10
+          },
+          {
+            "type": "image",
+            "block_id": "blk_fc7a4e61819c4c0ca3606d47a0282ae6",
+            "page": 10
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-014",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-015",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение высоты ОГШ-1 на листе 8: 5700 мм на видах В.1–В.3 против 5900 мм в ведомости, разница 200 мм. Разная оценка серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение высоты ОГШ-1 на листе 8: 5700 мм на видах В.1–В.3 против 5900 мм в ведомости, разница 200 мм. Разная оценка серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 77,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR17:b3834745b8377f227bbc",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ОГШ-1:5700 наВ.1–В.3 и2600+3100 наВ.7/В.8 против5900 в ведомости.",
+          "verdict": "confirmed_GRAPHIC_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "ОГШ-2:2600 наВ.7–В.9 против2800; ОГШ-3:1690 наВ.4 и1700 наВ.5–В.7 против1900.",
+          "verdict": "confirmed_GRAPHIC_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Численные разницы200–210мм и10мм между видамиОГШ-3.",
+          "verdict": "confirmed_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Все высоты относятся к одинаковым физическим границам.",
+          "verdict": "not_established",
+          "limits": "Нужно связать заполнение, каркас, монтажный габарит иКМ10.2. Различие размеров не доказывает ошибочное изготовление."
+        },
+        {
+          "claim": "Разница200мм допустима и замечание следует снять.",
+          "verdict": "unsupported_suppression",
+          "limits": "Документированная поправка не установлена; текущая выдача сохраняет вопрос баз измерения."
+        },
+        {
+          "claim": "Полезный исторически принятый вопрос по высотам сохранён.",
+          "verdict": "confirmed_same_claim_historical_acceptance_reuse",
+          "limits": "Принято относится к вопросу увязки; не к установленному дефекту изготовленных изделий."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "На В.7 правая размерная цепочка 1700+4000 также даёт 5700 мм общей высоты ОГШ-1.",
+          "verdict": "confirmed_current_direct_GRAPHIC_and_arithmetic",
+          "limits": "Новая цепочка подтверждает геометрию вида, но не одинаковые границы измерения с ведомостью."
+        }
+      ],
+      "unsupported_additions": "Фактическая неверная поставка, переделка и нарушение безопасности не установлены. Риски остаются условными. Нормативы-кандидаты не подтверждают конкретное нарушение.",
+      "novel_useful_content": "Основной тезис совпадает с проверенным первым повтором; дополнительные формулировки оценены отдельно.",
+      "duplicate_burden": "one_topic_multiple_marks_and_addresses_not_independent_defect_per_dimension",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json",
+        "sha256": "df73701f0cbb7275908c4ab51a94c3a5987c248b5e16d2dd3fc34968997bb98a",
+        "decision": "Принято",
+        "original_comment": "Повтор: высоты экранов ОГШ — это F-019 аудита 20.10, направлено заказчику 21.10 как замечание №9. Модель повторно нашла его верно.\n",
+        "scope": "same_marks_same_version_height_reconciliation_question_only",
+        "new_engineer_decision": false
+      },
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR17.json",
+          "sha256": "2c7bce2f3456b9bebdf7059d5b3ee79a40c72b29a994684d937747fdce46a7fd",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json",
+            "sha256": "df73701f0cbb7275908c4ab51a94c3a5987c248b5e16d2dd3fc34968997bb98a"
+          },
+          "limits": "Разные физические границы и КМ10.2 не проверены; производство неверных изделий не установлено.",
+          "wording": "Увязать высоты экранов ОГШ-1/2/3 между ведомостью и видами, указав базу измерения."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_3d63e546cfb54b108a681fffc5c2e192.png",
+          "sha256": "89a130aff8f3c5d6bb71a51e6a30f4a48ff289332d9586daeef55012f8090ff6",
+          "block_id": "blk_3d63e546cfb54b108a681fffc5c2e192",
+          "route": "prior_direct_GRAPHIC_review_reused_after_identical_r2_image_hash_verification",
+          "observation": "В.1–В.3:ОГШ-1=5700."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_622df5aee83e4bb09a3944020fb92380.png",
+          "sha256": "256b1727aa3c7bb2e8fc5ed1f6401f1d240349a5eb61c3b75340000a1416e57d",
+          "block_id": "blk_622df5aee83e4bb09a3944020fb92380",
+          "route": "prior_direct_GRAPHIC_review_reused_after_identical_r2_image_hash_verification",
+          "observation": "В.4:ОГШ-3=1690;В.5/В.6=1700."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_c52dea9d372c4c468025a641ffac8192.png",
+          "sha256": "c6f6651815eb75ea5430e5bb752a5043d3396cf6c233af910a953d784e5a45c9",
+          "block_id": "blk_c52dea9d372c4c468025a641ffac8192",
+          "route": "prior_direct_GRAPHIC_review_reused_after_identical_r2_image_hash_verification",
+          "observation": "В.7:ОГШ-1=2600+3100;ОГШ-2=2600;ОГШ-3=1700."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fc7a4e61819c4c0ca3606d47a0282ae6.png",
+          "sha256": "8f471eed78ced4cccba039c1957aae3905898730706ac777ed10604d5d715650",
+          "block_id": "blk_fc7a4e61819c4c0ca3606d47a0282ae6",
+          "route": "prior_direct_GRAPHIC_review_reused_after_identical_r2_image_hash_verification",
+          "observation": "В.8:ОГШ-1=2600+3100;ОГШ-2=2600;В.9:ОГШ-2=2600."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_with_identical_source_hashes_and_current_wording_review",
+          "finding_id": "F-018",
+          "limits": "No new engineer verdict. Manufacturer identity evidence reused from prior same-day primary-source check; no new certification of supplied product."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_c52dea9d372c4c468025a641ffac8192.png",
+          "sha256": "c6f6651815eb75ea5430e5bb752a5043d3396cf6c233af910a953d784e5a45c9",
+          "block_id": "blk_c52dea9d372c4c468025a641ffac8192",
+          "route": "current_r2_direct_GRAPHIC_review",
+          "observation": "На В.7 слева2600+3100, справа1700+4000; обе цепочки дают5700. Общая верхняя линия; ОГШ-1 в центре."
+        }
+      ],
+      "disposition": "assessed_r2_historically_accepted_screen_height_question_preserved"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Шумозащитные экраны",
+        "sheet": "Лист 8",
+        "page": 10,
+        "problem": "Аксонометрия и ведомость неоднозначно задают заполнение шумозащитных экранов.",
+        "description": "На аксонометрическом виде указано «Заполнение стальными ламелями», а ведомость для ОГШ-1, ОГШ-2 и ОГШ-3 предусматривает акустические сэндвич-панели с минераловатным утеплителем толщиной 30 мм. Не раскрыто, являются ли ламели и панели частями одной конструкции или альтернативными решениями, а также к каким маркам относится аксонометрия.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованности изображений, обозначений материалов и ведомостей конструкций.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-012",
+                "G-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-012",
+                  "G-013"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать заполнение с комплектом КМ10.2 и акустическим решением. Показать состав конструкции, роль ламелей и панелей и применимость к каждой марке; исправить аксонометрию и ведомость.",
+        "risk": "Поставка заполнения с неподтверждёнными акустическими характеристиками, дополнительные затраты и переделки.",
+        "source_finding_ids": [
+          "G-012",
+          "G-013"
+        ],
+        "source_block_ids": [
+          "blk_3833cfb33b574f36b5a8f0764f7471e5"
+        ],
+        "related_block_ids": [
+          "blk_3833cfb33b574f36b5a8f0764f7471e5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_3833cfb33b574f36b5a8f0764f7471e5",
+            "page": 10
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-012",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-013",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают одно расхождение на листе 8: стальные ламели на аксонометрии и акустические сэндвич-панели с минераловатным утеплителем толщиной 30 мм в ведомости ОГШ-1, ОГШ-2 и ОГШ-3. Ссылка на КМ 10.2 в рекомендации справа существенно не дополняет описание проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают одно расхождение на листе 8: стальные ламели на аксонометрии и акустические сэндвич-панели с минераловатным утеплителем толщиной 30 мм в ведомости ОГШ-1, ОГШ-2 и ОГШ-3. Ссылка на КМ 10.2 в рекомендации справа существенно не дополняет описание проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 77,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F018_screen_identity:2fc8c1d03f237cb052ba",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Аксонометрия подписана как заполнение стальными ламелями; ведомостьОГШ-1/2/3 задаёт акустические сэндвич-панели с минватой30мм.",
+          "verdict": "confirmed_GRAPHIC_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Аксонометрия точно относится к этим маркам и исключает панели.",
+          "verdict": "not_established",
+          "limits": "На просмотренной аксонометрии нет конкретной марки; внешний вид иобщий заголовок не доказывают тождество изделий или отсутствие внутреннего слоя."
+        },
+        {
+          "claim": "Нужна привязка аксонометрии к маркам и полный состав поКМ10.2.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Ламели не обеспечивают шумозащиту и требуют замены.",
+          "verdict": "not_established",
+          "limits": "Рабочее сечение, акустический расчёт иКМ10.2 не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "Аксонометрию и ведомость необходимо безусловно изменить.",
+          "verdict": "conditional_only",
+          "limits": "Сначала установить привязку к маркам и состав изделия по КМ10.2. Совместное применение панелей и ламелей не опровергнуто; возможно достаточно пояснения."
+        }
+      ],
+      "unsupported_additions": "Фактическая неверная поставка, переделка и нарушение безопасности не установлены. Риски остаются условными. Нормативы-кандидаты не подтверждают конкретное нарушение.",
+      "novel_useful_content": "Основной тезис совпадает с проверенным первым повтором; дополнительные формулировки оценены отдельно.",
+      "duplicate_burden": "distinct_material_identity_or_OGN4_height_question",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F018_screen_identity.json",
+          "sha256": "4697afa158d947df5c5673d1292bbf9c16d10cff73cc1d5ea894d98a7d4d9580",
+          "primary_adjudication": null,
+          "limits": "Подтверждены разные описания, но не тождество изделий и не техническая несовместимость решений. Общий заголовок и цвет RAL7021 не устанавливают конкретную марку. Нельзя автоматически объявлять ламели неакустическими или утверждать отсутствие утепления по внешнему виду. Полный комплект КМ10.2, рабочие сечения и акустический расчёт не проверены; отсутствие привязки во всём проекте и нарушение шумозащиты не установлены.",
+          "wording": "Уточнить привязку аксонометрии ламелей шумозащитного экрана к марке изделия и согласовать описание заполнения: на аксонометрии указаны стальные ламели, а для ОГШ-1/2/3 ведомость задаёт акустические сэндвич-панели с минераловатным утеплителем толщиной 30 мм."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_3833cfb33b574f36b5a8f0764f7471e5.png",
+          "sha256": "c1514c1fd6a2c69a5464b1e212e23d475d0efac5bade7426a26931021580441a",
+          "block_id": "blk_3833cfb33b574f36b5a8f0764f7471e5",
+          "route": "prior_direct_GRAPHIC_review_reused_after_identical_r2_image_hash_verification",
+          "observation": "Подпись:заполнение стальными ламелями; каркассм.КМ; конкретной маркиОГШ нет."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_with_identical_source_hashes_and_current_wording_review",
+          "finding_id": "F-019",
+          "limits": "No new engineer verdict. Manufacturer identity evidence reused from prior same-day primary-source check; no new certification of supplied product."
+        }
+      ],
+      "disposition": "assessed_r2_screen_filling_identity_question_no_proven_incompatibility"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-021",
+      "finding": {
+        "id": "F-021",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Ограждения кровли",
+        "sheet": "Листы 8, 12",
+        "page": [
+          10,
+          15
+        ],
+        "problem": "Высота ОГН-4 на виде отличается от ведомости и узла крепления на 10 мм.",
+        "description": "На виде «Светопрозрачное ограждение ОГН-4» указан вертикальный размер 2110 мм. Ведомость наружных ограждений на листе 8 задаёт 2100 мм, а узел крепления — h=2,1 м. Разница составляет 10 мм. Следует уточнить, относятся ли размеры к одинаковым границам измерения и учитывают ли монтажный зазор.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к согласованности размеров изделия на видах, узлах и в ведомостях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-022"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить границы измерения, обозначить монтажный зазор при его наличии и согласовать высоту ОГН-4 на виде, в ведомости и в узле.",
+        "risk": "Размерные несоответствия при изготовлении и монтаже ограждения.",
+        "source_finding_ids": [
+          "G-022"
+        ],
+        "source_block_ids": [
+          "blk_eb64722d53da4f5aa3e984fa2fb552c5"
+        ],
+        "related_block_ids": [
+          "blk_eb64722d53da4f5aa3e984fa2fb552c5",
+          "blk_c2c52346b94e41d082d3db11655d2706"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_eb64722d53da4f5aa3e984fa2fb552c5",
+            "page": 15
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-022",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 49,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F020_OGN4_height:45b7c32dafd201c30a67",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На видеОГН-4 размер2110; ведомость2100; узелh=2,1м иотметки43,380/41,280.",
+          "verdict": "confirmed_GRAPHIC_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Разность10мм.",
+          "verdict": "confirmed_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Точки отсчёта вообще не показаны.",
+          "verdict": "refuted_existing_dimensions",
+          "limits": "На виде есть размерные границы и41,280; на узле есть верхняя инижняя отметки. Смысл отличия требует уточнения."
+        },
+        {
+          "claim": "Правильное значение2100 следует выбрать по большинству либо10мм автоматически допустимы.",
+          "verdict": "not_established",
+          "limits": "Изготовительные границы, зазор или ошибка не установлены; универсальный допуск не вводится."
+        },
+        {
+          "claim": "Согласовать основания размеров и применяемую высоту.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Нарушение безопасности или фактически неверное изделие.",
+          "verdict": "not_established",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "Монтажный зазор объясняет разницу10мм.",
+          "verdict": "hypothesis_not_verified",
+          "limits": "Текущая формулировка правильно требует обозначить зазор только при наличии. Не принимать10мм как универсальный допуск."
+        }
+      ],
+      "unsupported_additions": "Фактическая неверная поставка, переделка и нарушение безопасности не установлены. Риски остаются условными. Нормативы-кандидаты не подтверждают конкретное нарушение.",
+      "novel_useful_content": "Основной тезис совпадает с проверенным первым повтором; дополнительные формулировки оценены отдельно.",
+      "duplicate_burden": "distinct_material_identity_or_OGN4_height_question",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F020_OGN4_height.json",
+          "sha256": "7801c49ea3c7172f8c0487ab722a493b90e3c08973e31e151dc0d953d1fcfd19",
+          "primary_adjudication": null,
+          "limits": "Размерные границы и отметки на рисунках присутствуют, поэтому утверждение об отсутствии точек отсчёта не подтверждается. Не установлено, объясняется ли разница монтажным габаритом, зазором или ошибкой. Не назначать правильный размер по большинству совпадений и не вводить универсальный допуск 10 мм. Ошибка изготовленного изделия, необходимость переделки и нарушение требований безопасности не доказаны.",
+          "wording": "Согласовать высоту ОГН-4: на виде указан размер 2110 мм, в ведомости — 2100 мм; узел крепления содержит h=2,1 м и отметки +43,380/+41,280, также дающие 2100 мм. Уточнить основание разницы 10 мм и применяемый размер."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eb64722d53da4f5aa3e984fa2fb552c5.png",
+          "sha256": "f9d066c70ef7cfc14850e5d87b13e2103c5262141dcac7285f900c585fec13d4",
+          "block_id": "blk_eb64722d53da4f5aa3e984fa2fb552c5",
+          "route": "prior_direct_GRAPHIC_review_reused_after_identical_r2_image_hash_verification",
+          "observation": "ОГН-4:вертикальный размер2110, отметка41,280."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_c2c52346b94e41d082d3db11655d2706.png",
+          "sha256": "ada6f98bef863cfa58e17d4bf8c8fce8278e6964a8f678932897d883ded5d00b",
+          "block_id": "blk_c2c52346b94e41d082d3db11655d2706",
+          "route": "prior_direct_GRAPHIC_review_reused_after_identical_r2_image_hash_verification",
+          "observation": "УзелОГН-4:h=2,1м;верх43,380;покрытие41,280."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_with_identical_source_hashes_and_current_wording_review",
+          "finding_id": "F-021",
+          "limits": "No new engineer verdict. Manufacturer identity evidence reused from prior same-day primary-source check; no new certification of supplied product."
+        }
+      ],
+      "disposition": "assessed_r2_OGN4_height_question_preserve_existing_datums"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": "Evaluation only; no generalized tolerance, no physical failure inferred from inconsistent documents."
+}
