@@ -7,11 +7,11 @@
     "technical": {
       "counts": {
         "denominator": 55,
-        "availability_unchecked": 36,
-        "unchecked": 36,
-        "availability_available": 19,
+        "availability_unchecked": 27,
+        "unchecked": 27,
+        "availability_available": 28,
         "partial": 6,
-        "full": 13
+        "full": 22
       },
       "review_complete": false,
       "full_match_rate": null,
@@ -42,7 +42,7 @@
     }
   },
   "section_accuracy_counts": {
-    "unchecked": 18
+    "unchecked": 27
   },
   "filter_effectiveness": null,
   "production_acceptance": false,

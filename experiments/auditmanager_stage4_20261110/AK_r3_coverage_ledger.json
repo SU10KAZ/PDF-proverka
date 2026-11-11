@@ -701,29 +701,98 @@
     },
     {
       "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-021"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "authoritative_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source": "direct_graphic_review",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9"
+        }
+      ],
+      "reason": "Полностью сохранено различие назначения M2: насос схемы против вентилятора перечня листа11. Схема просмотрена непосредственно; кабель Па3.1-11 в TEXT не заменяет доказательство назначения. Последствия поставки не оценены.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-021"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "authoritative_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source": "direct_graphic_review",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9"
+        }
+      ],
+      "reason": "Сохранено различие назначения M4: вентилятор на схеме против насоса в перечне листа11. Фактический режим резервирования и обязательная перенумерация не подтверждены.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-021"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "authoritative_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source": "direct_graphic_review",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9"
+        }
+      ],
+      "reason": "Сохранён M5 на схеме и в журнале при отсутствии в перечне листа11. TEXT КЖ9 содержит Па3.1-12 к M5. Отсутствие ограничено перечнем; недопоставка не установлена.",
       "section_assessment": "unchecked"
     },
     {
@@ -737,11 +806,39 @@
     },
     {
       "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-027"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "authoritative_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F020_heater_cable_conflict.json",
+          "sha256": "f6dbf031fc8ba16fd61cd5ebad1825e32f84c0bd4cd39527accb1a6230d293f2"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+          "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f"
+        },
+        {
+          "source": "direct_graphic_review",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be"
+        }
+      ],
+      "reason": "Сохранён конфликт одной линии По5.1-9 от ШАУВ-6-К5ПЧ к нагревателю: схема3×2,5 и КЖ4×4,0, обе10м. Схема просмотрена непосредственно, КЖ19 и локальная ведомость35 прочитаны. Правильное исполнение не выбрано; повтор этого конфликта в F-029 не создаёт второй целевой тезис.",
       "section_assessment": "unchecked"
     },
     {
@@ -764,20 +861,56 @@
     },
     {
       "target_id": "AK_F022_control_cable_balance:d4470ce9730307aed184",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-023"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "authoritative_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+          "sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53"
+        }
+      ],
+      "reason": "Сохранены восемь неэкранированных однопарных линий по15м:120м против50м в локальной ведомости26. TEXT КЖ5–6 проверен до перехода к Пкр4.1; маршрутные части10/5 не прибавлены. Удаление повтора силовой линии не является условием этой суммы; лишняя причинная оговорка модели не получает подтверждения.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "AK_F022_control_cable_balance:872ea17b985add42621f",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-023"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "authoritative_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+          "sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53"
+        }
+      ],
+      "reason": "Сохранены три экранированные однопарные линии20+15+15=50м против105м ведомости26. Двухпарные кабели исключены. Это документальный баланс, а не установленная избыточная закупка.",
       "section_assessment": "unchecked"
     },
     {
@@ -1016,29 +1149,83 @@
     },
     {
       "target_id": "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-032"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "authoritative_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+          "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32"
+        }
+      ],
+      "reason": "Сохранён повтор номера21.10 для двух разных интерфейсных кабелей; TEXT СО10 содержит3×2×0,78 и2×2×0,78. Исправление нумерации не означает удаление одного изделия как дубля.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-032"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "authoritative_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+          "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32"
+        }
+      ],
+      "reason": "Сохранён35341 у лотка22.4 и треугольных бирок22.9 в TEXT СО10. Это графа типа/марки, не заполненная отдельная графа кода оборудования. Термин модели «каталожные коды» не подтверждает структуру таблицы или правильный новый артикул.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-032"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "authoritative_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+          "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32"
+        }
+      ],
+      "reason": "СохранёнBSD2120 у подвеса22.6 и трубыДу32 позиции22.13 в TEXT СО10–11. Новый артикул трубы и фактическая ошибка заказа не установлены; конфликт маркировки подтверждён.",
       "section_assessment": "unchecked"
     },
     {
@@ -1394,11 +1581,11 @@
     }
   ],
   "limits": [
-    "Промежуточная оценка27 положительных тезисов; остальные не проверены, пропуски не назначены.",
+    "Промежуточная оценка36 положительных тезисов; остальные не проверены, пропуски не назначены.",
     "Частичные совпадения могут дополниться при чтении остальных строк.",
     "Совпадение узкого тезиса не подтверждает последствия, решение и нормативные основания.",
     "Авторитетный MD идентичен второму повтору; текст PDF заново не извлекался."
   ],
   "repeat": 3,
-  "output_review_scope": "Read problem, description and solution of F-001 through F-020; remaining findings and absence decisions pending."
+  "output_review_scope": "Read problem, description and solution of F-001 through F-043; F-044 through F-065 and absence decisions pending. Nine additional technical targets reviewed with mandatory context; other new matches remain unchecked."
 }
