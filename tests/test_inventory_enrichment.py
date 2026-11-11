@@ -102,7 +102,18 @@ async def test_smaller_packets_preserve_sources_pending_work_and_exact_resume(tm
     assert len(complete['object_registry']) == 3
     coverage = reconcile_object_registry(complete, {'a', 'b', 'c'})
     assert coverage['unresolved_source_blocks'] == 0
-    assert coverage['unresolved_operations'] == 15
+    # Inventorying sources does not execute any of the six required checks.
+    expected_operations = {
+        'identity_across_views', 'quantity_balance', 'dimension_consistency',
+        'requirement_applicability', 'document_links', 'calculation_consistency',
+    }
+    assert coverage['unresolved_operations'] == 18
+    for obj in complete['object_registry']:
+        rows = [r for r in coverage['operations'] if r['object_id'] == obj['id']]
+        assert len(rows) == 6
+        assert {r['operation'] for r in rows} == expected_operations
+        assert all(r['status'] == 'not_checked' and r['reason'] == 'missing_receipt'
+                   for r in rows)
     assert not coverage['coverage_complete']
     kwargs['max_source_chars'] = 90  # Same partition, different frozen policy.
     with pytest.raises(ValueError, match='inputs_changed'):
