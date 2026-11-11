@@ -77,17 +77,33 @@ def process_guard(event, args):
             raise RuntimeError(f'Non-Codex subprocess forbidden in classic control: {executable}')
 
 
-def freeze(work):
+def freeze(work, *, source_snapshot=None):
     root=work/'classic_control'
     if (root/'protocol.json').exists():raise ValueError('Protocol already frozen')
     if read(root/'input_checks.json')['status']!='passed':raise ValueError('Inputs not checked')
     files=[]
     for directory,pattern in [('backend/app','*.py'),('prompts','*'),('experiments/classic_investigator','*.py')]:
         files.extend(p for p in (ROOT/directory).rglob(pattern) if p.is_file())
+    marker=ROOT/'backend/__init__.py'
+    if marker.is_file():files.append(marker)
+    source_files={str(p.relative_to(ROOT)):sha(p) for p in files}
+    if source_snapshot is not None:
+        if (source_snapshot.get('source_root')!=str(ROOT.resolve())
+                or source_snapshot.get('source_files')!=source_files
+                or not source_snapshot.get('provenance')):
+            raise ValueError('Source snapshot provenance or bytes differ')
+        # An exported tree has no Git HEAD. Its historical origin and overlays
+        # are explicit provenance, never the coordinator checkout's commit.
+        commit=None
+    else:
+        git_root=Path(subprocess.check_output(['git','rev-parse','--show-toplevel'],cwd=ROOT,text=True).strip())
+        if git_root.resolve()!=ROOT.resolve():
+            raise ValueError('Source root is not the Git checkout root; snapshot provenance required')
+        commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     write(root/'protocol.json',{
         'name':'classic_fixed_codex_only','created':time.time(),
-        'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
-        'source_files':{str(p.relative_to(ROOT)):sha(p) for p in files},
+        'commit':commit,'source_snapshot':source_snapshot,
+        'source_files':source_files,
         'input_manifest_sha256':sha(root/'input_manifest.json'),'stage_models':MODELS,'environment':ENV,
         'method_config':METHOD_CONFIG,'reasoning_effort':REASONING_EFFORT,'max_request_attempts':MAX_REQUEST_ATTEMPTS,'graphic_parallelism':2,
         'scope':'graphic detector ensemble + full authoritative MD + merge + structural/absence verification',
