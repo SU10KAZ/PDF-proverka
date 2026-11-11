@@ -4,7 +4,7 @@
   "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
   "findings_sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
   "reviewer": "Codex source-bound atomic coverage review; evaluator only",
-  "entire_output_reviewed": false,
+  "entire_output_reviewed": true,
   "targets": [
     {
       "target_id": "B-VK-F-008:91aa2581cf81197e6fe8",
@@ -74,11 +74,11 @@
     },
     {
       "target_id": "B-VK-F-029:d083cf366c333ad81c4a",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Не утверждается,чтоГОСТ32414 относится кНПВХ. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -116,11 +116,11 @@
     },
     {
       "target_id": "VK32_drain_count_identity:7925cb948b0881a20c11",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "F014признаёт12воронок2+10; нет вывода о лишней12-й по11расчётнымсимволам. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -158,20 +158,20 @@
     },
     {
       "target_id": "VK50_specification_duplicates:f2c9bd72860a821601dd",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Нет вопроса повторного номера4 у опорной трубы и отводаК2.1. Другие вопросы комплектности не покрывают нумерацию. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK50_specification_duplicates:f59ff2a504ccf24245d9",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Нет буквальной записи8¹ из двух44¹ и её согласования. Упоминание45°вF008 относится к другому изделию. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -209,11 +209,11 @@
     },
     {
       "target_id": "VK_F003_reinforcement_counts:e513233db1a750cd7427",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "F006явно26/26DN200,дефицит отнесён толькоDN100/150. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -251,11 +251,11 @@
     },
     {
       "target_id": "VK_F006_test_criterion:cdce20857528642ffcee",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "F016ограничивается участками без квартирных приборов; отсутствие всех приборов объекта не заявлено. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -293,38 +293,38 @@
     },
     {
       "target_id": "VK_F013_drain_assembly_scope:f37578f6de4df40d140e",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "F014прямо признаёт модель в узле,несмотря на отсутствие марки в общей строке. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F013_drain_assembly_scope:9bace4bde2d823655edc",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Нет утверждения,что весьузелК-1исключительноПП. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F013_drain_assembly_scope:45990c01587ab3d1a583",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Нет исключительного составаХэмкор/AVF;F008называетPolytron. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F013_drain_assembly_scope:990e18216eaec4a3bf2d",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Не заявлено полное отсутствие воронок и крепленийК2;F014начинается с12комплектов. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -362,20 +362,20 @@
     },
     {
       "target_id": "VK_F015_roof_title_level:e6b91efad363f833fe38",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "F018сравнивает41,280/40,690,не приписывает41,290этойкровле. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F016_incomplete_riser_label:dc77e2144b6ac1213962",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Не найдена неполная выноскаСт.К1- у+5,447. F021 относится к маркировкеК1.1,не этой выноске. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -446,38 +446,38 @@
     },
     {
       "target_id": "VK_F026_sheet_title_scope:66eff95c8c4f43ea81ac",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Нет сравнения названия листа25/ведомости с двумя стоякамиК2-3.1/3.2. Другие заголовки кровли и ссылкиК1 не тот объект. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F026_sheet_title_scope:3066aa83db3239a42924",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Нет тезиса о противоречии основной надписи и ведомости листа25. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F026_sheet_title_scope:462e37ddc2cb56579949",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Нет тезиса об отсутствии стоякаК2-3.2. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F027_calculation_level_labels:7479fd101bd142ad9eec",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "F015 называет38,640 в расчёте,но не замечает одинаковые отметки трёх разных уровней и не связывает40,690/44,870 с ними. Само число не найденный дефект. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -515,20 +515,20 @@
     },
     {
       "target_id": "VK34_transition_assembly:composite:1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Нет переходаНПВХ160×6,2–DN150–SMLDN200К2-3.1/3.2 и учёта комплекта. F009проDN125К2.1 иF012проDN150К1 относятся к другим узлам. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK51_apartment_scope:composite:1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "F016упоминает отсутствие установленных квартирных приборов при испытании,но не конфликт будущих работ собственников/подключений2–3этажей/АИ-ФО. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -731,11 +731,11 @@
     },
     {
       "target_id": "VK_F009_pipe_125_inventory:composite:2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "F013упоминает32крепления125К1 лишь как неподтверждённое обеспечениеК1.1; нет сопоставления с0,2мтрубы и двумяотводамиК1. F009раскрывает толькоК2.1. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -773,20 +773,20 @@
     },
     {
       "target_id": "VK_F013_drain_assembly_scope:composite:2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "F014раскрывает модели воронки и комплект,но неППREHAU/BIS и их применимость при требованияхНПВХ/SML. F008проотводыPolytron,не этотузел. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F021_revision_height:composite:1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
       "evidence": [],
-      "reason": null,
+      "reason": "Нет трёх отметок ревизийК1-3.2 и разности0,410м против1м от чистого пола. F002/003/020проэтажи,количество и изображения не покрывают высоту. Просмотрены problem/description/solution/risk всех22строк; отсутствие строки не доказывает работу фильтра.",
       "section_assessment": "unchecked"
     }
   ],
@@ -794,5 +794,6 @@
     "Full match requires all mandatory object, relationship and location context.",
     "Score unsupported additions and novel findings separately.",
     "Engineer confirmation is required; model suggestions alone are not final matches."
-  ]
+  ],
+  "repeat": 3
 }

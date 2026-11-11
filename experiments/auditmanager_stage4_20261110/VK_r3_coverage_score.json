@@ -17,24 +17,23 @@
     "question": {
       "counts": {
         "denominator": 26,
-        "availability_available": 16,
+        "availability_available": 26,
         "full": 12,
-        "availability_unchecked": 10,
-        "unchecked": 10,
+        "absent": 10,
         "partial": 4
       },
-      "review_complete": false,
-      "full_match_rate": null,
+      "review_complete": true,
+      "full_match_rate": 0.46153846153846156,
       "meaning": "fully preserved target rate"
     },
     "negative": {
       "counts": {
         "denominator": 11,
-        "availability_unchecked": 11,
-        "unchecked": 11
+        "availability_available": 11,
+        "absent": 11
       },
-      "review_complete": false,
-      "full_match_rate": null,
+      "review_complete": true,
+      "full_match_rate": 0.0,
       "meaning": "repeated false claim rate"
     }
   },
