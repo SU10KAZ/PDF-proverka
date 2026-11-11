@@ -76,21 +76,49 @@
     },
     {
       "target_id": "AK57:9851f2c4946bad03af44",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-006",
+        "F-039",
+        "F-044"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Сохранены PDS4 Пм4.1, PDS3 Пкр4.1 и PDS3 Пкр5.1 — три из шести адресов. F-056/F-061 относятся к другим системам листов18/22 и не заменяют PDS2/PDS3/PDS4 Па3.1/Ва3.1/Ва3.1р. Не засчитывать тематическое сходство как полное покрытие.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK57:a998dcf058f81b7ac194",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "В основном описании есть перечень1/3 и СО3/1, в дополнении — графическая таблица2/2 с адресами PDS. Все три состава сохранены; общее количество4 и неопределённость правильного исполнения явно указаны.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK57:d6f8484b24bc88adcab5",
@@ -175,57 +203,135 @@
     },
     {
       "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-008"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F005_surface_sensor_quantity.json",
+          "sha256": "48b97c42cfa0b0277fb9cf701da41869de070db06fd4ec75fb99b0a388d1e722"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Шкаф ШАУВ-4-К4ПЧ, поз.4.8=2 накладных датчика против одного ТЕ2 сохранены. Не утверждается фактическая лишняя поставка.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-008"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json",
+          "sha256": "7dfe111f83f7d778b22f32158e23e25225b08f4f4ec3226926ddce63dfb1ef6a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Две позиции наружного датчика2.5/2.7 сопоставлены с одним ТЕ1 того же шкафа ШАУВ-2-К4ПЧ; назначение дополнительного изделия не выдумано.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Лист14, количество1 в перечне и2 в СО8.6 дополнены отдельными ТЕ3 П5.1.1/ТЕ4 П5.1.3 с сигналами12/20. Закупочная нехватка не утверждается.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Лист20, перечень1 и СО14.6=2 дополнены отдельными ТЕ3 П6.1.1/ТЕ4 П6.1.4 и сигналами11/20. Сохраняется область одного шкафа.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-031"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Пустое количество комплектного ТС2 вынесено в вопросы, отдельно от капиллярного ТС1 и позиции14.8; отсутствие защиты или необходимость второго капиллярного реле не утверждаются.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-008"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json",
+          "sha256": "c9bf31b3153a37963b0821177ba1398e145ddd70d03bda5a6432545628397940"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Поз.15.7=2 канальных датчика сопоставлена с одним ТЕ3 шкафа ШАУВ-3-К6ПЧ; резерв и фактическая поставка оставлены неопределёнными.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
@@ -274,30 +380,69 @@
     },
     {
       "target_id": "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-001"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F012_cable_section_conflict.json",
+          "sha256": "adda5976fdc931fee477376e4e53dc398de605c62cba05511adc92776b58090d"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Один идентификатор П4.1.3-9, одна длина15м, разные сечения4×2,5/4×4,0 и локальный перечень4×4,0 сохранены без превращения повтора в две физические линии.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-002"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+          "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Семь марок и адреса листов7/8 сохранены, различия строк отмечены. Сумма165м и её расчёт в итоговой строке отсутствуют; полный атом с количественным итогом не засчитан.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-002"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+          "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "14 повторных марок и листы25/26 сохранены; итог210м и расчёт14×15 не выведены. Не засчитывать полноту количественного атома.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F013_cable_repeated_rows:b911bab30a5f2b93c3e1",
@@ -978,9 +1123,12 @@
   "limits": [
     "Full match requires all mandatory object, relationship and location context.",
     "Score unsupported additions and novel findings separately.",
-    "Engineer confirmation is required; model suggestions alone are not final matches."
+    "Engineer confirmation is required; model suggestions alone are not final matches.",
+    "Full atomic matches do not certify output usability: appended descriptions retain stale initial caveats and internal local IDs; this is a separate output-quality defect."
   ],
   "status": "partial_review_not_acceptance",
   "source_snapshot": "/tmp/auditmanager_context_terminal_snapshot_20261112.json",
-  "source_snapshot_sha256": "1358431ad556afc30733620fbf974da3c521f343bfffffe4d26abc32b781f287"
+  "source_snapshot_sha256": "1358431ad556afc30733620fbf974da3c521f343bfffffe4d26abc32b781f287",
+  "reviewed_targets": 16,
+  "unchecked_targets": 84
 }
