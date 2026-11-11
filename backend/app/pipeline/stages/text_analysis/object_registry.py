@@ -1,8 +1,9 @@
 """Account for object operations and source coverage; model receipts are not proof."""
 from collections import Counter, defaultdict
+from ..prepare.calculation_consistency import has_calculation_trace
 
 OPERATIONS = ('identity_across_views', 'quantity_balance', 'dimension_consistency',
-              'requirement_applicability', 'document_links')
+              'requirement_applicability', 'document_links', 'calculation_consistency')
 
 
 def reconcile_object_registry(data, known_blocks):
@@ -51,6 +52,8 @@ def reconcile_object_registry(data, known_blocks):
                 row['reason'] = 'missing_reason'
             elif status in ('checked','not_applicable') and not valid_refs(receipt.get('source_refs')):
                 row['reason'] = 'unresolved_operation_sources'
+            elif operation == 'calculation_consistency' and status == 'checked' and not has_calculation_trace(receipt, known_blocks):
+                row['reason'] = 'missing_or_unbound_calculation_trace'
             else:
                 row['status'] = 'reported_'+status if status in ('checked','not_applicable') else status
     # Account for every source block independently of object extraction. An

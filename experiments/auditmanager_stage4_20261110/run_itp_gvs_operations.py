@@ -38,9 +38,9 @@ def prepare(object_id, packet_index=0):
         crops.symlink_to(BASE/'03_analysis/runs/control/blocks_stage02_100', target_is_directory=True)
     request, = build_object_operation_passes(root, BASE/'02_work/document.md', max_requests=1, enable_followup=True)
     packet = json.loads(request.messages[-1]['content'])
-    packet['operations'] = [o for o in packet['operations'] if o['operation'] in ('identity_across_views', 'document_links', 'dimension_consistency', 'quantity_balance')]
+    packet['operations'] = [o for o in packet['operations'] if o['operation'] in ('identity_across_views', 'document_links', 'dimension_consistency', 'quantity_balance', 'calculation_consistency')]
     assert packet['object']['id'] == object_id
-    assert len(packet['operations']) == 4
+    assert len(packet['operations']) == 5
     request = replace(request, messages=[request.messages[0], {'role': 'user', 'content': json.dumps(packet, ensure_ascii=False)}])
     wire = {'messages': request.messages, 'image_paths': [str(p) for p in request.image_paths]}
     binding = {'source_binding': request.continuation_source, 'request_sha256': evidence_digest(wire), 'inventory_result_sha256': hashlib.sha256(source.read_bytes()).hexdigest(), 'inventory_result_path': str(source),

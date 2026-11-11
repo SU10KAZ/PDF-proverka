@@ -22,7 +22,8 @@ def test_colliding_records_survive_but_ambiguous_receipts_are_not_inherited():
     assert {o['scope'] for o in merged['object_registry']} == {'QF3.2.1', 'QF3.21'}
     assert all(not o['record_identity']['physical_identity_resolved'] for o in merged['object_registry'])
     coverage = reconcile_object_registry(merged, {'graphic'})
-    assert coverage['unresolved_operations'] == 10
+    from backend.app.pipeline.stages.text_analysis.object_registry import OPERATIONS
+    assert coverage['unresolved_operations'] == 2 * len(OPERATIONS)
     assert len(coverage['unmatched_operations']) == 1
     assert coverage['unresolved_source_blocks'] == 1
     report, = merged['inventory_enrichment']['packets']

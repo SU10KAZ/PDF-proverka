@@ -17,12 +17,12 @@ def test_receipts_require_addressed_basis_and_never_certify_semantics():
     data={'object_registry':[obj()], 'object_operation_results':[receipt],
           'object_inventory_coverage':[{'block_id':'b','status':'inventoried','object_ids':['o'],'reason':'cabinet drawing'}]}
     r=reconcile_object_registry(data,{'b'})
-    assert r['unresolved_operations']==4 and r['unresolved_source_blocks']==0
+    assert r['unresolved_operations']==len(OPERATIONS)-1 and r['unresolved_source_blocks']==0
     assert not r['semantic_verified']
     receipt['source_refs']=['missing']
-    assert reconcile_object_registry(data,{'b'})['unresolved_operations']==5
+    assert reconcile_object_registry(data,{'b'})['unresolved_operations']==len(OPERATIONS)
     receipt['status']='not_applicable'
-    assert reconcile_object_registry(data,{'b'})['unresolved_operations']==5
+    assert reconcile_object_registry(data,{'b'})['unresolved_operations']==len(OPERATIONS)
 
 
 def test_ambiguous_identity_and_invented_object_links_stay_unresolved():

@@ -1,0 +1,8 @@
+{
+  "observed_gap": "quantity_balance reviewed physical item lengths/counts; dimension_consistency reviewed sizes. Neither explicitly performed hydraulic arithmetic or flow balance.",
+  "source_result": "ITP_gvs_pipe66_t411_result.json",
+  "change": "Add separate calculation_consistency operation with expression/result/unit/basis/source trace; unbound or missing trace cannot close operation.",
+  "test_result": "44 passed: calculation trace, registry, object requests, inventory IDs, followup, continuation and workflow.",
+  "new_control": "Same source inventory and original source context; no previous operation response or benchmark answers supplied.",
+  "full_acceptance": false
+}

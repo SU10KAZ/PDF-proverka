@@ -161,6 +161,9 @@ out-of-profile question during an unresolved operation must state question_basis
 Use quote only for an exact source substring; describe paraphrases as description.
 Preserve all listed operations, even those that remain unresolved. Do not declare
 whole-project coverage or silently add an operation outside the supplied list.'''
+        if any(operation['operation'] == 'calculation_consistency' for operation in operations):
+            from .calculation_consistency import CALCULATION_INSTRUCTIONS
+            instructions += CALCULATION_INSTRUCTIONS
         instructions += INVENTORY_NAVIGATION_INSTRUCTIONS
         if any(operation['operation'] == 'quantity_balance' for operation in operations):
             from .quantity_provenance import QUANTITY_PROVENANCE_INSTRUCTIONS
@@ -194,6 +197,13 @@ def validate_object_operation_payload(request,payload, *, context_search_exhaust
                 not isinstance(refs,list) or not refs or any(ref not in allowed for ref in refs)):
             receipt_pending.append(receipt)
             receipts.append({**receipt,'status':'not_checked','reason':'Sources not supplied to this operation pass.'})
+        elif receipt.get('operation') == 'calculation_consistency' and receipt.get('status') == 'checked':
+            from .calculation_consistency import has_calculation_trace
+            if has_calculation_trace(receipt, set(allowed)):
+                receipts.append(receipt)
+            else:
+                receipt_pending.append(receipt)
+                receipts.append({**receipt, 'status':'not_checked', 'reason':'missing_or_unbound_calculation_trace'})
         else:
             receipts.append(receipt)
     coverage=reconcile_object_registry({'object_registry':[obj],'object_operation_results':receipts},

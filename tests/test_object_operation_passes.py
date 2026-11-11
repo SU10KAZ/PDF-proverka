@@ -1,4 +1,5 @@
 import json
+from backend.app.pipeline.stages.text_analysis.object_registry import OPERATIONS
 from backend.app.pipeline.stages.prepare.object_operation_passes import build_object_operation_passes,validate_object_operation_payload
 
 
@@ -10,13 +11,13 @@ def test_missing_operations_generate_source_only_request_and_budget_backlog(tmp_
     assert len(requests)==1
     assert 'DO NOT LEAK' not in requests[0].messages[-1]['content']
     packet=json.loads(requests[0].messages[-1]['content'])
-    assert len(packet['operations'])==5
+    assert len(packet['operations'])==len(OPERATIONS)
     plan=json.loads((tmp_path/'03_object_operation_plan.json').read_text())
     assert plan['backlog'][0]['object_id']=='B'
     payload=validate_object_operation_payload(requests[0],{'findings':[{
         'object_id':'A','operation':'dimension_consistency','evidence':[{'block_id':'invented'}]}]})
     assert not payload['findings'] and payload['operation_pending']
-    assert payload['operation_coverage']['unresolved_operations']==5
+    assert payload['operation_coverage']['unresolved_operations']==len(OPERATIONS)
 
 
 def test_unavailable_graphic_cannot_close_operation(tmp_path):
@@ -27,7 +28,7 @@ def test_unavailable_graphic_cannot_close_operation(tmp_path):
     result=validate_object_operation_payload(request,{'object_operation_results':[{
         'object_id':'A','operation':'dimension_consistency','status':'checked','reason':'read it','source_refs':['g']}]})
     assert result['unverified_operation_receipts']
-    assert result['operation_coverage']['unresolved_operations']==5
+    assert result['operation_coverage']['unresolved_operations']==len(OPERATIONS)
 
 
 def test_needs_data_is_not_retried_without_new_source_context(tmp_path):
@@ -39,7 +40,7 @@ def test_needs_data_is_not_retried_without_new_source_context(tmp_path):
     path=tmp_path/'02_text_analysis.json';path.write_text(json.dumps(data))
     assert build_object_operation_passes(tmp_path,md)==[]
     plan=json.loads((tmp_path/'03_object_operation_plan.json').read_text())
-    assert len(plan['backlog'])==5
+    assert len(plan['backlog'])==len(OPERATIONS)
     receipts[0]['context_queries']=['Counterpart specification']
     path.write_text(json.dumps(data))
     requests=build_object_operation_passes(tmp_path,md)
@@ -84,7 +85,7 @@ def test_shared_context_is_supplied_once_across_operation_searches(tmp_path):
     payload=request.messages[-1]['content']
     assert payload.count(marker)==1
     packet=json.loads(payload)
-    assert len(packet['operations'])==5  # Three unreported operations also remain open.
+    assert len(packet['operations'])==len(OPERATIONS)  # Other unreported operations also remain open.
     for search in packet['context_searches'].values():
         assert search['hits'][0]['block_id']=='other'
         assert 'content' not in search['hits'][0]
