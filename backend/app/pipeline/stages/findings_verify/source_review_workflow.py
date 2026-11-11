@@ -39,19 +39,26 @@ For retain/revise/question provide display_field_reviews as an OBJECT keyed by e
         'image_paths':source_request['image_paths'],'image_bindings':source_request['image_bindings']}
 
 
-async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, *, invoke, executor_id, is_cancelled=None, max_images=8, repair_quote_spacing=False):
+async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, *, invoke, executor_id, is_cancelled=None, max_images=8, repair_quote_spacing=False, literal_image_hashes=()):
     """invoke(request, phase) -> provider result dict; caller owns authorization.
 
     Maximum five source reviews (initial plus four context revisions) and one
-    adjudication. No retries/fallback. A saved result is reused only for the exact
+    adjudication, plus up to four explicitly selected source-only image readings.
+    No retries/fallback. A saved result is reused only for the exact
     same request and executor identity. No original finding is changed here.
     """
     if type(max_images) is not int or not 0 <= max_images <= 16:
         raise ValueError('invalid_image_budget')
+    if (not isinstance(literal_image_hashes, (tuple, list)) or len(literal_image_hashes) > 4
+        or any(not isinstance(h, str) or len(h) != 64 for h in literal_image_hashes)
+        or len(set(literal_image_hashes)) != len(literal_image_hashes)):
+        raise ValueError('invalid_literal_image_selection')
     root=Path(work_dir);root.mkdir(parents=True,exist_ok=True)
     if not isinstance(executor_id,str) or not executor_id:raise ValueError('executor_identity_required')
     binding={'queue':evidence_digest(queue),'finding':evidence_digest(finding),
              'md':evidence_digest(md),'executor_id':executor_id,'workflow_version':3,'max_images':max_images}
+    if literal_image_hashes:
+        binding['literal_image_hashes'] = list(literal_image_hashes)
     manifest=root/'binding.json'
     if manifest.exists():
         if json.loads(manifest.read_text())!=binding:raise ValueError('workflow_inputs_changed')
@@ -85,8 +92,21 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
         if result.get('is_error') or not isinstance(result.get('json_data'),dict):raise ValueError('provider_result_not_usable')
         return result['json_data']
 
+    readings = []
+    if literal_image_hashes:
+        from .graphic_literal_reading import prepare_literal_reading, bind_literal_reading
+        initial = prepare_source_review_request(current,finding,md,max_images=max_images)
+        literal_requests = [prepare_literal_reading(initial, h) for h in literal_image_hashes]
+        for index, literal_request in enumerate(literal_requests):
+            response = await call(literal_request, 'literal_reading', index)
+            readings.append(bind_literal_reading(literal_request, response))
+        _write(root/'independent_graphic_readings.json', readings)
+
     for step in range(5):
         request=prepare_source_review_request(current,finding,md,max_images=max_images)
+        if readings:
+            from .graphic_literal_reading import attach_literal_readings
+            request = attach_literal_readings(request, readings)
         response=await call(request,'review',step)
         supplied={(im['block_id'],im['sha256']) for im in request['image_bindings']}
         for packet in current['packets']:
