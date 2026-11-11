@@ -489,6 +489,10 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_velocity_released_evidence/assessment.json",
           "sha256": "a8c1d27de5cc789c33290738996b429562f7a0696541dd992bb7c217337785cb"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_H72_independent_mapping_search.json",
+          "sha256": "cef257cb007b56ebeaffffb8b4629fc84e76b369422db6fa2eea7a979dbb64c2"
         }
       ],
       "full_acceptance_proven": false
@@ -520,7 +524,7 @@
       "hypothesis": "H05",
       "kind": "negative_controls_and_limits",
       "original_control": "КМ F014: разные последовательные марши не одна деталь.",
-      "evidence_state": "disputed_after_independent_checks_identity_unresolved",
+      "evidence_state": "cross_plan_core_supported_original_negative_control_not_valid",
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
@@ -545,6 +549,10 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_claude_raw_receipt_evidence/assessment.json",
           "sha256": "5c416488dcaf25a645df49b332c897d127bfc1c1464eeb4c8e762e5af68d5560"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_cross_plan_trace_evidence/assessment.json",
+          "sha256": "38af53473afaf609afd4602e2468a4b426c26df07b744e8ac9ef4c772002f47a"
         }
       ],
       "full_acceptance_proven": false
@@ -764,7 +772,7 @@
     "bounded_inventory_identity_control": 1,
     "bounded_known_candidate_control": 1,
     "bounded_quantity_control_released_profile_disputed": 1,
-    "disputed_after_independent_checks_identity_unresolved": 1,
+    "cross_plan_core_supported_original_negative_control_not_valid": 1,
     "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
     "partial_GVS_reported_velocity_released_wall_not_emitted": 1,

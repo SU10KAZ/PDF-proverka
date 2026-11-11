@@ -8,7 +8,7 @@ OUT=Path(__file__).parent
 # Explicit evidence mappings only. Unmapped controls are review work, not proof
 # that no evidence exists anywhere in the historical research corpus.
 EVIDENCE={
- ('H05','positive_controls',1):('partial_GVS_reported_velocity_released_wall_not_emitted',['ITP_GVS_combined_output_replay.json','ITP_GVS_circulation_output_replay.json','ITP_gvs_graphic_window_assessment.json','ITP_pipe_graphic_window_assessment.json','ITP_automatic_regions_output_replay.json','ITP_automatic_literal_output_replay.json','ITP_pipe_candidate_trace.json','itp_pipe_runtime_followup_evidence/assessment.json','itp_pipe_velocity_final_release_evidence/assessment.json','itp_velocity_released_evidence/assessment.json']),
+ ('H05','positive_controls',1):('partial_GVS_reported_velocity_released_wall_not_emitted',['ITP_GVS_combined_output_replay.json','ITP_GVS_circulation_output_replay.json','ITP_gvs_graphic_window_assessment.json','ITP_pipe_graphic_window_assessment.json','ITP_automatic_regions_output_replay.json','ITP_automatic_literal_output_replay.json','ITP_pipe_candidate_trace.json','itp_pipe_runtime_followup_evidence/assessment.json','itp_pipe_velocity_final_release_evidence/assessment.json','itp_velocity_released_evidence/assessment.json','ITP_H72_independent_mapping_search.json']),
  ('H06','negative_controls_and_limits',1):('bounded_inventory_identity_control',['ITP_pipe_distinct_materials_assessment.json','ITP_pipe_inv_008_validated.json']),
  ('H06','positive_controls',1):('bounded_control_recorded',['EOM_manufacturer_applicability_assessment.json','EOM_manufacturer_applicability_result.json','EOM_manufacturer_question_output_replay.json','EOM_shunt_identity_negative_pair.json']),
  ('H01','positive_controls',1):('bounded_facts_recorded_F032_routing_disputed',['EOM_F001_question_output_replay.json','EOM_F030_question_output_replay.json','EOM_F032_output_replay.json','EOM_F032_profile_disagreement.json','benchmark_errata.json']),
@@ -42,7 +42,7 @@ EVIDENCE={
  ('H04','negative_controls_and_limits',1):('bounded_control_recorded',['EOM_quantitative_overclaim_limits.json']),
  ('H04','negative_controls_and_limits',0):('bounded_control_recorded',['EOM_model_extracted_balance_control.json']),
  ('H05','positive_controls',0):('bounded_control_recorded',['KM_OGM20_geometry_assessment.json','KM_OGM20_geometry_validated.json']),
- ('H05','negative_controls_and_limits',0):('disputed_after_independent_checks_identity_unresolved',['benchmark_errata.json','KM_adjacent_flights_validated.json','km_f014_readjudication_evidence/assessment.json','km_f014_claude_same_input_evidence/assessment.json','km_f014_claude_same_input_evidence/transport_diagnosis.json','km_f014_claude_raw_receipt_evidence/assessment.json']),
+ ('H05','negative_controls_and_limits',0):('cross_plan_core_supported_original_negative_control_not_valid',['benchmark_errata.json','KM_adjacent_flights_validated.json','km_f014_readjudication_evidence/assessment.json','km_f014_claude_same_input_evidence/assessment.json','km_f014_claude_same_input_evidence/transport_diagnosis.json','km_f014_claude_raw_receipt_evidence/assessment.json','km_f014_cross_plan_trace_evidence/assessment.json']),
  ('H06','positive_controls',0):('bounded_control_recorded',['ITP_requirement_claude_assessment.json']),
  ('H07','positive_controls',1):('bounded_control_recorded',['EOM_prescan_recovery_assessment.json']),
 }

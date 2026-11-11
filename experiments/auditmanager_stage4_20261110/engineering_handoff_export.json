@@ -1,11 +1,11 @@
 {
-  "source_sha256": "bcb6834dff1a73d3b47746a135eaeb3d2a30f3b2652dacf93098741465128b26",
+  "source_sha256": "301f7db9a82be321a1b573b83b0fb2b529e064c50bdd42b16e5eabeb6ef21fdf",
   "questions": 6,
-  "evidence_refs_checked": 41,
+  "evidence_refs_checked": 43,
   "blank_engineer_answers_verified": true,
   "files": {
-    "Незакрытые_вопросы_инженеру.xlsx": "6708ae1357ad254a259d6070788b8d397e34455cae154690d9bfcea489c3ce76",
-    "Незакрытые_вопросы_инженеру.html": "35cc7935be387dd81b0357f445c7118750a33ecf513405857c40d69d49565b48"
+    "Незакрытые_вопросы_инженеру.xlsx": "4c8c20b5863ac33ef146ecf15f02fbf08ac864adc9658d1470002b1ac26615b6",
+    "Незакрытые_вопросы_инженеру.html": "dbfbbb362918987f0f4abf581291cbe9eb99bb40c998b5579d5f3fdf553afc99"
   },
   "model_calls": 0,
   "stage4_complete": false
