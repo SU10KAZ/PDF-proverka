@@ -1,0 +1,454 @@
+{
+  "status": "two_mark_outputs_checked_without_automatic_quantity_changes",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "6c8f638f899599dfd3976955d40a608eeaaf841ce624862704028184aa1aee8c",
+  "queue_after_sha256": "5fe63bc6363b3c21a4fff00cfd3fff78196ab468754425e8d7d4c371558dfd80",
+  "reviewer": "coordinator_GRAPHIC_TEXT_scope_review",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Маркировка и спецификации",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Количество ОГМ5 для ЛК4.1 не согласовано со схемами расположения.",
+        "description": "На схемах ЛК4.1 ОГМ5 обозначено для двух маршей: между −9,300 и −7,450, а также между −5,700 и −3,850. Спецификация предусматривает только одно ОГМ5. По переданным данным нельзя однозначно выбрать между ошибкой маркировки и недоучётом количества.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к соответствию марок и количества изделий на схемах и в спецификациях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-025"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-025"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить марки обоих маршей по деталировке и согласовать схемы с количеством изделий в спецификации.",
+        "risk": "Недопоставка ограждения либо изготовление изделия неверной марки.",
+        "source_finding_ids": [
+          "G-025"
+        ],
+        "source_block_ids": [
+          "blk_09df648d1b4d4cc097ea6f0e25ceef52"
+        ],
+        "related_block_ids": [
+          "blk_09df648d1b4d4cc097ea6f0e25ceef52",
+          "blk_b9096ac74f95416da66cc607a9828c3f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_09df648d1b4d4cc097ea6f0e25ceef52",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-025",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F016_label_count_scope:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На планахЛК4.1 ОГМ5 подписан у маршей−9,300→−7,450 и−5,700→−3,850; вСО одноОГМ5.",
+          "verdict": "confirmed_GRAPHIC_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Разрез3–3 иСО содержат одноОГМ5 и дваОГМ6.",
+          "verdict": "confirmed_countercontext",
+          "limits": "Разрез показывает ОГМ5 на нижнем марше; у следующей пары маршей видны ОГМ6. Плановые подписи должны согласовываться с разрезом, а не только с таблицей количества."
+        },
+        {
+          "claim": "Нужно добавить одноОГМ5.",
+          "verdict": "not_established_and_not_prescribed",
+          "limits": "Возможна ошибка марки на плане. Повторное обозначение не устанавливает дополнительную закупочную единицу. В текущей выдаче правильно сохранён выбор между ошибкой марки и количества, но не приведён согласованный разрез и отдельная проблема ОГМ6."
+        },
+        {
+          "claim": "Проверить марки и количество по конкретным маршам.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Недопоставка либо изготовление неверного ограждения.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_mark_or_flight_binding_question_do_not_count_labels_as_defects",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F016_label_count_scope.json",
+          "sha256": "38f37126a25f3a6b37eaba9d42387f4084f2b39e40f54f08e6d103f71ed0c1d6",
+          "primary_adjudication": null,
+          "limits": [
+            "Не установлено однозначное соответствие каждой повторной выноски физическому изделию; нельзя объявлять все повторы ни дублями вида, ни дополнительными ограждениями.",
+            "Недостаток количества в спецификации, фактическая недопоставка и экономический ущерб не доказаны.",
+            "Отдельные возможные ошибки марок и иных размеров не подменяют исходный тезис о количественном дефиците."
+          ],
+          "wording": "Согласовать выноскиОГМ5/ОГМ6 на планахЛК4.1 с разрезом3-3 и спецификацией. Планы содержат две подписиОГМ5 и триОГМ6; разрез и спецификация согласованно дают одноОГМ5 и дваОГМ6. До установления соответствия каждого участка не увеличивать количество изделий."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_09df648d1b4d4cc097ea6f0e25ceef52.png",
+          "sha256": "3d514b949f9c796121a13f658eb771481a0ed28a1c1ab82b194c4ef68cc6ba16",
+          "block_id": "blk_09df648d1b4d4cc097ea6f0e25ceef52",
+          "route": "direct_GRAPHIC_review",
+          "observation": "Три планаЛК4.1: две подписиОГМ5, триОГМ6; ОГМ5 у−9,300/−7,450 и−5,700/−3,850."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_9e54c5e5fb6b4b28ae2304bd06c49949.png",
+          "sha256": "337026cb8604094fb374e3e777ccdac9d2e3013652099b49d2829dac397309a6",
+          "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+          "route": "direct_GRAPHIC_review",
+          "observation": "Разрез3–3ЛК4.1: одноОГМ5, дваОГМ6, дваОГМ7, одноОГМ10."
+        }
+      ],
+      "disposition": "assessed_mark_count_question_keep_section_counterevidence"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-022",
+      "finding": {
+        "id": "F-022",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка и комплектность",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "ОГМ26 на схеме ЛК6 не обеспечено записью в спецификации и ссылкой на изготовление.",
+        "description": "На схеме ЛК6 на отметке −0,700 указана марка ОГМ26, отсутствующая в спецификации к схемам. Ведомость рабочих чертежей предусматривает деталировку только до ОГМ25. Для обозначенной позиции не установлены количество и чертёж изготовления; необходимо проверить, является ли выноска ошибочной.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к комплектности чертежей, маркам конструкций и их соответствию спецификациям.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-028",
+                "G-029"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-028",
+                  "G-029"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить проектную марку: исправить выноску на существующее изделие либо добавить ОГМ26 в спецификацию и разработать необходимые данные для изготовления.",
+        "risk": "Пропуск ограждения в поставке или невозможность его изготовления и монтажа по комплекту.",
+        "source_finding_ids": [
+          "G-028",
+          "G-029"
+        ],
+        "source_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba"
+        ],
+        "related_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba",
+          "blk_b9096ac74f95416da66cc607a9828c3f",
+          "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "blk_6bb0b4fa825241f087dbf06ba2178a0c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-028",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-029",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:006"
+              ],
+              "confidence": 0.96,
+              "reason": "Оба замечания указывают на отсутствие ОГМ26 в спецификации ЛК6 на отметке −0.700. Правое дополнительно указывает, что ведомость рабочих чертежей предусматривает деталировку только до ОГМ25.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.96,
+              "reason": "Оба замечания указывают на отсутствие ОГМ26 в спецификации ЛК6 на отметке −0.700. Правое дополнительно указывает, что ведомость рабочих чертежей предусматривает деталировку только до ОГМ25.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM3:23f9be653d9b57c84d4c",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На планеЛК6−0,700 есть ОГМ26.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "В спецификации листа7 отсутствует строка ОГМ26, ведомость листов перечисляет деталировку до25.",
+          "verdict": "confirmed_bounded_TEXT_absence",
+          "limits": "Просмотрена вся таблица спецификации и ведомость листов. Это не полный просмотр каждой детали всей графики."
+        },
+        {
+          "claim": "Деталировки ОГМ26 нигде нет и изделие нельзя изготовить.",
+          "verdict": "not_established_globally",
+          "limits": "Поиск марки вTEXT и предел25 в ведомости не доказывают отсутствия решения во всех графических блоках, КМД или смежных комплектах."
+        },
+        {
+          "claim": "Исправить марку либо добавить согласованное изделие после проверки.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не заменять26на25 автоматически по соседней выноске. Сначала связать фактическую геометрию и позицию."
+        },
+        {
+          "claim": "Ограждение пропущено в поставке.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_mark_or_flight_binding_question_do_not_count_labels_as_defects",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM3.json",
+          "sha256": "b453c43a58d1054330e0ac62fc71b0488ebbfcc1bca7aabe16011cd7d124e215",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/KM3_primary_GRAPHIC.json",
+            "sha256": "255952d3bff75f41a8d0825baed7dd1988efa895a514d5835c6238a2dde45255"
+          },
+          "limits": "Подтверждена выноска на плане. Полное отсутствие деталировки не доказано одним поиском в TEXT; заменять на ОГМ25 без проверки нельзя.",
+          "wording": "Увязать марку ОГМ26 на плане ЛК6 −0,700 со спецификацией и деталировкой."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_441423dd5fb448c89a33b610c54783ba.png",
+          "sha256": "e483f14964b885d339bef19552b34da013314ab6decdb262dc166ee44048f08e",
+          "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+          "route": "direct_GRAPHIC_review",
+          "observation": "ПланЛК6−0,700: справа сверху ОГМ26; соседняя выноскаОГМ25 относится к другой части схемы."
+        }
+      ],
+      "disposition": "assessed_OGM26_identity_question_bounded_absence"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+      "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+      "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+      "authoritative_TEXT": "### BLOCK #53 [TEXT]: blk_b9096ac74f95416da66cc607a9828c3f\n\n> **Created:** 2026-10-21 13:32:42 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/V6lQQTHSU3bvkpuFDKEP)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: Р | Sheet: 7 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестниц ЛК1.1, ЛК3.1, ЛК4.1, ЛК5, ЛК6 на отм. -9.300 ~ +2.100 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nСпецификация к схемам расположения металлических ограждений\n\n| Поз. | Обозначение | Наименование | Кол. | Масса ед., кг | Примечание |\n|---|---|---|---|---|---|\n|  |  | ЛК1.1 |  |  |  |\n| ОГМ1 | лист 8 | Ограждение металлическое ОГМ1 | 1 |  |  |\n| ОГМ2 | лист 8 | Ограждение металлическое ОГМ2 | 1 |  |  |\n| ОГМ3 | лист 8 | Ограждение металлическое ОГМ3 | 2 |  |  |\n| ОГМ4 | лист 8 | Ограждение металлическое ОГМ4 | 1 |  |  |\n|  |  | ЛК3.1 |  |  |  |\n| ОГМ5 | лист 8 | Ограждение металлическое ОГМ5 | 1 |  |  |\n| ОГМ6 | лист 8 | Ограждение металлическое ОГМ6 | 2 |  |  |\n| ОГМ7 | лист 8 | Ограждение металлическое ОГМ7 | 1 |  |  |\n| ОГМ8 | лист 8 | Ограждение металлическое ОГМ8 | 1 |  |  |\n| ОГМ9 | лист 9 | Ограждение металлическое ОГМ9 | 1 |  |  |\n|  |  | ЛК4.1 |  |  |  |\n| ОГМ5 | лист 8 | Ограждение металлическое ОГМ5 | 1 |  |  |\n| ОГМ6 | лист 8 | Ограждение металлическое ОГМ6 | 2 |  |  |\n| ОГМ7 | лист 8 | Ограждение металлическое ОГМ7 | 2 |  |  |\n| ОГМ10 | лист 9 | Ограждение металлическое ОГМ10 | 1 |  |  |\n|  |  | ЛК5 |  |  |  |\n| ОГМ11 | лист 9 | Ограждение металлическое ОГМ11 | 1 |  |  |\n| ОГМ12 | лист 9 | Ограждение металлическое ОГМ12 | 1 |  |  |\n| ОГМ13 | лист 9 | Ограждение металлическое ОГМ13 | 1 |  |  |\n| ОГМ17 | лист 10 | Ограждение металлическое ОГМ17 | 1 |  |  |\n| ОГМ18 | лист 10 | Ограждение металлическое ОГМ18 | 1 |  |  |\n| ОГМ19 | лист 10 | Ограждение металлическое ОГМ19 | 1 |  |  |\n| ОГМ20 | лист 10 | Ограждение металлическое ОГМ20 | 1 |  |  |\n|  |  | ЛК6 |  |  |  |\n| ОГМ14 | лист 9 | Ограждение металлическое ОГМ14 | 1 |  |  |\n| ОГМ15 | лист 9 | Ограждение металлическое ОГМ15 | 1 |  |  |\n| ОГМ16 | лист 9 | Ограждение металлическое ОГМ16 | 1 |  |  |\n| ОГМ21 | лист 10 | Ограждение металлическое ОГМ21 | 1 |  |  |\n| ОГМ22 | лист 10 | Ограждение металлическое ОГМ22 | 2 |  |  |\n| ОГМ23 | лист 10 | Ограждение металлическое ОГМ23 | 1 |  |  |\n| ОГМ24 | лист 10 | Ограждение металлическое ОГМ24 | 1 |  |  |\n| ОГМ25 | лист 10 | Ограждение металлическое ОГМ25 | 2 |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+      "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+      "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+      "authoritative_TEXT": "### BLOCK #5 [TEXT]: blk_5e4c3725456d4cafa74220f8a1fad14c\n\n> **Created:** 2026-10-21 13:32:33 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/l5kRG213jcI31jJ3sBJk)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Общие данные | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость рабочих чертежей основного комплекса ПД-00580716-КМ1.2\n\n| Лист | Наименование | Примечание |\n|---|---|---|\n| 1 | Общие данные |  |\n| 2 | Техническая спецификация металлопроката |  |\n| 3 | Схема расположения ограждений лестницы секции 2 на отм. +0.550 ~ +41.190 |  |\n| 4 | Ограждения ОГМ 1...6, 8 |  |\n| 5 | Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 |  |\n| 6 | Ограждения ОГМ 1...8 |  |\n| 7 | Схема расположения ограждений лестниц ЛК1.1, ЛК3.1, ЛК4.1, ЛК5, ЛК6 на отм. -9.300 ~ +2.100 |  |\n| 8 | Ограждения ОГМ 1...8 |  |\n| 9 | Ограждения ОГМ 9...16 |  |\n| 10 | Ограждения ОГМ 17...25 |  |\n\n##### Ведомость спецификаций\n\n| Лист | Наименование | Примечание |\n|---|---|---|\n| 2 | Техническая спецификация металлопроката |  |\n| 4 | Ведомость элементов ограждений ОГМ 1...6, ОГМ 8 |  |\n| 6 | Ведомость элементов ограждений ОГМ 1...8 |  |\n| 7 | Спецификация к схемам расположения металлических ограждений |  |\n| 8 | Ведомость элементов ограждений ОГМ 1...8 |  |\n| 9 | Ведомость элементов ограждений ОГМ 9...16 |  |\n| 10 | Ведомость элементов ограждений ОГМ 17...25 |  |\n|  |  |  |\n\n##### Ведомость ссылочных и прилагаемых документов\n\n| Обозначение | Наименование | Примечание |\n|---|---|---|\n| ГОСТ 27772-2021 | Прокат для строительных стальных конструкций |  |\n| ГОСТ 8732-2025 | Трубы стальные бесшовные горячедеформированные. Сортамент |  |\n| ГОСТ 8639-82 | Трубы стальные квадратные. Сортамент |  |\n| ГОСТ 19903-2015 | Лист стальной горячекатаный. Сортамент |  |\n| ГОСТ 56731-2023 | Анкеры механические для крепления в бетоне |  |\n\n##### Ведомость основных комплектов рабочих чертежей марки КМ\n\n| Обозначение | Наименование | Примечание |\n|---|---|---|\n| ПД-00580716-КМ1.1 | Ограждения лестниц. Секция С1. |  |\n| ПД-00580716-КМ1.2 | Ограждения лестниц. Секция С2, С3. |  |\n| ПД-00580716-КМ2 | Ограждения МХМС (кладовок), металлоконструкции для установки оборудования, лестницы в приямки, перемычки и конструкции для крепления противопожарных ворот и прочие конструкции |  |\n| ПД-00580716-КМ3.1 | Ограждение лоджий, балконов, корзин сплит-систем. Конструкции крылец, рекламных конструкций, архитектурных декоративных элементов, элементов и подконструкций фасада. Секция С1. |  |\n| ПД-00580716-КМ3.2 | Ограждение лоджий, балконов, корзин сплит-систем. Конструкции крылец, рекламных конструкций, архитектурных декоративных элементов, элементов и подконструкций фасада. Секция С2, С3. |  |\n| ПД-00580716-КМ4 | Конструктивные элементы стен, перегородок, перекрытий, фахверковые стойки. Спецификации. |  |\n| ПД-00580716-КМ5.1 | Ограждение паралпетов кровли. Секция С1. |  |\n| ПД-00580716-КМ5.2 | Ограждение паралпетов кровли. Секция С2, С3. |  |\n| ПД-00580716-КМ6.1 | Лестницы, стремянки на кровле. Секция С1. |  |\n| ПД-00580716-КМ6.2 | Лестницы, стремянки на кровле. Секция С2, С3. |  |\n| ПД-00580716-КМ7 | Ограждение территории (включая решения по фундаментам, узлы и детали). |  |\n| ПД-00580716-КМ8 | Конструктивные расчеты и обоснования (отдельные элементы, узлы и детали, при необходимости) |  |\n| ПД-00580716-КМ9.1 | Проект обслуживания фасада, в том числе проект на установку закладных деталей для крепления механизмов по обслуживанию фасадов (монтажных крепок для альпинистов, люлек и т.п.). Секция С1. |  |\n| ПД-00580716-КМ9.2 | Проект обслуживания фасада, в том числе проект на установку закладных деталей для крепления механизмов по обслуживанию фасадов (монтажных крепок для альпинистов, люлек и т.п.). Секция С2, С3. |  |\n| ПД-00580716-КМ10.1 | Рабочий проект по конструкциям шумоизоляционных и декоративных элементов кровли. Секция С1. |  |\n| ПД-00580716-КМ10.2 | Рабочий проект по конструкциям шумоизоляционных и декоративных элементов кровли. Секция С2, С3. |  |\n| ПД-00580716-КМ11 | Конструктивные решения козырьков. |  |\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F016_label_count_scope.json",
+      "sha256": "38f37126a25f3a6b37eaba9d42387f4084f2b39e40f54f08e6d103f71ed0c1d6",
+      "primary_adjudication": null,
+      "limits": [
+        "Не установлено однозначное соответствие каждой повторной выноски физическому изделию; нельзя объявлять все повторы ни дублями вида, ни дополнительными ограждениями.",
+        "Недостаток количества в спецификации, фактическая недопоставка и экономический ущерб не доказаны.",
+        "Отдельные возможные ошибки марок и иных размеров не подменяют исходный тезис о количественном дефиците."
+      ],
+      "wording": "Согласовать выноскиОГМ5/ОГМ6 на планахЛК4.1 с разрезом3-3 и спецификацией. Планы содержат две подписиОГМ5 и триОГМ6; разрез и спецификация согласованно дают одноОГМ5 и дваОГМ6. До установления соответствия каждого участка не увеличивать количество изделий."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM3.json",
+      "sha256": "b453c43a58d1054330e0ac62fc71b0488ebbfcc1bca7aabe16011cd7d124e215",
+      "primary_adjudication": {
+        "path": "experiments/auditmanager_stage1_20261109/KM3_primary_GRAPHIC.json",
+        "sha256": "255952d3bff75f41a8d0825baed7dd1988efa895a514d5835c6238a2dde45255"
+      },
+      "limits": "Подтверждена выноска на плане. Полное отсутствие деталировки не доказано одним поиском в TEXT; заменять на ОГМ25 без проверки нельзя.",
+      "wording": "Увязать марку ОГМ26 на плане ЛК6 −0,700 со спецификацией и деталировкой."
+    }
+  ],
+  "limits": [
+    "No new bill-of-materials quantity chosen.",
+    "No absence inferred across unreviewed drawings.",
+    "No frozen benchmark changes or engineering acceptance."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
