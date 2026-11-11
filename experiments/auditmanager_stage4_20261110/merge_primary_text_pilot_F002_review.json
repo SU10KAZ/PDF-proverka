@@ -1,0 +1,70 @@
+{
+  "status": "additional_output_review",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "finding_id": "F-002",
+  "original_model_finding": {
+    "id": "F-002",
+    "severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "category": "Кабельный журнал",
+    "report_section": "technical_findings",
+    "sheet": null,
+    "page": [
+      65,
+      66,
+      83,
+      84
+    ],
+    "problem": "Кабельный журнал содержит повторные записи, в том числе с разной разбивкой трассы.",
+    "description": "На листах 7–8 журнала повторены П4.1.1-6, П4.1.1-7 и Пм4.1-1…Пм4.1-5. Например, для Пм4.1-1 разбивка 15/10 м заменяется на 10/15 м, для Пм4.1-2…Пм4.1-5 — 20/5 на 15/10 м; также различаются записи НФ/HF. На листах 25–26 повторены все 14 строк Пб.1.1-7…Пб.1.1-11 и Пб.1.4-1…Пб.1.4-9. Повторы не являются дополнительными физическими кабелями.",
+    "norm": null,
+    "norm_quote": null,
+    "candidate_norm_references": [],
+    "solution": "Обозначить действующие записи, устранить повторы и согласовать разбивку по способам прокладки и точные марки кабелей.",
+    "risk": "Двойной учет материалов и неоднозначное определение трасс.",
+    "source_finding_ids": [
+      "T-002"
+    ],
+    "source_block_ids": [
+      "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+      "blk_3d78558e2eb34cb189b102380b0d3d00",
+      "blk_07eb5e614f424f588877ee1d3d5ce41b",
+      "blk_8c1c32681acd42c79d8190b013bbbf0c"
+    ],
+    "related_block_ids": [
+      "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+      "blk_3d78558e2eb34cb189b102380b0d3d00",
+      "blk_07eb5e614f424f588877ee1d3d5ce41b",
+      "blk_8c1c32681acd42c79d8190b013bbbf0c"
+    ],
+    "evidence_text_refs": [],
+    "evidence": [
+      {
+        "type": "text",
+        "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+        "page": 65
+      },
+      {
+        "type": "text",
+        "block_id": "blk_3d78558e2eb34cb189b102380b0d3d00",
+        "page": 66
+      },
+      {
+        "type": "text",
+        "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+        "page": 83
+      },
+      {
+        "type": "text",
+        "block_id": "blk_8c1c32681acd42c79d8190b013bbbf0c",
+        "page": 84
+      }
+    ],
+    "highlight_regions": []
+  },
+  "assessment": "facts_supported_split_technical_and_question",
+  "evidence_assessment_path": "experiments/auditmanager_stage4_20261110/recovery_format_pilot_source_assessment.json",
+  "evidence_assessment_sha256": "6cea70aa512172826ba9fc8a0332a50923881ddc08693b6a83bba34c24b6b8ac",
+  "reason": "Различная разбивка одних и тех же линий и повторы записей подтверждены. Но общий technical_findings смешивает техническое расхождение с вопросом о назначении повторов. Следует разделить, как в проверенном format-pilot; НФ/HF фиксировать буквально, не выводить разные пожарные свойства по одному написанию.",
+  "semantic_scope": "No proof of extra physical cables, duplicate procurement or installed wrong cable.",
+  "production_acceptance": false
+}

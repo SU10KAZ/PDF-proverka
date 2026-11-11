@@ -1,0 +1,97 @@
+{
+  "status": "bounded_format_repair_pilot_supported_not_full_audit_acceptance",
+  "project": "13АВ-РД-АК2-ПА",
+  "candidate_id": "T-002",
+  "source_md": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+  },
+  "response": {
+    "path": "/tmp/auditmanager_recovery_format_pilot_after_review_20261111/response_attempt_1.json",
+    "sha256": "5b8bbfe957134e0af0bf5535da5e0e0f11fd834dc8bf2b23609499c7511abed4"
+  },
+  "validated_response": {
+    "path": "/tmp/auditmanager_recovery_format_pilot_after_review_20261111/validated_response.json",
+    "sha256": "d3e762f63039df0ac24daa868a2b35d3126cfb1e13b0e2ac519218c605f40eef"
+  },
+  "quote_checks": [
+    {
+      "finding_id": "T-002-1",
+      "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+      "exact_quote_present": true,
+      "md_span_sha256": "b4b5473c4cbec1f32f175c18d9cbd3e47994ef7113a6d0f0d7db0eca6afb70fe"
+    },
+    {
+      "finding_id": "T-002-1",
+      "block_id": "blk_3d78558e2eb34cb189b102380b0d3d00",
+      "exact_quote_present": true,
+      "md_span_sha256": "950f74efc3edaed7bb529c34dacf9a2b380d3fc1706d83208f9758de34a435d7"
+    },
+    {
+      "finding_id": "T-002-2",
+      "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+      "exact_quote_present": true,
+      "md_span_sha256": "b4b5473c4cbec1f32f175c18d9cbd3e47994ef7113a6d0f0d7db0eca6afb70fe"
+    },
+    {
+      "finding_id": "T-002-2",
+      "block_id": "blk_3d78558e2eb34cb189b102380b0d3d00",
+      "exact_quote_present": true,
+      "md_span_sha256": "950f74efc3edaed7bb529c34dacf9a2b380d3fc1706d83208f9758de34a435d7"
+    },
+    {
+      "finding_id": "T-002-2",
+      "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+      "exact_quote_present": true,
+      "md_span_sha256": "b4f34e5983b621d2bcff5cbd81930de663eb63591296520b3f61433b5ae81b96"
+    },
+    {
+      "finding_id": "T-002-2",
+      "block_id": "blk_8c1c32681acd42c79d8190b013bbbf0c",
+      "exact_quote_present": true,
+      "md_span_sha256": "012e97d64ba8b4f5de93ca8494878494c8fb338087e0f20acee4f8b63ee86f0d"
+    }
+  ],
+  "before": {
+    "raw_findings": 2,
+    "admitted_findings": 0,
+    "reason": "missing_inspected_source_reference"
+  },
+  "after": {
+    "raw_findings": 2,
+    "admitted_findings": 2,
+    "pending_findings": 0,
+    "sections": [
+      "technical_findings",
+      "questions"
+    ],
+    "second_format_repair": "blocked_by_format_repair_limit"
+  },
+  "semantic_review": [
+    {
+      "id": "T-002-1",
+      "assessment": "supported_documentation_conflict",
+      "reason": "У тех же Пм4.1-1…5 общая длина25м сохранена; распределение 15/10 против10/15 и20/5 против15/10 различается. Не объявлены дополнительные физические линии, лишние25м или фактически неверный монтаж. Статус двух наборов записей требует согласования."
+    },
+    {
+      "id": "T-002-2",
+      "assessment": "supported_question",
+      "reason": "Подтверждены повторные семь маркировок на КЖ7–8 и14маркировок наКЖ25–26. Для второй пары проверены совпадения начала/конца,сечения,длины всех14строк. Модель не делает из повторов дополнительные кабели и не заявляет доказанный двойной заказ."
+    }
+  ],
+  "usage": {
+    "model": "codex/gpt-6-astra",
+    "duration_ms": 133038,
+    "input_tokens": 19018,
+    "output_tokens": 6445,
+    "cached_tokens": 8192,
+    "cost_source": "subscription"
+  },
+  "limits": [
+    "One known-case repair, not broad generalization or full pipeline acceptance.",
+    "Model citations checked against authoritative MD; no raster or PDF re-extraction.",
+    "Subscription monetary cost and engineer workload are unknown.",
+    "Backend recovery_semantic_verified remains false; this independent assessment is stored separately."
+  ],
+  "production_acceptance": false
+}
