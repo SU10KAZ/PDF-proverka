@@ -1,0 +1,703 @@
+{
+  "status": "four_AK_device_voltage_interface_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "6a508dcb3436dab363b66ca06de52f62821ba8f961f733a24982ac648840fe76",
+  "queue_after_sha256": "c8f026da80d5e993510ebee998ad27a6c877e9f57f0fc66c6cbcd0872c83529f",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-065",
+      "finding": {
+        "id": "F-065",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Обозначения оборудования",
+        "sheet": "Лист 33",
+        "page": 37,
+        "problem": "М2 и Y7 повторены у разных устройств ШАУВ-4-К5ПЧ.",
+        "description": "М2 обозначает резервный приточный вентилятор Пн5.1р и циркуляционный насос Пн5.1. Y7 обозначает регулирующий клапан теплоносителя Пн5.1 и воздушный клапан Вн5.1.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Присвоить устройствам уникальные позиции и согласовать их с функциональной схемой, перечнями и журналом.",
+        "risk": "Подключение или управление неверным устройством.",
+        "source_finding_ids": [
+          "G-078",
+          "G-079"
+        ],
+        "source_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "related_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a",
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+            "page": 37
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-078",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-079",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковые дубли позиционных обозначений: М2 у вентилятора Пн5.1р и циркуляционного насоса Пн5.1; Y7 у регулирующего клапана теплоносителя и воздухозаборного клапана. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковые дубли позиционных обозначений: М2 у вентилятора Пн5.1р и циркуляционного насоса Пн5.1; Y7 у регулирующего клапана теплоносителя и воздухозаборного клапана. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Внешняя схема:М2 обозначает резервный вентиляторПн5.1р и насосПн5.1;Y7 — клапан теплоносителяПн5.1 и воздушную заслонкуВн5.1.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Перечень лист15:М1–М4 вентиляторы,М5 насос;Y1–Y10 заслонки,Y11 регулирующий клапан.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "КЖПн5.1.-21 называет конечное устройствоМ1; это третий вариант для цепи насоса.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Дополнительный контекст проверки, не автоматическая добавка к полноте исходногоF-057; пересекается сF-021."
+        },
+        {
+          "claim": "Согласовать роли и позиции оборудования во внешней схеме, перечне иКЖ.",
+          "verdict": "supported_device_identity_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Повторы обозначений означают одно общее физическое устройство либо фактическое подключение насоса вместо вентилятора.",
+          "verdict": "not_established",
+          "limits": "Разные функции и отдельные графические устройства видны; монтаж не проверен. Число устройств не увеличивать."
+        },
+        {
+          "claim": "Подтверждено конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Нормативный кандидат без проверенного пункта не достаточен."
+        },
+        {
+          "claim": "Текущая строка отдельно обнаружила третий вариант М1 в журнале.",
+          "verdict": "not_asserted_in_r2",
+          "limits": "Это прежний дополнительный контекст проверки и предмет F-017; в F-065 названы только повтор М2 у разных устройств и повтор Y7. Не увеличивать полноту за счёт добавленного проверяющим контекста."
+        }
+      ],
+      "unsupported_additions": "Проектная марка не доказывает фактический маршрут или монтаж. Назначение клемм требует заводской схемы; одинаковая подпись не подтверждает электрическую несовместимость. Дополнительный контекст проверяющего не засчитывается как обнаруженный моделью.",
+      "novel_useful_content": "Текущие формулировки сопоставлены с прежними проверками идентичных источников; усиление вывода RS-485 и новая ссылка на соседнюю линию выделены отдельно.",
+      "duplicate_burden": "Two device identity conflicts; pump endpoint overlaps F-021 and must not be counted twice. Broad linked motor register not wholly recovered by this row.",
+      "profile_and_section": "technical_device_identity_no_proven_cross_connection",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_0074662f330048ff843342b285e6a016",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT «МЗ», «Пн5.1.-21» и суффикс НФ сохранены буквально. Не исправлять их по растру. Расхождение устанавливается по номеру линии, шкафу и назначению, а не догадке о распознавании.",
+            "Наличие насосной линии опровергает её полное отсутствие, но не снимает конфликт адреса с КЖ.",
+            "Совпадение позиции M2 в двух строках само по себе не доказывает ошибку: различие назначений проверено графически.",
+            "Тип и длина кабеля не используются для автоматического выбора правильного обозначения; заводские схемы и фактический монтаж не проверены.",
+            "Отказ, физическая перестановка цепей и нормативная квалификация не установлены."
+          ],
+          "wording": "Согласовать адреса двигателей: Пкр4.1-13 в КЖ→M2, на схеме подключений и функциональной схеме насос→M3; Пкр5.1-9 в КЖ→M2, на схемах резервный вентилятор→M3, а Пкр5.1-13 в КЖ→«МЗ», на схемах насос→M2; Пн5.1.-21 в КЖ→M1, насос на функциональной схеме→M5, на схеме подключений→M2. Сохранять функциональное назначение каждой линии при согласовании обозначений."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065",
+          "primary_adjudication": null,
+          "limits": [
+            "Назначение сопоставлено по шкафу,системе,технологической функции и отдельным цепям, а не только одинаковой букве позиции.",
+            "Согласованность функциональной схемы и перечня даёт конкретные обозначения для проверки исправления; заводская маркировка, внутренние схемы и монтаж не проверены.",
+            "Две исходные записи объединены в тему идентификации устройств одного шкафа с сохранением двух отдельных конфликтов в object_mapping. Не объявлять второй конфликт снятым дублем первого.",
+            "Отказ, неправильное подключение или нарушение конкретного пункта ГОСТ21.408 не установлены. Решение инженера по blind-кандидатам не найдено."
+          ],
+          "wording": "Согласовать обозначения устройств ШАУВ-4-К5ПЧ между схемой внешних подключений и функциональной схемой с перечнем. В подключениях насосПн5.1 названM2, как и резервный вентилятор; клапан теплоносителя названY7, как и воздушный клапанВн5.1. В функциональной схеме и перечне насос имеет позициюM5, клапан теплоносителя —Y11."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065",
+          "primary_adjudication": null,
+          "limits": [
+            "Назначение сопоставлено по шкафу,системе,технологической функции и отдельным цепям, а не только одинаковой букве позиции.",
+            "Согласованность функциональной схемы и перечня даёт конкретные обозначения для проверки исправления; заводская маркировка, внутренние схемы и монтаж не проверены.",
+            "Две исходные записи объединены в тему идентификации устройств одного шкафа с сохранением двух отдельных конфликтов в object_mapping. Не объявлять второй конфликт снятым дублем первого.",
+            "Отказ, неправильное подключение или нарушение конкретного пункта ГОСТ21.408 не установлены. Решение инженера по blind-кандидатам не найдено."
+          ],
+          "wording": "Согласовать обозначения устройств ШАУВ-4-К5ПЧ между схемой внешних подключений и функциональной схемой с перечнем. В подключениях насосПн5.1 названM2, как и резервный вентилятор; клапан теплоносителя названY7, как и воздушный клапанВн5.1. В функциональной схеме и перечне насос имеет позициюM5, клапан теплоносителя —Y11."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+          "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Original-resolution graphic: M2 at reserve fan and far-right circulation pump; Y7 at heating valve and exhaust damper."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-057",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-065_device_voltage_interface_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-066",
+      "finding": {
+        "id": "F-066",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка кабелей",
+        "sheet": "Лист 33",
+        "page": 37,
+        "problem": "Кабель концевого выключателя Y4 системы Пн5.1 имеет марку Ва3.1-18.",
+        "description": "Марка относится к другой системе и нарушает последовательность соседних линий Пн5.1-17 и Пн5.1-19.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Установить правильную марку линии Y4 системы Пн5.1 и исправить её во всех связанных документах.",
+        "risk": "Ошибки маркировки, прозвонки и подключения кабеля.",
+        "source_finding_ids": [
+          "G-080"
+        ],
+        "source_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "related_block_ids": [
+          "blk_127bea47b93f4214ac6430c54b21517a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+            "page": 37
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-080",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "На внешней схемеY4 Пн5.1 сигнальная линия черезXT5 обозначенаВа3.1-18, соседняя силоваяПн5.1-17.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "КЖ задаётПн5.1.-17 иПн5.1.-18 отШАУВ-4-К5ПЧ доХТ5, каждая35м.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать идентификатор сигнальной линии между схемой иКЖ.",
+          "verdict": "supported_cable_identity_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Провод физически проложен кВа3.1 либо отсутствует.",
+          "verdict": "not_established",
+          "limits": "Марка не доказывает реальную трассу или ошибочный монтаж; новая линия и дополнительный метраж не обоснованы."
+        },
+        {
+          "claim": "Подтверждено конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Нормативный кандидат без проверенного пункта не достаточен."
+        },
+        {
+          "claim": "Соседняя линия Пн5.1-19 независимо подтверждена этой повторной проверкой.",
+          "verdict": "not_independently_checked_added_scope",
+          "limits": "Прежняя проверка подтверждала Ва3.1-18 на схеме, Пн5.1-17 рядом и Пн5.1.-18 в журнале. Новое упоминание соседней -19 не считается дополнительно проверенным; основной адресный конфликт от него не зависит."
+        }
+      ],
+      "unsupported_additions": "Проектная марка не доказывает фактический маршрут или монтаж. Назначение клемм требует заводской схемы; одинаковая подпись не подтверждает электрическую несовместимость. Дополнительный контекст проверяющего не засчитывается как обнаруженный моделью.",
+      "novel_useful_content": "Текущие формулировки сопоставлены с прежними проверками идентичных источников; усиление вывода RS-485 и новая ссылка на соседнюю линию выделены отдельно.",
+      "duplicate_burden": "One labelled cable; not added hardware or length.",
+      "profile_and_section": "technical_cable_identity_no_proven_misrouting",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+          "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Original-resolution graphic: Y4 viaXT5, powerPn5.1-17, signalVa3.1-18."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-056",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-066_device_voltage_interface_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-067",
+      "finding": {
+        "id": "F-067",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Электропитание",
+        "sheet": "Лист 35",
+        "page": 39,
+        "problem": "Напряжение ввода ШАУВ-6-К5ПЧ не соответствует обозначенным проводникам.",
+        "description": "Ввод указан как 2,0 кВт, 380 В, II категория, но показано только подключение L, N и PE, соответствующее однофазному вводу.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать напряжение и число питающих проводников с разделом электроснабжения и исполнением шкафа.",
+        "risk": "Ошибочный выбор питающей линии и подключение шкафа к несоответствующему напряжению.",
+        "source_finding_ids": [
+          "G-086"
+        ],
+        "source_block_ids": [
+          "blk_065a335469904b2db1640b480b321503"
+        ],
+        "related_block_ids": [
+          "blk_065a335469904b2db1640b480b321503"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_065a335469904b2db1640b480b321503",
+            "page": 39
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-086",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на несогласованность напряжения ввода 380 В с подключением L, N, PE.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "ШАУВ-6-К5ПЧ ввод подписанIIкатегория,2,0кВт,380В; показаныL,N,PE.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Три двигателя подписаны220В иL/N/PE; электронагреватель также показанL/N/PE.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Это контекст, а не доказательство номинала вводного питания. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Согласовать напряжение ввода и набор проводников с питающим разделом.",
+          "verdict": "supported_supply_document_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Обязательно заменить380В на220В либо добавить фазы.",
+          "verdict": "not_established",
+          "limits": "Питающая схема ЭМ и заводская схема не проверены; правильное исправление автоматически не определяется."
+        },
+        {
+          "claim": "Фактически подано380В на220В потребители, оборудование повреждено.",
+          "verdict": "not_established",
+          "limits": "Фактическое питание и монтаж не исследованы.2,0кВт — подпись ввода, не доказанная мощность электронагревателя."
+        },
+        {
+          "claim": "Подтверждено нарушение конкретного нормативного пункта.",
+          "verdict": "not_established",
+          "limits": "Нормативный кандидат не заменяет проверку пункта и применимости."
+        },
+        {
+          "claim": "Второй повтор автоматически назначает 220 В вместо 380 В.",
+          "verdict": "not_asserted_in_r2",
+          "limits": "Решение требует согласования напряжения и проводников с питающим разделом и исполнением шкафа; эту границу сохранять."
+        }
+      ],
+      "unsupported_additions": "Проектная марка не доказывает фактический маршрут или монтаж. Назначение клемм требует заводской схемы; одинаковая подпись не подтверждает электрическую несовместимость. Дополнительный контекст проверяющего не засчитывается как обнаруженный моделью.",
+      "novel_useful_content": "Текущие формулировки сопоставлены с прежними проверками идентичных источников; усиление вывода RS-485 и новая ссылка на соседнюю линию выделены отдельно.",
+      "duplicate_burden": "One inlet specification conflict; separate from heater cable sizing F-019.",
+      "profile_and_section": "technical_supply_document_core_no_observed_failure",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+          "block_id": "blk_065a335469904b2db1640b480b321503",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Supply header380V2.0kW, lower inlet L/N/PE; three motor symbols220V L/N/PE; heater L/N/PE."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-058",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-067_device_voltage_interface_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-068",
+      "finding": {
+        "id": "F-068",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Интерфейсные подключения",
+        "sheet": "Лист 41",
+        "page": 45,
+        "problem": "Линия RS-485 БД-ТЗ1 показана на клеммах контактного входа.",
+        "description": "Связь со шкафом ЩД-АСУД.И.5.1ПЧ подключена к «КВ» и «Uпд». Такие же обозначения используются для концевого выключателя ворот SQ1 и не согласуются с указанным назначением RS-485.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "По схеме изготовителя КЭВ-БЛОК-МК определить интерфейсные клеммы и исправить подключение RS-485.",
+        "risk": "Неработоспособность диспетчерской связи и ошибочное подключение интерфейса.",
+        "source_finding_ids": [
+          "G-096",
+          "G-097"
+        ],
+        "source_block_ids": [
+          "blk_e7bf605cde374aec808e8a5deb78ce97"
+        ],
+        "related_block_ids": [
+          "blk_e7bf605cde374aec808e8a5deb78ce97"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+            "page": 45
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-096",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-097",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно противоречие на листе 41: линия RS-485 в шкаф ЩД-АСУД.И.5.1ПЧ подключена к клеммам «КВ Uпд», также обозначенным для концевого выключателя ворот. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно противоречие на листе 41: линия RS-485 в шкаф ЩД-АСУД.И.5.1ПЧ подключена к клеммам «КВ Uпд», также обозначенным для концевого выключателя ворот. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Внешняя схемаБД-ТЗ1 показываетRS-485 кЩД-АСУД.И.5.1ПЧ наКВ/Uпд; такие подписи также уSQ1.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Нужна проверка назначения выводов по заводской схемеКЭВ-БЛОК-МК и схеме диспетчеризации.",
+          "verdict": "supported_interface_terminal_question",
+          "limits": "Исходная выдача обоснованно сохраняет неопределённость."
+        },
+        {
+          "claim": "КВ/Uпд доказанно не могут быть интерфейсными выводами и линия подключена неверно.",
+          "verdict": "not_established",
+          "limits": "Паспорт конкретного исполнения и заводская схема не проверены; одинаковая подпись не доказывает физически общую пару."
+        },
+        {
+          "claim": "ИспользоватьA/B пульта вместоКВ/Uпд.",
+          "verdict": "not_established",
+          "limits": "A/B видны в другой группе пульта; её пригодность для требуемой линии диспетчеризации не доказана. Автоматическую перекоммутацию не предлагать."
+        },
+        {
+          "claim": "Связь отсутствует или входы повреждены.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Измерения, монтаж и испытания не проверены."
+        },
+        {
+          "claim": "Подтверждено конкретное нормативное нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Пункт и цитата не проверены."
+        },
+        {
+          "claim": "Клеммы КВ/Uпд доказанно являются исключительно контактным входом, поэтому подключение RS-485 надо исправить.",
+          "verdict": "stronger_than_available_evidence",
+          "limits": "Второй повтор усилил заголовок до установленного контактного входа. Без документации конкретного исполнения подтверждено лишь совпадение подписей с SQ1. Сначала проверить назначение по заводской схеме, затем решать, нужно ли исправление; не объявлять электрическую несовместимость доказанной."
+        }
+      ],
+      "unsupported_additions": "Проектная марка не доказывает фактический маршрут или монтаж. Назначение клемм требует заводской схемы; одинаковая подпись не подтверждает электрическую несовместимость. Дополнительный контекст проверяющего не засчитывается как обнаруженный моделью.",
+      "novel_useful_content": "Текущие формулировки сопоставлены с прежними проверками идентичных источников; усиление вывода RS-485 и новая ссылка на соседнюю линию выделены отдельно.",
+      "duplicate_burden": "One interface terminal assignment question; no per-terminal damage claims.",
+      "profile_and_section": "questions_clarifications_factory_interface",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+          "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+          "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Original resolution: bridgesY1–Y2/M1–M2/TS1–TS2 and chainU4.3–U4.6 shown; RS485 and SQ1 captions bothKB/Upd at block side; separate remote-control group includesA/B."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-061",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-068_device_voltage_interface_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
