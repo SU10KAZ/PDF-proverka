@@ -1,0 +1,243 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/EOM_output_review_queue.json",
+  "queue_before_sha256": "18c661d3f8f5595973013470a5b20462a3e235f712d0f8db7ac3ad65d81ceca2",
+  "queue_after_sha256": "2ef310ac6e5d16e5f8bafd1c668667985676331a0d8f26b956d17c8d7df268b9",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-021",
+      "finding": {
+        "id": "F-021",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Комплектность поставки",
+        "sheet": "Лист 4",
+        "page": 40,
+        "problem": "Количество розеток, рамок и подрозетников требует увязки по монтажным блокам.",
+        "description": "Для 56 розеток цвета «карбон» предусмотрены 51 однопостовая и 5 двухпостовых рамок, то есть 61 посадочное место. Всего указаны 62 розетки и 72 подрозетника. Назначение дополнительных мест, возможные устройства другого комплекта и запас не раскрыты.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить комплектность электроустановочных изделий и пояснения к количествам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-022"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Составить увязку по монтажным блокам, пояснить резерв и изделия смежных комплектов, скорректировать количества при необходимости.",
+        "risk": "Несовместимая комплектация и дополнительные закупки.",
+        "source_finding_ids": [
+          "T-022"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 40
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 66,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F039_frame_capacity:289e229897613e2cc690",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Карбон56розеток,51однопостовая и5двухпостовых рамок:61место;6белых розеток;72подрозетника.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": "СОлист4,блок192,строки5491–5496:56+6=62,51+2×5=61. Белые рамки ещё6; суммарно67мест, а не61 для всех цветов."
+        },
+        {
+          "claim": "Увязать по монтажным блокам и пояснить резерв.",
+          "verdict": "supported_scoped_question",
+          "limits": "Рамки могут включать устройства смежных комплектов. Назначение дополнительных мест не установлено; разность не доказывает недостачу розеток или лишние подрозетники."
+        },
+        {
+          "claim": "Скорректировать количества.",
+          "verdict": "conditional_action_only",
+          "limits": "Только после увязки сАИ/MAF, на которые ссылаются строки. Не подгонять количества к равенству автоматически."
+        }
+      ],
+      "unsupported_additions": "Фактические закупки, монтаж и комплектность исходного выпуска не проверены; различие количества или метаданных не равно техническому дефекту.",
+      "novel_useful_content": "Подтверждён ограниченный вопрос увязки спецификации или состава передачи; инженерное принятие не установлено.",
+      "duplicate_burden": "Не считать каждое посадочное место независимым дефектом; лист17СО и лист17основного комплекта разные документы.",
+      "profile_and_section": "Вопросы и уточнения; размещение в разделах итогового отчёта не проверено.",
+      "engineer_reuse": "Новое решение инженера не приписывается; текущая оценка непосредственно по авторитетномуMD.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "route": "authoritative_TEXT_direct_review",
+          "scope": "Block192 lines5491–5496 and AI/MAF notes"
+        }
+      ],
+      "disposition": "assessed_r3_direct_TEXT_inventory"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-026",
+      "finding": {
+        "id": "F-026",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Комплектность документации",
+        "sheet": "Листы 1, 16, 18, 27",
+        "page": [
+          3,
+          19,
+          20,
+          29
+        ],
+        "problem": "В предоставленном материале не установлен лист силовых сетей технического пространства на отметке +5,300.",
+        "description": "Ведомость предусматривает лист 17 с планом распределительных и силовых сетей уровня +5,300. В переданной последовательности после листа 16 следует лист 18. Лист 27 содержит кабеленесущие системы этого уровня. Отсутствие листа в исходном выпуске не доказано.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), кандидат п. 4.2.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить комплектность рабочих чертежей относительно ведомости.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-027"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-027"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.2.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить исходный выпуск и включить отсутствующий в передаче лист либо уточнить ведомость.",
+        "risk": "Передача монтажной организации неполного комплекта.",
+        "source_finding_ids": [
+          "T-027"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "page": 19
+          },
+          {
+            "type": "text",
+            "page": 20
+          },
+          {
+            "type": "text",
+            "page": 29
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 46,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Ведомость:лист17 силовых сетей+5.300; в метаданных основного комплекта после16идёт18;27кабеленесущие системы+5.300.",
+          "verdict": "confirmed_bounded_TEXT_metadata_inventory",
+          "limits": "Проверены все блокиMD. Лист17 есть у отдельнойСО: это не пропущенный лист основного комплекта. Метаданные не равнозначны инвентаризации исходныхPDFстраниц."
+        },
+        {
+          "claim": "Лист17 отсутствует в исходном выпуске.",
+          "verdict": "not_established_original_completeness",
+          "limits": "Текущая строка правильно оставляет это недоказанным. Наличие листа27 другого назначения не заменяет17 и не доказывает отсутствие силового плана во всём исходном выпуске."
+        },
+        {
+          "claim": "Проверить передачу и ведомость.",
+          "verdict": "supported_document_delivery_question",
+          "limits": "Не объявлять отсутствующее проектное решение или требовать нового проектирования до сверки состава исходного выпуска."
+        }
+      ],
+      "unsupported_additions": "Фактические закупки, монтаж и комплектность исходного выпуска не проверены; различие количества или метаданных не равно техническому дефекту.",
+      "novel_useful_content": "Подтверждён ограниченный вопрос увязки спецификации или состава передачи; инженерное принятие не установлено.",
+      "duplicate_burden": "Не считать каждое посадочное место независимым дефектом; лист17СО и лист17основного комплекта разные документы.",
+      "profile_and_section": "Вопросы и уточнения; размещение в разделах итогового отчёта не проверено.",
+      "engineer_reuse": "Новое решение инженера не приписывается; текущая оценка непосредственно по авторитетномуMD.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "route": "authoritative_TEXT_direct_review",
+          "scope": "Index lines110–122 and full MD block stamp inventory; distinguish main cipher from SO"
+        }
+      ],
+      "disposition": "assessed_r3_direct_TEXT_inventory"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Direct authoritative MD review of socket/frame quantities and bounded sheet inventory. No original PDF completeness claim."
+}
