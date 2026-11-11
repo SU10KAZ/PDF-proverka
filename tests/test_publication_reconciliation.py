@@ -120,3 +120,26 @@ def test_superseded_limitation_is_history_not_engineer_question_or_false_defect(
     response['parts'][0]['evidence'] = []
     with pytest.raises(InvalidPublication, match='missing_evidence'):
         reconcile_publication(finding, packet, response)
+
+
+def test_full_contract_includes_risk_solution_and_norms_without_silent_inheritance():
+    finding, _, _ = example()
+    finding.update(risk='Possible wrong equipment.', solution='Reconcile source documents.',
+                   norm='Unverified clause', norm_quote='Reported quote',
+                   candidate_norm_references=[{'document': 'Reported standard'}])
+    packet = build_packet(finding, {'t': 'Source'})
+    assert packet['contract_version'] == 2
+    assert {u['id'] for u in packet['input_units']} >= {'risk', 'solution', 'norm', 'norm_quote', 'candidate_norm_references'}
+    # Legacy pilots remain evaluable, but cannot masquerade as a full-field review.
+    legacy = build_packet(finding, {'t': 'Source'}, contract_version=1)
+    response = {'packet_sha256': fingerprint(legacy), 'parts': [{
+        'id': 'q', 'statement': 'Needs clarification.', 'reason': 'Source limits.', 'outcome': 'question',
+        'input_spans': [{'unit_id': u['id'], 'start': 0, 'end': len(u['text']), 'quote': u['text']}
+                        for u in legacy['input_units']], 'evidence': [], 'required_context': []}]}
+    result = reconcile_publication(finding, legacy, response)
+    assert result['review_scope'] == 'description_only_legacy'
+    assert result['unreviewed_claim_fields'] == ['solution', 'risk', 'norm', 'norm_quote', 'candidate_norm_references']
+    # A proposal that accounts only for the description cannot pass the full contract.
+    response['packet_sha256'] = fingerprint(packet)
+    with pytest.raises(InvalidPublication, match='omitted_or_overlapping'):
+        reconcile_publication(finding, packet, response)

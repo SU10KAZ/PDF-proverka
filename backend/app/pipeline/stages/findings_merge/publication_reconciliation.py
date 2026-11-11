@@ -17,12 +17,14 @@ def fingerprint(value):
     return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
 
 
-def build_packet(finding, text_sources, graphic_refs=()):
+def build_packet(finding, text_sources, graphic_refs=(), *, contract_version=2):
     """Only current run content and supplied primary sources enter the packet.
 
     Text source values are authoritative MD blocks; graphic refs must name
     images actually attached by the caller, not just known in a source index.
     """
+    if contract_version not in (1, 2):
+        raise InvalidPublication('unknown_contract_version')
     if not isinstance(finding.get('id'), str) or not finding['id']:
         raise InvalidPublication('missing_finding_id')
     units = []
@@ -32,6 +34,15 @@ def build_packet(finding, text_sources, graphic_refs=()):
             raise InvalidPublication('invalid_original_text')
         if value:
             units.append({'id': field, 'text': value})
+    if contract_version == 2:
+        for field in ('solution', 'risk', 'norm', 'norm_quote', 'candidate_norm_references'):
+            value = finding.get(field)
+            if value is None or value == '' or value == [] or value == {}:
+                continue
+            if not isinstance(value, (str, list, dict)):
+                raise InvalidPublication('invalid_claim_field')
+            text = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, sort_keys=True)
+            units.append({'id': field, 'text': text})
     addenda = finding.get('recovery_addenda', [])
     if not isinstance(addenda, list):
         raise InvalidPublication('invalid_addenda')
@@ -52,9 +63,12 @@ def build_packet(finding, text_sources, graphic_refs=()):
     graphic_refs = list(graphic_refs)
     if not all(isinstance(k, str) and k for k in graphic_refs) or set(graphic_refs) & set(text_sources):
         raise InvalidPublication('invalid_graphic_refs')
-    return {'finding_id': finding['id'], 'finding_sha256': fingerprint(finding),
+    packet = {'finding_id': finding['id'], 'finding_sha256': fingerprint(finding),
             'input_units': units, 'text_sources': deepcopy(text_sources),
             'attached_graphic_refs': list(dict.fromkeys(graphic_refs))}
+    if contract_version == 2:
+        packet['contract_version'] = 2
+    return packet
 
 
 INSTRUCTIONS = '''Reconcile this finding against the supplied primary sources.
@@ -88,6 +102,12 @@ questions. Do not silently correct MD TEXT using an image. Inspect GRAPHIC image
 Remove stale caveats from current wording only when their specific limitation is
 resolved by supplied evidence; preserve unresolved limitations as needs_data.
 Do not expose parent: aliases or old local finding IDs in current statements.
+Input units can also include solution, risk and normative references. Reconcile
+these too: do not retain an unsafe correction, an unproved consequence or an
+unverified normative applicability merely because the description was corrected.
+Keep conditional risks conditional, and preserve useful recommendations to
+reconcile documents without inventing the correct design. Do not count a risk or
+recommendation as another independent defect.
 No engineer decisions or reference answers are supplied. Your output is a proposed
 publication, not independent acceptance. Do not invent sources or norm quotations.
 '''
@@ -101,7 +121,8 @@ def reconcile_publication(finding, packet, response):
     """
     if packet.get('finding_sha256') != fingerprint(finding) or packet.get('finding_id') != finding.get('id'):
         raise InvalidPublication('finding_changed_after_packet')
-    expected = build_packet(finding, packet.get('text_sources'), packet.get('attached_graphic_refs', []))
+    expected = build_packet(finding, packet.get('text_sources'), packet.get('attached_graphic_refs', []),
+                            contract_version=packet.get('contract_version', 1))
     if packet != expected:
         raise InvalidPublication('packet_input_changed')
     if not isinstance(response, dict) or response.get('packet_sha256') != fingerprint(packet):
@@ -117,7 +138,10 @@ def reconcile_publication(finding, packet, response):
     result = {'technical_findings': [], 'questions': [], 'withdrawn': [], 'pending': [],
               'history_only': [], 'part_counts_not_finding_counts': True,
               'archive': deepcopy(finding), 'packet_sha256': fingerprint(packet),
-              'semantic_verified': False, 'candidate_coverage_updated': False}
+              'semantic_verified': False, 'candidate_coverage_updated': False,
+              'review_scope': 'claim_fields' if packet.get('contract_version') == 2 else 'description_only_legacy',
+              'unreviewed_claim_fields': [k for k in ('solution', 'risk', 'norm', 'norm_quote', 'candidate_norm_references')
+                                         if finding.get(k) and k not in units]}
     for part in parts:
         if not isinstance(part, dict) or not all(isinstance(part.get(k), str) and part[k].strip() for k in ('id', 'statement', 'reason')):
             raise InvalidPublication('missing_part_fields')

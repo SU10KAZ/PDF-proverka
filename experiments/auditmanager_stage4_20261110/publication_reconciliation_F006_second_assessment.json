@@ -1,0 +1,81 @@
+{
+  "status": "description_reconciliation_supported_by_source_review_full_field_trial_pending",
+  "finding_id": "F-006",
+  "validation": {
+    "request_sha256": "f7207d9321bd126c50da1bceaadde2042b9efce57a6ce64cf593a95f239a11d3",
+    "response_sha256": "6ae3549ad0923a9e3efdf0a7024958b5d09690204f1ba485f8d46dc9b28a34e2",
+    "selection": "DEV-known F-006, second calibration after contract failure; same primary sources, no previous response or coordinator conclusions supplied.",
+    "semantic_verified": false,
+    "production_acceptance": false,
+    "status": "structurally_valid_requires_source_review",
+    "projection_path": "/tmp/auditmanager_publication_reconciliation_F006_v2_20261112_run/publication_projection.json",
+    "projection_sha256": "7569df28fe8a67289655716e2713610f2d1a21dae3730992f3919f28939bfa67",
+    "counts": {
+      "technical_findings": 1,
+      "questions": 0,
+      "withdrawn": 0,
+      "pending": 0,
+      "history_only": 2
+    }
+  },
+  "duration_ms": 110797,
+  "source_review_authority": "coordinator_not_engineer_acceptance",
+  "source_review_record": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_sensor_range_counts_review_20261112.json",
+  "source_review_record_sha256": "381e0f39815205625beeda70e5f91066dcddbf42f5569d243494d83846ce6125",
+  "checks": {
+    "one_supported_conflict_preserves_1_3_3_1_2_2": true,
+    "pds4_column18_range_and_separate_100Pa_preserved": true,
+    "no_arbitrary_correct_design_selected": true,
+    "stale_caveat_and_service_link_history_only": true,
+    "all_supplied_input_spans_accounted": true,
+    "literal_text_quotes_valid": true,
+    "graphic_directly_reviewed": true,
+    "risk_and_solution_in_this_model_request": false
+  },
+  "publication_caveat": "The source limitation that the correct design is not established appears in reason; final rendering must retain this limitation together with the statement.",
+  "full_field_preparation": {
+    "path": "/tmp/auditmanager_publication_full_fields_AK_20261112/preparation.json",
+    "sha256": "f5e97be36efad0f3b51db45cf1f58bfec83e3c22361724c3c4fe60610366dc74",
+    "prepared": 85,
+    "ready": 82,
+    "held": [
+      {
+        "finding_id": "F-013",
+        "unavailable": [
+          {
+            "ref": "blk_f42735b18cb140928c3d9f29d2891ae2",
+            "reason": "image_budget"
+          }
+        ]
+      },
+      {
+        "finding_id": "F-027",
+        "unavailable": [
+          {
+            "ref": "blk_f42735b18cb140928c3d9f29d2891ae2",
+            "reason": "image_budget"
+          }
+        ]
+      },
+      {
+        "finding_id": "F-085",
+        "unavailable": [
+          {
+            "ref": "blk_f42735b18cb140928c3d9f29d2891ae2",
+            "reason": "image_budget"
+          }
+        ]
+      }
+    ],
+    "input_units": 658,
+    "dispatched": false,
+    "selection": "Current-run source links only; no gold/review answers."
+  },
+  "tests_passed": 26,
+  "production_acceptance": false,
+  "next_steps": [
+    "Run full-field contract pilot before batch rollout.",
+    "Supply readable bounded tiles for the large linked graphic in F-013/F-027/F-085 without treating omitted images as inspected.",
+    "Evaluate all current findings and original candidate obligations separately; then continue all six disciplines and comparison gates."
+  ]
+}
