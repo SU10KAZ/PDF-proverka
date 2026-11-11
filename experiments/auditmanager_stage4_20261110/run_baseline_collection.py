@@ -1,4 +1,5 @@
 """Durable serial dispatch of a preregistered baseline collection, no auto restart."""
+import argparse
 import hashlib
 import json
 import os
@@ -13,7 +14,8 @@ REPO=Path(__file__).resolve().parents[2]
 def write(p,d):
     temporary=p.with_suffix('.tmp');temporary.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n');temporary.replace(p)
 
-def main():
+def main(root=ROOT):
+    ROOT=Path(root).resolve()
     trial_path=ROOT/'baseline_collection_trial.json';trial=json.loads(trial_path.read_text())
     source=json.loads(Path(trial['source_snapshot']['path']).read_text())['source_root']
     state_path=ROOT/'baseline_collection_status.json'
@@ -42,4 +44,6 @@ def main():
     finally:
         state['finished']=time.time();write(state_path,state)
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,default=ROOT)
+    main(p.parse_args().root)

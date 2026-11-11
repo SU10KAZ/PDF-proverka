@@ -19,12 +19,12 @@ ARMS={
 INPUTS=Path('/tmp/auditmanager_six_candidate_inputs_20261110')
 
 
-def prepare(root):
+def prepare(root, inputs=INPUTS):
     root=root.resolve()
     root.mkdir(parents=True,exist_ok=False)
     sources={}
     for disc in DISCIPLINES:
-        path=INPUTS/disc
+        path=inputs/disc
         if not path.is_dir():raise ValueError('Missing source package: '+disc)
         files={str(p.relative_to(path)):hashlib.sha256(p.read_bytes()).hexdigest()
                for p in path.rglob('*') if p.is_file()}
@@ -61,6 +61,6 @@ def prepare(root):
     return report
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);a=p.parse_args()
-    r=prepare(a.root)
+    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--inputs',type=Path,default=INPUTS);a=p.parse_args()
+    r=prepare(a.root,a.inputs)
     print(json.dumps({'slots':len(r['runs']),'source_files':sum(len(s['files']) for s in r['sources_observed_now_not_yet_trial_frozen'].values()),'status':r['status']}))

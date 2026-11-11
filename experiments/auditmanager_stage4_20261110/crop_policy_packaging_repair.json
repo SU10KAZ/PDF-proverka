@@ -1,0 +1,106 @@
+{
+  "status": "new_source_package_revision_policy_restored",
+  "root": "/tmp/auditmanager_six_candidate_inputs_policy_v2_20261111",
+  "projects": [
+    {
+      "discipline": "AK",
+      "changed_files": [
+        "03_analysis/runs/candidate/blocks_stage02_100/index.json"
+      ],
+      "index_before": "df8a4f341aaefbdb7857780cbc63afae84c6758de8e42ec888097dd7343c18ca",
+      "index_after": "0e357b7e4bbb7f796e738b2095b2b5271558d77026bfb8dbf258b9bf5c1b3940",
+      "policy": {
+        "profile": "stage02_100",
+        "dpi": 100,
+        "min_long_side": 800,
+        "compact": false,
+        "skip_small": false
+      },
+      "all_text_pdf_and_image_bytes_unchanged": true
+    },
+    {
+      "discipline": "ITP",
+      "changed_files": [
+        "03_analysis/runs/candidate/blocks_stage02_100/index.json"
+      ],
+      "index_before": "34f60e006d9c2b99e69f50a2357fa9b598b77b710edfd796cbf381727d771064",
+      "index_after": "c03c12bbfa5c542006f89fd479860ca79ded07398f1183df98e5a870a0e3b04a",
+      "policy": {
+        "profile": "stage02_100",
+        "dpi": 100,
+        "min_long_side": 800,
+        "compact": false,
+        "skip_small": false
+      },
+      "all_text_pdf_and_image_bytes_unchanged": true
+    },
+    {
+      "discipline": "AR",
+      "changed_files": [
+        "03_analysis/runs/candidate/blocks_stage02_100/index.json"
+      ],
+      "index_before": "4f4c14c911f61b2de29af5084e4ec4988504d2c8fb5d0e3da381df0d32ec2f22",
+      "index_after": "88f7b70afbde903f453000e2b061708bb2d52d18bf016fb07064ae355ba0bde5",
+      "policy": {
+        "profile": "stage02_100",
+        "dpi": 100,
+        "min_long_side": 800,
+        "compact": false,
+        "skip_small": false
+      },
+      "all_text_pdf_and_image_bytes_unchanged": true
+    },
+    {
+      "discipline": "KM",
+      "changed_files": [
+        "03_analysis/runs/candidate/blocks_stage02_100/index.json"
+      ],
+      "index_before": "4c70850a047c107977f2e50789ae74d69036d69cb37a626fecb4bdba2602e3a0",
+      "index_after": "c50c53f072036d422c38502bb1c1ea1e511d8d365b496c2ab7e9f75edd2ec516",
+      "policy": {
+        "profile": "stage02_100",
+        "dpi": 100,
+        "min_long_side": 800,
+        "compact": false,
+        "skip_small": false
+      },
+      "all_text_pdf_and_image_bytes_unchanged": true
+    },
+    {
+      "discipline": "VK",
+      "changed_files": [
+        "03_analysis/runs/candidate/blocks_stage02_100/index.json"
+      ],
+      "index_before": "cfbabe6ee3405991c780b431dee812570ecd5b76329b07179dfbba1b14af4d87",
+      "index_after": "dc790836e091ac990608b106a29eb0238d6e8c616688419b697ecb79ab8666a1",
+      "policy": {
+        "profile": "stage02_100",
+        "dpi": 100,
+        "min_long_side": 800,
+        "compact": false,
+        "skip_small": false
+      },
+      "all_text_pdf_and_image_bytes_unchanged": true
+    },
+    {
+      "discipline": "EOM",
+      "changed_files": [
+        "03_analysis/runs/candidate/blocks_stage02_100/index.json"
+      ],
+      "index_before": "c0add7afdc6aded3aab3bf4c990e01f78afaa11fb24e49a337fd2b77ac1e37b4",
+      "index_after": "e6cd77a8530c1d4e5c988c31c14ba9aa10a36b48268d79b823d9e7d3a70e3104",
+      "policy": {
+        "profile": "stage02_100",
+        "dpi": 100,
+        "min_long_side": 800,
+        "compact": false,
+        "skip_small": false
+      },
+      "all_text_pdf_and_image_bytes_unchanged": true
+    }
+  ],
+  "prior_failed_run": "ak_r1_classic",
+  "prior_model_requests": 0,
+  "prior_run_artifacts_preserved": true,
+  "model_calls": 0
+}

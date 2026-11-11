@@ -1,4 +1,5 @@
 """Freeze eighteen baseline runs; keep engineering admission/quality unresolved."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -12,7 +13,8 @@ ROOT=Path('/tmp/auditmanager_comparative_trial_layout_20261111')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def ref(p):return {'path':str(p.resolve()),'sha256':sha(p)}
 
-def main():
+def main(root=ROOT):
+    ROOT=Path(root).resolve()
     snapshot_path=HERE/'classic_isolated_snapshot_provenance.json';snapshot=json.loads(snapshot_path.read_text())
     layout=json.loads((ROOT/'layout.json').read_text());runs=[r for r in layout['runs'] if r['variant']=='classic']
     assert len(runs)==18
@@ -53,7 +55,9 @@ def main():
     receipt={'status':'baseline_collection_frozen_not_started','trial':ref(trial_path),'runs':len(runs),
         'model':trial['model'],'effort':'high','model_calls':0,'stage4_complete':False,
         'scope':'Baseline source-scope measurement, not candidate admission or production acceptance.'}
-    (HERE/'baseline_collection_freeze.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
+    (ROOT/'freeze_receipt.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps(receipt,ensure_ascii=False))
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,default=ROOT)
+    main(p.parse_args().root)

@@ -43,9 +43,13 @@ def check(project):
         clean.append({k: block[k] for k in ('block_id','page','file','block_type','sha256','render_size')})
     if len(clean) != project['graphics_declared']:
         errors.append({'reason': 'graphic_count_mismatch'})
+    policy_keys=('profile','dpi','min_long_side','compact','skip_small')
+    if any(k not in original for k in policy_keys):
+        raise ValueError('Original crop policy missing; cannot infer rendition settings')
+    policy={k:original[k] for k in policy_keys}
     return {'discipline': project['discipline'], 'status': 'passed' if not errors else 'failed',
             'errors': errors, 'source_geometry_blocks': len(blocks),
-            'candidate_index': {'total_blocks': len(clean), 'blocks': clean},
+            'candidate_index': {**policy, 'total_blocks': len(clean), 'blocks': clean},
             'omitted_index_fields': ['ocr_label', 'ocr_text_len', 'source_result_json', 'rendition_note'],
             'boundary': 'Identity/page/hash checks only. Minimal index excludes free-form summaries and historical paths. Source MD is unchanged; filesystem isolation and graph rebuild are still required.'}
 
