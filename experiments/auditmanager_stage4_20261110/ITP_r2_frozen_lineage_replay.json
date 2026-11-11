@@ -1,0 +1,85 @@
+{
+  "status": "frozen_candidate_lineage_local_replay_not_model_review",
+  "inputs": {
+    "final": {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+    },
+    "text_analysis": {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "84f3b7ba798b66afd49134d1b620ec03e9c1ed777b81345e2d62fc1e7db41eda"
+    },
+    "markdown": {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    }
+  },
+  "code": [
+    {
+      "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/findings_merge/source_lineage.py",
+      "sha256": "c6a57bf27753a2a5d0acbe8a9862d25e9dcdf83e04a98af1e8b9b71db3b05a61"
+    },
+    {
+      "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/findings_verify/source_review_queue.py",
+      "sha256": "a6d70dad71f9ee03ea9c3ff88fcd5e3266d7933230efb0583b86746b2c87aa0c"
+    }
+  ],
+  "finding_id": "F-019",
+  "lineage": [
+    {
+      "source_finding_id": "T-019",
+      "status": "requires_semantic_review",
+      "source_claim": "Клапан отопления ДОО VFM-2R-20-6,3 в экспликации назван DN25, а расчет задает DN20. Соленоидные клапаны в экспликации имеют марку EV220WR, в спецификации — EV220В; для DN20 пропускная способность изменяется с 8,0 до 6,3 м³/ч. Требуется согласовать исполнения, диаметры и характеристики; примечание о допустимой замене на аналог не устраняет расхождение технических параметров.",
+      "source_location": "Стр. 9, 26 и 54, позиции 30, 35 и 36",
+      "existing_block_ids": [
+        "blk_11981549aceb463ba84c7c0de619d2fc",
+        "blk_30789714316b48908c5addc9bfb135d2"
+      ],
+      "unresolved_block_ids": []
+    }
+  ],
+  "source_review_requests": [
+    {
+      "source_finding_id": "T-019",
+      "source_claim": "Клапан отопления ДОО VFM-2R-20-6,3 в экспликации назван DN25, а расчет задает DN20. Соленоидные клапаны в экспликации имеют марку EV220WR, в спецификации — EV220В; для DN20 пропускная способность изменяется с 8,0 до 6,3 м³/ч. Требуется согласовать исполнения, диаметры и характеристики; примечание о допустимой замене на аналог не устраняет расхождение технических параметров.",
+      "block_ids": [
+        "blk_11981549aceb463ba84c7c0de619d2fc",
+        "blk_30789714316b48908c5addc9bfb135d2"
+      ]
+    }
+  ],
+  "packet_summary": {
+    "source_context_status": "needs_data",
+    "required_graphic_block_ids": [
+      "blk_b8c120f6cbc04397b8c5514a03fa3152"
+    ],
+    "missing_or_ambiguous_block_ids": [],
+    "budgeted_block_ids": [],
+    "reference_origins": {
+      "blk_11981549aceb463ba84c7c0de619d2fc": [
+        "source_candidate"
+      ],
+      "blk_30789714316b48908c5addc9bfb135d2": [
+        "source_candidate"
+      ],
+      "blk_b8c120f6cbc04397b8c5514a03fa3152": [
+        "final_finding"
+      ]
+    }
+  },
+  "supplied_text_block_ids": [
+    "blk_11981549aceb463ba84c7c0de619d2fc",
+    "blk_30789714316b48908c5addc9bfb135d2"
+  ],
+  "specification_block_expected": "blk_acc3bf59f8f447f988de16849e40e9f1",
+  "specification_in_initial_packet": false,
+  "original_claim_and_evidence_unchanged": true,
+  "interpretation": "Уже замороженный механизм возвращает исходный тезис T-019 с позициями35/36 и его текстовые ссылки в очередь проверки. Это происхождение, не доказательство. Исходная T-019 не ссылается на блок спецификации: одной реконструкции ссылок недостаточно для полной пары источников; дальнейший поиск контекста должен найти спецификацию.",
+  "limits": [
+    "Локально проверена подготовка пакета на одном найденном замечании; вызова модели, поиска дополнительного контекста и итоговой публикации здесь нет.",
+    "Не устраняет первичные пропуски: механизм требует существующий кандидат.",
+    "Нельзя считать восстановленные ссылки подтверждением истинности или повысить полноту итоговой строки без нового результата."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
