@@ -1,0 +1,455 @@
+{
+  "status": "two_KM_object_identity_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "1a3b357e526ae447eb67e1274a228aaa3427be00cea51254948bb46e423bb108",
+  "queue_after_sha256": "20c6d57d834b0aeea793c26556c01a9b2bfa834552a6cc4dc4c0220207e382ca",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация",
+        "sheet": "Листы 7, 10",
+        "page": [
+          9,
+          12
+        ],
+        "problem": "Ограждение ОГМ26 на схеме ЛК6 отсутствует в спецификации.",
+        "description": "По результатам графического анализа на схеме ЛК6 на отметке −0,700 обозначено ОГМ26. В спецификации листа 7 эта позиция отсутствует; количество и ссылка на чертеж изделия не заданы. Текстовый анализ также отмечает, что ведомости деталей заканчиваются ОГМ25. Предварительное текстовое замечание объединено с совпадающими графическими замечаниями; экономическая серьезность принята из графического анализа.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить соответствие номенклатуры и количества изделий в спецификации схемам расположения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010",
+                "G-024",
+                "G-025"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010",
+                  "G-024",
+                  "G-025"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить марку на схеме. Если ОГМ26 предусмотрено проектом, добавить его количество, деталировку и материалы; при ошибке обозначения исправить схему.",
+        "risk": "Пропуск изделия при заказе и изготовлении либо установка ограждения неверной марки.",
+        "source_finding_ids": [
+          "T-010",
+          "G-024",
+          "G-025"
+        ],
+        "source_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba"
+        ],
+        "related_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba",
+          "blk_6bb0b4fa825241f087dbf06ba2178a0c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-024",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-025",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания фиксируют ОГМ26 на схеме ЛК6 на отм. −0.700 при отсутствии этой позиции в спецификации листа 7. Уточнение об отсутствии количества и ссылки следует из отсутствия позиции; различие категорий серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания фиксируют ОГМ26 на схеме ЛК6 на отм. −0.700 при отсутствии этой позиции в спецификации листа 7. Уточнение об отсутствии количества и ссылки следует из отсутствия позиции; различие категорий серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "cost",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM3:23f9be653d9b57c84d4c",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На планеЛК6−0,700 есть ОГМ26.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "В спецификации листа7 отсутствует строка ОГМ26, ведомость листов перечисляет деталировку до25.",
+          "verdict": "confirmed_bounded_TEXT_absence",
+          "limits": "Просмотрена вся таблица спецификации и ведомость листов. Это не полный просмотр каждой детали всей графики."
+        },
+        {
+          "claim": "Деталировки ОГМ26 нигде нет и изделие нельзя изготовить.",
+          "verdict": "not_established_globally",
+          "limits": "Поиск марки вTEXT и предел25 в ведомости не доказывают отсутствия решения во всех графических блоках, КМД или смежных комплектах."
+        },
+        {
+          "claim": "Исправить марку либо добавить согласованное изделие после проверки.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не заменять26на25 автоматически по соседней выноске. Сначала связать фактическую геометрию и позицию."
+        },
+        {
+          "claim": "Ограждение пропущено в поставке.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Экономическая серьёзность доказана выбором оценки графического анализа при объединении.",
+          "verdict": "not_proven_by_merge_provenance",
+          "limits": "Происхождение оценки не подтверждает фактическую недопоставку или расходы. Сохранять проверку марки и спецификации."
+        }
+      ],
+      "unsupported_additions": "Не объявлять изделие отсутствующим во всём проекте или неизготовимым без проверки. Исправлять объект и сохранять подтверждённое ядро замечания.",
+      "novel_useful_content": "Основной тезис сохранён из первого повтора;новая самостоятельная техническая находка не установлена.",
+      "duplicate_burden": "distinct_mark_or_flight_binding_question_do_not_count_labels_as_defects",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM3.json",
+          "sha256": "b453c43a58d1054330e0ac62fc71b0488ebbfcc1bca7aabe16011cd7d124e215",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/KM3_primary_GRAPHIC.json",
+            "sha256": "255952d3bff75f41a8d0825baed7dd1988efa895a514d5835c6238a2dde45255"
+          },
+          "limits": "Подтверждена выноска на плане. Полное отсутствие деталировки не доказано одним поиском в TEXT; заменять на ОГМ25 без проверки нельзя.",
+          "wording": "Увязать марку ОГМ26 на плане ЛК6 −0,700 со спецификацией и деталировкой."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_441423dd5fb448c89a33b610c54783ba.png",
+          "sha256": "e483f14964b885d339bef19552b34da013314ab6decdb262dc166ee44048f08e",
+          "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "ПланЛК6−0,700: справа сверху ОГМ26; соседняя выноскаОГМ25 относится к другой части схемы."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-022",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-010_scoped_documentation_question"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка конструкций",
+        "sheet": "Листы 5, 6",
+        "page": [
+          7,
+          8
+        ],
+        "problem": "Ограждение площадки +7,270 секции С3 имеет разные марки на плане и разрезе.",
+        "description": "На схеме расположения на отметке +9,110 ограждение промежуточной площадки +7,270 обозначено ОГМ6. На разрезе 1–1 того же листа оно обозначено ОГМ4. Однозначный выбор изделия по деталям листа 6 невозможен.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Найти требования к маркировке элементов на схемах расположения и связи с деталировкой.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-013",
+                "G-014"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-013",
+                  "G-014"
+                ],
+                "designation_source": "Подобран при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить требуемую марку по геометрии площадки и деталям листа 6, согласовать план, разрез и количество изделий.",
+        "risk": "Изготовление или монтаж ограждения неподходящей марки.",
+        "source_finding_ids": [
+          "G-013",
+          "G-014"
+        ],
+        "source_block_ids": [
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e"
+        ],
+        "related_block_ids": [
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "blk_eff2811805d64c26b34d72e41ecbb194",
+          "blk_2f6153fc7d8243798ccea08249042194"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "page": 7
+          },
+          {
+            "type": "image",
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-013",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-014",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое противоречие на листе 5: ограждение площадки +7.270 обозначено ОГМ 6 на плане и ОГМ 4 на разрезе 1-1; рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое противоречие на листе 5: ограждение площадки +7.270 обозначено ОГМ 6 на плане и ОГМ 4 на разрезе 1-1; рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "ОГМ6 на плане +9,110 против ОГМ4 разреза",
+          "verdict": "supported_core_with_object_correction",
+          "observation": "На плане +9,110 верхняя в изображении ветвь ОГМ6 приходит к левой площадке +7,270; другая часть ветви показана с разрывом и отметкой +6,070. План +6,070 маркирует противоположный конец этой ветви ОГМ4. Разрез также даёт ОГМ4 между +6,070 и +7,270."
+        },
+        {
+          "claim": "Объект расхождения — ограждение площадки +7,270",
+          "verdict": "imprecise_object_name",
+          "correction": "Ограждение примыкающего марша +6,070 → +7,270, а не самостоятельное ограждение площадки."
+        },
+        {
+          "claim": "Неверная комплектация и монтаж",
+          "verdict": "possible_consequence_not_observed"
+        },
+        {
+          "claim": "Объект следует выбирать по геометрии самостоятельной площадки+7,270.",
+          "verdict": "requires_object_correction",
+          "limits": "Проверенный конфликт относится к примыкающему маршу+6,070→+7,270. Ошибка названия объекта не опровергает разницуОГМ6/ОГМ4."
+        },
+        {
+          "claim": "По всему комплекту однозначный выбор изделия невозможен.",
+          "verdict": "not_established_global_impossibility",
+          "limits": "Конфликт нужно согласовать;все изготовительные и смежные данные здесь не проверены."
+        }
+      ],
+      "unsupported_additions": "Не объявлять изделие отсутствующим во всём проекте или неизготовимым без проверки. Исправлять объект и сохранять подтверждённое ядро замечания.",
+      "novel_useful_content": "Основной тезис сохранён из первого повтора;новая самостоятельная техническая находка не установлена.",
+      "duplicate_burden": "same_historical_F014_theme_not_new_independent_discovery",
+      "profile_and_section": "preserve_supported_core_with_corrected_object_identity_respect_frozen_truth_hold",
+      "engineer_reuse": "no_new_engineer_decision_prior_model_review_distinguished",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_262b1bd1d76146e7a8e45b529a38ac2e.png",
+          "sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+          "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6d4c4daf192546de9f1dce661aafe577.png",
+          "sha256": "03f98971a897be59c307f7dfc84408102f399994764a0d5a7a20a1e6bc737bfa",
+          "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f8b3c96af858494c946ff4f1ceaa1fb5.png",
+          "sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_sheet_priority_release_evidence/final_check/receipt.json",
+          "sha256": "23c3873cb1516a4a5b48e26422ef8e8838e8feece9c80879dae1c5df76e027c8",
+          "role": "prior_known_case_review_not_engineer_acceptance"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-017"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-017",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-015_scoped_documentation_question"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
