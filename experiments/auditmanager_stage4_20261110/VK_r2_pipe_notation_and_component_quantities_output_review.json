@@ -1,0 +1,668 @@
+{
+  "status": "four_VK_pipe_and_quantity_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "97b91d38adadf7b59b31e23066999fb8efda7b8ae4ec40f52a7f41cc241d60bb",
+  "queue_after_sha256": "73b034eab6b31531c05e59ba689479cd9a4c2a3918baa3b37253f02068002611",
+  "reviewed_rows": [
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Материалы",
+        "sheet": "Лист 3",
+        "page": [
+          5,
+          31
+        ],
+        "problem": "В плане и спецификации указана труба диаметром 50 мм с нулевой толщиной стенки.",
+        "description": "На плане возле стояка К1-2.11 приведён размер «ø50х0.0». В спецификации К1 труба записана как 50×0 мм при длине 5,2 м. Нулевая толщина стенки не определяет пригодное изделие; повторение записи в двух источниках требует согласованного исправления.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к обозначению и техническим характеристикам изделий в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-011",
+                "G-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить фактический типоразмер выбранной трубы по документации изготовителя и исправить обозначения на плане и в спецификации.",
+        "risk": "Неоднозначное обозначение препятствует корректному подбору и закупке труб.",
+        "source_finding_ids": [
+          "T-011",
+          "G-001"
+        ],
+        "source_block_ids": [
+          "blk_05cc98f235e94d8c86d0758dfc8f2cd0",
+          "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+        ],
+        "related_block_ids": [
+          "blk_05cc98f235e94d8c86d0758dfc8f2cd0",
+          "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_05cc98f235e94d8c86d0758dfc8f2cd0",
+            "page": 5
+          },
+          {
+            "type": "text",
+            "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+            "page": 31
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T122708Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:27:08.898826+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK14:f8b1abbe9f89c7203c04",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На плане листа3 обозначение К1-ø50×0.0; в СО д50×0 длиной5,2м.",
+          "verdict": "confirmed_separate_GRAPHIC_and_TEXT_observations",
+          "limits": ""
+        },
+        {
+          "claim": "Изображённая и специфицированная трубы тождественны.",
+          "verdict": "not_established",
+          "limits": "Общая система и похожее обозначение не подтверждают один и тот же участок; не усиливать вывод простым объединением."
+        },
+        {
+          "claim": "Нулевая толщина стенки как фактическое свойство трубы.",
+          "verdict": "not_established_conditional_notation",
+          "limits": "Значение второго числа и выбранный артикул требуют уточнения. Заголовок категоричнее условного описания; сохранять вопрос обозначения, а не утверждение о физически изготовленной трубе без стенки."
+        },
+        {
+          "claim": "Уточнить обозначение по изделию.",
+          "verdict": "supported_question_without_TEXT_override",
+          "limits": "TEXT не переизвлекать и не исправлять по растру. Допустимо уточнить инженерный смысл и паспорт изделия."
+        },
+        {
+          "claim": "Ошибка заказа или монтажа.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативный кандидат в исходной выдаче.",
+          "verdict": "not_verified_applicable_norm",
+          "limits": "Не засчитывать нормативное нарушение без подтверждённого применимого требования."
+        },
+        {
+          "claim": "Подписьø50×0.0 расположена возлеК1-2.11.",
+          "verdict": "confirmed_current_direct_GRAPHIC",
+          "limits": "Соседство подтверждено просмотром текущего изображения; тождество конкретной строкиСО и плановой трубы не установлено."
+        }
+      ],
+      "unsupported_additions": "Сохранить документальные вопросы;недопоставка,закупка лишних деталей и невозможность монтажа не доказаны. TEXT не исправлять повторным распознаванием.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK14.json",
+          "sha256": "570852e44331a5bb4b36806002728b354e19f8b7079a17ab6c5abf7f6d7d1619",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/VK14_primary_TEXT.json",
+            "sha256": "ff5811ba4af99665e6e5c3c5c4947e6e90029d64b40e85e2f5e400cf91f534f2"
+          },
+          "limits": "Буквальная запись x0 не доказывает закупку физической трубы с нулевой стенкой. Привязка к конкретной плановой линии не подтверждена.",
+          "wording": "Уточнить типоразмер строки полипропиленовой трубы д50x0, 5,2м, ProAqua: отсутствует однозначное обозначение стенки/изделия."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_05cc98f235e94d8c86d0758dfc8f2cd0.png",
+          "sha256": "6ecb4da8968568d5c77f525b68f16d0d662a9b06843a91c72e079d1be1ff5b68",
+          "block_id": "blk_05cc98f235e94d8c86d0758dfc8f2cd0",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "В верхней части плана у группы приборов видна подпись К1-ø50×0.0; в средней части также опуск К1ø50×0.0. Соответствие конкретной позиции СО не установлено."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-008",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_05cc98f235e94d8c86d0758dfc8f2cd0.png",
+          "sha256": "6ecb4da8968568d5c77f525b68f16d0d662a9b06843a91c72e079d1be1ff5b68",
+          "block_id": "blk_05cc98f235e94d8c86d0758dfc8f2cd0",
+          "route": "current_direct_GRAPHIC_review",
+          "observation": "В верхней части плана у группы приборов видна подпись К1-ø50×0.0; в средней части также опуск К1ø50×0.0. Соответствие конкретной позиции СО не установлено."
+        }
+      ],
+      "disposition": "assessed_r2_notation_question_same_object_unproven"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Комплектность спецификации",
+        "sheet": "Лист 02",
+        "page": 31,
+        "problem": "Количество штучных соединителей «Рапид» записано дробным числом.",
+        "description": "В спецификации К1, позиция 30 соединительных деталей, для соединителей диаметром 100 мм указано 4,70 шт. Значение не задаёт целого количества изделий. Возможны ошибка заполнения или ошибка распознавания; исходное изображение на этапе консолидации отсутствует.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к указанию единицы измерения и количества изделий в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить запись с оригиналом таблицы и ведомостью объёмов, затем указать подтверждённое целое количество. Не заменять 4,70 на 470 автоматически.",
+        "risk": "Возможны ошибочный заказ соединителей и расхождение закупочных объёмов.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [
+          "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+        ],
+        "related_block_ids": [
+          "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+            "page": 31
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 41,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-VK-F-008:91aa2581cf81197e6fe8",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Поз. 30 Rapid DN100 код 310100: количество 4,70, единица шт.",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "Такая запись не задаёт корректное закупочное количество.",
+          "verdict": "requires_scope_qualification",
+          "limits": "Подтверждён вопрос основания количества. Назначение числа, расчётная потребность и фактический заказ не установлены; неправильная закупка не доказана."
+        },
+        {
+          "claim": "Заменить на 470 или округлить без расчёта нельзя.",
+          "verdict": "supported_uncertainty_preservation"
+        },
+        {
+          "claim": "Сверить по оригиналу.",
+          "verdict": "clarify_authority_in_followup",
+          "limits": "TEXT принят авторитетным. Допустимо искать основание количества в связанной ведомости; не допустимо исправлять число переизвлечением PDF или растром TEXT."
+        },
+        {
+          "claim": "Нарушение ГОСТ 21.110-2013 п. 4.1.",
+          "verdict": "not_verified_candidate_only",
+          "limits": "В выдаче кандидат, norm_quote=null; не считать проверенным нормативным нарушением."
+        },
+        {
+          "claim": "Ошибочная закупка и задержка комплектования.",
+          "verdict": "hypothetical_not_observed"
+        },
+        {
+          "claim": "Для исправления4,70 нужно заново распознатьTEXT по изображению.",
+          "verdict": "conflicts_with_TEXT_authority",
+          "limits": "Число4,70 принимается как исходное. Искать расчёт потребности и назначение графы;не менять на470 или5 без основания."
+        }
+      ],
+      "unsupported_additions": "Сохранить документальные вопросы;недопоставка,закупка лишних деталей и невозможность монтажа не доказаны. TEXT не исправлять повторным распознаванием.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "no_second_same_Rapid_DN100_4_70_claim_in_26_VK_output_rows",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_null_reuse_coordinator_scope_only",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+          "authoritative_TEXT": "### BLOCK #94 [TEXT]: blk_e6ea1f0742914463bbf7ce02d97c5afa\n\n> **Created:** 2026-10-16 08:25:12 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/IpuZ1Xqxdt5wC3U53IaS)\n> **Stamp:** Code: ПД-00580716 - ВК2-2 | Stage: Не указано | Sheet: 02 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: Не указано | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 16 | Отвод чугунный 45¹ DN100 | SML | 11010045 | \"AVF\" | шт. | 66 | 1,60 |  |\n| 17 | Отвод чугунный 45¹ DN150 | SML | 11015045 | \"AVF\" | шт. | 7 | 3,50 |  |\n| 18 | Отвод чугунный 88¹ DN100 | SML | 11010088 | \"AVF\" | шт. | 1 | 2,10 |  |\n| 19 | Отвод чугунный 88¹ из двух колен по 44¹ DN100 | SML | 11210088 | \"AVF\" | шт. | 62 | 3,20 |  |\n| 20 | Отвод чугунный SML DN100 45¹ | DIN 19522 |  |  | шт. | 1 |  |  |\n| 21 | Отвод чугунный SML DN125 45¹ | DIN 19522 |  |  | шт. | 2 |  |  |\n| 22 | Отвод чугунный SML DN150 45¹ | DIN 19522 |  |  | шт. | 1 |  |  |\n| 23 | Патрубок компенсационный учетверенной длины, DN110 | Polytron Stilte Plus | STPL900110 | Pro Aqua | шт. | 17 |  |  |\n| 24 | Переход канализационный 110x50 | Polytron Stilte Plus |  | Pro Aqua | шт. | 1 |  |  |\n| 25 | Переходная муфта чугун-ПП (ПВХ) DN100-110 | HL 9/1 |  | HL | шт. | 48 |  |  |\n| 26 | Ревизия канализационная д110 | Polytron Stilte Plus | STPL60110 | Pro Aqua | шт. | 7 |  |  |\n| 27 | Ревизия с прямоугольной крышкой чугунная SML DN100 | SML |  |  | шт. | 3 |  |  |\n| 28 | Ревизия с прямоугольной крышкой чугунная SML DN150 | SML |  |  | шт. | 3 |  |  |\n| 29 | Ревизия с прямоугольным отверстием чугунная DN100 | SML | 121100 | \"AVF\" | шт. | 2 | 7,60 |  |\n| 30 | Соединитель-хомут с блокирующей затяжкой DN100 | Rapid | 310100 | \"AVF\" | шт. | 4,70 | 0,18 |  |\n| 31 | Соединительная муфта ПП/SML DN50 | Konfix | 360050 | \"AVF\" | шт. | 1 |  |  |\n| 32 | Соединительная муфта ПП/SML DN100 | Konfix | 360100 | \"AVF\" | шт. | 2 |  |  |\n| 33 | Соединительная муфта с переходной манжетой DN100-50 | Multifix |  |  | шт. | 1 |  |  |\n| 34 | Тройник канализационный 45¹ 50x50 | Polytron Stilte Plus | STPL2005805845 | Pro Aqua | шт. | 2 |  |  |\n| 35 | Тройник канализационный 45¹ 110x110 | Polytron Stilte Plus | STPL2011011045 | Pro Aqua | шт. | 52 |  |  |\n| 36 | Тройник канализационный 87,5¹ 110x50 | Polytron Stilte Plus | STPL2011005887 | Pro Aqua | шт. | 17 |  |  |\n| 37 | Тройник канализационный 87,5¹ 110x110 | Polytron Stilte Plus | STPL2011011087 | Pro Aqua | шт. | 26 |  |  |\n| 38 | Тройник чугунный SML DN100x100 45¹ | DIN 19522 |  |  | шт. | 2 |  |  |\n| 39 | Тройник чугунный SML DN150x100 45¹ | DIN 19522 |  |  | шт. | 4 |  |  |\n| 40 | Тройник чугунный SML DN150x150 45¹ | DIN 19522 |  |  | шт. | 1 |  |  |\n| 41 | Тройник чугунный безраструдный 45¹ DN100 x 100 | SML | 15010010045 | \"AVF\" | шт. | 75 | 4,20 |  |\n| 42 | Тройник чугунный безраструдный 45¹ DN150 x 100 | SML | 15015010045 | \"AVF\" | шт. | 2 | 6,80 |  |\n| 43 | Тройник чугунный безраструдный 45¹ DN150 x 150 | SML | 15015015045 | \"AVF\" | шт. | 4 | 9,20 |  |\n| 44 | Тройник чугунный безраструдный 88¹ DN100 x 50 | SML | 15010005088 | \"AVF\" | шт. | 1 | 2,10 |  |\n| 45 | Тройник чугунный безраструдный 88¹ DN100 x 100 | SML | 15010010088 | \"AVF\" | шт. | 2 | 2,90 |  |\n| Трубы |  |  |  |  |  |  |  |  |\n| 1 | Труба канализационная полипропиленовая бесшумная д50x0 | ГОСТ 32414-2013 |  | Pro Aqua | м | 5,2 |  |  |\n| 2 | Труба канализационная полипропиленовая бесшумная д110x5,3 | ГОСТ 32414-2013 |  | Pro Aqua | м | 297,7 |  |  |\n| 3 | Труба канализационная чугунная безраструдная д100x5 | SML |  |  | м. | 220,8 |  |  |\n| 4 | Труба канализационная чугунная безраструдная д125x5 | SML |  |  | м. | 0,2 |  |  |\n| К1.1 |  |  |  |  |  |  |  |  |\n| Сантехнические приборы |  |  |  |  |  |  |  |  |\n| 1 | Трап ф100 | HL310NPr | 9003076004676 | HL | шт. | 8 | 0,75 |  |\n| Соединительные детали трубопроводов |  |  |  |  |  |  |  |  |\n| 1 | Крестовина двухплоскостная чугунная безраструдная 88¹ DN100 x 100 x 100 | SML | 15310010088 | \"AVF\" | шт. | 5 | 3,40 |  |\n| 2 | Крестовина чугунная безраструдная 45¹ DN100 x 100 x 100 | SML | 15210010045 | \"AVF\" | шт. | 4 | 5,30 |  |\n| 3 | Отвод чугунный 30¹ DN100 | SML | 11010030 | \"AVF\" | шт. | 1 | 1,30 |  |\n| 4 | Отвод чугунный 45¹ DN100 | SML | 11010045 | \"AVF\" | шт. | 18 | 1,60 |  |\n| 5 | Отвод чугунный 88¹ DN100 | SML | 11010088 | \"AVF\" | шт. | 2 | 2,10 |  |\n| 6 | Отвод чугунный 88¹ из двух колен по 44¹ DN100 | SML | 11210088 | \"AVF\" | шт. | 10 | 3,20 |  |\n| 7 | Отвод чугунный SML DN100 88¹ | DIN 19522 |  |  | шт. | 1 |  |  |\n\n## Page 32 — Sheet 03\n\n"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-008.json",
+          "sha256": "04017a8927d6b2f0a646bbcb162274eb2227858c8917d70c4a68455e32d8adc3",
+          "primary_engineer_decision": null,
+          "scope": "Правильное целое количество не определено; нельзя автоматически округлить до5 или заменить на470. Фактическая недопоставка не доказана."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-009",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_quantity_question_qualify_procurement_claim"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-013",
+      "finding": {
+        "id": "F-013",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Крепления трубопроводов",
+        "sheet": "Листы 03, 06",
+        "page": [
+          32,
+          35
+        ],
+        "problem": "В спецификации не заполнено количество креплений системы К1.1.",
+        "description": "Для К1.1 предусмотрено 63,2 м чугунных труб. В строке креплений К1.1 диаметром 100 мм количество отсутствует. Принадлежность креплений соседних строк этой системе не указана.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту сведений о количестве креплений, необходимых для проектируемых трубопроводов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить типоразмеры и количество креплений по трассам, принятому шагу и нагрузкам; заполнить строку К1.1.",
+        "risk": "Возможны недопоставка креплений и монтаж с неподтверждённым шагом опор.",
+        "source_finding_ids": [
+          "T-013"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_5a8674f9dc2343498ae3b666f20e67c9",
+          "blk_9b1d774c2f6c4127b2f8618e3792a647"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 68,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK35_B-VK-F-010:3dfbbec7f05abd4276e4",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Строка К1.1 Ø100 существует, количество пусто; длина трубы К1.1 63,2 м.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Явной ссылки на учёт креплений в другой строке нет в проверенной таблице.",
+          "verdict": "confirmed_local_table_scope",
+          "limits": "Не доказано фактическое отсутствие креплений или их закупки."
+        },
+        {
+          "claim": "Определить число по опорам и подвескам, либо дать ссылку на другую позицию.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не выводить число креплений только из 63,2 м без схемы и шага."
+        },
+        {
+          "claim": "Неопределённость закупочного объёма.",
+          "verdict": "plausible_documentation_consequence_not_observed_purchase_failure",
+          "limits": ""
+        },
+        {
+          "claim": "ГОСТ 21.110-2013 п.4.1",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; нормативный кандидат не засчитывается как проверенное нарушение."
+        },
+        {
+          "claim": "Пустая графа означает нулевую поставку креплений.",
+          "verdict": "not_established",
+          "limits": "Проверен пробел документации,заказ и поставка не проверены."
+        }
+      ],
+      "unsupported_additions": "Сохранить документальные вопросы;недопоставка,закупка лишних деталей и невозможность монтажа не доказаны. TEXT не исправлять повторным распознаванием.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_5a8674f9dc2343498ae3b666f20e67c9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK35_B-VK-F-010.json",
+          "sha256": "b175eeb75cd23a55a2ea601623e65898bc8dd4756c4fe16cf2e8aa8ad3e83f72",
+          "primary_adjudication": null,
+          "limits": "Не вычислять количество креплений по общей длине без шага и схемы крепления. Фактическая недопоставка не установлена.",
+          "wording": "Указать количество комплектов крепления трубопровода К1.1Ø100: строка предусмотрена в таблице креплений, графа количества пуста."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-012",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_blank_quantity_question"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Комплектность спецификации",
+        "sheet": "Листы 04, 06",
+        "page": [
+          33,
+          35
+        ],
+        "problem": "Объём труб К2.1 диаметром 125 мм не согласован с соединительными и фасонными деталями.",
+        "description": "Специфицировано 495,5 м чугунных труб диаметром 125 мм и 250 комплектов креплений этого диаметра. Соединители диаметром 125 мм и переходы к нему в разделе соединительных деталей не приведены; из фасонных частей указан один отвод. Наличие отдельного количества креплений требует проверки всей ведомости объёмов, а не исправления одной строки.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить комплектность труб, соединителей, фасонных частей и креплений по рабочим чертежам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-014"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-014"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить принадлежность и длину труб диаметром 125 мм по трассам К2.1, затем пересчитать соединители, фасонные части и крепления.",
+        "risk": "Возможны закупка лишних труб и креплений либо существенный недокомплект соединений, дополнительные затраты и задержка монтажа.",
+        "source_finding_ids": [
+          "T-014"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_2832f2bda58d416ab8c388c81c339b02",
+          "blk_5a8674f9dc2343498ae3b666f20e67c9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 86,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F009_pipe_125_inventory:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В К2.1: 495,5 м трубы ϕ125×5, один отвод DN125 и 250 креплений Ø125; отдельные соединители DN125 в разделе не перечислены.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Весь этот участок имеет DN125.",
+          "verdict": "unsupported_automatic_diameter_equivalence",
+          "limits": "Обозначение ϕ125×5 не заменяет условный диаметр DN125 без установления изделия."
+        },
+        {
+          "claim": "Не определены необходимые переходы к DN100.",
+          "verdict": "insufficient_topology_evidence",
+          "limits": "Наличие деталей обоих размеров само по себе не доказывает сопряжение между ними."
+        },
+        {
+          "claim": "Нельзя считать 495,5 м простой опечаткой.",
+          "verdict": "supported_as_no_automatic_correction",
+          "limits": "250 креплений — дополнительный повод сверить трассы, а не доказательство правильности длины или количества соединений."
+        },
+        {
+          "claim": "Недокомплект и невозможность выполнения сети.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Проверить трассы и комплектование до исправления СО.",
+          "verdict": "scoped_question_supported",
+          "limits": "Отдельный вопрос К1 о 0,2 м и 32 креплениях данным замечанием не покрыт."
+        },
+        {
+          "claim": "ГОСТ 21.110-2013 п.4.1",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; нормативный кандидат не засчитывается как проверенное нарушение."
+        },
+        {
+          "claim": "Наличие250 креплений подтверждает250стыков либо правильность495,5м трубы.",
+          "verdict": "not_established",
+          "limits": "Крепления и стыки — разные объекты. Нужна трасса и спецификация изделий;диаметр125не подменять автоматическиDN125."
+        }
+      ],
+      "unsupported_additions": "Сохранить документальные вопросы;недопоставка,закупка лишних деталей и невозможность монтажа не доказаны. TEXT не исправлять повторным распознаванием.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_5a8674f9dc2343498ae3b666f20e67c9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F009_pipe_125_inventory.json",
+          "sha256": "841874d6b0fce166bb0a0222ebc8cfe4a015cd33e59413d62f02186a20fbede9",
+          "primary_adjudication": null,
+          "limits": "Проверены текстовые позиции шести листов спецификации. Утверждение об отсутствии Ø125/DN125 на всех планах и схемах не проверено: поиск числа в извлечённом тексте не заменяет просмотр графики. Обозначение ø125×5 не подменяется автоматически условным DN125. Количество креплений не является количеством стыков; 32 крепления при 0,2 м трубы К1 требуют сверки назначения, но не доказывают 32 лишних крепления. Отсутствие переходов не доказывает необходимость переходов без проверки топологии. Недопоставка, дополнительные расходы и конкретное нарушение ГОСТ не установлены. Длина 495,5 м и её отношение к другим диаметрам сами по себе не доказывают завышение.",
+          "wording": "Согласовать спецификацию труб и комплектующих Ø125 с трассами К2.1 и К1. В К2.1 указаны 495,5 м SML ø125×5, один отвод DN125 и 250 креплений Ø125; в К1 — 0,2 м трубы д125×5, два отвода DN125 и 32 крепления Ø125. Отдельные соединители DN125 в проверенной спецификации не перечислены. Уточнить диаметры, назначение креплений и способ учёта соединений; после сверки трасс определить необходимые исправления."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-011",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_inventory_question_remove_diameter_and_topology_assumptions"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": "Specification inconsistencies do not prove physical supply failures. Reused evidence bound to identical current source hashes."
+}
