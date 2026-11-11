@@ -1,0 +1,136 @@
+{
+  "status": "private_source_copies_prepared_not_frozen",
+  "variant": "source_review",
+  "runs": [
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ak_r1_source_review",
+      "discipline": "AK",
+      "repeat": 1,
+      "files": 76,
+      "input_manifest_sha256": "5fe1c42730d21f04052ca940c52cf13b04add21620c0502d1b4c5ec616280f61"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/itp_r1_source_review",
+      "discipline": "ITP",
+      "repeat": 1,
+      "files": 54,
+      "input_manifest_sha256": "4a953eb895e13ba09f7202ac36ac432e1489d96d63a32bfc6e59ade41805bd4a"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ar_r1_source_review",
+      "discipline": "AR",
+      "repeat": 1,
+      "files": 48,
+      "input_manifest_sha256": "bdb2ae6e4b6564b32957915a8d7f80a0da937cd29e549cf3d4df8aef77687ac3"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/km_r1_source_review",
+      "discipline": "KM",
+      "repeat": 1,
+      "files": 60,
+      "input_manifest_sha256": "5020102c766fd035966e1e88b5b1ec4355e5adf00ec2817fbf47769cb3d647a3"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/vk_r1_source_review",
+      "discipline": "VK",
+      "repeat": 1,
+      "files": 41,
+      "input_manifest_sha256": "c9139448cfb2a1ca400ac90d7126b40025d6d8b4fa3ef1a5eaf895f606be571b"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/eom_r1_source_review",
+      "discipline": "EOM",
+      "repeat": 1,
+      "files": 91,
+      "input_manifest_sha256": "dc3964e2f40eeb750ec10f9e2e2efe6ed4c55bd5ed9b08037cd0f168789c07ef"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ak_r2_source_review",
+      "discipline": "AK",
+      "repeat": 2,
+      "files": 76,
+      "input_manifest_sha256": "80d8d2f36a6fd192ad13d04adf30721df9d86103f57f215d7a080cf0c2b5f3ee"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/itp_r2_source_review",
+      "discipline": "ITP",
+      "repeat": 2,
+      "files": 54,
+      "input_manifest_sha256": "897b03b5080d274bbb23801781f52900ef26b890399bcc510f6c8e4f50c7638a"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ar_r2_source_review",
+      "discipline": "AR",
+      "repeat": 2,
+      "files": 48,
+      "input_manifest_sha256": "e17a50bed21a75f5cfc4914360cbf2afdcbd15a19f3a97870119c8d1b9b06a58"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/km_r2_source_review",
+      "discipline": "KM",
+      "repeat": 2,
+      "files": 60,
+      "input_manifest_sha256": "3cdda1a087314c5b218b6f11d9cc4cae68abd84c58314a26643eacaa71d55bd1"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/vk_r2_source_review",
+      "discipline": "VK",
+      "repeat": 2,
+      "files": 41,
+      "input_manifest_sha256": "4bf9651a80b0a7497510bed451e3ee9aa334ab31976f659b7864987361cd390c"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/eom_r2_source_review",
+      "discipline": "EOM",
+      "repeat": 2,
+      "files": 91,
+      "input_manifest_sha256": "241c4963fcaf0530dd1013740ed192deb7711e2e4f4ccfc6acfa30d82548ca3b"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ak_r3_source_review",
+      "discipline": "AK",
+      "repeat": 3,
+      "files": 76,
+      "input_manifest_sha256": "596355365a5523d60bf40d8b005786a71e2d30f55f82214ebff7fedd9f685ddb"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/itp_r3_source_review",
+      "discipline": "ITP",
+      "repeat": 3,
+      "files": 54,
+      "input_manifest_sha256": "6735133092409563f4c514ee1587b956b877c709c1e08b2846e3a0ebb13d979e"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ar_r3_source_review",
+      "discipline": "AR",
+      "repeat": 3,
+      "files": 48,
+      "input_manifest_sha256": "12a7e44c34e0eae9275afdc518fea4dfdb3b18654bb9e20a3f26dcd8869bc78f"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/km_r3_source_review",
+      "discipline": "KM",
+      "repeat": 3,
+      "files": 60,
+      "input_manifest_sha256": "5bdd89ef012a3fe9c99ecbe724c859be2bc4c7a3ed9c9a4190219bac334da521"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/vk_r3_source_review",
+      "discipline": "VK",
+      "repeat": 3,
+      "files": 41,
+      "input_manifest_sha256": "2bf929c5bc3d67d014a9a24c57cdf01bb7d4134f46ae9923f64d1052664aa7be"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/eom_r3_source_review",
+      "discipline": "EOM",
+      "repeat": 3,
+      "files": 91,
+      "input_manifest_sha256": "3408812ba600c5e92e93d047e6b5966c3e15229f1542829b77555a1a3f827ec2"
+    }
+  ],
+  "source_layout_sha256": "725b8a09996f8cfa27a6d9f3913416d401a0fde28bb221619bb7f0130eb141b2",
+  "model_calls": 0,
+  "runnable_protocols_created": false,
+  "remaining": "Implementation, evaluator/trial binding, controls and dispatch order must be frozen separately."
+}

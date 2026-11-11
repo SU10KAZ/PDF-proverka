@@ -1,0 +1,136 @@
+{
+  "status": "private_source_copies_prepared_not_frozen",
+  "variant": "inventory",
+  "runs": [
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ak_r1_inventory",
+      "discipline": "AK",
+      "repeat": 1,
+      "files": 76,
+      "input_manifest_sha256": "94b331fa1554b8b3756c381dcac75deee73054eb4610fda823038a2e9289a370"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/itp_r1_inventory",
+      "discipline": "ITP",
+      "repeat": 1,
+      "files": 54,
+      "input_manifest_sha256": "e48da92a136214e89f654cbbc8db173b4dd40a71c07c148030301011c59e7b9c"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ar_r1_inventory",
+      "discipline": "AR",
+      "repeat": 1,
+      "files": 48,
+      "input_manifest_sha256": "60ef2f9ace89706386f2428f4494ad148ad24f42fdfdcf19fc8ecfcc211faa5d"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/km_r1_inventory",
+      "discipline": "KM",
+      "repeat": 1,
+      "files": 60,
+      "input_manifest_sha256": "c810f4bc0b9e84ea4984cc358261c695f96808546972437a3c43bd63bdd16571"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/vk_r1_inventory",
+      "discipline": "VK",
+      "repeat": 1,
+      "files": 41,
+      "input_manifest_sha256": "15c4566319f377789c291ce44b29b3131ed421e48b4dbd5148d226c8c4c43999"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/eom_r1_inventory",
+      "discipline": "EOM",
+      "repeat": 1,
+      "files": 91,
+      "input_manifest_sha256": "4a9e5ef8a840d7f4d343b966126bb95ed83de218243e2ea0651ecd4731b0c0ff"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ak_r2_inventory",
+      "discipline": "AK",
+      "repeat": 2,
+      "files": 76,
+      "input_manifest_sha256": "b72086adcbf052ef9a362b67673c729b2c9c19097651998f75f4e64dd8ea3a08"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/itp_r2_inventory",
+      "discipline": "ITP",
+      "repeat": 2,
+      "files": 54,
+      "input_manifest_sha256": "24cbc988d760b18985453816b974a5aa95d46f60c084ace38a909caea69af4cd"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ar_r2_inventory",
+      "discipline": "AR",
+      "repeat": 2,
+      "files": 48,
+      "input_manifest_sha256": "30721dc841b426673ef08b10ede6b95f1f92ba7fa6005af7e59c7df237cdcfb1"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/km_r2_inventory",
+      "discipline": "KM",
+      "repeat": 2,
+      "files": 60,
+      "input_manifest_sha256": "781965754f8ae324aef3588df55f2370c921b7d153054fa229b8c0470c4b6142"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/vk_r2_inventory",
+      "discipline": "VK",
+      "repeat": 2,
+      "files": 41,
+      "input_manifest_sha256": "fa25ca7cc393d3342776be6e14e746bf30c7c4d73685266a8ea31aae4327b1a2"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/eom_r2_inventory",
+      "discipline": "EOM",
+      "repeat": 2,
+      "files": 91,
+      "input_manifest_sha256": "81d8f0b1739beaf8f7acb7cfd1b2f45a016c59d5c6be7df2e017234c15f7a017"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ak_r3_inventory",
+      "discipline": "AK",
+      "repeat": 3,
+      "files": 76,
+      "input_manifest_sha256": "d60a664366503a4e1eb1d56611cce2a7aaeb64ab232b8c628f983f46a0bae8c2"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/itp_r3_inventory",
+      "discipline": "ITP",
+      "repeat": 3,
+      "files": 54,
+      "input_manifest_sha256": "dde8279242da441b0117efe4bd75526e1c3e803139363edc6e180871d898c2b0"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/ar_r3_inventory",
+      "discipline": "AR",
+      "repeat": 3,
+      "files": 48,
+      "input_manifest_sha256": "3a88b3ef25b514c309a40defd191ffa97173a7edf1b2ee2aa861f0e9ba11635d"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/km_r3_inventory",
+      "discipline": "KM",
+      "repeat": 3,
+      "files": 60,
+      "input_manifest_sha256": "22b314b1bc9bc1b4ee092f7beb1dfe9227b0c09618da014fb9a00b20236eeaf9"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/vk_r3_inventory",
+      "discipline": "VK",
+      "repeat": 3,
+      "files": 41,
+      "input_manifest_sha256": "166220ff125262cebdf51507838d47d9e5bd79f7e501e09fc83d490179aee56a"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_layout_20261111/eom_r3_inventory",
+      "discipline": "EOM",
+      "repeat": 3,
+      "files": 91,
+      "input_manifest_sha256": "49396e9e5af1327ecb58e6f3578a6c2ff80198d4aa2abea675999bbee1f898b2"
+    }
+  ],
+  "source_layout_sha256": "725b8a09996f8cfa27a6d9f3913416d401a0fde28bb221619bb7f0130eb141b2",
+  "model_calls": 0,
+  "runnable_protocols_created": false,
+  "remaining": "Implementation, evaluator/trial binding, controls and dispatch order must be frozen separately."
+}

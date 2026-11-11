@@ -1,0 +1,301 @@
+{
+  "status": "input_copies_and_arm_configuration_verified_not_trial_ready",
+  "runs": 90,
+  "rehash_count": 5550,
+  "distinct_file_inodes": 5550,
+  "equal_inputs_across_arms_and_repeats": true,
+  "shared_source_hardlinks": false,
+  "copy_receipts": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_layout_20261111/classic_input_copy_receipt.json",
+      "sha256": "54eaf9d1e95c13c11cc137ce9b9ad928b88be43bb1e106ff67f4a38cd90f1c8c"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_layout_20261111/classic_current_input_copy_receipt.json",
+      "sha256": "a995276153394696b94d0d69ab7686ff328ab4d2374eadc99fde4fa83d7a6f55"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_layout_20261111/inventory_input_copy_receipt.json",
+      "sha256": "caddbad040be7a108abc2a4be6b8a73729486fe9fa881e848ec74c773f2847ff"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_layout_20261111/source_review_input_copy_receipt.json",
+      "sha256": "7867b566802f10380300ba242fc98bdcf0c6f729192e90dbebb2cbf9fd2861ce"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_layout_20261111/candidate_input_copy_receipt.json",
+      "sha256": "565cdc7dcf0228822e0ff40ac6852fab4be986cd684ef8bce3240b37287e0120"
+    }
+  ],
+  "arm_preflights": {
+    "classic": {
+      "status": "shared_transport_preflight_passed",
+      "source_root": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_compatible",
+      "algorithm_module": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_compatible/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+      "backend_imports_verified": 42,
+      "cross_arm_imports": {},
+      "variant": "classic",
+      "method_config": {},
+      "context_option_keys": [],
+      "stage_models": {
+        "text_analysis": "codex/gpt-6-astra",
+        "block_batch": "ensemble/codex-only",
+        "findings_merge": "codex/gpt-6-astra",
+        "findings_critic": "codex/gpt-6-astra",
+        "findings_corrector": "codex/gpt-6-astra",
+        "norm_verify": "codex/gpt-6-astra",
+        "norm_fix": "codex/gpt-6-astra",
+        "norm_requote": "codex/gpt-6-astra",
+        "optimization": "ensemble/codex-codex-opt",
+        "optimization_critic": "codex/gpt-6-astra",
+        "optimization_corrector": "codex/gpt-6-astra"
+      },
+      "environment": {
+        "STAGE01_CLAUDE_LEG_ENABLED": "false",
+        "STAGE01_THIRD_LEG_ENABLED": "false",
+        "STAGE01_CODEX_ONLY_LEG_MODELS": "codex/gpt-6-astra,codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_LEG_EFFORT": "high",
+        "STAGE01_CODEX_ONLY_JUDGE_MODEL": "codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_JUDGE_EFFORT": "high",
+        "STAGE01_NEIGHBOR_COORD_TEXT_ENABLED": "false",
+        "MD_MIRROR_RECONCILE_ENABLED": "false",
+        "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false",
+        "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": "0",
+        "AUDIT_OBJECT_GRAPHIC_DETAILS": "0",
+        "AUDIT_OBJECT_TERMINAL_DISPOSITION": "0",
+        "AUDIT_OBJECT_OPERATION_MAX_REQUESTS": "8"
+      },
+      "reasoning_effort": "high",
+      "max_request_attempts": 3,
+      "retry_delay_seconds": 10,
+      "model_calls": 0,
+      "boundary": "Configuration/import check only. Candidate methods and execution/evaluator freeze are not complete."
+    },
+    "classic_current": {
+      "status": "shared_transport_preflight_passed",
+      "source_root": "/home/coder/projects/PDF-proverka",
+      "algorithm_module": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+      "backend_imports_verified": 42,
+      "cross_arm_imports": {},
+      "variant": "classic_current",
+      "method_config": {},
+      "context_option_keys": [],
+      "stage_models": {
+        "text_analysis": "codex/gpt-6-astra",
+        "block_batch": "ensemble/codex-only",
+        "findings_merge": "codex/gpt-6-astra",
+        "findings_critic": "codex/gpt-6-astra",
+        "findings_corrector": "codex/gpt-6-astra",
+        "norm_verify": "codex/gpt-6-astra",
+        "norm_fix": "codex/gpt-6-astra",
+        "norm_requote": "codex/gpt-6-astra",
+        "optimization": "ensemble/codex-codex-opt",
+        "optimization_critic": "codex/gpt-6-astra",
+        "optimization_corrector": "codex/gpt-6-astra"
+      },
+      "environment": {
+        "STAGE01_CLAUDE_LEG_ENABLED": "false",
+        "STAGE01_THIRD_LEG_ENABLED": "false",
+        "STAGE01_CODEX_ONLY_LEG_MODELS": "codex/gpt-6-astra,codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_LEG_EFFORT": "high",
+        "STAGE01_CODEX_ONLY_JUDGE_MODEL": "codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_JUDGE_EFFORT": "high",
+        "STAGE01_NEIGHBOR_COORD_TEXT_ENABLED": "false",
+        "MD_MIRROR_RECONCILE_ENABLED": "false",
+        "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false",
+        "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": "0",
+        "AUDIT_OBJECT_GRAPHIC_DETAILS": "0",
+        "AUDIT_OBJECT_TERMINAL_DISPOSITION": "0",
+        "AUDIT_OBJECT_OPERATION_MAX_REQUESTS": "8"
+      },
+      "reasoning_effort": "high",
+      "max_request_attempts": 3,
+      "retry_delay_seconds": 10,
+      "model_calls": 0,
+      "boundary": "Configuration/import check only. Candidate methods and execution/evaluator freeze are not complete."
+    },
+    "inventory": {
+      "status": "shared_transport_preflight_passed",
+      "source_root": "/home/coder/projects/PDF-proverka",
+      "algorithm_module": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+      "backend_imports_verified": 60,
+      "cross_arm_imports": {},
+      "variant": "inventory",
+      "method_config": {
+        "inventory_max_packets": 128,
+        "inventory_max_source_chars": 60000,
+        "inventory_max_images": 4
+      },
+      "context_option_keys": [
+        "inventory_executor_id",
+        "inventory_invoke",
+        "inventory_max_images",
+        "inventory_max_packets",
+        "inventory_max_source_chars"
+      ],
+      "stage_models": {
+        "text_analysis": "codex/gpt-6-astra",
+        "block_batch": "ensemble/codex-only",
+        "findings_merge": "codex/gpt-6-astra",
+        "findings_critic": "codex/gpt-6-astra",
+        "findings_corrector": "codex/gpt-6-astra",
+        "norm_verify": "codex/gpt-6-astra",
+        "norm_fix": "codex/gpt-6-astra",
+        "norm_requote": "codex/gpt-6-astra",
+        "optimization": "ensemble/codex-codex-opt",
+        "optimization_critic": "codex/gpt-6-astra",
+        "optimization_corrector": "codex/gpt-6-astra"
+      },
+      "environment": {
+        "STAGE01_CLAUDE_LEG_ENABLED": "false",
+        "STAGE01_THIRD_LEG_ENABLED": "false",
+        "STAGE01_CODEX_ONLY_LEG_MODELS": "codex/gpt-6-astra,codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_LEG_EFFORT": "high",
+        "STAGE01_CODEX_ONLY_JUDGE_MODEL": "codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_JUDGE_EFFORT": "high",
+        "STAGE01_NEIGHBOR_COORD_TEXT_ENABLED": "false",
+        "MD_MIRROR_RECONCILE_ENABLED": "false",
+        "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false",
+        "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": "1",
+        "AUDIT_OBJECT_GRAPHIC_DETAILS": "1",
+        "AUDIT_OBJECT_TERMINAL_DISPOSITION": "1",
+        "AUDIT_OBJECT_OPERATION_MAX_REQUESTS": "128"
+      },
+      "reasoning_effort": "high",
+      "max_request_attempts": 3,
+      "retry_delay_seconds": 10,
+      "model_calls": 0,
+      "boundary": "Configuration/import check only. Candidate methods and execution/evaluator freeze are not complete."
+    },
+    "source_review": {
+      "status": "shared_transport_preflight_passed",
+      "source_root": "/home/coder/projects/PDF-proverka",
+      "algorithm_module": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+      "backend_imports_verified": 60,
+      "cross_arm_imports": {},
+      "variant": "source_review",
+      "method_config": {
+        "source_review_max_findings": 256,
+        "source_review_auto_graphic_regions": true,
+        "source_final_check_max_findings": 256,
+        "source_final_check_complete_citations": true
+      },
+      "context_option_keys": [
+        "source_final_check_complete_citations",
+        "source_final_check_executor_id",
+        "source_final_check_invoke",
+        "source_final_check_max_findings",
+        "source_review_auto_graphic_regions",
+        "source_review_executor_id",
+        "source_review_invoke",
+        "source_review_max_findings"
+      ],
+      "stage_models": {
+        "text_analysis": "codex/gpt-6-astra",
+        "block_batch": "ensemble/codex-only",
+        "findings_merge": "codex/gpt-6-astra",
+        "findings_critic": "codex/gpt-6-astra",
+        "findings_corrector": "codex/gpt-6-astra",
+        "norm_verify": "codex/gpt-6-astra",
+        "norm_fix": "codex/gpt-6-astra",
+        "norm_requote": "codex/gpt-6-astra",
+        "optimization": "ensemble/codex-codex-opt",
+        "optimization_critic": "codex/gpt-6-astra",
+        "optimization_corrector": "codex/gpt-6-astra"
+      },
+      "environment": {
+        "STAGE01_CLAUDE_LEG_ENABLED": "false",
+        "STAGE01_THIRD_LEG_ENABLED": "false",
+        "STAGE01_CODEX_ONLY_LEG_MODELS": "codex/gpt-6-astra,codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_LEG_EFFORT": "high",
+        "STAGE01_CODEX_ONLY_JUDGE_MODEL": "codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_JUDGE_EFFORT": "high",
+        "STAGE01_NEIGHBOR_COORD_TEXT_ENABLED": "false",
+        "MD_MIRROR_RECONCILE_ENABLED": "false",
+        "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false",
+        "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": "0",
+        "AUDIT_OBJECT_GRAPHIC_DETAILS": "0",
+        "AUDIT_OBJECT_TERMINAL_DISPOSITION": "0",
+        "AUDIT_OBJECT_OPERATION_MAX_REQUESTS": "8"
+      },
+      "reasoning_effort": "high",
+      "max_request_attempts": 3,
+      "retry_delay_seconds": 10,
+      "model_calls": 0,
+      "boundary": "Configuration/import check only. Candidate methods and execution/evaluator freeze are not complete."
+    },
+    "candidate": {
+      "status": "shared_transport_preflight_passed",
+      "source_root": "/home/coder/projects/PDF-proverka",
+      "algorithm_module": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+      "backend_imports_verified": 60,
+      "cross_arm_imports": {},
+      "variant": "candidate",
+      "method_config": {
+        "inventory_max_packets": 128,
+        "inventory_max_source_chars": 60000,
+        "inventory_max_images": 4,
+        "source_review_max_findings": 256,
+        "source_review_auto_graphic_regions": true,
+        "source_final_check_max_findings": 256,
+        "source_final_check_complete_citations": true
+      },
+      "context_option_keys": [
+        "inventory_executor_id",
+        "inventory_invoke",
+        "inventory_max_images",
+        "inventory_max_packets",
+        "inventory_max_source_chars",
+        "source_final_check_complete_citations",
+        "source_final_check_executor_id",
+        "source_final_check_invoke",
+        "source_final_check_max_findings",
+        "source_review_auto_graphic_regions",
+        "source_review_executor_id",
+        "source_review_invoke",
+        "source_review_max_findings"
+      ],
+      "stage_models": {
+        "text_analysis": "codex/gpt-6-astra",
+        "block_batch": "ensemble/codex-only",
+        "findings_merge": "codex/gpt-6-astra",
+        "findings_critic": "codex/gpt-6-astra",
+        "findings_corrector": "codex/gpt-6-astra",
+        "norm_verify": "codex/gpt-6-astra",
+        "norm_fix": "codex/gpt-6-astra",
+        "norm_requote": "codex/gpt-6-astra",
+        "optimization": "ensemble/codex-codex-opt",
+        "optimization_critic": "codex/gpt-6-astra",
+        "optimization_corrector": "codex/gpt-6-astra"
+      },
+      "environment": {
+        "STAGE01_CLAUDE_LEG_ENABLED": "false",
+        "STAGE01_THIRD_LEG_ENABLED": "false",
+        "STAGE01_CODEX_ONLY_LEG_MODELS": "codex/gpt-6-astra,codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_LEG_EFFORT": "high",
+        "STAGE01_CODEX_ONLY_JUDGE_MODEL": "codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_JUDGE_EFFORT": "high",
+        "STAGE01_NEIGHBOR_COORD_TEXT_ENABLED": "false",
+        "MD_MIRROR_RECONCILE_ENABLED": "false",
+        "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false",
+        "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": "1",
+        "AUDIT_OBJECT_GRAPHIC_DETAILS": "1",
+        "AUDIT_OBJECT_TERMINAL_DISPOSITION": "1",
+        "AUDIT_OBJECT_OPERATION_MAX_REQUESTS": "128"
+      },
+      "reasoning_effort": "high",
+      "max_request_attempts": 3,
+      "retry_delay_seconds": 10,
+      "model_calls": 0,
+      "boundary": "Configuration/import check only. Candidate methods and execution/evaluator freeze are not complete."
+    }
+  },
+  "model_calls": 0,
+  "protocols_created": false,
+  "stage4_complete": false,
+  "limits": [
+    "No independent audit result or engineer assessment exists for these prepared slots.",
+    "Current implementation is not frozen; subsequent edits require new preflight and freeze.",
+    "Source copy isolation is not proof of every filesystem permission boundary in a future executor."
+  ]
+}
