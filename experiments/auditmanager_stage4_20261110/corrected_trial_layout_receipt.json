@@ -1,0 +1,27 @@
+{
+  "status": "corrected_layout_prepared_not_frozen_not_dispatched",
+  "layout_path": "/tmp/auditmanager_comparative_trial_corrected_20261111/layout.json",
+  "layout_sha256": "b75421200da481cce83f93041086b312c0a34edefef7e7ec6907f5b38cfcfc0b",
+  "input_package_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/six_corrected_source_input_package.json",
+  "input_package_sha256": "fa0fff534db89db29b371c7496a9af91081f69228b8c2a7cb3c51ba6ecbe5109",
+  "slots": 90,
+  "repeats": 3,
+  "disciplines": [
+    "AK",
+    "ITP",
+    "AR",
+    "KM",
+    "VK",
+    "EOM"
+  ],
+  "eligible_arms_not_yet_selected": true,
+  "model_calls": 0,
+  "input_copies_created": false,
+  "limits": [
+    "Combined candidate remains held until constituent methods are assessed.",
+    "New AK inputs use SS for both historical and candidate sources; prior EOM runs are not interchangeable matched controls.",
+    "Freeze only after source-handoff and recovery pilots are assessed; do not retune a frozen full series.",
+    "All inputs remain known DEV regression data."
+  ],
+  "production_acceptance": false
+}
