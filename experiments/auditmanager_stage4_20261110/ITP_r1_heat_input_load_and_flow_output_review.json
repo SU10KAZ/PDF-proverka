@@ -1,0 +1,285 @@
+{
+  "status": "one_heat_input_parameter_review",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "2a6ad88727f652355e50c2ec41a4dd8649fd7830343cc283ff736660122db534",
+  "queue_after_sha256": "14c48435f8e28e8c36602d161b8d67a2bfc39e79b07a494c51e00a4a70b1ca4c",
+  "reviewer": "coordinator_GRAPHIC_TEXT_and_arithmetic",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-044",
+      "finding": {
+        "id": "F-044",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Параметры теплового ввода",
+        "sheet": "Листы 5, 11.2",
+        "page": [
+          12,
+          18,
+          43
+        ],
+        "problem": "Нагрузка и расход теплового ввода на чертежах отличаются от ПЗ.",
+        "description": "Разрезы 1-1 и 2-2 листа 5 указывают 5,205 Гкал/ч. Аксонометрия листа 11.2 также задаёт 5,205 Гкал/ч и 260,25 м³/ч, тогда как ПЗ — 5,229 Гкал/ч и 261,50 м³/ч. Различия составляют 0,024 Гкал/ч и 1,25 м³/ч; разрезы и аксонометрия согласуются между собой по нагрузке.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Установить актуальные расчётные нагрузку и расход ввода и синхронизировать ПЗ, разрезы и аксонометрию.",
+        "risk": "Использование разных исходных данных при подборе, учёте и наладке ИТП.",
+        "source_finding_ids": [
+          "G-007",
+          "G-008",
+          "G-029",
+          "G-030"
+        ],
+        "source_block_ids": [
+          "blk_871a2c95697d4a93adb86dd3e2456614",
+          "blk_94b58ecf5d404f7d90c272d267eb2e48"
+        ],
+        "related_block_ids": [
+          "blk_871a2c95697d4a93adb86dd3e2456614",
+          "blk_94b58ecf5d404f7d90c272d267eb2e48"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_871a2c95697d4a93adb86dd3e2456614",
+            "page": 12
+          },
+          {
+            "type": "text",
+            "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+            "page": 18
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 43
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-008",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-029",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-030",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение нагрузки: 5,205 Гкал/ч на разрезах 1-1 и 2-2 против 5,229 Гкал/ч в пояснительной записке; разница 0,024 Гкал/ч. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение нагрузки: 5,205 Гкал/ч на разрезах 1-1 и 2-2 против 5,229 Гкал/ч в пояснительной записке; разница 0,024 Гкал/ч. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-044:de24b888831313c4d337",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Разрезы 1-1 и 2-2 листа 5 подписывают подачу Т1 нагрузкой 5,205 Гкал/ч и расходом 260,25 м³/ч.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "На аксонометрии листа 11.2 ввод Т1/Т2 также подписан 5,205 Гкал/ч и 260,25 м³/ч при 90/70 °C.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": "Подписи подачи и обратки не являются двумя независимыми нагрузками."
+        },
+        {
+          "claim": "ПЗ публикует итоговую нагрузку 5,229 Гкал/ч и расход 261,50 м³/ч. Разности с графикой 0,024 и 1,25 соответственно.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Прямое выражение 5,229×1000/(90−70) точно равно опубликованным 261,50.",
+          "verdict": "not_exact_arithmetic",
+          "limits": "Прямой результат 261,45; сумма опубликованных 74,15+44+9,55+3,35+76,40+54,05=261,50. Промежуточное округление вентиляции может объяснить 0,05; не вводить отдельный дефект и не считать это объяснением расхождения нагрузок 0,024."
+        },
+        {
+          "claim": "Нужно согласовать актуальные исходные данные и подписи ввода.",
+          "verdict": "supported_scoped_question",
+          "limits": "Правильная редакция, причина расхождения и влияние на подбор не установлены. Малое значение не превращать в универсальный допуск."
+        },
+        {
+          "claim": "Ошибки фактического учёта, наладки или типоразмера оборудования доказаны.",
+          "verdict": "not_established",
+          "limits": ""
+        },
+        {
+          "claim": "Оба графических блока в выдаче обозначены type=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "Проверены изображения, исходная выдача не изменена."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "Four detector IDs and multiple views support one grouped input-parameter discrepancy. Do not count each view or supply/return label separately.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-044.json",
+          "sha256": "2a46b122ca2c41e1aeff054be481066700a8c8499669287a08bb9f5a89b23a10",
+          "primary_adjudication": null,
+          "limits": "Графические и текстовые значения относятся к вводу ИТП с температурами90/70. Причина различий, история редакций и влияние на типоразмер оборудования не установлены. Не выдавать отдельную ошибку из-за разницы0,05м³/ч: по формуле проекта5,229×1000/20=261,45, а сумма опубликованных расходов261,50 содержит вентиляцию76,40 вместо прямого результата76,35. Округление промежуточного расхода может объяснить0,05, но не разницу исходных нагрузок0,024Гкал/ч.",
+          "wording": "Согласовать нагрузку и расход теплового ввода: на разрезах1-1/2-2 и аксонометрии указаны5,205Гкал/ч и260,25м³/ч, в ПЗ —5,229Гкал/ч и261,50м³/ч. Подтвердить действующие исходные данные и обновить связанные подписи."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_871a2c95697d4a93adb86dd3e2456614.png",
+          "sha256": "97b3068dcdaebbf363f1bc3e40c9605fd90564b7d2b33b3f029d772dd86f97f9",
+          "block_id": "blk_871a2c95697d4a93adb86dd3e2456614",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Heat input leaders show Q5.205 Gcal/h and G260.25 m3/h."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+          "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af",
+          "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Heat input leaders show Q5.205 Gcal/h and G260.25 m3/h."
+        }
+      ],
+      "disposition": "assessed_preserve_input_load_and_flow_coordination_question"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+      "authoritative_TEXT": "### BLOCK #81 [TEXT]: blk_cc70e063642d457fa0a38b30b1a1a51f\n\n> **Created:** 2026-10-20 11:49:24 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/ERdIZdh18UBN-WX2zrVB)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 5 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n**Тепловая нагрузка на ИТП (Гкал/ч)**\n\n|  | **отопление** | **Вентиляция** | **ГВС (макс)** | **ИТОГО** |\n|---|---|---|---|---|\n| **ИТОГО на ИТП (Гкал/час)** | **2,621** | **1,527** | **1,081** | **5,229** |\n\n**3. Расчет теплового ввода, и трубопроводов.**\n\n**Расчёт расхода воды производится по формулам СП 41-101-95**\n\n**Расход сетевой воды на вводе:**\n\n1. на отопление 1-зоны (теплоноситель с параметрами 90-70°С).\n\nGотmax = (Qотmax × 1000)/(τ₁ - τ₂) = (1,483 × 1000)/(90 - 70) = 74,15 м³ / ч;\n\n2. на отопление 2-зоны (теплоноситель с параметрами 90-70°С).\n\nGотmax = (Qотmax × 1000)/(τ₁ - τ₂) = (0,880 × 1000)/(90 - 70) = 44,00 м³ / ч;\n\n3. на отопление 3-зоны (теплоноситель с параметрами 90-70°С).\n\nGотmax = (Qотmax × 1000)/(τ₁ - τ₂) = (0,191 × 1000)/(90 - 70) = 9,55 м³ / ч;\n\n4. на отопление ДОО (теплоноситель с параметрами 90-70°С).\n\nGотmax = (Qотmax × 1000)/(τ₁ - τ₂) = (0,067 × 1000)/(90 - 70) = 3,35 м³ / ч;\n\n5. на вентиляцию (теплоноситель с параметрами 90-70°С).\n\nGвенmax = (Qвенmax × 1000)/(τ₁ - τ₂) = (1,527 × 1000)/(90 - 70) = 76,40 м³ / ч;\n\n6. максимальный на ГВС (теплоноситель с параметрами 90-70°С):\n\n**ГВС 1-зона:**\n\nGhmax 1 = (Qhmax × 1000)/(τ₁ - τ₃) = (0,728 × 1000)/(90 - 70) = 36,40 м³ / ч;\n\n**ГВС 2-зона:**\n\nGhmax 2 = (Qhmax × 1000)/(τ₁ - τ₃) = (0,377 × 1000)/(90 - 70) = 18,85 м³ / ч;\n\n**ГВС 3-зона:**\n\nGhmax 2 = (Qhmax × 1000)/(τ₁ - τ₃) = (0,181 × 1000)/(90 - 70) = 9,05 м³ / ч;\n\n**ГВС общий:**\n\nGhmax 2 = (Qhmax × 1000)/(τ₁ - τ₃) = (1,081 × 1000)/(90 - 70) = 54,05 м³ / ч;\n\nQhmax 1 – максимальный тепловой поток на горячее водоснабжение.\n\nτ₁ - температура воды в подающем трубопроводе тепловой сети в точке излома\n\n## Page 44 — Sheet 6\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+      "authoritative_TEXT": "### BLOCK #89 [TEXT]: blk_45df5405b31b4f9fb7e5b0f701325e3a\n\n> **Created:** 2026-10-20 11:49:28 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/yCCvDPUFoMiLnc-tLSkw)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 13 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nВыбраны циркуляционные насосы системы ГВС: 2 x **HELIX V 603-1/16/E/KS/400-50-N**\n(1раб, 1рез.) с характеристиками: G=2,55 м³/ч, Н=21,01 м.вд.см, N=0,55 кВт. Фирмы «ВИЛО»\n(арт. 2468072).\n\n###### 3-зона ГВС:\n\nQцирк = (0,2 × 0,039)/(1+0,2) = 0,006 Гкал / ч;\n\nGгвс мин = Gцирк = (1,3 × 0,006 × 1000)/10 = 0,78 (м³ / ч);\n\nHнас = 10,61 м (сист) + 3 м (ТО) + 5 м (зап) = 18,61 м\n\nВыбраны циркуляционные насосы системы ГВС: 2 x **HELIX V 603-1/16/E/KS/400-50-N**\n(1раб, 1рез.) с характеристиками: G=1,29 м³/ч, Н=21,92 м.вд.см, N=0,55 кВт. Фирмы «ВИЛО»\n(арт. 2468072).\n\n###### насосы греющего контура:\n\nGот/ макс² = (Qот/ макс × 1000)/(t₁ - t₂') = (5,229 × 1000)/(90 - 70) = 261,50 м³ / ч;\n\nHнас = 20 м (сист) + 5 м (зап) = 25 м\n\nВыбраны насосы отопления: 3 x **IL 100/160-18,5/2-R** (2раб, 1рез.) с характеристиками:\nG=147,83 м³/ч, Н=27,92м.вд.см, N=18,5 кВт. Фирмы «ВИЛО» (арт. 2786131)\n\n###### насосы отопления 1-зона:\n\nGот/ макс² = (Qот/ макс × 1000)/(t₁ - t₂') = (1,483 × 1000)/(80 - 60) = 74,15 м³ / ч;\n\nHнас = 7,2 м (сист) + 3 м (ТО) + 5 м (зап) = 15,2 м\n\nВыбраны насосы отопления: 2 x **IL 65/140-7,5/2-R** (1раб, 1рез.) с характеристиками:\nG=82,83 м³/ч, Н=22,53 м.вд.см, N=7,5 кВт. Фирмы «ВИЛО» (арт. 2786108).\n\n###### насосы отопления 2-зона:\n\nGот/ макс² = (Qот/ макс × 1000)/(t₁ - t₂') = (0,880 × 1000)/(80 - 60) = 44,00 м³ / ч;\n\nHнас = 7,4 м (сист) + 3 м (ТО) + 5 м (зап) = 15,4 м\n\nВыбраны насосы отопления: 2 x **IL 50/140-4/2-R** (1раб, 1рез.) с характеристиками:\nG=47,08 м³/ч, Н=21,29 м.вд.см, N=4,0 кВт. Фирмы «ВИЛО» (арт. 2786092).\n\n###### насосы отопления 3-зона:\n\nGот/ макс² = (Qот/ макс × 1000)/(t₁ - t₂') = (0,191 × 1000)/(80 - 60) = 9,55 м³ / ч;\n\nHнас = 8,4 м (сист) + 3 м (ТО) + 5 м (зап) = 16,4 м\n\n## Page 52 — Sheet 14\n\n"
+    }
+  ],
+  "graphic_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_871a2c95697d4a93adb86dd3e2456614.png",
+      "sha256": "97b3068dcdaebbf363f1bc3e40c9605fd90564b7d2b33b3f029d772dd86f97f9",
+      "block_id": "blk_871a2c95697d4a93adb86dd3e2456614",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Heat input leaders show Q5.205 Gcal/h and G260.25 m3/h."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+      "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af",
+      "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Heat input leaders show Q5.205 Gcal/h and G260.25 m3/h."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-044.json",
+      "sha256": "2a46b122ca2c41e1aeff054be481066700a8c8499669287a08bb9f5a89b23a10",
+      "primary_adjudication": null,
+      "limits": "Графические и текстовые значения относятся к вводу ИТП с температурами90/70. Причина различий, история редакций и влияние на типоразмер оборудования не установлены. Не выдавать отдельную ошибку из-за разницы0,05м³/ч: по формуле проекта5,229×1000/20=261,45, а сумма опубликованных расходов261,50 содержит вентиляцию76,40 вместо прямого результата76,35. Округление промежуточного расхода может объяснить0,05, но не разницу исходных нагрузок0,024Гкал/ч.",
+      "wording": "Согласовать нагрузку и расход теплового ввода: на разрезах1-1/2-2 и аксонометрии указаны5,205Гкал/ч и260,25м³/ч, в ПЗ —5,229Гкал/ч и261,50м³/ч. Подтвердить действующие исходные данные и обновить связанные подписи."
+    }
+  ],
+  "limits": [
+    "No automatic correction of equipment or input revision.",
+    "Intermediate rounding is distinct from the load discrepancy.",
+    "No frozen evaluator, model inputs or production changes."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
