@@ -1,0 +1,261 @@
+{
+  "status": "experimental_measurement_decisions_not_production_admission",
+  "bindings": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/original_control_checklist.json",
+      "sha256": "d273dc8267a0907816c5fee30f21d0e243ede476ac8ad0f2b17cf8823a5af634"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/candidate_retrieval_v2_snapshot_provenance.json",
+      "sha256": "c1e28d07df8e1badcaf0664e48186cd18b2e022c7fabc1e322e1b1a64556f58a"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/retrieval_v2_preflight_checks.json",
+      "sha256": "28c66b84d9f9867e9001b32cd520e61e0f64ef6f241d6e9f2d020f984b8d84ab"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/original_trial_protocol.json",
+      "sha256": "5186bfa93d8ca0f533b002cad3560eb0da84513ddadd25930b4a4047b238df42"
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "H01",
+      "local_outcome": "bounded_with_routing_dispute",
+      "limit": "F032 routing remains disputed; preserve its evidence and separate questions. No severity recovery from source-ID existence.",
+      "original_controls": [
+        {
+          "id": "H01-P01",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H01-P02",
+          "state": "bounded_facts_recorded_F032_routing_disputed"
+        },
+        {
+          "id": "H01-N01",
+          "state": "local_contract_verified"
+        },
+        {
+          "id": "H01-N02",
+          "state": "local_contract_verified"
+        },
+        {
+          "id": "H01-N03",
+          "state": "bounded_control_recorded"
+        }
+      ],
+      "full_method_acceptance": false
+    },
+    {
+      "id": "H02",
+      "local_outcome": "bounded_controls_recorded",
+      "limit": "Known-case context retrieval passed bounded checks; independent discovery and full-project costs remain unmeasured.",
+      "original_controls": [
+        {
+          "id": "H02-P01",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H02-P02",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H02-N01",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H02-N02",
+          "state": "bounded_control_recorded"
+        }
+      ],
+      "full_method_acceptance": false
+    },
+    {
+      "id": "H03",
+      "local_outcome": "partial_identity_and_missing_negative_pair",
+      "limit": "EOM physical instance identity unresolved. No generic terminal-number suppression is accepted; operation final disposition is a distinct mechanism.",
+      "original_controls": [
+        {
+          "id": "H03-P01",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H03-P02",
+          "state": "partial_instance_identity_question_preserved"
+        },
+        {
+          "id": "H03-P03",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H03-N01",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H03-N02",
+          "state": "explicit_evidence_limit"
+        },
+        {
+          "id": "H03-N03",
+          "state": "explicit_evidence_limit"
+        }
+      ],
+      "full_method_acceptance": false
+    },
+    {
+      "id": "H04",
+      "local_outcome": "partial_scope_and_profile_disputes",
+      "limit": "F050 document scope and F005 profile remain unresolved. Automatic grouping stays disabled. Quantity arithmetic does not prove procurement shortage.",
+      "original_controls": [
+        {
+          "id": "H04-P01",
+          "state": "partial_cable_F051_released_F050_scope_deferred"
+        },
+        {
+          "id": "H04-P02",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H04-P03",
+          "state": "bounded_quantity_control_released_profile_disputed"
+        },
+        {
+          "id": "H04-N01",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H04-N02",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H04-N03",
+          "state": "bounded_control_recorded"
+        }
+      ],
+      "full_method_acceptance": false
+    },
+    {
+      "id": "H05",
+      "local_outcome": "partial_and_invalid_negative_control",
+      "limit": "F014 supports a cross-view conflict rather than the proposed negative control. H72 pipe allocation unresolved. Do not accept a suppression rule from either case.",
+      "original_controls": [
+        {
+          "id": "H05-P01",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H05-P02",
+          "state": "partial_GVS_reported_velocity_released_wall_not_emitted"
+        },
+        {
+          "id": "H05-P03",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H05-N01",
+          "state": "cross_plan_core_supported_original_negative_control_not_valid"
+        },
+        {
+          "id": "H05-N02",
+          "state": "bounded_known_candidate_control"
+        },
+        {
+          "id": "H05-N03",
+          "state": "bounded_control_recorded"
+        }
+      ],
+      "full_method_acceptance": false
+    },
+    {
+      "id": "H06",
+      "local_outcome": "bounded_controls_recorded",
+      "limit": "Applicability controls passed only with supplied sources; inaccessible external documents remain availability limits, not proof of compliance.",
+      "original_controls": [
+        {
+          "id": "H06-P01",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H06-P02",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H06-P03",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H06-N01",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H06-N02",
+          "state": "bounded_inventory_identity_control"
+        },
+        {
+          "id": "H06-N03",
+          "state": "bounded_control_recorded"
+        }
+      ],
+      "full_method_acceptance": false
+    },
+    {
+      "id": "H07",
+      "local_outcome": "historical_negative_pair_missing",
+      "limit": "Synthetic metadata controls are not historical pairs. Broad automatic metadata suppression is not accepted.",
+      "original_controls": [
+        {
+          "id": "H07-P01",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H07-P02",
+          "state": "bounded_control_recorded"
+        },
+        {
+          "id": "H07-N01",
+          "state": "synthetic_contract_only"
+        },
+        {
+          "id": "H07-N02",
+          "state": "explicit_evidence_limit"
+        }
+      ],
+      "full_method_acceptance": false
+    }
+  ],
+  "arms": {
+    "classic_current": {
+      "decision": "eligible_for_reference_measurement",
+      "purpose": "Measure common candidate foundation with both optional families off; compare with historical classic."
+    },
+    "inventory": {
+      "decision": "eligible_for_experimental_measurement_only",
+      "purpose": "Measure inventory, dependent operations and context retrieval as one bundle against classic_current. No claim of isolated H01-H07 effects."
+    },
+    "source_review": {
+      "decision": "eligible_for_experimental_measurement_only",
+      "purpose": "Measure source review with mandatory independent release check against classic_current. Record incorrect suppressions as failures, including protected useful findings."
+    },
+    "candidate": {
+      "decision": "held",
+      "purpose": "Combined arm requires accepted constituent methods; successful preflight is insufficient."
+    }
+  },
+  "dispatch_prerequisites": [
+    "Separate frozen trial with identical six source packages, three repeats per arm, numeric budgets, evaluator and shared executor hashes.",
+    "Preregister serial dispatch and load conditions; do not overlap candidate full audits with the live historical series.",
+    "Executor receives project sources only, never this decision file, control IDs, expected answers or engineering history."
+  ],
+  "assessment_requirements": [
+    "Report unresolved controls separately; do not count them as passed, false or recovered by analogy.",
+    "All discovered suppressions and useful-findings losses require source-based evaluation; no generic filter accepted without a protected pair.",
+    "Frozen evaluator v2 remains unchanged; F014 does not become a scored negative control.",
+    "Compare foundation separately; common code changes cannot be attributed to an optional method.",
+    "Experimental runs may reject a method. Production and combination require original acceptance thresholds, new-project evidence and independent engineer review."
+  ],
+  "stage4_complete": false,
+  "full_method_acceptance": false,
+  "runnable_trial_created": false,
+  "new_model_calls": 0
+}
