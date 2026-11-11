@@ -1,0 +1,381 @@
+{
+  "status": "source_supported_two_LK6_discrepancies",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "1cf55307b62f0354a3e3ef8d397009a7e1bdd1cf540f4d0b55ad82bcff21c43c",
+  "queue_after_sha256": "84efc33d852a583c968adb4137029d1561aeb5c8218ee2695821c40a1b341ab6",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Геометрия и привязки",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Отметка верхней площадки правого марша ЛК6 различается на 2,800 м.",
+        "description": "На схеме ЛК6 на отметке +2,100 верхняя площадка правого марша подписана −0,700. На разрезе 8–8 эта площадка имеет отметку +2,100. Расхождение составляет 2800 мм.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованности высотных отметок и привязок на схемах и разрезах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-026",
+                "G-030"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-026",
+                  "G-030"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить проектную отметку верхней площадки и согласовать схему ЛК6 с разрезом 8–8.",
+        "risk": "Ошибочная высотная привязка ограждения при подготовке монтажной документации.",
+        "source_finding_ids": [
+          "G-026",
+          "G-030"
+        ],
+        "source_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba"
+        ],
+        "related_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba",
+          "blk_1849759086c445e687f8c0e2b424250b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+            "page": 9
+          },
+          {
+            "type": "image",
+            "block_id": "blk_1849759086c445e687f8c0e2b424250b",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-026",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-030",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадает противоречие отметок верхней площадки правого марша ЛК6: −0.700 на схеме и +2.100 на разрезе 8-8. Величины 2800 мм и 2,800 м эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадает противоречие отметок верхней площадки правого марша ЛК6: −0.700 на схеме и +2.100 на разрезе 8-8. Величины 2800 мм и 2,800 м эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 81,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Отметка верхней площадки правого марша ЛК6 различается на 2,800 м.",
+          "verdict": "supported_document_discrepancy",
+          "observation": "План ЛК6 +2,100: площадка у верхнего конца правого марша содержит −0,700, рядом верхняя левая площадка +2,100, нижний правый конец +1,100. Верхний марш разреза 8–8 с размером 3670 связывает +1,100 и +2,100; план имеет тот же правый марш длиной 3670. Вторая подпись −0,700 на верхнем плане противоречит этой связи.",
+          "arithmetic": "2.100 - (-0.700) = 2.800 m"
+        },
+        {
+          "claim": "Ошибочная высотная привязка ограждения при подготовке монтажной документации.",
+          "verdict": "possible_consequence_not_observed",
+          "note": "АР/КЖ и фактический монтаж не проверены; корректное проектное значение не назначено автоматически."
+        }
+      ],
+      "unsupported_additions": "no_additional_established_failure_claim_risk_remains_hypothetical",
+      "novel_useful_content": "source_supported_technical_discrepancy_novelty_and_engineer_acceptance_unestablished",
+      "duplicate_burden": "distinct_landing_addresses_do_not_drop_as_same_number_issue",
+      "profile_and_section": "technical_document_conflict_legacy_main_route",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_441423dd5fb448c89a33b610c54783ba.png",
+          "sha256": "e483f14964b885d339bef19552b34da013314ab6decdb262dc166ee44048f08e",
+          "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+          "directly_viewed": true,
+          "sheet": 7,
+          "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1849759086c445e687f8c0e2b424250b.png",
+          "sha256": "d7b15440e6f172fcc51f02d234f5fce4cbd94085416ddab99270a719521b115c",
+          "block_id": "blk_1849759086c445e687f8c0e2b424250b",
+          "directly_viewed": true,
+          "sheet": 7,
+          "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-020"
+        }
+      ],
+      "disposition": "source_supported_preservation_candidate"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-021",
+      "finding": {
+        "id": "F-021",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Геометрия и привязки",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Отметка нижней площадки правого марша ЛК6 различается на 50 мм.",
+        "description": "На схеме ЛК6 на отметке −4,000 нижняя площадка правого марша обозначена −6,050. На разрезах 8–8 и 9–9 того же листа указано −6,100. Разница составляет 50 мм.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованности отметок и геометрических привязок ограждений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-027",
+                "G-031"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-027",
+                  "G-031"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить проектную отметку площадки и согласовать план, разрезы и соответствующие привязки ограждений.",
+        "risk": "Несовпадение высоты и положения креплений ограждения с геометрией лестницы.",
+        "source_finding_ids": [
+          "G-027",
+          "G-031"
+        ],
+        "source_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba"
+        ],
+        "related_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba",
+          "blk_1849759086c445e687f8c0e2b424250b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+            "page": 9
+          },
+          {
+            "type": "image",
+            "block_id": "blk_1849759086c445e687f8c0e2b424250b",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-027",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-031",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают площадка правого марша ЛК6, отметки −6.050 на схеме и −6.100 на разрезах 8-8 и 9-9, а также расхождение 50 мм.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают площадка правого марша ЛК6, отметки −6.050 на схеме и −6.100 на разрезах 8-8 и 9-9, а также расхождение 50 мм.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Отметка нижней площадки правого марша ЛК6 различается на 50 мм.",
+          "verdict": "supported_document_discrepancy",
+          "observation": "План ЛК6 −4,000: нижняя правая площадка имеет −6,050, соседняя нижняя левая −5,700. На разрезе 8–8 соответствующий марш от −4,000 приходит к −6,100; разрез 9–9 связывает −6,100 и −5,700 через ОГМ22. Это согласует идентичность площадки без выбора правильного значения по большинству.",
+          "arithmetic": "abs(-6.050 - (-6.100)) = 0.050 m"
+        },
+        {
+          "claim": "Несовпадение высоты и положения креплений ограждения с геометрией лестницы.",
+          "verdict": "possible_consequence_not_observed",
+          "note": "АР/КЖ и фактический монтаж не проверены; корректное проектное значение не назначено автоматически."
+        }
+      ],
+      "unsupported_additions": "no_additional_established_failure_claim_risk_remains_hypothetical",
+      "novel_useful_content": "source_supported_technical_discrepancy_novelty_and_engineer_acceptance_unestablished",
+      "duplicate_burden": "distinct_landing_addresses_do_not_drop_as_same_number_issue",
+      "profile_and_section": "technical_document_conflict_legacy_main_route",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_441423dd5fb448c89a33b610c54783ba.png",
+          "sha256": "e483f14964b885d339bef19552b34da013314ab6decdb262dc166ee44048f08e",
+          "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+          "directly_viewed": true,
+          "sheet": 7,
+          "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1849759086c445e687f8c0e2b424250b.png",
+          "sha256": "d7b15440e6f172fcc51f02d234f5fce4cbd94085416ddab99270a719521b115c",
+          "block_id": "blk_1849759086c445e687f8c0e2b424250b",
+          "directly_viewed": true,
+          "sheet": 7,
+          "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-021"
+        }
+      ],
+      "disposition": "source_supported_preservation_candidate"
+    }
+  ],
+  "limits": [
+    "Source confirmation is not a new engineer decision or proof of discovery novelty.",
+    "No universal level tolerance or automatic correction chosen.",
+    "These are distinct landing addresses; grouping must preserve both.",
+    "Frozen audit outputs and candidate unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
