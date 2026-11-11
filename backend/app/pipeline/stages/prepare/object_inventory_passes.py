@@ -5,7 +5,14 @@ from pathlib import Path
 import re
 
 
-def build_object_inventory_passes(md_path, graphic_dir, *, max_chars=60000, max_images=4, max_image_bytes=16000000):
+def build_object_inventory_passes(md_path, graphic_dir, *, max_chars=60000, max_images=4,
+        max_image_bytes=16000000, max_single_image_bytes=24000000):
+    # The batch budget is not a per-file transport limit. Preserve larger
+    # drawings byte-for-byte in isolated packets, with a separate bounded cap.
+    # These are experiment resource limits, not provider capability guarantees.
+    if any(type(v) is not int or v < 1 for v in
+           (max_chars, max_images, max_image_bytes, max_single_image_bytes)):
+        raise ValueError('positive_inventory_packet_limits_required')
     from .codex_targeted_findings import CodexTargetedPass
     md_path=Path(md_path);graphic_dir=Path(graphic_dir).resolve();md=md_path.read_text()
     headers=list(re.finditer(r'^###[ \t]+BLOCK[^\n]*?\[([^]]+)\]:[ \t]*(\S+)[^\n]*$',md,re.M|re.I))
@@ -34,13 +41,18 @@ def build_object_inventory_passes(md_path, graphic_dir, *, max_chars=60000, max_
             if candidate is not None and candidate.is_relative_to(graphic_dir) and candidate.is_file():
                 path=candidate;size=path.stat().st_size
             else:unavailable.append({'block_id':bid,'reason':'graphic_unavailable'})
-        if len(content)>max_chars or size>max_image_bytes:
+        if len(content)>max_chars or size>max_single_image_bytes:
             raise ValueError('single_source_exceeds_budget:'+bid)
+        single_large_image = size > max_image_bytes
+        if single_large_image:
+            flush()
         if blocks and (chars+len(content)>max_chars or (path and len(images)>=max_images) or image_bytes+size>max_image_bytes):flush()
         blocks.append({'block_id':bid,'kind':kind,'page':page,'content':content});chars+=len(content)
         if path:
             images.append(path);image_bytes+=size
             bindings.append({'block_id':bid,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
+        if single_large_image:
+            flush()
     flush()
     instruction='''Discover engineering objects from EVERY supplied source block. No existing findings, historical answers or engineer decisions are supplied. TEXT/TABLE is authoritative. IMAGE/GRAPHIC descriptions are navigation only: inspect attached images for evidence. Do not use tools, web or other files.
 Return JSON with object_registry, object_inventory_coverage, object_operation_results and text_findings (Russian values). Each object: id (unique within packet), identity (mark/system/location and execution when visible), scope, kind, source_refs (supplied block IDs), observed_parameters (name,value,unit,source_ref, exact text quote or graphic observation). Separate physical instances from views, labels, assemblies and kits; do not silently merge similar marks. Preserve cross-document references as observations for later matching.
@@ -58,7 +70,11 @@ Report technical conflicts only with explicit source evidence in text_findings; 
             [{'role':'system','content':instruction},{'role':'user','content':json.dumps(payload,ensure_ascii=False)}],tuple(paths))
         requests.append(request)
         receipts.append({'stage':request.stage,'block_ids':[b['block_id'] for b in batch],
-            'message_chars':sum(len(m['content']) for m in request.messages),'images':bound})
+            'message_chars':sum(len(m['content']) for m in request.messages),'images':bound,
+            'image_bytes':sum(p.stat().st_size for p in paths),
+            'isolated_large_image':len(paths)==1 and paths[0].stat().st_size>max_image_bytes})
     return requests,{'source_md_sha256':hashlib.sha256(md.encode()).hexdigest(),'blocks':len(ids),
+        'packet_limits':{'max_chars':max_chars,'max_images':max_images,
+                         'max_image_bytes':max_image_bytes,'max_single_image_bytes':max_single_image_bytes},
         'packets':receipts,'unavailable_graphics':unavailable,'history_supplied':False,
         'input_coverage_complete':bool(ids) and not unavailable,'semantic_inventory_complete':False}

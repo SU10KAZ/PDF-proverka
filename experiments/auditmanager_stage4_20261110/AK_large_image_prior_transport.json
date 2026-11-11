@@ -1,0 +1,31 @@
+{
+  "image_sha256": "9181d53b64ad6288ad3b812fd129106544526319303f89b4b77b3094bd9cec48",
+  "image_bytes": 16352342,
+  "prior_delivery": [
+    {
+      "request_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_inventory/classic_control/requests/AK/1794426867689736623/request.json",
+      "request_sha256": "abfafc489226056dedeaff5d778ef4aef358c5979cb1b10bdddbbcc4c255e810",
+      "stage": "block_analysis",
+      "attempts": [
+        {
+          "is_error": false,
+          "reported_model": "codex/gpt-6-astra",
+          "model": "codex/gpt-6-astra"
+        }
+      ]
+    },
+    {
+      "request_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_inventory/classic_control/requests/AK/1794426867710309729/request.json",
+      "request_sha256": "abfafc489226056dedeaff5d778ef4aef358c5979cb1b10bdddbbcc4c255e810",
+      "stage": "block_analysis",
+      "attempts": [
+        {
+          "is_error": false,
+          "reported_model": "codex/gpt-6-astra",
+          "model": "codex/gpt-6-astra"
+        }
+      ]
+    }
+  ],
+  "limit": "Successful earlier delivery supports this exact image only, not all image sizes or engineering conclusions."
+}

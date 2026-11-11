@@ -1,0 +1,111 @@
+{
+  "status": "six_source_packetization_passed_no_model_calls",
+  "projects": [
+    {
+      "discipline": "AK",
+      "blocks": 254,
+      "packets": 21,
+      "large_image_packets": [
+        {
+          "stage": "object_inventory_017",
+          "block_ids": [
+            "blk_f42735b18cb140928c3d9f29d2891ae2"
+          ],
+          "message_chars": 5424,
+          "images": [
+            {
+              "block_id": "blk_f42735b18cb140928c3d9f29d2891ae2",
+              "sha256": "9181d53b64ad6288ad3b812fd129106544526319303f89b4b77b3094bd9cec48"
+            }
+          ],
+          "image_bytes": 16352342,
+          "isolated_large_image": true
+        }
+      ],
+      "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "packet_limits": {
+        "max_chars": 60000,
+        "max_images": 4,
+        "max_image_bytes": 16000000,
+        "max_single_image_bytes": 24000000
+      },
+      "input_coverage_complete": true
+    },
+    {
+      "discipline": "ITP",
+      "blocks": 210,
+      "packets": 15,
+      "large_image_packets": [],
+      "source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "packet_limits": {
+        "max_chars": 60000,
+        "max_images": 4,
+        "max_image_bytes": 16000000,
+        "max_single_image_bytes": 24000000
+      },
+      "input_coverage_complete": true
+    },
+    {
+      "discipline": "AR",
+      "blocks": 76,
+      "packets": 11,
+      "large_image_packets": [],
+      "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+      "packet_limits": {
+        "max_chars": 60000,
+        "max_images": 4,
+        "max_image_bytes": 16000000,
+        "max_single_image_bytes": 24000000
+      },
+      "input_coverage_complete": true
+    },
+    {
+      "discipline": "KM",
+      "blocks": 111,
+      "packets": 14,
+      "large_image_packets": [],
+      "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+      "packet_limits": {
+        "max_chars": 60000,
+        "max_images": 4,
+        "max_image_bytes": 16000000,
+        "max_single_image_bytes": 24000000
+      },
+      "input_coverage_complete": true
+    },
+    {
+      "discipline": "VK",
+      "blocks": 102,
+      "packets": 9,
+      "large_image_packets": [],
+      "source_md_sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+      "packet_limits": {
+        "max_chars": 60000,
+        "max_images": 4,
+        "max_image_bytes": 16000000,
+        "max_single_image_bytes": 24000000
+      },
+      "input_coverage_complete": true
+    },
+    {
+      "discipline": "EOM",
+      "blocks": 208,
+      "packets": 23,
+      "large_image_packets": [],
+      "source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "packet_limits": {
+        "max_chars": 60000,
+        "max_images": 4,
+        "max_image_bytes": 16000000,
+        "max_single_image_bytes": 24000000
+      },
+      "input_coverage_complete": true
+    }
+  ],
+  "production_acceptance": false,
+  "limits": [
+    "All original blocks and image bytes preserved; no model object extraction tested.",
+    "Single-image cap is an experimental resource policy, not a guarantee of provider support.",
+    "Full audit must use a newly frozen source snapshot; failed run remains failed."
+  ]
+}

@@ -29,3 +29,29 @@ def test_duplicate_ids_fail_instead_of_overwriting_sources(tmp_path):
     md=tmp_path/'document.md';md.write_text('### BLOCK #1 [TEXT]: same\na\n### BLOCK #2 [TEXT]: same\nb')
     with pytest.raises(ValueError,match='duplicate_source_block_ids'):
         build_object_inventory_passes(md,tmp_path)
+
+
+def test_large_drawing_is_isolated_without_reencoding(tmp_path):
+    md=tmp_path/'document.md';images=tmp_path/'graphics';images.mkdir()
+    rows=[];index=[];original={}
+    for i,size in enumerate([50,150,50]):
+        bid=f'g{i}';name=f'{i}.png';original[name]=bytes([i])*size
+        (images/name).write_bytes(original[name]);index.append({'block_id':bid,'file':name})
+        rows.append(f'### BLOCK #{i} [IMAGE]: {bid}\nDrawing {i}\n')
+    md.write_text(''.join(rows));(images/'index.json').write_text(json.dumps({'blocks':index}))
+    requests,receipt=build_object_inventory_passes(md,images,max_image_bytes=100,max_single_image_bytes=200)
+    assert [p['block_ids'] for p in receipt['packets']]==[['g0'],['g1'],['g2']]
+    assert [p['isolated_large_image'] for p in receipt['packets']]==[False,True,False]
+    assert [p['image_bytes'] for p in receipt['packets']]==[50,150,50]
+    assert receipt['input_coverage_complete']
+    assert all(p.read_bytes()==original[p.name] for r in requests for p in r.image_paths)
+    with pytest.raises(ValueError,match='single_source_exceeds_budget:g1'):
+        build_object_inventory_passes(md,images,max_image_bytes=100,max_single_image_bytes=149)
+
+
+def test_oversize_text_still_fails_without_truncation(tmp_path):
+    md=tmp_path/'document.md';images=tmp_path/'graphics';images.mkdir()
+    md.write_text('### BLOCK #1 [TEXT]: b1\n'+'a'*101)
+    (images/'index.json').write_text('{"blocks": []}')
+    with pytest.raises(ValueError,match='single_source_exceeds_budget:b1'):
+        build_object_inventory_passes(md,images,max_chars=100)
