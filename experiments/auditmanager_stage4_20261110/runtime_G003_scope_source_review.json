@@ -1,0 +1,115 @@
+{
+  "status": "same_version_graphic_review_complete_scope_unresolved",
+  "project": "AK",
+  "source_candidate_id": "G-003",
+  "model_finding_id_local": "F-037",
+  "model_response": "/tmp/auditmanager_runtime_recovery_graphic_detail_results_20261112/candidate_recovery_d9514d8925b97f17_detail01_attempt_1.json",
+  "model_response_sha256": "b9fd8df2249d92d4f1c550d5d4f0419c35fa9388f324c79ce4e48053c7d4f575",
+  "original_model_finding": {
+    "id": "F-037",
+    "severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "category": "Идентификация кондиционеров",
+    "report_section": "technical_findings",
+    "sheet": "Лист 5",
+    "page": 9,
+    "problem": "Марки «К5.3» и «К5.4» присвоены трём парам кондиционеров в разных помещениях.",
+    "description": "На общей схеме одинаковые марки К5.3 и К5.4 показаны в помещении СС 5.Т.1 корпуса 5, вводном помещении СС 6.Т.5 и помещении СС 6.Т.9 корпуса 6. Каждая пара находится в собственной рамке помещения и соединена со своим БУРР. Это три самостоятельные группы на одном чертеже, а не повтор одного узла в перекрывающихся деталях. Даже внутри корпуса 6 две разные пары имеют одинаковые марки. F-012 описывает исполнение управления и комплектность, но не этот конфликт идентификации.",
+    "norm": null,
+    "norm_quote": null,
+    "candidate_norm_references": [],
+    "solution": "Согласовать индивидуальные марки кондиционеров для помещений 5.Т.1, 6.Т.5 и 6.Т.9 с соответствующими комплектами ОВ и АК и исправить общую схему.",
+    "risk": "Неоднозначная адресация кондиционеров при согласовании схем управления, монтаже и наладке.",
+    "source_finding_ids": [
+      "G-003"
+    ],
+    "source_block_ids": [
+      "blk_0792816c162c469289b461843d2c307b"
+    ],
+    "related_block_ids": [],
+    "evidence_text_refs": [],
+    "evidence": [
+      {
+        "block_id": "blk_0792816c162c469289b461843d2c307b",
+        "type": "graphic",
+        "observation": "В рамке «Помещение СС (пом. 5.Т.1)» изображены кондиционеры К5.3 и К5.4, соединённые с расположенным под ними БУРР.",
+        "location": "Лист 5, корпус 5, подземная часть, detail_tile_8; строка 1, столбец 3 манифеста."
+      },
+      {
+        "block_id": "blk_0792816c162c469289b461843d2c307b",
+        "type": "graphic",
+        "observation": "В рамке «Ввод. помещение СС (пом. 6.Т.5)» показана отдельная пара К5.3 и К5.4 со своим БУРР.",
+        "location": "Лист 5, корпус 6, подземная часть, верхняя левая группа кондиционеров в detail_tile_9; строка 1, столбец 4 манифеста."
+      },
+      {
+        "block_id": "blk_0792816c162c469289b461843d2c307b",
+        "type": "graphic",
+        "observation": "В соседней самостоятельной рамке «Помещение СС (пом. 6.Т.9)» снова показаны К5.3 и К5.4, соединённые с отдельным БУРР.",
+        "location": "Лист 5, корпус 6, подземная часть, верхняя правая группа кондиционеров в detail_tile_9; строка 1, столбец 4 манифеста."
+      }
+    ],
+    "highlight_regions": []
+  },
+  "engineer_decision": null,
+  "engineer_decision_status": "not_mapped_for_this_run_candidate",
+  "late_auditor_review": {
+    "confirmed": "Три самостоятельные пары К5.3/К5.4 в помещениях 5.Т.1, 6.Т.5 и 6.Т.9. В двух последних помещениях у каждой пары собственный БУРР. Это не повтор изображения из-за перекрытия деталей.",
+    "unresolved": "Граница уникальности идентификатора, обозначения в смежном комплекте АК-К6 и книге 2 диспетчеризации, технические последствия совпадения короткой марки.",
+    "graphic_context": "Под БУРР корпуса 6 имеется ссылка на АК-К6 книгу 1, стрелки диспетчеризации отсылают к АК2-ПА книге 2. Наличие этих связей не доказывает конфликт адресов.",
+    "recommended_section": "questions",
+    "preserve_finding": true,
+    "technical_defect_confirmed": false,
+    "physical_fault_claim_refuted": false,
+    "reason": "Повтор марки прочитан верно; переход от факта повтора к техническому конфликту без проверки области идентификации не обоснован."
+  },
+  "evidence": {
+    "manifest": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/manifest.json",
+    "manifest_sha256": "7c5e918d277e164cb72075ffbc7b4dcdb69eb042c790192a96c99328a1f268cc",
+    "images": [
+      {
+        "block_id": "blk_0792816c162c469289b461843d2c307b",
+        "page_index": 8,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          3483.373331174254,
+          1132.2883895397185,
+          4967.785542502999,
+          2366.4509620666504
+        ],
+        "grid_row": 1,
+        "grid_column": 3,
+        "path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/detail_tile_8.png",
+        "width": 1901,
+        "height": 1580,
+        "sha256": "cd01fb581da93f8dae790715b593d398809221e3b5436eb6ea3ca5eeb673058a"
+      },
+      {
+        "block_id": "blk_0792816c162c469289b461843d2c307b",
+        "page_index": 8,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          4670.90310023725,
+          1132.2883895397185,
+          6006.874090433121,
+          2366.4509620666504
+        ],
+        "grid_row": 1,
+        "grid_column": 4,
+        "path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/detail_tile_9.png",
+        "width": 1711,
+        "height": 1580,
+        "sha256": "d71e372e1b9aca64a85fb03d5062f1de08d2f61ed0520dd2bb9c0aece72a778c"
+      }
+    ],
+    "inspection": "Direct visual inspection of graphic tiles 8 and 9; no TEXT recognition correction."
+  },
+  "control_pair": {
+    "negative_technical_claim": "G-003: повтор коротких марок сам по себе не доказывает адресный конфликт. Сохранить как вопрос.",
+    "positive_similar_technical_claim": null,
+    "evidence_gap": "Подтверждённая инженерная пара для универсального фильтра повторяющихся марок пока не установлена. Не вводить запрет на такие замечания."
+  },
+  "production_acceptance": false,
+  "limits": [
+    "This review must not enter blind audit prompts.",
+    "Do not silently relabel the sealed model output; retain proposed routing separately."
+  ]
+}
