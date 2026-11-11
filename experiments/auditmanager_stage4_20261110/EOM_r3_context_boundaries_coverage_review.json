@@ -1,0 +1,139 @@
+{
+  "status": "partial_coverage_review_not_quality_acceptance",
+  "ledger_before_sha256": "b70b56dc5b70682d63d353286a4f45fcb1281560bb5d0a6ecb16ec7ff87d7eef",
+  "ledger_after_sha256": "01d9338f162d083b8b6ff5059feaa379245ebb320327bc9afd7526493f644e11",
+  "reviewed_targets": [
+    {
+      "target_id": "EOM_F007_phase_and_temporary_load:9e004a2c0153a24dc3ce",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-030"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F007_phase_and_temporary_load.json",
+          "sha256": "1c27b242ec894d3038ec6afb0afb4a727801b04675928076ed2d19c28944fed1"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-030"
+        }
+      ],
+      "reason": "ДевятьЩМ2–10/107А,табличные35,8/41,5 иC40/C50 названы. Но временный однофазный режим сизоляцией двухфаз не раскрыт; сопоставление стремяфазами не полностью сохраняет эталонный вопрос режимов.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F021_F023_controller_voltage_scope:b197a84551461f1efaca",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-038"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F021_F023_controller_voltage_scope.json",
+          "sha256": "da0ea92659220b1cded0204453c0e08ae0435cd61d0525346e3b97a3a908d47e"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-038"
+        }
+      ],
+      "reason": "Группы4/5,1P,A/B и0,38названы. ПромежуточныеЯЧи назначение стороны напряжения потеряны; вопрос паспорта конечного потребителя сам по себе не восстанавливает связь через контроллер.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F024_room_number_collision:a27bd6546c4ff55c4e59",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-025"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F024_room_number_collision.json",
+          "sha256": "5f37d81095b90f1c769eaa87ed868673fea3491c2d83db7d2d23cfb63b3d61e5"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-025"
+        }
+      ],
+      "reason": "Повтор0.0.2.2уВенткамеры/РУ сохранён, но конкретные площади43,9/11,1 иобе таблицы−1этажа не названы; объединённый текст смешивает сдругой проблемой принадлежности экспликации−2этажа. Полная локализация не сохранена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F026_emergency_tray_legend:2474510e8b112f4c5cb1",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-041"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F026_emergency_tray_legend.json",
+          "sha256": "534e82c9adb2dbcd334fd051e503f06a2a98d77822fcd5164d1370eb54b3fb56"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-041"
+        }
+      ],
+      "reason": "Аварийныйлоток100×80неперфорированныйвузлах/перфорированныйвлегенде сохранён; диапазон25–31 включает проверенные26/27/28/30. Обобщение на остальные листы ирабочийлоток — дополнительные тезисы, требуют оценки качества.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F015_neutral_PE_unresolved_topology:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-036"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F015_neutral_PE_unresolved_topology.json",
+          "sha256": "b4c38d74f02f8e2978cabce4ea20aa5f68dec66f0c1afeebb72e0fec1a03b824"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-036"
+        }
+      ],
+      "reason": "Запрошена визуальная проверка, но соединениеN–PE уже утверждается ипредписано исключить перемычки. Не сохранена ключевая неопределённость концов ввода/QFD1; такой текст не считается полным воспроизведением безопасного вопроса.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:composite:2",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-045"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+          "sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-045"
+        }
+      ],
+      "reason": "Явно исправляется название50571.5.54-2024 наЭлектроустановки низковольтные/Часть5-54; не повторён вопрос о существовании документа. Применимость редакции к проекту этим не установлена.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "unchecked_targets": 32,
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": [
+    "Six targets reviewed; omitted temporary mode, controllers, room location and unresolved N/PE topology produce partial matches. Expanded graphic scope and normative applicability remain separate quality assessments."
+  ]
+}
