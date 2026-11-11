@@ -1,0 +1,353 @@
+{
+  "status": "three_cable_totals_review",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "7b75d49906729de54d4ceff97c98135e33bc3de53040db8418784942f767c346",
+  "queue_after_sha256": "4ae3cd9ba30cdff4eaba56c1c60903e9be55adf4c310b0d8c9aa6fe1d3a7a231",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-059",
+      "finding": {
+        "id": "F-059",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Междокументная сверка объёмов",
+        "sheet": "Лист 36",
+        "page": [
+          40,
+          78,
+          79,
+          80
+        ],
+        "problem": "Для кабеля ШАУВ-1-К5АС получены три разных объёма: 700, 720 и 730 м.",
+        "description": "Ведомость содержит 700 м ППГнг(А)-HF 4×2,5. Текстовая сверка журнала даёт 720 м. По описанию схемы сумма составляет 2×330 + 2×20 + 2×15 = 730 м. Следовательно, ведомость расходится с журналом на 20 м, со схемой — на 30 м, а схема и журнал — на 10 м. Выбор окончательного объёма без построчной сверки не обоснован.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие специфицируемого количества согласованным длинам кабельных линий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-017",
+                "G-080"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-017",
+                  "G-080"
+                ],
+                "designation_source": "Текстовое замечание и междокументная сверка"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сопоставить каждый участок схемы со строкой журнала, разрешить разность 10 м и пересчитать ведомость и спецификацию.",
+        "risk": "Недостаток кабеля и необоснованные изменения закупочного объёма.",
+        "source_finding_ids": [
+          "T-017",
+          "G-080"
+        ],
+        "source_block_ids": [
+          "blk_397f9663589b40bfbde9b898e99e5117",
+          "blk_96a99d46f82645bebdf992507a3e3ec6",
+          "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+          "blk_c13afb271fc74ce4a28b79e59652ee51",
+          "blk_3e1eb0838e6b4a33b9a090a9c4b998dd"
+        ],
+        "related_block_ids": [
+          "blk_397f9663589b40bfbde9b898e99e5117",
+          "blk_96a99d46f82645bebdf992507a3e3ec6",
+          "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+          "blk_c13afb271fc74ce4a28b79e59652ee51",
+          "blk_3e1eb0838e6b4a33b9a090a9c4b998dd"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_397f9663589b40bfbde9b898e99e5117",
+            "page": 40
+          },
+          {
+            "type": "text",
+            "block_id": "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+            "page": 78
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c13afb271fc74ce4a28b79e59652ee51",
+            "page": 79
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+            "page": 80
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-080",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 35,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Локальная ведомость указывает 700 м ППГнг(A)-HF 4x2,5.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Шесть строк журнала дают 20+20+10+10+330+330=720 м.",
+          "verdict": "confirmed_bounded_TEXT_arithmetic",
+          "limits": "Выборка по адресу шкафа и сечению; исходные латинские/кириллические марки сохранены в строках доказательств."
+        },
+        {
+          "claim": "Схема показывает два участка 20 м, два 330 м и два от ПЧ к двигателям по 15 м: всего 730 м.",
+          "verdict": "confirmed_direct_GRAPHIC_arithmetic",
+          "limits": "Это сумма показанных участков, а не установленный закупочный объём."
+        },
+        {
+          "claim": "Разности ведомость/журнал 20 м, ведомость/схема 30 м, схема/журнал 10 м.",
+          "verdict": "confirmed_arithmetic_with_identity_limit",
+          "limits": "В журнале две строки 330 м названы Ba3.1-3ПЧ/4ПЧ в разделе Па4.1/Ва4.1; строки 10 м адресованы между шкафами. На схеме 15 м идут от ПЧ к двигателям. Однозначное построчное соответствие требует согласования маркировки и концов участков."
+        },
+        {
+          "claim": "Нужно сверить участки и согласовать объёмы до изменения ведомости.",
+          "verdict": "supported_document_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Доказан недостаток кабеля; следует закупить 730 м.",
+          "verdict": "not_established",
+          "limits": "Окончательный состав и длины маршрутов не установлены; закупка и монтаж не исследованы."
+        },
+        {
+          "claim": "ГОСТ 21.110-2013 п.4.1 подтверждён как нарушенный.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Кандидат без проверенной цитаты."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "source_supported_arithmetic_conflict_no_new_engineer_acceptance",
+      "duplicate_burden": "One grouped reconciliation of six cable rows; do not count each pairwise total difference as an independent defect. Historical drive-cable target link does not automatically prove identical scope.",
+      "profile_and_section": "technical_document_coordination",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c13afb271fc74ce4a28b79e59652ee51",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT Ba/Ва и K5AC/К5АС сохранён буквально; сопоставление по шкафам, назначению, номеру и суффиксам не заменяет исходные строки.",
+            "Полностью прочитан раздел Па4.1/Ва4.1 от заголовка КЖ20 до следующей системы на КЖ22. Отсутствие отдельных трасс не заявляется для всех смежных комплектов.",
+            "Арифметическое расхождение730/700 усиливает документальное замечание, но не доказывает механизм составления700м или исключение именно двух15м из фактической закупки.",
+            "СуммаКЖ720м отражает его записанные конечные точки. Две10м линии нельзя автоматически считать заменой двух15м моторных участков: концы записаны как шкафы.",
+            "Маршрутные обмеры, заводские схемы, границы комплектной поставки и заказ не проверены. Длины330м не объявляются неправильными только из-за отличия от10м.",
+            "Историческое принятие и широкое объяснение сохранены отдельно от ограниченного текущего вывода. Записанная историческая причина потери немаркированных рёбер требует проверки журналов исполнения на этапе2."
+          ],
+          "wording": "Согласовать марки и состав цепей ШАУВ-1-К5АС.ПЧ: схема лист36 задаёт Ва4.1-3ПЧ/-4ПЧ/-RS, а КЖ лист22 — Ba3.1-3ПЧ/-4ПЧ/-RS для той же пары шкафов. Отдельные участки ПЧ→M2/M3 по15м4×2,5 на схеме не имеют индивидуальных марок и не представлены самостоятельными трассами в разделе КЖ Па4.1/Ва4.1. Сумма шести показанных участков4×2,5 составляет730м при700м в локальной ведомости. В КЖ дополнительно имеются межшкафные Ba4.1-3/-4 по10м; согласовать их назначение и пересчитать итог."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_397f9663589b40bfbde9b898e99e5117.png",
+          "sha256": "96df1986c5929c97c62369499fd26e3a7eb38071d3066a995f0aff8684fc9893",
+          "block_id": "blk_397f9663589b40bfbde9b898e99e5117",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Pa4.1-7/8 20m each; Va4.1-3PCh/4PCh 330m each; PCh motor tails 15m each.",
+          "inspection_crop": {
+            "box": [
+              1050,
+              150,
+              1550,
+              650
+            ],
+            "scale": 2,
+            "path": "/tmp/ak_f059_motor_cables.png"
+          }
+        }
+      ],
+      "disposition": "assessed_preserve_three_cable_totals_require_endpoint_mapping"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+      "authoritative_TEXT": "### BLOCK #127 [TEXT]: blk_96a99d46f82645bebdf992507a3e3ec6\n\n> **Created:** 2026-09-28 07:29:12 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/YGHID5cOveuY6BVBVvpi)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 36 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-1-К5АС. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 2400 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 55 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 20 | м |\n|  | Кабель КИС-Пнг(A)-HF 2x2x0,60 мм² | 330 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 1690 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 700 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+      "authoritative_TEXT": "### BLOCK #227 [TEXT]: blk_52c70a7a578c46e28e4087d5b7bd70cb\n\n> **Created:** 2026-09-28 07:29:45 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/wEPPfJ9JgBHwVeIhDA-w)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 20 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Вос5.1-3 | ШАУВ-6-К5ПЧ | ХТЗ | ППГнг(А)-HF | 3x1,5 | 15 | лоток 400х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 10/5 |  |\n| Вос5.1-4 | ШАУВ-6-К5ПЧ | ХТЗ | КСВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 400х100, труба гофр. | КСВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| Системы Па4.1 и Ва4.1 |  |  |  |  |  |  |  |  |  |\n| Па4.1-1 | ШАУВ-1-К5АС | ТЕ1 | КСПЭВПГнг(А)-HF | 1x2x0,75 | 15 | труба гофр. | КСПЭВПГнг(А)-HF 1x2x0,75 | 15 |  |\n| Па4.1-2 | ШАУВ-1-К5АС | ТЕ2 | КСПЭВПГнг(А)-HF | 1x2x0,75 | 20 | лоток 100х100, труба гофр. | КСПЭВПГнг(А)-HF 1x2x0,75 | 15/5 |  |\n| Па4.1-3 | ШАУВ-1-К5АС | ТЕ3 | КСПЭВПГнг(А)-HF | 1x2x0,75 | 20 | лоток 100х100, труба гофр. | КСПЭВПГнг(А)-HF 1x2x0,75 | 15/5 |  |\n| Па4.1-4 | ШАУВ-1-К5АС | ТС1 | КСВПГнг(А)-HF | 1x2x0,75 | 20 | лоток 100х100, труба гофр. | КСВПГнг(А)-HF 1x2x0,75 | 15/5 |  |\n| Па4.1-5 | ШАУВ-1-К5АС | PDS1 | КСВПГнг(А)-HF | 1x2x0,75 | 20 | лоток 100х100, труба гофр. | КСВПГнг(А)-HF 1x2x0,75 | 15/5 |  |\n| Па4.1-6 | ШАУВ-1-К5АС | PDS2 | КСВПГнг(А)-HF | 1x2x0,75 | 20 | лоток 100х100, труба гофр. | КСВПГнг(А)-HF 1x2x0,75 | 15/5 |  |\n| Па4.1-7 | ШАУВ-1-К5АС | M1 | ППГнг(А)-HF | 4x2,5 | 20 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x2,5 | 15/5 |  |\n| Па4.1-8 | ШАУВ-1-К5АС | M5 | ППГнг(А)-HF | 4x2,5 | 20 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x2,5 | 15/5 |  |\n| Па4.1-9 | ШАУВ-1-К5АС | ХТ1 | КСПЭВПГнг(А)-HF | 2x2x0,75 | 20 | лоток 100х100, труба гофр. | КСПЭВПГнг(А)-HF 2x2x0,75 | 15/5 |  |\n| Па4.1-10 | ШАУВ-1-К5АС | ХТ2 | ППГнг(А)-HF | 3x1,5 | 20 | лоток 100х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 15/5 |  |\n| Па4.1-11 | ШАУВ-1-К5АС | ХТ2 | КСВПГнг(А)-HF | 1x2x0,75 | 20 | лоток 100х100, труба гофр. | КСВПГнг(А)-HF 1x2x0,75 | 15/5 |  |\n| Па4.1-12 | ШАУВ-1-К5АС | M4 | ППГнг(А)-HF | 3x1,5 | 20 | лоток 100х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 15/5 |  |\n\n## Page 79 — Sheet 21\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_c13afb271fc74ce4a28b79e59652ee51",
+      "authoritative_TEXT": "### BLOCK #228 [TEXT]: blk_c13afb271fc74ce4a28b79e59652ee51\n\n> **Created:** 2026-09-28 07:29:45 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Doj2zNBowS_v2Tan3f-v)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 21 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Ba4.1-1 | ШАУВ-1-K5AC | PDS3 | КСПВПГнг(A)-HF | 1x2x0,75 | 330 | лоток 100х100, лоток 200х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 135/190/ 5 |  |\n| Ba4.1-2 | ШАУВ-1-K5AC | PDS4 | КСПВПГнг(A)-HF | 1x2x0,75 | 330 | лоток 100х100, лоток 200х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 135/190/ 5 |  |\n| Ba4.1-3 | ШАУВ-1-K5AC | ШАУВ-1-K5АС.ПЧ | ППГнг(A)-HF | 4x2,5 | 10 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 3/2/5 |  |\n| Ba4.1-4 | ШАУВ-1-K5AC | ШАУВ-1-K5АС.ПЧ | ППГнг(A)-HF | 4x2,5 | 10 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 3/2/5 |  |\n| Ba4.1-5 | ШАУВ-1-K5AC | XТ3 | ППГнг(A)-HF | 3x1,5 | 330 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 3x1,5 | 135/190/ 5 |  |\n| Ba4.1-6 | ШАУВ-1-K5AC | XТ3 | КСПВПГнг(A)-HF | 1x2x0,75 | 330 | лоток 100х100, лоток 200х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 135/190/ 5 |  |\n| Ba4.1-7 | ШАУВ-1-K5AC | XТ4 | ППГнг(A)-HF | 3x1,5 | 330 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 3x1,5 | 135/190/ 5 |  |\n| Ba4.1-8 | ШАУВ-1-K5AC | XТ4 | КСПВПГнг(A)-HF | 1x2x0,75 | 330 | лоток 100х100, лоток 200х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 135/190/ 5 |  |\n| Ba4.1-9 | ШАУВ-1-K5AC | XТ5 | ППГнг(A)-HF | 3x1,5 | 330 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 3x1,5 | 135/190/ 5 |  |\n| Ba4.1-10 | ШАУВ-1-K5AC | XТ5 | КСПВПГнг(A)-HF | 1x2x0,75 | 330 | лоток 100х100, лоток 200х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 135/190/ 5 |  |\n| Ba4.1-11 | ШАУВ-1-K5AC | XТ6 | ППГнг(A)-HF | 3x1,5 | 330 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 3x1,5 | 135/190/ 5 |  |\n\n## Page 80 — Sheet 22\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+      "authoritative_TEXT": "### BLOCK #229 [TEXT]: blk_3e1eb0838e6b4a33b9a090a9c4b998dd\n\n> **Created:** 2026-09-28 07:29:46 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/QvUGhPu866Lgl0sgf0yj)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 22 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Ba4.1-12 | ШАУВ-1-K5AC | XТ6 | КСПВПГнг(A)-HF | 1x2x0,75 | 330 | лоток 100х100, лоток 200х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 135/190/ 5 |  |\n| Ba4.1-13 | ШАУВ-1-K5AC | XТ7 | ППГнг(A)-HF | 3x1,5 | 330 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 3x1,5 | 135/190/ 5 |  |\n| Ba4.1-14 | ШАУВ-1-K5AC | XТ7 | КСПВПГнг(A)-HF | 1x2x0,75 | 330 | лоток 100х100, лоток 200х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 135/190/ 5 |  |\n| Ba3.1-3ПЧ | ШАУВ-1-K5AC.ПЧ | ШАУВ-1-K5AC | ППГнг(A)-HF | 4x2,5 | 330 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 135/190/ 5 |  |\n| Ba3.1-RS | ШАУВ-1-K5AC.ПЧ | ШАУВ-1-K5AC | KIC-Pнг(A)-HF | 2x2x0,60 | 330 | лоток 100х100, лоток 200х100, труба гофр. | KIC-Pнг(A)-HF 2x2x0,60 | 135/190/ 5 |  |\n| Ba3.1-4ПЧ | ШАУВ-1-K5AC.ПЧ | ШАУВ-1-K5AC | ППГнг(A)-HF | 4x2,5 | 330 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 135/190/ 5 |  |\n| Системы B6.1.1, B6.1.2 и B6.1.4 |  |  |  |  |  |  |  |  |  |\n| B6.1.1-1 | ШАУВ-1-K6ПЧ | PDS1 | КСПВПГнг(A)-HF | 1x2x0,75 | 30 | лоток 100х100, труба гофр., труба водогазопроводная , в металлоорукаве | КСПВПГнг(A)-HF 1x2x0,75 | 20/2/3/ 5 |  |\n| B6.1.1-2 | ШАУВ-1-K6ПЧ | M1 | ППГнг(A)-HF | 4x2,5 | 30 | лоток 100х100, труба гофр., труба водогазопроводная , в металлоорукаве | ППГнг(A)-HF 4x2,5 | 20/2/3/ 5 |  |\n| B6.1.1-3 | ШАУВ-1-K6ПЧ | XТ1 | ППГнг(A)-HF | 3x1,5 | 30 | лоток 100х100, труба гофр., труба водогазопроводная , в металлоорукаве | ППГнг(A)-HF 3x1,5 | 20/2/3/ 5 |  |\n\n## Page 81 — Sheet 23\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_397f9663589b40bfbde9b898e99e5117.png",
+      "sha256": "96df1986c5929c97c62369499fd26e3a7eb38071d3066a995f0aff8684fc9893",
+      "block_id": "blk_397f9663589b40bfbde9b898e99e5117",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Pa4.1-7/8 20m each; Va4.1-3PCh/4PCh 330m each; PCh motor tails 15m each.",
+      "inspection_crop": {
+        "box": [
+          1050,
+          150,
+          1550,
+          650
+        ],
+        "scale": 2,
+        "path": "/tmp/ak_f059_motor_cables.png"
+      }
+    }
+  ],
+  "selected_journal_rows": [
+    {
+      "block_id": "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+      "row": "| Па4.1-7 | ШАУВ-1-К5АС | M1 | ППГнг(А)-HF | 4x2,5 | 20 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x2,5 | 15/5 |  |",
+      "length": 20
+    },
+    {
+      "block_id": "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+      "row": "| Па4.1-8 | ШАУВ-1-К5АС | M5 | ППГнг(А)-HF | 4x2,5 | 20 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x2,5 | 15/5 |  |",
+      "length": 20
+    },
+    {
+      "block_id": "blk_c13afb271fc74ce4a28b79e59652ee51",
+      "row": "| Ba4.1-3 | ШАУВ-1-K5AC | ШАУВ-1-K5АС.ПЧ | ППГнг(A)-HF | 4x2,5 | 10 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 3/2/5 |  |",
+      "length": 10
+    },
+    {
+      "block_id": "blk_c13afb271fc74ce4a28b79e59652ee51",
+      "row": "| Ba4.1-4 | ШАУВ-1-K5AC | ШАУВ-1-K5АС.ПЧ | ППГнг(A)-HF | 4x2,5 | 10 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 3/2/5 |  |",
+      "length": 10
+    },
+    {
+      "block_id": "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+      "row": "| Ba3.1-3ПЧ | ШАУВ-1-K5AC.ПЧ | ШАУВ-1-K5AC | ППГнг(A)-HF | 4x2,5 | 330 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 135/190/ 5 |  |",
+      "length": 330
+    },
+    {
+      "block_id": "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+      "row": "| Ba3.1-4ПЧ | ШАУВ-1-K5AC.ПЧ | ШАУВ-1-K5AC | ППГнг(A)-HF | 4x2,5 | 330 | лоток 100х100, лоток 200х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 135/190/ 5 |  |",
+      "length": 330
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+      "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5",
+      "primary_adjudication": null,
+      "limits": [
+        "TEXT Ba/Ва и K5AC/К5АС сохранён буквально; сопоставление по шкафам, назначению, номеру и суффиксам не заменяет исходные строки.",
+        "Полностью прочитан раздел Па4.1/Ва4.1 от заголовка КЖ20 до следующей системы на КЖ22. Отсутствие отдельных трасс не заявляется для всех смежных комплектов.",
+        "Арифметическое расхождение730/700 усиливает документальное замечание, но не доказывает механизм составления700м или исключение именно двух15м из фактической закупки.",
+        "СуммаКЖ720м отражает его записанные конечные точки. Две10м линии нельзя автоматически считать заменой двух15м моторных участков: концы записаны как шкафы.",
+        "Маршрутные обмеры, заводские схемы, границы комплектной поставки и заказ не проверены. Длины330м не объявляются неправильными только из-за отличия от10м.",
+        "Историческое принятие и широкое объяснение сохранены отдельно от ограниченного текущего вывода. Записанная историческая причина потери немаркированных рёбер требует проверки журналов исполнения на этапе2."
+      ],
+      "wording": "Согласовать марки и состав цепей ШАУВ-1-К5АС.ПЧ: схема лист36 задаёт Ва4.1-3ПЧ/-4ПЧ/-RS, а КЖ лист22 — Ba3.1-3ПЧ/-4ПЧ/-RS для той же пары шкафов. Отдельные участки ПЧ→M2/M3 по15м4×2,5 на схеме не имеют индивидуальных марок и не представлены самостоятельными трассами в разделе КЖ Па4.1/Ва4.1. Сумма шести показанных участков4×2,5 составляет730м при700м в локальной ведомости. В КЖ дополнительно имеются межшкафные Ba4.1-3/-4 по10м; согласовать их назначение и пересчитать итог."
+    }
+  ],
+  "limits": [
+    "Totals do not establish final procurement quantity.",
+    "No frozen evaluator or runtime changed."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
