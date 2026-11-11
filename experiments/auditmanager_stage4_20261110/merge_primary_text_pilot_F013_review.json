@@ -1,0 +1,224 @@
+{
+  "status": "output_finding_reviewed_as_scope_question",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "source_md": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+  },
+  "reviews": [
+    {
+      "finding_id": "F-013",
+      "original_model_finding": {
+        "id": "F-013",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Границы системы контроля СО",
+        "report_section": "questions",
+        "sheet": "Лист 54",
+        "page": [
+          8,
+          58,
+          89,
+          90,
+          91,
+          92,
+          93,
+          102
+        ],
+        "problem": "Не определена поставка и подключение группы газоанализаторов 5.1–5.18.",
+        "description": "Таблица применимости содержит 19 адресов зоны 3, 20 зоны 4 и 22 зоны 5, всего 61. Спецификация содержит 43 сигнализатора и 43 коробки. Журнал перечисляет группы 1–4, без группы 5.1–5.18. Разность 18 совпадает с размером этой группы, но ее поставка другим комплектом не подтверждена. Проектные 200 м² на прибор нельзя проверить делением всей площади автостоянки 15216,80 м² на количество поставки АК2-ПА: границы контроля и размещение приборов не установлены.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проектировщику АК указать комплект поставки и подключения каждого прибора группы 5.1–5.18, границы зон контроля и расчет покрытия по плану.",
+        "risk": "Возможный разрыв между управляемой зоной, поставкой и подключением сигнализаторов; физическая недостача не доказана.",
+        "source_finding_ids": [
+          "T-013"
+        ],
+        "source_block_ids": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "blk_7b41b193ccad4f559ba654a2248576d5",
+          "blk_3eda565e44cb443c8143585904b82ced",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_a256f98d4e01408d90baba99d8b2cc19"
+        ],
+        "related_block_ids": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_6ba4df04a74d4e8d8db22cb4db7aff4f",
+          "blk_f42735b18cb140928c3d9f29d2891ae2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+            "page": 58
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          },
+          {
+            "type": "text",
+            "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+            "page": 89
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+            "page": 90
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+            "page": 91
+          },
+          {
+            "type": "text",
+            "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+            "page": 92
+          },
+          {
+            "type": "text",
+            "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+            "page": 93
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_unresolved_supply_and_connection_scope",
+      "reason": "Таблица применимости задаёт 14+5+20+4+18=61 адрес. В пяти прочитанных блоках КЖ31–35 найдены 43 уникальных адреса групп 1–4, группа 5 отсутствует; спецификация содержит 43 сигнализатора и 43 коробки. Разность 18 совпадает с группой 5.1–5.18. Это подтверждает вопрос о границах поставки и подключения, но не физическую недостачу. Площадь 15216,80 м² записана в экспликации; принадлежность всей площади контролируемым зонам не доказана, деление площади на 200 м² не использовано для вывода о дефиците.",
+      "arithmetic": {
+        "applicability_groups": [
+          14,
+          5,
+          20,
+          4,
+          18
+        ],
+        "applicability_total": 61,
+        "journal_unique_sensor_addresses": [
+          "1.1",
+          "1.10",
+          "1.11",
+          "1.12",
+          "1.13",
+          "1.14",
+          "1.2",
+          "1.3",
+          "1.4",
+          "1.5",
+          "1.6",
+          "1.7",
+          "1.8",
+          "1.9",
+          "2.1",
+          "2.2",
+          "2.3",
+          "2.4",
+          "2.5",
+          "3.1",
+          "3.10",
+          "3.11",
+          "3.12",
+          "3.13",
+          "3.14",
+          "3.15",
+          "3.16",
+          "3.17",
+          "3.18",
+          "3.19",
+          "3.2",
+          "3.20",
+          "3.3",
+          "3.4",
+          "3.5",
+          "3.6",
+          "3.7",
+          "3.8",
+          "3.9",
+          "4.1",
+          "4.2",
+          "4.3",
+          "4.4"
+        ],
+        "journal_total": 43,
+        "specification_sensor_quantity": 43,
+        "difference": 18
+      },
+      "evidence": [
+        {
+          "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "md_span_sha256": "96e9d96ed9f61f230e035d6f559e60397df97e2c9a55e730a53c9f104d4db6a0",
+          "start": 352024,
+          "end": 353185,
+          "inspection_scope": "relevant TEXT rows; graphic coverage not inspected"
+        },
+        {
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "md_span_sha256": "6788dfbfdca0eeb3d9a89e1c460f758be70a1385c93d7e22029c2ff7b092c952",
+          "start": 453077,
+          "end": 455518,
+          "inspection_scope": "relevant TEXT rows; graphic coverage not inspected"
+        },
+        {
+          "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "md_span_sha256": "988ffe11392de038e62bd38b5c24a808277b0553fcd3b8a9fa9a669dfa56734e",
+          "start": 421429,
+          "end": 423798,
+          "inspection_scope": "relevant TEXT rows; graphic coverage not inspected"
+        },
+        {
+          "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+          "md_span_sha256": "36e173f4e3124a4e248035764fc85bae86d235ff2a827e5ea517f7a4b3b2ec22",
+          "start": 423798,
+          "end": 426019,
+          "inspection_scope": "relevant TEXT rows; graphic coverage not inspected"
+        },
+        {
+          "block_id": "blk_3eda565e44cb443c8143585904b82ced",
+          "md_span_sha256": "ce639f523d39380444577e0daa795c0a435897de7b12d0ceef490cb3541dbd63",
+          "start": 426019,
+          "end": 428379,
+          "inspection_scope": "relevant TEXT rows; graphic coverage not inspected"
+        },
+        {
+          "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "md_span_sha256": "cb38bf51dd1ac96735f0fe9cdc5e934cd640610ab30f8dc6b7632f058ea654d6",
+          "start": 428379,
+          "end": 430911,
+          "inspection_scope": "relevant TEXT rows; graphic coverage not inspected"
+        },
+        {
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "md_span_sha256": "a0c2f57dfe554d763ea9544d0a85b338c752587308acc9e09f534a8833dec026",
+          "start": 430911,
+          "end": 432749,
+          "inspection_scope": "relevant TEXT rows; graphic coverage not inspected"
+        },
+        {
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "md_span_sha256": "2cbc98fcdd0ca377cb4ef3b7a0e6c57c8dfda7905b38e69eaa07a8c00e32c154",
+          "start": 34947,
+          "end": 40661,
+          "inspection_scope": "relevant TEXT rows; graphic coverage not inspected"
+        },
+        {
+          "block_id": "blk_6ba4df04a74d4e8d8db22cb4db7aff4f",
+          "md_span_sha256": "3266efcaa4a2ea0964422f7ed0b70e4b0070f873e7757b1ed5ec839baf3c8032",
+          "start": 331273,
+          "end": 341334,
+          "inspection_scope": "relevant TEXT rows; graphic coverage not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    }
+  ],
+  "production_acceptance": false
+}

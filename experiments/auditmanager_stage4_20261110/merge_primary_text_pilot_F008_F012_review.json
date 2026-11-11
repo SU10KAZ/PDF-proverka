@@ -1,0 +1,497 @@
+{
+  "status": "five_more_output_findings_reviewed_with_scope_limits",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "source_md": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+  },
+  "reviews": [
+    {
+      "finding_id": "F-008",
+      "original_model_finding": {
+        "id": "F-008",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Границы комплектации",
+        "report_section": "questions",
+        "sheet": "Листы 8, 10, 21",
+        "page": [
+          12,
+          14,
+          25,
+          94,
+          95,
+          101
+        ],
+        "problem": "Требуется установить назначение дополнительных температурных датчиков.",
+        "description": "Для ШАУВ-2-К4ПЧ наружный датчик записан в позициях 2.5 и 2.7 по 1 шт. при одном ТЕ1 в перечне. Для ШАУВ-4-К4ПЧ позиция 4.8 содержит 2 накладных датчика при одном ТЕ2. Для ШАУВ-3-К6ПЧ позиция 15.7 содержит 2 канальных датчика при одном ТЕ3. Марки дополнительных приборов и признак запаса не указаны; избыточная закупка не доказана.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проектировщику АК указать индивидуальные назначения дополнительных приборов либо обозначить резерв и скорректировать перечни.",
+        "risk": "Ошибочная комплектация или неучтенное подключение дополнительных приборов.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [
+          "blk_192d323532434ee1aba250ffaac80b47",
+          "blk_0457419703024673bb4328b18d47501e",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_a4846024d95044a09f7a24d76da41c31"
+        ],
+        "related_block_ids": [
+          "blk_192d323532434ee1aba250ffaac80b47",
+          "blk_0457419703024673bb4328b18d47501e",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_a4846024d95044a09f7a24d76da41c31"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_192d323532434ee1aba250ffaac80b47",
+            "page": 94
+          },
+          {
+            "type": "text",
+            "block_id": "blk_0457419703024673bb4328b18d47501e",
+            "page": 12
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+            "page": 95
+          },
+          {
+            "type": "text",
+            "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+            "page": 101
+          },
+          {
+            "type": "text",
+            "block_id": "blk_a4846024d95044a09f7a24d76da41c31",
+            "page": 25
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_unassigned_sensor_quantities",
+      "reason": "Спецификация 2.5 и 2.7 содержит по одному наружному датчику против одного ТЕ1; 4.8 содержит два накладных против одного ТЕ2; 15.7 содержит два канальных против одного ТЕ3. Заголовок позиции 15 на предыдущем листе относит её к ШАУВ-3-К6ПЧ. Назначение дополнительных приборов и резерв не установлены. Сохранить вопрос, не утверждать избыточную закупку.",
+      "evidence": [
+        {
+          "block_id": "blk_192d323532434ee1aba250ffaac80b47",
+          "md_span_sha256": "a5b3534830b3dfe820ef097262b4eabd941bc311a5470cb7b7ab5e949424b4dd",
+          "start": 432749,
+          "end": 435382,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_0457419703024673bb4328b18d47501e",
+          "md_span_sha256": "0e96b6657276129c078c2ee9b11c2531aac3ae4cfaf46d409bdcb0d834207257",
+          "start": 62907,
+          "end": 64262,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+          "md_span_sha256": "45a639cd03c26f6c428e2654dd78c7cd5d68fba8c4662afe4ec080bb6a9e689d",
+          "start": 435382,
+          "end": 438074,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "md_span_sha256": "d12caff8e905ca49022d08daee69c0c52ed9b192c56ee5b54e9c114a519d7f51",
+          "start": 72899,
+          "end": 74575,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "md_span_sha256": "e35ac512dab6993959cd00914d1e81beeeb1cad821244a4142e26c19cc0d06ca",
+          "start": 450496,
+          "end": 453077,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_a4846024d95044a09f7a24d76da41c31",
+          "md_span_sha256": "66ab1e121e7609e0d88881fc22a27269c7a8a3f352a4baea41a6ab6b0728b5d2",
+          "start": 134040,
+          "end": 135753,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "md_span_sha256": "52b019673ec133c34788afa344835bcdc2cd45e0dee21d5379a7759ff39eda43",
+          "start": 447851,
+          "end": 450496,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending; existing historical decisions must be mapped separately",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-009",
+      "original_model_finding": {
+        "id": "F-009",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Комплектность тепловых завес",
+        "report_section": "questions",
+        "sheet": "Лист 23",
+        "page": 27,
+        "problem": "Количество изделий тепловых завес требует сопоставления с позиционными обозначениями.",
+        "description": "Перечень содержит М3–М6 с количеством 2 и Y1, Y2 с количеством 4. Легенда отдельно перечисляет М3, М4, М5, М6 как двигатели завес и Y1, Y2 как приводы клапанов. Изделия отнесены к комплектам ОВ. Графический счет четырех двигателей и двух клапанов не проверен; автоматически устанавливать недостачу двух двигателей или избыток двух клапанов нельзя.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проектировщикам АК и ОВ раскрыть соответствие каждой позиции физическому изделию и смесительному комплекту, затем согласовать количества.",
+        "risk": "Неоднозначное распределение комплектного оборудования при монтаже и приемке.",
+        "source_finding_ids": [
+          "T-009",
+          "G-057",
+          "G-058"
+        ],
+        "source_block_ids": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_1afb9b9bff5242cca6f364f218b96506"
+        ],
+        "related_block_ids": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_1afb9b9bff5242cca6f364f218b96506",
+          "blk_523708af1c384b0e8bc6767d93644336"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+            "page": 27
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1afb9b9bff5242cca6f364f218b96506",
+            "page": 27
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_position_to_quantity_mapping",
+      "reason": "В перечне Y1, Y2 имеют количество 4, М3–М6 — 2; легенда перечисляет четыре обозначения двигателей и два обозначения приводов клапанов. Комплектность отнесена к ОВ. Это основание уточнить соответствие позиций изделиям; графическое количество и реальная недостача не проверены.",
+      "evidence": [
+        {
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "md_span_sha256": "50cff33a69d3ed35abc74e1632dd352f24d3050eaa6e518a118c83495e06d357",
+          "start": 148290,
+          "end": 149706,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_1afb9b9bff5242cca6f364f218b96506",
+          "md_span_sha256": "d0c10651d1475ccd85e3b7936a768cdedf3fe9f3fcfbef89fe540d524550019b",
+          "start": 149706,
+          "end": 150662,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending; existing historical decisions must be mapped separately",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-010",
+      "original_model_finding": {
+        "id": "F-010",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Обозначения систем",
+        "report_section": "questions",
+        "sheet": null,
+        "page": [
+          5,
+          7
+        ],
+        "problem": "В описании четырех завес используются два набора обозначений.",
+        "description": "Пункт 5 общих данных сначала называет У1–У4, затем ведущую У4.3 и ведомые У4.4–У4.6. Ведомость чертежей использует У4.3–У4.6. Соответствие двух наборов не раскрыто. Применение буквы «У» само по себе не является ошибкой.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить соответствие обозначений и привести описание к маркам завес в ведомости и схемах.",
+        "risk": "Неоднозначное понимание состава и алгоритма управления завесами.",
+        "source_finding_ids": [
+          "T-010"
+        ],
+        "source_block_ids": [
+          "blk_3555a6e6bcc443c39eaba461232ceec3",
+          "blk_6e394962eb18407fb17b09f063c30a5c",
+          "blk_c68be533b2c24e4799dde6fb256694f4"
+        ],
+        "related_block_ids": [
+          "blk_3555a6e6bcc443c39eaba461232ceec3",
+          "blk_6e394962eb18407fb17b09f063c30a5c",
+          "blk_c68be533b2c24e4799dde6fb256694f4"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_3555a6e6bcc443c39eaba461232ceec3",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": "blk_6e394962eb18407fb17b09f063c30a5c",
+            "page": 5
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_system_names",
+      "reason": "Пункт 5 называет У1, У2, У3, У4, затем ведущую У4.3 и ведомые У4.4–У4.6. Ведомость листов 23 и 41 использует второй набор. Сохранить вопрос о соответствии обозначений; буква У сама по себе не признана ошибочной.",
+      "evidence": [
+        {
+          "block_id": "blk_3555a6e6bcc443c39eaba461232ceec3",
+          "md_span_sha256": "837eb3d1682b3dcc2d74112a36193ba3cfc943c3a7f862d428e85f768b819126",
+          "start": 27811,
+          "end": 29938,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_6e394962eb18407fb17b09f063c30a5c",
+          "md_span_sha256": "a83d4dd0aac3eddd0f4b72a8bc555816a5c595241167bad6882f2619b385e67a",
+          "start": 4284,
+          "end": 7372,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_c68be533b2c24e4799dde6fb256694f4",
+          "md_span_sha256": "e983f9b9b4de1036147bdfd9c09345c0e199d21ed71383c5a90f49c538326819",
+          "start": 8332,
+          "end": 10851,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending; existing historical decisions must be mapped separately",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-011",
+      "original_model_finding": {
+        "id": "F-011",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Управление противодымным подогревом",
+        "report_section": "technical_findings",
+        "sheet": null,
+        "page": [
+          8,
+          28,
+          93,
+          102
+        ],
+        "problem": "Алгоритм предусматривает датчик-реле, а спецификация — термопреобразователь NTC10К.",
+        "description": "Общие данные, пункт 7, задают «Спрут Т-06», переключение при 18 °C и управляющий сигнал на пускатель электрокалорифера. Позиция 20.1 спецификации содержит 6 приборов МВТ 3280 с чувствительным элементом NTC10К и погружной частью 200 мм. Релейная команда и измерение сопротивления требуют разных цепей обработки. Шесть применений типовой схемы подтверждаются примечанием и журналом; наличие совместимого преобразования сигнала внутри шкафов не установлено.",
+        "norm": "СП 7.13130.2013 — норматив-кандидат; статус и применимая редакция не проверены.",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 7.13130.2013",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к управлению подогревом воздуха противодымных систем и согласованности его работы с пожарным режимом.",
+            "clause_candidate": null,
+            "quote_candidate": null,
+            "provenance": {
+              "source_finding_ids": [
+                "T-011"
+              ],
+              "designation_source": "Первичные общие данные проекта"
+            }
+          }
+        ],
+        "solution": "Согласовать выбранный датчик, вход каждого шкафа, преобразование сигнала и реализацию уставки 18 °C; обновить алгоритм и спецификацию.",
+        "risk": "Несовместимость поставленного прибора с цепью управления подогревом.",
+        "source_finding_ids": [
+          "T-011"
+        ],
+        "source_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "related_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_db759e961c1045b2822ce177cef0a17f",
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_dc32b584ce9748a5b520a300112b12de",
+          "blk_400a32e7aac048e6a9d6da65c598995f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          },
+          {
+            "type": "text",
+            "block_id": "blk_db759e961c1045b2822ce177cef0a17f",
+            "page": 28
+          },
+          {
+            "type": "text",
+            "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+            "page": 93
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_documented_sensor_interface_discrepancy",
+      "reason": "Пункт 7 задаёт датчик-реле Спрут Т-06 с командой на пускатель при уставке 18 °C; спецификация 20.1 задаёт шесть термопреобразователей NTC10К МВТ 3280. Примечание листа 24 перечисляет шесть применений схемы, КЖ35 содержит шесть соответствующих линий ТЕ1 к шкафам. Документальное расхождение подтверждено. Внутренняя схема шкафов и преобразование сигнала не проверены, поэтому фактическая несовместимость и нарушение СП не установлены; норматив остаётся кандидатом.",
+      "evidence": [
+        {
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "md_span_sha256": "2cbc98fcdd0ca377cb4ef3b7a0e6c57c8dfda7905b38e69eaa07a8c00e32c154",
+          "start": 34947,
+          "end": 40661,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "md_span_sha256": "6788dfbfdca0eeb3d9a89e1c460f758be70a1385c93d7e22029c2ff7b092c952",
+          "start": 453077,
+          "end": 455518,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_db759e961c1045b2822ce177cef0a17f",
+          "md_span_sha256": "372c2751f72fddfb9efb9a63d983a53a46f3d7a0dc04df8b8f19521533877dd8",
+          "start": 154662,
+          "end": 155540,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "md_span_sha256": "a0c2f57dfe554d763ea9544d0a85b338c752587308acc9e09f534a8833dec026",
+          "start": 430911,
+          "end": 432749,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending; existing historical decisions must be mapped separately",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-012",
+      "original_model_finding": {
+        "id": "F-012",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Управление кондиционерами",
+        "report_section": "technical_findings",
+        "sheet": "Лист 42",
+        "page": [
+          7,
+          46,
+          102
+        ],
+        "problem": "Документы задают разные комплекты ротации кондиционеров.",
+        "description": "На листе 42 перечислены один БУРР-1М и два БИС-1М производства «Алекс электроникс», связанные радиоканалом, а также автомат QF1 6 А. В спецификации указаны три согласователя TD0027170RU Haier и шесть адаптеров Haier. Общие данные заявляют отсутствие внешнего питания и дополнительных устройств сопряжения. Примечание листа 42 относит перечень к одной сплит-системе, тогда как общие данные описывают управление двумя кондиционерами.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Выбрать конкретное исполнение; согласовать питание, интерфейсы, адаптеры, комплектность и привязку трех комплектов к помещениям и парам кондиционеров.",
+        "risk": "Закупка несовместимого оборудования и невозможность реализовать ротацию по предусмотренной схеме.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [
+          "blk_52496725d0f247bf913f197b2ed305ac",
+          "blk_ed9c75d3fd26408c88f163f107138612",
+          "blk_400b84df0f63420ab16fb5c330de54b7",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "related_block_ids": [
+          "blk_52496725d0f247bf913f197b2ed305ac",
+          "blk_ed9c75d3fd26408c88f163f107138612",
+          "blk_400b84df0f63420ab16fb5c330de54b7",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_66ba3cf1e99c46a292deb3fecd22f58a",
+          "blk_8de25b2b318647aeac8b3298fe03a98c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_52496725d0f247bf913f197b2ed305ac",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": "blk_ed9c75d3fd26408c88f163f107138612",
+            "page": 46
+          },
+          {
+            "type": "text",
+            "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+            "page": 46
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_documented_conditioner_control_package_discrepancy",
+      "reason": "Лист 42 перечисляет БУРР-1М (1), БИС-1М (2), QF1 6 А, изготовителя Алекс электроникс; примечание задаёт радиоканал и комплект на одну сплит-систему. Спецификация 18.1–18.2 содержит Haier TD0027170RU (3) и адаптеры (6). Общие данные описывают два кондиционера без дополнительных устройств сопряжения и внешнего источника питания. Согласование исполнения обосновано; аппаратная несовместимость, отсутствие питания и лишние комплекты не доказаны.",
+      "evidence": [
+        {
+          "block_id": "blk_52496725d0f247bf913f197b2ed305ac",
+          "md_span_sha256": "74fbb6b19174e897079434f5d4d9d034221bb6f8f9b2aeb07c90c99860877451",
+          "start": 23412,
+          "end": 27811,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_ed9c75d3fd26408c88f163f107138612",
+          "md_span_sha256": "ad09c8955ef9df341e772257769c7687fee422a0d5519982ba4d0b89ebefa984",
+          "start": 230549,
+          "end": 231721,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+          "md_span_sha256": "54822425fb9795f776b11b525a1c941394c4b23afedd4c625b0de1a7a7b154aa",
+          "start": 236534,
+          "end": 237498,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        },
+        {
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "md_span_sha256": "6788dfbfdca0eeb3d9a89e1c460f758be70a1385c93d7e22029c2ff7b092c952",
+          "start": 453077,
+          "end": 455518,
+          "inspection_scope": "relevant authoritative TEXT content; graphic not inspected"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending; existing historical decisions must be mapped separately",
+      "graphic_verification": "not_performed"
+    }
+  ],
+  "production_acceptance": false
+}
