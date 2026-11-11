@@ -11,7 +11,7 @@ ERRATA=Path(__file__).with_name('benchmark_errata.json')
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def main():
+def build_view():
     release=json.loads(RELEASE.read_text());errata=json.loads(ERRATA.read_text())
     assert release['status']=='frozen_evaluator_dataset'
     for entry in release['files']:
@@ -42,6 +42,11 @@ def main():
             'No engineer decision or resolution is fabricated by applying a hold.',
             'Freeze the chosen evaluator version before comparative results are revealed; this working view is evaluator-only.'],
         'observed_quality_metrics':None,'production_acceptance':False}
+    return report
+
+
+def main():
+    report=build_view()
     Path(__file__).with_name('evaluator_errata_working_view.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({k:report[k] for k in ['verified_release_files','original_counts','working_counts']},ensure_ascii=False))
 
