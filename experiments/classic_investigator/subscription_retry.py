@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 from functools import wraps
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -48,9 +49,12 @@ async def retry_subscription_call(call, *args, stop_requested, on_attempt, sleep
         attempt += 1
         result = await call(*args, **kwargs)
         reason = transient_reason(result)
-        usage = {field: getattr(result, field, 0) or 0 for field in _USAGE_FIELDS}
+        # Unknown counters must reach the final receipt auditor unchanged.
+        # Coercing None/missing to zero would make incomplete accounting pass.
+        usage = {field: getattr(result, field, None) for field in _USAGE_FIELDS}
         for field, value in usage.items():
-            totals[field] += value
+            if type(value) in (int, float) and math.isfinite(value) and value >= 0:
+                totals[field] += value
         exhausted = bool(reason and max_attempts is not None and attempt >= max_attempts)
         on_attempt({
             'timestamp': time.time(), 'stage': kwargs.get('stage'),
@@ -65,6 +69,8 @@ async def retry_subscription_call(call, *args, stop_requested, on_attempt, sleep
         if not reason or exhausted:
             # Existing stage counters receive total usage of this request,
             # including unsuccessful attempts, rather than only the last answer.
+            # These are lower bounds if any receipt has missing/invalid usage;
+            # summarize_request_usage remains the completeness authority.
             if attempt > 1:
                 for field, value in totals.items():
                     if hasattr(result, field):

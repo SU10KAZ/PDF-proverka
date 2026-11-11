@@ -112,7 +112,10 @@ def summarize_request_usage(request_root):
         if {p.name for p in folder.glob('response_*.json')}!=expected:
             issues.append({'request':folder.name,'reason':'response_attempt_set_mismatch'})
     if not requests:issues.append({'reason':'no_transport_requests_recorded'})
+    money_measured = bool(groups) and not issues and all(source == 'actual' for _, source in groups)
     return {'accounting_complete':not issues,'request_count':requests,'attempt_count':attempts,
             'failed_attempt_count':failures,'totals':total,'by_model_and_cost_source':list(groups.values()),
+            'actual_monetary_cost_usd':total['cost_usd'] if money_measured else None,
+            'monetary_cost_fully_measured':money_measured,
             'issues':issues,'artifact_sha256':files,
             'boundary':'Transport receipts only. Summed duration is not wall time. Cache/reasoning tokens are not added again. Subscription cost_usd=0 is not proof of zero resource cost. Missing receipts make totals lower bounds.'}

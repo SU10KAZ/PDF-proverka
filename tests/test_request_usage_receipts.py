@@ -50,3 +50,14 @@ def test_incomplete_accounting_is_not_silently_complete(tmp_path,damage):
 def test_no_requests_is_unknown_not_free(tmp_path):
     result=module.summarize_request_usage(tmp_path)
     assert not result['accounting_complete']
+
+
+@pytest.mark.parametrize('cost_source,measured', [('actual',True),('estimated',False),('subscription',False)])
+def test_monetary_metric_never_promotes_subscription_zero_to_measured_cost(tmp_path,cost_source,measured):
+    p,rows=request(tmp_path,'request',[10])
+    rows[0]['cost_source']=cost_source
+    (p/'attempts.json').write_text(json.dumps(rows))
+    summary=module.summarize_request_usage(tmp_path)
+    assert summary['accounting_complete']
+    assert summary['monetary_cost_fully_measured'] is measured
+    assert summary['actual_monetary_cost_usd']==(0 if measured else None)
