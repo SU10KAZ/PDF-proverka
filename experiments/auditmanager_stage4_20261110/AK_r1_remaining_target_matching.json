@@ -1,0 +1,764 @@
+{
+  "status": "coordinator_target_coverage_complete_not_quality_acceptance",
+  "discipline": "AK",
+  "repeat": 1,
+  "mapped_atoms": [
+    {
+      "target_id": "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-020"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+          "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Отсутствие3×2,5 вСО, локальные20/10м и необходимость предварительного согласованияПо5.1 сохранены. Фактическая недопоставка30м не зачтена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F038_temperature_graphic_connection:c533a857981c11cd1b9a",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F038_temperature_graphic_connection.json",
+          "sha256": "67c1995d61ab5adda8800a0f465a1c6eb0deb791c8eab1570f2650bc9999e2a1"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Ложная привязкаTE2Пкр4.1 к воздуховоду не повторена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F039_served_rooms_conflict.json",
+          "sha256": "c5a07b351f4355a0bceeca4d625d01832f64782fd1432801547cbdf40ed24840"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Различие обслуживаемых помещенийП4.1.1 в общих указаниях и схеме не сформулировано; другие конфликты назначения систем не заменяют этот адрес.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-040"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+          "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Все пять эталонных схем охвачены отметкамиDI, но неоднозначность направления/назначения превращена в безусловное требование выходов и пересчёта. Возможность входящего состояния или внешней команды не сохранена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-044"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Точные16/19,M3/M4,Ва3.1/Ва3.1р сохранены. Возможные динамические роли при ротации не учтены; неоднозначность подписи объявлена перестановкой, требующей исправления.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:8239404083a86b949049",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Ошибочные колонки15/30 не повторены: F-044 указывает11/14/26/29.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-044"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Все четыре правильных адреса11/14/26/29 сохранены, но условие согласования статических/динамических ролей отсутствует. Безусловная перестановка подписей сильнее узкого эталона.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F042_pressure_legend_scope.json",
+          "sha256": "4ce2a068ccb529525bd5ef450e448e30bdfd57fbbc4aa15339d719306e8e54e0"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Ограничение легендыPDS только вентилятором не сформулировано. Конфликты диапазонов не являются этим редакционным вопросом.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-047"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+          "sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Пу5.1:TS2 функциональной схемы сопоставлен сТС1 перечня иПу5.1-2КЖ; отсутствие прибора не заявлено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-047"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+          "sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "По5.1:TS2 противТС1 перечня/КЖ сохранён, однако дополнительная независимая привязкаTS1 внешней схемы не раскрыта.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-024"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
+          "sha256": "1b628d71c0871ea4fc70d34f43c7229a6c4c15294586da247f4568d964746b4f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "КонкретнаяВос5.1-1 сопоставлена:PDS5 схем противPDS45КЖ. НаписаниеPDS45 не нормализовано.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-050"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F046_position_range_editorial.json",
+          "sha256": "912b8afed5b7dd638a2fb92ba907a9cda2ab531204e7f17dabe88ee0f2c2c81b"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "UZ1–UZ53 и3шт перечня сопоставлены сUZ1/2/3 схемы; недостача50устройств не заявлена. Требование снова сверять оригинал отдельно не одобряется.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-051"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F050_heater_legend_identity.json",
+          "sha256": "f316e24040e8fd1ffc2a9d7fa9bcf2e56cc64e483684d014745f7f825ce3e5fe"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Электрический нагреватель легенды иводяной контур85/60 названы. Но утверждение о совпадении рабочего символа сэлектрическим противоречит узкому эталону, где начертания различаются. Полный корректный редакционный вопрос не сохранён.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-053"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F051_cabinet_label_scope.json",
+          "sha256": "a66c212be8c1dde3bd5132cf55aa4a8b92153efad0e9b2b3ce89f39fa3f5b853"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "ШУ-ПД4.14 иЩУ-ПД4.1.4 сопоставлены по той же цепиТЕ1; правильная марка не выбрана без согласования.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F052_local_cable_balance:61ee4b031d84d67a9995",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F052_local_cable_balance.json",
+          "sha256": "269fbd7df09fb79b766b4bbed801b044d88de0bba6e8555945cb4280f992cf2e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Ложное175м по пяти приводам35м не повторено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F053_local_cable_balance:3ea87f3768012a815077",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F053_local_cable_balance.json",
+          "sha256": "f0fe30025610ce7f3d413dec02072e1dd1a2937afe5cd720b3a8737b91bde092"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Лист25:165м поM1–M5 против155м локальной ведомости не сформулированы. Иные суммы и шкафы не заменяют этот баланс.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-054"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "ШАУВ-4-К4ПЧ:M1/M2,29/30 названы, примечание изготовителя сохранено; электрическое объединение прямо не доказано.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:62cc730e92af787c8d46",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-054"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "ШАУВ-3-К5ПЧ:PDS4/PDS5,23/24 названы с вопросом полных адресов, без утверждения короткого замыкания.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:0fadfeadec26c587750e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-054"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Тот же шкаф:M1/M2,29–31 названы и предложено согласование с изготовителем.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-057"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "M2 сопоставлен у резервного вентилятораПн5.1р инасосаПн5.1. Узкий конфликт двух устройств сохранён.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-057"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Y7 сопоставлен у теплоносителяПн5.1 ивоздушного клапанаВн5.1. Узкий конфликт сохранён, хотя Y11 связанной функциональной схемы не приведён.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-024"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F058_temperature_endpoint.json",
+          "sha256": "7f391d6a377940f60763577625de4cf7ec7cdf80d28ddb2317108f1965f7d1f3"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "По5.1-1:TE2 внешней схемы противTE1КЖ; различие наружного/канального назначения раскрыто.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-024"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F060_thermostat_endpoint.json",
+          "sha256": "4ae7511ca6056afa1ff0f85c52539b4154b6ba45c99f75bac26d841da23f0d38"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Вторая линияП6.1.4-2 сопоставленаTS2схемы/ТС1КЖ, отдельноеназначениеТС1дляП6.1.1 сохранено. ЛитераПб исходногоTEXT нормализована моделью; это не одобряется зачётом смысла.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F061_penetration_detail_scope:5c02072a41acbc8744af",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-062"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F061_penetration_detail_scope.json",
+          "sha256": "fd69d890fb13cea2f5adfa44fc272a31dc5e66368917c5c7159597065583df04"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Три узлаА ипримечание3 ометаллических трубах сопоставлены; допускается согласование области применения, отсутствие трубы не объявлено доказанным нарушением огнестойкости.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F064_reference_register_scope:fc47e77750c166a5d33d",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F064_reference_register_scope.json",
+          "sha256": "5d142f45af5de6a7c5002d60bedc3b7517fad1dc38ff05f0d8616263c90ca6ee"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Обязательный перенос любого упоминанияГОСТ/СП в ведомость не требовался.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F065_norm_replacement_applicability:d53a7df3ef467306402d",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F065_norm_replacement_applicability.json",
+          "sha256": "ee0e2ec0de3444283d4ddfdf2bd26ef2a9bd08ac871d666d8989d6842015220b"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Уточнение применимой редакцииГОСТР21.101-2020 исходных общих указаний не сформулировано. Ссылки модели на этот стандарт в других замечаниях не являются найденным вопросом его применимости.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/AK_review.json",
+  "review_ledger_sha256": "4445f88e02bfe4ffe796258af8bd512a1192ab73351cfe1029ea33384cde1477",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "AK",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 55,
+          "availability_available": 55,
+          "partial": 12,
+          "absent": 3,
+          "full": 40
+        },
+        "review_complete": true,
+        "full_match_rate": 0.7272727272727273,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 23,
+          "availability_available": 23,
+          "partial": 6,
+          "full": 14,
+          "absent": 3
+        },
+        "review_complete": true,
+        "full_match_rate": 0.6086956521739131,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 22,
+          "availability_available": 22,
+          "absent": 21,
+          "partial": 1
+        },
+        "review_complete": true,
+        "full_match_rate": 0.0,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 54
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "unresolved_output_issue": {
+    "finding": "F-051",
+    "issue": "Утверждение о рабочем символе электрического нагревателя расходится с замороженной графической проверкой: символы различаются. Требуется отдельный учёт неподтверждённого расширения."
+  },
+  "limits": [
+    "Завершена оценка покрытия100эталонных атомов только одного прогона; не весь проектный или сравнительный план.",
+    "Все разделы выдачи покаunchecked; новые находки и необоснованные дополнения ещё не оценены полностью.",
+    "Полнота относительно эталона не является точностью всего отчёта.",
+    "Отсутствие ошибок не доказывает эффективность фильтра."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
