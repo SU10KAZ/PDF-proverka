@@ -1,0 +1,108 @@
+{
+  "status": "failed_numeric_acceptance",
+  "files": [
+    {
+      "path": "00_followup.json",
+      "sha256": "f6854aa5fb683054620f75137eafa3aaa611d55d0daaf48ec3f3072e2f1776b7"
+    },
+    {
+      "path": "00_initial_validation.json",
+      "sha256": "6c942a026300c4d6f6085c75b58f8bb8a0cfbc7957a9d1bc566fe1249bcb34da"
+    },
+    {
+      "path": "00_region_literal_0/attempt.json",
+      "sha256": "d16e9120699d087fcbdc592fad40a0d96375c21678a96062c5b2b02d374e0c56"
+    },
+    {
+      "path": "00_region_literal_0/request.json",
+      "sha256": "d6929f826f68d17da15e675196e20cfb1a7c73d0caff80c53792538c58fd8687"
+    },
+    {
+      "path": "00_region_literal_0/result.json",
+      "sha256": "e71c7a22f76c2d49cc5c128661b2779ecc53769d4c2c8105c1a00bb8f23ab988"
+    },
+    {
+      "path": "00_region_literal_1/attempt.json",
+      "sha256": "68dbe04f893518fc722e66ce1ed12c4b49552bf7cf86dec56be5a879463709f4"
+    },
+    {
+      "path": "00_region_literal_1/request.json",
+      "sha256": "f8aa9d78a7aa8648b88997a435ffe326c6237d7486722fc1c5293690d7fb4a51"
+    },
+    {
+      "path": "00_region_literal_1/result.json",
+      "sha256": "167cbb2ddbc4490f66b6c240eb35e50eedde612001509005b4d467400d986a60"
+    },
+    {
+      "path": "00_region_review/attempt.json",
+      "sha256": "14a04c5ad096de432a18e0f2d2f3191b9cc48e7a6106c2e15a302635e773aca4"
+    },
+    {
+      "path": "00_region_review/request.json",
+      "sha256": "c12b0e77d85bae924a15873bea622a7458e5705c702c870ba65b3b8c42ab2892"
+    },
+    {
+      "path": "00_region_review/result.json",
+      "sha256": "7ab8abd454c2b1240e68191db02dd5f9ab675bfc5a08208d175949a7fa9fa47b"
+    },
+    {
+      "path": "00_region_validation.json",
+      "sha256": "ed7ddde272b71963004707313aa53d6fb36ad4b5adcfb22275641e1e7264a515"
+    },
+    {
+      "path": "00_review/attempt.json",
+      "sha256": "c01626f7e4ef2b828674db9cf076efa9b5eda656ad5fa13cc6e99bd92f890fd2"
+    },
+    {
+      "path": "00_review/request.json",
+      "sha256": "e426de96207c170dedc48d00617b1f39cf9d774032b77eb061412a1f455d5316"
+    },
+    {
+      "path": "00_review/result.json",
+      "sha256": "9f1b4b752a09800dd53493d3486afe8608f39aaf3d9ec109177a8d871dcea04e"
+    },
+    {
+      "path": "00_validation.json",
+      "sha256": "6c942a026300c4d6f6085c75b58f8bb8a0cfbc7957a9d1bc566fe1249bcb34da"
+    },
+    {
+      "path": "05_adjudication/attempt.json",
+      "sha256": "ff78e6c3b6f2cbbb9931ba5887c6134fd0b51300b08e9038af8bac33d607ea08"
+    },
+    {
+      "path": "05_adjudication/request.json",
+      "sha256": "3c99afcc198ad278e892f063ef56deace9bd3e2b53c5eaab9ea23b445b9447f5"
+    },
+    {
+      "path": "05_adjudication/result.json",
+      "sha256": "bfbe2993d13205880332717c9cabf5b4373d889d990c2a924a853d49c81f50a6"
+    },
+    {
+      "path": "binding.json",
+      "sha256": "2d2b8661635a28a32fcf11d1dfb22205b94829aa11f0eac26461e5ea751c6310"
+    },
+    {
+      "path": "candidate.json",
+      "sha256": "de24d2641397fc4c296285dcb3059ca3c543b88e45bc8d43b5143793bf8fdebc"
+    },
+    {
+      "path": "graphic_region_manifest.json",
+      "sha256": "b38aa7c216bd8a59fdbd79b8f80b9da0743e653b5511bd498664e148b901ad82"
+    },
+    {
+      "path": "independent_graphic_readings.json",
+      "sha256": "1cadf5c3a348f9b62e121373b1bba09cd238a3678f1d75e85cc7efbc5138191f"
+    }
+  ],
+  "workflow_completed": true,
+  "actual_final_reading": "2,78",
+  "actual_final_difference": "3,11",
+  "source_value_from_prior_direct_check": "2,73",
+  "correct_difference": "3,16",
+  "manual_expected_answer_supplied": false,
+  "core_conflict_preserved": true,
+  "automatic_region_selection_corrected_by_model": true,
+  "revised_region_independently_read": false,
+  "next_action": "Bounded second region-reading round when the review moves its evidence region; retain explicit unverified status at budget exhaustion. No project-specific numerical rule.",
+  "full_acceptance": false
+}

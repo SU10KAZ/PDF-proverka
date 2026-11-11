@@ -1,0 +1,90 @@
+{
+  "text": "{\"annotations\":[{\"literal\":\"T411\",\"bbox_norm_xyxy\":[0.022,0.6,0.072,0.833]},{\"literal\":\"⌀48\",\"bbox_norm_xyxy\":[0.553,0.0,0.581,0.325]},{\"literal\":\"⌀48\",\"bbox_norm_xyxy\":[0.727,0.058,0.756,0.383]},{\"literal\":\"T411\",\"bbox_norm_xyxy\":[0.875,0.433,0.904,0.833]},{\"literal\":\"DN3\",\"bbox_norm_xyxy\":[0.915,0.0,0.946,0.375]},{\"literal\":\"P\",\"bbox_norm_xyxy\":[0.217,0.825,0.233,0.983]},{\"literal\":\"T\",\"bbox_norm_xyxy\":[0.421,0.842,0.434,0.992]}],\"reading_uncertainties\":[\"Several annotations intersect the image boundaries and are incomplete.\",\"The diameter annotations at the upper edge may continue beyond the crop; only the visible diameter mark and digits 48 are transcribed.\",\"The cyan DN3 annotation reaches the upper boundary and may be incomplete.\",\"The turquoise annotation at the upper left and the cropped black annotations along the lower and right edges cannot be read confidently.\",\"Other small instrument-circle lettering near the lower edge is too cropped to transcribe confidently.\"]}",
+  "json_data": {
+    "annotations": [
+      {
+        "literal": "T411",
+        "bbox_norm_xyxy": [
+          0.022,
+          0.6,
+          0.072,
+          0.833
+        ]
+      },
+      {
+        "literal": "⌀48",
+        "bbox_norm_xyxy": [
+          0.553,
+          0.0,
+          0.581,
+          0.325
+        ]
+      },
+      {
+        "literal": "⌀48",
+        "bbox_norm_xyxy": [
+          0.727,
+          0.058,
+          0.756,
+          0.383
+        ]
+      },
+      {
+        "literal": "T411",
+        "bbox_norm_xyxy": [
+          0.875,
+          0.433,
+          0.904,
+          0.833
+        ]
+      },
+      {
+        "literal": "DN3",
+        "bbox_norm_xyxy": [
+          0.915,
+          0.0,
+          0.946,
+          0.375
+        ]
+      },
+      {
+        "literal": "P",
+        "bbox_norm_xyxy": [
+          0.217,
+          0.825,
+          0.233,
+          0.983
+        ]
+      },
+      {
+        "literal": "T",
+        "bbox_norm_xyxy": [
+          0.421,
+          0.842,
+          0.434,
+          0.992
+        ]
+      }
+    ],
+    "reading_uncertainties": [
+      "Several annotations intersect the image boundaries and are incomplete.",
+      "The diameter annotations at the upper edge may continue beyond the crop; only the visible diameter mark and digits 48 are transcribed.",
+      "The cyan DN3 annotation reaches the upper boundary and may be incomplete.",
+      "The turquoise annotation at the upper left and the cropped black annotations along the lower and right edges cannot be read confidently.",
+      "Other small instrument-circle lettering near the lower edge is too cropped to transcribe confidently."
+    ]
+  },
+  "input_tokens": 10954,
+  "output_tokens": 943,
+  "cost_usd": 0.0,
+  "duration_ms": 44658,
+  "model": "codex/gpt-6-astra",
+  "is_error": false,
+  "error_message": "",
+  "cached_tokens": 10240,
+  "cache_write_tokens": 0,
+  "reasoning_tokens": 647,
+  "cost_source": "subscription",
+  "response_id": "01a1c83b-13d6-75a3-ad4c-4a6787aafc6e",
+  "finish_reason": "stop"
+}
