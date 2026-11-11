@@ -1,4 +1,5 @@
 """Replay the exact recorded final check through the runtime phase and Excel."""
+import argparse
 import asyncio
 import hashlib
 import json
@@ -13,7 +14,8 @@ ROOT=Path('/tmp/auditmanager_km_f014_native_final_phase_replay_20261111')
 CANDIDATE=Path('/tmp/auditmanager_km_f014_native_cross_plan_20261111/workflow/candidate.json')
 MD=Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.md')
 
-async def main():
+async def main(source_root=SOURCE, output_root=ROOT, candidate_path=CANDIDATE):
+    SOURCE, ROOT, CANDIDATE = source_root, output_root, candidate_path
     ROOT.mkdir(exist_ok=True)
     document=json.loads((SOURCE/'input_document.json').read_text())
     candidate=json.loads(CANDIDATE.read_text());fid=candidate['entry']['response']['finding_id']
@@ -58,4 +60,10 @@ async def main():
        'output_sha256':hashlib.sha256(sealed).hexdigest(),'xlsx_sha256':hashlib.sha256((ROOT/'report.xlsx').read_bytes()).hexdigest()}
     (ROOT/'assessment.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n');print(json.dumps(summary))
 
-if __name__=='__main__':asyncio.run(main())
+if __name__=='__main__':
+    p=argparse.ArgumentParser()
+    p.add_argument('--source-root',type=Path,default=SOURCE)
+    p.add_argument('--output-root',type=Path,default=ROOT)
+    p.add_argument('--candidate',type=Path,default=CANDIDATE)
+    args=p.parse_args()
+    asyncio.run(main(args.source_root,args.output_root,args.candidate))

@@ -1,0 +1,7 @@
+{
+  "initial_request_sha256": "d2df026ca5282e7127c88ec447fd73ab37dec5920505e86409e07f7ee6eb50ee",
+  "initial_result_sha256": "1bebfffe32fba852be47adee909c3ae65fbc9130ed75996338826b71b9181a48",
+  "initial_response_replayed": true,
+  "fresh_followups": true,
+  "blind_discovery": false
+}

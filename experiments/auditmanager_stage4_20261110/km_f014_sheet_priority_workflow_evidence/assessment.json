@@ -1,0 +1,18 @@
+{
+  "status": "controlled_known_candidate_retrieval_improvement_final_release_pending",
+  "initial_request_and_response_identical": true,
+  "initial_response_replayed_not_new_call": true,
+  "fresh_followups_and_adjudication": 3,
+  "baseline_action": "defer",
+  "priority_action": "revise",
+  "specific_change": "Exact document-code + sheet query ranked before generic mark matches; same max_images=8.",
+  "evidence": "Requested detail images omitted by old order now attached; all original three images retained.",
+  "limits": [
+    "One known-candidate paired trajectory; stochastic variation not quantified.",
+    "Corrected workflow also consumed remaining search backlog, so fresh downstream call count increased.",
+    "No blind discovery improvement established.",
+    "Full comparative candidate snapshot needs a new version; current baseline capsule untouched."
+  ],
+  "final_release_complete": false,
+  "production_changed": false
+}

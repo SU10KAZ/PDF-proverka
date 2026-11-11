@@ -18,11 +18,12 @@ def immutable(path,data):
     if path.exists():assert json.loads(path.read_text())==data,str(path)
     else:path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
 
-async def main(execute, output_root=ROOT):
+async def main(execute, output_root=ROOT, candidate_path=None):
     os.environ['CODEX_TRANSIENT_RETRIES']='0'
     source=BASE/'inputs/KM/versions/v001/02_work/document.md'
     md=source.read_text();baseline=json.loads((BASE/'snapshots/KM/findings_verify.json').read_text())
-    for name,path in CANDIDATES.items():
+    candidates=CANDIDATES if candidate_path is None else {'native':candidate_path}
+    for name,path in candidates.items():
         entry=json.loads(path.read_text())['entry'];fid=entry['response']['finding_id']
         original=next(p['finding_snapshot'] for p in entry['queue']['packets'] if p['finding_id']==fid)
         document={**baseline,'findings':[original if f['id']==fid else f for f in baseline['findings']]}
@@ -47,5 +48,6 @@ async def main(execute, output_root=ROOT):
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--execute',action='store_true')
     parser.add_argument('--output-root',type=Path,default=ROOT)
+    parser.add_argument('--candidate',type=Path)
     args=parser.parse_args()
-    asyncio.run(main(args.execute,args.output_root))
+    asyncio.run(main(args.execute,args.output_root,args.candidate))
