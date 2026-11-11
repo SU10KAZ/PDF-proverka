@@ -1,0 +1,10 @@
+{
+  "tested_commit": "63102b0b8eb63bfcf6b9a5c39f64d1035b9c63fc",
+  "command": "python -m pytest -q tests/test_source_review*.py tests/test_atomic_review_scoring.py tests/test_evaluator_freeze.py tests/test_paired_method_profiles.py tests/test_paired_shared_protocol.py",
+  "exit_code": 0,
+  "passed": 208,
+  "duration_seconds": 5.06,
+  "model_calls": 0,
+  "scope": "Local contracts for review/adjudication/release, evaluator and variant isolation. Not six-project comparative quality, independent engineering review or production acceptance.",
+  "stage4_complete": false
+}
