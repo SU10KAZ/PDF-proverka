@@ -1,0 +1,54 @@
+{
+  "status": "review_summary_not_trial_acceptance",
+  "discipline": "ITP",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "findings_sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027",
+  "routes": {
+    "technical": {
+      "counts": {
+        "denominator": 19,
+        "availability_available": 19,
+        "partial": 10,
+        "full": 7,
+        "absent": 2
+      },
+      "review_complete": true,
+      "full_match_rate": 0.3684210526315789,
+      "meaning": "fully preserved target rate"
+    },
+    "question": {
+      "counts": {
+        "denominator": 56,
+        "availability_unchecked": 56,
+        "unchecked": 56
+      },
+      "review_complete": false,
+      "full_match_rate": null,
+      "meaning": "fully preserved target rate"
+    },
+    "negative": {
+      "counts": {
+        "denominator": 12,
+        "availability_unchecked": 12,
+        "unchecked": 12
+      },
+      "review_complete": false,
+      "full_match_rate": null,
+      "meaning": "repeated false claim rate"
+    }
+  },
+  "section_accuracy_counts": {
+    "unchecked": 7
+  },
+  "filter_effectiveness": null,
+  "production_acceptance": false,
+  "unmeasured": [
+    "Novel valid findings",
+    "Unsupported additions",
+    "Duplicate burden",
+    "Useful baseline retention",
+    "Engineer time",
+    "Run cost and duration",
+    "Candidate arrival and reasoned filter removal"
+  ]
+}
