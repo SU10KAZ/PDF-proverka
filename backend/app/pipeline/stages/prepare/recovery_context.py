@@ -1,4 +1,5 @@
 """Bounded literal search over authoritative prepared MD, never PDF re-extraction."""
+from copy import deepcopy
 import hashlib
 import json
 import re
@@ -205,6 +206,26 @@ def build_context_followup(request, payload):
     new = report['hits']
     if not new:
         return None, {'status': 'no_new_context', 'search': report}
+    # The previous answer may split a compound obligation into new stable IDs.
+    # Carry those missing parts explicitly; a previous_decisions narrative alone
+    # is not an executable publication obligation. Preserve omitted older parts.
+    refreshed = []
+    for candidate in unresolved:
+        candidate = deepcopy(candidate)
+        obligations = candidate.get('pending_subclaims', [])
+        obligations = deepcopy(obligations) if isinstance(obligations, list) else []
+        for decision in decisions:
+            if not isinstance(decision, dict) or (decision.get('origin'), decision.get('pointer')) != (candidate.get('origin'), candidate.get('pointer')):
+                continue
+            claims = decision.get('subclaims', [])
+            for claim in claims if isinstance(claims, list) else []:
+                if not isinstance(claim, dict) or claim.get('decision') != 'needs_data' or not isinstance(claim.get('id'), str):
+                    continue
+                obligations = [o for o in obligations if not (isinstance(o, dict) and isinstance(o.get('claim'), dict) and o['claim'].get('id') == claim['id'])]
+                obligations.append({'reason': 'needs_data', 'claim': deepcopy(claim)})
+        candidate['pending_subclaims'] = obligations
+        refreshed.append(candidate)
+    unresolved = refreshed
     packet['candidate_group'] = unresolved
     packet['candidate'] = unresolved[0]
     packet['retrieved_context'] = new

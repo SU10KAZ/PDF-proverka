@@ -1,0 +1,97 @@
+{
+  "status": "context_handoff_gaps_identified",
+  "snapshot": "/tmp/auditmanager_recovery_snapshot_20261112_03.json",
+  "pending": [
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/4/findings/1",
+      "claims": [
+        {
+          "reason": "missing_subclaim_final_link",
+          "claim": {
+            "id": "1",
+            "claim": "PDS3 задан диапазонами 20–200 и 50–500 Па.",
+            "decision": "retained",
+            "reason": "На изображении листа 9 PDS3 связан с позицией 12; соответствующий столбец таблицы задаёт перепад на вентиляторе 20–200 Па. Авторитетная строка перечня PDS1-PDS3 задаёт 50–500 Па. Подтверждённое расхождение уже связано с F-036 в предыдущем решении.",
+            "source_refs": [
+              "blk_28e6a3fa2bff45aabce4aed90feff741",
+              "blk_6414183ffe264f65a253b3d6a5155da1"
+            ],
+            "required_source_refs": [],
+            "target_finding_ids": [],
+            "reported_target_finding_ids": [
+              "F-036"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/8/findings/0",
+      "claims": [
+        {
+          "reason": "subclaim_not_emitted",
+          "claim": {
+            "id": "2",
+            "claim": "Позиция 7.3 спецификации шкафа ШАУВ-2-К5ПЧ предусматривает для PDS3 диапазон 50–500 Па.",
+            "decision": "retained",
+            "reason": "Раздел 7 прямо относится к ШАУВ-2-К5ПЧ, позиция 7.3 содержит три датчика 50–500 Па. Перечень этого шкафа идентифицирует три прибора как PDS1–PDS3. На втором изображении PDS3 указан в колонке контроля перепада на вентиляторе Пкр5.1 и подключён линией Пкр5.1-7 к клеммам 17–18 этого шкафа. Недостающая сторона сопоставления подтверждена.",
+            "source_refs": [
+              "blk_576ad6ac1cff48f79ac223f56ba405ae",
+              "blk_08e6971dafd541b2a40e0aa270404a4e",
+              "blk_c0ed6bca935843c18344796377677f2f"
+            ],
+            "required_source_refs": [],
+            "target_finding_ids": [
+              "F-079"
+            ],
+            "reported_target_finding_ids": [
+              "F-036"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/8/findings/1",
+      "claims": [
+        {
+          "reason": "subclaim_not_emitted",
+          "claim": {
+            "id": "2",
+            "claim": "Диапазон PDS3 Пкр5.1 в таблице сигналов отличается от диапазона 50–500 Па в позиции 7.3 спецификации.",
+            "decision": "retained",
+            "reason": "Изображение подтверждает 20–200 Па в колонке 12. Предоставленный TEXT позиции 7.3 раздела ШАУВ-2-К5ПЧ подтверждает три прибора 50–500 Па; перечень элементов включает PDS3 в эти три прибора. Расхождение документов установлено, непригодность прибора для уставки 50 Па из него не следует.",
+            "source_refs": [
+              "blk_4e142b330766407099c7d561f0a8eb6a",
+              "blk_08e6971dafd541b2a40e0aa270404a4e",
+              "blk_576ad6ac1cff48f79ac223f56ba405ae"
+            ],
+            "required_source_refs": [],
+            "target_finding_ids": [
+              "F-079"
+            ],
+            "reported_target_finding_ids": [
+              "F-036"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "causes": [
+    {
+      "stage": "candidate_recovery_8e1933d07700e1d1_context",
+      "issue": "Two new claim IDs 2 were returned by the initial recovery but absent from the followup candidate pending_subclaims. Publication ignored these otherwise source-linked parts.",
+      "fix": "build_context_followup now carries newly unresolved subclaims and preserves omitted earlier obligations. Existing sealed followups remain unchanged."
+    },
+    {
+      "stage": "candidate_recovery_9abbe90f57edee78_context",
+      "issue": "Followup references F-036 created by its parent response but receives only the frozen 35 base findings. Parent-local target identity is not available to final binding.",
+      "fix_status": "pending_request_lineage_binding; do not bind by coincident global ID"
+    }
+  ],
+  "production_acceptance": false
+}

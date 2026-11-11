@@ -264,3 +264,22 @@ def test_retained_parent_still_retrieves_context_for_unresolved_child(tmp_path):
     assert json.loads(followup.messages[-1]['content'])['previous_decisions'] == [decision]
     decision['pointer'] = '/unknown'
     assert build_context_followup(request, {'candidate_decisions': [decision]})[1]['status'] == 'no_explicit_context_queries'
+
+
+def test_followup_carries_new_missing_parts_and_preserves_omitted_obligations(tmp_path):
+    path = tmp_path / 'document.md'; path.write_text(MD)
+    candidate = {'origin': 'text', 'pointer': '/text_findings/0', 'pending_subclaims': [
+        {'reason': 'needs_data', 'claim': {'id': 'old', 'claim': 'Old unreviewed part'}}]}
+    packet = {'candidate': candidate, 'authoritative_md': '', 'allowed_source_refs': [],
+              'md_source': {'path': str(path), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}}
+    request = CodexTargetedPass('candidate_recovery_split', 'x.json', [
+        {'role': 'system', 'content': 'review'}, {'role': 'user', 'content': json.dumps(packet)}])
+    claim = {'id': 'new_part', 'claim': 'Compare specification', 'decision': 'needs_data', 'context_queries': ['U1.1']}
+    followup, _ = build_context_followup(request, {'candidate_decisions': [
+        {'origin': 'text', 'pointer': '/text_findings/0', 'decision': 'needs_data', 'subclaims': [claim]}]})
+    body = json.loads(followup.messages[-1]['content'])
+    obligations = body['candidate']['pending_subclaims']
+    assert [o['claim']['id'] for o in obligations] == ['old', 'new_part']
+    assert obligations[-1]['claim'] == claim
+    assert body['candidate_group'][0] == body['candidate']
+    assert len(candidate['pending_subclaims']) == 1
