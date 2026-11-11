@@ -1,0 +1,693 @@
+{
+  "status": "five_specification_questions_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "78665f2436f01dba6354d11860da88825e1dd75c965b7604b8575cd26c83b8ef",
+  "queue_after_sha256": "be5ecc796335ebbdf025be826bf87e0355a48d28b155a377e1d55dd13fd2aee1",
+  "reviewer": "Codex direct authoritative TEXT claim/action review",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-023",
+      "finding": {
+        "id": "F-023",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Лист 18",
+        "page": 54,
+        "problem": "Одинаковый код продукции указан для четырех различных изделий.",
+        "description": "Код 178513 поставщика Bolta присвоен бетонному держателю токоотвода, шпильке М8, гайке М8 и соединителю СЛУ-50/65. Для отметки +41,290 каждая строка содержит 104 шт., для +44,650 — 82 шт. Поставка единым комплектом явно не оформлена.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить однозначную идентификацию изделий и оформление комплектной поставки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать отдельные артикулы либо оформить единый комплект с раскрытым составом и количеством комплектов.",
+        "risk": "Повторный заказ комплектов или поставка изделий, не соответствующих наименованиям.",
+        "source_finding_ids": [
+          "T-023"
+        ],
+        "source_block_ids": [
+          "blk_f3f718605a024394b9026b08fa4c9b20"
+        ],
+        "related_block_ids": [
+          "blk_f3f718605a024394b9026b08fa4c9b20"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+            "page": 54
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 97,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F029_shared_product_code:9059426853483f0c34cf",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Четыре разных наименования имеют код 178513 Bolta и одинаковые количества 104 и 82 в двух группах строк.",
+          "verdict": "confirmed_bounded_TEXT",
+          "limits": "Подтверждено по листу 18; принадлежность первой группы отметке +41.290 читается с предыдущего листа 17."
+        },
+        {
+          "claim": "Уточнить отдельные артикулы или документированный состав комплекта.",
+          "verdict": "supported_scoped_question",
+          "limits": "Каталог и фактическая комплектность не проверены. Общий код не доказывает четырехкратный заказ; исправленные артикулы не назначать."
+        },
+        {
+          "claim": "Повторный заказ комплектов или поставка изделий, не соответствующих наименованиям.",
+          "verdict": "unverified_possible_consequence",
+          "limits": "Фактическая закупка, монтаж и последствия не проверены."
+        },
+        {
+          "claim": "Нормативные ссылки итогового замечания",
+          "verdict": "not_checked",
+          "limits": "Кандидаты норм не использованы как доказательство нарушения."
+        }
+      ],
+      "unsupported_additions": "Каталог и фактическая комплектность не проверены. Общий код не доказывает четырехкратный заказ; исправленные артикулы не назначать.",
+      "novel_useful_content": "scoped_document_coordination_question_no_new_physical_defect_proven",
+      "duplicate_burden": "one_question_per_issue_not_per_item_or_missing_field",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; direct authoritative TEXT review of current output.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_f3f718605a024394b9026b08fa4c9b20",
+            "blk_79370c7a344c44559b2d828291b6a1b6"
+          ],
+          "route": "authoritative_TEXT_direct_review"
+        }
+      ],
+      "disposition": "assessed_preserve_scoped_specification_question_with_limits"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-025",
+      "finding": {
+        "id": "F-025",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектность кабельных трасс",
+        "sheet": "Листы 16, 17",
+        "page": [
+          52,
+          53
+        ],
+        "problem": "Количество гаек М6 не согласовано с количеством винтов для лотков С3.",
+        "description": "В подразделе «2–10 этаж С3» для каждого из двух типов лотков указаны 405 винтов М6×10 и 450 винтов М6×16, но только 190 гаек М6 с насечкой. При соединении каждого винта отдельной гайкой это не обеспечивает даже комплектование винтов М6×10; встроенные резьбы и комплектные гайки не раскрыты.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить комплектность крепежа с учетом поставки фасонных изделий и конструкции соединений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-025"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-025"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить узлы и заводскую комплектность, затем скорректировать количество гаек М6 без зачета крепежа других диаметров.",
+        "risk": "Нехватка крепежа, задержки монтажа или применение непредусмотренных соединений.",
+        "source_finding_ids": [
+          "T-025"
+        ],
+        "source_block_ids": [
+          "blk_e106d0b41bf9480aaf187ef2259994db",
+          "blk_79370c7a344c44559b2d828291b6a1b6"
+        ],
+        "related_block_ids": [
+          "blk_e106d0b41bf9480aaf187ef2259994db",
+          "blk_79370c7a344c44559b2d828291b6a1b6"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e106d0b41bf9480aaf187ef2259994db",
+            "page": 52
+          },
+          {
+            "type": "text",
+            "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+            "page": 53
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 77,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Для каждого из двух лотков С3: 405 винтов М6×10, 450 винтов М6×16 и 190 гаек М6.",
+          "verdict": "confirmed_bounded_TEXT",
+          "limits": "Подтверждены листы 16–17 и граница подраздела. Условно 405+450−190=665 на группу, но это не установленная нехватка."
+        },
+        {
+          "claim": "Проверить узлы, встроенные резьбы и комплектность; менять количество только после проверки потребности.",
+          "verdict": "supported_scoped_question",
+          "limits": "Ряд фасонных изделий прямо включает крепеж. Неизвестно, покрывает ли комплект отдельные винты; правило одна гайка на любой винт не установлено. Гайки М8 и винты М5 не закрывают баланс М6."
+        },
+        {
+          "claim": "Нехватка крепежа, задержки монтажа или применение непредусмотренных соединений.",
+          "verdict": "unverified_possible_consequence",
+          "limits": "Фактическая закупка, монтаж и последствия не проверены."
+        },
+        {
+          "claim": "Нормативные ссылки итогового замечания",
+          "verdict": "not_checked",
+          "limits": "Кандидаты норм не использованы как доказательство нарушения."
+        }
+      ],
+      "unsupported_additions": "Ряд фасонных изделий прямо включает крепеж. Неизвестно, покрывает ли комплект отдельные винты; правило одна гайка на любой винт не установлено. Гайки М8 и винты М5 не закрывают баланс М6.",
+      "novel_useful_content": "scoped_document_coordination_question_no_new_physical_defect_proven",
+      "duplicate_burden": "one_question_per_issue_not_per_item_or_missing_field",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; direct authoritative TEXT review of current output.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_e106d0b41bf9480aaf187ef2259994db",
+            "blk_79370c7a344c44559b2d828291b6a1b6"
+          ],
+          "route": "authoritative_TEXT_direct_review"
+        }
+      ],
+      "disposition": "assessed_preserve_scoped_specification_question_with_limits"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-026",
+      "finding": {
+        "id": "F-026",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Выбор электрооборудования",
+        "sheet": "Лист 4",
+        "page": 40,
+        "problem": "Характеристики четырех стабилизаторов недостаточны для выбора и проверки нагрузки.",
+        "description": "Два стабилизатора 30 кВА и два стабилизатора 40 кВА заданы только мощностью и поставщиком. Отсутствуют модель, фазность, диапазон входного напряжения и допустимая нагрузка при его снижении; не раскрыта проверка пусковых режимов подключаемого оборудования.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1; ПУЭ (норматив-кандидат), кандидат п. 1.1.28",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить достаточность характеристик для однозначного заказа оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-026"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить соответствие параметров электрооборудования условиям работы.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-026"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.1.28",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать модели либо полный набор определяющих характеристик, привязать стабилизаторы к потребителям и подтвердить допустимую нагрузку во всем рабочем диапазоне напряжения.",
+        "risk": "Поставка стабилизаторов, не обеспечивающих требуемое питание и пуск потребителей.",
+        "source_finding_ids": [
+          "T-026"
+        ],
+        "source_block_ids": [
+          "blk_99cc8bf95861437186be76b36e9d446b"
+        ],
+        "related_block_ids": [
+          "blk_99cc8bf95861437186be76b36e9d446b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+            "page": 40
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "В двух строках указаны 30 кВА и 40 кВА по 2 штуки и поставщик, без моделей и диапазонов.",
+          "verdict": "confirmed_bounded_TEXT",
+          "limits": "Подтверждено только для строк листа 4. Глобальное отсутствие расчетов, паспортов или привязок не доказано."
+        },
+        {
+          "claim": "Уточнить идентификацию оборудования и определяющие характеристики применительно к его потребителям.",
+          "verdict": "supported_scoped_question",
+          "limits": "Пусковые режимы и снижение мощности зависят от выбранного изделия и нагрузки; их нарушение не установлено. Не требовать проверки моторного пуска без установления потребителя."
+        },
+        {
+          "claim": "Поставка стабилизаторов, не обеспечивающих требуемое питание и пуск потребителей.",
+          "verdict": "unverified_possible_consequence",
+          "limits": "Фактическая закупка, монтаж и последствия не проверены."
+        },
+        {
+          "claim": "Нормативные ссылки итогового замечания",
+          "verdict": "not_checked",
+          "limits": "Кандидаты норм не использованы как доказательство нарушения."
+        }
+      ],
+      "unsupported_additions": "Пусковые режимы и снижение мощности зависят от выбранного изделия и нагрузки; их нарушение не установлено. Не требовать проверки моторного пуска без установления потребителя.",
+      "novel_useful_content": "scoped_document_coordination_question_no_new_physical_defect_proven",
+      "duplicate_burden": "one_question_per_issue_not_per_item_or_missing_field",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; direct authoritative TEXT review of current output.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_99cc8bf95861437186be76b36e9d446b"
+          ],
+          "route": "authoritative_TEXT_direct_review"
+        }
+      ],
+      "disposition": "assessed_preserve_scoped_specification_question_with_limits"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-027",
+      "finding": {
+        "id": "F-027",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Комплектация щитов",
+        "sheet": "Листы 1, 2, 3",
+        "page": [
+          37,
+          38,
+          39
+        ],
+        "problem": "Не заполнены ссылки на схемы щитов индивидуального изготовления.",
+        "description": "В спецификации ссылки на комплект заканчиваются словом «листы», но номера листов не приведены. Состав каждого щита по этим строкам определить однозначно нельзя.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить оформление обозначений документов, определяющих изготовление и комплектность оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-027"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-027"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Заполнить ссылки на конкретные схемы и документы комплектации всех щитов индивидуального изготовления.",
+        "risk": "Ошибки изготовления и дополнительные согласования состава щитов.",
+        "source_finding_ids": [
+          "T-027"
+        ],
+        "source_block_ids": [
+          "blk_4638622aac5646e5b61bc689463e15c2",
+          "blk_7170586af51c43f79c96734a40269d7d",
+          "blk_af87003578d3440a9be734a66a09af90"
+        ],
+        "related_block_ids": [
+          "blk_4638622aac5646e5b61bc689463e15c2",
+          "blk_7170586af51c43f79c96734a40269d7d",
+          "blk_af87003578d3440a9be734a66a09af90"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4638622aac5646e5b61bc689463e15c2",
+            "page": 37
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+            "page": 38
+          },
+          {
+            "type": "text",
+            "block_id": "blk_af87003578d3440a9be734a66a09af90",
+            "page": 39
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 77,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Ссылки на схемы в строках щитов заканчиваются словом «листы» без номеров.",
+          "verdict": "confirmed_bounded_TEXT",
+          "limits": "Подтверждены три указанных текстовых блока. Марки щитов присутствуют; отсутствие самих схем этим не доказано."
+        },
+        {
+          "claim": "Дополнить адресные ссылки на существующие схемы и документы комплектации.",
+          "verdict": "supported_scoped_question",
+          "limits": "Оформительский вопрос, а не доказанный дефект изготовления. Возможность найти схемы по марке сохраняется."
+        },
+        {
+          "claim": "Ошибки изготовления и дополнительные согласования состава щитов.",
+          "verdict": "unverified_possible_consequence",
+          "limits": "Фактическая закупка, монтаж и последствия не проверены."
+        },
+        {
+          "claim": "Нормативные ссылки итогового замечания",
+          "verdict": "not_checked",
+          "limits": "Кандидаты норм не использованы как доказательство нарушения."
+        }
+      ],
+      "unsupported_additions": "Оформительский вопрос, а не доказанный дефект изготовления. Возможность найти схемы по марке сохраняется.",
+      "novel_useful_content": "scoped_document_coordination_question_no_new_physical_defect_proven",
+      "duplicate_burden": "one_question_per_issue_not_per_item_or_missing_field",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; direct authoritative TEXT review of current output.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_4638622aac5646e5b61bc689463e15c2",
+            "blk_7170586af51c43f79c96734a40269d7d",
+            "blk_af87003578d3440a9be734a66a09af90"
+          ],
+          "route": "authoritative_TEXT_direct_review"
+        }
+      ],
+      "disposition": "assessed_preserve_scoped_specification_question_with_limits"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-028",
+      "finding": {
+        "id": "F-028",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кабельные трассы",
+        "sheet": "Листы 1, 15, 18, 19, 20, 21, 6",
+        "page": [
+          3,
+          18,
+          20,
+          21,
+          22,
+          23,
+          42
+        ],
+        "problem": "Материал и исполнение труб в монтажных указаниях не согласованы со спецификацией.",
+        "description": "Указания предусматривают ПВХ-гофру и гладкие ПВХ-трубы, тогда как спецификация содержит только безгалогенные гибкие трубы диаметром 25 и 32 мм. Эквивалентность решений не установлена; гладкие трубы отдельной позицией не приведены.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1; ПУЭ (норматив-кандидат), кандидат п. 2.1.31",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие спецификации принятым способам прокладки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-028"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-028"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить выбор электропроводок и способов прокладки по условиям среды и эксплуатации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-028"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-028"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "2.1.31",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Для каждого способа прокладки установить согласованные материал, жесткость и диаметр трубы; включить необходимые исполнения и комплектующие в спецификацию.",
+        "risk": "Замена предусмотренного способа прокладки при закупке и нехватка материалов.",
+        "source_finding_ids": [
+          "T-028"
+        ],
+        "source_block_ids": [
+          "blk_76d1760dd5b34882a0df18538f78e39b",
+          "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+          "blk_628818db493e46e7bdccc75b01afbd16",
+          "blk_1da24da5ad594599aa59defe9fde265b"
+        ],
+        "related_block_ids": [
+          "blk_76d1760dd5b34882a0df18538f78e39b",
+          "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+          "blk_628818db493e46e7bdccc75b01afbd16",
+          "blk_1da24da5ad594599aa59defe9fde265b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_76d1760dd5b34882a0df18538f78e39b",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+            "page": 18
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+            "page": 42
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 91,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Указания называют ПВХ; лист 6 СО перечисляет безгалогенные гибкие гофрированные трубы Ø25/32.",
+          "verdict": "confirmed_bounded_TEXT",
+          "limits": "Подтверждено расхождение формулировок указаний и конкретных строк СО. Утверждение «во всей спецификации только такие трубы» слишком широкое: лист 4 также содержит стальную ВГП Ду40."
+        },
+        {
+          "claim": "Согласовать материал и исполнение по участкам, уточнить реально выбранный вариант.",
+          "verdict": "supported_scoped_question",
+          "limits": "В примечаниях прямо стоит «гофрированной трубе или гладкой ПВХ трубе»: отсутствие гладкой позиции не доказывает нехватку и не требует ее обязательного добавления. Полный перечень остальных полимерных труб не проверен; эквивалентность и пожарные свойства не установлены."
+        },
+        {
+          "claim": "Замена предусмотренного способа прокладки при закупке и нехватка материалов.",
+          "verdict": "unverified_possible_consequence",
+          "limits": "Фактическая закупка, монтаж и последствия не проверены."
+        },
+        {
+          "claim": "Нормативные ссылки итогового замечания",
+          "verdict": "not_checked",
+          "limits": "Кандидаты норм не использованы как доказательство нарушения."
+        }
+      ],
+      "unsupported_additions": "В примечаниях прямо стоит «гофрированной трубе или гладкой ПВХ трубе»: отсутствие гладкой позиции не доказывает нехватку и не требует ее обязательного добавления. Полный перечень остальных полимерных труб не проверен; эквивалентность и пожарные свойства не установлены.",
+      "novel_useful_content": "scoped_document_coordination_question_no_new_physical_defect_proven",
+      "duplicate_burden": "one_question_per_issue_not_per_item_or_missing_field",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; direct authoritative TEXT review of current output.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_76d1760dd5b34882a0df18538f78e39b",
+            "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+            "blk_628818db493e46e7bdccc75b01afbd16",
+            "blk_1da24da5ad594599aa59defe9fde265b",
+            "blk_99cc8bf95861437186be76b36e9d446b"
+          ],
+          "route": "authoritative_TEXT_direct_review"
+        }
+      ],
+      "disposition": "assessed_preserve_scoped_specification_question_with_limits"
+    }
+  ],
+  "limits": [
+    "No procurement quantity or model substitution authorized by these reviews.",
+    "Alternative permitted implementations must not become cumulative mandatory requirements.",
+    "Norm candidates remain unverified."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
