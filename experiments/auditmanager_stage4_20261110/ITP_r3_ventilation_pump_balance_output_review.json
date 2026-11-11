@@ -1,0 +1,163 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "1df9dba2347ea2613287b6c447558ff1d9658b5bd81d97bd63eb15508e345545",
+  "queue_after_sha256": "998bf50e721210c380c17ea4b289c9e5d8bcb80d6ff9485a05a819e29c569afa",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-022",
+      "finding": {
+        "id": "F-022",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Насосы вентиляции",
+        "sheet": "Лист 14",
+        "page": [
+          52,
+          63,
+          111,
+          112,
+          113
+        ],
+        "problem": "Достаточность напора насоса вентиляции не подтверждена требованиями потребителей.",
+        "description": "Расчёт использует сопротивление системы 5,5 м и общий напор 13,5 м. Анкеты требуют перепад на выходе ИТП 14 м для жилья и аренды и 15 м для ДОО, дополнительно к потерям внутри ИТП. Потери теплообменника в режиме подбора составляют 1,78 м. Выбранная точка насоса — 63,56 м³/ч и 15,27 м.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить обоснование полного гидравлического баланса с требованиями смежной системы.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-022"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить с разделом ОВ точки задания перепадов и расходы; пересчитать потери сети и ИТП и проверить рабочую точку насоса.",
+        "risk": "Недостаточное теплоснабжение вентиляционных установок.",
+        "source_finding_ids": [
+          "T-022"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_296b8547a33a47dbb7a9b8e546d964e0"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 52
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 63
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 113
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "ПЗHнас=5,5+3+5=13,5м;выбранная точка63,56м³/ч,15,27м.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "К13,артикул2786102; вэкспликации предусмотрен частотный преобразователь. Не считать работу на полной частоте обязательной."
+        },
+        {
+          "claim": "АнкетыТ1.4.1/2 дают36,4/22,4→14м;Т1.4.4ДОО39,9/24,9→15м.",
+          "verdict": "confirmed_TEXT_and_differences",
+          "limits": "Т1.4.3автостоянка32,4/22,4→10м. Это требуемые значения на выходеИТП, не автоматически потери всей насосной петли."
+        },
+        {
+          "claim": "Потери теплообменника1,78м.",
+          "verdict": "confirmed_selection_specific_condition",
+          "limits": "w203115749 холодная сторона70,23т/ч,60→85°C; горячая2,74м. Значение1,78не переносить точно на63,56м³/ч без характеристик и свойств."
+        },
+        {
+          "claim": "Напор насоса требует согласования с анкетами и внутренними потерями.",
+          "verdict": "supported_document_balance_question",
+          "limits": "13,5ниже15;при переносе1,78на тотже режим15+1,78=16,78>15,27. Но это условная оценка: нужен единый режим, характеристики насоса/сети, местные потери и распределение потребителей. Фактическая недостаточность не доказана."
+        }
+      ],
+      "unsupported_additions": "Не установлены общая рабочая точка, фактический дефицит расхода и необходимость замены насоса;1,78м относится к конкретному массовому расходу подбора.",
+      "novel_useful_content": "Прямые документальные основания вопроса подтверждены; новое инженерное принятие не установлено.",
+      "duplicate_burden": "Сравниваются требования нескольких потребителей одной системы; не считать каждое повторение15м отдельным отказом.",
+      "profile_and_section": "Отдельные вопросы и уточнения; фактическое расположение в итоговом отчёте не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; вывод опирается на прямойTEXT.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_20a7f89489d543c5b30e8822dd2999c2",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_950ad44af3d645539b95e38ddad3a8e0",
+          "route": "direct_authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r3_direct_ventilation_pump_balance"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Direct authoritative TEXT evaluation of ventilation F022: matched K13 pump, secondary HX condition and T1.4 consumer questionnaire. Arithmetic differences verified; no complete operating-point calculation or observed failure. No external model call or engineer acceptance."
+}
