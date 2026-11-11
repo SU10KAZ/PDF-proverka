@@ -244,8 +244,14 @@
       "finding_id": "F-020",
       "problem": "Требуется подтвердить конструкцию линий температурного контроля противодымных систем.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "source_supported_question_compliance_unresolved",
+      "engineer_decision": null,
+      "review_reason": "Шесть строк КЖ от ТЕ1 соответствующих ПД-систем к их шкафам содержат КСРЭПнг(A)-FRHF 2×2×1,13 и гофротрубу; длины45+35+105+105+65+65=420м совпадают с позицией21.11. Позиции22.1/22.2 содержат общую ПВХ-гофру и держатели без адресной привязки именно к этим шести линиям. Поэтому вывод о применении конкретной ПВХ-конструкции на каждой линии не доказан и в замечании не заявлен. Пункт7 уже описывает роль температурного сигнала в управлении подогревом подпора при пожаре; запрос «определить роль» следует сузить до подтверждения требований к сохранению этой функции, времени работы и адресной конструкции. По данным строкам не установлены испытанная конструкция, требуемое время или нормативное несоответствие. Сохранить вопрос в разделе уточнений, не повышать до нарушения на основании одной марки кабеля или общей строки материалов. Правовое соответствие, сертификаты и фактический монтаж в этой проверке не оценивались.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_smoke_control_cable_question_review_20261112.json",
+        "sha256": "3b5db66d3aff64e437958dd7d728bc14b11fe682339d6d01dfb9a629f2dc3822"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-021",
@@ -1081,14 +1087,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 77,
-  "unchecked": 8,
+  "reviewed": 78,
+  "unchecked": 7,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 77,
-  "unchecked_findings": 8
+  "reviewed_findings": 78,
+  "unchecked_findings": 7
 }
