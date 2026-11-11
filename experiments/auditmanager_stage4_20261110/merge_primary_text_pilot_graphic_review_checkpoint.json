@@ -1,0 +1,71 @@
+{
+  "status": "all_graphic_candidate_records_have_source_review_not_all_claims_resolved",
+  "graphic_candidate_records": 118,
+  "unique_defect_count": null,
+  "all_claims_confirmed": false,
+  "historical_engineer_mapping": "pending",
+  "source_review_files": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_gas43_54_graphic_followup.json",
+      "sha256": "c85c7a1ce176b383d98a942cdc00bb05981f6bc261e051fe4ab2acb03cff702a"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_motor_and_dimension_graphic_followup.json",
+      "sha256": "6af07ddcf002a3e28c51e9478a7ab65767410c6a6c4ba3d8c0a10f3b01f79909"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_mounting_details50_54_graphic_followup.json",
+      "sha256": "ea41ecda12eb9cfaf8fcc6f30284748463dd6662243190ba8e5e3339b9d05828"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+      "sha256": "933904e7dd0cd1841c05acf8ea8f090d7face9124dfb3a1ca3f4f4cca6a01c4d"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets16_18_graphic_followup.json",
+      "sha256": "ec3c7b1ee128eec69c65139f8dd737f728bd3f9a6853ffb56523eb9a6e80fd6c"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets19_20_graphic_followup.json",
+      "sha256": "3fc72495616766aabfb8d741028eeeca9b3f45bf5a4af292675c68072e79cbb5"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets21_24_graphic_followup.json",
+      "sha256": "fe43c3821b81ebaf93db2e15793520a727e91dece90a84c6756a524d0144e290"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets25_28_graphic_followup.json",
+      "sha256": "43ec9e7065cfe90c7e03cb6d77e5dfe0a6a335db289d6dc73228e7b49ffeb361"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets32_34_graphic_followup.json",
+      "sha256": "404f4445aead6f203c0cfd7666b54427a51dc841a938d772c01c3a6ff48e49c4"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets35_36_graphic_followup.json",
+      "sha256": "434dadd239c6ed1ad2d153a37add120ea77c12379cee7cf76f2b87ad97779322"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets37_40_graphic_followup.json",
+      "sha256": "cdd1a316b3bf7b0edc50277b8464b60853127c1242ed5b52f7edd78c26aed3c5"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets41_42_graphic_followup.json",
+      "sha256": "b2421bab5db9351207e99bc8f07f21563970a34446e47770cced11dac8b934bd"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets5_29_graphic_followup.json",
+      "sha256": "a8f77d6cc6ca2a7502fb3ad76fdc9ef7f814ebd8a7fc3ab44fafd134fcac5a31"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets8_10_graphic_followup.json",
+      "sha256": "87776b7c446f80f08993460c4da2f497e67c25c907a183ffac28cd4e9af74ab6"
+    }
+  ],
+  "remaining_work": [
+    "Resolve or explicitly retain questions about manufacturer interfaces, supply scope, symbol standards, reference scope and dispatch book 2.",
+    "Map atomic findings to historical engineer gold without treating each candidate as an independent defect.",
+    "Integrate source handoff and pending subclaim handling, freeze candidate, run matched six-project comparison."
+  ],
+  "production_acceptance": false
+}

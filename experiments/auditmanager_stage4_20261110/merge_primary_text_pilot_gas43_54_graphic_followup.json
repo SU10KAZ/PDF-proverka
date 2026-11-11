@@ -1,0 +1,205 @@
+{
+  "status": "three_candidate_records_reviewed_with_explicit_unresolved_context",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "G-105",
+      "pointer": "/block_analyses/66/findings/0",
+      "original_candidate": {
+        "id": "G-105",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_marking",
+        "finding": "На плане −1 этажа, лист 54, в выноске к БПС-3.13 указан сигнализатор СТГ-3-И-1.13. Эта марка уже использована для сигнализатора при БПС-1.13, тогда как таблица применимости относит к данной группе датчики СТГ-3-И-3.1…СТГ-3-И-3.20. Маркировка неоднозначно идентифицирует два разных сигнализатора.\n\nРекомендация: Исправить марку сигнализатора при БПС-3.13 на СТГ-3-И-3.13, согласовав её со схемой подключения.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_f42735b18cb140928c3d9f29d2891ae2",
+        "value_found": "СТГ-3-И-1.13 / БПС-3.13; СТГ-3-И-1.13 / БПС-1.13",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-105",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на повторное обозначение СТГ-3-И-1.13 при БПС-3.13 и БПС-1.13. Уточнение правильной марки СТГ-3-И-3.13 слева не меняет сути и объёма проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "plan_sensor_label_conflict_observed_connection_correction_pending",
+      "reason": "На плане 54 у двух самостоятельных датчиков читается СТГ-3-И-1.13: в верхней группе у БПС-1.13 и в центральной нижней группе у БПС-3.13 (ряд парковочных мест с подписью 597). Таблица применимости TEXT относит группу 3 к СТГ-З-И-3.1…3.20. Несогласованность выноски наблюдается; исходный растр имеет размытые мелкие подписи, что ограничивает надёжность буквального чтения. Исправление именно на 3.13 требуется сверить со схемой подключений группы 3, она в этой проверке не прочитана. Реальная адресация датчиков не установлена. Сохранить кандидат на согласование маркировки, не объявлять доказанным отказ контроля зоны.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f42735b18cb140928c3d9f29d2891ae2.png",
+        "sha256": "9181d53b64ad6288ad3b812fd129106544526319303f89b4b77b3094bd9cec48",
+        "bytes": 16352342,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "heading": "### BLOCK #207 [TEXT]: blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "start": 352024,
+          "end": 353185,
+          "sha256": "96e9d96ed9f61f230e035d6f559e60397df97e2c9a55e730a53c9f104d4db6a0",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-106",
+      "pointer": "/block_analyses/66/findings/1",
+      "original_candidate": {
+        "id": "G-106",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_marking",
+        "finding": "На плане листа 54 обозначение СТГ-3-И-1.13 повторно присвоено датчику при БПС-3.13, хотя уже используется для датчика при БПС-1.13. Таблица применимости относит датчики группы 3 к отдельной зоне управления; повторная маркировка делает идентификацию датчика неоднозначной.\n\nРекомендация: Исправить обозначение датчика при БПС-3.13, согласовав его со схемой подключения и таблицей применимости.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_f42735b18cb140928c3d9f29d2891ae2",
+        "value_found": "СТГ-3-И-1.13 / БПС-3.13; СТГ-3-И-1.13 / БПС-1.13",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-106",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на повторное обозначение СТГ-3-И-1.13 при БПС-3.13 и БПС-1.13. Уточнение правильной марки СТГ-3-И-3.13 слева не меняет сути и объёма проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "plan_sensor_label_conflict_observed_connection_correction_pending",
+      "reason": "На плане 54 у двух самостоятельных датчиков читается СТГ-3-И-1.13: в верхней группе у БПС-1.13 и в центральной нижней группе у БПС-3.13 (ряд парковочных мест с подписью 597). Таблица применимости TEXT относит группу 3 к СТГ-З-И-3.1…3.20. Несогласованность выноски наблюдается; исходный растр имеет размытые мелкие подписи, что ограничивает надёжность буквального чтения. Исправление именно на 3.13 требуется сверить со схемой подключений группы 3, она в этой проверке не прочитана. Реальная адресация датчиков не установлена. Сохранить кандидат на согласование маркировки, не объявлять доказанным отказ контроля зоны.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f42735b18cb140928c3d9f29d2891ae2.png",
+        "sha256": "9181d53b64ad6288ad3b812fd129106544526319303f89b4b77b3094bd9cec48",
+        "bytes": 16352342,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "heading": "### BLOCK #207 [TEXT]: blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "start": 352024,
+          "end": 353185,
+          "sha256": "96e9d96ed9f61f230e035d6f559e60397df97e2c9a55e730a53c9f104d4db6a0",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "D-aed74214926fc9d966f9e854",
+      "pointer": "/block_analyses/40/deferred_findings/0",
+      "original_candidate": {
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "gas_alarm",
+        "finding": "На листе 43 оповещатель HL/HA1 подключён через реле «ПОРОГ2», тогда как общие указания предусматривают световое и звуковое предупреждение в диспетчерской уже при пороге I — 20 мг/м³. Реализация предупреждения первого порога через показанную систему диспетчеризации в предоставленных материалах не раскрыта.",
+        "norm_quote": null,
+        "value_found": "Реле ПОРОГ2; HL/HA1",
+        "recommendation": "Сопоставить алгоритм диспетчеризации из книги 2 с требованием светового и звукового предупреждения при достижении первого порога.",
+        "claim_type": "context_gap",
+        "problem_class": "first_threshold_alarm_unverified",
+        "affected_entity": "СУ-КЗ2, оповещатель HL/HA1, сигнализация первого порога СО",
+        "evidence_quote": "На схеме реле «ПОРОГ1» соединено с входом «Пуск» ШАУВ-1-К4АС, реле «ПОРОГ2» — через СУК2-2 и КК1-СКЗ с HL/HA1. Общие данные: «При превышении I порога ПДК СО 20 мг/м³ проектом предусмотрено: - выдача светового и звукового предупредительного сигнала ... в помещение диспетчерской». Также показано подключение RS-485 к системе диспетчеризации.",
+        "evidence_kind": "block_image",
+        "context_status": "needs_retrieval",
+        "confidence": 0.92,
+        "counterevidence_checked": true,
+        "required_context": [
+          "Книга 2 раздела 13АВ-РД-АК2-ПА: алгоритм обработки первого порога СО и светозвукового предупреждения на диспетчерском посту."
+        ],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:2",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:001",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "non_publishable_claim_type",
+            "insufficient_context"
+          ]
+        }
+      },
+      "assessment": "local_second_threshold_wiring_confirmed_first_threshold_dispatch_pending",
+      "reason": "Лист 43: HL/HA1 подключён через коробку КК1-СКЗ к X5 реле ПОРОГ2; X6 ПОРОГ1 связан с пуском вентиляции. Отдельно показана связь RS-485 с ЩД-АСУД.И.5.1ПЧ и ссылка на книгу 2. Общие указания TEXT предусматривают световое и звуковое предупреждение в диспетчерской при I пороге 20 мг/м³ и аварийный сигнал при II пороге 100 мг/м³. Локальная цепь второго порога подтверждена. Реализация первого порога через диспетчеризацию в просмотренном фрагменте не раскрыта, связанная книга 2 не проверена. Исходный осторожный тезис сохраняется как запрос контекста; отсутствие первого предупреждения и неисправность не доказаны. Нормативная применимость чисел 20/100 здесь не оценивалась.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5868e672efb546cba18c0598fe98f61d.png",
+        "sha256": "1428ed30db27649e2aa5c393d0c769ba31a861c8a8a6425a39aca84ce43b4547",
+        "bytes": 474969,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "heading": "### BLOCK #16 [TEXT]: blk_1865bf51c17e444491a5621d4a33c331",
+          "start": 34947,
+          "end": 40661,
+          "sha256": "2cbc98fcdd0ca377cb4ef3b7a0e6c57c8dfda7905b38e69eaa07a8c00e32c154",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}

@@ -2194,7 +2194,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_gas43_54_graphic_followup.json",
+        "assessment": "local_second_threshold_wiring_confirmed_first_threshold_dispatch_pending"
+      }
     },
     {
       "source_id": "G-098",
@@ -2330,7 +2334,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_gas43_54_graphic_followup.json",
+        "assessment": "plan_sensor_label_conflict_observed_connection_correction_pending"
+      }
     },
     {
       "source_id": "G-106",
@@ -2341,7 +2349,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_gas43_54_graphic_followup.json",
+        "assessment": "plan_sensor_label_conflict_observed_connection_correction_pending"
+      }
     },
     {
       "source_id": "G-107",
