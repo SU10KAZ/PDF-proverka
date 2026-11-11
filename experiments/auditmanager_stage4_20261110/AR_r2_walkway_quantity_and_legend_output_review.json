@@ -1,0 +1,150 @@
+{
+  "status": "AR_walkway_candidate_assessed_with_partial_refutation",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "c68e9eb6f29ae8f91151ac876d5398311c2cd3f7d0f86d26b7c08127d4b426f5",
+  "queue_after_sha256": "3f67361ddfed0ce290b43d284725a38b936e1c8aa24639008b738253b8964d71",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Ведомости материалов",
+        "sheet": "Листы 7, 10",
+        "page": [
+          9,
+          12
+        ],
+        "problem": "Не раскрыт учёт материалов проходных дорожек К-7.",
+        "description": "В условных обозначениях проходных дорожек на листе 10 приведена марка К-7, а текстовая ведомость материалов на листе 7 содержит только К-1, К-3, К-4 и К-5. Отдельные количества материалов дорожек или ссылка на включение в другие позиции не указаны. В текстовом описании типового узла упомянуто 46,58 м² плитки и геотекстиля; это значение требует проверки по исходному чертежу и сопоставления с ведомостью. Отсутствие самих проходов не установлено.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к согласованности марок на чертежах и учёту соответствующих материалов в ведомостях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать позиции, в которых учтены материалы дорожек, либо добавить отдельные строки с подтверждёнными количествами; согласовать обозначение К-7.",
+        "risk": "Пропуск материалов при комплектовании или их двойной учёт.",
+        "source_finding_ids": [
+          "T-011"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_2f3068ab00334ed49a43fbc0d168a15b",
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_747f574e1fa54f62aa0ad09874faa314",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 60,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "cost",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "В условных обозначениях листа10 естьК-7.",
+          "verdict": "confirmed_authoritative_TEXT_and_GRAPHIC",
+          "limits": "Это пример марочного обозначения с подписью «Марка покрытия кровли/отделки парапета». Он отделён от зелёного обозначения дорожки. Принадлежность маркиК-7 дорожкам не доказана."
+        },
+        {
+          "claim": "В текстовой ведомости листа7 перечисленыК-1,К-3,К-4,К-5,отдельной строки дорожек нет.",
+          "verdict": "confirmed_bounded_TEXT_absence",
+          "limits": "Отсутствие строки в одной ведомости не равно отсутствию материалов во всём комплекте."
+        },
+        {
+          "claim": "На узле есть46,58м² плитки и геотекстиля.",
+          "verdict": "partially_confirmed_GRAPHIC_wording_requires_precision",
+          "limits": "Точная подпись — общая площадь дорожек и площадок46,58м². Узел задаёт геотекстиль300г/м² и плитку40мм, но отдельных закупочных количеств каждого материала не содержит. Не учитывать автоматически нахлёсты, запас или отходы."
+        },
+        {
+          "claim": "Самих проходов нет.",
+          "verdict": "refuted_direct_GRAPHIC",
+          "limits": "Зелёные дорожки и площадки показаны; типовой узел содержит ширину600мм."
+        },
+        {
+          "claim": "Материалы не учтены при комплектовании либо учтены дважды.",
+          "verdict": "not_established",
+          "limits": "Проверены ведомость и узел; смета и закупочный учёт не проверены. Сохранить запрос о связи со сводными позициями, не требовать безусловного добавления46,58м²."
+        },
+        {
+          "claim": "Обязательно исправить маркуК-7.",
+          "verdict": "not_established_object_binding",
+          "limits": "Легенда сама по себе не доказывает ошибочную маркировку объекта."
+        },
+        {
+          "claim": "Конкретное нормативное нарушение подтверждено.",
+          "verdict": "unverified_candidate_only",
+          "limits": "ГОСТ приведён как кандидат без проверенного пункта."
+        }
+      ],
+      "unsupported_additions": "Не считатьК-7 установленной маркой дорожек; не превращать площадь дорожек в подтверждённый дефицит двух материалов.",
+      "novel_useful_content": "Новый отдельный вопрос второго повтора: указать связь составов дорожек со сводной ведомостью. Инженерная полезность и дефицит материалов не подтверждены.",
+      "duplicate_burden": "Связать с вопросами учёта плитки, но не смешивать площадиК-3,К-4 и дорожек без объектной привязки.",
+      "profile_and_section": "questions_and_clarifications_scoped_material_accounting_only",
+      "engineer_reuse": "Решение инженера по данной новой формулировке не установлено.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_747f574e1fa54f62aa0ad09874faa314",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_ec74ee6311844434b2aab7ca7f844085.png",
+          "sha256": "6fff678d5e57324dab31b090c2d83e4adb8b082a1457931328d1a12b0968591e",
+          "block_id": "blk_ec74ee6311844434b2aab7ca7f844085",
+          "route": "current_direct_GRAPHIC_original_resolution",
+          "observation": "Дорожки зелёным;тип1 ширина600;геотекстиль300,плитка40;общая площадь46,58. ОбозначениеК-7 в легенде отделено от символа дорожки;на плане и узле основное покрытиеК-1."
+        }
+      ],
+      "disposition": "assessed_r2_walkway_accounting_question_correct_legend_binding"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
