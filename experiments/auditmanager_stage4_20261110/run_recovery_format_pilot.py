@@ -1,5 +1,6 @@
 """Run the prepared format-repair case after the paired merge pilot exits."""
 import asyncio
+import argparse
 from dataclasses import asdict
 import json
 import os
@@ -52,6 +53,7 @@ async def main():
             raise ValueError('Frozen implementation changed: '+name)
     state = {'pid': os.getpid(), 'started': time.time(), 'status': 'waiting_for_merge_pilot',
              'model': request['model'], 'attempts': [], 'production_acceptance': False}
+    ROOT.mkdir(parents=True, exist_ok=True)
     with (ROOT/'pilot_started.json').open('x') as f:
         json.dump({**state, 'request_sha256': sha(request_path), 'script_sha256': sha(Path(__file__)),
                    'snapshot_path': str(snapshot_path), 'snapshot_sha256': sha(snapshot_path)}, f)
@@ -119,4 +121,10 @@ async def main():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output', type=Path, default=ROOT)
+    parser.add_argument('--predecessor', type=Path, default=PREDECESSOR)
+    args = parser.parse_args()
+    ROOT = args.output.resolve()
+    PREDECESSOR = args.predecessor.resolve()
     asyncio.run(main())
