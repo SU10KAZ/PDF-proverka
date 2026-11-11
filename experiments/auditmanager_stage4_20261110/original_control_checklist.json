@@ -557,6 +557,18 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_native_release_evidence/assessment.json",
           "sha256": "c6680c2b7b2861df20a8661f7d0b3a9ccb9c9a88fb0fcc21283396f5b7460b44"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_original_refs_evidence/assessment.json",
+          "sha256": "4a0ed5e93708f5bcfd8598eb1a58526e22d68387bacf036cbe8ad6df47a0eae4"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_sheet_priority_workflow_evidence/assessment.json",
+          "sha256": "1423d3f8c87aef2bf7777c4edf9910eecaada9ff793152c77ae46b01a1850081"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_sheet_priority_release_evidence/assessment.json",
+          "sha256": "f4cc6e908ad6c50671237585b87cba29c27bf746234808bc351dc808451f66c9"
         }
       ],
       "full_acceptance_proven": false
