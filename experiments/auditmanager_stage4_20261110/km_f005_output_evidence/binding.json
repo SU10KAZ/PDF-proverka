@@ -1,0 +1,16 @@
+{
+  "source_candidate_sha256": "794648ca1823b5ddb15acd8caa61fa06a8e6be809c61ec9e0ac6a9b4df52af91",
+  "request_sha256": "378258d26d3a7642bbc310b087682c803c7b462e0ab780f23c49c8535b9ba0c4",
+  "model": "codex/gpt-6-astra",
+  "previous_adjudication_supplied": false,
+  "history_or_engineer_answers_supplied": false,
+  "current_report_peers": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/KM/findings_verify.json",
+    "sha256": "d85048316ccca845e1cac247c6896671cdd78283848f73e2ad1ecf5ed226fa02",
+    "count": 25
+  },
+  "automatic_retries": 0,
+  "message_chars": 138562,
+  "images": 16,
+  "reason": "Review same-source claims with explicit final evidence selection and optional current-report overlap context."
+}

@@ -1,0 +1,66 @@
+{
+  "scope": "Known KM F005 whole-report output replay after source adjudication; not blind discovery.",
+  "baseline_sha256": "d85048316ccca845e1cac247c6896671cdd78283848f73e2ad1ecf5ed226fa02",
+  "files": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f005_output_evidence/attempt.json",
+      "sha256": "b37dd94ab5192f67133da0327cfcd7db5613677b7650435571518a14c7da8d34"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f005_output_evidence/binding.json",
+      "sha256": "f1ea9e6e8f820b7245b4c75d07fe3dc5923437121f5786a8c12b28f558449cb3"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f005_output_evidence/candidate.json",
+      "sha256": "153ac99bdb63a388f49c1a7ea8141f49ea93fb7d90f1e7e911cbcfdf8dd396e3"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f005_output_evidence/local_output.json",
+      "sha256": "cbf5bcf4f136bd8f2ee411ff61571deef01ba42a75a086be8c81bda80378425e"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f005_output_evidence/request.json",
+      "sha256": "d0f67a11299696a068c7183e295097b9d786786780df8821b9efa3e3a6968e44"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f005_output_evidence/result.json",
+      "sha256": "ac9bf68f6975053404d254de8518dc31c121b748a6408f9b31f8a4e80c7b5450"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f005_output_evidence/03_findings.json",
+      "sha256": "bb21e2c0a0d714967a3d66e60aeca91008981372e031c279754cbd8eb7bafe3b"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f005_output_evidence/report.xlsx",
+      "sha256": "58d8acdfc691e438979dd09c7f77cf8899cd1562c99b087a16c91b4c6f4d8201"
+    }
+  ],
+  "original_rows": 26,
+  "final_rows": 26,
+  "other_findings_preserved_exactly": 25,
+  "final_pages": [
+    4,
+    5,
+    6,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "final_sheet": "Листы 2, 3, 4, 6, 7, 8, 9, 10",
+  "explicit_evidence_refs": 60,
+  "anchor_totals_conditional": true,
+  "plate_counts_and_conditional_mass_preserved": true,
+  "S2_overlap_cross_referenced_to_F004": true,
+  "new_findings_claimed": 0,
+  "profile_disagreement": "Model retains technical/economic routing on plate-balance scope; frozen target routes this as question. This replay does not resolve the evaluator disagreement.",
+  "limitations": [
+    "Known-control adapter binds exact original visible fields, not the full original finding fingerprint.",
+    "Other 25 findings unchanged means preservation, not validation of all their content.",
+    "Literal mark identity mapping for some whole-project totals remains a model-supported interpretation.",
+    "Full automatic report overlap integration and paired project comparison remain pending."
+  ],
+  "full_acceptance_proven": false,
+  "production_changed": false
+}
