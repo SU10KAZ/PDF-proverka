@@ -1,0 +1,242 @@
+{
+  "status": "bounded_four_target_second_repeat_review",
+  "evaluator": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/evaluator_release_errata_v2.json",
+    "sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76"
+  },
+  "baseline_r1_index": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/baseline_r1_nine_technical_miss_index.json",
+    "sha256": "59b6b3b964ae40174d70e5ce08b66306654b222c63ca32b7a19c0c624394e291"
+  },
+  "runs": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "status_receipt": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/status/ITP.json",
+        "sha256": "9ee258eab1876f033c9967b746d246c70b98a8f9c492e9c65311a7edefbd4a85"
+      },
+      "final_output": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027"
+      },
+      "rows_read": 57,
+      "targets": [
+        {
+          "target_id": "B-ITP-F-015:68e759d0e8be658b6916",
+          "coverage_r1": "absent",
+          "discovery_r2": "present_in_T-019",
+          "final_coverage_r2": "partial",
+          "finding_ids": [
+            "F-019"
+          ],
+          "reason": "Смысл конкретного сравнения присутствует, однако адреса позиций35/36 и явная привязка двух источников в итоговой строке неполны. Не выдаётся полный зачёт адресного покрытия."
+        },
+        {
+          "target_id": "B-ITP-F-015:5713c213c4eafe2032fb",
+          "coverage_r1": "absent",
+          "discovery_r2": "present_in_T-019",
+          "final_coverage_r2": "partial",
+          "finding_ids": [
+            "F-019"
+          ],
+          "reason": "Смысл конкретного сравнения присутствует, однако адреса позиций35/36 и явная привязка двух источников в итоговой строке неполны. Не выдаётся полный зачёт адресного покрытия."
+        },
+        {
+          "target_id": "ITP_F004_safety_valve_setpoints:composite:1",
+          "coverage_r1": "absent",
+          "final_coverage_r2": "absent",
+          "finding_ids": [],
+          "reason": "F-003 сравнивает уставку20бар с давлением оборудования16бар; это иной тезис. Конфликт записи для клапана45: схема16бар против спецификации20бар в выдаче не сформулирован."
+        }
+      ],
+      "recovered_discovery": {
+        "text_output": {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "84f3b7ba798b66afd49134d1b620ec03e9c1ed777b81345e2d62fc1e7db41eda"
+        },
+        "text_finding": {
+          "id": "T-019",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "valves",
+          "source": "Стр. 9, 26 и 54, позиции 30, 35 и 36",
+          "finding": "Клапан отопления ДОО VFM-2R-20-6,3 в экспликации назван DN25, а расчет задает DN20. Соленоидные клапаны в экспликации имеют марку EV220WR, в спецификации — EV220В; для DN20 пропускная способность изменяется с 8,0 до 6,3 м³/ч. Требуется согласовать исполнения, диаметры и характеристики; примечание о допустимой замене на аналог не устраняет расхождение технических параметров.",
+          "norm": "Техническое задание, п. 5.18.3.2",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_11981549aceb463ba84c7c0de619d2fc",
+            "blk_30789714316b48908c5addc9bfb135d2"
+          ]
+        },
+        "final_finding": {
+          "id": "F-019",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "Арматура",
+          "sheet": "Лист 10",
+          "page": [
+            9,
+            17,
+            26,
+            54
+          ],
+          "problem": "Диаметр клапана ДОО и исполнения соленоидных клапанов не согласованы.",
+          "description": "Клапан поз. 30 VFM-2R-20-6,3 назван в экспликации DN25, тогда как расчёт и разрез 24-24, лист 10, задают DN20. Для соленоидных клапанов указаны марки EV220WR и EV220В; для DN20 пропускная способность различается: 8,0 и 6,3 м³/ч. Примечание о допустимости аналога не определяет согласованное исполнение.",
+          "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+          "norm_quote": null,
+          "candidate_norm_references": [
+            {
+              "designation": "ГОСТ Р 21.101-2020",
+              "cited_designation": "ГОСТ Р 21.101-2020",
+              "candidate_relevance": 0.85,
+              "reason": "Однозначность обозначений и характеристик изделий в рабочей документации.",
+              "provenance": {
+                "producer": "stage03_candidate_contract",
+                "designation_source": "stage03.candidate_norm_references",
+                "source_finding_ids": [
+                  "T-019",
+                  "G-017",
+                  "G-018"
+                ],
+                "input_provenance": {
+                  "source_finding_ids": [
+                    "T-019",
+                    "G-017",
+                    "G-018"
+                  ],
+                  "designation_source": "Перечень нормативных документов входного анализа"
+                }
+              },
+              "clause_candidate": null,
+              "quote_candidate": null
+            }
+          ],
+          "solution": "Исправить диаметр клапана ДОО и согласовать марки, присоединения и пропускную способность соленоидных клапанов.",
+          "risk": "Несовместимость присоединений и несоответствие гидравлических характеристик закупленной арматуры.",
+          "source_finding_ids": [
+            "T-019",
+            "G-017",
+            "G-018"
+          ],
+          "source_block_ids": [
+            "blk_b8c120f6cbc04397b8c5514a03fa3152"
+          ],
+          "related_block_ids": [
+            "blk_b8c120f6cbc04397b8c5514a03fa3152"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "text",
+              "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+              "page": 17
+            }
+          ],
+          "highlight_regions": [],
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-astra",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-017",
+                "mode": "independent",
+                "detected_at": "2026-11-11T10:49:14.408928+00:00",
+                "context_source": "raw_vector"
+              },
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-astra",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-018",
+                "mode": "independent",
+                "detected_at": "2026-11-11T10:49:14.408928+00:00",
+                "context_source": "raw_vector"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "match",
+            "relations": [
+              {
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:003"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания фиксируют одинаковое расхождение диаметра клапана поз. 30 VFM-2R-20-6,3: DN20 на разрезе 24-24 и в расчёте против DN25 в экспликации.",
+                "reviewer_model": "codex/gpt-6-astra",
+                "origin": "dual_comparison"
+              },
+              {
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:001"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания фиксируют одинаковое расхождение диаметра клапана поз. 30 VFM-2R-20-6,3: DN20 на разрезе 24-24 и в расчёте против DN25 в экспликации.",
+                "reviewer_model": "codex/gpt-6-astra",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "norm_references": [],
+          "norm_paragraph_state": "resolver_pending",
+          "quality": {
+            "practicality_score": 77,
+            "engineering_relevance": "high",
+            "impact_axes": [
+              "schedule",
+              "construction"
+            ],
+            "formalism_flags": [],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "high"
+          }
+        },
+        "assessment": "T-019 содержит позиции 30,35,36, марки EV220WR/EV220В и различие 8,0/6,3 для DN20. F-019 сохраняет оба сравнения, но позиции35/36 и связанные текстовые таблицы не перечисляет; его единственный source_block_ids относится к графическому сравнению клапана30. Ссылка на T-019 остаётся, поэтому полная потеря происхождения не заявляется."
+      }
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "status_receipt": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/status/KM.json",
+        "sha256": "fff871ec2646f55e5f5707ee9a98ae7b2e4e9ef69640c83c52aa93927bc89e4f"
+      },
+      "final_output": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "d93486c6a6510ae841be839873e137a44c3241005e6060361017dce855a3e5d1"
+      },
+      "rows_read": 25,
+      "targets": [
+        {
+          "target_id": "KM9_LK5_landing_elevation:95ba2445f5ada28f5184",
+          "coverage_r1": "absent",
+          "final_coverage_r2": "absent",
+          "finding_ids": [],
+          "reason": "Во всех25 строках нет сравнения одной площадки ЛК5 ОГМ20: −2.350 на плане и −2.500 на разрезе6-6. F-018/F-019 относятся к другим уровням ЛК6 и не покрывают этот объект."
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Прочитаны problem, description, solution всех 57 строк ИТП и 25 строк КМ, но оценены только четыре выбранные цели.",
+    "Частичное покрытие конечной строки не является одобрением её последствий, рекомендаций и нормативных ссылок.",
+    "Наличие тезиса во втором базовом запуске не является улучшением нового метода.",
+    "История и эталон остаются только у оценщика; независимые входы и промпты не изменены."
+  ],
+  "production_acceptance": false,
+  "model_calls": 0
+}
