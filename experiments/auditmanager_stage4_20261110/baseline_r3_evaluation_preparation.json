@@ -1,0 +1,67 @@
+{
+  "status": "third_repeat_evaluation_prepared_not_adjudicated",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "entries": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "seal_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/status/AK.json",
+      "seal_sha256": "185a2a746d2a80b718816a905eabe1c105b45dcaa8b164345a26797e9ad2a444",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34",
+      "findings": 65,
+      "ledger_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_coverage_ledger.json",
+      "ledger_sha256": "0d61db573f2341d4860e982f5c53037285c6d3d1733b4fa03c753254bde098ee",
+      "targets": 100,
+      "unchecked_targets": 100
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "seal_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/status/ITP.json",
+      "seal_sha256": "ce32d5f75f8d8f2c7d295e020d3211dcfac5f4a30e9a3585a26b49e652fe730c",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "aa76592c061f7c75196ee2c35c606de32dd98c383243ddb22357d35dde54c89b",
+      "findings": 54,
+      "ledger_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_coverage_ledger.json",
+      "ledger_sha256": "fe37d0a4ccee5712d9d1fc70302c5d5741d2735c1c7a55216e20a10bc70aba94",
+      "targets": 87,
+      "unchecked_targets": 87
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "seal_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/status/AR.json",
+      "seal_sha256": "72e7731be06b26258a713b17d2c18de6b3d7dcec876175539b87771a17932943",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+      "findings": 20,
+      "ledger_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AR_coverage_ledger.json",
+      "ledger_sha256": "cefaf2ec044b40720738b1496341a93c8eb602419dd618fb3071ec51489be1e5",
+      "targets": 33,
+      "unchecked_targets": 33
+    }
+  ],
+  "pending": [
+    {
+      "discipline": "KM",
+      "reason": "not_completed",
+      "status": "running"
+    },
+    {
+      "discipline": "VK",
+      "reason": "no_completion_seal"
+    },
+    {
+      "discipline": "EOM",
+      "reason": "no_completion_seal"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": [
+    "Only sealed outputs opened. Existing ledgers preserved.",
+    "No history or evaluator data written into model run directories.",
+    "Prepared targets are unchecked, not scored misses."
+  ]
+}
