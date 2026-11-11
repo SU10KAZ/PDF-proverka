@@ -1,0 +1,632 @@
+{
+  "status": "nine_candidate_records_six_issue_groups_graphically_reviewed",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "G-086",
+      "pointer": "/block_analyses/32/findings/0",
+      "original_candidate": {
+        "id": "G-086",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable_specification",
+        "finding": "Для кабелей В6.1.1-4, В6.1.2-1, В6.1.2-4 и В6.1.4-1 указаны разные марки: на схеме внешних подключений ШАУВ-1-К6ПЧ, лист 37, — КСПВПГнг(А)-HF, а в кабельном журнале, лист 23, — КСВПГнг(A)-HF. Спецификация на листе схемы подтверждает марку КСПВПГнг(A)-HF.\n\nРекомендация: Согласовать марку указанных кабелей в схеме, спецификации и кабельном журнале.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_b8712be58c8b43f6ac75cfa6420d5479",
+        "value_found": "КСПВПГнг(А)-HF 1х2х0,75; КСВПГнг(A)-HF 1x2x0,75",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-086",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одинаковое расхождение марок КСПВПГнг(А)-HF и КСВПГнг(A)-HF для тех же четырёх кабелей между листом 37 схемы и листом 23 кабельного журнала. Упоминание спецификации слева не добавляет существенной детализации проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_literal_cable_brand_conflict",
+      "reason": "Лист 37: В6.1.1-4, В6.1.2-1, В6.1.2-4, В6.1.4-1 подписаны КСПВПГнг(А)-HF 1х2х0,75 по 30 м; соответствующие строки журнала с буквальным префиксом B6 содержат КСВПГнг(A)-HF. Ведомость листа 37 содержит КСПВПГнг(A)-HF. Подтверждено различие написания марки по связанным цепям XT1/PDS2/XT2/PDS3 одного шкафа. Техническая взаимозаменяемость, существование каждой марки у производителя и правильное исполнение не установлены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8712be58c8b43f6ac75cfa6420d5479.png",
+        "sha256": "1e2341ee22473618e8dd909d53c863618bd86d002b9d77d0b4b5e71ef6e9c0ba",
+        "bytes": 285250,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+          "heading": "### BLOCK #230 [TEXT]: blk_aa193b92cd134c37853e3c8ec6ccd32d",
+          "start": 403514,
+          "end": 405279,
+          "sha256": "0030ca747f56914e9d8ecbc37990baee9419c4ea0c699893ed7c45100ad8a5ec",
+          "authority": "prepared Markdown TEXT"
+        },
+        {
+          "block_id": "blk_a3ebf964570e4e669569795872f6001b",
+          "heading": "### BLOCK #131 [TEXT]: blk_a3ebf964570e4e669569795872f6001b",
+          "start": 214129,
+          "end": 215245,
+          "sha256": "36ad125ae719a02f6af593c498f9e0e3cb15ab3799c8471f0e9f48ff694e8306",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "D-798aaadc7718df147d4eb053",
+      "pointer": "/block_analyses/32/deferred_findings/0",
+      "original_candidate": {
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable_specification",
+        "finding": "Марки кабелей В6.1.1-4, В6.1.2-1, В6.1.2-4 и В6.1.4-1 не согласованы: на схеме внешних подключений ШАУВ-1-К6ПЧ, лист 37, указан КСПВПГнг(А)-HF, а в кабельном журнале, лист 23, — КСВПГнг(A)-HF при одинаковом сечении 1х2х0,75.",
+        "norm_quote": null,
+        "value_found": "КСПВПГнг(А)-HF 1х2х0,75; КСВПГнг(A)-HF 1x2x0,75",
+        "recommendation": "Уточнить проектную марку перечисленных кабелей и согласовать обозначения в схеме, спецификации листа и кабельном журнале.",
+        "claim_type": "contradiction",
+        "problem_class": "cable_type_mismatch",
+        "affected_entity": "Кабели В6.1.1-4, В6.1.2-1, В6.1.2-4, В6.1.4-1 шкафа ШАУВ-1-К6ПЧ",
+        "evidence_quote": "На схеме для перечисленных линий указано «КСПВПГнг(А)-HF 1х2х0,75»; спецификация листа также содержит «Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²». В кабельном журнале на листе 23 для этих же линий указано «КСВПГнг(A)-HF», «1x2x0,75», «30».",
+        "evidence_kind": "document_retrieval",
+        "context_status": "sufficient",
+        "confidence": 0.96,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:2",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:002",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одинаковое расхождение марок КСПВПГнг(А)-HF и КСВПГнг(A)-HF для тех же четырёх кабелей между листом 37 схемы и листом 23 кабельного журнала. Упоминание спецификации слева не добавляет существенной детализации проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      },
+      "assessment": "confirmed_graphic_text_literal_cable_brand_conflict",
+      "reason": "Лист 37: В6.1.1-4, В6.1.2-1, В6.1.2-4, В6.1.4-1 подписаны КСПВПГнг(А)-HF 1х2х0,75 по 30 м; соответствующие строки журнала с буквальным префиксом B6 содержат КСВПГнг(A)-HF. Ведомость листа 37 содержит КСПВПГнг(A)-HF. Подтверждено различие написания марки по связанным цепям XT1/PDS2/XT2/PDS3 одного шкафа. Техническая взаимозаменяемость, существование каждой марки у производителя и правильное исполнение не установлены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8712be58c8b43f6ac75cfa6420d5479.png",
+        "sha256": "1e2341ee22473618e8dd909d53c863618bd86d002b9d77d0b4b5e71ef6e9c0ba",
+        "bytes": 285250,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+          "heading": "### BLOCK #230 [TEXT]: blk_aa193b92cd134c37853e3c8ec6ccd32d",
+          "start": 403514,
+          "end": 405279,
+          "sha256": "0030ca747f56914e9d8ecbc37990baee9419c4ea0c699893ed7c45100ad8a5ec",
+          "authority": "prepared Markdown TEXT"
+        },
+        {
+          "block_id": "blk_a3ebf964570e4e669569795872f6001b",
+          "heading": "### BLOCK #131 [TEXT]: blk_a3ebf964570e4e669569795872f6001b",
+          "start": 214129,
+          "end": 215245,
+          "sha256": "36ad125ae719a02f6af593c498f9e0e3cb15ab3799c8471f0e9f48ff694e8306",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-087",
+      "pointer": "/block_analyses/33/findings/0",
+      "original_candidate": {
+        "id": "G-087",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "connection_identification",
+        "finding": "На схеме внешних подключений ШАУВ-2-К6ПЧ, лист 38, кабель П6.1.4-2 подключён к термостату TS2. В кабельном журнале, листы 25 и 26, для этого кабеля указан конечный прибор ТС1, что противоречит схеме.\n\nРекомендация: Согласовать обозначение конечного прибора кабеля П6.1.4-2 на схеме и в кабельном журнале.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_40bad73db9d44699955a7a4682f309a8",
+        "value_found": "П6.1.4-2 — TS2; кабельный журнал: «Пб.1.4-2 | ШАУВ-2-К6ПЧ | ТС1»",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-087",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_thermostat_identity_conflict",
+      "reason": "Лист 38: линия П6.1.4-2 приходит к TS2 системы П6.1.4. В двух текстовых строках журнала 25/26 линия буквально Пб.1.4-2 идёт от ШАУВ-2-К6ПЧ к ТС1, 15 м, 1х2х0,75. Связь установлена по шкафу, позиции линии, устройству и параметрам; различие 6/б сохранено и не исправлено в TEXT. Расхождение номера термостата 2/1 подтверждено. Повторные строки журнала не считаются двумя физическими линиями.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+        "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+        "bytes": 434156,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "heading": "### BLOCK #232 [TEXT]: blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "start": 407398,
+          "end": 409924,
+          "sha256": "b4f34e5983b621d2bcff5cbd81930de663eb63591296520b3f61433b5ae81b96",
+          "authority": "prepared Markdown TEXT"
+        },
+        {
+          "block_id": "blk_8c1c32681acd42c79d8190b013bbbf0c",
+          "heading": "### BLOCK #233 [TEXT]: blk_8c1c32681acd42c79d8190b013bbbf0c",
+          "start": 409924,
+          "end": 412482,
+          "sha256": "012e97d64ba8b4f5de93ca8494878494c8fb338087e0f20acee4f8b63ee86f0d",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-088",
+      "pointer": "/block_analyses/33/findings/1",
+      "original_candidate": {
+        "id": "G-088",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "На схеме внешних подключений ШАУВ-2-К6ПЧ, лист 38, показаны два реле температуры: TS1 системы П6.1.1 и TS2 системы П6.1.4. В спецификации оборудования, лист 7, позиция 14.8, для этого шкафа предусмотрено только одно реле температуры.\n\nРекомендация: Согласовать количество реле температуры в спецификации с двумя устройствами, показанными на схеме подключений.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_40bad73db9d44699955a7a4682f309a8",
+        "value_found": "TS1; TS2; «Реле температуры (капиллярный термостат)» — 1 шт.",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-088",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "refuted_narrow_extra_separately_supplied_thermostat_claim",
+      "reason": "На схеме действительно показаны два устройства TS1/TS2. Однако TEXT перечня листа 20 отдельно указывает ТС1 как капиллярное реле и ТС2 как термостат комплектно с электронагревателем; спецификация 14.8 задаёт одно капиллярное реле. Число символов 2 против строки количества 1 не доказывает недостающий отдельно поставляемый прибор. Основание требовать увеличить 14.8 не подтверждается. Пустое количество ТС2 и согласование обозначения его кабеля остаются отдельными вопросами; поставка комплекта физически не проверена.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+        "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+        "bytes": 434156,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "heading": "### BLOCK #74 [TEXT]: blk_917406a6b2804ee2abedff901eb85582",
+          "start": 130512,
+          "end": 132110,
+          "sha256": "9bca0c4a8f7bc1302052554c4e2c66ab4fa16187d401ede300913c5b8e1ac844",
+          "authority": "prepared Markdown TEXT"
+        },
+        {
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "heading": "### BLOCK #249 [TEXT]: blk_5b5187b5afb740efb6423fa40c399349",
+          "start": 447851,
+          "end": 450496,
+          "sha256": "52b019673ec133c34788afa344835bcdc2cd45e0dee21d5379a7759ff39eda43",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-089",
+      "pointer": "/block_analyses/34/findings/0",
+      "original_candidate": {
+        "id": "G-089",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "references",
+        "finding": "На схеме внешних подключений ШАУВ-3-К6ПЧ, лист 39, питающие кабели отнесены к проекту 13АВ-РД-ЭМ-К3, тогда как общие данные относят питание шкафов управления вентиляционными установками к разделу 13АВ-РД-ЭМ2-ПА. Обозначения смежного раздела противоречат друг другу.\n\nРекомендация: Согласовать обозначение раздела электроснабжения для вводов Q1 и Q2 и привести ссылки на схеме и в общих данных к единому обозначению.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_0c71a5773a2348d0822a526b8c88b16a",
+        "value_found": "Кабель учтен и показан в проекте \"13АВ-РД-ЭМ-К3\"",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-089",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_power_reference_conflict",
+      "reason": "Лист 39: подписи вдоль обоих питающих вводов Q1/Q2 относят кабели к 13АВ-РД-ЭМ-К3; общие указания TEXT относят питание шкафов вентиляции к 13АВ-РД-ЭМ2-ПА. Подтверждено различие ссылок на смежный раздел, а не отсутствие электроснабжения. Действующий комплект ЭМ для окончательного выбора ссылки не проверен.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0c71a5773a2348d0822a526b8c88b16a.png",
+        "sha256": "c7ed7dfe2a0e03098467557efab196bc4317e49293e8f678142efb0edb1f8b24",
+        "bytes": 411870,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_76e892431d7d4c48a09aba49a57b223c",
+          "heading": "### BLOCK #11 [TEXT]: blk_76e892431d7d4c48a09aba49a57b223c",
+          "start": 19537,
+          "end": 23412,
+          "sha256": "ac93a82bb8680fc59420a6050a184c4e9210f61d15cf107a60e8a01b77484215",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-090",
+      "pointer": "/block_analyses/35/findings/0",
+      "original_candidate": {
+        "id": "G-090",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_reference",
+        "finding": "В спецификации шкафа ШАУВ-1-К6АС преобразователи частоты поз. 16.2 и 16.3 отнесены к системам Ва4.1 и Па4.1. На схеме внешних подключений, лист 40, и плане, лист 54, этот шкаф обслуживает системы Ва5.1 и Па5.1.\n\nРекомендация: Согласовать привязку преобразователей частоты в спецификации с системами Ва5.1 и Па5.1, указанными на схеме и плане.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_47163e69651c48528b3e054d5a5db095",
+        "value_found": "16.2: «для Ва 4.1»; 16.3: «для Па 4.1»",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-090",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:003",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковую ошибку привязки поз. 16.2 и 16.3: Ва4.1/Па4.1 в спецификации вместо Ва5.1/Па5.1 по схеме листа 40 и плану листа 54.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_scheme_specification_core_plan_support_not_checked",
+      "reason": "Лист 40: шкаф ШАУВ-1-К6АС связан с вентиляторами Па5.1, Ва5.1 и Ва5.1р. Спецификация этого шкафа в 16.2/16.3 относит преобразователи к Ва4.1/Па4.1. Ядро несогласованности схема–спецификация подтверждено. Дополнительный тезис обоих кандидатов о подтверждении планом листа 54 в этой проверке не исследован; всему составному замечанию полное подтверждение не присвоено.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+        "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+        "bytes": 608982,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "heading": "### BLOCK #250 [TEXT]: blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "start": 450496,
+          "end": 453077,
+          "sha256": "e35ac512dab6993959cd00914d1e81beeeb1cad821244a4142e26c19cc0d06ca",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-091",
+      "pointer": "/block_analyses/35/findings/1",
+      "original_candidate": {
+        "id": "G-091",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_assignment",
+        "finding": "Схема внешних подключений ШАУВ-1-К6АС на листе 40 относится к системам Па5.1/Ва5.1, а в спецификации этого шкафа преобразователи частоты поз. 16.2 и 16.3 отнесены к Ва4.1 и Па4.1. План на листе 54 подтверждает принадлежность ШАУВ-1-К6АС системам Па5.1/Ва5.1.\n\nРекомендация: Согласовать обозначения обслуживаемых систем в позициях 16.2 и 16.3 спецификации со схемой ШАУВ-1-К6АС и планом оборудования.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_47163e69651c48528b3e054d5a5db095",
+        "value_found": "16.2: «для Ва 4.1»; 16.3: «для Па 4.1»",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-091",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковую ошибку привязки поз. 16.2 и 16.3: Ва4.1/Па4.1 в спецификации вместо Ва5.1/Па5.1 по схеме листа 40 и плану листа 54.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_scheme_specification_core_plan_support_not_checked",
+      "reason": "Лист 40: шкаф ШАУВ-1-К6АС связан с вентиляторами Па5.1, Ва5.1 и Ва5.1р. Спецификация этого шкафа в 16.2/16.3 относит преобразователи к Ва4.1/Па4.1. Ядро несогласованности схема–спецификация подтверждено. Дополнительный тезис обоих кандидатов о подтверждении планом листа 54 в этой проверке не исследован; всему составному замечанию полное подтверждение не присвоено.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+        "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+        "bytes": 608982,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "heading": "### BLOCK #250 [TEXT]: blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "start": 450496,
+          "end": 453077,
+          "sha256": "e35ac512dab6993959cd00914d1e81beeeb1cad821244a4142e26c19cc0d06ca",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-092",
+      "pointer": "/block_analyses/35/findings/2",
+      "original_candidate": {
+        "id": "G-092",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable_specification",
+        "finding": "Для кабеля входа СКЗ шкафа ШАУВ-1-К6АС указаны разные марки: на схеме внешних подключений, лист 40, — КСПВПГнг(А)-HF, в кабельном журнале, лист 35, — КСПВПнг(А)-HF. Сечение 1х2х0,75 и длина 45 м совпадают.\n\nРекомендация: Указать единую проектную марку кабеля связи СКЗ со шкафом ШАУВ-1-К6АС на схеме и в кабельном журнале.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_47163e69651c48528b3e054d5a5db095",
+        "value_found": "КСПВПГнг(А)-HF 1х2х0,75 мм²; КСПВПнг(A)-HF 1х2х0,75",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-092",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:004",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания фиксируют расхождение марки одного кабеля СКЗ длиной 45 м и сечением 1х2х0,75: КСПВПГнг(А)-HF на листе 40 и КСПВПнг(А)-HF в журнале на листе 35. Разная оценка severity не меняет сути проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_literal_cable_brand_conflict",
+      "reason": "Лист 40: вход СКЗ шкафа ШАУВ-1-К6АС подписан СУКЗ-1, КСПВПГнг(А)-HF 1х2х0,75, 45 м; журнал листа 35 для СУКЗ-1 от СУ-К33 к этому шкафу содержит КСПВПнг(A)-HF, то же сечение и длину. Подтверждено различие буквальной марки на одной линии; различие свойств кабелей и правильное исполнение без дополнительной проверки не заявлены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+        "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+        "bytes": 608982,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "heading": "### BLOCK #242 [TEXT]: blk_a256f98d4e01408d90baba99d8b2cc19",
+          "start": 430911,
+          "end": 432749,
+          "sha256": "a0c2f57dfe554d763ea9544d0a85b338c752587308acc9e09f534a8833dec026",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-093",
+      "pointer": "/block_analyses/35/findings/3",
+      "original_candidate": {
+        "id": "G-093",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_specification",
+        "finding": "Для линии входа СКЗ шкафа ШАУВ-1-К6АС длиной 45 м указаны разные марки кабеля: на схеме листа 40 — КСПВПГнг(А)-HF, в кабельном журнале на листе 35 — КСПВПнг(А)-HF.\n\nРекомендация: Установить единую марку кабеля линии СКЗ и согласовать схему, кабельный журнал и ведомость кабелей.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_47163e69651c48528b3e054d5a5db095",
+        "value_found": "КСПВПГнг(А)-HF 1х2х0,75 мм², L=45м; КСПВПнг(A)-HF 1х2х0,75, 45",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-093",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:004"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания фиксируют расхождение марки одного кабеля СКЗ длиной 45 м и сечением 1х2х0,75: КСПВПГнг(А)-HF на листе 40 и КСПВПнг(А)-HF в журнале на листе 35. Разная оценка severity не меняет сути проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_literal_cable_brand_conflict",
+      "reason": "Лист 40: вход СКЗ шкафа ШАУВ-1-К6АС подписан СУКЗ-1, КСПВПГнг(А)-HF 1х2х0,75, 45 м; журнал листа 35 для СУКЗ-1 от СУ-К33 к этому шкафу содержит КСПВПнг(A)-HF, то же сечение и длину. Подтверждено различие буквальной марки на одной линии; различие свойств кабелей и правильное исполнение без дополнительной проверки не заявлены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+        "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+        "bytes": 608982,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "heading": "### BLOCK #242 [TEXT]: blk_a256f98d4e01408d90baba99d8b2cc19",
+          "start": 430911,
+          "end": 432749,
+          "sha256": "a0c2f57dfe554d763ea9544d0a85b338c752587308acc9e09f534a8833dec026",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}
