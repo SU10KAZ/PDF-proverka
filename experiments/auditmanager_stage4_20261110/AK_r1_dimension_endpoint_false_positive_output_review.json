@@ -1,0 +1,209 @@
+{
+  "status": "dimension_false_positive_refuted_with_positive_control",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "38511407d9a00b0e7d941e2021ac5743e64130dc4f90b3ee1e38e75632c2ceb6",
+  "queue_after_sha256": "2ade3226eb2a89effc27a4593101dda8ab0ddbedaeb1b9d4c9f127143facc62d",
+  "reviewer": "coordinator_direct_GRAPHIC_endpoint_and_arithmetic_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-063",
+      "finding": {
+        "id": "F-063",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Размерные цепи",
+        "sheet": "Лист 52",
+        "page": 56,
+        "problem": "Общий размер между осями 5.1–5.5 расходится на двух планах.",
+        "description": "На плане первого этажа указан размер 16300 мм, на плане технического пространства — 16800 мм. Одинаковая цепочка 7050 + 1750 + 4850 + 2650 даёт 16300 мм. Разность составляет 500 мм.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Найти требования к нанесению размеров и согласованности чертежей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-095"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-095"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить архитектурную основу и исправить общий размер технического пространства либо составляющие размерной цепи.",
+        "risk": "Ошибочные привязки оборудования и определение длин трасс.",
+        "source_finding_ids": [
+          "G-095"
+        ],
+        "source_block_ids": [
+          "blk_69a0cd3b48964764884d44fb2e0597e5"
+        ],
+        "related_block_ids": [
+          "blk_69a0cd3b48964764884d44fb2e0597e5",
+          "blk_7519332eea8f44cca60ee966f3ef72aa"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_69a0cd3b48964764884d44fb2e0597e5",
+            "page": 56
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-095",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "7050+1750+4850+2650=16300мм.",
+          "verdict": "confirmed_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Оба общих размера16300 и16800 относятся к одним осям5.1–5.5.",
+          "verdict": "refuted_direct_GRAPHIC_endpoints",
+          "limits": "На плане техпространства слева есть дополнительный участок500мм отП.42 до5.1; общий16800 начинается отП.42, а не5.1."
+        },
+        {
+          "claim": "Размер16800 не равен сумме изображённой цепи.",
+          "verdict": "refuted_complete_chain",
+          "limits": "500+7050+1750+4850+2650=16800. Между5.1–5.5 остаётся16300 на обоих планах."
+        },
+        {
+          "claim": "Нужно исправить архитектурную основу, общий размер или составляющие.",
+          "verdict": "unsupported_correction_remove",
+          "limits": "Исходный конфликт опровергнут проверкой концов размерных линий; не переносить в вопросы как нерешённую техническую ошибку."
+        },
+        {
+          "claim": "Ошибка привязки оборудования и длин трасс вследствие этих размеров.",
+          "verdict": "not_established",
+          "limits": "Нет подтверждённого размерного расхождения. Реальные трассы здесь не измерялись."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "no_new_defect_dimension_chain_consistent",
+      "duplicate_burden": "One false candidate; no additional project defect inferred.",
+      "profile_and_section": "excluded_refuted_technical_claim",
+      "engineer_reuse": "No engineer decision invented; direct source recheck refutes this new output claim.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_69a0cd3b48964764884d44fb2e0597e5.png",
+          "sha256": "d7258eb89275719bc7f4e5c1237693f4b0563ffa79f269538915549a0da1eef8",
+          "block_id": "blk_69a0cd3b48964764884d44fb2e0597e5",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "First-floor plan bottom chain5.1–5.5:7050/1750/4850/2650, total16300."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7519332eea8f44cca60ee966f3ef72aa.png",
+          "sha256": "82f005708e2ecb3e02e4efda92b429e11b411f70c9bcbd7ac2c9a0c7752d5606",
+          "block_id": "blk_7519332eea8f44cca60ee966f3ef72aa",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Technical-space plan: extra left500 betweenP.42 and5.1; total16800 fromP.42 to5.5, includes all five segments. Comparison used different endpoints."
+        }
+      ],
+      "disposition": "assessed_refuted_dimension_endpoint_mismatch_remove"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_69a0cd3b48964764884d44fb2e0597e5.png",
+      "sha256": "d7258eb89275719bc7f4e5c1237693f4b0563ffa79f269538915549a0da1eef8",
+      "block_id": "blk_69a0cd3b48964764884d44fb2e0597e5",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "First-floor plan bottom chain5.1–5.5:7050/1750/4850/2650, total16300."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7519332eea8f44cca60ee966f3ef72aa.png",
+      "sha256": "82f005708e2ecb3e02e4efda92b429e11b411f70c9bcbd7ac2c9a0c7752d5606",
+      "block_id": "blk_7519332eea8f44cca60ee966f3ef72aa",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Technical-space plan: extra left500 betweenP.42 and5.1; total16800 fromP.42 to5.5, includes all five segments. Comparison used different endpoints."
+    }
+  ],
+  "historical_scope_sources": [],
+  "control_pair": {
+    "negative": {
+      "discipline": "AK",
+      "finding_id": "F-063",
+      "expected": "remove_refuted",
+      "reason": "Different endpoint sets; full500+7050+1750+4850+2650 chain reconciles16800."
+    },
+    "positive": {
+      "discipline": "AK",
+      "finding_id": "F-064",
+      "expected": "retain_document_dimension_conflict",
+      "receipt_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_installation_dimensions_and_device_tags_output_review.json",
+      "receipt_sha256": "e710d8412d1064c7c4fa06af697fd2a6af3b531cd0d21e28393d5c03dcc793d3",
+      "reason": "Same floor and cabinet endpoints:1000+1400 differs from1800 by600."
+    },
+    "proposed_behavior": "Before comparing dimension totals bind endpoints, intermediate axes and included segments. Remove a claimed mismatch only when the complete source chain reconciles it. Preserve same-endpoint unresolved mismatches; unreadable endpoints remain insufficient evidence.",
+    "failure_stage": "Observed error in final claim: graphic endpoint binding and omission of500 segment. Exact detector-versus-merge origin not traced in this receipt.",
+    "limits": "DEV-known pair, prepared after outputs; not blind validation or evidence of candidate runtime improvement. No engineer decision or special500mm tolerance inferred."
+  },
+  "limits": [
+    "No runtime filter implemented or changed during frozen comparison.",
+    "No universal tolerance inferred from500mm.",
+    "Frozen evaluator and independent inputs unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
