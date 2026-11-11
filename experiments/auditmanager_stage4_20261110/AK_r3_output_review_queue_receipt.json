@@ -1,0 +1,33 @@
+{
+  "status": "prepared_output_review_not_quality_verdict",
+  "repeat": 3,
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "sources": [
+    {
+      "discipline": "AK",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34",
+      "ledger_path": "experiments/auditmanager_stage4_20261110/AK_r3_coverage_ledger.json",
+      "ledger_sha256": "bf15e6bd7dbb66d3f5ad86c17fff3c9721f8981562a812d492a50df57ba4d004"
+    }
+  ],
+  "counts": {
+    "mapped_requires_addition_review": 46,
+    "unmapped_not_yet_classified": 19
+  },
+  "discipline_counts": {
+    "AK": 65
+  },
+  "rules": [
+    "Match coverage does not approve additions, consequences or remedies.",
+    "Unmapped does not mean false, novel or useless.",
+    "Assess compound claims and duplicates separately.",
+    "Reuse engineer decisions only for the same claim and source context.",
+    "Do not expose evaluator queues to independent model runners."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_sha256": "fefa2b7e0a3d1c6a7550e153d66c72662a63cf6d00fb5808ac2116333a5cd614",
+  "findings": 65
+}
