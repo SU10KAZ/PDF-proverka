@@ -123,3 +123,21 @@ def test_long_drawings_use_full_extent_three_tile_strip(tmp_path,size,expected):
     assert choose_detail_grid(source,'g',16)==expected
     assert choose_detail_grid(source,'g',3)==expected
     assert choose_detail_grid(source,'g',2)==(0,0)
+
+
+def test_graphic_and_counterpart_requests_share_one_revision(tmp_path):
+    request,payload,_,_,md=setup(tmp_path)
+    md.write_text(md.read_text()+'### BLOCK #3 [TEXT]: b\nCounterpart calculation\n')
+    binding=deepcopy(request.continuation_source)
+    binding['md_sha256']=hashlib.sha256(md.read_bytes()).hexdigest()
+    request=replace(request,continuation_source=binding)
+    payload['object_operation_results'][0]['context_queries']=['Counterpart calculation']
+    followup,receipt=build_object_operation_followup(request,payload)
+    assert receipt['status']=='prepared'
+    assert receipt['simultaneous_context_retrieval']['status']=='prepared'
+    packet=json.loads(followup.messages[-1]['content'])
+    assert packet['context_revision']==1
+    assert set(packet['allowed_source_refs'])=={'g','t','b'}
+    assert len(followup.image_paths)==10
+    assert packet['prior_operation_response_untrusted']==payload
+    assert verify_operation_source_binding(followup) is None

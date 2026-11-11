@@ -127,6 +127,32 @@ def prepare_graphic_followup(request, payload, sources):
     new_binding = deepcopy(binding)
     new_binding.setdefault('detail_images', []).extend(
         {k: tile[k] for k in ('block_id', 'path', 'sha256')} for tile in tiles)
+    # A model may request both a close-up and another document in one response.
+    # Satisfy both within one revision, rather than spending the entire revision
+    # on graphics and losing the textual query when the next answer changes.
+    from .object_operation_continuation import prepare_object_operation_continuation
+    from ..findings_verify.source_review_evidence import evidence_digest
+    from .object_operation_followup import _bound_attachment
+    candidate_packet = deepcopy(next_packet)
+    candidate_packet['context_revision'] = packet.get('context_revision', 0)
+    candidate_messages = deepcopy(messages)
+    candidate_messages[-1]['content'] = json.dumps(candidate_packet, ensure_ascii=False)
+    candidate_wire = {'messages':candidate_messages, 'image_paths':paths}
+    attachments = [_bound_attachment(new_binding, image_id, path)
+                   for image_id,path in zip(candidate_packet['attached_image_ids_in_order'],paths,strict=True)]
+    prepared = prepare_object_operation_continuation(
+        candidate_wire, payload, sources, new_binding['images'],
+        Path(new_binding['md_path']).read_text(),
+        expected_request_sha256=evidence_digest(candidate_wire),
+        expected_md_sha256=new_binding['md_sha256'],
+        original_image_hashes={image_id:new_binding['images'][image_id]['sha256']
+                               for image_id in candidate_packet['attached_image_ids_in_order']},
+        original_image_bindings=attachments, graph=new_binding['graph'])
+    if prepared['status'] == 'prepared':
+        messages = prepared['request']['messages']
+        paths = prepared['request']['image_paths']
+        next_packet = json.loads(messages[-1]['content'])
+    text_receipt = {k:v for k,v in prepared.items() if k not in ('request','images','searches')}
     root = re.sub(r'_context_\d+$', '', request.stage)
     stage = f"{root}_context_{next_packet['context_revision']}"
     followup = CodexTargetedPass(stage, '03_' + stage + '.json', messages,
@@ -137,4 +163,5 @@ def prepare_graphic_followup(request, payload, sources):
     return followup, {'status': 'prepared', 'route': 'graphic_detail', 'next_stage': stage,
                       'block_id': bid, 'tiles_added': len(tiles),
                       'deferred_block_ids': pending[1:], 'manifest_path': str(run / 'tiles/manifest.json'),
-                      'semantic_verified': False, 'absence_proven': False}
+                      'semantic_verified': False, 'absence_proven': False,
+                      'simultaneous_context_retrieval': text_receipt}

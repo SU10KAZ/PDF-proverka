@@ -1,0 +1,16 @@
+{
+  "status": "no_findings_recovered",
+  "steps": 4,
+  "findings_by_step": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "graphic_budget_refusal_resolved": true,
+  "remaining_cause": "Graphic continuation returned before handling simultaneous context_queries; the requested principle scheme was deferred while the current axonometric view was enlarged. The revision limit then ended the control.",
+  "correction": "Process the same response context_queries while preparing graphic details, preserving previous sources and a single revision increment.",
+  "tests_passed": 35,
+  "full_acceptance": false,
+  "next_control": "/tmp/auditmanager_itp_automatic_graphic_control_v3_20261111"
+}

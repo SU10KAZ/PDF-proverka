@@ -1,0 +1,243 @@
+{
+  "stage": "object_operations_1d5ddc8a6489d3c9_context_1",
+  "output_filename": "03_object_operations_1d5ddc8a6489d3c9_context_1.json",
+  "messages": [
+    {
+      "role": "system",
+      "content": "Perform the listed unresolved operations for this object from current project sources.\nMD TEXT/TABLE is authoritative. GRAPHIC summaries are navigation only; inspect the\nattached images before making graphic claims. Match instance, execution, scope,\nunits and physical basis before comparing. Never infer compliance from a missing\ncomparison. If a counterpart, calculation or applicability source is absent, return\nneeds_data with exact missing context and context_queries (up to six literal\nobject marks or short phrases for MD search), not a refuted or confirmed defect.\nFor identity_across_views, also check whether the supplied designations distinguish\ndifferent instances within the object's scope. On electrical/control connection\ndiagrams inspect the full address (cabinet, terminal strip, terminal number) and\nthe connected circuit separately. Do not include the circuit in the uniqueness\nkey merely to hide a repeated terminal address. Conversely, repeated numbers in\ndifferent cabinets/strips, common PE/N, bridges and repeated views are not defects\nby themselves: establish the actual connection and addressing convention. Record\neach inspected location and any unresolved address component. A manufacturer\nclarification note is context, not proof that an observed ambiguity is resolved.\nSeparate an evidenced local inconsistency or addressing ambiguity from unresolved\nphysical consequences and from whole-document completeness. If the supplied\ndrawing itself establishes the local problem, preserve that narrowly scoped\nfinding with its inspected locations even when the broader operation needs_data.\nDo not suppress a supported local claim solely because another document is needed\nto choose the correction or determine consequences. Conversely, missing context\nalone is not a local problem: cite the actual conflicting or ambiguous source\nelements and explain what remains undecided. Do not infer a wiring fault, shortage,\nnoncompliance or missing project-wide documentation from a local ambiguity.\nReturn JSON with object_operation_results (object_id, operation, status checked/\nnot_applicable/needs_data/not_checked, reason in Russian, source_refs) and findings.\nEach finding must have object_id, operation, severity, problem, description, solution,\npage/sheet when established, evidence with exact block_id, and report_section:\ntechnical_findings for confirmed technical conflicts, questions for conditional,\nminor editorial or out-of-profile clarifications. Separate questions\nfrom proven conflicts in the wording; never invent a norm or universal tolerance.\nMissing context in this bounded packet is an internal retrieval task, not by itself\nan engineer question. Return needs_data and context_queries. A confirmed minor or\nout-of-profile question during an unresolved operation must state question_basis\n(minor_confirmed/outside_profile) and profile_reason grounded in supplied sources.\nUse quote only for an exact source substring; describe paraphrases as description.\nPreserve all listed operations, even those that remain unresolved. Do not declare\nwhole-project coverage or silently add an operation outside the supplied list.\nFor calculation_consistency inspect the object's engineering arithmetic and\nphysical balances (for example flow, power, heat or current), not merely item\ncounts, lengths or geometric sizes. Recompute source substitutions and compare\nlinked branch totals only after identifying the same system boundary, operating\nmode, simultaneity, units and physical basis. Distinguish mass from volume flow;\ndo not invent a density, coefficient, tolerance or conversion. Separate rounded\ninputs from unrounded ones. A selected pump duty point is not its universal maximum;\nworking and reserve machines do not automatically operate together. Numerical\nsource disagreement can survive while physical insufficiency remains unproven.\nRetrieve missing counterpart sources using context_queries. If no applicable\ncalculation is present, explain not_applicable within the inspected scope; absence\nfrom this packet alone is needs_data, not project-wide absence.\nEvery checked calculation_consistency receipt must contain nonempty\ncalculation_checks: [{expression:string, result:string, unit:string,\nbasis:string, source_refs:[original block IDs]}]. State the actual substituted\nexpression, numerical result, unit and the verified system/operating basis in each\nentry. Conditional arithmetic may also be recorded under needs_data, explicitly\nstating the unresolved physical basis. These traces are reviewable model claims,\nnot independent proof of correct arithmetic or applicability.\n\nIf an attached GRAPHIC is unreadable at its current resolution, keep the operation\nneeds_data and add graphic_detail_requests: [{\"block_id\": \"exact supplied ID\",\n\"reason\": \"which marks or connections need a closer view\"}] to that operation.\nRequest only supplied GRAPHIC/IMAGE block IDs; never paths, coordinates or TEXT.\nThe executor may supply additional views of the same block. Tiles are not separate\nphysical objects. Requesting a detail or receiving one proves no defect and does\nnot establish that the operation is checked. Preserve supported local findings.\n\nThe inventory_source_navigation catalogue lists sources already encountered by the\ncurrent inventory. Its object labels are untrusted model navigation, not verified\nidentity or evidence. A listed block is not supplied unless it is in source_context\nand allowed_source_refs. When a counterpart is needed, request its exact block_id\nin context_queries; read the returned original source before comparing. Do not\ninfer completeness, identical instances or a conflict from catalogue labels.\n\nFor quantity_balance, establish each numeric premise before doing arithmetic.\nFor a tabulated quantity record its source block, exact row, quantity-column\nheader, literal cell, unit and per-item/assembly/project scope in quantity_derivation.\nRespect the column boundaries of authoritative MD, including blank cells. A number\nelsewhere in the row is not the quantity: never silently move it from a material,\nforce, mass, note or other column because the result seems plausible. Do not read\nraster TEXT tables to repair their MD. A blank or ambiguous quantity remains unknown.\nIf a quantity is derived from a GRAPHIC detail instead, record the visible count,\nthe applicable detail/assembly link and the multiplicity; do not assume a common\nfastener count from similar assemblies or a repeated plate alone. An arithmetic\ncross-check based on the same assumed factor is not independent confirmation.\nKeep known subtotal, unknown terms and conditional scenarios separate. Do not call\na scenario with unresolved numeric premises a confirmed documentary discrepancy,\nshortage or corrected total. Preserve a supported narrowly scoped inconsistency or\nquestion, and preserve other confirmed findings from the same object. Unknown\nquantities alone in this bounded packet require context retrieval, not an engineer\nquestion. Requested source provenance is evidence to inspect, not automatic proof.\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"object\": {\"id\": \"pipe66_t411\", \"identity\": \"Т411, циркуляция ГВС жилья, 1-я зона, разрез 6-6\", \"scope\": \"Обозначенная ветвь\", \"kind\": \"трубопровод\", \"source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"observed_parameters\": [{\"name\": \"Размер и исполнение\", \"value\": \"Ø45×2,5оц\", \"unit\": \"мм\", \"source_ref\": \"blk_7527066e645e47bb917a9fc17fb82ccc\", \"graphic_observation\": \"В верхней левой подписи читается «Т411 Ø45x2,5оц ГВС, циркуляционный жилья 1-ая зона».\"}, {\"name\": \"Режим\", \"value\": \"T=55 °C; G=5,89 м³/ч; P=8,06 бар\", \"unit\": null, \"source_ref\": \"blk_7527066e645e47bb917a9fc17fb82ccc\", \"graphic_observation\": \"Значения читаются в продолжении подписи Т411; текст мелкий.\"}]}, \"inventory_source_navigation\": {\"sources\": [{\"block_id\": \"blk_7527066e645e47bb917a9fc17fb82ccc\", \"kind\": \"IMAGE\", \"registered_objects\": 23, \"object_examples\": [{\"object_id\": \"pipe66_t411\", \"identity\": \"Т411, циркуляция ГВС жилья, 1-я зона, разрез 6-6\", \"scope\": \"Обозначенная ветвь\"}, {\"object_id\": \"view_66\", \"identity\": \"Разрез 6-6\", \"scope\": \"Левая и центральная части второго изображения\"}, {\"object_id\": \"view_55\", \"identity\": \"Разрез 5-5\", \"scope\": \"Правая часть второго изображения\"}, {\"object_id\": \"k14_view_55\", \"identity\": \"К14, насос циркуляции греющего контура, разрез 5-5\", \"scope\": \"Другой вид узла с маркой К14; не учтён как дополнительный физический насос\"}, {\"object_id\": \"pipe66_t412\", \"identity\": \"Т412, циркуляция ГВС аренды/ДОО, 1-я зона, разрез 6-6\", \"scope\": \"Обозначенная ветвь\"}, {\"object_id\": \"pipe66_t311\", \"identity\": \"Т311, подача ГВС жилья, 1-я зона, разрез 6-6\", \"scope\": \"Обозначенная ветвь\"}], \"omitted_object_examples\": 17}, {\"block_id\": \"blk_d4b7a506870a4c3dbe5a3d19eb26dfdc\", \"kind\": \"IMAGE\", \"registered_objects\": 18, \"object_examples\": [{\"object_id\": \"view_44\", \"identity\": \"Разрез 4-4\", \"scope\": \"Представление оборудования и трубопроводов ИТП\"}, {\"object_id\": \"k16_left\", \"identity\": \"К16, крайний левый узел на разрезе 4-4\", \"scope\": \"Локально различимое изображение узла; количество физических насосов не установлено\"}, {\"object_id\": \"k16_right\", \"identity\": \"К16, второй узел слева на разрезе 4-4\", \"scope\": \"Отдельное локальное изображение с повторной маркой К16; связь с k16_left требует сопоставления\"}, {\"object_id\": \"k15_view\", \"identity\": \"К15, ГВС 1-й зоны, разрез 4-4\", \"scope\": \"Изображение насосного узла и обвязки\"}, {\"object_id\": \"k14_view_44\", \"identity\": \"К14, насос циркуляции греющего контура, разрез 4-4\", \"scope\": \"Изображение насосного узла в средней правой части\"}, {\"object_id\": \"vessel_rm80\", \"identity\": \"RM 80 PN25, позиция 21.2, разрез 4-4\", \"scope\": \"Сосуд между узлом К15 и установкой SPL BASIC\"}], \"omitted_object_examples\": 12}, {\"block_id\": \"blk_fa4cca816905454ab134c787b1d1862a\", \"kind\": \"TEXT\", \"registered_objects\": 8, \"object_examples\": [{\"object_id\": \"text_pipe_initial_heated\", \"identity\": \"Нагреваемая сторона теплообменника ГВС, начальный фрагмент страницы 45; зона в данном фрагменте не названа\", \"scope\": \"Расчётный участок через теплообменник\"}, {\"object_id\": \"text_pipe_initial_circ\", \"identity\": \"Циркуляционный трубопровод ГВС перед заголовком 2-й зоны; зона в начальном фрагменте не названа\", \"scope\": \"Расчётный циркуляционный участок\"}, {\"object_id\": \"text_pipe_z2_heating\", \"identity\": \"ГВС 2-й зоны, греющая сторона теплообменника\", \"scope\": \"Расчётный участок через теплообменник\"}, {\"object_id\": \"text_pipe_z2_heated\", \"identity\": \"ГВС 2-й зоны, нагреваемая сторона теплообменника\", \"scope\": \"Расчётный участок через теплообменник\"}, {\"object_id\": \"text_pipe_z2_circ\", \"identity\": \"ГВС 2-й зоны, циркуляционный трубопровод\", \"scope\": \"Расчётный циркуляционный участок\"}, {\"object_id\": \"text_pipe_z3_heating\", \"identity\": \"ГВС 3-й зоны, греющая сторона теплообменника\", \"scope\": \"Расчётный участок через теплообменник\"}], \"omitted_object_examples\": 2}, {\"block_id\": \"blk_fed30df45d124919a8b7cc13253733b1\", \"kind\": \"TEXT\", \"registered_objects\": 6, \"object_examples\": [{\"object_id\": \"dhw_pump_method\", \"identity\": \"Расчётные положения выбора насосов ГВС\", \"scope\": \"Общие формулы и принятые коэффициенты\"}, {\"object_id\": \"dhw_zone1_calc\", \"identity\": \"ГВС 1-й зоны, расчёт циркуляции и насосного напора\", \"scope\": \"Расчётная система\"}, {\"object_id\": \"dhw_zone1_pump_set\", \"identity\": \"Комплект циркуляционных насосов ГВС 1-й зоны, HELIX V 603-1/16/E/KS/400-50-N\", \"scope\": \"Комплект из двух насосов; не отдельный третий физический насос\"}, {\"object_id\": \"dhw_zone1_pump_a\", \"identity\": \"Насос А комплекта ГВС 1-й зоны, HELIX V 603-1/16/E/KS/400-50-N; локальный идентификатор\", \"scope\": \"Первый из двух физических экземпляров, прямо заданных количеством; проектная индивидуальная марка не приведена\"}, {\"object_id\": \"dhw_zone1_pump_b\", \"identity\": \"Насос Б комплекта ГВС 1-й зоны, HELIX V 603-1/16/E/KS/400-50-N; локальный идентификатор\", \"scope\": \"Второй из двух физических экземпляров, прямо заданных количеством; проектная индивидуальная марка не приведена\"}, {\"object_id\": \"dhw_zone2_calc\", \"identity\": \"ГВС 2-й зоны, расчёт циркуляции и насосного напора\", \"scope\": \"Расчётная система; выбранная модель насосов в данном блоке не приведена\"}], \"omitted_object_examples\": 0}], \"omitted_block_ids\": [], \"semantic_verified\": false, \"coverage_complete\": false}, \"operations\": [{\"object_id\": \"pipe66_t411\", \"operation\": \"identity_across_views\", \"status\": \"not_checked\", \"semantic_verified\": false, \"object_source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"reason\": \"missing_receipt\"}, {\"object_id\": \"pipe66_t411\", \"operation\": \"quantity_balance\", \"status\": \"not_checked\", \"semantic_verified\": false, \"object_source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"reason\": \"missing_receipt\"}, {\"object_id\": \"pipe66_t411\", \"operation\": \"dimension_consistency\", \"status\": \"not_checked\", \"semantic_verified\": false, \"object_source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"reason\": \"missing_receipt\"}, {\"object_id\": \"pipe66_t411\", \"operation\": \"document_links\", \"status\": \"not_checked\", \"semantic_verified\": false, \"object_source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"reason\": \"missing_receipt\"}, {\"object_id\": \"pipe66_t411\", \"operation\": \"calculation_consistency\", \"status\": \"not_checked\", \"semantic_verified\": false, \"object_source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"reason\": \"missing_receipt\"}], \"source_context\": [{\"block_id\": \"blk_7527066e645e47bb917a9fc17fb82ccc\", \"kind\": \"IMAGE\", \"content\": \"### BLOCK #23 [IMAGE]: blk_7527066e645e47bb917a9fc17fb82ccc\\n\\n> **Created:** 2026-10-20 11:48:56 UTC\\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Jp_sGhjGbkEwCWXoDsy8)\\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.- | Stage: Р | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: ИТП_Разрезы 4-4...6-6,33-33,35-35,36-36 | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\\n\\n**[IMAGE]** | Type: Разрез\\n\\n**Summary:** Разрезы 6-6 и 5-5 магистральных трубопроводов и оборудования теплового узла с параметрами ГВС, циркуляционных контуров и насоса К14.\\n\\n**Description:** Фрагмент содержит два разреза магистральных трубопроводов. Левая и центральная панели озаглавлены «Разрез 6-6 M 1:25». В левой части указаны параметры трубопроводов: «T411 Ø45x2,5оц ГВС, циркуляционный жилья 1-ая зона T=55 °С, G=5,89 м3/ч, P=8,06 бар», «T412 Ø38x3,2оц ГВС, циркуляционный аренды/ДОО 1-ая зона T=55 °С, G=3,13 м3/ч, P=8,06 бар», «T311 Ø76x3,0оц ГВС, подающая 1-ая зона, жилье G=8,71 м3/ч T=65 °С, P=9,06 бар», «T312 Ø57x3,5оц ГВС, подающая 1-ая зона, аренда/ДОО G=4,63 м3/ч T=65 °С, P=9,06 бар», «T33 Ø50x3,5оц ГВС, подающая 3-ая зона Q=0,174 Гкал/ч, G=2,90 м3/ч T=65 °С, P=18,23 бар», «T43 Ø32x3,2оц ГВС, циркуляционный 3-ая зона, T=55 °С, G=0,78 м3/ч, P=17,23 бар». Видны многочисленные отметки высот (например, отм. +2.400, отм. +2.200, отм. +1.809) и размеры. В центральной части расположены резервуары с подписями «АУПД 2 зона Т94» и «АУПД 3 зона Т94», а также примечание «подключение к ТО отопления Т13,Т23, 3 зона» и «дренажный насос (учтено в ВК, в дренажном приямке, см раздел ВК)». Правая панель озаглавлена «Разрез 5-5 M 1:25» и изображает насосное оборудование с подписью «К14 Насос циркуляции греющего контура G=147,83 м3/ч, H=27,92 м.вод.ст.». Присутствуют отметки отм. +2.840, отм. +2.494, отм. +1.000 и диаметры трубопроводов Т2-Ø300, Т1-Ø300.\\n\\n**Entities:** Разрез 6-6; Разрез 5-5; M 1:25; T411 Ø45x2,5оц ГВС; T412 Ø38x3,2оц ГВС; T311 Ø76x3,0оц ГВС; T312 Ø57x3,5оц ГВС; T33 Ø50x3,5оц ГВС; T43 Ø32x3,2оц ГВС; К14; Насос циркуляции греющего контура; G=147,83 м3/ч; H=27,92 м.вод.ст.; АУПД 2 зона Т94; АУПД 3 зона Т94; Т2-Ø300; Т1-Ø300; отм. +2.840; отм. +2.494; отм. +2.400; отм. +2.200; отм. +1.000; отм. +1.809; отм. +1.700; отм. +1.601; отм. +1.512; отм. +0.956; отм. +0.262; отм. +0.194; DN20x3,2; Pcp=20 бар; G=8,71 м3/ч; G=5,89 м3/ч; G=4,63 м3/ч; G=3,13 м3/ч; G=2,90 м3/ч; G=0,78 м3/ч; Q=0,174 Гкал/ч; T=65 °С; T=55 °С; P=8,06 бар; P=9,06 бар; P=18,23 бар; P=17,23 бар; подключение к ТО отопления Т13,Т23, 3 зона; дренажный насос (учтено в ВК, в дренажном приямке, см раздел ВК)\\n\\n**Verification:** В левой части разреза 6-6 некоторые числовые значения в подписях трубопроводов (например, расход G для T411) перекрываются линиями чертежа; рекомендуется перечитать их на увеличенном фрагменте.\\n\\n\"}], \"context_searches\": {}, \"attached_image_ids_in_order\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\", \"blk_7527066e645e47bb917a9fc17fb82ccc\", \"blk_7527066e645e47bb917a9fc17fb82ccc\", \"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"allowed_source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"omitted\": [], \"scope_complete\": false, \"same_page_text_context\": {\"candidate_block_ids\": [], \"supplied_block_ids\": [], \"applicability_verified\": false}, \"context_revision\": 1, \"prior_operation_response_untrusted\": {\"object_operation_results\": [{\"object_id\": \"pipe66_t411\", \"operation\": \"identity_across_views\", \"status\": \"needs_data\", \"reason\": \"Осмотрены верхняя левая подпись Т411 и прилегающая обвязка разреза 6-6, центральная часть этого разреза и разрез 5-5 справа. Обозначения Т411, Т412 и Т311 различают ветви; их соседство не подтверждает повторное изображение одного объекта. Для Т411 не установлена соответствующая ветвь на другом виде. Требуются исходный разрез 4-4 и схема с привязкой Т411. Мелкие марки и линии выносок требуют увеличения для проверки принадлежности обозначений.\", \"source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"context_queries\": [\"blk_d4b7a506870a4c3dbe5a3d19eb26dfdc\", \"Т411\", \"циркуляционный жилья\"], \"graphic_detail_requests\": [{\"block_id\": \"blk_7527066e645e47bb917a9fc17fb82ccc\", \"reason\": \"Уточнить подпись Т411, направление её выноски и марки прилегающих участков в левой части разреза 6-6 для прослеживания одной ветви.\"}]}, {\"object_id\": \"pipe66_t411\", \"operation\": \"quantity_balance\", \"status\": \"needs_data\", \"reason\": \"Изображение обозначенной ветви не устанавливает её полную длину или спецификационное количество. Не представлены ведомость трубопроводов, строка спецификации Т411 с единицей и областью учёта и схема, позволяющая учитывать участки без повторного подсчёта разных видов. Числовые предпосылки количественного баланса не установлены; количество изображений не принято за количество физических трубопроводов.\", \"source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"context_queries\": [\"Т411\", \"Спецификация трубопроводов\", \"Ведомость трубопроводов\", \"циркуляционный жилья\"]}, {\"object_id\": \"pipe66_t411\", \"operation\": \"dimension_consistency\", \"status\": \"needs_data\", \"reason\": \"Осмотрена размерная подпись Т411 в верхней левой части разреза 6-6. Разрешения недостаточно для уверенной проверки всех символов размера и исполнения, а также привязки мелких размерных обозначений к этой ветви. Навигационное значение Ø45×2,5оц не принято за независимо проверенное чтение. Не представлен сопоставимый размер Т411 на схеме, другом виде или в спецификации.\", \"source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"context_queries\": [\"Т411\", \"blk_d4b7a506870a4c3dbe5a3d19eb26dfdc\", \"Спецификация трубопроводов\"], \"graphic_detail_requests\": [{\"block_id\": \"blk_7527066e645e47bb917a9fc17fb82ccc\", \"reason\": \"Нужна читаемая подпись диаметра, толщины стенки и исполнения Т411 вместе с выноской и относящимися к ветви размерными обозначениями.\"}]}, {\"object_id\": \"pipe66_t411\", \"operation\": \"document_links\", \"status\": \"needs_data\", \"reason\": \"На приложенном изображении установлена локальная подпись Т411 на разрезе 6-6. Связь этой ветви с расчётом циркуляции, схемой и спецификацией пока не проверена: соответствующие оригинальные источники не включены в пакет. Каталог содержит потенциально относящиеся к проверке расчётные блоки и разрез 4-4, однако их навигационные описания не доказывают применимость к Т411.\", \"source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"context_queries\": [\"blk_fed30df45d124919a8b7cc13253733b1\", \"blk_fa4cca816905454ab134c787b1d1862a\", \"blk_d4b7a506870a4c3dbe5a3d19eb26dfdc\", \"Т411\"]}, {\"object_id\": \"pipe66_t411\", \"operation\": \"calculation_consistency\", \"status\": \"needs_data\", \"reason\": \"На разрезе рядом с Т411 приведены эксплуатационные параметры, но исходные формулы, подстановки и баланс относящейся к ней расчётной системы не представлены. Мелкие значения расхода и давления требуют уточнения по изображению. Для проверки необходимы оригинальные расчёты с разделением циркуляции жилья и аренды/ДОО первой зоны, определением границы баланса, режима и физического смысла расходов. Сопоставление с расходом подачи или рабочей точкой насоса без такой связи не обосновано.\", \"source_refs\": [\"blk_7527066e645e47bb917a9fc17fb82ccc\"], \"context_queries\": [\"blk_fed30df45d124919a8b7cc13253733b1\", \"blk_fa4cca816905454ab134c787b1d1862a\", \"Т411\", \"Т412\", \"ГВС 1-й зоны\"], \"graphic_detail_requests\": [{\"block_id\": \"blk_7527066e645e47bb917a9fc17fb82ccc\", \"reason\": \"Уточнить численные значения и единицы температуры, расхода и давления в подписи Т411; сохранить соседние подписи и выноски для проверки принадлежности параметров.\"}]}], \"findings\": []}, \"graphic_detail_views\": [{\"block_id\": \"blk_7527066e645e47bb917a9fc17fb82ccc\", \"first_image_index_zero_based\": 1, \"tile_count\": 3, \"grid_columns\": 3, \"grid_rows\": 1, \"same_source_block\": true, \"semantic_verified\": false}]}"
+    }
+  ],
+  "image_paths": [
+    "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_7527066e645e47bb917a9fc17fb82ccc.png",
+    "/tmp/auditmanager_itp_automatic_graphic_control_v2_20261111/initial/pipe66_t411/object_graphic_details/graphic_detail_5jkogjrd/tiles/detail_tile_0.png",
+    "/tmp/auditmanager_itp_automatic_graphic_control_v2_20261111/initial/pipe66_t411/object_graphic_details/graphic_detail_5jkogjrd/tiles/detail_tile_1.png",
+    "/tmp/auditmanager_itp_automatic_graphic_control_v2_20261111/initial/pipe66_t411/object_graphic_details/graphic_detail_5jkogjrd/tiles/detail_tile_2.png"
+  ],
+  "continuation_source": {
+    "md_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/02_work/document.md",
+    "md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+    "images": {
+      "blk_34f0f01cb9df4143ac2644ca3276b582": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_34f0f01cb9df4143ac2644ca3276b582.png",
+        "sha256": "97fefddd773f87a7c13a137d0ef2233581845fe63101f49b6d9acca5854acd3a"
+      },
+      "blk_0103a941fa5a4b0d9141a4149e927bff": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png",
+        "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2"
+      },
+      "blk_cc80e7962a094791b984d8fb5391e886": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_cc80e7962a094791b984d8fb5391e886.png",
+        "sha256": "df5eab1b75e59001cf78cb3cded3596c55d5726badde250c456889c012e1a3b3"
+      },
+      "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_61cbeb249f9e4bba8d0a30f6b4b3b79c.png",
+        "sha256": "9a098a71fc26249d70777e78f9bfe35539f7b32844d48bfdd8221ca2e51012c1"
+      },
+      "blk_871a2c95697d4a93adb86dd3e2456614": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_871a2c95697d4a93adb86dd3e2456614.png",
+        "sha256": "97b3068dcdaebbf363f1bc3e40c9605fd90564b7d2b33b3f029d772dd86f97f9"
+      },
+      "blk_bd55e9b9fbff4d0886c6084a326ec05e": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_bd55e9b9fbff4d0886c6084a326ec05e.png",
+        "sha256": "c186fb2f0e6ab5c9b18d343506d096649d72b07811693d3b1d24f9a73f2384b6"
+      },
+      "blk_63043bc6592f43068fc91591b7274963": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_63043bc6592f43068fc91591b7274963.png",
+        "sha256": "6862484f82d59cbada094a35d2f002d6b6331b795738113168b97e33e11bed78"
+      },
+      "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_d4b7a506870a4c3dbe5a3d19eb26dfdc.png",
+        "sha256": "53d497514b8c168918c9e9fd00680a2497bf1297f7672b747996c56e8aedba33"
+      },
+      "blk_7527066e645e47bb917a9fc17fb82ccc": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_7527066e645e47bb917a9fc17fb82ccc.png",
+        "sha256": "f33722b2cc7117e431c01cf6c19c274f7b07a0a4042a6ce7cea7349ab1db9e49"
+      },
+      "blk_9a10a5131f3e467db9bd6e9cce76c59a": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_9a10a5131f3e467db9bd6e9cce76c59a.png",
+        "sha256": "bbd26956be16fad3f8e89a8b8a4bf947eb94eba503ab3dcf1b934bf307d76e62"
+      },
+      "blk_10f7f3fbc82f4e11be9c81cdf6e4bc5c": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_10f7f3fbc82f4e11be9c81cdf6e4bc5c.png",
+        "sha256": "a4cbde117b9cd70f28af3f0d9bc7452a6df979cb4742f6fab14a46f172190072"
+      },
+      "blk_dbf7b3d84e5642c9805145cb7502e78d": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_dbf7b3d84e5642c9805145cb7502e78d.png",
+        "sha256": "9430d17206ebc8c3f761eb4c56c827b9490d61acfab7cfa363b86a27d5ee3356"
+      },
+      "blk_5d085f4c917a4e568fd33327e6f8edea": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+        "sha256": "b912407176437e746a465c78e72293ad851026cb26d5f2dfb5b3fdcb597f8301"
+      },
+      "blk_6496640ac5e44e98a89acc7af56d0509": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png",
+        "sha256": "7354443aa6ecdf7232110223a7b30b0dd25276027e3006175c728eb1fdc35edd"
+      },
+      "blk_b236e8ad38084811b7ae15386e293de5": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_b236e8ad38084811b7ae15386e293de5.png",
+        "sha256": "642dc956a925f1ae1a9ff6338cfbb83e8d3dce14d4e73e74a38eaa3b03e938d3"
+      },
+      "blk_104762a5861a40a3b2300f8b2d0dbee1": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_104762a5861a40a3b2300f8b2d0dbee1.png",
+        "sha256": "b0d4da4257d9cfc9e7e8a919a184b77492abec986765f91d093d50c44de63534"
+      },
+      "blk_27af51f0cd26488ea08ffa55589b0c3e": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_27af51f0cd26488ea08ffa55589b0c3e.png",
+        "sha256": "9ae3ec6ff303ff8f3b6317bd8cfa1b49ab22653581184818e10d9f0393bf4c7a"
+      },
+      "blk_3e9208547b9947268cb44a3b078741b5": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_3e9208547b9947268cb44a3b078741b5.png",
+        "sha256": "f734f9a6fab5e5a3e7b4ad6d4c667531b32c7b1fb5bf9fb5f8b2f2dec13139a9"
+      },
+      "blk_54235e84a8d648d19eaccce2040d5f65": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_54235e84a8d648d19eaccce2040d5f65.png",
+        "sha256": "2dc43eac792d36fff9d84e8e3904768255f7aadc1105b05f5f88eca1a498081e"
+      },
+      "blk_8e4e78d833774d1094ea7fc72932c0ff": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_8e4e78d833774d1094ea7fc72932c0ff.png",
+        "sha256": "89a963ddc75e1cd7a81dee28b10d2ff797f2383be5d965d2e05407587df3215f"
+      },
+      "blk_b8c120f6cbc04397b8c5514a03fa3152": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+        "sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137"
+      },
+      "blk_7d05e8efe5c84824821f86dad3ccd42f": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_7d05e8efe5c84824821f86dad3ccd42f.png",
+        "sha256": "1b68603478867935d64e2b7428f1f454c4d150b248473ce770feee30a6193832"
+      },
+      "blk_d0a62bc2e56f4d07bb33a73622429881": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_d0a62bc2e56f4d07bb33a73622429881.png",
+        "sha256": "813ec783eeaea997e75b97ece66d75b1bc6508fd8aaf1f02adf4e3dbed719013"
+      },
+      "blk_6d5640f1a71b440cb7ca3f2c177af08a": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+        "sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19"
+      },
+      "blk_94b58ecf5d404f7d90c272d267eb2e48": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+        "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af"
+      },
+      "blk_049ee88c136045da9910995a4c44a1e8": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_049ee88c136045da9910995a4c44a1e8.png",
+        "sha256": "8a15e36bf264f5c708284942ff853a4afdb5ffa7e7fe329a36da355a7686ed59"
+      },
+      "blk_693e53fec5744b27b721eb667e933ef5": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+        "sha256": "054e48c413554acbe425a0a73a982a4f39c215d2b53aeb5877ccd77d8d686713"
+      },
+      "blk_981b77a31c254f73aa67261d897a2987": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_981b77a31c254f73aa67261d897a2987.png",
+        "sha256": "3cb700af6b7c1b3c41c11860f02195a7927e36c84a4e7a027629c4995c1c6aed"
+      },
+      "blk_5b07e35a49dd46e4942116281bb13d8f": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_5b07e35a49dd46e4942116281bb13d8f.png",
+        "sha256": "a32088411f121b152cc34cf31e6c9749c5d635b4442b57b1ba86555b1f96fbcf"
+      },
+      "blk_06029d59a01b4b779037ffcee1ae5260": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+        "sha256": "99f0948dd8e59ee31f68b9f79a58131e5fa3a0fc63e5fdfcb0a541f00871bb8c"
+      },
+      "blk_606823ca386e49ffbe2f96d95e08793b": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_606823ca386e49ffbe2f96d95e08793b.png",
+        "sha256": "2590ec1fa6878028f58f107b148d7b86b67dd3f6c36285a9b46ae3f1dec76de0"
+      },
+      "blk_64d234df62024a40b06b044dcb8f4bc9": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_64d234df62024a40b06b044dcb8f4bc9.png",
+        "sha256": "34e4d8eea4b9128f856f6793d5b330b666d8954956dd96c27b98c5678f1a7351"
+      },
+      "blk_396954f77098430281d203e5380eb32e": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_396954f77098430281d203e5380eb32e.png",
+        "sha256": "31ba80944012830d7222bb6907053322400d471911e18146498bec0fae13241a"
+      },
+      "blk_128a43447f394e0687d841e25e436e75": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_128a43447f394e0687d841e25e436e75.png",
+        "sha256": "c4063b3b34fed1a321c7724a88cc86016d5dbd1f99a0a0bc5aca57b45a704d9e"
+      },
+      "blk_3162e0fafc32457285830ec07afdd653": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_3162e0fafc32457285830ec07afdd653.png",
+        "sha256": "c4952915704589e6d12bdd775fbd8366738e766e6506f661e84767cac0f0df9a"
+      },
+      "blk_fefc14a3038245fb8d626f8567232455": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_fefc14a3038245fb8d626f8567232455.png",
+        "sha256": "873ba0c7845baf4263bb53e3f9964d5719bf5c043750734c2503c71df6eb76b2"
+      },
+      "blk_c9c859476bca4ad68c287bd457f45fc1": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_c9c859476bca4ad68c287bd457f45fc1.png",
+        "sha256": "b4ecdec06d758abae131a66d1624aa4ba06a96946de1bcc9f46b24e306a22e1e"
+      },
+      "blk_5fcd6a8809434a5282850d4fc01be3ac": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_5fcd6a8809434a5282850d4fc01be3ac.png",
+        "sha256": "b4ecdec06d758abae131a66d1624aa4ba06a96946de1bcc9f46b24e306a22e1e"
+      },
+      "blk_e5569b054ca84f9e9ccadf38de23a7b0": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_e5569b054ca84f9e9ccadf38de23a7b0.png",
+        "sha256": "b4ecdec06d758abae131a66d1624aa4ba06a96946de1bcc9f46b24e306a22e1e"
+      },
+      "blk_0cb95f43fa78424db035c2183e65f61c": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_0cb95f43fa78424db035c2183e65f61c.png",
+        "sha256": "72bc6cf7f572758621224a8eff8edf6dc207c9f6217c61a7034458c63f3e7a78"
+      },
+      "blk_cb2a56b168154cc0aba1d9faf506432b": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_cb2a56b168154cc0aba1d9faf506432b.png",
+        "sha256": "0ec8d7a7c03ae592c0a14db87170d7de2de1bfb77cd6af56a40ddceec498155f"
+      },
+      "blk_3fbddb2b1e404846ae0c58826ee3bd89": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_3fbddb2b1e404846ae0c58826ee3bd89.png",
+        "sha256": "183cf6c8c7adf8b4d2d162cf1d42a88350c8dd1d2b767336cfa6051e671a906b"
+      },
+      "blk_1f8cd402e98f432cad1ad665a03a4c77": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_1f8cd402e98f432cad1ad665a03a4c77.png",
+        "sha256": "7bd3602a2689255a97546b36235ac59a2b3b9ce5885d453f8c71da52bb479166"
+      },
+      "blk_4916cf83dbce454b88ef0d17b8b1b922": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_4916cf83dbce454b88ef0d17b8b1b922.png",
+        "sha256": "ab919d92a65f19403323fc52ece392cee08eea8347eb5fec2295b7d8748ac6eb"
+      },
+      "blk_53368f5043e24bc99dbbe9956b94a695": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_53368f5043e24bc99dbbe9956b94a695.png",
+        "sha256": "dd9e735cbf87c158954150fd15c2bf6f9b66c1b6829257174c41bd95b9462b94"
+      },
+      "blk_3211f4d72b024b31b46059fba4d8873a": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_3211f4d72b024b31b46059fba4d8873a.png",
+        "sha256": "aa7c4337ce73a900153175194ccde8e7f059943d812328deb39ed1bbbbc6bc2e"
+      },
+      "blk_09cb98a0d22145cc9c076ec28d45176f": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_09cb98a0d22145cc9c076ec28d45176f.png",
+        "sha256": "e08aa313bdfa3dc1f072ab8d97e6a0775a9e1c7e4584ac1e8ef94c39a6056fb3"
+      },
+      "blk_8445a5ccfd584b2d8f96d2b7079e113b": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_8445a5ccfd584b2d8f96d2b7079e113b.png",
+        "sha256": "40184c1fcd6f4cbf1398b213f8373aecc68baa74571e5f7a4476b06e9d30967d"
+      }
+    },
+    "graph": null,
+    "graphic_source": {
+      "output_dir": "/tmp/auditmanager_itp_automatic_graphic_control_v2_20261111/initial/pipe66_t411/object_graphic_details",
+      "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/02_work/document.pdf",
+      "pdf_sha256": "6d77bc0942e795ff2a6018b1ce65d45d5080e7aa220041da6dbbdd37a74c8b40",
+      "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/02_work/blocks.json",
+      "blocks_sha256": "84d9257bccbf9ea1ea7fbb69fbff09f32fd2a04f3afe9a0d0c90d511ed8e183a"
+    },
+    "detail_images": [
+      {
+        "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+        "path": "/tmp/auditmanager_itp_automatic_graphic_control_v2_20261111/initial/pipe66_t411/object_graphic_details/graphic_detail_5jkogjrd/tiles/detail_tile_0.png",
+        "sha256": "847037c08616aa20e44353c005fda5c0a0f36e7f9b4f878eb2326f550c8a5375"
+      },
+      {
+        "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+        "path": "/tmp/auditmanager_itp_automatic_graphic_control_v2_20261111/initial/pipe66_t411/object_graphic_details/graphic_detail_5jkogjrd/tiles/detail_tile_1.png",
+        "sha256": "aa28d255a89ca92e5fa0337511c8cf65dcd89a68c1c9d01cb7f7c0e90d773b4d"
+      },
+      {
+        "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+        "path": "/tmp/auditmanager_itp_automatic_graphic_control_v2_20261111/initial/pipe66_t411/object_graphic_details/graphic_detail_5jkogjrd/tiles/detail_tile_2.png",
+        "sha256": "4f7048f57ad47ca8be9733ee36a66e18d9252d8ce54b1703d80446d250207eaf"
+      }
+    ]
+  }
+}
