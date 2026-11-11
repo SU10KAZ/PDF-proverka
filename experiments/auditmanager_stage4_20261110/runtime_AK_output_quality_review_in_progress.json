@@ -299,15 +299,27 @@
       "finding_id": "F-030",
       "problem": "Диапазон обозначений преобразователей не согласован с количеством.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "correct_question_scope",
+      "engineer_decision": null,
+      "review_reason": "На функциональной схеме лист19 три отдельных круга SC UZ1/UZ2/UZ3 в строке ШАУВ-1-К6ПЧ. Авторитетный перечень содержит SC UZ1–SC UZ53 при количестве3. Вопрос исправления конечной марки обоснован;53изделия не утверждаются. Старую оговорку о непроверенной графике нужно убрать из текущего текста,сохранив в истории.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_identity_dimension_review_20261112.json",
+        "sha256": "526bfcc4d9f98abb4d864edcce574d5fdad99ba53601db7ea5062b1434390308"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-031",
       "problem": "Требуется уточнить количество комплектного термостата ТС2.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "correct_question_scope",
+      "engineer_decision": null,
+      "review_reason": "На внешних подключениях TS1 за калорифером П6.1.1 связан линией П6.1.1-4 с13/14;TS2 за калорифером П6.1.4 связан П6.1.4-2 с15/16. Перечень различает капиллярное релеТС1,1шт и комплектныйТС2 с пустым количеством;СО14.8 содержит одно капиллярное реле. Сохранить вопрос количества комплектного термостата,не требовать второго капиллярного реле.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_identity_dimension_review_20261112.json",
+        "sha256": "526bfcc4d9f98abb4d864edcce574d5fdad99ba53601db7ea5062b1434390308"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-032",
@@ -648,15 +660,27 @@
       "finding_id": "F-073",
       "problem": "Электронагреватель Пу5.1 изображён символом электродвигателя.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "correct_question_scope",
+      "engineer_decision": null,
+      "review_reason": "В колонке Электронагреватель системы Пу5.1 изображён круг М над U/V/W/PE. Линия Пу5.1-7 идёт к32/33/34/PE. Символ и назначение не согласованы;выдача правильно оставляет вопрос оформления и не утверждает неверное электрическое подключение.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_identity_dimension_review_20261112.json",
+        "sha256": "526bfcc4d9f98abb4d864edcce574d5fdad99ba53601db7ea5062b1434390308"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-074",
       "problem": "Напряжение ввода ШАУВ-6-К5ПЧ не согласовано с обозначениями его проводников.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Левый заголовок ввода показывает кат.2,2.0кВт,380В. Тот же ввод внутри ШАУВ-6-К5ПЧ подключён через Q1/X1 и подписан L,N,PE. Совпадение одной цепи прослежено визуально. Документальное противоречие подтверждено;решение не выбирает автоматически220В или трёхфазный ввод,а требует согласования со смежным разделом.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_identity_dimension_review_20261112.json",
+        "sha256": "526bfcc4d9f98abb4d864edcce574d5fdad99ba53601db7ea5062b1434390308"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-075",
@@ -697,8 +721,14 @@
       "finding_id": "F-080",
       "problem": "Вертикальная размерная цепь установки шкафа противоречива на 600 мм.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Прямая проверка концов размерных линий:1400 между верхом и низом шкафа,1000 между низом и уровнем пола,1800 между теми же верхом и полом.1400+1000−1800=600мм. Не суммировались размеры разных уровней. Замечание верно требует уточнить выбранную высоту и габарит;какой из размеров ошибочен,по фрагменту не установлено.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_identity_dimension_review_20261112.json",
+        "sha256": "526bfcc4d9f98abb4d864edcce574d5fdad99ba53601db7ea5062b1434390308"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-081",
@@ -754,6 +784,6 @@
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 22,
-  "unchecked_findings": 63
+  "reviewed_findings": 27,
+  "unchecked_findings": 58
 }

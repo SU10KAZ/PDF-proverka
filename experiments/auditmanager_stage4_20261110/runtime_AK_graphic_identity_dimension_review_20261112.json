@@ -1,0 +1,98 @@
+{
+  "source_md": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-030",
+      "status": "correct_question_scope",
+      "review_reason": "На функциональной схеме лист19 три отдельных круга SC UZ1/UZ2/UZ3 в строке ШАУВ-1-К6ПЧ. Авторитетный перечень содержит SC UZ1–SC UZ53 при количестве3. Вопрос исправления конечной марки обоснован;53изделия не утверждаются. Старую оговорку о непроверенной графике нужно убрать из текущего текста,сохранив в истории.",
+      "direct_graphic": {
+        "block_id": "blk_5999641136b84d1c9a5dd129e06ae055",
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_5999641136b84d1c9a5dd129e06ae055.png",
+        "sha256": "cb1c9c5fdf02478799b5474ff55d7f18a9e6d54da46e9ffdc4733bc5ab0f0a80",
+        "directly_viewed": true
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_50601fa20414465ea70cc3f42158d923",
+          "start": 125261,
+          "end": 126197,
+          "sha256": "cb47874c9a8ff044f5fb64051cbce73604bb2c3b4b8531eaf785f6ceb66b9163"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-031",
+      "status": "correct_question_scope",
+      "review_reason": "На внешних подключениях TS1 за калорифером П6.1.1 связан линией П6.1.1-4 с13/14;TS2 за калорифером П6.1.4 связан П6.1.4-2 с15/16. Перечень различает капиллярное релеТС1,1шт и комплектныйТС2 с пустым количеством;СО14.8 содержит одно капиллярное реле. Сохранить вопрос количества комплектного термостата,не требовать второго капиллярного реле.",
+      "direct_graphic": {
+        "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+        "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+        "directly_viewed": true
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "start": 130512,
+          "end": 132108,
+          "sha256": "17e68b33b138670c3729977f74971625316be7f8d629c1faf51aadd04c85d6c0"
+        },
+        {
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "start": 447851,
+          "end": 450471,
+          "sha256": "71647d5a708a13ca3c56090775349146fff2ccf3140d616f7ea95445881b4cdb"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-073",
+      "status": "correct_question_scope",
+      "review_reason": "В колонке Электронагреватель системы Пу5.1 изображён круг М над U/V/W/PE. Линия Пу5.1-7 идёт к32/33/34/PE. Символ и назначение не согласованы;выдача правильно оставляет вопрос оформления и не утверждает неверное электрическое подключение.",
+      "direct_graphic": {
+        "block_id": "blk_a2c817786b3a459fb5fa2667d9492450",
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_a2c817786b3a459fb5fa2667d9492450.png",
+        "sha256": "292eaec8678f1e4bbf28d2348b8661424e121d4b0e7182c425db37d9682e835a",
+        "directly_viewed": true
+      },
+      "authoritative_md_spans": [],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-074",
+      "status": "confirmed_document_conflict",
+      "review_reason": "Левый заголовок ввода показывает кат.2,2.0кВт,380В. Тот же ввод внутри ШАУВ-6-К5ПЧ подключён через Q1/X1 и подписан L,N,PE. Совпадение одной цепи прослежено визуально. Документальное противоречие подтверждено;решение не выбирает автоматически220В или трёхфазный ввод,а требует согласования со смежным разделом.",
+      "direct_graphic": {
+        "block_id": "blk_065a335469904b2db1640b480b321503",
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+        "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+        "directly_viewed": true
+      },
+      "authoritative_md_spans": [],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-080",
+      "status": "confirmed_document_conflict",
+      "review_reason": "Прямая проверка концов размерных линий:1400 между верхом и низом шкафа,1000 между низом и уровнем пола,1800 между теми же верхом и полом.1400+1000−1800=600мм. Не суммировались размеры разных уровней. Замечание верно требует уточнить выбранную высоту и габарит;какой из размеров ошибочен,по фрагменту не установлено.",
+      "direct_graphic": {
+        "block_id": "blk_d52bf811660e42b59acdce0038f9fbf0",
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_d52bf811660e42b59acdce0038f9fbf0.png",
+        "sha256": "42c7d8b05562c4c461752bf37d98233d9a519a4530360dd8f160494b4500ce95",
+        "directly_viewed": true
+      },
+      "authoritative_md_spans": [],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}
