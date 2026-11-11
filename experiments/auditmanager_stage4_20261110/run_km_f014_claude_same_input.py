@@ -10,9 +10,10 @@ from backend.app.pipeline.stages.findings_verify.source_review_evidence import e
 
 ROOT=Path('/tmp/auditmanager_km_f014_claude_same_input_20261111')
 
-async def main(execute):
+async def main(execute, root=ROOT):
     # Rebuild and verify the old request against original source bytes. Does not
     # read the Astra response, the evaluator or any engineer answer.
+    ROOT=Path(root)
     wire, source_binding=original.prepare()
     ROOT.mkdir(exist_ok=True)
     manifest={**source_binding, 'model':'claude/claude-sonnet-5-5',
@@ -22,7 +23,10 @@ async def main(execute):
     if not execute:return
     with (ROOT/'attempt.json').open('x') as f:
         json.dump({'status':'started','request_sha256':manifest['request_sha256']},f)
-    result=await direct_cli_executor(manifest['model'],project_id='KM-F014-independent-same-input')(wire,'readjudication')
+    async def save_event(event):
+        immutable(ROOT/'cli_result_event.json',event)
+    result=await direct_cli_executor(manifest['model'],project_id='KM-F014-independent-same-input',
+        claude_result_observer=save_event)(wire,'readjudication')
     immutable(ROOT/'result.json',result)
     immutable(ROOT/'result_binding.json',{'request':manifest['request_sha256'],'result':evidence_digest(result)})
     original.prepare()
@@ -34,4 +38,5 @@ async def main(execute):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true')
-    asyncio.run(main(p.parse_args().execute))
+    p.add_argument('--output-root',type=Path,default=ROOT)
+    args=p.parse_args();asyncio.run(main(args.execute,args.output_root))
