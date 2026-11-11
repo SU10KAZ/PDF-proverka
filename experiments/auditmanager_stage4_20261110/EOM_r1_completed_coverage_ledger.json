@@ -1,0 +1,2156 @@
+{
+  "schema_version": 1,
+  "discipline": "EOM",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "findings_sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386",
+  "reviewer": "coordinator_source_bound_review_not_new_engineer_acceptance",
+  "entire_output_reviewed": true,
+  "review_scope": "Все48финальных замечаний прочитаны для сопоставления с72целями; техническая корректность всех расширений и новых находок ещё не оценена.",
+  "targets": [
+    {
+      "target_id": "B-EOM-F-002:589046b033f782342a04",
+      "route": "question",
+      "source_atom": {
+        "claim": "ВРП2 формула180×0,32=57,6 отличается от таблицы240/69,6",
+        "verdict": "confirmed_authoritative_TEXT"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-001"
+      ],
+      "reason": "Формула180×0,32=57,6, таблица240/69,6 и необходимость согласования сохранены. 0,29 и76,8 приведены как арифметические варианты; правильное проектное значение не установлено.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            384,
+            385
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-002.json",
+          "sha256": "2851662c79803e5a4e8d362f3c73fee55915522fab48395fe380e426b4dd512d"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-003:26a778e20220ace19772",
+      "route": "question",
+      "source_atom": {
+        "claim": "Опубликованные строки даютPy94,5 иPp89,9 против94,1/89,5",
+        "verdict": "confirmed_decimal_sum"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-002"
+      ],
+      "reason": "Обе суммы94,5/89,9 против94,1/89,5 сохранены. Это покрытие опубликованного расхождения, не подтверждение ошибки исходного расчёта. Модель допускает иной состав точных мощностей; единица Ip в TEXT остаётся кВт, автоматическое исправление её на А требует отдельной оценки.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            422,
+            447
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+          "sha256": "0577c89529c7aadb1f5f57385d56f6cf8748477b1df25539747380ce45aca248"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-004:90fc50f60a8f39d5e2cb",
+      "route": "question",
+      "source_atom": {
+        "claim": "Для C2520 опубликованы 6 кВт в таблице и 5,5 кВт на схеме",
+        "verdict": "supported_same_line"
+      },
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-002"
+      ],
+      "reason": "C2520 и таблица6кВт/6,88кВА найдены. Значение5,5 в выдаче выведено из таблицы, а сравнение с подписью5,5 на схеме явно не выполнено. Обнаружение междокументной связи не засчитывается полностью; изображения в этом пакете не перепроверялись.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            440,
+            443
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json",
+          "sha256": "6ec81943e3282643c6afdba57f11970e973a2a86b2afb5d28ca09687c5194b16"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-005:a26fcc71b65fb1e5cfa1",
+      "route": "question",
+      "source_atom": {
+        "claim": "Компенсированный ввод2:121,6кВт,cosφ0,97,123,2кВА; расчётТТ использует125,4кВА",
+        "verdict": "confirmed_authoritative_TEXT"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-003"
+      ],
+      "reason": "Ввод2 ВРУ-3, режим с компенсацией,121,6/0,97,123,2 и125,4 в проверке ТТ названы. Категоричность слова «ошибочные» и распространение на итог295,9 требуют отдельной оценки; покрытие узкого конфликта не подтверждает все расширения.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            655,
+            661,
+            691,
+            693
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json",
+          "sha256": "9b98c505b2fdb2cbc3f9bff2b6489f30e19884381c8eec62cf2515fbd5ae81d8"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-006:70a5bb3630cd86d67bdf",
+      "route": "question",
+      "source_atom": {
+        "claim": "Пять слагаемых25 дают125, а не100",
+        "verdict": "confirmed_arithmetic"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "reason": "Сумма пяти25=125 против записанных100 явно указана;125не назначено правильной проектной нагрузкой.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            805,
+            805
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-006:9b2481431ea0814f9774",
+      "route": "question",
+      "source_atom": {
+        "claim": "Формулы вводов125,1/100 отличаются от табличных100/83,2",
+        "verdict": "confirmed_authoritative_TEXT"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "reason": "Формулы вводов125,1/100 сопоставлены с100/83,2. Требуется согласование исходных нагрузок, а не автоматическая замена оборудования.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            804,
+            805
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-006:50e2ed9a377d8e0af479",
+      "route": "question",
+      "source_atom": {
+        "claim": "Послеаварийная формула225,1 отличается от табличной суммы183,2",
+        "verdict": "confirmed_arithmetic_and_TEXT"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "reason": "Послеаварийные225,1 и183,2 сопоставлены;225,1 не объявлено обязательной мощностью.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "lines": [
+            806,
+            806
+          ]
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM11:7985c84eea058c206240",
+      "route": "technical",
+      "source_atom": {
+        "claim": "В проверенном кабельном подразделе отсутствует позицияFRHF5×35",
+        "verdict": "confirmed_bounded_absence"
+      },
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "Тема отсутствия FRHF5×35 для С2513/С3510 в итоговых48замечаниях не найдена. F-008 описывает материал HF, F-021 идентификацию ОКЛ: это иные объекты проверки. Стадия потери пока не установлена.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM11.json",
+          "sha256": "1d38db92b11e8fcde7159b7685795f19804600fc29102e6fed2bb5a1f76630a1"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM11:3cea91fda96c41ad80dc",
+      "route": "negative",
+      "source_atom": {
+        "claim": "Все кабели5×35 отсутствуют",
+        "verdict": "refuted_HF_172m_present"
+      },
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "Утверждение об отсутствии всех5×35 в итоговой выдаче не повторено. Это не доказывает, что полезный поиск FRHF выполнен.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM11.json",
+          "sha256": "1d38db92b11e8fcde7159b7685795f19804600fc29102e6fed2bb5a1f76630a1"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM111_outdoor_unit_identifier:43d787c7eed47d02cc3b",
+      "route": "question",
+      "source_atom": {
+        "claim": "Два отдельных блока имеют К3.2.406 и AJ068TXJ3KH/EA",
+        "verdict": "supported_graphic"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-043"
+      ],
+      "reason": "Сохранены два отдельных блока К3.2.406, зона403/405/406 и модель AJ068TXJ3KH/EA. Недостача блока405 и ошибочность одинаковой модели не утверждаются. Оценка покрытия по замороженному графическому эталону; новая инженерная приёмка отсутствует.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json",
+          "sha256": "8c56324a1cdd435e58e33992a1133a3b6069ba04fab79a7dff7986472a091e25"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM27_active_socket_circuits:46bf196510e24cc289cf",
+      "route": "technical",
+      "source_atom": {
+        "claim": "Их отдельных строк нет вРП3.",
+        "verdict": "Подтверждено полным TEXT таблицы;24 строкиC231–C2324."
+      },
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "Отдельных строк рабочих С2326/С2327 в РП3 выдача не обсуждает. F-034 относится к другому щиту2ЩСС1 и не покрывает этот пропуск.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM27_active_socket_circuits.json",
+          "sha256": "539cb99a7e98600cef013c0847d9dc68ea77774c009848fae45ae4d535d828a1"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM27_active_socket_circuits:d00dddfff15bbd7767ab",
+      "route": "negative",
+      "source_atom": {
+        "claim": "С2328 также пропущенная активная нагрузка.",
+        "verdict": "Опровергнуто в этой области: на схеме это резерв."
+      },
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "С2328 не объявлен пропущенной активной нагрузкой. Отсутствие ложного тезиса не засчитывается как обнаружение С2326/С2327.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM27_active_socket_circuits.json",
+          "sha256": "539cb99a7e98600cef013c0847d9dc68ea77774c009848fae45ae4d535d828a1"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM5_shunt_trip_identity:946dc28da1dfa089e8c3",
+      "route": "negative",
+      "source_atom": {
+        "claim": "Оба QF3.20 и QF3.17 подписаны ВА-301",
+        "status": "частично опровергнуто графикой: QF3.17 ВА-303; QF3.20 ВА-301"
+      },
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "Ложное обобщение двух аппаратов как ВА-301 не повторено.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM5_shunt_trip_identity.json",
+          "sha256": "d8d84614d752aab554ea481335da63b34bd3a39419682483c124627b5df5b1b4"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM5_shunt_trip_identity:877b6fefac02ba992ea1",
+      "route": "question",
+      "source_atom": {
+        "claim": "РН-300-2Р только для2P",
+        "status": "подтверждено руководством конкретного изготовителя и серии"
+      },
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "Вопрос совместимости конкретного расцепителя РН-300-2Р и QF3.20 не найден. Другие вопросы фазности и полюсности к этой цепи не привязаны.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM5_shunt_trip_identity.json",
+          "sha256": "d8d84614d752aab554ea481335da63b34bd3a39419682483c124627b5df5b1b4"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM70_F008_consumer_power:d74160d19f75fda36950",
+      "route": "question",
+      "source_atom": {
+        "claim": "Одна и та же К21/ЩМ7/7Н имеет 20,0 кВт на схеме и 23,2 в таблице",
+        "verdict": "supported_same_object"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-006"
+      ],
+      "reason": "К21/ЩМ7/7Н,20/23,2 и80/83,2 названы. Сопутствующие площади и предлагаемое обновление параметров требуют отдельной оценки; покрытие данного атома не подтверждает их.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM70_F008_consumer_power.json",
+          "sha256": "4f491caf2dcbd75d1512da43f998abe388b1f23f0362d570367c25c0c8a59887"
+        },
+        {
+          "source": "directly_viewed_GRAPHIC",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "observation": "Вводы: у обоих символов кВт·ч250/5; отдельная левая группа1ТТ4…1ТТ6 —200/5, правая2ТТ4…2ТТ6 —250/5. Отходящие линии имеют107А; К21/ЩМ7 подписана20кВт;10Н связано с ЩМ10. Растр не использован для исправления TEXT."
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM76_B-EOM-F-012:8e69883d4dc84cb69b01",
+      "route": "question",
+      "source_atom": {
+        "claim": "Девять заполненных групп дают8×0,40+0,20=3,40кВт при итоге5,4",
+        "verdict": "confirmed_linked_graphic_count_and_arithmetic"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-034"
+      ],
+      "reason": "Сохранены9заполненных групп,8×0,40+0,20=3,40 против5,4 и необходимость уточнить резерв. Пустые резервные строки не признаны доказанными2кВт.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM76_B-EOM-F-012.json",
+          "sha256": "b34a2943aefce4b68eb1a8ee496d4ef4c7645c11d945a2c2768827a8fd1c7f80"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM8:93d4f22f3881c3b6f642",
+      "route": "negative",
+      "source_atom": {
+        "claim": "ЯУ-ДУ2.1 не обозначен на конструкции щитовС2",
+        "verdict": "refuted_direct_graphic_leader_to_cabinet"
+      },
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "Отсутствие ЯУ-ДУ2.1 на конструкции щитовС2 не утверждается.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM8.json",
+          "sha256": "cd3198220c028d4cb8d6bd25723a7249f7515defaad806528f8b4543fb000f5f"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM8:e341364ee0bc7bae8147",
+      "route": "negative",
+      "source_atom": {
+        "claim": "Подпись является только кабельной, а не обозначением шкафа",
+        "verdict": "refuted_linked_primary_graphic_check"
+      },
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "Ошибочная трактовка выноски ЯУ-ДУ2.1 как только кабельной не повторена; это второй атом той же отрицательной темы, не независимый дефект.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM8.json",
+          "sha256": "cd3198220c028d4cb8d6bd25723a7249f7515defaad806528f8b4543fb000f5f"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F001_cable_description:e57af65ca85f5ab8075c",
+      "route": "question",
+      "source_atom": {
+        "claim": "Общие данные называют изоляцию и оболочку ППГнг(A)-HF ПВХ",
+        "verdict": "supported_TEXT"
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-008"
+      ],
+      "reason": "Одна марка ППГнг(A)-HF сопоставлена между общими данными и СО. Сохранён конфликт описаний. Химическое и нормативное расширение оценивается отдельно; ошибочная фактическая поставка не доказана.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F001_cable_description.json",
+          "sha256": "905f1f26daecb1841c99b8c7c2a70103cf60d545a0bb95358d82e9267004b5e5"
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F007_phase_and_temporary_load:9e004a2c0153a24dc3ce",
+      "route": "question",
+      "source_atom": {
+        "claim": "Девять подписанных линий имеют на схеме 107,0 А",
+        "verdict": "supported_graphic"
+      },
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-033"
+      ],
+      "reason": "Подписи107А и условный трёхфазный расчёт найдены, но временное однофазное питание из примечания не учтено. Заголовок «ошибочно» и требование исправить токи сильнее доказательств.107А воспроизводится при20кВт/(0,22кВ×0,85), поэтому нельзя без тождества режима подменить его35,8А.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F007_phase_and_temporary_load.json",
+          "sha256": "1c27b242ec894d3038ec6afb0afb4a727801b04675928076ed2d19c28944fed1"
+        },
+        {
+          "source": "directly_viewed_GRAPHIC",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "observation": "Вводы: у обоих символов кВт·ч250/5; отдельная левая группа1ТТ4…1ТТ6 —200/5, правая2ТТ4…2ТТ6 —250/5. Отходящие линии имеют107А; К21/ЩМ7 подписана20кВт;10Н связано с ЩМ10. Растр не использован для исправления TEXT."
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F009_commercial_identity_supply:2c0ad71382f4e28b3853",
+      "route": "question",
+      "source_atom": {
+        "claim": "В помещении 10Н на схеме ЩМ10, в таблице ЩМ20.",
+        "verdict": "Подтверждено; TEXT не исправлялся по растру."
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-031"
+      ],
+      "reason": "ЩМ10/ЩМ20 сопоставлены через помещение10Н. Исходный TEXT таблицы не исправлялся по графике.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F009_commercial_identity_supply.json",
+          "sha256": "ce3785a0efeda80ba7dd010d463cb406632919a791bb99394e43c8cd472609c0"
+        },
+        {
+          "source": "directly_viewed_GRAPHIC",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "observation": "Вводы: у обоих символов кВт·ч250/5; отдельная левая группа1ТТ4…1ТТ6 —200/5, правая2ТТ4…2ТТ6 —250/5. Отходящие линии имеют107А; К21/ЩМ7 подписана20кВт;10Н связано с ЩМ10. Растр не использован для исправления TEXT."
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F009_commercial_identity_supply:ceddc2904fb7fa5d39e4",
+      "route": "question",
+      "source_atom": {
+        "claim": "Таблица перечисляет девять коммерческих потребителей, спецификация семь ЩМ.",
+        "verdict": "Подтверждено: 2Н–6Н пять и 7Н–10Н четыре; количество строки СО — семь."
+      },
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "Девять коммерческих потребителей против семи ЩМ в выдаче не сопоставлены. F-010 рассматривает90квартирных щитов; это другой состав и другая граница поставки.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F009_commercial_identity_supply.json",
+          "sha256": "ce3785a0efeda80ba7dd010d463cb406632919a791bb99394e43c8cd472609c0"
+        },
+        {
+          "source": "directly_viewed_GRAPHIC",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "observation": "Вводы: у обоих символов кВт·ч250/5; отдельная левая группа1ТТ4…1ТТ6 —200/5, правая2ТТ4…2ТТ6 —250/5. Отходящие линии имеют107А; К21/ЩМ7 подписана20кВт;10Н связано с ЩМ10. Растр не использован для исправления TEXT."
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F010_meter_CT_identity:3db2ab4cd251ab7a20a8",
+      "route": "negative",
+      "source_atom": {
+        "claim": "Цепи учёта Wh1 и Wh2 на схеме имеют 200/5.",
+        "verdict": "Опровергнуто: у обоих символов счётчиков 250/5."
+      },
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-032"
+      ],
+      "reason": "Ошибка переноса200/5 на цепь учёта повторилась для Wh1; утверждения об обоих Wh1/Wh2 в новой выдаче нет. Поэтому составной отрицательный атом покрыт частично.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F010_meter_CT_identity.json",
+          "sha256": "a703160135a73507c68370fde3502cd18805f7170e1f697e52463ef0a0d5794a"
+        },
+        {
+          "source": "directly_viewed_GRAPHIC",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "observation": "Вводы: у обоих символов кВт·ч250/5; отдельная левая группа1ТТ4…1ТТ6 —200/5, правая2ТТ4…2ТТ6 —250/5. Отходящие линии имеют107А; К21/ЩМ7 подписана20кВт;10Н связано с ЩМ10. Растр не использован для исправления TEXT."
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F010_meter_CT_identity:428615994b8f295c4f7f",
+      "route": "negative",
+      "source_atom": {
+        "claim": "Схема и расчёт ТТ учёта требуют согласования 200/5 против 250/5.",
+        "verdict": "Опровергнуто: сравнивались разные объекты."
+      },
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-032"
+      ],
+      "reason": "Повторён ложный конфликт200/5 против250/5 между разными объектами. Прямой просмотр исходного графического блока: у обоих кВт·ч250/5; верхняя левая группа1ТТ4…1ТТ6 имеет200/5, верхняя правая250/5. Расчёт Wh1/Wh2 относится к учёту. Снимать все расхождения ТТ без трассировки цепи нельзя.",
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F010_meter_CT_identity.json",
+          "sha256": "a703160135a73507c68370fde3502cd18805f7170e1f697e52463ef0a0d5794a"
+        },
+        {
+          "source": "directly_viewed_GRAPHIC",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "observation": "Вводы: у обоих символов кВт·ч250/5; отдельная левая группа1ТТ4…1ТТ6 —200/5, правая2ТТ4…2ТТ6 —250/5. Отходящие линии имеют107А; К21/ЩМ7 подписана20кВт;10Н связано с ЩМ10. Растр не использован для исправления TEXT."
+        }
+      ],
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F011_meter_internal_symbols:d1766d1077f31422494f",
+      "route": "question",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F011_meter_internal_symbols.json",
+          "sha256": "846fefca5751cb80b828934db27ad8c1a4654799dc592ca6b77352ea93e0e4c9"
+        }
+      ],
+      "reason": "Общая линия внутри схемы счётчика и условные элементы не рассматриваются. F-037/F-040 относятся к N/PE других щитов.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F013_small_load_currents:4191d1c0f009a85947f9",
+      "route": "question",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-035"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F013_small_load_currents.json",
+          "sha256": "91ce3dbd9625bde7420f0793438f84470d7631517c4677e3d72c2623203a6cb6"
+        }
+      ],
+      "reason": "Обе нагрузки0,20/0,10, токи2/1 и условные1,01/0,51 найдены. Не раскрыты возможный запас и основание расчёта; предложено пересчитать токи, хотя неправильность именно токов не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F014_phase_A_current:d972a6b9f556089a8923",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-036"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F014_phase_A_current.json",
+          "sha256": "658e2faf7e777cc659e49710a787ab6dfbae0ae51a050597f960008447f3eaa9"
+        }
+      ],
+      "reason": "Сохранены1.ЩС,10,3 против26,2 на фазеA и запрос фазного расчёта. Применение0,9 к группе — отдельное неподтверждённое расширение, не доказательство перегрузки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F016_management_phase_current:fdef783b69877a39920c",
+      "route": "question",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-038"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
+          "sha256": "fd397c9b88821ec58404f09b5ee75556f169bd87b1258e15617e5ee42ff06997"
+        }
+      ],
+      "reason": "Сохранены3,2 и1+8,5 на фазеA, но противоречащая подпись3P группы4 и необходимость уточнить подключение опущены.8,55 — условная арифметика, не точный фазорный расчёт.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F017_poles_and_PE_scope:5a5257d09b828c10e8ca",
+      "route": "question",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F017_poles_and_PE_scope.json",
+          "sha256": "19e3acff85440a85eb46002f0f9f7f6563081deff719e91d8b476c8e861a22eb"
+        }
+      ],
+      "reason": "СвязкаQF4 3P, A,0,22кВ,3×2,5 для1.ЩС-УК-4 не проверяется. F-042 относится к2ЩРОВ1, F-040 к связиN–PE, это другие тезисы.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F018_temporary_outgoing_parameters:51ab0814a9c617d18dcc",
+      "route": "question",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F018_temporary_outgoing_parameters.json",
+          "sha256": "58493afcb1d36bea9496f9f5d00c72ef3c74624d28c411e5913af9ba3174b22e"
+        }
+      ],
+      "reason": "Пустые параметры отходящих групп временного ЩМ-к на листах9/10 не найдены. Общий вопрос поставки90щитовF-010 их не заменяет.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F018_temporary_outgoing_parameters:5a289d06ebe35181566c",
+      "route": "negative",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F018_temporary_outgoing_parameters.json",
+          "sha256": "58493afcb1d36bea9496f9f5d00c72ef3c74624d28c411e5913af9ba3174b22e"
+        }
+      ],
+      "reason": "Отсутствие номиналов защиты временных щитов не утверждается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F019_typical_floor_scope:35bac9306e2bcbc588c5",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-027"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F019_typical_floor_scope.json",
+          "sha256": "683b019ef27fdb28bf2963996eb113c81f014344286e744930005b9c075e8b80"
+        }
+      ],
+      "reason": "Диапазоны ведомости7–10 и схемы7–9, наличие10этажа в другом варианте и локализация ошибки в ведомости сохранены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F019_typical_floor_scope:784b0d5832e912d7f9d7",
+      "route": "negative",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F019_typical_floor_scope.json",
+          "sha256": "683b019ef27fdb28bf2963996eb113c81f014344286e744930005b9c075e8b80"
+        }
+      ],
+      "reason": "Тезис об отсутствии схемы10этажа не повторён; F-027 прямо называет другой типовой вариант.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F020_enclosure_minimums:b34c225d7cc1d2d234e8",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-009"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F020_enclosure_minimums.json",
+          "sha256": "bf585abffce6c388509728cf559c7128600172b2a0e177b5b859c20235fb3d07"
+        }
+      ],
+      "reason": "МинимумыIP54/IP31 для тех же щитов найдены; фактическая поставкаIP31 не заявлена. Предложение назначитьIP54 или обосновать другое требует отдельной оценки условий установки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F021_F023_controller_voltage_scope:b197a84551461f1efaca",
+      "route": "question",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-042"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F021_F023_controller_voltage_scope.json",
+          "sha256": "da0ea92659220b1cded0204453c0e08ae0435cd61d0525346e3b97a3a908d47e"
+        }
+      ],
+      "reason": "Группы4/5,1P,A/B и0,38 найдены; условность0,22 и запрос фактической фазности сохранены. Но цепь через ЯЧ и вопрос, к какой стороне относитсяUн, не раскрыты.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F021_F023_controller_voltage_scope:04253642dc34f231614b",
+      "route": "question",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F021_F023_controller_voltage_scope.json",
+          "sha256": "da0ea92659220b1cded0204453c0e08ae0435cd61d0525346e3b97a3a908d47e"
+        }
+      ],
+      "reason": "Противоположное сочетание групп1–3 ABC/3P/5×2,5 с0,22 не рассмотрено. F-042 охватывает только4/5.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F022_ventilation_power_rounding:2dcc867069010078edd3",
+      "route": "question",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F022_ventilation_power_rounding.json",
+          "sha256": "a61e8bb81c63cacd0ee0e6e3ce075dbe8455c1bba1dfa4fe172b8cfd034336f2"
+        }
+      ],
+      "reason": "Сумма1,5 против итога1,4 для вентиляционного щита не найдена; другие арифметические замечания не покрывают этот объект.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F024_room_number_collision:a27bd6546c4ff55c4e59",
+      "route": "question",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-025"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F024_room_number_collision.json",
+          "sha256": "5f37d81095b90f1c769eaa87ed868673fea3491c2d83db7d2d23cfb63b3d61e5"
+        }
+      ],
+      "reason": "Коллизия номера0.0.2.2 и первая пара43,9/11,1 сохранены. Для второй экспликации выдача называет43,2/11,4, отличаясь от замороженного целевого тезиса о повторе43,9/11,1. Вторую таблицу нужно проверить отдельно; полное покрытие не засчитывается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F024_room_number_collision:425a9b88c69b00e6214e",
+      "route": "negative",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F024_room_number_collision.json",
+          "sha256": "5f37d81095b90f1c769eaa87ed868673fea3491c2d83db7d2d23cfb63b3d61e5"
+        }
+      ],
+      "reason": "Различием этажей или секционных подзаголовков коллизия не оправдывается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F025_repeated_note_numbers:c0bda0b5718912600dc3",
+      "route": "question",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F025_repeated_note_numbers.json",
+          "sha256": "78365e20d4bc3174de421622aba55969f5ac8fa86617b555fc7ed94f2bee6484"
+        }
+      ],
+      "reason": "Повторные номера2/3 в примечаниях не рассматриваются.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F026_emergency_tray_legend:2474510e8b112f4c5cb1",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-044"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F026_emergency_tray_legend.json",
+          "sha256": "534e82c9adb2dbcd334fd051e503f06a2a98d77822fcd5164d1370eb54b3fb56"
+        }
+      ],
+      "reason": "Сопоставление неперфорированного аварийного лотка в узле и перфорированного в легенде сохранено, включая26/27/28/30. Расширение на25–31 проверяется отдельно; семь подтверждённых повторов не засчитываются автоматически.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F027_penetration_material_scope:d3fca7220bbe9d48857c",
+      "route": "question",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F027_penetration_material_scope.json",
+          "sha256": "f57f007725816118bf933a0276615dbac5cebbcec1c404dfbca5023f8b26092a"
+        }
+      ],
+      "reason": "Назначение DN1201 в гильзе относительно герметизации щелей не рассмотрено. F-029 спрашивает объёмы проходок, а не различие зон применения материалов.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F028_apartment_plan_identity:bbc814c9d763c8f736f7",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-045"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F028_apartment_plan_identity.json",
+          "sha256": "d3b57fbf21e0f9bdc4d803134c2255b9a4b4d5f6ff34b7610023e084aa0eb2bf"
+        }
+      ],
+      "reason": "Адресные наборы квартир388–390/431–437 и391–393/438–444 сохранены. Категоричное заключение о разных этажах и монтажных последствиях требует отдельной проверки архитектурной версии.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F029_shared_product_code:9059426853483f0c34cf",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-018"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json",
+          "sha256": "77e362cc528f68c54dffd966b254eb69b718ae3b96f59718c2a8d61bd6aeb2a7"
+        }
+      ],
+      "reason": "Код178513 для четырёх разных изделий, повтор двух групп и вопрос комплекта сохранены. Фактическая поставка не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F030_CT_minimum_substitutions:e48399b0ddd41647bc4a",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F030_CT_minimum_substitutions.json",
+          "sha256": "537dee4a137c78461c807d74d1def9412b209d680414692bc6b0dbd638082946"
+        }
+      ],
+      "reason": "ДляВРУ2 сохранены подстановки77/70 и74/80 против23,9/30,6; пересчёт сохраняет0,1А. Дополнительный0,25А не принимается как подтверждённый нормативный критерий.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F030_CT_minimum_substitutions:82bb92f6ba02b2b7c780",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F030_CT_minimum_substitutions.json",
+          "sha256": "537dee4a137c78461c807d74d1def9412b209d680414692bc6b0dbd638082946"
+        }
+      ],
+      "reason": "ДляВРУ3 сохранены77/100 и74/80 против39,4/28,6 и отсутствие доказательства непригодности ТТ.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F031_CT_emergency_assumptions:d8fbf0545ffcdbb28172",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F031_CT_emergency_assumptions.json",
+          "sha256": "170491373e1f56f3edabfeeba46b1bd400c09a887065f8bcc05472f567d8e71a"
+        }
+      ],
+      "reason": "Сохранены обе пары384,1/390,3 и465,1/471,4, требование связать20% с конкретным исполнением. Единицы сводногоIp и пригодность учёта этим не установлены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F032_commercial_area_inputs:16faed04bf572c1876a5",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json",
+          "sha256": "5162f21dcede7066fb3d1512cd551bef5cf76a3746d6360ac9d9959a69283c99"
+        }
+      ],
+      "reason": "Для7Н сохранены105,4/108,1, вопрос методики и условный множитель0,22. Спор о разделе выдачи удерживается отдельно; требуемая мощность и обновление оборудования не подтверждены.",
+      "section_assessment": "held_disputed_output_section_only"
+    },
+    {
+      "target_id": "EOM_F032_commercial_area_inputs:147160644f952ff76e59",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json",
+          "sha256": "5162f21dcede7066fb3d1512cd551bef5cf76a3746d6360ac9d9959a69283c99"
+        }
+      ],
+      "reason": "Для8Н сохранены68,6/63,0. Это отдельная адресная площадь; вопрос правильного раздела выдачи остаётся открытым.",
+      "section_assessment": "held_disputed_output_section_only"
+    },
+    {
+      "target_id": "EOM_F033_apartment_board_scope:dbb1bab29b165bc0b8ca",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-010"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F033_apartment_board_scope.json",
+          "sha256": "733ea2ad8e0939b80ecb45e225de97885ae4879d5e2d56470b01ce7441c11a83"
+        }
+      ],
+      "reason": "90квартирных щитов и границы временной/постоянной поставки сохранены. Установка собственником не названа запретом проектной поставки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F034_specification_quantity:cc93bff16c691fce3df8",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-012"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json",
+          "sha256": "a63aa0206c93f1d384029fc98b7d1b4c335e25505edd3672d091df494b1d711a"
+        }
+      ],
+      "reason": "Две строкиØ32 по190 и условное удаление только ошибочного повтора сохранены. Заголовок о двойном учёте сильнее доказанного совпадения; оценить отдельно.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F035_specification_quantity:0498a98c0a043fe1e66d",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F035_specification_quantity.json",
+          "sha256": "d2fdf2b0a62b954bc12f46539bcc5944fc1413db62c61166ff991b5d317f8177"
+        }
+      ],
+      "reason": "Повтор парыLG1000/М6×20 привязан кВРУ2 и сопряжённым количествам. Удаление предложено после подтверждения дубля; лишняя поставка не доказана.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F036_tray_code_description:da6b33367ef613f75477",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-016"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F036_tray_code_description.json",
+          "sha256": "4e9118267e89143c1c088e4a42e68b3b72d0bd1650e9b643f6bc1993fcf2eb85"
+        }
+      ],
+      "reason": "Один3530410 сопоставлен с различными описаниями перфорации на первом и верхних уровнях; требуется проверка изготовителя.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F037_tray_cover_scope:5eaa42d72fba7e53d76e",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-017"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F037_tray_cover_scope.json",
+          "sha256": "15432598db63ee87b27c7deece7cbcede488860c1944a00c2f5ef1fa513caa1f"
+        }
+      ],
+      "reason": "Три адресные пары130/126,57/55,41/40 и разница7м сохранены, предлагается уточнить незакрытые участки или запас. Без этого7м не доказанная недопоставка.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F038_specification_quantity:2bf971bcf81224ba57b8",
+      "route": "question",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-013"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json",
+          "sha256": "96f4c1648640eb1c94ca979a73869993ab04a7359a183655ca07a3807fe43e64"
+        }
+      ],
+      "reason": "Единица м,2345/190 и необходимость расчёта шага найдены. Однако заранее назначена замена на штуки без рассмотрения способа комплектного учёта на метр; правильные количества не установлены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F039_frame_capacity:289e229897613e2cc690",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-019"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F039_frame_capacity.json",
+          "sha256": "a1d31ff9ed8eb3319579cf81a42e523bb9007502dc39096902d226b85774ebda"
+        }
+      ],
+      "reason": "56механизмов карбон и61пост сохранены с вопросом раскладки и резерва. Заголовок об избыточных постах и расширение на72коробки проверяются отдельно.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F040_parking_sum_refuted:d962213a7fbe53a371a7",
+      "route": "negative",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F040_parking_sum_refuted.json",
+          "sha256": "80f9efbe1165cbf69cd274cf70c536c6fdc4ca0a31b3493bdadd03be31b8057c"
+        }
+      ],
+      "reason": "Ложная сумма парковки1622,7 не повторена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F040_parking_sum_refuted:6aaa8a3dc96fadec242b",
+      "route": "negative",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F040_parking_sum_refuted.json",
+          "sha256": "80f9efbe1165cbf69cd274cf70c536c6fdc4ca0a31b3493bdadd03be31b8057c"
+        }
+      ],
+      "reason": "Ложная разница парковки13,8м² не повторена; один отрицательный случай с двумя атомами.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F041_F048_contradictory_norm_status:35536aa9bdef77ffbaf1",
+      "route": "negative",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-023"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F041_F048_contradictory_norm_status.json",
+          "sha256": "777df2fb3800db17423feed421e17427a9394ad86256c34011b7650b31fdc47f"
+        }
+      ],
+      "reason": "Повторено основание о замене50462 на33542, но дата01.10.2016 и буквальное утверждение отмены не приведены. Статус заимствован из входного перечня и требует проверки по первичному источнику; оценка здесь относительно замороженного эталона.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F042_SPZ_legend_scope:1b019c967f9372026bd1",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-022"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F042_SPZ_legend_scope.json",
+          "sha256": "8c770016e591be6e1ee95b9176a5d5aba5cbfd37c147f904cd2563a9209e4b3d"
+        }
+      ],
+      "reason": "Совместное названиеСПЗ/Iкатегории и неоднозначность разделения найдены; фактическая совместная прокладка явно не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F043_hanger_fireproofing_supply:2828cd141e6335bf59ca",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-020"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F043_hanger_fireproofing_supply.json",
+          "sha256": "c635932a8d19138d1870cc16af9486c5aeab7f54456fa941f43692eb5b52e434"
+        }
+      ],
+      "reason": "МБОР10 для подвесов и отсутствие отдельной позиции в рассматриваемойСО найдены; допускается комплект. Расширение на всю итоговуюСО и поставку не подтверждено этим совпадением.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F044_F045_incomplete_reference_identity:922b40879439f8fa0153",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-024"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F044_F045_incomplete_reference_identity.json",
+          "sha256": "ea77298204f5f47fec14183ada91f47f7de67218bd30c44c9a3164e9ef567fc9"
+        }
+      ],
+      "reason": "Отсутствие реквизитов правил эксплуатации привязано к разделуТехника безопасности; конкретная обязательная редакция не назначена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F044_F045_incomplete_reference_identity:43be2c9d093d757ce864",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-024"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F044_F045_incomplete_reference_identity.json",
+          "sha256": "ea77298204f5f47fec14183ada91f47f7de67218bd30c44c9a3164e9ef567fc9"
+        }
+      ],
+      "reason": "МПБЭЭ без реквизитов сохранено; предположение о прежних правилах не является установленной идентификацией.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:49e98cd23b9141b479ed",
+      "route": "negative",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+          "sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315"
+        }
+      ],
+      "reason": "Неподтверждённое существование новых документов не заявлено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:07b64d2a81e03ae2bf52",
+      "route": "negative",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+          "sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315"
+        }
+      ],
+      "reason": "Точность обозначения безР не утверждается; это не обнаружение редакционного пропускаР.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:2adc54b2dd1facb5698e",
+      "route": "negative",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+          "sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315"
+        }
+      ],
+      "reason": "Точное совпадение названия50571.5.54 с официальным не утверждается; исправление также не найдено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F047_unsubstantiated_norm_status:d6a04d7c3701131cd97f",
+      "route": "negative",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F047_unsubstantiated_norm_status.json",
+          "sha256": "f04e2b4063049458130984b879e82b2425d856e3a0c06759420be45498de9757"
+        }
+      ],
+      "reason": "СНиП не объявлен единственным основанием безопасности.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F049_lightning_reference_title:106f839cb3a98ca97f29",
+      "route": "question",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-048"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F049_lightning_reference_title.json",
+          "sha256": "4584797c55ba058a83a66f9c599d6383a81c40397467675ecfb4e337504858db"
+        }
+      ],
+      "reason": "Одинаковое расширенное названиеРД/СО и уточнение названияРД найдены. Совместное включение документов не объявлено конфликтом требований.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "H-EOM-2:c728f93740c455471c9e",
+      "route": "negative",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/H-EOM-2.json",
+          "sha256": "d9d8e62b62288e57895d5524e6411535980bd8d807ebdaa39f0e8134f54d50b0"
+        }
+      ],
+      "reason": "Дефицит200м поH-EOM-2 не повторён; другие отсутствующие позиции не относятся к этой теме.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F015_neutral_PE_unresolved_topology:composite:1",
+      "route": "question",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-037"
+      ],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F015_neutral_PE_unresolved_topology.json",
+          "sha256": "b4c38d74f02f8e2978cabce4ea20aa5f68dec66f0c1afeebb72e0fec1a03b824"
+        }
+      ],
+      "reason": "Нужный щит1.ЩС иN/PE найдены, но неоднозначность топологии заменена категорическим соединением и требованием удалить связь. Запрос читаемой топологии не выполнен. Наличие перемычки не считать ни доказанным, ни опровергнутым.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:composite:1",
+      "route": "question",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+          "sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315"
+        }
+      ],
+      "reason": "Уточнение обозначения21.101-2026 добавлениемР не найдено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:composite:2",
+      "route": "question",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+          "sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315"
+        }
+      ],
+      "reason": "Уточнение названия50571.5.54-2024 до структурыЧасть5-54 не найдено.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "counts_by_route": {
+    "technical": {
+      "absent": 2
+    },
+    "question": {
+      "full": 33,
+      "partial": 8,
+      "absent": 11
+    },
+    "negative": {
+      "absent": 15,
+      "partial": 2,
+      "full": 1
+    }
+  },
+  "limits": [
+    "Это покрытие замороженных целей, не оценка точности всех48замечаний.",
+    "Отрицательные атомы одной темы не считать независимыми дефектами.",
+    "Все источники решений сверены поSHA; новые графические наблюдения явно указаны в предыдущем пакете. Не заявляется повторная независимая проверка всех исходных чертежей.",
+    "Раздел выдачи для двух площадейF032 удерживается поbenchmark_errata; фактическое покрытие оценивается отдельно.",
+    "Full обозначает сохранение узкого эталонного тезиса; неподтверждённые расширения оцениваются отдельно. Partial не засчитывать как полноценную находку.",
+    "Новые решения инженеров отсутствуют. Итоговая приёмка всего метода не выполнена."
+  ]
+}
