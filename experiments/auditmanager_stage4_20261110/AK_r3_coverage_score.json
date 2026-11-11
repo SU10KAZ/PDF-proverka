@@ -7,11 +7,11 @@
     "technical": {
       "counts": {
         "denominator": 55,
-        "availability_unchecked": 27,
-        "unchecked": 27,
-        "availability_available": 28,
-        "partial": 6,
-        "full": 22
+        "availability_unchecked": 13,
+        "unchecked": 13,
+        "availability_available": 42,
+        "partial": 14,
+        "full": 28
       },
       "review_complete": false,
       "full_match_rate": null,
@@ -20,11 +20,11 @@
     "question": {
       "counts": {
         "denominator": 23,
-        "availability_available": 8,
-        "partial": 3,
-        "full": 5,
-        "availability_unchecked": 15,
-        "unchecked": 15
+        "availability_available": 16,
+        "partial": 5,
+        "full": 11,
+        "availability_unchecked": 7,
+        "unchecked": 7
       },
       "review_complete": false,
       "full_match_rate": null,
@@ -42,7 +42,7 @@
     }
   },
   "section_accuracy_counts": {
-    "unchecked": 27
+    "unchecked": 39
   },
   "filter_effectiveness": null,
   "production_acceptance": false,
