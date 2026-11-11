@@ -1,0 +1,395 @@
+{
+  "status": "two_direct_graphic_reviews_controller_and_unit_scope",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "f19b0a95fd2f2b9f7bf9565bfdc7759fb6216d6ea70bc72fabb118155aa44b1e",
+  "queue_after_sha256": "2b03578333c1444b5bfbf085888257bfae750546fb3c39225e628f96e97f03c6",
+  "reviewer": "coordinator_direct_graphic_review",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-042",
+      "finding": {
+        "id": "F-042",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Схемы питания и расчёт нагрузок",
+        "sheet": "Лист 13",
+        "page": 16,
+        "problem": "Напряжение и токи двух групп 2ЩРОВ1 противоречат однофазному подключению.",
+        "description": "Группы 2ЩРОВ1-4 для П2.01 и 2ЩРОВ1-5 для П.УК.1 подключены через однополюсные QF4 и QF5 к фазам А и В. В таблице указано 0,38 кВ. Если предусмотрены однофазные потребители 0,22 кВ, то при мощностях 0,8 и 0,4 кВт и cosφ=0,85 токи составляют около 4,3 и 2,1 А вместо 1,3 и 0,7 А. Фактическую фазность необходимо установить по данным оборудования.",
+        "norm": "ПУЭ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Соответствие оборудования параметрам сети и выбор проводников по расчётным токам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-034",
+                "G-035"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-034",
+                  "G-035"
+                ],
+                "designation_source": "Подбор кандидата при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить напряжение и фазность электроприёмников, согласовать подключение, полюсность автоматов и кабели, затем пересчитать токи групп и фазные нагрузки щита.",
+        "risk": "Невозможность работы оборудования по показанной схеме или выбор линии по заниженному току.",
+        "source_finding_ids": [
+          "G-034",
+          "G-035"
+        ],
+        "source_block_ids": [
+          "blk_af9f7cd6dba549149cd7152de8b85c41"
+        ],
+        "related_block_ids": [
+          "blk_af9f7cd6dba549149cd7152de8b85c41"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_af9f7cd6dba549149cd7152de8b85c41",
+            "page": 16
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-034",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-035",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на несоответствие напряжения 0,38 кВ однофазному подключению групп 2ЩРОВ1-4 и 2ЩРОВ1-5 через QF4 и QF5 (1P, фазы A и B). Правое дополнительно выявляет несоответствие расчётных токов: около 4,3/2,1 А вместо 1,3/0,7 А при 0,22 кВ.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на несоответствие напряжения 0,38 кВ однофазному подключению групп 2ЩРОВ1-4 и 2ЩРОВ1-5 через QF4 и QF5 (1P, фазы A и B). Правое дополнительно выявляет несоответствие расчётных токов: около 4,3/2,1 А вместо 1,3/0,7 А при 0,22 кВ.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F021_F023_controller_voltage_scope:b197a84551461f1efaca",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "2ЩРОВ1-4/5:QF4/QF5 1P,фазыA/B,кабели3×2,5;таблица0,38кВ,0,8/0,4кВт,cos0,85,1,3/0,7А.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "При однофазных220В и указанных мощностях токи≈4,3/2,1А.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "Это гипотеза о питаемой стороне и нагрузке,не установленная фактическая схема оборудования."
+        },
+        {
+          "claim": "Между аппаратом и двигателем нет промежуточных устройств.",
+          "verdict": "refuted_if_assumed",
+          "limits": "На каждой линии показанЯЧ и далее надписькабель по проекту автоматики. Выдача не отражает эту существенную границу."
+        },
+        {
+          "claim": "Уточнить,к какой сторонеЯЧ относитсяUн,проверить фазность,полюсность и параметры конечного оборудования.",
+          "verdict": "supported_scoped_question",
+          "limits": "Нельзя автоматически менять0,38на0,22без схемыЯЧ и проекта автоматики."
+        },
+        {
+          "claim": "Оборудование не сможет работать или линия выбрана по заниженному току.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Фактическое подключение,защита и паспорт не проверены."
+        },
+        {
+          "claim": "Проверены также группы1–3 сABC/3P/5×2,5 и0,22кВ.",
+          "verdict": "not_covered_by_output",
+          "limits": "На изображении этот вопрос присутствует,ноF042ограничен4/5. Новое наблюдение оценщика не засчитывается модели."
+        },
+        {
+          "claim": "Нормативные кандидаты.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Не засчитывать конкретное нормативное нарушение."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_electrical_interface_and_individual_unit_identity",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F021_F023_controller_voltage_scope.json",
+          "sha256": "da0ea92659220b1cded0204453c0e08ae0435cd61d0525346e3b97a3a908d47e",
+          "primary_adjudication": null,
+          "limits": "Подтверждены подписи и топология входов ЯЧ. Внутренние схемы ЯЧ и питание после них не представлены на этом фрагменте; наличие преобразователя не установлено. Пятижильный ввод с нейтралью допускает питание нагрузок фаза–нейтраль, поэтому 3P не доказывает обязательность 0,38 кВ у каждого потребителя. Однофазный вход ЯЧ не устанавливает без его схемы выходное напряжение двигателя. Монтажная ошибка, отказ и нормативное нарушение не доказаны.",
+          "wording": "В схеме 2ЩРОВ1 группы 1–3 питают ЯЧ через ABC, автоматы 3P и кабели 5×2,5, но Uн электроприёмников в таблице 0,22 кВ. Группы 4–5 питают ЯЧ однофазно через 1P и 3×2,5, но Uн в таблице 0,38 кВ. Уточните, к какой стороне ЯЧ относятся напряжения, и согласуйте таблицу с проектом автоматики и паспортами оборудования."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_af9f7cd6dba549149cd7152de8b85c41.png",
+          "sha256": "c0818141c89611cddd3349315dbdd3350a7a9af64d5bcd5a09b0d36b74f425f8",
+          "block_id": "blk_af9f7cd6dba549149cd7152de8b85c41",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Группы4/5:A/B,1P,3×2,5,ЯЧ,далеекабель по проекту автоматики;Uн0,38,Ру0,8/0,4,cos0,85,Ip1,3/0,7."
+        }
+      ],
+      "disposition": "assessed_preserve_ventilation_interface_question_require_controller_context"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-043",
+      "finding": {
+        "id": "F-043",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Обозначения электрооборудования",
+        "sheet": "Лист 18",
+        "page": 20,
+        "problem": "Два наружных блока кондиционеров имеют одинаковое обозначение.",
+        "description": "В зоне оборудования квартир № 403, 405 и 406 два отдельных наружных блока обозначены К3.2.406. В переданном анализе приведена подпись AJ068TXJ3KH/EA. Принадлежность отдельных блоков и питающих линий неоднозначна.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать обозначения с обслуживаемыми квартирами и смежным разделом кондиционирования, присвоить однозначные марки и обновить маркировку питания.",
+        "risk": "Подключение или отключение оборудования другой квартиры и ошибки эксплуатационного учёта.",
+        "source_finding_ids": [
+          "G-037"
+        ],
+        "source_block_ids": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "related_block_ids": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "page": 20
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-037",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM111_outdoor_unit_identifier:43d787c7eed47d02cc3b",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В зоне403/405/406 два отдельных наружных блока имеютК3.2.406 иAJ068TXJ3KH/EA;третийК3.2.403.",
+          "verdict": "confirmed_direct_graphic_leaders",
+          "limits": "Две выноски относятся к разным символам,а не двум видам одного блока."
+        },
+        {
+          "claim": "Одинаковая модель двух экземпляров ошибочна.",
+          "verdict": "not_supported_not_required_by_output",
+          "limits": "Одинаковая модель допустима;вопрос касается индивидуального позиционного обозначения."
+        },
+        {
+          "claim": "Нужна сверка индивидуальных марок и принадлежности квартирным линиям.",
+          "verdict": "supported_scoped_question",
+          "limits": "Правильная марка каждой позиции без документации кондиционирования не установлена."
+        },
+        {
+          "claim": "Для405не хватает блока или для406есть лишний.",
+          "verdict": "not_established",
+          "limits": "На плане три символа для трёх квартир;отсутствие отдельнойвыноски405не доказывает недостачу оборудования."
+        },
+        {
+          "claim": "Подключено либо отключено оборудование другой квартиры.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Фактические подключения и эксплуатационные действия не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_electrical_interface_and_individual_unit_identity",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json",
+          "sha256": "8c56324a1cdd435e58e33992a1133a3b6069ba04fab79a7dff7986472a091e25",
+          "primary_adjudication": null,
+          "limits": "Просмотрен исходный графический блок целиком. Подтверждены отдельные символы с одинаковым позиционным обозначением и подпись общей зоны; это не повторный вид одного блока. Одинаковая модель у разных блоков допустима и не является предметом замечания. Правильное обозначение каждой позиции не установлено. Отсутствие К3.2.405 ограничено просмотренным планом, не всем проектом. Три изображённых блока могут соответствовать трём квартирам при ошибке одной выноски; недостача блока для 405 и избыточность для 406 не доказаны. Схемы индивидуальных связей, документация кондиционирования и спецификация поставки не проверены. Текстовые таблицы на изображении не использованы для исправления авторитетного TEXT.",
+          "wording": "Уточнить маркировку наружных блоков в зоне для квартир 403, 405, 406: два отдельных блока имеют обозначение К3.2.406 и модель AJ068TXJ3KH/EA, третий — К3.2.403. На этом плане выноска К3.2.405 отсутствует. Согласовать индивидуальные обозначения с документацией кондиционирования."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4b5016856cc94ec088efe86a8ec2a925.png",
+          "sha256": "2e0bd13fc244dcc5539122bfb527216b63c083db40abc0768c3eabecde126aa5",
+          "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Три наружных блока у зоны403/405/406;две отдельные выноскиК3.2.406 сAJ068TXJ3KH/EA,третьяК3.2.403."
+        }
+      ],
+      "disposition": "assessed_preserve_outdoor_unit_identifier_question"
+    }
+  ],
+  "source_evidence": [],
+  "graphic_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_af9f7cd6dba549149cd7152de8b85c41.png",
+      "sha256": "c0818141c89611cddd3349315dbdd3350a7a9af64d5bcd5a09b0d36b74f425f8",
+      "block_id": "blk_af9f7cd6dba549149cd7152de8b85c41",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Группы4/5:A/B,1P,3×2,5,ЯЧ,далеекабель по проекту автоматики;Uн0,38,Ру0,8/0,4,cos0,85,Ip1,3/0,7."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4b5016856cc94ec088efe86a8ec2a925.png",
+      "sha256": "2e0bd13fc244dcc5539122bfb527216b63c083db40abc0768c3eabecde126aa5",
+      "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Три наружных блока у зоны403/405/406;две отдельные выноскиК3.2.406 сAJ068TXJ3KH/EA,третьяК3.2.403."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F021_F023_controller_voltage_scope.json",
+      "sha256": "da0ea92659220b1cded0204453c0e08ae0435cd61d0525346e3b97a3a908d47e",
+      "primary_adjudication": null,
+      "limits": "Подтверждены подписи и топология входов ЯЧ. Внутренние схемы ЯЧ и питание после них не представлены на этом фрагменте; наличие преобразователя не установлено. Пятижильный ввод с нейтралью допускает питание нагрузок фаза–нейтраль, поэтому 3P не доказывает обязательность 0,38 кВ у каждого потребителя. Однофазный вход ЯЧ не устанавливает без его схемы выходное напряжение двигателя. Монтажная ошибка, отказ и нормативное нарушение не доказаны.",
+      "wording": "В схеме 2ЩРОВ1 группы 1–3 питают ЯЧ через ABC, автоматы 3P и кабели 5×2,5, но Uн электроприёмников в таблице 0,22 кВ. Группы 4–5 питают ЯЧ однофазно через 1P и 3×2,5, но Uн в таблице 0,38 кВ. Уточните, к какой стороне ЯЧ относятся напряжения, и согласуйте таблицу с проектом автоматики и паспортами оборудования."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json",
+      "sha256": "8c56324a1cdd435e58e33992a1133a3b6069ba04fab79a7dff7986472a091e25",
+      "primary_adjudication": null,
+      "limits": "Просмотрен исходный графический блок целиком. Подтверждены отдельные символы с одинаковым позиционным обозначением и подпись общей зоны; это не повторный вид одного блока. Одинаковая модель у разных блоков допустима и не является предметом замечания. Правильное обозначение каждой позиции не установлено. Отсутствие К3.2.405 ограничено просмотренным планом, не всем проектом. Три изображённых блока могут соответствовать трём квартирам при ошибке одной выноски; недостача блока для 405 и избыточность для 406 не доказаны. Схемы индивидуальных связей, документация кондиционирования и спецификация поставки не проверены. Текстовые таблицы на изображении не использованы для исправления авторитетного TEXT.",
+      "wording": "Уточнить маркировку наружных блоков в зоне для квартир 403, 405, 406: два отдельных блока имеют обозначение К3.2.406 и модель AJ068TXJ3KH/EA, третий — К3.2.403. На этом плане выноска К3.2.405 отсутствует. Согласовать индивидуальные обозначения с документацией кондиционирования."
+    }
+  ],
+  "conditional_currents_A": [
+    4.278074866310161,
+    2.1390374331550803
+  ],
+  "limits": [
+    "Controller internal circuit and equipment passports unverified.",
+    "No new engineer acceptance.",
+    "No inferred missing or surplus outdoor unit.",
+    "IMAGE inspected without correcting authoritativeTEXT.",
+    "Frozen runs,evaluator and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
