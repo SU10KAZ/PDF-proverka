@@ -1,0 +1,69 @@
+{
+  "status": "source_handoff_and_recovery_plan_verified_not_recovery_success",
+  "run": "AK_r1_classic_current",
+  "sources": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794421719150038973/request.json",
+      "sha256": "8f54fd2ca027e26f8c4048443b9f8f9341711d63da2579e43e52fcc0a7f357ad"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+      "sha256": "2e942f6c617c99a07600261a048f4cde4b27a5228a399e572ddff96e5a0f5c2f"
+    },
+    {
+      "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/prepare/prompt_builder.py",
+      "sha256": "92d8f3bb0de886652a5fe4fd16978d87fc966e45dd8c8ab0de49fa119d7a47e0"
+    },
+    {
+      "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+      "sha256": "eb9cb5c6ff7a3fe957e3e6745ec8e6414cebefb2d55efe9e2f36aa03ec71ab7e"
+    }
+  ],
+  "request_structure": {
+    "entire_user_content_parsed_as_two_analysis_JSON_objects": true,
+    "text_analysis_equals_saved_stage_result": true,
+    "graphic_payload_keys": [
+      "batch_id",
+      "project_id",
+      "timestamp",
+      "stage01_mode",
+      "stage01_meta",
+      "block_analyses"
+    ],
+    "attached_images": 0,
+    "allowed_tools": ""
+  },
+  "code_evidence": [
+    {
+      "file": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/prepare/prompt_builder.py",
+      "function": "build_findings_merge_messages",
+      "line": 742,
+      "fact": "Embeds text and block analysis JSON only; no original MD body or graphic attachments are added here."
+    },
+    {
+      "file": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+      "function": "build_targeted_findings_passes",
+      "line": 751,
+      "fact": "Appends candidate recovery passes after targeted document-norm pass."
+    }
+  ],
+  "observed_contract_mismatch": "Candidate decisions require inspected authoritative TEXT and actual graphic evidence; request exposes earlier analysis results, including their quotations, but no independent source-reading tools or image attachments. Model deferred all candidates.",
+  "recovery_plan": {
+    "requests": 70,
+    "candidate_occurrences_by_origin": {
+      "text": 28,
+      "prescan": 1,
+      "graphic": 118
+    },
+    "attached_image_occurrences": 45,
+    "unavailable_image_occurrences": 0,
+    "history_supplied": false
+  },
+  "limits": [
+    "Quotes embedded in previous analysis are present; this is not a claim that the request contains no source quotations.",
+    "Recovery requests are planned; completed recovery and final preservation are not yet established.",
+    "146 deferred candidates are not 146 verified defects.",
+    "Keep current frozen comparison intact; any correction needs a separately versioned experiment."
+  ],
+  "production_acceptance": false
+}
