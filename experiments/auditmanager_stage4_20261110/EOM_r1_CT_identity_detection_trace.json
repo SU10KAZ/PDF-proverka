@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "discipline": "EOM",
+  "finding_id": "F-032",
+  "source_finding_ids": [
+    "G-016"
+  ],
+  "evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_085302__ensemble_codex-only_high/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.json",
+      "sha256": "f22aab87837b38b18f9c8c2402a21eaf4189ea9bf2aa160fbdc61e51b5d7777e"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/EOM_r1_identity_and_missing_coverage_review.json",
+      "sha256": "a8cccbfd934e143938a130027c9b73aea1d8c9623e2b40a1074955da0f89afdc"
+    }
+  ],
+  "detectors": [
+    {
+      "detector_index": 0,
+      "model": "codex/gpt-6-astra",
+      "ct_findings": [
+        {
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "current_transformer",
+          "finding": "На схеме ВРУ-К, лист 4, трансформаторы тока цепи учёта первого ввода 1ТТ4–1ТТ6 имеют коэффициент 200/5. В расчёте выбора трансформаторов тока для Wh1 принят коэффициент 250/5 и проверка выполнена с Kтт=50, поэтому приведённый расчёт не подтверждает показанное на схеме оборудование.",
+          "norm_quote": null,
+          "value_found": "1ТТ4..1ТТ6 200/5, кл.0,5",
+          "recommendation": "Согласовать коэффициент трансформации 1ТТ4–1ТТ6 на схеме с расчётом и параметрами учёта первого ввода.",
+          "claim_type": "contradiction",
+          "problem_class": "metering_ct_ratio_mismatch",
+          "affected_entity": "Трансформаторы тока 1ТТ4–1ТТ6 первого ввода ВРУ-К",
+          "evidence_quote": "У счётчика первого ввода указано «1ТТ4..1ТТ6 200/5,кл.0,5»; расчёт Wh1 содержит «принимаем тр-р тока 250/5» и «156.6/50 = 3.1A». Обозначение 250/5 на схеме относится к другой группе — 1ТТ1–1ТТ3.",
+          "evidence_kind": "block_image",
+          "context_status": "sufficient",
+          "confidence": 0.98,
+          "counterevidence_checked": true,
+          "required_context": []
+        }
+      ]
+    },
+    {
+      "detector_index": 1,
+      "model": "codex/gpt-6-astra",
+      "ct_findings": []
+    }
+  ],
+  "final_claim": {
+    "problem": "Коэффициент трансформации первого ввода ВРУ-К различается на схеме и в расчёте.",
+    "description": "Для 1ТТ4–1ТТ6 на схеме указано 200/5, класс 0,5. В расчёте Wh1 принято 250/5 и коэффициент 50. Расчёт не подтверждает показанное на схеме исполнение.",
+    "solution": "Установить единый коэффициент трансформации, проверить выбранное исполнение и согласовать схему, расчёт и параметры счётчика."
+  },
+  "conclusion": "Ошибка принадлежности ТТ цепи учёта уже присутствует в первичном графическом детекторе0, а не возникает впервые в финальном объединении. Детектор1 аналогичного замечания не выдал. Итоговый F-032 сохраняет ложное сравнение.",
+  "self_checks": {
+    "context_status": "sufficient",
+    "confidence": 0.98,
+    "counterevidence_checked": true,
+    "required_context": [],
+    "interpretation": "sufficient/0.98/true/[] — заявления модели, не доказательство выполненной трассировки цепи."
+  },
+  "proposed_verification": "Проверять связь конкретного ТТ с кВт·ч и расчётной строкой до сравнения коэффициентов. Контроль: не переносить200/5 соседних измерительных ТТ на Wh1; не снимать конфликт только по наличию подходящего250/5 где-либо на листе.",
+  "limits": [
+    "Точный механизм пропуска ошибочного вывода судьёй, критиком и корректором в этой записи не установлен.",
+    "Молчание второго детектора не считается независимым опровержением.",
+    "Близкая положительная пара с ошибочным коэффициентом того же ТТ пока не подтверждена; универсальный фильтр не принимается.",
+    "Не изменены замороженные код, промпты или результаты текущего сравнения."
+  ]
+}
