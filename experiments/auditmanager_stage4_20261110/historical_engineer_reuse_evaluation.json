@@ -1,0 +1,55 @@
+{
+  "status": "historical_engineer_truth_reuse_workflow_prepared",
+  "user_clarification": "Use existing engineer verification and rejection reasons for the six known projects; no blanket repeat verification requested.",
+  "evaluator": {
+    "path": "experiments/auditmanager_stage4_20261110/evaluator_release_errata_v2.json",
+    "sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76"
+  },
+  "prepared_reviews": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "findings_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+      "ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/AK_review.json",
+      "ledger_sha256": "396a35db1e1cd05568798506afa43da4bae07f2a88eb7a4626da207aaf125dae",
+      "targets": 100,
+      "reviewed": 0,
+      "quality_metrics_available": false
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "findings_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+      "ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/ITP_review.json",
+      "ledger_sha256": "bb9f77fc2b29ca5b9df20b12a3f4771c44207e32574e6414b971a8b5ece12468",
+      "targets": 87,
+      "reviewed": 0,
+      "quality_metrics_available": false
+    },
+    {
+      "discipline": "AR",
+      "repeat": 1,
+      "findings_sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d",
+      "ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/AR_review.json",
+      "ledger_sha256": "0a45d995ce50fb172b8cd9069b899e58c31223ebd599d825bc4e04d1040b28c0",
+      "targets": 33,
+      "reviewed": 0,
+      "quality_metrics_available": false
+    }
+  ],
+  "evaluation_policy": [
+    "Reuse the engineer decision for the same atomic claim, object, source version and context; do not transfer it solely by matching keywords or IDs.",
+    "Keep original claim, engineer decision, rejection reason, engineer clarification and later audit inference separate.",
+    "Coordinator semantic matching is recorded as coordinator work, not as a new engineer decision.",
+    "Rejected does not imply false; duplicates, profile and low significance remain separate.",
+    "Only novel, materially changed or unresolved claims enter the exception review queue.",
+    "Frozen evaluator holds and disputed cases remain unscored; no retrospective change to the running trial.",
+    "Historical labels do not measure present engineer review time. Mark workload unknown; do not claim its acceptance gate passed.",
+    "No matching/evaluator material is passed to the executing audit models; no candidate tuning from these sealed outputs during this series."
+  ],
+  "new_engineer_review_performed": false,
+  "engineer_workload_measured": false,
+  "metric_gate_waived": false,
+  "model_calls": 0,
+  "production_acceptance": false
+}
