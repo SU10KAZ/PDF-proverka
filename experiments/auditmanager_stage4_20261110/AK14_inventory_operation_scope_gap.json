@@ -1,0 +1,323 @@
+{
+  "status": "historical_inventory_scope_gap_confirmed_not_new_audit",
+  "source": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_inventory/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+    "sha256": "025043181a05d0ae687f83ad6f2148874b8810b0425cc5f00a49aded4e073ad5"
+  },
+  "md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "objects": [
+    {
+      "object": {
+        "id": "О-05",
+        "identity": "ШАУВ-4-К4ПЧ; оборудование П4.1.1 и Пм4.1",
+        "scope": "Корпус 4; комплектность и внешние цепи",
+        "kind": "Шкаф с относящимся к нему перечнем оборудования",
+        "source_refs": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_3d78558e2eb34cb189b102380b0d3d00"
+        ]
+      },
+      "operation": {
+        "object_id": "О-05",
+        "operation": "identity_across_views",
+        "status": "reported_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_3d78558e2eb34cb189b102380b0d3d00"
+        ],
+        "receipt": {
+          "object_id": "О-05",
+          "operation": "identity_across_views",
+          "status": "checked",
+          "reason": "Повторяющиеся линии КЖ распознаны как повторные записи тех же адресов, а не новые кабели.",
+          "source_refs": [
+            "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+            "blk_3d78558e2eb34cb189b102380b0d3d00"
+          ]
+        }
+      },
+      "source_kinds": {
+        "blk_47212e9079d1485c9c43fc3d1e9cd108": "TEXT",
+        "blk_3dfcda405820460b84179ebf65d182d1": "TEXT",
+        "blk_30ab2c5b39b8442baf89f7a9cfe31434": "TEXT",
+        "blk_3d78558e2eb34cb189b102380b0d3d00": "TEXT"
+      },
+      "graphic_source_references": [],
+      "scheduled_by_current_unresolved_operation_selector": false
+    },
+    {
+      "object": {
+        "id": "О-06",
+        "identity": "ШАУВ-1-К4АС; Па3.1, Ва3.1; отдельный щит ШАУВ-1-К4АС.ПЧ по КЖ",
+        "scope": "Дымовая зона 3, корпус 4 и рампа; границы отдельного щита требуют уточнения",
+        "kind": "Система управления вентиляцией зоны",
+        "source_refs": [
+          "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "blk_667249cd697c45c3ab985e7d75d15655",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_3705aceeb77e406ebacc38fcaf7f2d28"
+        ]
+      },
+      "operation": {
+        "object_id": "О-06",
+        "operation": "identity_across_views",
+        "status": "reported_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "blk_667249cd697c45c3ab985e7d75d15655",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_3705aceeb77e406ebacc38fcaf7f2d28"
+        ],
+        "receipt": {
+          "object_id": "О-06",
+          "operation": "identity_across_views",
+          "status": "checked",
+          "reason": "Установлено различие назначения М2 и М4 и состава двигателей между перечнем и КЖ.",
+          "source_refs": [
+            "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+            "blk_2ad1534d9efb41548a02a2b2a6020ba6"
+          ]
+        }
+      },
+      "source_kinds": {
+        "blk_4b31b3207abe4695bdb1d9d9c4b5df2f": "TEXT",
+        "blk_667249cd697c45c3ab985e7d75d15655": "TEXT",
+        "blk_2ad1534d9efb41548a02a2b2a6020ba6": "TEXT",
+        "blk_3705aceeb77e406ebacc38fcaf7f2d28": "TEXT"
+      },
+      "graphic_source_references": [],
+      "scheduled_by_current_unresolved_operation_selector": false
+    },
+    {
+      "object": {
+        "id": "О-09",
+        "identity": "ШАУВ-3-К5ПЧ; оборудование П5.1.1 и П5.1.3",
+        "scope": "Корпус 5; комплектность и внешние цепи",
+        "kind": "Шкаф с относящимся к нему перечнем оборудования",
+        "source_refs": [
+          "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "blk_bdfeffa5dba44748bf80fcc48b97c618"
+        ]
+      },
+      "operation": {
+        "object_id": "О-09",
+        "operation": "identity_across_views",
+        "status": "reported_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "blk_bdfeffa5dba44748bf80fcc48b97c618"
+        ],
+        "receipt": {
+          "object_id": "О-09",
+          "operation": "identity_across_views",
+          "status": "checked",
+          "reason": "ТЕ3 и ТЕ4 прослежены как отдельные адреса двух приточных систем.",
+          "source_refs": [
+            "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+            "blk_611c64e52f5d4223aaee5cf72c58e34e",
+            "blk_bdfeffa5dba44748bf80fcc48b97c618"
+          ]
+        }
+      },
+      "source_kinds": {
+        "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d": "TEXT",
+        "blk_576ad6ac1cff48f79ac223f56ba405ae": "TEXT",
+        "blk_611c64e52f5d4223aaee5cf72c58e34e": "TEXT",
+        "blk_bdfeffa5dba44748bf80fcc48b97c618": "TEXT"
+      },
+      "graphic_source_references": [],
+      "scheduled_by_current_unresolved_operation_selector": false
+    },
+    {
+      "object": {
+        "id": "О-10",
+        "identity": "ШАУВ-4-К5ПЧ; оборудование Пн5.1 и Вн5.1",
+        "scope": "Корпус 5, водомерный узел и насосные станции; отдельные щиты ПЧ упомянуты в СО",
+        "kind": "Система управления вентиляцией помещения",
+        "source_refs": [
+          "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "blk_88d8dd46122c41148a81ba6b14c890eb",
+          "blk_af7d76cf48cd48db813eee8d44227292",
+          "blk_0074662f330048ff843342b285e6a016"
+        ]
+      },
+      "operation": {
+        "object_id": "О-10",
+        "operation": "identity_across_views",
+        "status": "reported_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "blk_88d8dd46122c41148a81ba6b14c890eb",
+          "blk_af7d76cf48cd48db813eee8d44227292",
+          "blk_0074662f330048ff843342b285e6a016"
+        ],
+        "receipt": {
+          "object_id": "О-10",
+          "operation": "identity_across_views",
+          "status": "checked",
+          "reason": "Выявлено повторное назначение М1 линии предполагаемого насоса вместо М5.",
+          "source_refs": [
+            "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+            "blk_af7d76cf48cd48db813eee8d44227292",
+            "blk_0074662f330048ff843342b285e6a016"
+          ]
+        }
+      },
+      "source_kinds": {
+        "blk_83ff7d2544fe4ddd843f3c1ec01c7087": "TEXT",
+        "blk_88d8dd46122c41148a81ba6b14c890eb": "TEXT",
+        "blk_af7d76cf48cd48db813eee8d44227292": "TEXT",
+        "blk_0074662f330048ff843342b285e6a016": "TEXT"
+      },
+      "graphic_source_references": [],
+      "scheduled_by_current_unresolved_operation_selector": false
+    },
+    {
+      "object": {
+        "id": "О-17",
+        "identity": "ШАУВ-1-К6АС; оборудование Па5.1 и Ва5.1",
+        "scope": "Дымовая зона 5, корпус 6",
+        "kind": "Система управления вентиляцией зоны",
+        "source_refs": [
+          "blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052"
+        ]
+      },
+      "operation": {
+        "object_id": "О-17",
+        "operation": "identity_across_views",
+        "status": "reported_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052"
+        ],
+        "receipt": {
+          "object_id": "О-17",
+          "operation": "identity_across_views",
+          "status": "checked",
+          "reason": "Таблица зоны 5 и перечень согласованы; СО ошибочно подписывает ПЧ как Па4.1/Ва4.1.",
+          "source_refs": [
+            "blk_3963ce75beb642a0a5fe85d9dada94b3",
+            "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+            "blk_f9a46b38e8aa4c498ede6fbe4a461052"
+          ]
+        }
+      },
+      "source_kinds": {
+        "blk_3963ce75beb642a0a5fe85d9dada94b3": "TEXT",
+        "blk_5bb120b4d9cd4ceebfc4c15a896ddd48": "TEXT",
+        "blk_f9a46b38e8aa4c498ede6fbe4a461052": "TEXT"
+      },
+      "graphic_source_references": [],
+      "scheduled_by_current_unresolved_operation_selector": false
+    }
+  ],
+  "target_page_graphic_inventory": [
+    {
+      "pdf_page": 32,
+      "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+      "inventory_receipts": [
+        {
+          "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+          "status": "needs_data",
+          "object_ids": [
+            "О-05"
+          ],
+          "reason": "Только описание внешних подключений."
+        }
+      ]
+    },
+    {
+      "pdf_page": 33,
+      "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+      "inventory_receipts": [
+        {
+          "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+          "status": "needs_data",
+          "object_ids": [
+            "О-06"
+          ],
+          "reason": "Только описание внешних подключений."
+        }
+      ]
+    },
+    {
+      "pdf_page": 36,
+      "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+      "inventory_receipts": [
+        {
+          "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+          "status": "needs_data",
+          "object_ids": [
+            "О-09"
+          ],
+          "reason": "Только описание внешних подключений."
+        }
+      ]
+    },
+    {
+      "pdf_page": 37,
+      "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+      "inventory_receipts": [
+        {
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "status": "needs_data",
+          "object_ids": [
+            "О-10"
+          ],
+          "reason": "Только описание внешних подключений."
+        }
+      ]
+    },
+    {
+      "pdf_page": 44,
+      "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+      "inventory_receipts": [
+        {
+          "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+          "status": "needs_data",
+          "object_ids": [
+            "О-17"
+          ],
+          "reason": "Только описание внешних подключений."
+        }
+      ]
+    }
+  ],
+  "code_evidence": [
+    {
+      "file": "backend/app/pipeline/stages/text_analysis/object_registry.py",
+      "function": "reconcile_object_registry",
+      "behavior": "checked with known references becomes reported_checked; no route or required-view completion requirement."
+    },
+    {
+      "file": "backend/app/pipeline/stages/prepare/object_operation_passes.py",
+      "function": "build_object_operation_passes",
+      "behavior": "Only not_checked and needs_data operations are selected; reported_checked identity operation is excluded."
+    }
+  ],
+  "conclusion": "Five cabinet objects exist, but their reported identity checks cite TEXT only and do not establish terminal address verification on drawings. The unresolved-operation selector does not reschedule this identity operation.",
+  "limits": [
+    "These are preserved outputs of a terminally failed inventory trial; the trial is not accepted.",
+    "This does not prove the model would miss the defect in a newly configured complete run.",
+    "An object may still be scheduled for a different operation; do not equate exclusion of identity operation with exclusion of every check.",
+    "Known engineer case used only for offline mapping, never dispatched."
+  ],
+  "next_change": "Track required source views and independently checkable operations; a TEXT-only identity receipt must not close an outstanding GRAPHIC address operation. Preserve legitimate text-only checks.",
+  "production_acceptance": false
+}
