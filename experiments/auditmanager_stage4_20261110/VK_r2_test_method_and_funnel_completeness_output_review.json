@@ -1,0 +1,331 @@
+{
+  "status": "two_VK_method_and_funnel_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "129297f159f6c9a9203a948e1ffa55bc5c3b6ac7047cda9dfa0f419af72a7194",
+  "queue_after_sha256": "d17308b2864515e7b36cc876ccb4562c368e519e1a812679348a2c75bd92f19e",
+  "reviewed_rows": [
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Испытания канализации",
+        "sheet": "Лист 2",
+        "page": 4,
+        "problem": "Условие испытания канализации сформулировано через долю расчётного расхода вместо числа открытых приборов.",
+        "description": "Пункт 7 общих требований назначает пролив расходом не менее 75% расчётного. В исходном нормативном обосновании указано одновременное открытие 75% подключённых санитарных приборов. Доля расхода и доля приборов не являются равнозначными условиями испытания.",
+        "norm": "СП 73.13330.2016 (норматив-кандидат), кандидат п. 8.6.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 73.13330.2016",
+            "cited_designation": "СП 73.13330.2016",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить порядок испытания внутренней канализации проливом и требуемую долю одновременно открываемых санитарных приборов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "8.6.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить формулировку методики по проверенному нормативному пункту. Отдельно определить порядок испытания участков без установленных квартирных приборов.",
+        "risk": "Испытания могут быть выполнены при нагрузке, не соответствующей установленному порядку, с неполным выявлением дефектов.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 52,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F006_test_criterion:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пункт7 проекта задаёт 75% расчётного расхода.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Доля расхода равна доле одновременно открытых приборов.",
+          "verdict": "equivalence_not_established",
+          "limits": "Это разные величины; ссылка модели на исходный анализ не является самостоятельной нормативной проверкой. Исторический разбор базового СП сохранён отдельно; применимость редакции не подтверждена."
+        },
+        {
+          "claim": "Порядок испытания без квартирных приборов не определён.",
+          "verdict": "only_local_scope_supported",
+          "limits": "В прочитанном пункте не описана подача к заглушённым квартирным подключениям. Но есть отдельный монтажный проект, пролив, заполнение горизонтальных участков и критерий отсутствия течей; МОП выполняются полностью. Нельзя утверждать отсутствие методики во всей документации."
+        },
+        {
+          "claim": "Уточнить программу для фактически смонтированных участков после проверки применимой нормы.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Пропуск дефектов герметичности при приёмке.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативный кандидат в исходной выдаче.",
+          "verdict": "not_verified_applicable_norm",
+          "limits": "Не засчитывать нормативное нарушение без подтверждённого применимого требования."
+        },
+        {
+          "claim": "Критерии75%расхода и75%приборов тождественны.",
+          "verdict": "different_quantities_no_general_equivalence",
+          "limits": "Без режима пользования и расходов отдельных приборов равенство не следует. Это не доказывает фактическую недостаточность испытания;применимая редакция нормы не установлена."
+        }
+      ],
+      "unsupported_additions": "Не считать необходимость проверки паспортов и методики доказательством непригодности изделия или фактического дефекта приёмки. Нормативные кандидаты отдельно не подтверждены.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_d01ac56c817044c4a525d02e3251ba0e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_686c23c287f1430199897dff70be0878",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F006_test_criterion.json",
+          "sha256": "8de36f9d965c639b3b294ae1a2230ff52558f1750c107d647263ae1d8bb996f5",
+          "primary_adjudication": null,
+          "limits": "Не доказаны неполная проверка герметичности, невозможность испытания или отсутствие методики во всей документации. Проект предусматривает отдельный монтажный проект, пролив скрываемых участков, заполнение горизонтальных участков и критерий отсутствия течей. Отсутствие квартирных приборов не относится к МОП: там разводка выполняется полностью. Расчётный расход и число подключённых приборов — разные величины, но фактическая недостаточность расхода не вычислена. Базовый текст нормы не подменяет проверку применимой редакции. Не включать в положительную метрику нормативных нарушений до такой проверки.",
+          "wording": "Согласовать методику пролива бытовой канализации и дренажа в п. 7 общих требований: проект задаёт не менее 75% расчётного расхода, тогда как п. 7.5.1 базового издания указанного в проекте СП 73.13330.2016 задаёт одновременное открытие 75% подключённых приборов. Эти критерии нельзя считать эквивалентными без обоснования. Уточнить применимую редакцию и порядок подачи воды для фактически смонтированных участков с учётом заглушенных квартирных подключений и приборов общественных помещений."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-003",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_testing_question_existing_methods_preserved"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Оборудование водостоков",
+        "sheet": "Лист 03",
+        "page": 32,
+        "problem": "Основная спецификация недостаточно определяет исполнение и комплектность водосточных воронок.",
+        "description": "Двенадцать комплектов воронок указаны диаметром 110 мм и с электроподогревом, без марки, состава комплекта и электрических характеристик. Количество согласуется с описаниями схем: две воронки в секции С2 и десять в секции С3. Наличие узла воронки не подтверждает, что его надставные элементы включены в каждый специфицированный комплект.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить достаточность обозначения, технических характеристик и комплектности оборудования для однозначного заказа.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-016"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать марку либо однозначные параметры выбора, состав комплекта с надставными элементами и характеристики обогрева. Подтвердить паспортную пропускную способность для принятой нагрузки с запасом 25%.",
+        "risk": "Возможна поставка несовместимого или неполного комплекта и необходимость изменения кровельных узлов.",
+        "source_finding_ids": [
+          "T-016"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_9b1d774c2f6c4127b2f8618e3792a647",
+          "blk_f55a34ccc6704860863578612dabc254",
+          "blk_bf4a62ad15554778a7859e339ff538cc",
+          "blk_2707c7b12fb2453aaf9a67b91f2b185f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 76,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F013_drain_assembly_scope:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В основной СО 12 комплектов воронок ф110 с электроподогревом; марка и изготовитель пусты.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "На листе 15 есть HL62.1H/1, HL65H и 116010.",
+          "verdict": "confirmed_direct_GRAPHIC_review",
+          "limits": "Узел явно относится к кровле К-4. На схеме и таблице видны модель воронки, надставной элемент и пластиковая труба DN125."
+        },
+        {
+          "claim": "Сведения этого узла не доказывают одинаковую комплектацию всех 12 воронок.",
+          "verdict": "supported_scope_boundary",
+          "limits": "Не распространять узел К-4 на все кровли и не считать комплектующие отсутствующими только из-за отсутствия отдельных строк СО."
+        },
+        {
+          "claim": "Указать модели и состав типов комплектов с привязкой к узлам.",
+          "verdict": "supported_scoped_question",
+          "limits": "Полное покрытие узлов К-1 и К-4 не доказано одной графикой. Эталонный отдельный тезис о REHAU/BIS данным замечанием не найден."
+        },
+        {
+          "claim": "Проверить пропускную способность и передать электрическую мощность.",
+          "verdict": "additional_verification_not_confirmed_defect",
+          "limits": "В рамках этой оценки не проверены расчёт способности, задание ЭОМ и его отсутствие. Эти действия не считать двумя новыми подтверждёнными нарушениями."
+        },
+        {
+          "claim": "Закупка несовместимой комплектации.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "ГОСТ 21.110-2013 п.4.1",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативная цитата отсутствует; кандидат не равен доказанному нарушению."
+        },
+        {
+          "claim": "Требуется учитывать дополнительно25%расчётного расхода.",
+          "verdict": "confirmed_current_authoritative_TEXT_project_requirement",
+          "limits": "Блокblk_c64786c6b8ed4532a0ff7c797c3f335b прямо задаёт это для воронок и диаметров водостока. Не переносить на другие проекты."
+        },
+        {
+          "claim": "Две воронкиС2 и десятьС3 независимо подтверждают все12комплектов.",
+          "verdict": "not_independently_verified_current_graphic_count",
+          "limits": "2+10=12 арифметически верно;описания графических блоков не заменяют поштучный подсчёт,тождество моделей и привязку комплектов к типам кровли."
+        },
+        {
+          "claim": "Отсутствуют электрические данные во всём проекте.",
+          "verdict": "not_established_global_absence",
+          "limits": "Пустота основной строки не доказывает отсутствие заданияЭОМ или паспорта. Электрическая нагрузка обогрева не проверена."
+        }
+      ],
+      "unsupported_additions": "Не считать необходимость проверки паспортов и методики доказательством непригодности изделия или фактического дефекта приёмки. Нормативные кандидаты отдельно не подтверждены.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F013_drain_assembly_scope.json",
+          "sha256": "51f2e39a7857fc364ed2dc076d1601c1f1d3e881aa3ee0968085461f31447dea",
+          "primary_adjudication": null,
+          "limits": "Модель воронки в проекте присутствует: отсутствие марки в общей строке не означает отсутствие выбора во всех материалах. Нельзя автоматически считать HL65H и116010 неучтёнными закупками: они могут входить в «к-т», границы поставки не раскрыты. Не установлено, что все12 воронок одинаковы и относятся к узлуК-1; количество12 против исторического расчёта11 рассматривается отдельно вH-VK-32. Расчётная пропускная способность выбранного изделия, фактическая поставка и конкретное нормативное нарушение не проверены. УзелК-4 из предварительной оценки модели в этом решении не используется: непосредственно просмотрена спецификацияК-1. ИсторическоеU-033 принято инженером без пояснения, но некомплектность поставки этим не доказана. ВК2 есть также4 отводаPro Aqua (F005), поэтому тезис «фасонные части толькоХэмкор/AVF» неверен. Общий лист креплений содержит комплект хомут/стержень/дюбель, но эквивалентностьBIS не установлена. Нет основания объявлять все крепления отсутствующими или требовать повторную закупку. РазрешённостьПП на конкретном участке у воронки, её давление и согласование замен не проверены. Название исторической строкиК1/К4 шире непосредственно проверенного узлаК-1; выводы оК-4 не подтверждены этим фрагментом.",
+          "wording": "Согласовать состав и материалы узла воронкиК-1 с общей спецификациейК2. В узле перечислены ПП REHAU (отвод, тройник, труба), крепёжBIS, HL62.1H/1, HL65H и116010 DN125, а общая строка содержит12 комплектов воронокØ110 с подогревом без расшифровки. Явно связать позиции или согласованные аналоги и границы комплектной поставки; уточнить применениеПП в узле при общих требованиях к напорнымНПВХ иSML. Проверить выбранную воронку по расчётному расходу."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f55a34ccc6704860863578612dabc254.png",
+          "sha256": "739211db1e32875132edfd3e612331c6c34d7cbaaa2a88703022e5bf172f7856",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Узел кровли К-4; HL62.1H/1, HL65H, 116010, DN110 и DN125 видны в таблице и деталях. Графика не устанавливает состав всех 12 комплектов."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-013",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "route": "current_authoritative_TEXT",
+          "observation": "Водосточные воронки и диаметры трубопроводов водостока принимаются с учётом пропуска дополнительно25%расчётного расхода."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_funnel_specification_question_with_existing_node"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": "Specification inconsistencies do not prove physical supply failures. Reused evidence bound to identical current source hashes."
+}
