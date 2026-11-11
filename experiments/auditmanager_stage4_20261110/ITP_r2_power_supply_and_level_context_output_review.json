@@ -1,0 +1,566 @@
+{
+  "status": "four_ITP_document_context_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "f660aba5391db74db406ffefbd20b9402bf78b03ddaab0269e79de3a7c876dd6",
+  "queue_after_sha256": "84eec563cc94bdaf7e107db574bba846245d6b9e06b30ac6efa4de29036d8743",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-005",
+      "finding": {
+        "id": "F-005",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Электробезопасность",
+        "sheet": "Лист 17",
+        "page": 55,
+        "problem": "Предписана замена предохранителей при включённом питании.",
+        "description": "Пункт 8.4 пояснительной записки содержит общее указание заменять предохранители в блоках питания при включённом питании. Условия допустимости таких работ и специальные меры защиты не установлены.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Указать замену после снятия напряжения, предотвращения повторного включения и проверки отсутствия напряжения.",
+        "risk": "Поражение персонала электрическим током и ожоги при электрической дуге.",
+        "source_finding_ids": [
+          "T-005"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 91,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "rework",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F006_fuse_instruction:3453d72502ca1458b28c",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пункт8.4 предписывает замену предохранителей блоков питания при включённом питании.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Раздел не содержит мер защиты.",
+          "verdict": "refuted_if_generalized",
+          "limits": "8.1отсылает к правилам,8.5требует подготовку персонала,8.6предусматривает заземление. Отсутствуют конкретные условия именно операции8.4."
+        },
+        {
+          "claim": "Необходимо уточнить порядок обслуживания для конкретных блоков питания.",
+          "verdict": "supported_scoped_question",
+          "limits": "Конструкция предохранителя,напряжение,доступность частей и режим нагрузки не установлены."
+        },
+        {
+          "claim": "Критическая опасность и необходимость единственного способа замены доказаны.",
+          "verdict": "not_established",
+          "limits": "КлассКРИТИЧЕСКОЕ не подтверждён данными о конкретной цепи.8.3относится к кабельным работам,а не автоматически ко всем операциям."
+        },
+        {
+          "claim": "Произошли поражение током или дуговое событие.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Указанное решение — единственный доказанно допустимый порядок для всех блоков питания проекта.",
+          "verdict": "not_established_specific_equipment_conditions",
+          "limits": "Второй повтор убрал оговорку о конкретных цепях. Сохранить вопрос об исправлении общего указания8.4, но не заявлять установленную применимость единственного порядка без идентификации оборудования. Новая правовая проверка требований здесь не выполнялась."
+        }
+      ],
+      "unsupported_additions": "Не подменять подтверждённую несогласованность документов доказанным отказом оборудования, дефицитом давления или проверенной применимостью нормативного предписания.",
+      "novel_useful_content": "Основной документальный тезис сохранён; изменения области утверждения проверены отдельно.",
+      "duplicate_burden": "distinct_service_power_supply_head_and_drainage_claims; repeated_drainage_notes_grouped_not_independent_defects",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_67b9571de5e74033b6c491043f8c87d1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
+          "sha256": "3f9035b4b5dd1c3025ee792a816175c764cbd6a6ea2492193cf061a4d5025477",
+          "primary_adjudication": null,
+          "limits": "Прямое предписание подтверждено, но конструкция предохранителей, напряжение, доступность токоведущих частей и режим нагрузки не установлены. Критичность и нарушение конкретного пункта ПУЭ не доказаны. Нельзя утверждать, что раздел не содержит никаких защитных мер: пункты 8.1, 8.5, 8.6 описывают общие правила, подготовку персонала и заземление. Пункт 8.3 касается кабельных работ и не является прямым запретом любой другой операции под напряжением.",
+          "wording": "Уточнить пункт 8.4 ПЗ, лист 17: «Замена предохранителей в блоках питания выполнять при включенном питании». Согласовать порядок обслуживания с конкретными блоками питания и инструкциями изготовителя; в текущем пункте условия применимости этого предписания не раскрыты."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
+          "sha256": "3f9035b4b5dd1c3025ee792a816175c764cbd6a6ea2492193cf061a4d5025477",
+          "primary_adjudication": null,
+          "limits": "Прямое предписание подтверждено, но конструкция предохранителей, напряжение, доступность токоведущих частей и режим нагрузки не установлены. Критичность и нарушение конкретного пункта ПУЭ не доказаны. Нельзя утверждать, что раздел не содержит никаких защитных мер: пункты 8.1, 8.5, 8.6 описывают общие правила, подготовку персонала и заземление. Пункт 8.3 касается кабельных работ и не является прямым запретом любой другой операции под напряжением.",
+          "wording": "Уточнить пункт 8.4 ПЗ, лист 17: «Замена предохранителей в блоках питания выполнять при включенном питании». Согласовать порядок обслуживания с конкретными блоками питания и инструкциями изготовителя; в текущем пункте условия применимости этого предписания не раскрыты."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-008",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-005_scoped_document_conflict"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-006",
+      "finding": {
+        "id": "F-006",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Электроснабжение",
+        "sheet": "Лист 19",
+        "page": [
+          57,
+          150
+        ],
+        "problem": "Категория электроснабжения ИТП противоречит техническому заданию.",
+        "description": "Пояснительная записка предусматривает II категорию, тогда как пункт 5.2.6.1 технического задания требует I категорию. Реализованная схема резервирования должна быть установлена по разделу электроснабжения.",
+        "norm": "ПУЭ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Требования к надёжности электроснабжения и резервированию электроприёмников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать категорию и схему резервирования с разделом электроснабжения и исправить исходные требования ИТП.",
+        "risk": "Недостаточная надёжность питания насосов и автоматики, остановка теплоснабжения при отказе источника.",
+        "source_finding_ids": [
+          "T-006"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 47,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-007:0725100843103b391be5",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ПЗ предписывает питание380/220категорииII;ТЗ5.2.6.1требуетIкатегорию,технологическое резервирование,отдельноеВРУ и учёт.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Категорию требуется согласовать междуПЗ,ТЗ и электротехническим разделом.",
+          "verdict": "supported_internal_document_discrepancy",
+          "limits": ""
+        },
+        {
+          "claim": "ОтдельноеВРУ и учёт отсутствуют.",
+          "verdict": "not_established",
+          "limits": "ТребованияТЗ не доказывают отсутствия оборудования. Исходная выдача правильно оговаривает непроверенный электротехнический раздел."
+        },
+        {
+          "claim": "Фактическая надёжность питания недостаточна.",
+          "verdict": "not_established",
+          "limits": "Схемы питания и резервирования не проверены."
+        },
+        {
+          "claim": "Строка второго повтора сохраняет отдельные требования кВРУ и учёту.",
+          "verdict": "not_explicitly_covered_in_this_row",
+          "limits": "Они присутствуют в исходномТЗ, но в новой формулировке названы категория и резервирование. Их отсутствие в строке не доказывает отсутствие оборудования и не означает потерю самостоятельного подтверждённого дефекта."
+        }
+      ],
+      "unsupported_additions": "Не подменять подтверждённую несогласованность документов доказанным отказом оборудования, дефицитом давления или проверенной применимостью нормативного предписания.",
+      "novel_useful_content": "Основной документальный тезис сохранён; изменения области утверждения проверены отдельно.",
+      "duplicate_burden": "distinct_service_power_supply_head_and_drainage_claims; repeated_drainage_notes_grouped_not_independent_defects",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_8a446a40473d48d18d60edba74661d9e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-007.json",
+          "sha256": "80725162dc61ad03bf5e1c5301f9349e232eb695808ce2d524e94a2fb8b35d9c",
+          "primary_adjudication": null,
+          "limits": "Подтверждено противоречие требований. Фактическая недостаточная надёжность не доказана без схем питания и резервирования. Требование отдельного ВРУ и учёта приведено в ТЗ, но их отсутствие не установлено; отдельное замечание об отсутствии не выпускать.",
+          "wording": "Согласовать задание на электроснабжение ИТП: ПЗ, лист 19, задаёт категорию II, а ТЗ, п. 5.2.6.1, — первую категорию с технологическим резервированием. Отразить согласованное решение в смежном электротехническом разделе."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-009",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-006_scoped_document_conflict"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Гидравлические исходные данные",
+        "sheet": "Лист 4",
+        "page": [
+          42,
+          108
+        ],
+        "problem": "Напор ХВС первой зоны различается в пояснительной записке и анкете.",
+        "description": "Для ввода ХВС первой зоны указаны 95,59 м вод.ст. в пояснительной записке и 91,59 м вод.ст. в анкете. Разница 4 м влияет на располагаемый напор ГВС после оборудования ИТП.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Достоверность исходных данных гидравлического расчёта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать напор с разделом ВК и проверить потери через теплообменники, приборы учёта и арматуру.",
+        "risk": "Недостаточный напор у потребителей первой зоны.",
+        "source_finding_ids": [
+          "T-010"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-037:8139bf7df3bbe04da245",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Для первой зоныПЗ даёт95,59м на вводе,анкета91,59м и требуемые86,59м на выходе.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Сравниваются документы того же корпуса и первой зоны.",
+          "verdict": "confirmed_context_binding",
+          "limits": "Совпадают нагрузка0,728Гкал/ч и отметка верхнего крана51,97м."
+        },
+        {
+          "claim": "Согласовать исходный напор и проверить баланс.",
+          "verdict": "supported_technical_core",
+          "limits": ""
+        },
+        {
+          "claim": "Дефицит давленияГВС доказан.",
+          "verdict": "not_established",
+          "limits": "СмежныйВК и полный баланс не проверены."
+        },
+        {
+          "claim": "Разница95,59−91,59=4м влияет на располагаемый напор.",
+          "verdict": "confirmed_arithmetic_conditional_hydraulic_consequence",
+          "limits": "4м подтверждены. Величины9/5м во втором повторе не заявлены; влияние на фактический напор требует общей высотной базы и режима. Недостаточность у потребителя не доказана."
+        }
+      ],
+      "unsupported_additions": "Не подменять подтверждённую несогласованность документов доказанным отказом оборудования, дефицитом давления или проверенной применимостью нормативного предписания.",
+      "novel_useful_content": "Основной документальный тезис сохранён; изменения области утверждения проверены отдельно.",
+      "duplicate_burden": "distinct_service_power_supply_head_and_drainage_claims; repeated_drainage_notes_grouped_not_independent_defects",
+      "profile_and_section": "technical_core_preserve_conditional_consequence",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_4de04f93b8b745ceb034696663bfcc58",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-037.json",
+          "sha256": "77e4dc763659487421731725cbfec2d7e8f78380090db6e5edb06498a7707ac7",
+          "primary_adjudication": null,
+          "limits": "Подтверждено расхождение документов одного корпуса и первой зоны; совпадают нагрузка0,728 и отметка верхнего крана51,97. Условные разности9м и5м не являются проверенным располагаемым перепадом. Напор86,59 — требуемый, не измеренный. Дефицит напора, неверная арматура и нормативное нарушение не доказаны; актуальная редакция смежного ВК и полный гидравлический баланс не проверены.",
+          "wording": "Согласовать исходный напор ХВС на вводе в ИТП для первой зоны: ПЗ задаёт95,59м, анкета абонента —91,59м. В анкете требуемый выходной напор ГВС86,59м. После согласования режима и высотной базы проверить баланс потерь."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-033",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-010_scoped_document_conflict"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Отметки и компоновка",
+        "sheet": "Лист 1",
+        "page": [
+          7,
+          108,
+          110
+        ],
+        "problem": "Не согласованы высотные отметки пола ИТП.",
+        "description": "Указаны отметки −4,000, −4,450 и −4,900 м; внутри одной анкеты одновременно приведены −4,900 и −4,450 м. Статические напоры отопления рассчитаны от −4,900 м: 44,78+4,90=49,68 м. Назначение разных отметок не разграничено.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Согласованность геометрических исходных данных расчёта инженерных систем.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить отметки с архитектурными решениями, обозначить уровни конструкции, чистого пола и оборудования; уточнить статические напоры.",
+        "risk": "Ошибки высотной привязки оборудования и расчётных давлений.",
+        "source_finding_ids": [
+          "T-011"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-038:705f2262875c31478443",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Названия планов в ведомости содержат отметку −4,000 м.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Это отметка в названии планов; ведомость не определяет её как чистый пол."
+        },
+        {
+          "claim": "Анкета содержит «Отметка пола ИТП» −4,900 и «Место расположения и относительная отметка пола ИТП» −4,450.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Обе строки называют пол; проверенные строки не разграничивают чистый пол, плиту и другую высотную базу."
+        },
+        {
+          "claim": "44,78+4,90=49,68 и 135,83+4,90=140,73; значения совпадают со статическими высотами анкеты.",
+          "verdict": "confirmed_arithmetic_consistency",
+          "limits": "Дополнительно 92,14+4,90=97,04 для зоны 2. Совпадение указывает на совместимость с базой −4,900, но не доказывает фактическую точку измерения давления или процедуру расчёта автора."
+        },
+        {
+          "claim": "Необходимо согласовать смысл отметок и высотную базу со смежными разделами.",
+          "verdict": "supported_scoped_question",
+          "limits": "АР/КР и фактические монтажные уровни здесь не проверены."
+        },
+        {
+          "claim": "Все три значения должны быть заменены одной отметкой.",
+          "verdict": "not_established",
+          "limits": "Разные конструктивные уровни возможны, но такое объяснение пока не подтверждено. Нельзя ни автоматически исправить, ни снять вопрос этим предположением."
+        },
+        {
+          "claim": "Гидростатический расчёт или монтаж оборудования уже доказанно неверен.",
+          "verdict": "not_established",
+          "limits": "Подтверждена неопределённость документальных привязок, не физическая ошибка монтажа или недостаточность давления."
+        },
+        {
+          "claim": "−4,000 является установленной отметкой пола.",
+          "verdict": "not_established_title_overgeneralization",
+          "limits": "−4,000 взято из названия планов. Нельзя объединять с двумя явно названными отметками пола без проверки назначения. Сохранить несогласованность−4,450/−4,900 внутри анкеты."
+        },
+        {
+          "claim": "Статические напоры автор рассчитал именно от−4,900.",
+          "verdict": "arithmetic_compatible_not_proven_author_method",
+          "limits": "44,78+4,90=49,68 подтверждено. Совпадение значений не устанавливает процедуру расчёта или фактическую точку измерения."
+        }
+      ],
+      "unsupported_additions": "Не подменять подтверждённую несогласованность документов доказанным отказом оборудования, дефицитом давления или проверенной применимостью нормативного предписания.",
+      "novel_useful_content": "Основной документальный тезис сохранён; изменения области утверждения проверены отдельно.",
+      "duplicate_burden": "One height-reference question; repeated values across zones are supporting consistency checks, not independent pressure defects.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_90da5d0d361c48008030c2bf87767ced",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_4de04f93b8b745ceb034696663bfcc58",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-038.json",
+          "sha256": "35c602bbbe1e1dd36f6aa55f734b93813654cc257bc170858a9006bc799f891f",
+          "primary_adjudication": null,
+          "limits": "Ведомость не называет−4,000 отметкой чистого пола. В анкете обе строки названы отметками пола, но различие чистого пола и конструкций не пояснено в этих строках. Нельзя автоматически заменить все значения на одно. Смежные АР/КР и фактическая геометрия не проверены; ошибка монтажа и расчёта давления не доказана.",
+          "wording": "Уточнить высотные отметки ИТП: названия планов в ведомости содержат−4,000; в анкете поле «Отметка пола ИТП» —−4,900, а строка размещения и относительной отметки пола —−4,450. Указать единую высотную базу и смысл каждой отметки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-032",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-011_scoped_document_conflict"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
