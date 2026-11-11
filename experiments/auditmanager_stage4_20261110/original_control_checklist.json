@@ -440,7 +440,7 @@
       "hypothesis": "H05",
       "kind": "positive_controls",
       "original_control": "ИТП: расходы ветвейГВС сопоставить с режимомК15; толщины3/3.5 связать с теми же участками.",
-      "evidence_state": "partial_GVS_reported_wall_not_emitted_velocity_profile_disputed",
+      "evidence_state": "partial_GVS_reported_velocity_released_wall_not_emitted",
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_GVS_combined_output_replay.json",
@@ -477,6 +477,10 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_pipe_velocity_final_release_evidence/assessment.json",
           "sha256": "17c9ce57630c066e9ac85da592d1fdf6b4880e81b939a83763c3843b2a54b245"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_velocity_released_evidence/assessment.json",
+          "sha256": "a8c1d27de5cc789c33290738996b429562f7a0696541dd992bb7c217337785cb"
         }
       ],
       "full_acceptance_proven": false
@@ -743,7 +747,7 @@
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
-    "partial_GVS_reported_wall_not_emitted_velocity_profile_disputed": 1,
+    "partial_GVS_reported_velocity_released_wall_not_emitted": 1,
     "partial_control_grouping_held_source_identity_unresolved": 1,
     "partial_instance_identity_question_preserved": 1,
     "synthetic_contract_only": 1

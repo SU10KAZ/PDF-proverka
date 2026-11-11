@@ -1,0 +1,17 @@
+{
+  "status": "runtime_final_release_and_excel_passed",
+  "baseline_rows": 53,
+  "output_rows": 54,
+  "all_baseline_findings_unchanged": true,
+  "all_visible_claim_fields_checked": true,
+  "rerun_idempotent": true,
+  "new_model_calls": 0,
+  "recorded_calls_replayed": [
+    "final_release_check"
+  ],
+  "original_wall_control_recovered": false,
+  "whole_audit_discovery": false,
+  "full_stage4_acceptance": false,
+  "output_sha256": "de5195d9bed566ea93730a29c03ecd16276055b2e2fe0cb47ed8868ed7da08a3",
+  "xlsx_sha256": "81f6ece7b8461a49bc24d5f450925fbc32da553f10aa145a4293292b4bd34eb4"
+}
