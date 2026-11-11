@@ -1,0 +1,508 @@
+{
+  "status": "sensor_address_conflicts_and_factory_boundary_review",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "8363fa68d770ea72844665ebc7ff112052267f4d6c0dd28c07a612b107672a58",
+  "queue_after_sha256": "9772b612529a0f0e7b6a8d00a53bb88f9c96feda78cfd80814fbcfa857d174ac",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-024",
+      "finding": {
+        "id": "F-024",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Подключение датчиков и защиты",
+        "sheet": "Листы 17, 35, 38",
+        "page": [
+          14,
+          21,
+          24,
+          39,
+          42,
+          65,
+          66,
+          77,
+          83,
+          84
+        ],
+        "problem": "Не согласованы адреса и полнота подключений приборов контроля и защиты.",
+        "description": "Для П4.1.1 предусмотрен ТС2, но отдельная линия в журнале не идентифицирована. Кабель П6.1.4-2 приходит к TS2 на схеме и к ТС1 в журнале, где ТС1 также назначен водяному нагревателю П6.1.1. Для По5.1 перечень содержит наружный ТЕ1 и канальный ТЕ2; единственная температурная линия По5.1-1 адресована ТЕ2 на схеме и ТЕ1 в журнале. Кабель Вос5.1-1 адресован PDS5 на схемах и PDS45 в журнале.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту внешних проводок и согласованность адресов приборов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023",
+                "G-033",
+                "G-034",
+                "G-076",
+                "G-077",
+                "G-084",
+                "G-085"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить единые позиции приборов, исправить адреса линий и показать недостающие соединения либо границы комплектной проводки.",
+        "risk": "Подключение к неверному датчику, отсутствие предусмотренного контроля или защиты.",
+        "source_finding_ids": [
+          "T-023",
+          "G-033",
+          "G-034",
+          "G-076",
+          "G-077",
+          "G-084",
+          "G-085"
+        ],
+        "source_block_ids": [
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_065a335469904b2db1640b480b321503",
+          "blk_40bad73db9d44699955a7a4682f309a8"
+        ],
+        "related_block_ids": [
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_065a335469904b2db1640b480b321503",
+          "blk_40bad73db9d44699955a7a4682f309a8",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "blk_c63456cda51644db9470fb57f29b27de",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+            "page": 21
+          },
+          {
+            "type": "text",
+            "block_id": "blk_065a335469904b2db1640b480b321503",
+            "page": 39
+          },
+          {
+            "type": "text",
+            "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+            "page": 42
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-033",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-034",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-076",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-077",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-084",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-085",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют расхождение PDS5 на функциональной схеме и PDS45 в качестве конечного прибора кабеля Вос5.1-1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:006"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют расхождение PDS5 на функциональной схеме и PDS45 в качестве конечного прибора кабеля Вос5.1-1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания фиксируют одно расхождение: для кабеля П6.1.4-2 на схеме указан TS2, а в кабельном журнале — ТС1. Упоминание другого кабеля с обозначением ТС1 существенно не меняет содержание проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В перечне П4.1.1/Пм4.1 есть ТС2, в разделе журнала КЖ7–8 отдельная линия к нему не идентифицирована.",
+          "verdict": "confirmed_within_reviewed_journal_section",
+          "limits": "ТС2 явно комплектно с электронагревателем; отсутствие отдельного внешнего кабеля не доказывает отсутствие защиты."
+        },
+        {
+          "claim": "Для П4.1.1 нужно добавить отдельное внешнее подключение ТС2.",
+          "verdict": "insufficient_factory_wiring_boundary",
+          "limits": "Сначала установить границы заводской проводки и требуемые внешние сигналы. Не добавлять кабель автоматически."
+        },
+        {
+          "claim": "Внешняя схема П6.1.4-2 приходит к TS2; журнал КЖ25 содержит Пб.1.4-2→ТС1, тогда как П6.1.1-4 в КЖ24 также приходит к ТС1.",
+          "verdict": "confirmed_address_conflict_with_literal_identifier_caveat",
+          "limits": "В TEXT КЖ25 сохранена буква б, а не автоматически заменённая цифра6. Связь поддержана последовательностью строк, шкафом ШАУВ-2-К6ПЧ и назначениями приборов; буквальное равенство марки не заявляется."
+        },
+        {
+          "claim": "Перечень По5.1 содержит наружный ТЕ1 и канальный ТЕ2; По5.1-1 на внешней схеме приходит к TE2, в КЖ19 к ТЕ1.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC_address_conflict",
+          "limits": "В проверенных внешней схеме и разделе журнала имеется одна линия к температурному датчику. Не установлено, что наружный датчик отсутствует во всём проекте либо не передаётся иной связью."
+        },
+        {
+          "claim": "Вос5.1-1 на внешней схеме приходит к PDS5, в КЖ19 к PDS45.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC_address_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Оборудование подключено неправильно либо не имеет защиты.",
+          "verdict": "not_established",
+          "limits": "Исполнительная проводка, заводские схемы и испытания не проверены; подтверждены расхождения проектных адресов."
+        },
+        {
+          "claim": "ГОСТ21.408-2013 п.4.1 нарушен.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативный кандидат не засчитан как проверенное нарушение."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "source_supported_conflicts_no_new_engineer_acceptance",
+      "duplicate_burden": "Do not count bundled thermostat scope again as F060 or Po5 thermostat naming again as F047. Preserve distinct addressed TE2/TE1 and PDS5/PDS45 conflicts; absence of external wiring remains a separate question.",
+      "profile_and_section": "technical_address_conflicts_plus_factory_boundary_question",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
+          "sha256": "1b628d71c0871ea4fc70d34f43c7229a6c4c15294586da247f4568d964746b4f",
+          "primary_adjudication": null,
+          "limits": [
+            "PDS45 в авторитетном TEXT сохранено буквально; проверка графики относится к самостоятельным схемам, а не исправлению распознавания журнала.",
+            "Нельзя интерпретировать PDS45 как PDS4 и PDS5: соседняя строка Во5.1-1 отдельно относится к PDS4, внешняя схема имеет раздельные линии и клеммы.",
+            "Фактическая маркировка, наличие отдельного PDS45 в иных документах и ошибочное подключение не установлены. Правильное подключение по внешней схеме возможно.",
+            "Нормативный пункт и решение инженера не установлены; вывод ограничен документальным конфликтом одного конечного прибора."
+          ],
+          "wording": "Согласовать конечный прибор линии Вос5.1-1 шкафа ШАУВ-6-К5ПЧ: КЖ лист19 указывает PDS45, тогда как функциональная и внешняя схемы показывают PDS5; внешняя схема задаёт клеммы14/15."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F058_temperature_endpoint.json",
+          "sha256": "7f391d6a377940f60763577625de4cf7ec7cdf80d28ddb2317108f1965f7d1f3",
+          "primary_adjudication": null,
+          "limits": [
+            "Совпадают шкаф, марка линии, длина10м и сечение1×2×0,75, поэтому сопоставлены записи одной линии, а не случайно одинаковые обозначения разных шкафов.",
+            "Наличие двух разных функций в перечне делает существенным номер прибора. Однако это не доказывает фактическое подключение к неверному входу контроллера.",
+            "Правильную окончательную нумерацию следует согласовать с заводской документацией; журнал сам по себе не определяет номер входа контроллера.",
+            "Полнота подключения наружного ТЕ1 в целом здесь не проверена. Нельзя из отсутствия его на одном фрагменте вывести отсутствующий датчик или необходимый дополнительный кабель.",
+            "Текст нормативного пункта ГОСТ21.408-2013 не проверен, нормативное нарушение не установлено. Решение инженера по кандидату отсутствует."
+          ],
+          "wording": "Согласовать конечный прибор линии По5.1-1 шкафа ШАУВ-6-К5ПЧ: внешняя схема указывает TE2 — датчик приточного воздуха, КЖ лист19 указывает ТЕ1. Перечень листа17 различает ТЕ1 наружного воздуха и канальный ТЕ2; функциональная схема показывает TE2 в выходном воздуховоде По5.1."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F060_thermostat_endpoint.json",
+          "sha256": "4ae7511ca6056afa1ff0f85c52539b4154b6ba45c99f75bac26d841da23f0d38",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT Пб.1.4-2 сохранён буквально и не исправлен по растру. Сопоставление с П6.1.4-2 установлено по заголовку раздела КЖ лист24 «Системы П6.1.1 и П6.1.4», общему шкафу, последовательности линий и соседним приборам TE4,PDS3–PDS5,M2,XT3,электронагреватель.",
+            "На КЖ лист24 для первой системы П6.1.1-4 указан ТС1, что согласуется с TS1 на внешней схеме. Расхождение касается номера второго прибора, а не только кириллицы/латиницы.",
+            "Дублирование строки на листах25/26 не означает две физические неисправности. Случай фиксируется один раз.",
+            "Фактическая ошибка монтажа, отказ защиты и необходимость замены прибора не доказаны. Окончательные исправления согласовать по заводской схеме и реестру позиций.",
+            "Снятая количественная претензия F059 не является основанием снять этот конфликт идентификации. Решение инженера по F060 не установлено."
+          ],
+          "wording": "Согласовать обозначение конечного прибора второй системы шкафа ШАУВ-2-К6ПЧ: на схеме внешних подключений линия П6.1.4-2 идёт к TS2 на клеммы15/16, в КЖ листы25/26 строка Пб.1.4-2 указывает ТС1. Функциональная схема также показывает TS2 у электрического нагревателя; TS1 относится к первой системе."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+          "block_id": "blk_065a335469904b2db1640b480b321503",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "По5.1-1 connects to TE2; Вос5.1-1 to PDS5. One temperature sensor connection is shown; TS1 separately shown."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+          "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+          "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "П6.1.4-2 connects to TS2; П6.1.1-4 to TS1; separate drawn cables and cabinet terminals."
+        }
+      ],
+      "disposition": "assessed_preserve_address_conflicts_qualify_bundled_thermostat_absence"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+      "authoritative_TEXT": "### BLOCK #34 [TEXT]: blk_47212e9079d1485c9c43fc3d1e9cd108\n\n> **Created:** 2026-09-28 07:28:43 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/NlKfDyVRoRzqHvD2zgXd)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 10 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П4.1.1, Пм4.1 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n##### Перечень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 2 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| ТС2 | Термостат | 2 | (комплектно с электронагревателем) |\n| PDS2 | Датчик давления дифференциальный 20-200 Па | 1 |  |\n| PDS1,PDS3, PDS4 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| Y1-Y2 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| Y3 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M2 | Электродвигатель вентилятора | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M3 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ1 | Регулятор скорости, СИ-РСY10 | 1 |  |\n| SC UZ2 | Преобразователь частоты 2,2кВт 380В, E5-MINI-003H | 1 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+      "authoritative_TEXT": "### BLOCK #63 [TEXT]: blk_1bbcbe84761b4011af6e39b8fbbc3f3f\n\n> **Created:** 2026-09-28 07:28:52 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/AHBrQJB4uDV5Ga-lKIlI)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 17 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточная система По5.1, вытяжные системы Во5.1, Вос5.1. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1 |  |\n| ТС1 | Термостат | 1 | (комплектно с электронагревателем) |\n| PDS1, PDS2 | Датчик давления дифференциальный 50-500 Па | 2 |  |\n| PDS3-PDS5 | Датчик давления дифференциальный 20-200 Па | 3 |  |\n| Y1-Y3 | Электропривод воздушной заслонки | 3 | Учтено в разделе 1ЗАВ-РД-ОВ2.2-ПА |\n| M1-M3 | Электродвигатель вентилятора | 3 | Учтено в разделе 1ЗАВ-РД-ОВ2.2-ПА |\n| SC UZ1- SC UZ3 | Регулятор скорости, СИ-PCY10 | 3 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+      "authoritative_TEXT": "### BLOCK #74 [TEXT]: blk_917406a6b2804ee2abedff901eb85582\n\n> **Created:** 2026-09-28 07:28:56 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/s258V2OxTtRaakC5NXxx)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 20 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П6.1.1, П6.1.4 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обоззн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-Н2/Pt | 1 |  |\n| ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| ТС2 | Термостат |  | (комплектно с электронагревателем) |\n| PDS1, PDS3, PDS5 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| PDS2,PDS4 | Датчик давления дифференциальный 20-200 Па | 2 |  |\n| У1-У2 | Электропривод воздушной заслонки | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| УЗ | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M2 | Электродвигатель вентилятора | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| MЗ | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ1, SC UZ2 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001H | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+      "authoritative_TEXT": "### BLOCK #214 [TEXT]: blk_30ab2c5b39b8442baf89f7a9cfe31434\n\n> **Created:** 2026-09-28 07:29:38 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/BAHwENmJ0TgBL7Q5ekZJ)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 7 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Пкр4.1-12 | ШАУВ-3-К4ПЧ | ХТ2 | КСПВПГнг(А)-НФ | 1х2х0,75 | 10 | труба гофр. | КСПВПГнг(А)-НФ 1х2х0,75 | 10 |  |\n| Пкр4.1-13 | ШАУВ-3-К4ПЧ | M2 | ППГнг(А)-НФ | 3х1,5 | 10 | труба гофр. | ППГнг(А)-НФ 3х1,5 | 10 |  |\n| Системы П4.1.1 и Пм4.1 |  |  |  |  |  |  |  |  |  |\n| П4.1.1-1 | ШАУВ-4-К4ПЧ | ТЕ3 | КСПЭВПГнг(А)-НФ | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-НФ 1х2х0,75 | 15/10 |  |\n| П4.1.1-2 | ШАУВ-4-К4ПЧ | PDS1 | КСПВПГнг(А)-НФ | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-НФ 1х2х0,75 | 15/5 |  |\n| П4.1.1-3 | ШАУВ-4-К4ПЧ | PDS2 | КСПВПГнг(А)-НФ | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-НФ 1х2х0,75 | 15/5 |  |\n| П4.1.1-4 | ШАУВ-4-К4ПЧ | M1 | ППГнг(А)-НФ | 3х2,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-НФ 3х2,5 | 15/5 |  |\n| П4.1.1-5 | ШАУВ-4-К4ПЧ | Y1 | ППГнг(А)-НФ | 3х1,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-НФ 3х1,5 | 15/5 |  |\n| П4.1.1-6 | ШАУВ-4-К4ПЧ | Y1 | КСПВПГнг(А)-НФ | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-НФ 1х2х0,75 | 15/5 |  |\n| П4.1.1-7 | ШАУВ-4-К4ПЧ | Электронагреватель системы П4.1.1 | ППГнг(А)-НФ | 4х2,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-НФ 4х2,5 | 15/5 |  |\n| Пм4.1-1 | ШАУВ-4-К4ПЧ | ТЕ1 | КСПЭВПГнг(А)-НФ | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-НФ 1х2х0,75 | 15/10 |  |\n| Пм4.1-2 | ШАУВ-4-К4ПЧ | ТЕ2 | КСПЭВПГнг(А)-НФ | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-НФ 1х2х0,75 | 20/5 |  |\n| Пм4.1-3 | ШАУВ-4-К4ПЧ | ТЕ4 | КСПЭВПГнг(А)-НФ | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-НФ 1х2х0,75 | 20/5 |  |\n| Пм4.1-4 | ШАУВ-4-К4ПЧ | TS1 | КСПВПГнг(А)-НФ | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПВПГнг(А)-НФ 1х2х0,75 | 20/5 |  |\n| Пм4.1-5 | ШАУВ-4-К4ПЧ | PDS3 | КСПВПГнг(А)-НФ | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПВПГнг(А)-НФ 1х2х0,75 | 20/5 |  |\n|  |  |  |  |  |  |  |  |  |  |\n\n## Page 66 — Sheet 8\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_3d78558e2eb34cb189b102380b0d3d00",
+      "authoritative_TEXT": "### BLOCK #215 [TEXT]: blk_3d78558e2eb34cb189b102380b0d3d00\n\n> **Created:** 2026-09-28 07:29:38 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/CPhHng5xG8GuJPlBNB_f)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 8 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| П4.1.1-6 | ШАУВ-4-К4ПЧ | У1 | КСПВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| П4.1.1-7 | ШАУВ-4-К4ПЧ | Электронагреватель системы П4.1.1 | ППГнг(А)-HF | 4х2,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 15/5 |  |\n| Пм4.1-1 | ШАУВ-4-К4ПЧ | ТЕ1 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 10/15 |  |\n| Пм4.1-2 | ШАУВ-4-К4ПЧ | ТЕ2 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 15/10 |  |\n| Пм4.1-3 | ШАУВ-4-К4ПЧ | ТЕ4 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 15/10 |  |\n| Пм4.1-4 | ШАУВ-4-К4ПЧ | ТС1 | КСПВПГнг(А)-HF | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/10 |  |\n| Пм4.1-5 | ШАУВ-4-К4ПЧ | PDS3 | КСПВПГнг(А)-HF | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/10 |  |\n| Пм4.1-6 | ШАУВ-4-К4ПЧ | PDS4 | КСПВПГнг(А)-HF | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/10 |  |\n| Пм4.1-7 | ШАУВ-4-К4ПЧ | M2 | ППГнг(А)-HF | 4х2,5 | 25 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 15/10 |  |\n| Пм4.1-8 | ШАУВ-4-К4ПЧ | У3 | КСПЭВПГнг(А)-HF | 2х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 2х2х0,75 | 15/10 |  |\n| Пм4.1-9 | ШАУВ-4-К4ПЧ | XТ3 | ППГнг(А)-HF | 3х1,5 | 25 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 15/10 |  |\n| Пм4.1-10 | ШАУВ-4-К4ПЧ | XТ3 | КСПВПГнг(А)-HF | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/10 |  |\n| Пм4.1-11 | ШАУВ-4-К4ПЧ | M3 | ППГнг(А)-HF | 3х1,5 | 25 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 15/10 |  |\n| Системы Па3.1 и Ва3.1 |  |  |  |  |  |  |  |  |  |\n| Па3.1-1 | ШАУВ-1-К4АС | ТЕ1 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 25 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 15/10 |  |\n|  |  |  |  |  |  |  |  |  |  |\n\n## Page 67 — Sheet 9\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+      "authoritative_TEXT": "### BLOCK #226 [TEXT]: blk_c63456cda51644db9470fb57f29b27de\n\n> **Created:** 2026-09-28 07:29:44 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/FwmYFO-VxWPrK7fCBQHU)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 19 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Системы По5.1, Во5.1 и Вос5.1 |  |  |  |  |  |  |  |  |  |\n| По5.1-1 | ШАУВ-6-К5ПЧ | ТЕ1 | КСПЭВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПЭВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-2 | ШАУВ-6-К5ПЧ | ТС1 | КСПВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-3 | ШАУВ-6-К5ПЧ | PDS1 | КСПВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-4 | ШАУВ-6-К5ПЧ | PDS2 | КСПВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-5 | ШАУВ-6-К5ПЧ | PDS3 | КСПВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-6 | ШАУВ-6-К5ПЧ | M1 | ППГнг(A)-HF | 4x2,5 | 10 | труба гофр. | ППГнг(A)-HF 4x2,5 | 10 |  |\n| По5.1-7 | ШАУВ-6-К5ПЧ | XТ1 | ППГнг(A)-HF | 3x1,5 | 10 | труба гофр. | ППГнг(A)-HF 3x1,5 | 10 |  |\n| По5.1-8 | ШАУВ-6-К5ПЧ | XТ1 | КСПВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10 |  |\n| По5.1-9 | ШАУВ-6-К5ПЧ | Электронагреватель системы По5.1 | ППГнг(A)-HF | 4x4,0 | 10 | труба гофр. | ППГнг(A)-HF 4x4,0 | 10 |  |\n| Во5.1-1 | ШАУВ-6-К5ПЧ | PDS4 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 15 |  |\n| Во5.1-2 | ШАУВ-6-К5ПЧ | M2 | ППГнг(A)-HF | 4x2,5 | 15 | труба гофр. | ППГнг(A)-HF 4x2,5 | 15 |  |\n| Во5.1-3 | ШАУВ-6-К5ПЧ | XТ2 | ППГнг(A)-HF | 3x1,5 | 15 | труба гофр. | ППГнг(A)-HF 3x1,5 | 15 |  |\n| Во5.1-4 | ШАУВ-6-К5ПЧ | XТ2 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 15 |  |\n| Вос5.1-1 | ШАУВ-6-К5ПЧ | PDS45 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 400х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Вос5.1-2 | ШАУВ-6-К5ПЧ | M3 | ППГнг(A)-HF | 4x2,5 | 15 | лоток 400х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 10/5 |  |\n\n## Page 78 — Sheet 20\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_b30682ddac7544ab95a724bbed5f6e69",
+      "authoritative_TEXT": "### BLOCK #231 [TEXT]: blk_b30682ddac7544ab95a724bbed5f6e69\n\n> **Created:** 2026-09-28 07:29:47 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/E9H5NfwLFqrbaoh3C_ar)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 24 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| B6.1.4-2 | ШАУВ-1-К6ПЧ | МЗ | ППГнг(A)-HF | 4x2,5 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | ППГнг(A)-HF 4x2,5 | 20/2/3/ 5 |  |\n| B6.1.4-3 | ШАУВ-1-К6ПЧ | ХТЗ | ППГнг(A)-HF | 3x1,5 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | ППГнг(A)-HF 3x1,5 | 20/2/3/ 5 |  |\n| B6.1.4-4 | ШАУВ-1-К6ПЧ | ХТЗ | КСПВПГнг(A)-HF | 1x2x0,75 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | КСПВПГнг(A)-HF 1x2x0,75 | 20/2/3/ 5 |  |\n| Системы П6.1.1 и П6.1.4 |  |  |  |  |  |  |  |  |  |\n| П6.1.1-1 | ШАУВ-2-К6ПЧ | ТЕ1 | КСПЭВПГнг(A)-HF | 1x2x0,75 | 20 | лоток 100х100, труба гофр. | КСПЭВПГнг(A)-HF 1x2x0,75 | 10/10 |  |\n| П6.1.1-2 | ШАУВ-2-К6ПЧ | ТЕ2 | КСПЭВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| П6.1.1-3 | ШАУВ-2-К6ПЧ | ТЕ3 | КСПЭВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| П6.1.1-4 | ШАУВ-2-К6ПЧ | ТС1 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| П6.1.1-5 | ШАУВ-2-К6ПЧ | PDS1 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| П6.1.1-6 | ШАУВ-2-К6ПЧ | PDS2 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n|  |  |  |  |  |  |  |  |  |  |\n\n## Page 83 — Sheet 25\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+      "authoritative_TEXT": "### BLOCK #232 [TEXT]: blk_07eb5e614f424f588877ee1d3d5ce41b\n\n> **Created:** 2026-09-28 07:29:48 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/7R6v-t0JVkmuwCzJRUkC)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 25 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Пб.1.1-7 | ШАУВ-2-К6ПЧ | M1 | ППГнг(A)-HF | 4x2,5 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 10/5 |  |\n| Пб.1.1-8 | ШАУВ-2-К6ПЧ | XТ1 | КСПЭВПГнг(A)-HF | 2x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(A)-HF 2x2x0,75 | 10/5 |  |\n| Пб.1.1-9 | ШАУВ-2-К6ПЧ | XТ2 | ППГнг(A)-HF | 3x1,5 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 3x1,5 | 10/5 |  |\n| Пб.1.1-10 | ШАУВ-2-К6ПЧ | XТ2 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.1-11 | ШАУВ-2-К6ПЧ | M3 | ППГнг(A)-HF | 3x1,5 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 3x1,5 | 10/5 |  |\n| Пб.1.4-1 | ШАУВ-2-К6ПЧ | ТЕ4 | КСПЭВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-2 | ШАУВ-2-К6ПЧ | ТС1 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-3 | ШАУВ-2-К6ПЧ | PDS3 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-4 | ШАУВ-2-К6ПЧ | PDS4 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-5 | ШАУВ-2-К6ПЧ | PDS5 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-6 | ШАУВ-2-К6ПЧ | M2 | ППГнг(A)-HF | 4x2,5 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 10/5 |  |\n| Пб.1.4-7 | ШАУВ-2-К6ПЧ | XТ3 | ППГнг(A)-HF | 3x1,5 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 3x1,5 | 10/5 |  |\n| Пб.1.4-8 | ШАУВ-2-К6ПЧ | XТ3 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-9 | ШАУВ-2-К6ПЧ | Электронагреватель системы Пб.1.4 | ППГнг(A)-HF | 4x4,0 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 4x4,0 | 10/5 |  |\n\n## Page 84 — Sheet 26\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+      "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+      "block_id": "blk_065a335469904b2db1640b480b321503",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "По5.1-1 connects to TE2; Вос5.1-1 to PDS5. One temperature sensor connection is shown; TS1 separately shown."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+      "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+      "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "П6.1.4-2 connects to TS2; П6.1.1-4 to TS1; separate drawn cables and cabinet terminals."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
+      "sha256": "1b628d71c0871ea4fc70d34f43c7229a6c4c15294586da247f4568d964746b4f",
+      "primary_adjudication": null,
+      "limits": [
+        "PDS45 в авторитетном TEXT сохранено буквально; проверка графики относится к самостоятельным схемам, а не исправлению распознавания журнала.",
+        "Нельзя интерпретировать PDS45 как PDS4 и PDS5: соседняя строка Во5.1-1 отдельно относится к PDS4, внешняя схема имеет раздельные линии и клеммы.",
+        "Фактическая маркировка, наличие отдельного PDS45 в иных документах и ошибочное подключение не установлены. Правильное подключение по внешней схеме возможно.",
+        "Нормативный пункт и решение инженера не установлены; вывод ограничен документальным конфликтом одного конечного прибора."
+      ],
+      "wording": "Согласовать конечный прибор линии Вос5.1-1 шкафа ШАУВ-6-К5ПЧ: КЖ лист19 указывает PDS45, тогда как функциональная и внешняя схемы показывают PDS5; внешняя схема задаёт клеммы14/15."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F058_temperature_endpoint.json",
+      "sha256": "7f391d6a377940f60763577625de4cf7ec7cdf80d28ddb2317108f1965f7d1f3",
+      "primary_adjudication": null,
+      "limits": [
+        "Совпадают шкаф, марка линии, длина10м и сечение1×2×0,75, поэтому сопоставлены записи одной линии, а не случайно одинаковые обозначения разных шкафов.",
+        "Наличие двух разных функций в перечне делает существенным номер прибора. Однако это не доказывает фактическое подключение к неверному входу контроллера.",
+        "Правильную окончательную нумерацию следует согласовать с заводской документацией; журнал сам по себе не определяет номер входа контроллера.",
+        "Полнота подключения наружного ТЕ1 в целом здесь не проверена. Нельзя из отсутствия его на одном фрагменте вывести отсутствующий датчик или необходимый дополнительный кабель.",
+        "Текст нормативного пункта ГОСТ21.408-2013 не проверен, нормативное нарушение не установлено. Решение инженера по кандидату отсутствует."
+      ],
+      "wording": "Согласовать конечный прибор линии По5.1-1 шкафа ШАУВ-6-К5ПЧ: внешняя схема указывает TE2 — датчик приточного воздуха, КЖ лист19 указывает ТЕ1. Перечень листа17 различает ТЕ1 наружного воздуха и канальный ТЕ2; функциональная схема показывает TE2 в выходном воздуховоде По5.1."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F060_thermostat_endpoint.json",
+      "sha256": "4ae7511ca6056afa1ff0f85c52539b4154b6ba45c99f75bac26d841da23f0d38",
+      "primary_adjudication": null,
+      "limits": [
+        "TEXT Пб.1.4-2 сохранён буквально и не исправлен по растру. Сопоставление с П6.1.4-2 установлено по заголовку раздела КЖ лист24 «Системы П6.1.1 и П6.1.4», общему шкафу, последовательности линий и соседним приборам TE4,PDS3–PDS5,M2,XT3,электронагреватель.",
+        "На КЖ лист24 для первой системы П6.1.1-4 указан ТС1, что согласуется с TS1 на внешней схеме. Расхождение касается номера второго прибора, а не только кириллицы/латиницы.",
+        "Дублирование строки на листах25/26 не означает две физические неисправности. Случай фиксируется один раз.",
+        "Фактическая ошибка монтажа, отказ защиты и необходимость замены прибора не доказаны. Окончательные исправления согласовать по заводской схеме и реестру позиций.",
+        "Снятая количественная претензия F059 не является основанием снять этот конфликт идентификации. Решение инженера по F060 не установлено."
+      ],
+      "wording": "Согласовать обозначение конечного прибора второй системы шкафа ШАУВ-2-К6ПЧ: на схеме внешних подключений линия П6.1.4-2 идёт к TS2 на клеммы15/16, в КЖ листы25/26 строка Пб.1.4-2 указывает ТС1. Функциональная схема также показывает TS2 у электрического нагревателя; TS1 относится к первой системе."
+    }
+  ],
+  "limits": [
+    "No factory wiring or installed protection verification.",
+    "TEXT literal identifiers preserved; no PDF text re-extraction.",
+    "No frozen evaluator or production change."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
