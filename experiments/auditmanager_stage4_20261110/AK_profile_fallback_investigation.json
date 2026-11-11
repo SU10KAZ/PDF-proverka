@@ -1,0 +1,152 @@
+{
+  "status": "confirmed_shared_AK_profile_fallback_comparison_limitation",
+  "code": [
+    {
+      "file": "backend/app/services/common/discipline_service.py",
+      "baseline_path": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_with_catalog/backend/app/services/common/discipline_service.py",
+      "baseline_sha256": "985e064de9a3a6473a992c1db96192427634221b889c0720a053895abd6c0d2c",
+      "candidate_path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/services/common/discipline_service.py",
+      "candidate_sha256": "985e064de9a3a6473a992c1db96192427634221b889c0720a053895abd6c0d2c",
+      "identical": true
+    },
+    {
+      "file": "backend/app/services/common/discipline_identity.py",
+      "baseline_path": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_with_catalog/backend/app/services/common/discipline_identity.py",
+      "baseline_sha256": "98ea095be83265e05df41ec506aa7a10724426323d3632d7fefccebef961002d",
+      "candidate_path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/services/common/discipline_identity.py",
+      "candidate_sha256": "98ea095be83265e05df41ec506aa7a10724426323d3632d7fefccebef961002d",
+      "identical": true
+    },
+    {
+      "file": "prompts/disciplines/_registry.json",
+      "baseline_path": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_with_catalog/prompts/disciplines/_registry.json",
+      "baseline_sha256": "9a926e56e3a8b90c054b70fe4ff2f70673a2aad3f000142209c68f96ebe7daa4",
+      "candidate_path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/prompts/disciplines/_registry.json",
+      "candidate_sha256": "9a926e56e3a8b90c054b70fe4ff2f70673a2aad3f000142209c68f96ebe7daa4",
+      "identical": true
+    },
+    {
+      "file": "prompts/disciplines/EOM/role.md",
+      "baseline_path": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_with_catalog/prompts/disciplines/EOM/role.md",
+      "baseline_sha256": "949c503f0eca15b1fd99e29e3abcdaa801cbfd7481ed698e492f1cbcbaef53f0",
+      "candidate_path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/prompts/disciplines/EOM/role.md",
+      "candidate_sha256": "949c503f0eca15b1fd99e29e3abcdaa801cbfd7481ed698e492f1cbcbaef53f0",
+      "identical": true
+    }
+  ],
+  "role_marker": "Ты — эксперт-проектировщик по электроснабжению жилых и общественных зданий (ЭОМ/ЭС/ЭМ).",
+  "runs": [
+    {
+      "run": "ak_r1_classic",
+      "log_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/process.log",
+      "warning_lines_at_inspection": [
+        72,
+        73,
+        80
+      ],
+      "role_matches_by_stage": {
+        "findings_merge": 1,
+        "text_analysis": 1
+      },
+      "requests": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794378116658109344/request.json",
+          "sha256": "2131111ec9e46bf14037e9328be78239b03a7dea8199f3e74f0756fbb9a1bee5",
+          "stage": "findings_merge",
+          "exact_EOM_role_present": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794377654199100508/request.json",
+          "sha256": "0ae545836e68f3a914b4cace6d70ead79e77a3f5e2ec871483edd5a6da4d1278",
+          "stage": "text_analysis",
+          "exact_EOM_role_present": true
+        }
+      ],
+      "snapshot_only_running_log_may_grow": false
+    },
+    {
+      "run": "ak_r2_classic",
+      "log_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/process.log",
+      "warning_lines_at_inspection": [
+        72,
+        73,
+        81
+      ],
+      "role_matches_by_stage": {
+        "findings_merge": 1,
+        "text_analysis": 1
+      },
+      "requests": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/requests/AK/1794393319460818609/request.json",
+          "sha256": "179a64caea6c47990e811bddb4909fd9c8ace590cd58a69c0c5f5706bd8cdb5a",
+          "stage": "findings_merge",
+          "exact_EOM_role_present": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/requests/AK/1794392797287819608/request.json",
+          "sha256": "629e746de006683987e3c0ed00bec0093032634aa1b77a7fa23d82d1b3dd8749",
+          "stage": "text_analysis",
+          "exact_EOM_role_present": true
+        }
+      ],
+      "snapshot_only_running_log_may_grow": false
+    },
+    {
+      "run": "ak_r3_classic",
+      "log_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/process.log",
+      "warning_lines_at_inspection": [
+        72,
+        73,
+        80
+      ],
+      "role_matches_by_stage": {
+        "text_analysis": 1,
+        "findings_merge": 1
+      },
+      "requests": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/requests/AK/1794407119957457031/request.json",
+          "sha256": "2cb25e5fb199f4a3a7c840716c975a89328ea007281f9fc8cde8ca1ec11d1b4f",
+          "stage": "text_analysis",
+          "exact_EOM_role_present": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/requests/AK/1794407639981316975/request.json",
+          "sha256": "53216b26c3ea58688ea958a2ac589d8df3e27531c9de16a915acb23e5c2558bc",
+          "stage": "findings_merge",
+          "exact_EOM_role_present": true
+        }
+      ],
+      "snapshot_only_running_log_may_grow": false
+    },
+    {
+      "run": "ak_r1_classic_current",
+      "log_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/process.log",
+      "warning_lines_at_inspection": [
+        72,
+        73
+      ],
+      "role_matches_by_stage": {
+        "text_analysis": 1
+      },
+      "requests": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794420454338031384/request.json",
+          "sha256": "1ec422ab2c6b3b2ba34beba64f6fc70e48ac75f333a8aabc2e4e1c93e55aad87",
+          "stage": "text_analysis",
+          "exact_EOM_role_present": true
+        }
+      ],
+      "snapshot_only_running_log_may_grow": true
+    }
+  ],
+  "conclusions": [
+    "AK is absent from the registered recognized codes; non-strict load_discipline falls back to EOM.",
+    "Baseline three repeats and current experimental control logs show the same warning. Exact role presence is recorded per request, not inferred only from logs.",
+    "This is a shared baseline limitation, not evidence by itself that candidate configuration drifted.",
+    "Do not silently patch frozen sources during comparison. Current results measure methods conditional on this profile configuration, not an independently validated AK-specific audit.",
+    "The causal effect on missed or false findings is not measured. An AK-specific profile needs a separately frozen matched test before any production claim."
+  ],
+  "production_acceptance": false
+}
