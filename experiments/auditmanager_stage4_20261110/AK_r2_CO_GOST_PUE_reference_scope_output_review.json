@@ -1,0 +1,496 @@
+{
+  "status": "three_AK_reference_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "1a5fc1352e5c4ca18f1ceda4d5cfe6a77f649d153b043fc2e97dfd1d2b31899d",
+  "queue_after_sha256": "66fbf488900efa0294051c30df077d65ed40388dfcc805c1ccefb133fb50b0cd",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 4",
+        "page": 8,
+        "problem": "Нормативное основание порогов СО устарело.",
+        "description": "Пороги 20 и 100 мг/м³ обоснованы ГН 2.2.5.1313-03, утратившим силу по сведениям исходного анализа. Одна ссылка на ПДК не обосновывает назначение обоих порогов.",
+        "norm": "СанПиН 1.2.3685-21 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СанПиН 1.2.3685-21",
+            "cited_designation": "СанПиН 1.2.3685-21",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить допустимые концентрации оксида углерода и условия их применения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Актуализировать нормативное основание и отдельно обосновать предупредительный и аварийный пороги с учётом назначения помещений и времени воздействия.",
+        "risk": "Ошибочное назначение порогов и алгоритмов реагирования.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ],
+        "related_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": 8
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 65,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Проект называет 20 и100мг/м³ I иII порогами ПДК СО и ссылается на ГН2.2.5.1313-03.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Постановление о введении ГН2.2.5.1313-03 было признано утратившим силу.",
+          "verdict": "confirmed_primary_act_republication",
+          "limits": "Пункт3 постановления13.02.2018№25 прямо перечисляет постановление30.04.2003№76. Это проверка истории отмены, не утверждение действующей замены на2026год."
+        },
+        {
+          "claim": "Выбранный СТГ-3-И-СО имеет пороги20 и100мг/м³.",
+          "verdict": "confirmed_manufacturer_table_and_project_specification",
+          "limits": "Проверены строка СО19.2 и таблица изготовителя на странице1 листка СТГ-3. Типовые пороги не доказывают нормативную пригодность всего проекта."
+        },
+        {
+          "claim": "Проект разрешает постоянное пребывание людей при100мг/м³.",
+          "verdict": "not_supported_by_project_TEXT",
+          "limits": "Круглосуточное пребывание относится к персоналу диспетчерской, куда передаётся сигнал. Для100мг/м³ записан аварийный сигнал, а не допустимость постоянного воздействия."
+        },
+        {
+          "claim": "Назначение порогов и алгоритм реагирования отсутствуют.",
+          "verdict": "refuted_by_project_TEXT",
+          "limits": "При первом пороге предусмотрены предупреждение и включение вентиляции, если выключена; при втором аварийный сигнал. Достаточность этого алгоритма нормативам здесь не доказана."
+        },
+        {
+          "claim": "Нужно актуализировать нормативное обоснование и различать пороги сигнализации и гигиенические пределы воздействия.",
+          "verdict": "supported_scoped_reference_and_terminology_question",
+          "limits": "Не требовать автоматически изменения20/100; при оценке гигиенических пределов установить применимые условия и продолжительность воздействия."
+        },
+        {
+          "claim": "Неверные уставки вызывают несвоевременное реагирование либо нарушен конкретный пункт СанПиН1.2.3685-21.",
+          "verdict": "not_established",
+          "limits": "Применимый пункт, условия воздействия, испытания и временные характеристики всей системы не проверены."
+        },
+        {
+          "claim": "Второй повтор утверждает допустимость постоянного пребывания при100 мг/м³ или полное отсутствие алгоритма.",
+          "verdict": "not_asserted_in_r2",
+          "limits": "Эти прежние чрезмерные тезисы убраны. Сохранить вопрос нормативного обоснования и различение гигиенических пределов и порогов сигнализации; назначение предупреждения и аварийного сигнала в проекте уже описано."
+        }
+      ],
+      "unsupported_additions": "Библиографическая проверка не доказывает техническое нарушение. Не назначать универсальные20/100 мг/м³ или4 Ом; применимость конкретных требований и фактическая безопасность не проверены.",
+      "novel_useful_content": "Сопоставлены новые формулировки с прежней проверкой реквизитов и проектного текста; исключённые чрезмерные тезисы не приписаны текущей выдаче. Актуальность внешних источников заново не проверялась.",
+      "duplicate_burden": "One reference/terminology question; do not count20 and100as separate technical defects. Do not merge with gas sensor quantity findings F006/F007.",
+      "profile_and_section": "questions_clarifications_reference_and_terminology",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+          "sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0",
+          "primary_adjudication": null,
+          "limits": [
+            "Совпадение с листом изготовителя не доказывает нормативную достаточность алгоритма оповещения и вентиляции для объекта.",
+            "ТУ-газ-86 и руководство конкретного исполнения не проверены. Основание200м² не установлено, но отсутствие основания в разделе6 не доказывает отсутствия во всём проекте.",
+            "Планы размещения, воздухообмен, препятствия и покрытие этим решением не оценены.",
+            "Нельзя переносить20/100,1,5м или200м² в универсальные допуски для других газов, приборов или помещений."
+          ],
+          "wording": "Уточнить нормативное основание системы контроляCO: раздел6 ссылается на отменённые ГН2.2.5.1313-03 и не раскрывает реквизиты ТУ-газ-86 для высоты установки. Представить применимое основание площади200м² на сигнализатор. Пороги20/100мг/м³ и высота1,5м согласуются с опубликованными данными изготовителя СТГ-3-И-СО; требование изменить эти значения данным замечанием не обосновано."
+        },
+        {
+          "url": "https://www.consultant.ru/document/cons_doc_LAW_296440/92d969e26a4326c5d02fa79b8f9cf4994ee5633b/",
+          "access_date": "2026-11-11",
+          "route": "primary_normative_act_republished_text",
+          "verified_fact": "Point3 of decree13.02.2018No25 repeals decree30.04.2003No76 introducing GN2.2.5.1313-03.",
+          "limits": "Republication, not issuer site; no current replacement or whole-design compliance determination.",
+          "reuse_limits": "Использовано прежнее чтение источника, сохранённое в проверке первого повтора. Нового запроса или проверки актуальности в этой записи нет."
+        },
+        {
+          "url": "https://www.analitpribor-smolensk.ru/files/rek_listovki_2017/stg-3.pdf",
+          "path": "/tmp/ak_stg3_manufacturer.pdf",
+          "sha256": "08d4f0c13dbfd3e3ee9f655c4a544a5966a6b2bca042f6fa05a4d0df70520538",
+          "access_date": "2026-11-11",
+          "route": "manufacturer_primary_PDF_table_visually_verified",
+          "verified_fact": "Page1 rowSTG-3-CO/STG-3-I-CO: threshold1=20,threshold2=100mg/m3.",
+          "limits": "Manufacturer nominal thresholds only, not hygienic exposure permission or project compliance.",
+          "reuse_limits": "Использовано прежнее чтение источника, сохранённое в проверке первого повтора. Нового запроса или проверки актуальности в этой записи нет."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-002",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-001_reference_precision_with_technical_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 2",
+        "page": 6,
+        "problem": "Ошибочно обозначен стандарт на документацию автоматизации.",
+        "description": "В общих указаниях записано «ГОСТ 21.4.08-2013» с лишней точкой.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить обозначение и область применения стандарта на рабочую документацию автоматизации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить исходник и исправить обозначение на ГОСТ 21.408-2013.",
+        "risk": "Неоднозначная идентификация применённого стандарта.",
+        "source_finding_ids": [
+          "T-002"
+        ],
+        "source_block_ids": [
+          "blk_adc4052a68344abf9c8f56861b9294d1"
+        ],
+        "related_block_ids": [
+          "blk_adc4052a68344abf9c8f56861b9294d1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В авторитетном MD записано ГОСТ21.4.08-2013 с названием документа по автоматизации.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Официальное обозначение стандарта с этим названием — ГОСТ21.408-2013.",
+          "verdict": "confirmed_official_catalog",
+          "limits": "Карточка Росстандарта просмотрена11.11.2026; проверены обозначение и название, не конкретное нарушение требований."
+        },
+        {
+          "claim": "Уточнить обозначение ссылки.",
+          "verdict": "supported_editorial_question",
+          "limits": "Не исправлять исходный MD в доказательствах; выдавать предлагаемую редакционную правку отдельно."
+        },
+        {
+          "claim": "Запись вызвана ошибкой OCR.",
+          "verdict": "not_established",
+          "limits": "Источник ошибки не установлен; авторитетный TEXT не переизвлекается и не исправляется по растру."
+        },
+        {
+          "claim": "Опечатка доказывает неправильное проектирование или монтаж.",
+          "verdict": "not_established",
+          "limits": "По названию документ идентифицируется; техническое последствие не доказано."
+        },
+        {
+          "claim": "Пункт1 стандарта проверен как нарушенное требование.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Карточка реквизитов не является доказательством нарушения пункта."
+        },
+        {
+          "claim": "Для исправления обозначения требуется переизвлечь авторитетный TEXT.",
+          "verdict": "not_required_or_authorized",
+          "limits": "Зафиксировать редакционную рекомендацию отдельно от исходного MD. Причина лишней точки не установлена; техническая неисправность из неё не следует."
+        }
+      ],
+      "unsupported_additions": "Библиографическая проверка не доказывает техническое нарушение. Не назначать универсальные20/100 мг/м³ или4 Ом; применимость конкретных требований и фактическая безопасность не проверены.",
+      "novel_useful_content": "Сопоставлены новые формулировки с прежней проверкой реквизитов и проектного текста; исключённые чрезмерные тезисы не приписаны текущей выдаче. Актуальность внешних источников заново не проверялась.",
+      "duplicate_burden": "Group minor normative-reference edits with F066 if both retained; not a separate technical safety defect.",
+      "profile_and_section": "questions_clarifications_normative_reference_edit",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+          "sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66",
+          "primary_adjudication": null,
+          "limits": [
+            "Официальные карточки подтверждают реквизиты, но не доказывают нарушение конкретных технических требований в проекте.",
+            "В разделе заземления есть собственные указания и ссылка на СП 76.13330.2016; отсутствие точного пункта ПУЭ не означает отсутствия требований.",
+            "Текст ПУЭ и нормативное требование приводить полное название СП не проверены. Сокращение названия не выпускать отдельным техническим дефектом.",
+            "Решение инженера по этому слепому кандидату отсутствует; историческое принятие не приписывается."
+          ],
+          "wording": "Исправить обозначение ГОСТ 21.4.08-2013 на ГОСТ 21.408-2013 в общих указаниях. Уточнить адрес ссылки «гл.7 ПУЭ» в разделе заземления. Объединить эти редакционные уточнения в один вопрос по реквизитам; техническое нарушение заземления данным замечанием не установлено."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/ad7aee01-bcb3-495e-a46f-6393783f864c",
+          "access_date": "2026-11-11",
+          "route": "official_catalog_direct_web_open",
+          "verified_fact": "ГОСТ21.408-2013 identifies the standard on working documentation of process automation.",
+          "limits": "Bibliographic identity only; no project technical compliance adjudicated.",
+          "reuse_limits": "Использовано прежнее чтение источника, сохранённое в проверке первого повтора. Нового запроса или проверки актуальности в этой записи нет."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-001",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-002_reference_precision_with_technical_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-074",
+      "finding": {
+        "id": "F-074",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "В указаниях по заземлению неверно указан номер главы ПУЭ.",
+        "description": "Строка MD 745: «Оборудование АК подлежит заземлению в соответствии с требованиями СП 76.13330.2016 и гл.7 «ПУЭ» с использованием общего контура заземления. Сопротивление заземляющего устройства, используемого для заземления электрооборудования, предусматривается не более 4 Ом. В цепи заземляющих и нулевых проводников отсутствуют разъединяющие приспособления и предохранители. Присоединение заземляющих и нулевых проводников к частям электрооборудования выполняется сваркой или болтовым соединением, в соответствии с «ПУЭ». Рабочее заземление оборудования следует выполнять согласно техническим требованиям на оборудование». Требования к заземлению и защитным мерам электробезопасности относятся к главе 1.7 ПУЭ. Ссылка «гл.7» ошибочна: раздел 7 посвящён электрооборудованию специальных установок.",
+        "page": null,
+        "norm": "ПУЭ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Исправить ссылку «гл.7» на главу 1.7 ПУЭ.",
+        "risk": "Ошибочная адресация нормативных требований при выполнении и проверке заземления.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": null,
+            "md_lines": "строка 745"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Лист 4",
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 42,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [
+            "formal_reference_category",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В проектном разделе заземления записано гл.7 ПУЭ.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Глава1.7 ПУЭ посвящена заземлению и защитным мерам; пункт1.7.1 задаёт её общую область применения.",
+          "verdict": "confirmed_primary_act_text_republication",
+          "limits": "Прочитан текст приказа Минэнерго08.07.2002№204 на Legalacts; это републикация акта, не сайт органа-издателя."
+        },
+        {
+          "claim": "Уточнить общую ссылку на заземление до главы1.7.",
+          "verdict": "supported_editorial_reference_recommendation",
+          "limits": "Подтверждён адрес общей главы, а не единственный применимый пункт для всех перечисленных решений. Исходный MD не изменять."
+        },
+        {
+          "claim": "Автор перепутал седьмое издание и номер главы.",
+          "verdict": "not_established_author_intent",
+          "limits": ""
+        },
+        {
+          "claim": "Заземление выполнено неправильно или опасно.",
+          "verdict": "not_established",
+          "limits": "Устройство, измерения и монтаж не проверены. В проекте есть собственные указания и ссылка на СП76; неточная ссылка не означает отсутствия требований."
+        },
+        {
+          "claim": "4 Ом является универсальным требованием для любого оборудования.",
+          "verdict": "not_established_no_generalization",
+          "limits": "Проектное число не переносить в универсальное правило без условий сети и применимого пункта."
+        },
+        {
+          "claim": "Подтверждено нарушение конкретного технического пункта ПУЭ.",
+          "verdict": "not_established",
+          "limits": "Библиографическая проверка не является проверкой соответствия заземляющего устройства."
+        },
+        {
+          "claim": "Новый тезис о названии раздела7 отдельно проверен в этой записи.",
+          "verdict": "not_independently_checked_added_bibliographic_scope",
+          "limits": "Предыдущее доказательство устанавливает предмет главы1.7 и неточность ссылки гл.7. Новое описание раздела7 не засчитывается как дополнительно проверенное; на редакционную рекомендацию по главе1.7 оно не влияет."
+        }
+      ],
+      "unsupported_additions": "Библиографическая проверка не доказывает техническое нарушение. Не назначать универсальные20/100 мг/м³ или4 Ом; применимость конкретных требований и фактическая безопасность не проверены.",
+      "novel_useful_content": "Сопоставлены новые формулировки с прежней проверкой реквизитов и проектного текста; исключённые чрезмерные тезисы не приписаны текущей выдаче. Актуальность внешних источников заново не проверялась.",
+      "duplicate_burden": "Group with F001 as minor reference corrections; retain separate source facts, no additional safety-defect count.",
+      "profile_and_section": "questions_clarifications_normative_reference_edit",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+          "sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66",
+          "primary_adjudication": null,
+          "limits": [
+            "Официальные карточки подтверждают реквизиты, но не доказывают нарушение конкретных технических требований в проекте.",
+            "В разделе заземления есть собственные указания и ссылка на СП 76.13330.2016; отсутствие точного пункта ПУЭ не означает отсутствия требований.",
+            "Текст ПУЭ и нормативное требование приводить полное название СП не проверены. Сокращение названия не выпускать отдельным техническим дефектом.",
+            "Решение инженера по этому слепому кандидату отсутствует; историческое принятие не приписывается."
+          ],
+          "wording": "Исправить обозначение ГОСТ 21.4.08-2013 на ГОСТ 21.408-2013 в общих указаниях. Уточнить адрес ссылки «гл.7 ПУЭ» в разделе заземления. Объединить эти редакционные уточнения в один вопрос по реквизитам; техническое нарушение заземления данным замечанием не установлено."
+        },
+        {
+          "url": "https://legalacts.ru/doc/prikaz-minenergo-rf-ot-08072002-n-204/",
+          "access_date": "2026-11-11",
+          "route": "primary_normative_act_republished_text",
+          "verified_fact": "Chapter1.7 is grounding and protective measures;1.7.1 describes general scope.",
+          "limits": "Chapter identity only; not a full legal applicability or project compliance assessment.",
+          "reuse_limits": "Использовано прежнее чтение источника, сохранённое в проверке первого повтора. Нового запроса или проверки актуальности в этой записи нет."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-066",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-074_reference_precision_with_technical_limits"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
