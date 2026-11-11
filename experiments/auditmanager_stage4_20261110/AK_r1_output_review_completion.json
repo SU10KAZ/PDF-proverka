@@ -1,0 +1,80 @@
+{
+  "status": "first_experimental_AK_all_findings_assessed_not_accepted",
+  "review_verification": {
+    "status": "exact_receipt_replay_verified",
+    "queue_sha256": "11cf44763b8d573e8b8dc9aae5b2c2fa60765a1efb83dee94d169fdf3c1f7de2",
+    "transitions": [
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_output_review_first_three.json",
+        "sha256": "0bf34756e4d008d1dd3a0d9e5f29ac1fccaa9f8df92707fb4e080230059a5284"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_output_review_ranges_and_fan_role.json",
+        "sha256": "c3334c72672ac6902fb488937947aa89d19c067345ddb2965cd555d25004703a"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_output_review_text_six.json",
+        "sha256": "3c294a8d414d6b752539d1623a8ff3ad19e3f7deb010d631d7f6ade36acf914e"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_output_review_graphic_eight.json",
+        "sha256": "297e564a4a76e1e1fad837c3201f8edd1e95a64efb30166f81c10271a0d7ff45"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_output_review_last_eight.json",
+        "sha256": "7c0bcf0b9bb78692212c4a2d0fe451ed3269256a43f709d34bacee0aa1ef37de"
+      }
+    ],
+    "counts": {
+      "AK": {
+        "rows": 28,
+        "assessed": 28,
+        "unchecked": 0
+      }
+    },
+    "quality_acceptance": false,
+    "limits": "Verifies preservation and source binding, not factual truth, usefulness or resolved uncertainty."
+  },
+  "coverage_receipt_path": "experiments/auditmanager_stage4_20261110/AK_r1_classic_current_coverage_review.json",
+  "paired_regression_path": "experiments/auditmanager_stage4_20261110/AK_r1_first_paired_coverage_regression.json",
+  "findings_assessed": 28,
+  "unchecked": 0,
+  "unresolved_is_not_confirmed": true,
+  "issues": {
+    "incorrect_column_locators": [
+      "F-019",
+      "F-020"
+    ],
+    "outgoing_signal_semantics_unproven": [
+      "F-015",
+      "F-017"
+    ],
+    "overlapping_brand_clarification": [
+      "F-007",
+      "F-023"
+    ],
+    "missing_question_section": [
+      "F-001",
+      "F-002"
+    ],
+    "technical_claim_in_questions": [
+      "F-009"
+    ],
+    "editorial_claim_in_technical": [
+      "F-027"
+    ],
+    "internal_packet_comment": [
+      "F-011"
+    ],
+    "unnecessary_unverified_norm_clause": [
+      "F-002"
+    ]
+  },
+  "limits": [
+    "New candidate engineer usefulness and time not measured.",
+    "All assessed means each claim reviewed, not all confirmed.",
+    "First repeat fails preservation; cannot release.",
+    "No model calls for this evaluator review."
+  ],
+  "production_acceptance": false
+}

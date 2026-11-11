@@ -1,0 +1,1076 @@
+{
+  "status": "last_eight_source_reviews_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/experimental/AK_r1_classic_current/output_review_queue.json",
+  "queue_before_sha256": "ffad56fb1e8b54aa1dc23cd3057bd25e540f76a189c1522811ba2dacd6789582",
+  "queue_after_sha256": "11cf44763b8d573e8b8dc9aae5b2c2fa60765a1efb83dee94d169fdf3c1f7de2",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "Ошибочное обозначение ГОСТ по оформлению документации автоматизации.",
+        "description": "На листе 2 строка MD 266 содержит: «- ГОСТ 21.4.08-2013 \"Правила выполнения рабочей документации автоматизации технологических процессов\";». В обозначении ошибочно добавлена точка: указанному названию соответствует ГОСТ 21.408-2013.",
+        "page": null,
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Исправить «ГОСТ 21.4.08-2013» на «ГОСТ 21.408-2013».",
+        "risk": "Ошибочное обозначение затрудняет однозначную идентификацию нормативного документа.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+            "page": null,
+            "md_lines": "строка 266"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Лист 2",
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 22,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "formal_reference_category"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "MD ГОСТ21.4.08-2013 versus21.408-2013 identity verified in prior same-day catalog review.",
+          "assessment": "confirmed_reference_typo",
+          "limits": "No OCR-cause claim or technical compliance failure."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_wording",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "no_identical_claim_duplicate_identified",
+      "profile_and_section": "questions_required_missing_section",
+      "engineer_reuse": "no_new_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #9 [TEXT]: blk_adc4052a68344abf9c8f56861b9294d1\n\n\n##### 1. Общие указания\n\nНастоящая Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13Аи 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Летняя.\n\nРабочая документация разработана на основании и в соответствии:\n\n- стадии П получившей положительное заключение экспертизы;\n\n- ГОСТ Р 21.101-2020 \"Основные требования к проектной и рабочей документации\";\n\n- ГОСТ 21.4.08-2013 \"Правила выполнения рабочей документации автоматизации технологических процессов\";\n\n- СП 7.13130.2013 \"Отопление, вентиляция и кондиционирование\";\n\n- СП 77.13330.2016 \"Актуализированная редакция СНиП 3.05.07-85. Системы автоматизации\";\n\n- СП 76.13330.2016 \"Актуализированная редакция СНиП 3.05.06-85. Электротехнические устройства\";\n\n- ПУЭ \"Правила устройства электроустановок. Издание 7\";\n\n- ГОСТ 31565-2012 \"Кабельные изделия. Требования пожарной безопасности\";\n\n- технического задания на проектирование;\n\n- принятых архитектурно-планировочных решений.\n\nТехнические решения, принятые в рабочих чертежах, соответствуют требованиям экологическим, санитарно-гигиеническим, противопожарным и другим действующим норм и правил, и обеспечивают безопасность для жизни и здоровья людей эксплуатацию объекта при соблюдении предусмотренных рабочими чертежами мероприятий.\n\n##### 2. Основные технические решения\n\nДля корпуса 4 подземная часть автоматизации подлежат:\n\n- вытяжная система В4.1.1, обслуживающая блок кладовых, хран. тележек, велосипедная, ПУИ;\n\n- вытяжная система В4.1.2, помещение ЭОМ, помещение ревизий;\n\n- вытяжная система В4.1.4, Электрощитовая ГРЩ блока 13В;\n\n- вытяжная система Вм4.1, Мусоросборная камера, хранение мусора;\n\n- вытяжная система Вм4.1.1 Мусоросборная камера. Пристройка 4.1;\n\n- приточная система Пкр4.1, Пом.ревизий, коридор, ЛХ. 2-18эт. Надземная часть;\n\n- приточная система П4.1.3, Венткамеры. ;\n\n- приточная система П4.1.4, Электрощитовая ГРЩ блока 13В;\n\n- приточная система П4.1.1, Блок кладовых, хран.тележек, велосипедная, ПУИ, ЛХ.;\n\n- приточная система Пм4.1, Мусоросборная камера. Хранение мусора..;\n\n- вытяжная система В5.1.1, Блок кладовых, хран. тележек, велосипедная, ПУИ.;\n\n- вытяжная система В5.1.2, Помещение ЭОМ;\n\n- вытяжная система Вм.5.1, Мусорокамера;\n\n- приточная система П5.1.3, Венткамеры. ;\n\n- приточная система П5.1.1, Блок кладовых, хран.тележек,велосипедная, ПУИ, ЛХ;\n\n- приточная система Пн5.1 Помещение водомерного узла и насосных станций;\n\n- вытяжная система Вн5.1 Помещение водомерного узла и насосных станций;\n\n- приточная система Пу5.1 Управляющая компания;\n\n- приточная система Ву5.1 Управляющая компания;\n\n- приточная система Всу5.1 Управляющая компания. С/У;\n\n- приточная система По5.1 Пост охраны;\n\n- приточная система Во5.1 Пост охраны. ;\n\n- приточная система Вос5.1 Пост охраны. С/У;\n\n- вытяжная система В6.1.1, Блок кладовых;\n\n- вытяжная система В6.1.2, Помещение ЭОМ;\n\n- вытяжная система В6.1.4, Венкамера ПД;\n\n- приточная система Пб.1.1, Блок кладовых, хран.тележек, велосипедная, ПУИ, ЛХ ;\n\n- приточная система Пб.1.4, Венткамеры.;\n\n- приточная система Пкрб.1 Пом.ревизий, коридор, ЛХ. 2-28эт. Надземная часть;\n\n- приточная система Вмб.1 Мусоросборная камера.\n\n###### 2.1. Приточные системы\n\nАвтоматизация приточно-вытяжной системы выполняется на базе шкафа автоматики компании\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-001",
+          "route": "reuse_same_day_prior_reference_identity_review",
+          "scope": "Bibliographic identity only; current wording reviewed separately. No fresh web lookup."
+        }
+      ],
+      "disposition": "assessed_preserve_bounded_claim_with_section_and_scope_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "Неверно указан раздел ПУЭ, содержащий требования к заземлению.",
+        "description": "На листе 4 строка MD 745 содержит: «Оборудование АК подлежит заземлению в соответствии с требованиями СП 76.13330.2016 и гл.7 «ПУЭ» с использованием общего контура заземления. Сопротивление заземляющего устройства, используемого для заземления электрооборудования, предусматривается не более 4 Ом. В цепи заземляющих и нулевых проводников отсутствуют разъединяющие приспособления и предохранители. Присоединение заземляющих и нулевых проводников к частям электрооборудования выполняется сваркой или болтовым соединением, в соответствии с «ПУЭ». Рабочее заземление оборудования следует выполнять согласно техническим требованиям на оборудование.». Требования к заземлению и защитным мерам электробезопасности относятся к главе 1.7 ПУЭ. Запись «гл.7» не идентифицирует эту главу; раздел 7 посвящён электрооборудованию специальных установок.",
+        "page": null,
+        "norm": "ПУЭ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Заменить ссылку «гл.7 «ПУЭ»» на «глава 1.7 ПУЭ».",
+        "risk": "Ошибочная адресация нормативных требований затрудняет проверку решений по заземлению.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": null,
+            "md_lines": "строка 745"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Лист 4",
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 50,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [
+            "formal_reference_category"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "MD гл.7 ПУЭ in grounding paragraph; chapter1.7 grounding identity verified in prior act-text review.",
+          "assessment": "confirmed_reference_imprecision",
+          "limits": "Statement about full section7 subject not separately verified here; unnecessary to narrow correction. No universal4Ohm rule or grounding failure."
+        }
+      ],
+      "unsupported_additions": "section7_subject_not_separately_reverified_remove_unnecessary_clause",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "no_identical_claim_duplicate_identified",
+      "profile_and_section": "questions_required_missing_section",
+      "engineer_reuse": "no_new_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #16 [TEXT]: blk_1865bf51c17e444491a5621d4a33c331\n\n\n##### 6. Система контроля загазованности\n\nДля построения системы контроля загазованности помещений в качестве базового оборудования выбрана автоматизированная система БПС-3-И производства СПО «Аналитприбор». При превышении I порога ПДК СО 20 мг/м³ проектом предусмотрено:\n\n- выдача светового и звукового предупредительного сигнала о превышении I порога ПДК СО в помещение диспетчерской с круглосуточным пребыванием персонала;\n\n- включение общеобменной вентиляции в зоне повышенной концентрации СО, если она выключена. Для обеспечения нормального воздухообмена вентиляция в паркинге работает постоянно.\n\nОбщеобменная вентиляция в зоне повышенной концентрации СО в автостоянке продолжает работать до снижения ПДК СО ниже I порога.\n\nПри превышении II порога ПДК СО 100 мг/м³ проектом предусмотрена выдача светового и звукового аварийного сигнала о превышении II порога ПДК СО в помещение диспетчерской с круглосуточным пребыванием персонала.\n\nЗначения Порог 1 и Порог 2: стандартные предусмотренные 20 и 100 мг/м³ и определяются ГН 2.2.5.1313-03. Газоанализаторы выбраны в необходимом количестве исходя из контролируемой площади 200 м². Высота установки первичных приборов 1,5м – определяется требованиями ТУ-газ-86. Место установки первичных приборов – на стенах и колоннах помещения паркинга, вторичных приборов – в точке оптимальной удаленности от всех подключенных датчиков.\n\n##### 7. Противодымные системы с электрокалорифером\n\nСогласно СП 7.13130.2013 воздух, подаваемый системой противодымной вентиляции в помещения пожаробезопасных зон, должен подогреваться. Схема автоматизации противодымной вентиляции см. лист 6 примера РД pdf. При получении сигнала \"ПОЖАР\" от пожарной сигнализации включается система подпора воздуха в пожаробезопасные зоны (см. статья \"ПС\"). Проектом марки \"-ОВ\" предусматриваются системы подпора воздуха в зоны МГН с подогревом.\n\nСистема выполняется:\n\n- автоматическое включение электрокалорифера системы \"тёплого подпора\" при включении вентилятора и температуре поступающего наружного воздуха ниже 18°C по сигналу проектируемого канального датчика-реле температуры \"Спрут Т-06\";\n\n- автоматическое отключение электрокалорифера системы \"тёплого подпора\" при температуре поступающего наружного воздуха выше 18°C по сигналу проектируемого канального датчика-реле температуры \"Спрут Т-06\";\n\nУправляющий сигнал от датчика-реле температуры поступает в силовой шкаф управления установками систем противодымной вентиляции на э/м пускатель электрокалорифера. Шкаф управления предусмотрен по проекту марки \"-ЭОМ\".\n\n##### 8. Электропитание и заземление оборудования\n\nЭлектроснабжение шкафов осуществляется по проекту 13АВ-РД-ЭМ-КЗ.\n\nЩиты автоматизации и управления для приточных систем вентиляции с водяным подогревом электропитание цепей управления защиты от замораживания выполнено по I категория надежности, электропитания для привода вентилятора по II категории надежности.\n\nОборудование АК подлежит заземлению в соответствии с требованиями СП 76.13330.2016 и гл.7 «ПУЭ» с использованием общего контура заземления. Сопротивление заземляющего устройства, используемого для заземления электрооборудования, предусматривается не более 4 Ом. В цепи заземляющих и нулевых проводников отсутствуют разъединяющие приспособления и предохранители. Присоединение заземляющих и нулевых проводников к частям электрооборудования выполняется сваркой или болтовым соединением, в соответствии с «ПУЭ». Рабочее заземление оборудования следует выполнять согласно техническим требованиям на оборудование.\n\nВсе металлические части проектируемого оборудования, требующие по инструкции заземления, должны быть соединены стандартными проводниками с шинами заземления проектируемых шкафов.\n\n##### 9. Указания по монтажу\n\nПроектируемые кабели соответствуют ГОСТ 31565-2012. Прокладку кабелей в местах пересечения трассой стен и перекрытий выполнить через технологические отверстия или гильзы, предусмотренные в конструкциях. Прочность кабельной проходки при этом обеспечивается мероприятиями по обрамлению проемов и отверстий, предусмотренными в разделах АР, КР.\n\nПрокладываемые по кабеленесущим конструкциям кабели, укладываются \"россыпью\", одно- или многослойно.\n\nКабельные линии при прохождении через конструкции с нормируемым пределом огнестойкости, в том числе через противопожарные стены и перекрытия, в местах пересечения этих преград заделываются наглухо специальными огнезащитными материалами с тем же пределом огнестойкости. Для заделки горизонтальных пересечений конструкций, применить пену огнестойкую FIREFIX ТУ20.30.22-049-09559281-2022 и герметик огнестойкий FIREFIX ТУ 20.30.22-041-09559281-2021. Проходы небронированных кабелей, защищенных и незащищенных проводов через несгораемые стены (перегородки) и междуэтажные перекрытия выполнить в отрезках стальных труб.\n\nВ проемах стен и перекрытий устанавливать обрамление, исключающее их разрушение в процессе эксплуатации. В местах прохода проводов и кабелей через стены, перекрытия или их выхода наружу следует заделать зазоры между проводами, кабелями и трубой легко удаляемой массой из несгораемого материала (применить пену огнестойкую FIREFIX ТУ20.30.22-049-09559281-2022 и герметик огнестойкий FIREFIX ТУ\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-066",
+          "route": "reuse_same_day_prior_reference_identity_review",
+          "scope": "Bibliographic identity only; current wording reviewed separately. No fresh web lookup."
+        }
+      ],
+      "disposition": "assessed_preserve_bounded_claim_with_section_and_scope_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-022",
+      "finding": {
+        "id": "F-022",
+        "severity": "УТОЧНЕНИЕ",
+        "category": "cross_references",
+        "report_section": "questions",
+        "finding": "На листе 42 требуется уточнить согласованность ссылок на электроснабжение. Справа от цепи питания БУРР-1М через QF1 указано: «Электропитание 220В предусмотрено в разделе 21/24-ГК-К5-ЭМ». В примечании 2 питающие и межблочные кабели отнесены к разделу 13АВ-РД-ЭМ-К5. Распространяется ли примечание 2 на питание БУРР-1М? Если да, следует согласовать шифры; если ссылки относятся к разным работам, следует уточнить границы их применения. Примечание не называет БУРР-1М прямо, поэтому однозначный технический конфликт пока не установлен.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_8de25b2b318647aeac8b3298fe03a98c",
+        "value_found": "Схема питания БУРР-1М: 21/24-ГК-К5-ЭМ; примечание 2: «Питающие и межблочные (между внутренними и наружными блоками) кабели прокладываются по разделу 13АВ-РД-ЭМ-К5».",
+        "highlight_regions": [],
+        "source_refs": [
+          "blk_8de25b2b318647aeac8b3298fe03a98c",
+          "blk_400b84df0f63420ab16fb5c330de54b7"
+        ],
+        "source_finding_ids": [
+          "G-096",
+          "G-097"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+            "type": "text",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_cdb6ec6bbabef5ec",
+        "problem": "На листе 42 требуется уточнить согласованность ссылок на электроснабжение. Справа от цепи питания БУРР-1М через QF1 указано: «Электропитание 220В предусмотрено в разделе 21/24-ГК-К5-ЭМ». В примечании 2 питающие и межблочные кабели отнесены к разделу 13АВ-РД-ЭМ-К5. Распространяется ли примечание 2 на питание БУРР-1М? Если да, следует согласовать шифры; если ссылки относятся к разным работам, следует уточнить границы их применения. Примечание не называет БУРР-1М прямо, поэтому однозначный технический конфликт пока не установлен.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-096",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-097",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение ссылок на электроснабжение БУРР-1М: 21/24-ГК-К5-ЭМ в схеме и 13АВ-РД-ЭМ-К5 в примечании 2 листа 42. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение ссылок на электроснабжение БУРР-1М: 21/24-ГК-К5-ЭМ в схеме и 13АВ-РД-ЭМ-К5 в примечании 2 листа 42. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 42",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 68,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "БУРР supply QF1 points to21/24-ГК-К5-ЭМ; note2 specifies13АВ-РД-ЭМ-К5 for supply/interunit cables.",
+          "assessment": "confirmed_different_references_scope_question",
+          "limits": "Note does not explicitly include БУРР supply; do not claim definite same-work technical contradiction."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_wording",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "no_identical_claim_duplicate_identified",
+      "profile_and_section": "questions_appropriate",
+      "engineer_reuse": "no_new_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+          "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+          "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "БУРР supply QF1 points to21/24-ГК-К5-ЭМ; note2 specifies13АВ-РД-ЭМ-К5 for supply/interunit cables."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #147 [TEXT]: blk_400b84df0f63420ab16fb5c330de54b7\n\n\nПримечание:\n\n1. Исполнительные блоки БИС-1М связаны с базовым блоком БУРР-1М по радиоканалу;\n\n2. Питающие и межблочные (между внутренними и наружными блоками) кабели прокладываются по разделу 13АВ-РД-ЭМ-К5;\n\n3. Оборудование в перечне элементов представлена для 1 сплит системы.\n\n## Page 47 — Sheet 43 — Схема внешних подключений системы управления и контроля загазованности СУ-К32\n"
+        }
+      ],
+      "disposition": "assessed_preserve_bounded_claim_with_section_and_scope_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-023",
+      "finding": {
+        "object_id": "O-02",
+        "operation": "identity_across_views",
+        "severity": "low",
+        "problem": "Различается запись марки сигнального кабеля в схеме и кабельном журнале",
+        "description": "Для линии В4.1.1-1 от ШАУВ-1-К4ПЧ к PDS1 схема внешних подключений указывает КСПВПГнг(А)-HF, а предоставленная таблица кабельного журнала — КСВПГнг(A)-HF. При этом назначение линии, сечение 1x2x0,75 и длина 30 м совпадают. Подтверждено расхождение записи марки; различие фактически выбранных изделий и электрические последствия не установлены.",
+        "solution": "Сверить обозначение с принятой маркой изделия и привести запись этой линии в кабельном журнале и схеме подключений к единому виду.",
+        "sheet": "Листы 25, 1",
+        "evidence": [
+          {
+            "block_id": "blk_1c493988cdf14cee9ad351ef2e706470",
+            "description": "Лист 25, цепь PDS1, кабель В4.1.1-1: марка КСПВПГнг(А)-HF, сечение 1x2x0,75, длина 30 м."
+          },
+          {
+            "block_id": "blk_019b790b96c0452e9b83c348ec3d429c",
+            "description": "Кабельный журнал, лист 1, строка B4.1.1-1, начало ШАУВ-1-К4ПЧ, конец PDS1.",
+            "quote": "КСВПГнг(A)-HF"
+          }
+        ],
+        "report_section": "questions",
+        "question_basis": "minor_confirmed",
+        "profile_reason": "Локальное расхождение буквенной записи марки при совпадающих назначении, сечении и длине линии. Источники не устанавливают применение разных изделий, поэтому замечание ограничено согласованием документации.",
+        "operation_semantic_verified": false,
+        "source_finding_ids": [
+          "O-42ce13236d7eac9238cc1391"
+        ],
+        "operation_candidate_lineage": [
+          {
+            "source_finding_id": "O-42ce13236d7eac9238cc1391",
+            "status": "requires_semantic_review",
+            "source_claim": "problem: Различается запись марки сигнального кабеля в схеме и кабельном журнале\ndescription: Для линии В4.1.1-1 от ШАУВ-1-К4ПЧ к PDS1 схема внешних подключений указывает КСПВПГнг(А)-HF, а предоставленная таблица кабельного журнала — КСВПГнг(A)-HF. При этом назначение линии, сечение 1x2x0,75 и длина 30 м совпадают. Подтверждено расхождение записи марки; различие фактически выбранных изделий и электрические последствия не установлены.\nsolution: Сверить обозначение с принятой маркой изделия и привести запись этой линии в кабельном журнале и схеме подключений к единому виду.",
+            "existing_block_ids": [
+              "blk_1c493988cdf14cee9ad351ef2e706470",
+              "blk_019b790b96c0452e9b83c348ec3d429c"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "id": "F-023",
+        "source_stage": "object_operations_5b051b292826d72c",
+        "sheet_title": "13АВ-РД-АК2-ПА, лист 25; 13АВ-РД-АК2-ПА.КЖ, лист 1",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "norm": null,
+        "norm_quote": null,
+        "quality": {
+          "practicality_score": 50,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "O-42ce13236d7eac9238cc1391",
+            "source_claim": "problem: Различается запись марки сигнального кабеля в схеме и кабельном журнале\ndescription: Для линии В4.1.1-1 от ШАУВ-1-К4ПЧ к PDS1 схема внешних подключений указывает КСПВПГнг(А)-HF, а предоставленная таблица кабельного журнала — КСВПГнг(A)-HF. При этом назначение линии, сечение 1x2x0,75 и длина 30 м совпадают. Подтверждено расхождение записи марки; различие фактически выбранных изделий и электрические последствия не установлены.\nsolution: Сверить обозначение с принятой маркой изделия и привести запись этой линии в кабельном журнале и схеме подключений к единому виду.",
+            "block_ids": [
+              "blk_1c493988cdf14cee9ad351ef2e706470",
+              "blk_019b790b96c0452e9b83c348ec3d429c"
+            ]
+          }
+        ]
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "В4.1.1-1/PDS1: diagramКСПВПГ versus journalКСВПГ, same30m/1x2x0.75 cabinetchain.",
+          "assessment": "confirmed_same_line_spelling_difference",
+          "limits": "No proof different supplied product, equivalence or electrical consequence."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_wording",
+      "novel_useful_content": "same_line_evidence_extends_F007",
+      "duplicate_burden": "combine_with_F007_as_same_brand_clarification",
+      "profile_and_section": "questions_appropriate",
+      "engineer_reuse": "no_new_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1c493988cdf14cee9ad351ef2e706470.png",
+          "sha256": "fa028d82f0e5f818dd38743f9b5d6fb88006621d52993253769127266e375b24",
+          "block_id": "blk_1c493988cdf14cee9ad351ef2e706470",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "В4.1.1-1/PDS1: diagramКСПВПГ versus journalКСВПГ, same30m/1x2x0.75 cabinetchain."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_019b790b96c0452e9b83c348ec3d429c",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #208 [TEXT]: blk_019b790b96c0452e9b83c348ec3d429c\n\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| B4.1.1-1 | ШАУВ-1-К4ПЧ | PDS1 | КСВПГнг(A)-HF | 1x2x0,75 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | КСВПГнг(A)-HF 1x2x0,75 | 20/3/3/ 4 |  |\n| B4.1.1-2 | ШАУВ-1-К4ПЧ | M1 | ППГнг(A)-HF | 4x2,5 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | ППГнг(A)-HF 4x2,5 | 20/3/3/ 4 |  |\n| B4.1.1-3 | ШАУВ-1-К4ПЧ | XТ1 | ППГнг(A)-HF | 3x1,5 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | ППГнг(A)-HF 3x1,5 | 20/3/3/ 4 |  |\n| B4.1.1-4 | ШАУВ-1-К4ПЧ | XТ1 | КСВПГнг(A)-HF | 1x2x0,75 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | КСВПГнг(A)-HF 1x2x0,75 | 20/3/3/ 4 |  |\n| B4.1.2-1 | ШАУВ-1-К4ПЧ | PDS2 | КСВПГнг(A)-HF | 1x2x0,75 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | КСВПГнг(A)-HF 1x2x0,75 | 20/3/3/ 4 |  |\n\n## Page 60 — Sheet 2\n"
+        }
+      ],
+      "disposition": "assessed_preserve_bounded_claim_with_section_and_scope_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-024",
+      "finding": {
+        "object_id": "O-03",
+        "operation": "identity_across_views",
+        "severity": "medium",
+        "problem": "Для одной линии П4.1.3-9 заданы разные сечения кабеля.",
+        "description": "В кабельном журнале одна маркировка от ШАУВ-2-К4ПЧ к электронагревателю приведена на листе 5 с исполнением 4×2,5 мм², а на листе 6 — 4×4,0 мм². В обеих строках длина 15 м. Схема внешних подключений листа 26 показывает одну линию П4.1.3-9 к электронагревателю П4.1.3, от клемм 40–42 и PE, с исполнением 4×4,0 мм² и длиной 15 м. Наименование клеммника этой отходящей цепи отдельно не установлено. Различных экземпляров или участков кабеля источники не обозначают. Это подтвержденное противоречие назначения кабеля; допустимость каждого сечения по нагрузке не проверена.",
+        "solution": "Установить расчетное исполнение линии и согласовать обе записи кабельного журнала со схемой подключений и ведомостью кабелей. При сохранении двух физических кабелей дать им отдельные маркировки и явно показать их подключения.",
+        "sheet": "Листы 5, 6, 26",
+        "evidence": [
+          {
+            "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+            "description": "Строка П4.1.3-9: ШАУВ-2-К4ПЧ — электронагреватель, ППГнг(А)-HF, 4×2,5 мм², 15 м."
+          },
+          {
+            "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+            "description": "Строка П4.1.3-9: тот же шкаф — электронагреватель системы П4.1.3, ППГнг(А)-HF, 4×4,0 мм², 15 м."
+          },
+          {
+            "block_id": "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+            "description": "Правая силовая цепь электронагревателя: П4.1.3-9, кабель 4×4,0 мм², L=15 м; клеммы шкафа 40, 41, 42, PE соединены с U, V, W, PE нагревателя."
+          },
+          {
+            "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+            "description": "Ведомость листа 26 содержит 15 м кабеля ППГнг(A)-HF 4×4,0 мм²."
+          }
+        ],
+        "report_section": "technical_findings",
+        "operation_semantic_verified": false,
+        "source_finding_ids": [
+          "O-34503edb626478b28d870901"
+        ],
+        "operation_candidate_lineage": [
+          {
+            "source_finding_id": "O-34503edb626478b28d870901",
+            "status": "requires_semantic_review",
+            "source_claim": "problem: Для одной линии П4.1.3-9 заданы разные сечения кабеля.\ndescription: В кабельном журнале одна маркировка от ШАУВ-2-К4ПЧ к электронагревателю приведена на листе 5 с исполнением 4×2,5 мм², а на листе 6 — 4×4,0 мм². В обеих строках длина 15 м. Схема внешних подключений листа 26 показывает одну линию П4.1.3-9 к электронагревателю П4.1.3, от клемм 40–42 и PE, с исполнением 4×4,0 мм² и длиной 15 м. Наименование клеммника этой отходящей цепи отдельно не установлено. Различных экземпляров или участков кабеля источники не обозначают. Это подтвержденное противоречие назначения кабеля; допустимость каждого сечения по нагрузке не проверена.\nsolution: Установить расчетное исполнение линии и согласовать обе записи кабельного журнала со схемой подключений и ведомостью кабелей. При сохранении двух физических кабелей дать им отдельные маркировки и явно показать их подключения.",
+            "existing_block_ids": [
+              "blk_3efc4048723143beaeb20fa1792f1776",
+              "blk_13738f8bb6f840fcb0cb37491b612396",
+              "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+              "blk_c5ecdd6fe0d145118c604b663f84bba8"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "id": "F-024",
+        "source_stage": "object_operations_e04ccd2df23a392b",
+        "sheet_title": "13АВ-РД-АК2-ПА.КЖ: 5, 6; 13АВ-РД-АК2-ПА: 26",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "norm": null,
+        "norm_quote": null,
+        "quality": {
+          "practicality_score": 42,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "O-34503edb626478b28d870901",
+            "source_claim": "problem: Для одной линии П4.1.3-9 заданы разные сечения кабеля.\ndescription: В кабельном журнале одна маркировка от ШАУВ-2-К4ПЧ к электронагревателю приведена на листе 5 с исполнением 4×2,5 мм², а на листе 6 — 4×4,0 мм². В обеих строках длина 15 м. Схема внешних подключений листа 26 показывает одну линию П4.1.3-9 к электронагревателю П4.1.3, от клемм 40–42 и PE, с исполнением 4×4,0 мм² и длиной 15 м. Наименование клеммника этой отходящей цепи отдельно не установлено. Различных экземпляров или участков кабеля источники не обозначают. Это подтвержденное противоречие назначения кабеля; допустимость каждого сечения по нагрузке не проверена.\nsolution: Установить расчетное исполнение линии и согласовать обе записи кабельного журнала со схемой подключений и ведомостью кабелей. При сохранении двух физических кабелей дать им отдельные маркировки и явно показать их подключения.",
+            "block_ids": [
+              "blk_3efc4048723143beaeb20fa1792f1776",
+              "blk_13738f8bb6f840fcb0cb37491b612396",
+              "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+              "blk_c5ecdd6fe0d145118c604b663f84bba8"
+            ]
+          }
+        ]
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Same П4.1.3-9/15m/cabinet/heater has4x2.5 versus4x4 in two journalrows; graphicterm40–42/PE shows4x4/15m.",
+          "assessment": "confirmed_same_line_cross_section_conflict",
+          "limits": "No evidence of two physical cables; no load adequacy calculation; terminalblock name remains unspecified."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_wording",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "no_identical_claim_duplicate_identified",
+      "profile_and_section": "technical_appropriate",
+      "engineer_reuse": "no_new_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #212 [TEXT]: blk_3efc4048723143beaeb20fa1792f1776\n\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Системы П4.1.3 и П4.1.4 |  |  |  |  |  |  |  |  |  |\n| П4.1.3-1 | ШАУВ-2-К4ПЧ | ТЕ1 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 10/10 |  |\n| П4.1.3-2 | ШАУВ-2-К4ПЧ | ТЕ2 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.3-3 | ШАУВ-2-К4ПЧ | ТС1 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.3-4 | ШАУВ-2-К4ПЧ | PDS1 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.3-5 | ШАУВ-2-К4ПЧ | PDS2 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.3-6 | ШАУВ-2-К4ПЧ | M1 | ППГнг(А)-HF | 4х2,5 | 15 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 10/5 |  |\n| П4.1.3-7 | ШАУВ-2-К4ПЧ | XТ1 | ППГнг(А)-HF | 3х1,5 | 15 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 10/5 |  |\n| П4.1.3-8 | ШАУВ-2-К4ПЧ | XТ1 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.3-9 | ШАУВ-2-К4ПЧ | Электронагреватель | ППГнг(А)-HF | 4х2,5 | 15 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 10/5 |  |\n| П4.1.4-1 | ШАУВ-2-К4ПЧ | ТЕ3 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.4-2 | ШАУВ-2-К4ПЧ | PDS3 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.4-3 | ШАУВ-2-К4ПЧ | PDS4 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10/5 |  |\n| П4.1.4-4 | ШАУВ-2-К4ПЧ | M2 | ППГнг(А)-HF | 4х2,5 | 15 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 10/5 |  |\n| П4.1.4-5 | ШАУВ-2-К4ПЧ | XТ2 | КСПЭВПГнг(А)-HF | 2х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 2х2х0,75 | 10/5 |  |\n|  |  |  |  |  |  |  |  |  |  |\n\n## Page 64 — Sheet 6\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #213 [TEXT]: blk_13738f8bb6f840fcb0cb37491b612396\n\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| П4.1.4-6 | ШАУВ-2-К4ПЧ | ХТ2 | КСПВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| П4.1.4-7 | ШАУВ-2-К4ПЧ | ХТ3 | КСПЭВПГнг(А)-HF | 2x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(А)-HF 2x2x0,75 | 10/5 |  |\n| П4.1.4-8 | ШАУВ-2-К4ПЧ | ХТ3 | КСПВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| П4.1.3-9 | ШАУВ-2-К4ПЧ | Электронагреватель системы П4.1.3 | ППГнг(А)-HF | 4x4,0 | 15 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x4,0 | 10/5 |  |\n| Система Пкр4.1 |  |  |  |  |  |  |  |  |  |\n| Пкр4.1-1 | ШАУВ-3-К4ПЧ | ТЕ1 | КСПЭВПГнг(А)-HF | 1x2x0,75 | 15 | труба гофр. | КСПЭВПГнг(А)-HF 1x2x0,75 | 15 |  |\n| Пкр4.1-2 | ШАУВ-3-К4ПЧ | ТЕ2 | КСПЭВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПЭВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-3 | ШАУВ-3-К4ПЧ | ТЕ3 | КСПЭВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПЭВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-4 | ШАУВ-3-К4ПЧ | ТС1 | КСПВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-5 | ШАУВ-3-К4ПЧ | PDS1 | КСПВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-6 | ШАУВ-3-К4ПЧ | PDS2 | КСПВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-7 | ШАУВ-3-К4ПЧ | PDS3 | КСПВПГнг(А)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10 |  |\n| Пкр4.1-8 | ШАУВ-3-К4ПЧ | M1 | ППГнг(А)-HF | 4x2,5 | 10 | труба гофр. | ППГнг(А)-HF 4x2,5 | 10 |  |\n| Пкр4.1-9 | ШАУВ-3-К4ПЧ | M2 | ППГнг(А)-HF | 4x2,5 | 10 | труба гофр. | ППГнг(А)-HF 4x2,5 | 10 |  |\n| Пкр4.1-10 | ШАУВ-3-К4ПЧ | ХТ1 | КСПЭВПГнг(А)-HF | 2x2x0,75 | 10 | труба гофр. | КСПЭВПГнг(А)-HF 2x2x0,75 | 10 |  |\n| Пкр4.1-11 | ШАУВ-3-К4ПЧ | ХТ2 | ППГнг(А)-HF | 3x1,5 | 10 | труба гофр. | ППГнг(А)-HF 3x1,5 | 10 |  |\n|  |  |  |  |  |  |  |  |  |  |\n\n## Page 65 — Sheet 7\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b2b11f12b2c24e10bebb7fb32c3680f5.png",
+          "sha256": "152537eff5e3477a461f86fc4fdafc54ba9263ebc2c6808265bf971fcf635e3f",
+          "block_id": "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "Same П4.1.3-9/15m/cabinet/heater has4x2.5 versus4x4 in two journalrows; graphicterm40–42/PE shows4x4/15m."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #97 [TEXT]: blk_c5ecdd6fe0d145118c604b663f84bba8\n\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 50 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 105 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 30 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 15 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 30 | м |\n|  | Кабель ППГнг(A)-HF 4x4,0мм² | 15 | м |\n"
+        }
+      ],
+      "disposition": "assessed_preserve_bounded_claim_with_section_and_scope_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-025",
+      "finding": {
+        "object_id": "O-03",
+        "operation": "identity_across_views",
+        "severity": "medium",
+        "problem": "Два отдельных преобразователя частоты в одном шкафу обозначены SC UZ1.",
+        "description": "В строке шкафа ШАУВ-2-К4ПЧ на функциональной схеме листа 8 обозначение SC UZ1 повторено в столбцах 7 и 14, соответствующих разным вентиляторам П4.1.3/M1 и П4.1.4/M2. Перечень элементов этого листа различает SC UZ1 и SC UZ2, а спецификация предусматривает два ПЧ для этих систем. Следовательно, обозначения на функциональной схеме не различают два экземпляра внутри одного шкафа. Ошибка фактического подключения или недостаток числа ПЧ этим не доказаны.",
+        "solution": "Согласовать позиционные обозначения двух ПЧ на функциональной схеме с перечнем элементов и адресным перечнем шкафа, однозначно закрепив каждый ПЧ за своим вентилятором.",
+        "page": 12,
+        "sheet": "8",
+        "evidence": [
+          {
+            "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+            "description": "Строка ШАУВ-2-К4ПЧ, столбец 7 для П4.1.3 и столбец 14 для П4.1.4: оба круглых обозначения содержат SC UZ1."
+          },
+          {
+            "block_id": "blk_0457419703024673bb4328b18d47501e",
+            "quote": "SC UZ1, SC UZ2",
+            "description": "В перечне указаны два преобразователя частоты 0,75 кВт, 380 В."
+          },
+          {
+            "block_id": "blk_192d323532434ee1aba250ffaac80b47",
+            "description": "Позиция 2.2: два ПЧ 0,75 кВт, 380 В, установленные внутри щита для П4.1.3 и П4.1.4."
+          },
+          {
+            "block_id": "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+            "description": "Раздельные отходящие цепи: M1 через П4.1.3-6 от клемм 20–22 и PE; M2 через П4.1.4-4 от клемм 23–25 и PE."
+          }
+        ],
+        "report_section": "technical_findings",
+        "operation_semantic_verified": false,
+        "source_finding_ids": [
+          "O-530d53cf956d8b01fa9197d3"
+        ],
+        "operation_candidate_lineage": [
+          {
+            "source_finding_id": "O-530d53cf956d8b01fa9197d3",
+            "status": "requires_semantic_review",
+            "source_claim": "problem: Два отдельных преобразователя частоты в одном шкафу обозначены SC UZ1.\ndescription: В строке шкафа ШАУВ-2-К4ПЧ на функциональной схеме листа 8 обозначение SC UZ1 повторено в столбцах 7 и 14, соответствующих разным вентиляторам П4.1.3/M1 и П4.1.4/M2. Перечень элементов этого листа различает SC UZ1 и SC UZ2, а спецификация предусматривает два ПЧ для этих систем. Следовательно, обозначения на функциональной схеме не различают два экземпляра внутри одного шкафа. Ошибка фактического подключения или недостаток числа ПЧ этим не доказаны.\nsolution: Согласовать позиционные обозначения двух ПЧ на функциональной схеме с перечнем элементов и адресным перечнем шкафа, однозначно закрепив каждый ПЧ за своим вентилятором.",
+            "existing_block_ids": [
+              "blk_aa15c30f0e7e48988cadcac795e1ccff",
+              "blk_0457419703024673bb4328b18d47501e",
+              "blk_192d323532434ee1aba250ffaac80b47",
+              "blk_b2b11f12b2c24e10bebb7fb32c3680f5"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "id": "F-025",
+        "source_stage": "object_operations_e04ccd2df23a392b",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "norm": null,
+        "norm_quote": null,
+        "quality": {
+          "practicality_score": 40,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "O-530d53cf956d8b01fa9197d3",
+            "source_claim": "problem: Два отдельных преобразователя частоты в одном шкафу обозначены SC UZ1.\ndescription: В строке шкафа ШАУВ-2-К4ПЧ на функциональной схеме листа 8 обозначение SC UZ1 повторено в столбцах 7 и 14, соответствующих разным вентиляторам П4.1.3/M1 и П4.1.4/M2. Перечень элементов этого листа различает SC UZ1 и SC UZ2, а спецификация предусматривает два ПЧ для этих систем. Следовательно, обозначения на функциональной схеме не различают два экземпляра внутри одного шкафа. Ошибка фактического подключения или недостаток числа ПЧ этим не доказаны.\nsolution: Согласовать позиционные обозначения двух ПЧ на функциональной схеме с перечнем элементов и адресным перечнем шкафа, однозначно закрепив каждый ПЧ за своим вентилятором.",
+            "block_ids": [
+              "blk_aa15c30f0e7e48988cadcac795e1ccff",
+              "blk_0457419703024673bb4328b18d47501e",
+              "blk_192d323532434ee1aba250ffaac80b47",
+              "blk_b2b11f12b2c24e10bebb7fb32c3680f5"
+            ]
+          }
+        ]
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F035_UZ_identity:f588470dec49e00c838c",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Two SCUZ1 in samecabinet sheet8 atcolumns7/14 forM1/M2; listUZ1/UZ2 andSO2.2 two drives; external separate cablechains.",
+          "assessment": "confirmed_distinct_object_tag_collision",
+          "limits": "No actual drive shortage or wiring failure demonstrated."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_wording",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "no_identical_claim_duplicate_identified",
+      "profile_and_section": "technical_appropriate",
+      "engineer_reuse": "no_new_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+          "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+          "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "Two SCUZ1 in samecabinet sheet8 atcolumns7/14 forM1/M2; listUZ1/UZ2 andSO2.2 two drives; external separate cablechains."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_0457419703024673bb4328b18d47501e",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #28 [TEXT]: blk_0457419703024673bb4328b18d47501e\n\n\nПеречень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2, ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 2 |  |\n| ТС1 | Теромастат | 1 | (комплектно с электронагревателем) |\n| PDS2, PDS4 | Датчик давления дифференциальный 20-200 Па | 2 |  |\n| PDS1, PDS3 | Датчик давления дифференциальный 50-500 Па | 2 |  |\n| У1 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В | 1 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| У2, У3 | Электропривод воздушной заслонки без возвратной пружиной, плавное регулирование 24 В | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| SC UZ1, SC UZ2 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001Н | 2 |  |\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_192d323532434ee1aba250ffaac80b47",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #243 [TEXT]: blk_192d323532434ee1aba250ffaac80b47\n\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n|  | Приборы и средства автоматизации |  |  |  |  |  |  |  |\n| 1 | Шкаф ШАУВ-1-К4ПЧ |  |  |  |  |  |  |  |\n| 1.1 | Шкаф управления с контроллером Феникс шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 1.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 3 |  | Установлен внутри щита (для В4.1.1,В4.1.2, В4.1.4) |\n| 1.3 | Преобразователь частоты 1,5кВт 380В | Веспер | E5-MINI-002H | Савэл-Инжиниринг | шт. | 1 |  | Установлен внутри щита (для Вм4.1) |\n| 1.4 | Преобразователь частоты 2,2кВт 380В | Веспер | E5-MINI-003H | Савэл-Инжиниринг | шт. | 1 |  | Установлен внутри щита (для Вм4.1.1) |\n| 1.5 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 5 |  |  |\n| 1.6 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В |  | DA5FU230-DS | Ноосоп | шт. | 5 |  |  |\n| 2 | Шкаф ШАУВ-2-К4ПЧ |  |  |  |  |  |  |  |\n| 2.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 2.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для П4.1.3 и П4.1.4) |\n| 2.3 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 2.4 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 2.5 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 2.6 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 2.7 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 95 — Sheet 2\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b2b11f12b2c24e10bebb7fb32c3680f5.png",
+          "sha256": "152537eff5e3477a461f86fc4fdafc54ba9263ebc2c6808265bf971fcf635e3f",
+          "block_id": "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "Two SCUZ1 in samecabinet sheet8 atcolumns7/14 forM1/M2; listUZ1/UZ2 andSO2.2 two drives; external separate cablechains."
+        }
+      ],
+      "disposition": "assessed_preserve_bounded_claim_with_section_and_scope_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-027",
+      "finding": {
+        "id": "F-027",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_marking",
+        "finding": "Обозначение шкафа управления системой ПД4.1.4 не согласовано между документами: на функциональной схеме 13АВ-РД-АК2-ПА, лист 24, в левой ячейке таблицы сигналов указано «ШУ-ПД4.14 (учтено в разделе ЭМ)», а на схеме внешних подключений того же комплекта, лист 47, внутри контура щита внизу слева — «ЩУ-ПД4.1.4». В кабельном журнале 13АВ-РД-АК2-ПА.КЖ, лист 35, строка кабеля «ПД4.1.4-1» также задает подключение от «ТЕ1 (ПД 4.1.4)» к «ЩУ-ПД4.1.4». Различаются буквенная часть марки и разделение числового индекса.\n\nРекомендация: Согласовать единую марку шкафа системы ПД4.1.4 на функциональной схеме, схеме внешних подключений и в кабельном журнале.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_dc32b584ce9748a5b520a300112b12de",
+        "value_found": "ШУ-ПД4.14; ЩУ-ПД4.1.4",
+        "highlight_regions": [],
+        "source_finding_ids": [
+          "G-059",
+          "G-060"
+        ],
+        "source_refs": [
+          "blk_dc32b584ce9748a5b520a300112b12de",
+          "blk_400a32e7aac048e6a9d6da65c598995f",
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_db759e961c1045b2822ce177cef0a17f",
+          "blk_2b217a39b5174211bec9d56597c2ec3e",
+          "blk_388cf697312746a88850319891c6bcae"
+        ],
+        "report_section": "technical_findings",
+        "evidence": [
+          {
+            "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_400a32e7aac048e6a9d6da65c598995f",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+            "type": "text",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_db759e961c1045b2822ce177cef0a17f",
+            "type": "text",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_2b217a39b5174211bec9d56597c2ec3e",
+            "type": "text",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_388cf697312746a88850319891c6bcae",
+            "type": "text",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_8e01d82f6bc92871_context",
+        "problem": "Обозначение шкафа управления системой ПД4.1.4 не согласовано между документами: на функциональной схеме 13АВ-РД-АК2-ПА, лист 24, в левой ячейке таблицы сигналов указано «ШУ-ПД4.14 (учтено в разделе ЭМ)», а на схеме внешних подключений того же комплекта, лист 47, внутри контура щита внизу слева — «ЩУ-ПД4.1.4». В кабельном журнале 13АВ-РД-АК2-ПА.КЖ, лист 35, строка кабеля «ПД4.1.4-1» также задает подключение от «ТЕ1 (ПД 4.1.4)» к «ЩУ-ПД4.1.4». Различаются буквенная часть марки и разделение числового индекса.\n\nРекомендация: Согласовать единую марку шкафа системы ПД4.1.4 на функциональной схеме, схеме внешних подключений и в кабельном журнале.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-059",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-060",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое несоответствие марки одного шкафа: «ШУ-ПД4.14» на листе 24 и «ЩУ-ПД4.1.4» в кабельном журнале на листе 35.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое несоответствие марки одного шкафа: «ШУ-ПД4.14» на листе 24 и «ЩУ-ПД4.1.4» в кабельном журнале на листе 35.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Листы 24, 47, 35, 1",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 58,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Sheet24 ШУ-ПД4.14 versus sheet47 ЩУ-ПД4.1.4 andjournalПД4.1.4-1 same system.",
+          "assessment": "confirmed_mark_spelling_difference",
+          "limits": "Reference reconciliation, not demonstrated equipment failure."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_wording",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "no_identical_claim_duplicate_identified",
+      "profile_and_section": "questions_required_instead_of_technical",
+      "engineer_reuse": "no_new_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+          "sha256": "dd058661889a4dc4848d14c89c82942d241702c6c954001e2acef9f5a28b3851",
+          "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "Sheet24 ШУ-ПД4.14 versus sheet47 ЩУ-ПД4.1.4 andjournalПД4.1.4-1 same system."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_400a32e7aac048e6a9d6da65c598995f.png",
+          "sha256": "9f1c56a09670dc3bf5436ad8a321abef871308f8be8292c116e32b30cad1b5bb",
+          "block_id": "blk_400a32e7aac048e6a9d6da65c598995f",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "Sheet24 ШУ-ПД4.14 versus sheet47 ЩУ-ПД4.1.4 andjournalПД4.1.4-1 same system."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #242 [TEXT]: blk_a256f98d4e01408d90baba99d8b2cc19\n\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| СУКЗ-1 | СУ-К33 | ШАУВ-1-К6АС | КСПВПнг(A)-HF | 1х2х0,75 | 45 | лоток 100x100, лоток 50x50, труба гофр. | КСПВПнг(A)-HF 1х2х0,75 | 10/30/5 |  |\n| Противодымные приточные системы |  |  |  |  |  |  |  |  |  |\n| ПД4.1.4-1 | ТЕ1 (ПД 4.1.4) | ЩУ-ПД4.1.4 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 45 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 45 |  |\n| ПД4.1.21.2-1 | ТЕ1 (ПД4.1.21.2) | ЩУ-ПД4.1.21.2 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 35 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 35 |  |\n| ПД5.1.4-1 | ТЕ1 (ПД5.1.4) | ЩУ-ПД5.1.4 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 105 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 105 |  |\n| ПД5.1.21.2-1 | ТЕ1 (ПД5.1.21.2) | ЩУ-ПД5.1.21.2 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 105 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 105 |  |\n| ПД6.1.4-1 | ТЕ1 (ПД6.1.4) | ЩУ-ПД6.1.4 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 65 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 65 |  |\n| ПД6.1.21.2-1 | ТЕ1 (ПД6.1.21.2) | ЩУ-ПД6.1.21.2 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 65 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 65 |  |\n|  |  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n\n## Page 94 — Sheet 1 — Спецификация оборудования, изделий и материалов\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_db759e961c1045b2822ce177cef0a17f",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #90 [TEXT]: blk_db759e961c1045b2822ce177cef0a17f\n\n\nПримечание:\n\n1. Данная схема выполнена для противодымной приточной системы ПД4.1.4, для ПД4.1.21.2, ПД 5.1.4, ПД5.1.21.2, ПД 6.1.4, ПД6.1.21.2 аналогично.\n\n2. Предельные рабочие значения измеряемых величин уточняются при ПНР\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2b217a39b5174211bec9d56597c2ec3e",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #162 [TEXT]: blk_2b217a39b5174211bec9d56597c2ec3e\n\n\nПримечание:\n\nДанная схема выполнена для противодымной приточной системы ПД4.1.4,\nдля ПД4.1.21.2, ПД 5.1.4, ПД5.1.21.2, ПД 6.1.4, ПД6.1.21.2 аналогично\n\n## Page 52 — Sheet 48 — План расположения оборудования и кабельных трасс. Кровля. Корпус 4\n"
+        }
+      ],
+      "disposition": "assessed_preserve_bounded_claim_with_section_and_scope_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-028",
+      "finding": {
+        "id": "F-028",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "connection_identification",
+        "finding": "Для кабеля термостата системы П6.1.4 шкафа ШАУВ-2-К6ПЧ указаны разные конечные приборы. На схеме внешних подключений, лист 38, кабель П6.1.4-2 соединяет клеммы 15–16 шкафа с TS2. В кабельном журнале 13АВ-РД-АК2-ПА.КЖ, листы 25 и 26, в строке «Пб.1.4-2» указан конец «ТС1». Функциональная схема, лист 20, подтверждает TS2 в системе П6.1.4 и отдельный TS1 в системе П6.1.1. Расхождение создаёт неоднозначность идентификации прибора при подключении и проверке цепи.\n\nРекомендация: Согласовать обозначение конечного прибора этой цепи в кабельном журнале и схемах.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_40bad73db9d44699955a7a4682f309a8",
+        "value_found": "Лист 38: П6.1.4-2 → TS2, клеммы 15–16. Кабельный журнал, листы 25–26: «Пб.1.4-2 | ШАУВ-2-К6ПЧ | ТС1».",
+        "highlight_regions": [],
+        "source_finding_ids": [
+          "G-087"
+        ],
+        "source_refs": [
+          "blk_40bad73db9d44699955a7a4682f309a8",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "blk_8c1c32681acd42c79d8190b013bbbf0c",
+          "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "blk_54608a880c2545aa926c442d213988c3",
+          "blk_388cf697312746a88850319891c6bcae"
+        ],
+        "report_section": "technical_findings",
+        "evidence": [
+          {
+            "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+            "type": "text",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_8c1c32681acd42c79d8190b013bbbf0c",
+            "type": "text",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_b30682ddac7544ab95a724bbed5f6e69",
+            "type": "text",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_54608a880c2545aa926c442d213988c3",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_388cf697312746a88850319891c6bcae",
+            "type": "text",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_2ff4fe498788740e_context",
+        "problem": "Для кабеля термостата системы П6.1.4 шкафа ШАУВ-2-К6ПЧ указаны разные конечные приборы. На схеме внешних подключений, лист 38, кабель П6.1.4-2 соединяет клеммы 15–16 шкафа с TS2. В кабельном журнале 13АВ-РД-АК2-ПА.КЖ, листы 25 и 26, в строке «Пб.1.4-2» указан конец «ТС1». Функциональная схема, лист 20, подтверждает TS2 в системе П6.1.4 и отдельный TS1 в системе П6.1.1. Расхождение создаёт неоднозначность идентификации прибора при подключении и проверке цепи.\n\nРекомендация: Согласовать обозначение конечного прибора этой цепи в кабельном журнале и схемах.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-087",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Листы 38, 25, 26, 24, 20, 1",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 40,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "SamecabinetП6.1.4-2 term15/16→TS2 graphic versus journalПб.1.4-2→ТС1 on25/26; functional20 has separateTS1 firstsystem andTS2 second.",
+          "assessment": "confirmed_endpoint_tag_conflict",
+          "limits": "Keep Cyrillicб/6 transcription visible; identity rests on cabinet,system,function and cablecontext, not spelling alone. No installed failure."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_wording",
+      "novel_useful_content": "known_target_related_not_claimed_new",
+      "duplicate_burden": "no_identical_claim_duplicate_identified",
+      "profile_and_section": "technical_appropriate",
+      "engineer_reuse": "no_new_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+          "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+          "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "SamecabinetП6.1.4-2 term15/16→TS2 graphic versus journalПб.1.4-2→ТС1 on25/26; functional20 has separateTS1 firstsystem andTS2 second."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #232 [TEXT]: blk_07eb5e614f424f588877ee1d3d5ce41b\n\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Пб.1.1-7 | ШАУВ-2-К6ПЧ | M1 | ППГнг(A)-HF | 4x2,5 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 10/5 |  |\n| Пб.1.1-8 | ШАУВ-2-К6ПЧ | XТ1 | КСПЭВПГнг(A)-HF | 2x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(A)-HF 2x2x0,75 | 10/5 |  |\n| Пб.1.1-9 | ШАУВ-2-К6ПЧ | XТ2 | ППГнг(A)-HF | 3x1,5 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 3x1,5 | 10/5 |  |\n| Пб.1.1-10 | ШАУВ-2-К6ПЧ | XТ2 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.1-11 | ШАУВ-2-К6ПЧ | M3 | ППГнг(A)-HF | 3x1,5 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 3x1,5 | 10/5 |  |\n| Пб.1.4-1 | ШАУВ-2-К6ПЧ | ТЕ4 | КСПЭВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-2 | ШАУВ-2-К6ПЧ | ТС1 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-3 | ШАУВ-2-К6ПЧ | PDS3 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-4 | ШАУВ-2-К6ПЧ | PDS4 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-5 | ШАУВ-2-К6ПЧ | PDS5 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-6 | ШАУВ-2-К6ПЧ | M2 | ППГнг(A)-HF | 4x2,5 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 4x2,5 | 10/5 |  |\n| Пб.1.4-7 | ШАУВ-2-К6ПЧ | XТ3 | ППГнг(A)-HF | 3x1,5 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 3x1,5 | 10/5 |  |\n| Пб.1.4-8 | ШАУВ-2-К6ПЧ | XТ3 | КСПВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-9 | ШАУВ-2-К6ПЧ | Электронагреватель системы Пб.1.4 | ППГнг(A)-HF | 4x4,0 | 15 | лоток 100х100, труба гофр. | ППГнг(A)-HF 4x4,0 | 10/5 |  |\n\n## Page 84 — Sheet 26\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_8c1c32681acd42c79d8190b013bbbf0c",
+          "route": "authoritative_TEXT",
+          "reviewed_block_content": "### BLOCK #233 [TEXT]: blk_8c1c32681acd42c79d8190b013bbbf0c\n\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Пб.1.1-7 | ШАУВ-2-К6ПЧ | M1 | ППГнг(А)-HF | 4x2,5 | 15 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x2,5 | 10/5 |  |\n| Пб.1.1-8 | ШАУВ-2-К6ПЧ | XТ1 | КСПЭВПГнг(А)-HF | 2x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(А)-HF 2x2x0,75 | 10/5 |  |\n| Пб.1.1-9 | ШАУВ-2-К6ПЧ | XТ2 | ППГнг(А)-HF | 3x1,5 | 15 | лоток 100х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 10/5 |  |\n| Пб.1.1-10 | ШАУВ-2-К6ПЧ | XТ2 | КСПВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.1-11 | ШАУВ-2-К6ПЧ | M3 | ППГнг(А)-HF | 3x1,5 | 15 | лоток 100х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 10/5 |  |\n| Пб.1.4-1 | ШАУВ-2-К6ПЧ | ТЕ4 | КСПЭВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-2 | ШАУВ-2-К6ПЧ | ТС1 | КСПВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-3 | ШАУВ-2-К6ПЧ | PDS3 | КСПВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-4 | ШАУВ-2-К6ПЧ | PDS4 | КСПВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-5 | ШАУВ-2-К6ПЧ | PDS5 | КСПВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-6 | ШАУВ-2-К6ПЧ | M2 | ППГнг(А)-HF | 4x2,5 | 15 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x2,5 | 10/5 |  |\n| Пб.1.4-7 | ШАУВ-2-К6ПЧ | XТ3 | ППГнг(А)-HF | 3x1,5 | 15 | лоток 100х100, труба гофр. | ППГнг(А)-HF 3x1,5 | 10/5 |  |\n| Пб.1.4-8 | ШАУВ-2-К6ПЧ | XТ3 | КСПВПГнг(А)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПВПГнг(А)-HF 1x2x0,75 | 10/5 |  |\n| Пб.1.4-9 | ШАУВ-2-К6ПЧ | Электронагреватель системы Пб.1.4 | ППГнг(А)-HF | 4x4,0 | 15 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x4,0 | 10/5 |  |\n|  |  |  |  |  |  |  |  |  |  |\n\n## Page 85 — Sheet 27\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+          "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+          "block_id": "blk_54608a880c2545aa926c442d213988c3",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "SamecabinetП6.1.4-2 term15/16→TS2 graphic versus journalПб.1.4-2→ТС1 on25/26; functional20 has separateTS1 firstsystem andTS2 second."
+        }
+      ],
+      "disposition": "assessed_preserve_bounded_claim_with_section_and_scope_limits"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
