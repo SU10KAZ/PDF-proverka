@@ -117,8 +117,21 @@ minor editorial or out-of-profile clarifications), and candidate_decisions
 (origin, pointer, decision retained/duplicate/refuted/needs_data/out_of_profile,
 reason in Russian, source_refs exact inspected block IDs). For graphic claims without
 adequate attached images return needs_data, not a confirmed finding. Include evidence
-and exact locations in any finding. Do not invent norms. Preserve useful questions
-as questions; do not convert them into technical defects. Do not omit a decision.
+and exact locations in any finding. Every findings[] item MUST contain its own
+nonempty evidence ARRAY of objects, each with block_id from allowed_source_refs
+and an exact quote for TEXT or a concrete observation for an attached GRAPHIC.
+Example shape only: "evidence": [{"block_id": "<inspected permitted block ID>",
+"type": "text", "quote": "<exact source quote>", "location": "<source location>"}].
+Replace placeholders with inspected source content; never invent evidence to meet
+this shape. A plain evidence string, related_block_ids, or source_refs solely in
+candidate_decisions does not satisfy finding-level evidence. For split findings,
+assign only the evidence supporting that individual claim; do not copy the whole
+candidate's reference set to every child. If support is unavailable, use needs_data.
+Use only these severity values: КРИТИЧЕСКОЕ, ЭКОНОМИЧЕСКОЕ, ЭКСПЛУАТАЦИОННОЕ,
+РЕКОМЕНДАТЕЛЬНОЕ, ПРОВЕРИТЬ ПО СМЕЖНЫМ. Questions use report_section=questions;
+do not invent severity values such as РЕДАКЦИОННОЕ or УТОЧНЕНИЕ.
+Do not invent norms. Preserve useful questions as questions; do not convert them
+into technical defects. Do not omit a decision.
 For needs_data, include context_queries: up to six literal object marks or short
 phrases to search in this project's prepared MD. No regex or historical answer IDs.
 Search may return TEXT/TABLE evidence or GRAPHIC navigation summaries; summaries
