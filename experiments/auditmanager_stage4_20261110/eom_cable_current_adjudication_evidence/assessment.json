@@ -1,0 +1,47 @@
+{
+  "status": "F050_context_gap_F051_revised_final_checks_pending",
+  "rows": [
+    {
+      "id": "F-050",
+      "action": "defer",
+      "reason": "Параметры С2513 и состав кабельных групп на листе 5 подтверждаются, но принадлежность схемы к комплекту, охватываемому спецификацией ЭОМ 2-1.СО, не установлена. Ведомость прилагаемых документов связывает эту спецификацию с ЭОМ 2-1, однако не идентифицирует приложенную схему без штампа. На планах присутствует ссылка на ЭОМ 0-1 для питания от ВРУ-2. Все 16 изображений просмотрены; остальные схемы и узлы проходок не устанавливают границу учета С2513. Поэтому сопоставление пока подтверждает различие представленных записей, но не техническую несогласованность в проверенной общей области учета. Требуется внутренняя проверка штампа исходного листа со схемой С2513 и документа, определяющего границы ее специфицирования; при отнесении линии к ЭОМ 0-1 — соответствующей спецификации этого комплекта. Это конкретная задача получения источников, а не вопрос инженеру. Оснований подавлять замечание как опровергнутое либо переводить его в раздел малозначительных редакционных вопросов нет.",
+      "supplied_graphic_metadata_count": 0,
+      "usage": {
+        "input_tokens": 60346,
+        "output_tokens": 2079,
+        "duration_ms": 60757,
+        "cost_source": "subscription"
+      }
+    },
+    {
+      "id": "F-051",
+      "action": "revise",
+      "reason": "Подтверждена локальная несогласованность схемы и кабельного раздела листа 5 спецификации: для линии QF5.10 предусмотрен FRHF 5х35 длиной 95 м, а соответствующей позиции на этом листе нет. Проверены все 16 изображений; фасады, другая схема, планы лотков и узлы огнезащиты не подтверждают учет этого кабеля и не опровергают расхождение. Замечание остается техническим: затронуто исполнение кабеля питания лифта пожарных бригад, а не редакционное оформление. Уточнены границы вывода и категория серьезности. Отсутствие позиции во всей спецификации, фактическая поставка другого кабеля и дефицит не установлены.",
+      "supplied_graphic_metadata_count": 0,
+      "usage": {
+        "input_tokens": 60414,
+        "output_tokens": 3186,
+        "duration_ms": 90028,
+        "cost_source": "subscription"
+      }
+    }
+  ],
+  "diagnosis": "Legacy frozen queues contain no graphic_metadata. Current request builder validates but does not populate an absent field. Fresh queue construction supplies it. F050 requested a stamp that exists in authoritative MD but was not sent in this request.",
+  "affected_stage": "source packet preparation for legacy replay, not failure of TEXT extraction or refutation of cable mismatch",
+  "next_control": "Fresh F050 review explicitly supplies graphic_stamp_metadata from the same MD, with no previous review or decisions. It does not silently normalize ЗОМ to ЭОМ or prove shared scope.",
+  "full_acceptance": false,
+  "artifact_sha256": {
+    "F-051/manifest.json": "38b3f7434855d90de99ae08e25afc71cdc5c081fcd59a8503a7304171ff60bf3",
+    "F-051/request.json": "a20ac72cd7e0c516764d370895c3b684a1db7d82e2875071cdc91543d73ff0fa",
+    "F-051/attempt.json": "0fb52911a6f12719f463007d018d774ace3b99b116751eca67e2c55fc5d381d7",
+    "F-051/result.json": "d4221252a0d801d30aaad4b1fd7f738d961fed491f800528faf39625444b32fe",
+    "F-051/result_binding.json": "efceb87d56166aba3f3b41586daeab0718f924880191a972e3353c5162e3514a",
+    "F-051/candidate.json": "fa656b3f50e50ea17353957a7365ff57d3a5d8723a2df3a380e2c8423102da34",
+    "F-050/manifest.json": "7f71d6f1038c29868d79e21a5ac3ded8c5de6d20f7d698e72bdad6be4a3c5137",
+    "F-050/request.json": "36b73e6a8357641d943e6436a50899baa4a3b012d2aba9beaec174495a7af96e",
+    "F-050/attempt.json": "d90456def4983ccc00ea7b509c67d49a8de87e445d1bc3cee2d5e33209dd66d1",
+    "F-050/result.json": "a846667fb9785b8881924664621b56543fa55e81888312744de0b298d43ced27",
+    "F-050/result_binding.json": "35abfcad019eb07984eb0285180bb20eb6d67fbd190590f1d9dea08ff73171c3",
+    "F-050/candidate.json": "64bf14f0e193cc1a1ca189feade85d43e6e1cf44bcbb37885b4c0bf783dd4cc4"
+  }
+}
