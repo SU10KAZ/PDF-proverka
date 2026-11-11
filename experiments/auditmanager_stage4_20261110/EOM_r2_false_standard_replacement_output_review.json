@@ -1,0 +1,306 @@
+{
+  "status": "two_replacement_claims_contradicted_by_official_catalog",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "c6a629fd102463aac1e5eee48408ed228f7144293619e76aa03f762e4dc16ef3",
+  "queue_after_sha256": "91108ea7acc217969c85a9aa2c36df09ed57ae88db04dc3c4bee1b6d2f4051fe",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Ссылка на стандарт идентификации проводников требует актуализации.",
+        "description": "В общих указаниях приведен ГОСТ Р 50462-2009. Входной анализ указывает, что он заменен ГОСТ 33542-2015. Несоответствие фактически принятых цветов проводников не установлено.",
+        "norm": "ГОСТ Р 50462-2009 (норматив-кандидат), пункт не подтверждён; ГОСТ 33542-2015 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 50462-2009",
+            "cited_designation": "ГОСТ Р 50462-2009",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить реквизиты замененного документа, указанного в проекте.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 33542-2015",
+            "cited_designation": "ГОСТ 33542-2015",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить сведения о замене и требования к идентификации проводников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "После проверки статуса актуализировать ссылку и согласовать с ней цвета и буквенные обозначения проводников.",
+        "risk": "Неоднозначность требований к маркировке при изготовлении и монтаже.",
+        "source_finding_ids": [
+          "T-002"
+        ],
+        "source_block_ids": [
+          "blk_d90c772851514a0a9c65cdd019e56957"
+        ],
+        "related_block_ids": [
+          "blk_d90c772851514a0a9c65cdd019e56957"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+            "page": 3
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F041_F048_contradictory_norm_status:35536aa9bdef77ffbaf1",
+          "route": "negative",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В проекте указан ГОСТ Р 50462-2009.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "ГОСТ Р 50462-2009 заменен ГОСТ 33542-2015.",
+          "verdict": "contradicted_by_official_catalogue",
+          "limits": "Официальная карточка: Действует; поле заменяющего документа пустое. Утверждение входного анализа не является доказательством."
+        },
+        {
+          "claim": "Ссылку следует обновить из-за установленной замены.",
+          "verdict": "unsupported_recommendation_remove",
+          "limits": "Не выпускать как дефект или полезный вопрос только на основании неподтвержденной отмены. Иные основания применимости не проверены."
+        },
+        {
+          "claim": "Неоднозначность требований к маркировке при изготовлении и монтаже.",
+          "verdict": "not_established",
+          "limits": "Фактическая маркировка, инструкции и безопасность работ отдельно не проверены."
+        }
+      ],
+      "unsupported_additions": "Unverified replacement status carried from model analysis; official catalogue contradicts it.",
+      "novel_useful_content": "none_established_on_replacement_basis",
+      "duplicate_burden": "F002 repeats baseline-r1 F023 false replacement claim; F003 distinct standard.",
+      "profile_and_section": "remove_unsubstantiated_replacement_finding",
+      "engineer_reuse": "No engineer acceptance inferred; primary official catalogue checked.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957"
+          ],
+          "route": "authoritative_TEXT"
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/974cc100-ffdd-460a-9865-f35d4f55ea80",
+          "accessed": "2026-11-11",
+          "route": "official_Rosstandart_catalog_opened",
+          "observations": {
+            "status": "Действует",
+            "replacement_designation": "-"
+          },
+          "limits": "Catalogue status check; not a full reconstruction of all legal acts or project applicability."
+        }
+      ],
+      "disposition": "assessed_refuted_replacement_basis_remove"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-003",
+      "finding": {
+        "id": "F-003",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "В требованиях безопасности указана замененная редакция стандарта электросварочных работ.",
+        "description": "Раздел обеспечения безопасности ссылается на ГОСТ 12.3.003-86, который по сведениям входного анализа заменен ГОСТ 12.3.003-2018.",
+        "norm": "ГОСТ 12.3.003-86 (норматив-кандидат), пункт не подтверждён; ГОСТ 12.3.003-2018 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 12.3.003-86",
+            "cited_designation": "ГОСТ 12.3.003-86",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить статус документа, приведенного в требованиях безопасности.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 12.3.003-2018",
+            "cited_designation": "ГОСТ 12.3.003-2018",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить сведения о замене и применимые требования безопасности электросварочных работ.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить применимую редакцию стандарта и обновить ссылку в требованиях безопасности.",
+        "risk": "Применение неактуальных инструкций при производстве работ.",
+        "source_finding_ids": [
+          "T-003"
+        ],
+        "source_block_ids": [
+          "blk_76d1760dd5b34882a0df18538f78e39b"
+        ],
+        "related_block_ids": [
+          "blk_76d1760dd5b34882a0df18538f78e39b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_76d1760dd5b34882a0df18538f78e39b",
+            "page": 3
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "В проекте указан ГОСТ 12.3.003-86.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "ГОСТ 12.3.003-86 заменен ГОСТ 12.3.003-2018.",
+          "verdict": "contradicted_by_official_catalogue",
+          "limits": "Официальная карточка: Действует; поле заменяющего документа пустое. Утверждение входного анализа не является доказательством."
+        },
+        {
+          "claim": "Ссылку следует обновить из-за установленной замены.",
+          "verdict": "unsupported_recommendation_remove",
+          "limits": "Не выпускать как дефект или полезный вопрос только на основании неподтвержденной отмены. Иные основания применимости не проверены."
+        },
+        {
+          "claim": "Применение неактуальных инструкций при производстве работ.",
+          "verdict": "not_established",
+          "limits": "Фактическая маркировка, инструкции и безопасность работ отдельно не проверены."
+        }
+      ],
+      "unsupported_additions": "Unverified replacement status carried from model analysis; official catalogue contradicts it.",
+      "novel_useful_content": "none_established_on_replacement_basis",
+      "duplicate_burden": "F002 repeats baseline-r1 F023 false replacement claim; F003 distinct standard.",
+      "profile_and_section": "remove_unsubstantiated_replacement_finding",
+      "engineer_reuse": "No engineer acceptance inferred; primary official catalogue checked.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_76d1760dd5b34882a0df18538f78e39b"
+          ],
+          "route": "authoritative_TEXT"
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/c3c26996-7106-4f0b-a26e-f87ae173290b",
+          "accessed": "2026-11-11",
+          "route": "official_Rosstandart_catalog_opened",
+          "observations": {
+            "status": "Действует",
+            "replacement_designation": "-"
+          },
+          "limits": "Catalogue status check; not a full reconstruction of all legal acts or project applicability."
+        }
+      ],
+      "disposition": "assessed_refuted_replacement_basis_remove"
+    }
+  ],
+  "model_calls": 0,
+  "web_calls": 3,
+  "production_acceptance": false
+}
