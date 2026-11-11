@@ -1,0 +1,1110 @@
+{
+  "status": "complete_primary_recovery_structural_replay_not_final_quality",
+  "run": "AK_r1_classic_current",
+  "by_origin": {
+    "graphic": {
+      "requests": 41,
+      "raw_findings": 49,
+      "admitted_findings": 13,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 36
+      }
+    },
+    "prescan": {
+      "requests": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      }
+    },
+    "text": {
+      "requests": 28,
+      "raw_findings": 36,
+      "admitted_findings": 7,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 29
+      }
+    }
+  },
+  "rows": [
+    {
+      "request_id": "1794422216432117133",
+      "stage": "candidate_recovery_56e40c36532b13ac",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422216432117133/request.json": "e246131d88ee5a4ab28c52922416db2f2ab4268b476aef58452fa96052b25990",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422216432117133/response_1.json": "f07291180288774fa1cf93d4b20ee70bcc4f45dddd0c617ce178ecbb847261d9"
+      }
+    },
+    {
+      "request_id": "1794422236515798156",
+      "stage": "candidate_recovery_fdd5d6029b5be09c",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422236515798156/request.json": "97fefba6e24eaf4a2176d8ace76baaca2409ecda602d646e4f3b93af9b9a110a",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422236515798156/response_1.json": "09bcaf375aab24320c2509efe9b0722232403bcf03e3fc24d848d48ce433e2a5"
+      }
+    },
+    {
+      "request_id": "1794422267405678037",
+      "stage": "candidate_recovery_cc6c75d4a04cce08",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 3,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 3
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422267405678037/request.json": "d980376069f42d3cb809af4e2eea88412e18152f0e5c6e7ec7e91185043358d7",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422267405678037/response_1.json": "40bfd0bea29a61ea78239cd2357d049676432b72c5fce36b3ed0a85536814e80"
+      }
+    },
+    {
+      "request_id": "1794422308313421997",
+      "stage": "candidate_recovery_3cdd02e26903f3bc",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422308313421997/request.json": "28e2a6f7fe56a9c01c690ee5fdd4bb7c4ab9bcce709ee268157dc1b7a57191ac",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422308313421997/response_1.json": "3aa135db161957cd571f0ecc31773ab96c544492bd888382677509417b45f941"
+      }
+    },
+    {
+      "request_id": "1794422333956348412",
+      "stage": "candidate_recovery_7eba1f2128aaa810",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422333956348412/request.json": "5ed47110f0666b358d35d59e29c88b5416770376b07f0fac5bc92b4427ea8c5a",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422333956348412/response_1.json": "a8f1681b63a79ca88ebff14dc4db7ba1960eeec8c5a7129680ad2f4e856bfafb"
+      }
+    },
+    {
+      "request_id": "1794422349956942139",
+      "stage": "candidate_recovery_0e00d42053965fce",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422349956942139/request.json": "9b93e82a39d2f17f889cd396df2ef2f055b20c9dcd05310e4e793b29fc364282",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422349956942139/response_1.json": "ee9d036229f4288bc00d9a70df8aae5258cfbd8dbcf93bd11477bef25eae2f8a"
+      }
+    },
+    {
+      "request_id": "1794422368313283602",
+      "stage": "candidate_recovery_c1bd9a16093eec2c",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422368313283602/request.json": "784d298efd460dcf2e7d8d44de6ddeb5a6c3c430ad6921fefd3017ed3d1e9b8a",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422368313283602/response_1.json": "43197efc28cb0ad0f318758b46c92ca638d2466e8cccb28d830b7daa5145dbea"
+      }
+    },
+    {
+      "request_id": "1794422395095582670",
+      "stage": "candidate_recovery_42d2a9ad34f8c7e4",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422395095582670/request.json": "92970b4e03190201de3cf1d612086593aae713744c72a493b3b8ee5f2260e4f4",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422395095582670/response_1.json": "336751d8171be8bd8d24a3beb203a5e441e20d7e79ebb4d1d870d15c61bfb2e9"
+      }
+    },
+    {
+      "request_id": "1794422424588166530",
+      "stage": "candidate_recovery_c55df6218fb2e088",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422424588166530/request.json": "8e859460ab6aeed514ec54f71349f90800cdd17646c95aea9c6b31a67a9db252",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422424588166530/response_1.json": "7926db48787d115094a3ef5b3d96408a9983fab9e189b49dc414b9d1f2b180e6"
+      }
+    },
+    {
+      "request_id": "1794422444288103656",
+      "stage": "candidate_recovery_8c254d58cf02390d",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422444288103656/request.json": "db0f3890f859a38bb18ba0b220a3863696dba06c5948659b753aa50bd5591067",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422444288103656/response_1.json": "9aa2d16e2bf8dbcaf8b18894f5d8a61a0ab02cd2a2e7c8e45373ffde732f844b"
+      }
+    },
+    {
+      "request_id": "1794422466586211974",
+      "stage": "candidate_recovery_ea98d93df19a5366",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422466586211974/request.json": "f2700f12b4d974b4222017534e0cdd36d3a4accfb973c7f58988fb5d0225abec",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422466586211974/response_1.json": "06fb58bbb11425d5748ff941100e37c19df268d3ef16edab7a37f32ba0350c56"
+      }
+    },
+    {
+      "request_id": "1794422491020902680",
+      "stage": "candidate_recovery_df3ea701371d5379",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 2,
+      "admitted_findings": 2,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422491020902680/request.json": "bb5717eef2e1d7bded32a22565bce0bb3359909be9ba2c7a6c770337a4da400b",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422491020902680/response_1.json": "18994027da658a0e4625b7c23b479766ef2d97176c88f39f28185e320934b060"
+      }
+    },
+    {
+      "request_id": "1794422525727615248",
+      "stage": "candidate_recovery_8ca164079388da4e",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422525727615248/request.json": "3a1dbd5597122c304de9320daa36201cd91af61bfdef9ac97b00dd04a2559a80",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422525727615248/response_1.json": "c6a9c955e26ea1fe62da9bdeff864fe2a08c83657e0fb28d9965f7d9f9620293"
+      }
+    },
+    {
+      "request_id": "1794422558557201143",
+      "stage": "candidate_recovery_0aaac558db9dbd04",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422558557201143/request.json": "a5832c6e3b8d1a6ebe83f2ca415d9e7e83ea440883d2dbf2f1e5fde88abbfeb9",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422558557201143/response_1.json": "5918387be2925d44da0bff3d548b18df73e09f3aee7ed1fc0eb28c89e77eaa30"
+      }
+    },
+    {
+      "request_id": "1794422581264869311",
+      "stage": "candidate_recovery_fe790f4f6c9ab4a6",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422581264869311/request.json": "66330ec50d7bda5b03e80518b6e2041d6d57039c4de154bae4f9c9152b9da838",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422581264869311/response_1.json": "12f2bb8dcf142e3c17aefb696875148e5901d924129f14d1d676377b790d1f0d"
+      }
+    },
+    {
+      "request_id": "1794422599361305347",
+      "stage": "candidate_recovery_9a9e1fae49e22db9",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422599361305347/request.json": "f1dcc929e16183c079da84243b7ca8a957d3f85ac429d60c8499dbf884cea665",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422599361305347/response_1.json": "350f1e8ab87fa4572716df538376552be2039c03c487ca5a48a030040b5559d3"
+      }
+    },
+    {
+      "request_id": "1794422621205501175",
+      "stage": "candidate_recovery_88374b5fecdcb2d3",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422621205501175/request.json": "da5325a64bb04b63c29a5598c8fbfb0c8284fbed4936e73beb781f0f80966bdd",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422621205501175/response_1.json": "fae9c156ef7c8da2df195735f1bdfc2a552e080262a64bd7d30fb9fc2b99425b"
+      }
+    },
+    {
+      "request_id": "1794422645120527745",
+      "stage": "candidate_recovery_3c36b3b81f0cc320",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422645120527745/request.json": "483384b85593bfa639e7123a3751d7f3127bd7fe0c75e56ebba1bfd88d9b381d",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422645120527745/response_1.json": "991d7f266f3ecae643e53c367d2f6ddd0341a26248130c8a4e8a32aff441678c"
+      }
+    },
+    {
+      "request_id": "1794422673253363786",
+      "stage": "candidate_recovery_b44d414e323a4b1a",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422673253363786/request.json": "0d26f384d0091ea435f18d5751e362298d09d378ef87e209a706b1645bf1e92d",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422673253363786/response_1.json": "e0372fe045e941d149cc3821ffdc9c7133d9c006f1c81b929a4fc6b7c7b30024"
+      }
+    },
+    {
+      "request_id": "1794422706718100476",
+      "stage": "candidate_recovery_710c30a0eb6b242a",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422706718100476/request.json": "5666224e12d77a5884bc474fc307d281f40c7a3980b4c8f1bba06a1aee3a867d",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422706718100476/response_1.json": "623284929da8ca00992c99b4b747e490cee889d23bfb80c6d7ab33c477a5a1b0"
+      }
+    },
+    {
+      "request_id": "1794422734563244548",
+      "stage": "candidate_recovery_3920b0dedd93a8de",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422734563244548/request.json": "fcd3e8c81f949c391e07cbd7741b453a03019799ce8f8ddade81c99fddcfa6d4",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422734563244548/response_1.json": "f385b926ae5fa47f0738929cdfd2759e101ef5fd86fd1e432bfcd9d3d524ff79"
+      }
+    },
+    {
+      "request_id": "1794422753217124936",
+      "stage": "candidate_recovery_cefea27d8d926636",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422753217124936/request.json": "c31bb9fefa9ff0e32adf4d59c10e69248f5eff34b672b341f515924251026252",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422753217124936/response_1.json": "f99a7c598d05e2f1bb0b6badba9e442fbbd01f4e279733ed9cfcfb15d86083a8"
+      }
+    },
+    {
+      "request_id": "1794422775138945214",
+      "stage": "candidate_recovery_342a0881d2479b9e",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422775138945214/request.json": "fd15b2019627de2763ed30f03ac58f00ff6a5fdc8cdcc4bb0147d30dc3fb95ea",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422775138945214/response_1.json": "7690c7bd116c8b0cfcb436520d2416f5d95c15f97bcdef86e9765c5849586e95"
+      }
+    },
+    {
+      "request_id": "1794422800145123230",
+      "stage": "candidate_recovery_69e484f2406b4b2c",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422800145123230/request.json": "1a140d07fbb44a6e21d2373ecc38a37d3ec43d4d8737010c55b69a6d8a49e8d0",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422800145123230/response_1.json": "59ae5b764220cafd4f4ce09539d38bfd033f0d54ac8164e42207718d0f8ae819"
+      }
+    },
+    {
+      "request_id": "1794422825919546772",
+      "stage": "candidate_recovery_3852110fa34e9256",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422825919546772/request.json": "279a6828c4240f084bbc9ef485da2d5c952c6d5cb64b378488c2aaa684cf824c",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422825919546772/response_1.json": "4f6be3533411550f63e7e76cee6e288c375b08b126921f031a9614ac3a954ae0"
+      }
+    },
+    {
+      "request_id": "1794422852672458588",
+      "stage": "candidate_recovery_658735b3317f8ea8",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 3,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 3
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422852672458588/request.json": "b15ce9436616b3e8e861866faef3588acbe66aba24299e64c9f83f28ee6e6466",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422852672458588/response_1.json": "40d6457f707f18568e229855d475e60af0be57f148d35e634f930ad18be981be"
+      }
+    },
+    {
+      "request_id": "1794422879887227438",
+      "stage": "candidate_recovery_2f8cb37d7421ec1d",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422879887227438/request.json": "5ddba860f4dd414f538f55afe3828d2aa83fbfe08f0e89463e0975bf5d881c3f",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422879887227438/response_1.json": "6b7c3279a0d0233789b985ac61500e97e5e953a715db596ec3e642d0a5ea5c0a"
+      }
+    },
+    {
+      "request_id": "1794422907044921894",
+      "stage": "candidate_recovery_35c9521c7e27aa73",
+      "origin": "text",
+      "candidate_group_size": 1,
+      "attached_images": 0,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422907044921894/request.json": "aaf90c9b3e8963e00b5a0ba5394f190ccb02e87c325bb9ada7d786e99b7c072c",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422907044921894/response_1.json": "fa3d70209a0798009c83ed32fc633521f3015dc5332a10d94a9ede97d9d93918"
+      }
+    },
+    {
+      "request_id": "1794422921764613659",
+      "stage": "candidate_recovery_e441ee3a3e5edcc7",
+      "origin": "prescan",
+      "candidate_group_size": 1,
+      "attached_images": 4,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422921764613659/request.json": "a728b87f6d5bf726d8e423f36b41182ed5e0a664b08b463d4ce205ff0def61aa",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422921764613659/response_1.json": "25a9e1b4e7316b3989c20bb177bac9ba124ba7bf231917327bfcbf60f3679d14"
+      }
+    },
+    {
+      "request_id": "1794422955512332928",
+      "stage": "candidate_recovery_d9514d8925b97f17",
+      "origin": "graphic",
+      "candidate_group_size": 3,
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422955512332928/request.json": "eb0b3fe1a060523faae4d4f654fd21a1c1a0c28113e92a0598344414f45c1cdd",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422955512332928/response_1.json": "f6b00a2334bb4aad59f7213a2d24a844f6e85e5db26d0d5ad793086226878215"
+      }
+    },
+    {
+      "request_id": "1794422980918405264",
+      "stage": "candidate_recovery_78b43efa7df28b57",
+      "origin": "graphic",
+      "candidate_group_size": 6,
+      "attached_images": 1,
+      "raw_findings": 3,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 3
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422980918405264/request.json": "8c719baf21a898415ac195ee0e21eb70ce0d66e2e20ff36da792f4e690da599e",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422980918405264/response_1.json": "45fb6c1fd24044256fc274d9b4459f86c8d1f006ca406e8ab4f1d1a076bd3c65"
+      }
+    },
+    {
+      "request_id": "1794423031988765518",
+      "stage": "candidate_recovery_9abbe90f57edee78",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423031988765518/request.json": "043087d787fa3aecdae924aca011b0dc87763dd284bd594131d4a1ed50711c78",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423031988765518/response_1.json": "53b0ff014eec9dc32129d4c74ae5918edf1de422185e28c8ffc91f9da1211b65"
+      }
+    },
+    {
+      "request_id": "1794423055960796272",
+      "stage": "candidate_recovery_b6955a9ce7a4594e",
+      "origin": "graphic",
+      "candidate_group_size": 5,
+      "attached_images": 1,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423055960796272/request.json": "65ac7c3e5c6d5385159764aa95099db3033194fa5fa03d9bc2696de67b6dd8c7",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423055960796272/response_1.json": "2b84ef481cb09d3a50b5db99139b816d456cfb110baabe622e700c21f2caface"
+      }
+    },
+    {
+      "request_id": "1794423130101409150",
+      "stage": "candidate_recovery_407d3adbc528e7bc",
+      "origin": "graphic",
+      "candidate_group_size": 5,
+      "attached_images": 1,
+      "raw_findings": 3,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 3
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423130101409150/request.json": "389a575637a54426680fb3d7e50d6ea8ef686c98861d0bbdb723df14c9ba0400",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423130101409150/response_1.json": "affe4b7dbf45585a7af2ce212891cdf99a9d4e5b5d32631c7e12d76b10b88f88"
+      }
+    },
+    {
+      "request_id": "1794423179395803023",
+      "stage": "candidate_recovery_8e1933d07700e1d1",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423179395803023/request.json": "fbef52ed2ebb86753e0d83537c19474d40e90a29b717c7a60baa6b6f53b2c43d",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423179395803023/response_1.json": "5fbc6241cd6bd2538372273539af5bda8ff400a47f52699797b59e565412e552"
+      }
+    },
+    {
+      "request_id": "1794423203439840615",
+      "stage": "candidate_recovery_f6100783711eff57",
+      "origin": "graphic",
+      "candidate_group_size": 6,
+      "attached_images": 1,
+      "raw_findings": 3,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 3
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423203439840615/request.json": "7178223bdeaf66a65f3844c58c4b66cf838e8de7573aaa64618899502af7fc5f",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423203439840615/response_1.json": "e658aa7a39f8f995270c36bdf0f496c87cdc6b05e9e54db81dfebe4e05a3829f"
+      }
+    },
+    {
+      "request_id": "1794423253818571135",
+      "stage": "candidate_recovery_8a66131b1f217809",
+      "origin": "graphic",
+      "candidate_group_size": 5,
+      "attached_images": 1,
+      "raw_findings": 3,
+      "admitted_findings": 3,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423253818571135/request.json": "302effeedafc6fba47f5ae41f70cc5d2987c2f3458756d2b124f821212172f31",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423253818571135/response_1.json": "0636767cdf944d04ca6b16313088f4ed99614e361f86c669a00de60923b088f8"
+      }
+    },
+    {
+      "request_id": "1794423299968106115",
+      "stage": "candidate_recovery_d6b9d85471e11d80",
+      "origin": "graphic",
+      "candidate_group_size": 4,
+      "attached_images": 1,
+      "raw_findings": 2,
+      "admitted_findings": 2,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423299968106115/request.json": "d1d3c26321aff53b41a71918ef64c3cfad6d74cd4162cbe5e3be74d001407e14",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423299968106115/response_1.json": "d1665ab322e5ef99c09fce0b82cacd03d4f3c4d898e506912117831c91594eee"
+      }
+    },
+    {
+      "request_id": "1794423339958590526",
+      "stage": "candidate_recovery_462b47d52cd1cc17",
+      "origin": "graphic",
+      "candidate_group_size": 6,
+      "attached_images": 1,
+      "raw_findings": 2,
+      "admitted_findings": 2,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423339958590526/request.json": "c656af3d7f8c00abdaa51e293a0d29122ea0fb241972a058a41ece7be8d4d312",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423339958590526/response_1.json": "058233960f6d99cc5b0558aeb5804cc10901cf6ba4c63f30f6a120b4ce78182e"
+      }
+    },
+    {
+      "request_id": "1794423383534223864",
+      "stage": "candidate_recovery_c51a95d91fea1908",
+      "origin": "graphic",
+      "candidate_group_size": 4,
+      "attached_images": 1,
+      "raw_findings": 3,
+      "admitted_findings": 1,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423383534223864/request.json": "db8582688e037f40751ad000ef6fde2bc72d837b045ed6ce08a4e96212162a38",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423383534223864/response_1.json": "70d4b2085bdc03febb1246cfd0f5c262d92b69b30adea1d1f485e7e454eaac2b"
+      }
+    },
+    {
+      "request_id": "1794423425156050943",
+      "stage": "candidate_recovery_05881990c30ff302",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423425156050943/request.json": "815c008dc2396b328a8a48b0e770f3e3381ceb4587c71f01a4905dde2efe15f2",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423425156050943/response_1.json": "b3c66314f86e1af352f62ce34051398f76ddd9ce063fc44ed42eda742f95b51c"
+      }
+    },
+    {
+      "request_id": "1794423448522815408",
+      "stage": "candidate_recovery_52a1935a609ff64a",
+      "origin": "graphic",
+      "candidate_group_size": 4,
+      "attached_images": 1,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423448522815408/request.json": "7787b272fbac4ce203a134bf3c0eca4f22cf3ebb13c31289ad7bf6cf3a277dd8",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423448522815408/response_1.json": "7228a62366a684004947f93396079804749bc2d766b84f84c8b6d94fc0870748"
+      }
+    },
+    {
+      "request_id": "1794423480507112475",
+      "stage": "candidate_recovery_88631e2c01433c89",
+      "origin": "graphic",
+      "candidate_group_size": 3,
+      "attached_images": 1,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423480507112475/request.json": "aec9649167912ec3d80167d44e9681c958062a073fdc08308b74c8627982c071",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423480507112475/response_1.json": "57e9f4fd692bdb07b7758dcd805c6b2ee4e24191a17c4164447b7a9593a7c957"
+      }
+    },
+    {
+      "request_id": "1794423515502383508",
+      "stage": "candidate_recovery_fca4ddc4d2607995",
+      "origin": "graphic",
+      "candidate_group_size": 3,
+      "attached_images": 1,
+      "raw_findings": 2,
+      "admitted_findings": 2,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423515502383508/request.json": "fb434314f1c3721d49ef945484832b88983799cdfaab304d636291b005024e1e",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423515502383508/response_1.json": "52c3438854bd0b149b3dcba556aa90122ba1f3415c4fea40387370e02b4e3ef7"
+      }
+    },
+    {
+      "request_id": "1794423550251144215",
+      "stage": "candidate_recovery_a2895c43aa1a858a",
+      "origin": "graphic",
+      "candidate_group_size": 4,
+      "attached_images": 1,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423550251144215/request.json": "9891746000bb934f1bf295aa25e670d6ea3563c9aa523fb8f3d0a892c6ea4b5a",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423550251144215/response_1.json": "1cb51133da8c565937956929a094a9c3cf0d042d36f19245b3dfab5c97b0afc0"
+      }
+    },
+    {
+      "request_id": "1794423590293311450",
+      "stage": "candidate_recovery_8e01d82f6bc92871",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423590293311450/request.json": "7ac30d71a6783f2e2b36e755854fe82690beb51840441fa3f4bd48980a4bc41b",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423590293311450/response_1.json": "d31a220bbad2e5d56f3ad2925b62cd65a439da6e2b3b31257e8e93359af3b284"
+      }
+    },
+    {
+      "request_id": "1794423606764024916",
+      "stage": "candidate_recovery_6e4095cc61e05485",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423606764024916/request.json": "9b73c1ed0b98e51b528cd0c9b545debd714ff2db823c56fd2779170fb0b14d6b",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423606764024916/response_1.json": "c283600f702edafcd6b84742a6b54c2e7bfdf3e091715c74f6aa1db0adc42b4e"
+      }
+    },
+    {
+      "request_id": "1794423627163978813",
+      "stage": "candidate_recovery_a4190b40375a1b93",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423627163978813/request.json": "921883715969ef7fe77347dc66b6ff3cb254871c62e9675ffd697e05ef838725",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423627163978813/response_1.json": "5a5bcd3fc5520891dcc25a545885f30404840ab892b550c3e2be2e8a4268add0"
+      }
+    },
+    {
+      "request_id": "1794423654855927641",
+      "stage": "candidate_recovery_ac6111f8cef9b172",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423654855927641/request.json": "51df9c337b74bb165a44523617982032b7fa272db93b8464db1c5859ed2c6064",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423654855927641/response_1.json": "f595716024e29503f644613fbb6f43bf156cade091dd4b1ba50b41bb23a6a7fe"
+      }
+    },
+    {
+      "request_id": "1794423683422524260",
+      "stage": "candidate_recovery_9bbf094131fa1546",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423683422524260/request.json": "fea42f463283d21f7155d1023e40b9114e01f14d38b31c00ccf951158bf4fb6a",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423683422524260/response_1.json": "570c1d4154f3edf2fa997431c724d330fef618cb110346a3ab727f82def3e600"
+      }
+    },
+    {
+      "request_id": "1794423708321014213",
+      "stage": "candidate_recovery_ebfc0f3cea16edd8",
+      "origin": "graphic",
+      "candidate_group_size": 1,
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423708321014213/request.json": "b1ccdcbe05e1970c58c5e02ce3eb7f48986b4043146fe7f0562bdac46751ef71",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423708321014213/response_1.json": "69bf30dcd665e886b37cb86af8c531cb02b6210213aa7e8d0912a6c3744a02e6"
+      }
+    },
+    {
+      "request_id": "1794423742994054525",
+      "stage": "candidate_recovery_b366fd4aa7c83041",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423742994054525/request.json": "81d9fdd47513f16cb002603c9a773a710a7aa16ba159f5a6dd35111079eac453",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423742994054525/response_1.json": "1e08a27540683f7a356fd9067512a71afe5e7eb4869816149643af34b5f80457"
+      }
+    },
+    {
+      "request_id": "1794423759288963269",
+      "stage": "candidate_recovery_8306f1551dea9f94",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423759288963269/request.json": "68f40a5bf7272f7806b47dc0db1169bdecbb5fd0093e0719b8e175164d1c9746",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423759288963269/response_1.json": "31fbf2906a4d65e7c223ae3662926e335cb439a36992781ab6b896e7f5632d69"
+      }
+    },
+    {
+      "request_id": "1794423787513881802",
+      "stage": "candidate_recovery_d3619220649274c2",
+      "origin": "graphic",
+      "candidate_group_size": 3,
+      "attached_images": 1,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423787513881802/request.json": "c8394be7c2daf71dddef3b33f60d0eced19284ad0dbefb986ebc7d8adc8a2a10",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423787513881802/response_1.json": "9e9edf34aeba045c54d39df8e3ffd5f0a3d97f46e6cfa380e372dea9f7e64fc0"
+      }
+    },
+    {
+      "request_id": "1794423823159805804",
+      "stage": "candidate_recovery_b5f634e6db2b2eac",
+      "origin": "graphic",
+      "candidate_group_size": 1,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423823159805804/request.json": "33163a659733e15a4868973ae5525e4ee75e4f9b60fa82beb911defde21f0856",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423823159805804/response_1.json": "51c3969ec94d7c5e5a8ed3908f2b9351e4415c0d8b59d0bcecba2adfa5cd2466"
+      }
+    },
+    {
+      "request_id": "1794423838697281152",
+      "stage": "candidate_recovery_cde143d1702b1baf",
+      "origin": "graphic",
+      "candidate_group_size": 7,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423838697281152/request.json": "5f14b88fb762a1bbfa42ff0d976b076d8ca7fa8f304516c738f6fd8d8b7add89",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423838697281152/response_1.json": "59f75036f06ddd77962b375818ef3bbc461099f97d0c86bceb2e8b6ff64ca290"
+      }
+    },
+    {
+      "request_id": "1794423877473635963",
+      "stage": "candidate_recovery_8b38ddf3cba607c1",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423877473635963/request.json": "23d79ba84b20568d6694fe35bd00a7559ed5decddbeab32723dbb237c1e49c7b",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423877473635963/response_1.json": "b1530582ea2baf4fad3538d62d7bacc6aa214fd9783e56a545491ff3981297a0"
+      }
+    },
+    {
+      "request_id": "1794423906425092686",
+      "stage": "candidate_recovery_ccd1181a32f0f8f9",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423906425092686/request.json": "7eb2dfd649894e8f9c9ac855471f16f54ef9375464890c0ae7fd27e43484c51d",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423906425092686/response_1.json": "7a51d3bb69bb61b37d2aaaa30c3e79981e87842f78a8d84e484a2503188b74b1"
+      }
+    },
+    {
+      "request_id": "1794423928286315000",
+      "stage": "candidate_recovery_2ff4fe498788740e",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423928286315000/request.json": "d478667b1743a6c18a13b4a3690f9c058cbb1437ec300bfb6e93c980e4829a3d",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423928286315000/response_1.json": "76392fe628384a2981f1a606545bb3382919c1d4fc5bf56c182ecaee75c8acaa"
+      }
+    },
+    {
+      "request_id": "1794423945724131613",
+      "stage": "candidate_recovery_a325646a9392a166",
+      "origin": "graphic",
+      "candidate_group_size": 1,
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423945724131613/request.json": "87f19fb1a718b354940aac64f633d424a1840bab02b3595c5481f24be57392a3",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423945724131613/response_1.json": "164dffb99a24f4a167be2067d0f4eb9796bfc386870fdf5ce43fd84015da614c"
+      }
+    },
+    {
+      "request_id": "1794423958531182196",
+      "stage": "candidate_recovery_a3da27e91b027081",
+      "origin": "graphic",
+      "candidate_group_size": 4,
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423958531182196/request.json": "36dde424390a54a0a4d2406a68765e70c0a20da6272b8c15157813dac5fc03e1",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423958531182196/response_1.json": "c563ceda3f5d7e8d7edd396b54b78014f195e4a36934ec1bac478bc77602f4e6"
+      }
+    },
+    {
+      "request_id": "1794423983789088070",
+      "stage": "candidate_recovery_1a4e6d4c1e4c750b",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423983789088070/request.json": "9882c18298b5ebd3ee0ad16ffce7f0f63e1b4b1e2b965929f515f10c57c1a682",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423983789088070/response_1.json": "69e064d17af2ef1ce290ca8cb0f9562206a2ed676b23ce5f163fb86de340ee31"
+      }
+    },
+    {
+      "request_id": "1794424017768710985",
+      "stage": "candidate_recovery_cdb6ec6bbabef5ec",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424017768710985/request.json": "de6e7e7afe3f5be6c3f638f20119fd6d4809bc51a8cfd558bfd7e39b31e295c7",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424017768710985/response_1.json": "15704bac8c95a1bcb88aa8b5a173023a7983ce64b235993a259218346159e070"
+      }
+    },
+    {
+      "request_id": "1794424042699258291",
+      "stage": "candidate_recovery_6a910fe53416406d",
+      "origin": "graphic",
+      "candidate_group_size": 1,
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424042699258291/request.json": "671c54c58cff30720396026e261aba7b7f5f920419013a1df311d5bc8ffca6c8",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424042699258291/response_1.json": "cf08e384cda516fa767e3531681f3b3b4a187dbf19dc0627175642fecaa79c34"
+      }
+    },
+    {
+      "request_id": "1794424057241102564",
+      "stage": "candidate_recovery_3fb5a04bc43d123b",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424057241102564/request.json": "eee91d781e0de7c56aa8a651e4e386d81792f012fb443af1b757cea723740d85",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424057241102564/response_1.json": "78ecfee6a6bebfca81bda6f989a799b102286e58a482499e5c2cabbec2538709"
+      }
+    },
+    {
+      "request_id": "1794424081527860522",
+      "stage": "candidate_recovery_fe143346b451ef4c",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424081527860522/request.json": "f3de704d2e310a1703ad4ffcaf6bf8b3ffe898759dfb3ce680ce8fc112f10ace",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424081527860522/response_1.json": "16491a5b45e766ccc6a8ddf256300d659984f869ee6483cff34b1992d27f1a8a"
+      }
+    },
+    {
+      "request_id": "1794424104602442976",
+      "stage": "candidate_recovery_561b99e437244618",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424104602442976/request.json": "116a13996010b4e475250af3f7e167140f2ff7e8f4b00a6e751f395719eefa34",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424104602442976/response_1.json": "b144bf72fc1494f9ee1056e9b9debc57f0b11eea3343de6bcdaf9f088edc5c85"
+      }
+    },
+    {
+      "request_id": "1794424123402593714",
+      "stage": "candidate_recovery_d67136d298a28725",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424123402593714/request.json": "d8d358a33732ae6629e2e7999f457b5acc02a66b2976e67b632e29b328e5b303",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424123402593714/response_1.json": "b82d3df0d4d67c402df480202a37c484cbdc2d0cbffb448e92603c3060f9a40b"
+      }
+    },
+    {
+      "request_id": "1794424141434781922",
+      "stage": "candidate_recovery_5e5e5b6685948eff",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424141434781922/request.json": "f8c1c3e94a707fca92bdbfb3ce13ce1c7cf5f0e35a83d24d3e6c4a14fc5f8532",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424141434781922/response_1.json": "cea29a86ee40878dda254b493f503e4bf6e282f6814b2a81bb14dce6309ed167"
+      }
+    },
+    {
+      "request_id": "1794424161119121046",
+      "stage": "candidate_recovery_0e920a705ba2ab51",
+      "origin": "graphic",
+      "candidate_group_size": 2,
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 1
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424161119121046/request.json": "a54d6ff65af11a8b8efe0cf60f03fd1d4cb67e73226f52ba9ae3ddf5c72f6c64",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794424161119121046/response_1.json": "c03d73c5ed706bfa0334d4520205a1939f6dfed728e6be55f570dc370c4721c8"
+      }
+    }
+  ],
+  "validator_path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/prepare/candidate_recovery.py",
+  "validator_sha256": "e6f9ac142f19a0f16eec368e972a7fec548e1a3e6a10a3d9e29a9ab2071dd57e",
+  "limits": [
+    "Structural acceptance does not establish engineering truth, source sufficiency or usefulness.",
+    "No source images were independently interpreted for this replay.",
+    "Counts precede final combination, deduplication, verification and context followups.",
+    "Candidate groups and split findings are not independent defects."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
