@@ -1,0 +1,366 @@
+{
+  "status": "three_direct_source_reviews_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/experimental/AK_r1_classic_current/output_review_queue.json",
+  "queue_before_sha256": "f31473aaa9bf618f143f8dcb42521502cd7c15f7554de0c16707e656155b0c70",
+  "queue_after_sha256": "03b0399ff5de623d2baf32003ab14d9a03eb2ce60ca2f7316ba0932e09bd8361",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "13АВ-РД-АК2-ПА, Общие данные: лист 2, пункт 2.1; лист 3, пункт 2.2; лист 4, пункт 8",
+        "finding": "Просьба уточнить применимые комплекты электроснабжения шкафов: в пункте 2.1 указан 13АВ-РД-ЭМ2-ПА, в пункте 2.2 — «1З АВ-РД-ЭМ2-ПА», а в пункте 8 — 13АВ-РД-ЭМ-КЗ. Следует пояснить распределение этих ссылок по группам шкафов, включая питание цепей защиты от замораживания по I категории и приводов вентиляторов по II категории, указанное в пункте 8. Различие ссылок требует уточнения; нарушение фактической схемы электроснабжения представленными текстами не установлено.",
+        "evidence": [
+          {
+            "block_id": "blk_76e892431d7d4c48a09aba49a57b223c",
+            "location": "Лист 2, пункт 2.1",
+            "quote": "Питание шкафов управления вентиляционных установок разрабатывается в разделе 13АВ-РД-ЭМ2-ПА."
+          },
+          {
+            "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+            "location": "Лист 3, пункт 2.2",
+            "quote": "Питание шкафов управления вентиляционными установок разрабатывается в разделе 1З АВ-РД-ЭМ2-ПА."
+          },
+          {
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "location": "Лист 4, пункт 8",
+            "quote": "Электроснабжение шкафов осуществляется по проекту 13АВ-РД-ЭМ-КЗ."
+          },
+          {
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "location": "Лист 4, пункт 8",
+            "quote": "Щиты автоматизации и управления для приточных систем вентиляции с водяным подогревом электропитание цепей управления защиты от замораживания выполнено по I категория надежности, электропитания для привода вентилятора по II категории надежности."
+          }
+        ],
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_76e892431d7d4c48a09aba49a57b223c",
+          "blk_f30f5e10b54f415392e7e149a87dae24",
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ],
+        "source_finding_ids": [
+          "T-023"
+        ],
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_342a0881d2479b9e",
+        "problem": "Просьба уточнить применимые комплекты электроснабжения шкафов: в пункте 2.1 указан 13АВ-РД-ЭМ2-ПА, в пункте 2.2 — «1З АВ-РД-ЭМ2-ПА», а в пункте 8 — 13АВ-РД-ЭМ-КЗ. Следует пояснить распределение этих ссылок по группам шкафов, включая питание цепей защиты от замораживания по I категории и приводов вентиляторов по II категории, указанное в пункте 8. Различие ссылок требует уточнения; нарушение фактической схемы электроснабжения представленными текстами не установлено.",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-023",
+            "status": "requires_semantic_review",
+            "source_claim": "Для электропитания шкафов указаны разные комплекты: в описании приточных систем 13АВ-РД-ЭМ2-ПА, в пункте электропитания 13АВ-РД-ЭМ-КЗ. Требуется указать применимый комплект для каждой группы шкафов и раздельных вводов I и II категорий. Само распределение работ между АК и ЭМ является нормальной практикой; вопрос вызван несовпадающими адресными ссылками.",
+            "source_location": "Общие данные, лист 2, пункт 2.1; лист 4, пункт 8",
+            "existing_block_ids": [
+              "blk_76e892431d7d4c48a09aba49a57b223c",
+              "blk_1865bf51c17e444491a5621d4a33c331",
+              "blk_f30f5e10b54f415392e7e149a87dae24"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "sheet": "Листы 2, 3, 4",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-023",
+            "source_claim": "Для электропитания шкафов указаны разные комплекты: в описании приточных систем 13АВ-РД-ЭМ2-ПА, в пункте электропитания 13АВ-РД-ЭМ-КЗ. Требуется указать применимый комплект для каждой группы шкафов и раздельных вводов I и II категорий. Само распределение работ между АК и ЭМ является нормальной практикой; вопрос вызван несовпадающими адресными ссылками.",
+            "block_ids": [
+              "blk_76e892431d7d4c48a09aba49a57b223c",
+              "blk_1865bf51c17e444491a5621d4a33c331",
+              "blk_f30f5e10b54f415392e7e149a87dae24"
+            ]
+          }
+        ]
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Different power-supply project references appear in sections 2.1, 2.2 and 8.",
+          "assessment": "confirmed_text_difference",
+          "limits": "Typography alone is not a separate technical defect. Applicable supply documents and actual wiring have not been checked."
+        },
+        {
+          "claim": "Request clarification of reference scope without alleging actual supply failure.",
+          "assessment": "supported_question",
+          "limits": "Engineer utility and checking time not measured."
+        }
+      ],
+      "unsupported_additions": "none_established_within_stated_drawing_scope",
+      "novel_useful_content": "supported_clarification_outside_frozen_targets_engineer_value_unmeasured",
+      "duplicate_burden": "distinct_objects_within_this_output",
+      "profile_and_section": "appropriate_questions_section",
+      "engineer_reuse": "none_no_same_claim_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_76e892431d7d4c48a09aba49a57b223c",
+          "route": "authoritative_TEXT",
+          "quote": "Питание шкафов управления вентиляционных установок разрабатывается в разделе 13АВ-РД-ЭМ2-ПА."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+          "route": "authoritative_TEXT",
+          "quote": "Питание шкафов управления вентиляционными установок разрабатывается в разделе 1З АВ-РД-ЭМ2-ПА."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "route": "authoritative_TEXT",
+          "quote": "Электроснабжение шкафов осуществляется по проекту 13АВ-РД-ЭМ-КЗ."
+        }
+      ],
+      "disposition": "assessed_preserve_as_question_not_technical_failure"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "pressure_switch_connection",
+        "report_section": "technical_findings",
+        "finding": "На листе 15 в правой части функциональной схемы Вн5.1 подключения дифференциальных реле PDS4 и PDS5 показаны с обратной полярностью относительно направления вытяжного потока. Воздух поступает справа из помещения и удаляется влево к отметке «Выброс», однако входы «+» реле подключены справа, на стороне всасывания, а входы «−» — слева, на стороне нагнетания. При таком подключении рабочий перепад на реле имеет отрицательный знак, что не соответствует указанной уставке ΔP=100 Па.\n\nРекомендация: Подключить входы «+» PDS4 и PDS5 к стороне нагнетания, а входы «−» — к стороне всасывания соответствующих вентиляторов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_1421872a752e4019a31247d056c0e9bc",
+        "value_found": "PDS4 и PDS5: «+» справа со стороны помещения, «−» слева со стороны выброса; ΔP=100 Па.",
+        "source_finding_ids": [
+          "G-032"
+        ],
+        "source_refs": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "highlight_regions": [],
+        "evidence": [
+          {
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_8a66131b1f217809",
+        "problem": "На листе 15 в правой части функциональной схемы Вн5.1 подключения дифференциальных реле PDS4 и PDS5 показаны с обратной полярностью относительно направления вытяжного потока. Воздух поступает справа из помещения и удаляется влево к отметке «Выброс», однако входы «+» реле подключены справа, на стороне всасывания, а входы «−» — слева, на стороне нагнетания. При таком подключении рабочий перепад на реле имеет отрицательный знак, что не соответствует указанной уставке ΔP=100 Па.\n\nРекомендация: Подключить входы «+» PDS4 и PDS5 к стороне нагнетания, а входы «−» — к стороне всасывания соответствующих вентиляторов.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-032",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 15",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 52,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "PDS4/PDS5, Вн5.1/Вн5.1р, sheet15: right-to-left exhaust airflow and plus right/minus left impulse connections.",
+          "assessment": "confirmed_graphic_topology",
+          "limits": "Graphic evidence only; no field installation or commissioning evidence."
+        },
+        {
+          "claim": "This polarity is reversed relative to the pressure rise across a normally operating fan; recommendation is to reconcile the drawn impulse connections.",
+          "assessment": "supported_engineering_inference_from_graphic",
+          "limits": "Actual differential magnitude, relay configuration and actual operation are not measured. Do not turn drawing inconsistency into proven installed failure."
+        }
+      ],
+      "unsupported_additions": "none_established_within_stated_drawing_scope",
+      "novel_useful_content": "supported_graphic_candidate_outside_frozen_targets_engineer_value_unmeasured",
+      "duplicate_burden": "distinct_objects_within_this_output",
+      "profile_and_section": "technical_drawing_consistency_section_appropriate",
+      "engineer_reuse": "none_no_same_claim_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "Direct graphic inspection: room is on the right, exhaust Выброс on the left; flow arrows point left. Both named fan differential relays show plus impulse connection on the right and minus on the left, threshold 100 Pa. Supply fan on the same image flows right with minus left and plus right."
+        }
+      ],
+      "disposition": "assessed_preserve_drawing_polarity_candidate_with_operational_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-021",
+      "finding": {
+        "id": "F-021",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "pressure_switch_connection",
+        "finding": "На листе 22, в правой части функциональной схемы, у PDS3 над вентилятором Ва5.1 и PDS4 над вентилятором Ва5.1р показано обратное подключение импульсных линий. Воздух движется от автостоянки справа к выбросу слева, однако «+» каждого реле подключён справа, к стороне всасывания, а «−» — слева, к стороне нагнетания. При таком подключении перепад на реле имеет отрицательный знак вместо предусмотренного положительного порога 100 Па. Следует подключить «+» к нагнетанию, а «−» к всасыванию соответствующего вентилятора.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+        "value_found": "PDS3 и PDS4: «−» слева, «+» справа, ΔP=100Па; направление вытяжного потока — справа налево к «Выброс».",
+        "highlight_regions": [],
+        "source_finding_ids": [
+          "G-056"
+        ],
+        "source_refs": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "report_section": "technical_findings",
+        "evidence": [
+          {
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_fca4ddc4d2607995",
+        "problem": "На листе 22, в правой части функциональной схемы, у PDS3 над вентилятором Ва5.1 и PDS4 над вентилятором Ва5.1р показано обратное подключение импульсных линий. Воздух движется от автостоянки справа к выбросу слева, однако «+» каждого реле подключён справа, к стороне всасывания, а «−» — слева, к стороне нагнетания. При таком подключении перепад на реле имеет отрицательный знак вместо предусмотренного положительного порога 100 Па. Следует подключить «+» к нагнетанию, а «−» к всасыванию соответствующего вентилятора.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-056",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 22",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 40,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "PDS3/PDS4, Ва5.1/Ва5.1р, sheet22: right-to-left exhaust airflow and plus right/minus left impulse connections.",
+          "assessment": "confirmed_graphic_topology",
+          "limits": "Graphic evidence only; no field installation or commissioning evidence."
+        },
+        {
+          "claim": "This polarity is reversed relative to the pressure rise across a normally operating fan; recommendation is to reconcile the drawn impulse connections.",
+          "assessment": "supported_engineering_inference_from_graphic",
+          "limits": "Actual differential magnitude, relay configuration and actual operation are not measured. Do not turn drawing inconsistency into proven installed failure."
+        }
+      ],
+      "unsupported_additions": "none_established_within_stated_drawing_scope",
+      "novel_useful_content": "supported_graphic_candidate_outside_frozen_targets_engineer_value_unmeasured",
+      "duplicate_burden": "distinct_objects_within_this_output",
+      "profile_and_section": "technical_drawing_consistency_section_appropriate",
+      "engineer_reuse": "none_no_same_claim_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "Direct graphic inspection: room is on the right, exhaust Выброс on the left; flow arrows point left. Both named fan differential relays show plus impulse connection on the right and minus on the left, threshold 100 Pa. Supply fan on the same image flows right with minus left and plus right."
+        }
+      ],
+      "disposition": "assessed_preserve_drawing_polarity_candidate_with_operational_limits"
+    }
+  ],
+  "source_inspection": "Two existing GRAPHIC rasters viewed; three authoritative TEXT blocks read. No PDF re-extraction.",
+  "model_calls": 0,
+  "engineer_validation": false,
+  "production_acceptance": false
+}
