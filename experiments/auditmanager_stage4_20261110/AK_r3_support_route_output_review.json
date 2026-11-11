@@ -1,0 +1,1248 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "074b5c2ff6df0baa675bd3648e51a40cc4328504c759779d59dc15b00f2a3dbf",
+  "queue_after_sha256": "d2dd309892bbd235853f1217799ad733ab9e4a4880425c77c7bc632f46c37425",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Кабельные объёмы",
+        "sheet": "Листы 7, 8, 25, 26",
+        "page": [
+          65,
+          66,
+          83,
+          84
+        ],
+        "problem": "Повторные строки журнала завышают суммируемую длину кабелей на 375 м.",
+        "description": "Повторены семь строк П4.1.1-6, П4.1.1-7 и Пм4.1-1–Пм4.1-5 общей длиной 165 м. Также повторён набор из 14 строк общей длиной 210 м. В части дублей различается распределение по способам прокладки.",
+        "norm": "ГОСТ Р 2.105-2019 (норматив-кандидат), кандидат п. 5.2.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 2.105-2019",
+            "cited_designation": "ГОСТ Р 2.105-2019",
+            "candidate_relevance": 0.85,
+            "reason": "Однозначность табличных данных кабельного журнала.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-018"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "5.2.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Удалить повторные строки, согласовать способы прокладки и пересчитать ведомости.",
+        "risk": "Завышение закупки кабеля и монтажных объёмов.",
+        "source_finding_ids": [
+          "T-018"
+        ],
+        "source_block_ids": [
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "blk_8c1c32681acd42c79d8190b013bbbf0c"
+        ],
+        "related_block_ids": [
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "blk_8c1c32681acd42c79d8190b013bbbf0c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+            "page": 65
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3d78558e2eb34cb189b102380b0d3d00",
+            "page": 66
+          },
+          {
+            "type": "text",
+            "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+            "page": 83
+          },
+          {
+            "type": "text",
+            "block_id": "blk_8c1c32681acd42c79d8190b013bbbf0c",
+            "page": 84
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 65,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Семь повторных марок165м и четырнадцать210м, сумма375м.",
+          "verdict": "confirmed_same_source_TEXT_and_arithmetic",
+          "limits": "Текущая строка перечисляет первый набор, но не адреса всех14 второго. Разность не является измеренным перерасходом."
+        },
+        {
+          "claim": "Удалить повторные строки.",
+          "verdict": "resolve_versions_before_deletion",
+          "limits": "В первой группе различаютсяНФ/HF,Y1/У1,TS1/ТС1 и разбиение трассы. Лист8 содержит новые строки; нельзя удалять страницу целиком или выбирать редакцию автоматически."
+        },
+        {
+          "claim": "Закупка завышена на375м.",
+          "verdict": "not_established",
+          "limits": "Не проверены смета, заказ и поставка; условное суммирование двух копий не доказывает фактическую закупку."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Повторные метры не являются закупочным ущербом;45консолей —условный расчёт; разные марки не доказывают эквивалентность; отсутствие трубы в узле не устанавливает огнестойкость.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить документальные конфликты и условные вопросы по опорам; фактическая маршрутизация разделов не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_8c1c32681acd42c79d8190b013bbbf0c",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+          "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297",
+          "primary_adjudication": null,
+          "limits": [
+            "Числа165 и210 — сумма одного повторяющегося набора разных кабельных марок, не количество одного типа кабеля и не доказанный перерасход.",
+            "Условная добавка375м возникает только при суммировании обеих копий как независимых линий. Включение такой добавки в СО, смету или заказ не проверено.",
+            "Первый набор не является дословным дублем: НФ/HF, Y1/У1, TS1/ТС1 и участки15/10,20/5,10/15 различаются. Источник сохранён буквально; нельзя молча выбрать одну редакцию.",
+            "Во втором наборе различается написание латинской A/кириллической А в марке; адреса, сечения и проектные длины совпадают. Наличие новой самостоятельной линии повторением строки не доказано.",
+            "Не удалять целиком лист8: он содержит продолжение Пм4.1-6…11 и новую систему Па3.1. Повторы рассматриваются по идентификаторам, а не по сходству страницы.",
+            "Решение инженера, фактическое завышение закупки и экономический ущерб не установлены."
+          ],
+          "wording": "Согласовать повторные записи КЖ: на листах7/8 повторены семь марок П4.1.1-6/7 и Пм4.1-1…5 с суммой проектных длин165м, на листах25/26 —14 марок Пб.1.1-7…11 и Пб.1.4-1…9 с суммой210м. Установить действующие записи перед расчётом итогов; первый набор содержит различия марки кабеля, обозначений концов и разбивки трассы."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+          "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297",
+          "primary_adjudication": null,
+          "limits": [
+            "Числа165 и210 — сумма одного повторяющегося набора разных кабельных марок, не количество одного типа кабеля и не доказанный перерасход.",
+            "Условная добавка375м возникает только при суммировании обеих копий как независимых линий. Включение такой добавки в СО, смету или заказ не проверено.",
+            "Первый набор не является дословным дублем: НФ/HF, Y1/У1, TS1/ТС1 и участки15/10,20/5,10/15 различаются. Источник сохранён буквально; нельзя молча выбрать одну редакцию.",
+            "Во втором наборе различается написание латинской A/кириллической А в марке; адреса, сечения и проектные длины совпадают. Наличие новой самостоятельной линии повторением строки не доказано.",
+            "Не удалять целиком лист8: он содержит продолжение Пм4.1-6…11 и новую систему Па3.1. Повторы рассматриваются по идентификаторам, а не по сходству страницы.",
+            "Решение инженера, фактическое завышение закупки и экономический ущерб не установлены."
+          ],
+          "wording": "Согласовать повторные записи КЖ: на листах7/8 повторены семь марок П4.1.1-6/7 и Пм4.1-1…5 с суммой проектных длин165м, на листах25/26 —14 марок Пб.1.1-7…11 и Пб.1.4-1…9 с суммой210м. Установить действующие записи перед расчётом итогов; первый набор содержит различия марки кабеля, обозначений концов и разбивки трассы."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-015",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-016"
+        }
+      ],
+      "disposition": "assessed_r3_support_and_route_document_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-031",
+      "finding": {
+        "id": "F-031",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Опоры кабельных трасс",
+        "sheet": "Лист 53",
+        "page": [
+          52,
+          54,
+          57,
+          103
+        ],
+        "problem": "Состав кровельных опор не согласован со сводной спецификацией.",
+        "description": "Типовой комплект содержит плиту, двойной подвес BSD4120, четыре консоли и четыре анкера. Для 15 плит спецификация содержит 60 анкеров, но только 15 консолей и подвес BSD2120. При применении типового комплекта требуется 60 консолей, разница составляет 45 шт.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Соответствие количества и марок монтажных изделий принятому узлу.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-030",
+                "G-105",
+                "G-106"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-030"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подтвердить конструкцию каждой опоры и согласовать тип подвеса и число консолей.",
+        "risk": "Недокомплект опор, вынужденные замены и дополнительные затраты.",
+        "source_finding_ids": [
+          "T-030",
+          "G-105",
+          "G-106"
+        ],
+        "source_block_ids": [
+          "blk_56331ec5845f4d73be99b93df1faec9c",
+          "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_978fa763ed7e4a39977b35b866485e2e"
+        ],
+        "related_block_ids": [
+          "blk_56331ec5845f4d73be99b93df1faec9c",
+          "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_978fa763ed7e4a39977b35b866485e2e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+            "page": 57
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-105",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-106",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение: подвес BSD4120 на листе 53 и BSD2120 (BSD-21) в позиции 22.6 спецификации на листе 10. Детализация эквивалентна; различие в категории серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение: подвес BSD4120 на листе 53 и BSD2120 (BSD-21) в позиции 22.6 спецификации на листе 10. Детализация эквивалентна; различие в категории серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F023_support_type:58cbd95ce44a50b86573",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "BSD4120 локальной таблицы противBSD2120СО.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": "Взаимозаменяемость и окончательная марка не установлены."
+        },
+        {
+          "claim": "Таблица:4консоли на1плиту;СО15плит/15консолей/60анкеров.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": "4×15=60 и разница45 только при применимости таблицы ко всем15опорам."
+        },
+        {
+          "claim": "Графика типового узла подтверждает четыре консоли.",
+          "verdict": "not_established",
+          "limits": "На ранее просмотренных рисунках явно видна одна консоль; проекция не устанавливает окончательный состав. Не исправлятьTEXT4 по растру."
+        },
+        {
+          "claim": "Подтвердить конструкцию каждой опоры и согласовать количество.",
+          "verdict": "supported_conditional_question",
+          "limits": "Раскладка опор и соответствиеВВН-60/BВH6060 не проверены; дозаказ45 не доказан."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Повторные метры не являются закупочным ущербом;45консолей —условный расчёт; разные марки не доказывают эквивалентность; отсутствие трубы в узле не устанавливает огнестойкость.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить документальные конфликты и условные вопросы по опорам; фактическая маршрутизация разделов не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_56331ec5845f4d73be99b93df1faec9c",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F023_support_type.json",
+          "sha256": "b33ca81b4392fa59b48a45050d3def13fa4f6e75038357b77ec7daf6aa63d753",
+          "primary_adjudication": null,
+          "limits": [
+            "Сопоставлены полные TEXT-таблицы одного комплекта. Не доказаны взаимозаменяемость, несущая способность или техническая непригодность какой-либо марки.",
+            "Различие количества1 в локальной таблице и15 в СО само по себе не дефект: возможны повторяющиеся узлы.",
+            "Фактический заказ, недопоставка и задержка монтажа не установлены. Решение инженера для этого кандидата отсутствует.",
+            "Сходные обозначения не являются достаточным основанием признать изделия одинаковыми или автоматически выбрать одно из них."
+          ],
+          "wording": "Согласовать марку подвеса для крепления к кровле: таблица листа53 содержит двойной подвес ДКС BSD4120, позиция22.6 СО — двойной вертикальный подвес BSD-21, BSD2120. Уточнить предусмотренное изделие и привести документы в соответствие."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F024_support_console_scope.json",
+          "sha256": "44adf7ab3a2842d4508f92cfecd4e56fdbb8cc303ab691a43f4e8ff0d0024ec9",
+          "primary_adjudication": null,
+          "limits": [
+            "Соотношения1:4 и15:15 подтверждены авторитетным TEXT; число60 является условным расчётом, а не установленным объёмом закупки.",
+            "Не проверены размещение всех опор, другие типы узлов и область применения каждой из15 плит. Не доказано, что все15 относятся именно к узлу листа53.",
+            "В таблице указана Консоль ВВН-60, в СО Усиленная консоль600мм BВH6060; точная эквивалентность изделий не проверена.",
+            "Текстовая таблица не доказывает фактический состав изображённого узла; графика этого крепления здесь не проверена.",
+            "Недостача45 консолей и последствия для монтажа не установлены. Проектный коэффициент4 нельзя превращать в универсальное правило крепления."
+          ],
+          "wording": "Уточнить количество консолей для кровельных опор: таблица листа53 задаёт4 консоли на1 плиту, СО содержит15 плит и15 консолей. Если все15 опор выполняются по этому узлу, расчётное количество составляет60 консолей; требуется подтвердить применимость узла и согласовать ведомости."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_978fa763ed7e4a39977b35b866485e2e.png",
+          "sha256": "dd1639fcbd7fab08dc46cb0b59a93fe616bd296a1abbf52a76491d68383ef783",
+          "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_978fa763ed7e4a39977b35b866485e2e.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_98835baf7fed4bf1934dc55088895af9.png",
+          "sha256": "e70ffed5f0ab39b6c0bec139a21a1758c2d20ce9aeec0e0c30c71e5208bc5f72",
+          "block_id": "blk_98835baf7fed4bf1934dc55088895af9",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_98835baf7fed4bf1934dc55088895af9.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6e1b1e0631904e1c8330bf2c4f47744c.png",
+          "sha256": "4584454d0b6f655ff0797a4c7526f42439f19861f5c5607f9b141904d98a4481",
+          "block_id": "blk_6e1b1e0631904e1c8330bf2c4f47744c",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6e1b1e0631904e1c8330bf2c4f47744c.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-026",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_56331ec5845f4d73be99b93df1faec9c",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F023_support_type.json",
+          "sha256": "b33ca81b4392fa59b48a45050d3def13fa4f6e75038357b77ec7daf6aa63d753",
+          "primary_adjudication": null,
+          "limits": [
+            "Сопоставлены полные TEXT-таблицы одного комплекта. Не доказаны взаимозаменяемость, несущая способность или техническая непригодность какой-либо марки.",
+            "Различие количества1 в локальной таблице и15 в СО само по себе не дефект: возможны повторяющиеся узлы.",
+            "Фактический заказ, недопоставка и задержка монтажа не установлены. Решение инженера для этого кандидата отсутствует.",
+            "Сходные обозначения не являются достаточным основанием признать изделия одинаковыми или автоматически выбрать одно из них."
+          ],
+          "wording": "Согласовать марку подвеса для крепления к кровле: таблица листа53 содержит двойной подвес ДКС BSD4120, позиция22.6 СО — двойной вертикальный подвес BSD-21, BSD2120. Уточнить предусмотренное изделие и привести документы в соответствие."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F024_support_console_scope.json",
+          "sha256": "44adf7ab3a2842d4508f92cfecd4e56fdbb8cc303ab691a43f4e8ff0d0024ec9",
+          "primary_adjudication": null,
+          "limits": [
+            "Соотношения1:4 и15:15 подтверждены авторитетным TEXT; число60 является условным расчётом, а не установленным объёмом закупки.",
+            "Не проверены размещение всех опор, другие типы узлов и область применения каждой из15 плит. Не доказано, что все15 относятся именно к узлу листа53.",
+            "В таблице указана Консоль ВВН-60, в СО Усиленная консоль600мм BВH6060; точная эквивалентность изделий не проверена.",
+            "Текстовая таблица не доказывает фактический состав изображённого узла; графика этого крепления здесь не проверена.",
+            "Недостача45 консолей и последствия для монтажа не установлены. Проектный коэффициент4 нельзя превращать в универсальное правило крепления."
+          ],
+          "wording": "Уточнить количество консолей для кровельных опор: таблица листа53 задаёт4 консоли на1 плиту, СО содержит15 плит и15 консолей. Если все15 опор выполняются по этому узлу, расчётное количество составляет60 консолей; требуется подтвердить применимость узла и согласовать ведомости."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_978fa763ed7e4a39977b35b866485e2e.png",
+          "sha256": "dd1639fcbd7fab08dc46cb0b59a93fe616bd296a1abbf52a76491d68383ef783",
+          "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_978fa763ed7e4a39977b35b866485e2e.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_98835baf7fed4bf1934dc55088895af9.png",
+          "sha256": "e70ffed5f0ab39b6c0bec139a21a1758c2d20ce9aeec0e0c30c71e5208bc5f72",
+          "block_id": "blk_98835baf7fed4bf1934dc55088895af9",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_98835baf7fed4bf1934dc55088895af9.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6e1b1e0631904e1c8330bf2c4f47744c.png",
+          "sha256": "4584454d0b6f655ff0797a4c7526f42439f19861f5c5607f9b141904d98a4481",
+          "block_id": "blk_6e1b1e0631904e1c8330bf2c4f47744c",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6e1b1e0631904e1c8330bf2c4f47744c.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-026",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-029"
+        }
+      ],
+      "disposition": "assessed_r3_support_and_route_document_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-033",
+      "finding": {
+        "id": "F-033",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Марки сигнальных кабелей",
+        "sheet": "Лист 37",
+        "page": [
+          29,
+          41,
+          59,
+          81,
+          92,
+          102,
+          103
+        ],
+        "problem": "Марки сигнальных кабелей не унифицированы между схемами, журналом и спецификацией.",
+        "description": "Применены КСПВПГнг(А)-HF, КСВПГнг(А)-HF, КСПВПнг(А)-HF и КСПВППГнг(А)-HF без подтверждения эквивалентности. В частности, для В6.1.1-4, В6.1.2-1, В6.1.2-4 и В6.1.4-1 схема содержит КСПВПГнг(А)-HF, журнал — КСВПГнг(А)-HF. Отдельное локальное расхождение линии СУКЗ-1 также сохраняется в исходных данных.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Однозначность номенклатуры кабельных изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-032",
+                "G-089",
+                "G-090",
+                "G-095"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-032"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить марки с техническими условиями изготовителя и унифицировать документы по подтверждённой номенклатуре.",
+        "risk": "Закупка различных изделий под видом одной марки и ошибки монтажа.",
+        "source_finding_ids": [
+          "T-032",
+          "G-089",
+          "G-090",
+          "G-095"
+        ],
+        "source_block_ids": [
+          "blk_13604b1cfe21408f85c2bc28e358b012",
+          "blk_019b790b96c0452e9b83c348ec3d429c",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_b8712be58c8b43f6ac75cfa6420d5479",
+          "blk_47163e69651c48528b3e054d5a5db095"
+        ],
+        "related_block_ids": [
+          "blk_13604b1cfe21408f85c2bc28e358b012",
+          "blk_019b790b96c0452e9b83c348ec3d429c",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_b8712be58c8b43f6ac75cfa6420d5479",
+          "blk_47163e69651c48528b3e054d5a5db095"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b8712be58c8b43f6ac75cfa6420d5479",
+            "page": 41
+          },
+          {
+            "type": "text",
+            "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+            "page": 44
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-089",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-090",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-095",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение марок КСПВПГнг(А)-HF и КСВПГнг(А)-HF между схемой, лист 37, и кабельным журналом, лист 23, для тех же четырёх кабелей. Упоминание спецификации в рекомендации не добавляет новой проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение марок КСПВПГнг(А)-HF и КСВПГнг(А)-HF между схемой, лист 37, и кабельным журналом, лист 23, для тех же четырёх кабелей. Упоминание спецификации в рекомендации не добавляет новой проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Четыре адресные линииВ6.1.1-4/В6.1.2-1/-4/В6.1.4-1:КСПВПГ схемы противКСВПГ журнала;СОКСПВППГ.",
+          "verdict": "confirmed_same_source_TEXT_and_GRAPHIC",
+          "limits": "Не стирать различие марок нормализацией; поставленный материал и эквивалентность неизвестны."
+        },
+        {
+          "claim": "Отдельное расхождение линииСУКЗ-1.",
+          "verdict": "partly_addressed",
+          "limits": "Прежняя проверка подтверждает45м входаСКЗ шкафаК6АС иКСПВПГ/КСПВПнг. Новая строка не раскрывает этот адрес и пару марок; общего упоминания недостаточно для полной трассируемости."
+        },
+        {
+          "claim": "ПроверитьТУ и унифицировать.",
+          "verdict": "supported_bounded_recommendation",
+          "limits": "ОшибкуOCR не объявлять, подготовленныйTEXT не переизвлекать; изменение физической конструкции кабеля не доказано."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Повторные метры не являются закупочным ущербом;45консолей —условный расчёт; разные марки не доказывают эквивалентность; отсутствие трубы в узле не устанавливает огнестойкость.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить документальные конфликты и условные вопросы по опорам; фактическая маршрутизация разделов не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+          "sha256": "d0ba9aaabb16c1ce4b6b16f7aaa9bbe3903ca1b7084bd043e6e1007636fbabfb",
+          "primary_adjudication": null,
+          "limits": [
+            "В TEXT КЖ идентификаторы начинаются с латинской B; исходное написание сохранено в доказательствах. Соответствие схеме устанавливается по шкафу, номеру линии, оконечному устройству, сечению и длине, а не только замене букв.",
+            "7040 м в СО — сводный объём; его принадлежность только четырём линиям не утверждается.",
+            "Различие конструкций, правильная закупочная марка, фактическая поставка и работоспособность не установлены. Возможная опечатка не устраняет документальное расхождение.",
+            "Историческое решение инженера для этого независимого кандидата не установлено."
+          ],
+          "wording": "Согласовать марку контрольного кабеля 1×2×0,75: на схеме листа37 и в локальных ведомостях листов25/37 — КСПВПГнг(А)-HF; в КЖ лист23 для четырёх линий шкафа ШАУВ-1-К6ПЧ — КСВПГнг(A)-HF; в СО лист9 поз.21.4 — КСПВППГнг(А)-HF. Сохранить адреса линий и установить согласованное обозначение."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+          "sha256": "d0ba9aaabb16c1ce4b6b16f7aaa9bbe3903ca1b7084bd043e6e1007636fbabfb",
+          "primary_adjudication": null,
+          "limits": [
+            "В TEXT КЖ идентификаторы начинаются с латинской B; исходное написание сохранено в доказательствах. Соответствие схеме устанавливается по шкафу, номеру линии, оконечному устройству, сечению и длине, а не только замене букв.",
+            "7040 м в СО — сводный объём; его принадлежность только четырём линиям не утверждается.",
+            "Различие конструкций, правильная закупочная марка, фактическая поставка и работоспособность не установлены. Возможная опечатка не устраняет документальное расхождение.",
+            "Историческое решение инженера для этого независимого кандидата не установлено."
+          ],
+          "wording": "Согласовать марку контрольного кабеля 1×2×0,75: на схеме листа37 и в локальных ведомостях листов25/37 — КСПВПГнг(А)-HF; в КЖ лист23 для четырёх линий шкафа ШАУВ-1-К6ПЧ — КСВПГнг(A)-HF; в СО лист9 поз.21.4 — КСПВППГнг(А)-HF. Сохранить адреса линий и установить согласованное обозначение."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8712be58c8b43f6ac75cfa6420d5479.png",
+          "sha256": "1e2341ee22473618e8dd909d53c863618bd86d002b9d77d0b4b5e71ef6e9c0ba",
+          "block_id": "blk_b8712be58c8b43f6ac75cfa6420d5479",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Four addressed K6PCh signal lines show КСПВПГнг(А)-HF1x2x0.75.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8712be58c8b43f6ac75cfa6420d5479.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+          "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+          "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "SKZ input45m shows КСПВПГнг(А)-HF1x2x0.75; crop[2480,300,2610,650]scale3 inspected.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-025",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT_explicit_unit_comparison",
+          "quotes": [
+            [
+              "### BLOCK #142 [TEXT]: blk_419647cb4cd74c26b4c46942b49756e7",
+              "|  | Кабель КИС-Пнг(A)-HF 3x2x0,78 мм² | 30 | м |"
+            ],
+            [
+              "### BLOCK #149 [TEXT]: blk_c1399ff966ec45aa94b7a3724d717361",
+              "|  | Кабель КИС-Пнг(A)-HF 2x2x0,78 | 450 | м |"
+            ]
+          ],
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-033"
+        }
+      ],
+      "disposition": "assessed_r3_support_and_route_document_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-061",
+      "finding": {
+        "id": "F-061",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кабельные проходки",
+        "sheet": "Листы 50, 52, 54",
+        "page": [
+          54,
+          56,
+          58
+        ],
+        "problem": "Типовые узлы группового прохода кабелей противоречат примечаниям о металлических трубах.",
+        "description": "Узел А на листах 50, 52 и 54 показывает лоток с кабелями через конструкцию с огнезащитной заделкой без металлических труб. Примечание 3 каждого листа требует защиты проходов через стены и перекрытия металлическими трубами. Это установленное внутреннее противоречие, а не доказательство обязательности труб для любого варианта проходки.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Согласованность графических решений и указаний рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-100",
+                "G-102",
+                "G-103",
+                "G-109"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-100",
+                  "G-102",
+                  "G-103",
+                  "G-109"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить принятое исполнение группового прохода и область применения труб, согласовав узлы с примечаниями.",
+        "risk": "Различное исполнение проходок монтажниками и несоответствие принятой конструкции заделки.",
+        "source_finding_ids": [
+          "G-100",
+          "G-102",
+          "G-103",
+          "G-109"
+        ],
+        "source_block_ids": [
+          "blk_3a652e527d9242058c018c7b7199b5e6",
+          "blk_3ce77761b19f4562bb8fdf7579aa80ec",
+          "blk_256f5749f1274c84b54b8873170bdccc"
+        ],
+        "related_block_ids": [
+          "blk_3a652e527d9242058c018c7b7199b5e6",
+          "blk_3ce77761b19f4562bb8fdf7579aa80ec",
+          "blk_256f5749f1274c84b54b8873170bdccc"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_3a652e527d9242058c018c7b7199b5e6",
+            "page": 54
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3ce77761b19f4562bb8fdf7579aa80ec",
+            "page": 56
+          },
+          {
+            "type": "text",
+            "block_id": "blk_256f5749f1274c84b54b8873170bdccc",
+            "page": 58
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-100",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-102",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-103",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-109",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие на листе 50: узел А показывает проход кабелей в лотке без металлических труб, а примечание 3 требует защиты проходов металлическими трубами. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие: узел А показывает проход кабелей в лотке без металлической трубы, тогда как примечание 3 листа 52 требует защиты проходов металлическими трубами. Уточнение о пене не добавляет самостоятельной проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F061_penetration_detail_scope:5c02072a41acbc8744af",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "УзлыА50/52/54:лоток и огнезаделка без показанной трубы при требовании трубы в примечании3.",
+          "verdict": "confirmed_same_source_TEXT_and_GRAPHIC",
+          "limits": "Один внутренний конфликт повторяющегося узла, не три разных физических дефекта."
+        },
+        {
+          "claim": "Согласовать состав групповой проходки или область применения примечания.",
+          "verdict": "supported_scoped_remedy",
+          "limits": "УзлыБ с гильзой — другие проходки. Текущая строка правильно не утверждает универсальную обязательность трубы."
+        },
+        {
+          "claim": "Недостаточная огнестойкость или непригодностьFIREFIX.",
+          "verdict": "not_established",
+          "limits": "РазделКР, испытанный состав, сертификаты и фактический монтаж не проверены; автоматически добавлять трубы нельзя."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Повторные метры не являются закупочным ущербом;45консолей —условный расчёт; разные марки не доказывают эквивалентность; отсутствие трубы в узле не устанавливает огнестойкость.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить документальные конфликты и условные вопросы по опорам; фактическая маршрутизация разделов не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_0f3dd0d612604a15b2e186aea9a6dde1",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_d2dbea3364034dd3bcc80d3c1c8f3fe3",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_77d8c6a52e15473eb0dda8aa27b37511",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F061_penetration_detail_scope.json",
+          "sha256": "fd69d890fb13cea2f5adfa44fc272a31dc5e66368917c5c7159597065583df04",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждено рассогласование состава изображённого узла и общего требования проекта; нормативная обязательность трубы для любого группового прохода не устанавливалась.",
+            "Примечание5 допускает прокладку в лотках в технических помещениях, но не формулирует исключение из примечания3 для пересечения конструкций. Примечание12 относит предел огнестойкости к разделуКР.",
+            "РазделКР, документация/сертификаты системы проходки, принципиальные схемы и выполненный монтаж не проверены. Нельзя автоматически добавлять трубы или заявлять несоответствие огнестойкости.",
+            "Изображения не содержат полных штампов; номера листов установлены по привязке исходного MD и метаданным TEXT.",
+            "УзлыБ с металлическими гильзами — отдельные проходы; их наличие не доказывает гильзы в узлахА и не означает отсутствия гильз во всём проекте.",
+            "Фактические различия монтажа, отказ в приёмке и нарушение конкретного пункта СП77.13330.2016 не доказаны."
+          ],
+          "wording": "Согласовать узлыА группового прохода кабелей в лотке на листах50,52,54 с примечанием3 этих листов: примечание требует металлические трубы в проходах через стены и перекрытия, а узлыА показывают лоток, кабели и огнезаделку без обозначенной трубы. Уточнить состав проходки либо область применения примечания с учётом выбранного проектного решения."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_3a652e527d9242058c018c7b7199b5e6.png",
+          "sha256": "ce4011bdd397822bd1415ce8299474c19d7861a5e21a423e3e89817d37e5fdf1",
+          "block_id": "blk_3a652e527d9242058c018c7b7199b5e6",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "NodeA grouped cables in tray with FIREFIX foam/sealant; no metal tube drawn. NodesB where present explicitly label metal sleeve.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_3a652e527d9242058c018c7b7199b5e6.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_3ce77761b19f4562bb8fdf7579aa80ec.png",
+          "sha256": "5715b293f381de3b0236db974c89465d002f5d00307768861965a5664f4d05bc",
+          "block_id": "blk_3ce77761b19f4562bb8fdf7579aa80ec",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "NodeA grouped cables in tray with FIREFIX foam/sealant; no metal tube drawn. NodesB where present explicitly label metal sleeve.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_3ce77761b19f4562bb8fdf7579aa80ec.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_256f5749f1274c84b54b8873170bdccc.png",
+          "sha256": "3a813bc3ba16aa30dea69307e3280aacb6b3b046a0760404547dd96da9831436",
+          "block_id": "blk_256f5749f1274c84b54b8873170bdccc",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "NodeA grouped cables in tray with FIREFIX foam/sealant; no metal tube drawn. NodesB where present explicitly label metal sleeve.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_256f5749f1274c84b54b8873170bdccc.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-062",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-069"
+        }
+      ],
+      "disposition": "assessed_r3_support_and_route_document_limits"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Four current route and support findings reviewed against five frozen prior inspections. All local hashes and r3 MD/PNG identity checked. No new graphic view or engineer decision claimed."
+}
