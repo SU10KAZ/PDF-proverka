@@ -80,6 +80,15 @@ def preflight(source_root,work,variant="classic"):
     from backend.app.pipeline.stages.findings_merge.runner import run_findings_merge
     from backend.app.pipeline.stages.findings_verify.runner import run_findings_verify
     options=harness.method_context_options('PREFLIGHT')
+    from backend.app.services.llm import codex_runner
+    inline_options=harness.inline_evidence_options({})
+    tool_args=codex_runner._json_tool_args(inline_options['allowed_tools'])
+    for setting in ('features.shell_tool=false','features.view_image=false',
+                    'features.multi_agent=false','features.apps=false',
+                    'memories.use_memories=false','skills.include_instructions=false'):
+        if setting not in tool_args:raise RuntimeError('Missing shared tool isolation: '+setting)
+    if not callable(getattr(codex_runner,'_has_tool_activity',None)):
+        raise RuntimeError('Missing tool-activity result check')
     assert set(options)<=set(PipelineStageContext.__dataclass_fields__)
     if not Path(graphics.__file__).resolve().is_relative_to(harness.ROOT):
         raise RuntimeError('Imported algorithm from wrong arm')
@@ -94,7 +103,7 @@ def preflight(source_root,work,variant="classic"):
     assert config.STAGE_MODEL_CONFIG==harness.MODELS
     report={'status':'shared_transport_preflight_passed','source_root':str(harness.ROOT),
         'algorithm_module':str(Path(graphics.__file__).resolve()),'backend_imports_verified':len(loaded),'cross_arm_imports':foreign,
-        'variant':variant,'method_config':harness.METHOD_CONFIG,'context_option_keys':sorted(options),
+        'variant':variant,'inline_evidence_tool_args':tool_args,'method_config':harness.METHOD_CONFIG,'context_option_keys':sorted(options),
         'stage_models':harness.MODELS,'environment':harness.ENV,
         'reasoning_effort':harness.REASONING_EFFORT,'max_request_attempts':harness.MAX_REQUEST_ATTEMPTS,
         'retry_delay_seconds':10,'model_calls':0,

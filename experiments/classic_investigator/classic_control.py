@@ -70,6 +70,13 @@ def method_context_options(project_id):
     return options
 
 
+def inline_evidence_options(options):
+    """No search/file tools in this source-only comparison scope."""
+    if options.get('allowed_tools') not in (None, ''):
+        raise RuntimeError('TOOLS_OUTSIDE_FROZEN_INLINE_COMPARISON_SCOPE')
+    return {**options, 'allowed_tools': ''}
+
+
 def process_guard(event, args):
     if event == 'subprocess.Popen':
         executable = Path(os.fsdecode(args[0])).name
@@ -129,6 +136,7 @@ def configure(work,disc):
     claude_json_runner.run_claude_json_messages=deny
     async def guarded(messages,**kwargs):
         validate_model(kwargs.get('model'))
+        kwargs=inline_evidence_options(kwargs)
         kwargs['reasoning_effort']=REASONING_EFFORT
         request=root/'requests'/disc/str(time.time_ns());request.mkdir(parents=True)
         write(request/'request.json',{'messages':messages,'options':{k:([str(p) for p in v] if k=='image_paths' and v else v) for k,v in kwargs.items() if k!='on_output'},

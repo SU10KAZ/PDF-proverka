@@ -1,0 +1,65 @@
+diff --git a/backend/app/services/llm/codex_runner.py b/backend/app/services/llm/codex_runner.py
+index ed36aa52..d4bd765e 100644
+--- a/backend/app/services/llm/codex_runner.py
++++ b/backend/app/services/llm/codex_runner.py
+@@ -48,6 +48,11 @@ _DEFAULT_JSON_SANDBOX = "read-only"
+ _ALLOWED_SANDBOXES = {"read-only", "workspace-write", "danger-full-access"}
+ _ALLOWED_REASONING_EFFORTS = {"minimal", "low", "medium", "high", "xhigh", "max"}
+ _NORMS_MCP_PREFIX = "mcp__norms__"
++_TOOLLESS_FEATURES = (
++    "shell_tool", "view_image", "multi_agent", "apps", "plugins", "memories",
++    "browser_use", "browser_use_external", "computer_use", "skill_search",
++    "shell_snapshot", "tool_suggest", "goals", "request_permissions_tool",
++)
+ _NORMS_RUNTIME_TOOLS = configured_runtime_tools_path()
+ _NORMS_MCP_PYTHON = configured_mcp_python_path(_NORMS_RUNTIME_TOOLS)
+ _NORMS_MCP_SERVER = ROOT_DIR / "norms" / "tools" / "mcp_server.py"
+@@ -412,6 +417,13 @@ def _tool_config_args(allowed_tools: str | None) -> list[str]:
+     args: list[str] = []
+     if not ({"WebSearch", "WebFetch"} & tool_names):
+         args.extend(["-c", 'web_search="disabled"'])
++    if not tool_names:
++        # Explicit empty allow-list means inline evidence only. Read-only
++        # sandboxing by itself still permits reading evaluator/history files.
++        overrides = [f"features.{name}=false" for name in _TOOLLESS_FEATURES]
++        overrides += ["memories.use_memories=false", "memories.generate_memories=false",
++                      "skills.bundled.enabled=false", "skills.include_instructions=false"]
++        args.extend(part for value in overrides for part in ("-c", value))
+ 
+     norms_tools = sorted(
+         name.removeprefix(_NORMS_MCP_PREFIX)
+@@ -431,6 +443,21 @@ def _tool_config_args(allowed_tools: str | None) -> list[str]:
+     return args
+ 
+ 
++def _has_tool_activity(stdout: str) -> bool:
++    """Inspect CLI item events, not text quoted inside a model response."""
++    for line in stdout.splitlines():
++        try:
++            event = json.loads(line)
++        except ValueError:
++            continue
++        if not isinstance(event, dict) or not str(event.get("type", "")).startswith("item."):
++            continue
++        item = event.get("item")
++        if isinstance(item, dict) and item.get("type") not in ("agent_message", "reasoning"):
++            return True
++    return False
++
++
+ def _normalize_image_paths(image_paths: Sequence[str | Path] | None) -> list[Path]:
+     if not image_paths:
+         return []
+@@ -911,6 +938,12 @@ async def run_codex_json_messages(
+             # Видно в leg_failures.error и в UI: отказ пережил N попыток —
+             # значит перегрузка у провайдера не секундная, а затяжная.
+             error = f"{error}; attempts_{attempts}"
++        if allowed_tools is not None and not _allowed_tool_names(allowed_tools) and _has_tool_activity(stdout):
++            # A valid final JSON cannot rehabilitate a run that used tools
++            # outside its explicit evidence boundary. Retain text for review.
++            is_error = True
++            json_data = None
++            error = "unexpected_tool_activity_in_toolless_json"
+         return LLMResult(
+             text=response_text or stdout or stderr or "",
+             json_data=json_data,

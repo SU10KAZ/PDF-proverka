@@ -42,3 +42,21 @@ assert 'backend' not in sys.modules
 """
     result=subprocess.run([sys.executable,'-c',code],cwd=ROOT,capture_output=True,text=True)
     assert result.returncode==0,result.stdout+result.stderr
+
+
+def test_inline_boundary_cannot_inherit_tools_or_silently_drop_requested_tools():
+    code="""
+import sys
+sys.path.insert(0,'experiments/classic_investigator')
+import classic_control as c
+for value in (None, ''):
+    original={'model':'codex/gpt-6-astra','allowed_tools':value}
+    checked=c.inline_evidence_options(original)
+    assert checked['allowed_tools']=='' and original['allowed_tools']==value
+for value in ('Read', 'WebSearch', 'mcp__norms__search', ['Read']):
+    try:c.inline_evidence_options({'allowed_tools':value})
+    except RuntimeError:pass
+    else:raise AssertionError('Tool request admitted')
+"""
+    result=subprocess.run([sys.executable,'-c',code],cwd=ROOT,capture_output=True,text=True)
+    assert result.returncode==0,result.stdout+result.stderr
