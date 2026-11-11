@@ -1,0 +1,869 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "e3a256a06b6220ab9dc68d9c73e435736bfd78618710a748ba042556087e2173",
+  "queue_after_sha256": "337694028e3e0c8e918d1c131f8040993c33c22a9e7d0389cdb2eff340a137b6",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-024",
+      "finding": {
+        "id": "F-024",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектация оборудования",
+        "sheet": "Листы 2, 2.1, 1., 2.",
+        "page": [
+          8,
+          9,
+          24,
+          25
+        ],
+        "problem": "Подпозиции установок поддержания давления обозначают разные изделия.",
+        "description": "В экспликации К18.1 — насосный блок, К18.2 — основной бак, К18.3 — демпферный бак. В спецификации 18 — блок, 18.1 — основной бак, 18.2 — демпферный бак. Аналогичная перестановка есть для остальных установок. Бак второй зоны объёмом 50 л обозначен как RM 580 PN16.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к позиционным обозначениям и однозначной комплектации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-024"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-024"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Унифицировать позиционные номера блоков и баков, исправить марки и сверить ссылки на схемах.",
+        "risk": "Ошибочная комплектация и монтаж оборудования по неверным позициям.",
+        "source_finding_ids": [
+          "T-024"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_1601889b50624245a5c590ad23d87175"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 24
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-031:20e0a2fe6cdbb065f78a",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Экспликация K18.1/K18.2/K18.3 и спецификация 18/18.1/18.2 обозначают блок, основной и демпферный баки соответственно.",
+          "verdict": "confirmed_authoritative_TEXT_first_zone",
+          "limits": "Разные системы нумерации требуют однозначной таблицы соответствия; сами по себе не доказывают неправильный состав. Обобщение на все остальные установки в этой проверке не подтверждено."
+        },
+        {
+          "claim": "Бак второй зоны 50 л PN16 обозначен RM 580 PN16, при RM50 в экспликации и подборе.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": "Не утверждать, что RM580 вообще не существует: каталог не проверен."
+        },
+        {
+          "claim": "Унифицировать номера и марки для предотвращения ошибки монтажа.",
+          "verdict": "supported_scoped_question",
+          "limits": "Достаточность явного соответствия вместо полной перенумерации следует сохранить как вариант; фактическая ошибочная поставка или монтаж не установлены."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая ошибочная комплектация, ошибочная нагрузка в расчёте конструктора, правильность объёма200л и обязанность единой нумерации. Обобщение нумерации на остальные установки отдельно не подтверждено.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы о соответствии позиций, высотной базе, объёме и массе. Не превращать их в доказанные физические дефекты. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fe2066a9479d4d9e9c215338d4f82621",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-031.json",
+          "sha256": "1e77b4c1af3d96d38544e8d299129f7e02e867812d6138b2c8ecb99817db0e26",
+          "primary_adjudication": null,
+          "limits": "Это два самостоятельных уточнения идентификации, объединённых исходной строкой. Реальная ошибочная закупка не доказана. Не заявлять, что модельRM580 не существует, без каталога; подтверждено только расхождение записей. Не удалять2кранаDn32 как дубль позиции88 и не присваивать новый номер автоматически: выноски всех чертежей не проверены.",
+          "wording": "Уточнить обозначения спецификации: в поз.19.2 приV50л/PN16 записаноRM580PN16, тогда как экспликацияК19.3 и подбор указываютRM50/16бар. Также номер89 присвоен двум кранам BVR —Dn25(118шт.) иDn32(2шт.); обеспечить однозначную связь с чертежами."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-030",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-039"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_positions_levels_and_tank_mass"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-031",
+      "finding": {
+        "id": "F-031",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Отметки и статическое давление",
+        "sheet": "Лист 1",
+        "page": [
+          7,
+          108,
+          110,
+          111,
+          112,
+          113
+        ],
+        "problem": "Отметки ИТП не согласованы с исходными данными статического расчёта.",
+        "description": "В ведомости рабочих чертежей указана отметка −4,000, в анкете присутствуют −4,900 и −4,450. Статические высоты рассчитаны относительно −4,900: например, 135,83+4,90=140,73 м. Назначение каждой отметки не раскрыто.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить обоснование расчётных высот и давлений по согласованным исходным данным.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-031"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-031"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать с архитектурным разделом отметку чистого пола и расчётную отметку подключения; проверить статические давления и настройки.",
+        "risk": "Неверные уставки поддержания давления и оценка допустимых давлений оборудования.",
+        "source_finding_ids": [
+          "T-031"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_90da5d0d361c48008030c2bf87767ced",
+          "blk_9167c15ea57c423ea6ad708738bb420f",
+          "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 108
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 110
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-038:705f2262875c31478443",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Ведомость содержит отметку −4,000; анкета содержит две отметки пола −4,900 и −4,450.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "−4,000 находится в названии планов, а не в явно заданной отметке чистого пола."
+        },
+        {
+          "claim": "135,83+4,90=140,73 м; статические высоты рассчитаны от −4,900.",
+          "verdict": "arithmetic_confirmed_author_method_not_proven",
+          "limits": "Числа совместимы с этой базой; процедура расчёта автора и точка измерения не доказаны."
+        },
+        {
+          "claim": "Уточнить смысл отметок, высотную базу и связанные давления.",
+          "verdict": "supported_scoped_question",
+          "limits": "АР/КР и фактические уровни не проверены. Разные конструктивные уровни возможны, но не доказаны; нельзя автоматически заменить все значения одним или снять вопрос."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая ошибочная комплектация, ошибочная нагрузка в расчёте конструктора, правильность объёма200л и обязанность единой нумерации. Обобщение нумерации на остальные установки отдельно не подтверждено.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы о соответствии позиций, высотной базе, объёме и массе. Не превращать их в доказанные физические дефекты. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_90da5d0d361c48008030c2bf87767ced",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_4de04f93b8b745ceb034696663bfcc58",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-038.json",
+          "sha256": "35c602bbbe1e1dd36f6aa55f734b93813654cc257bc170858a9006bc799f891f",
+          "primary_adjudication": null,
+          "limits": "Ведомость не называет−4,000 отметкой чистого пола. В анкете обе строки названы отметками пола, но различие чистого пола и конструкций не пояснено в этих строках. Нельзя автоматически заменить все значения на одно. Смежные АР/КР и фактическая геометрия не проверены; ошибка монтажа и расчёта давления не доказана.",
+          "wording": "Уточнить высотные отметки ИТП: названия планов в ведомости содержат−4,000; в анкете поле «Отметка пола ИТП» —−4,900, а строка размещения и относительной отметки пола —−4,450. Указать единую высотную базу и смысл каждой отметки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-032",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-011"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_positions_levels_and_tank_mass"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-042",
+      "finding": {
+        "id": "F-042",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расширительные баки",
+        "sheet": "Листы 4, 14",
+        "page": [
+          9,
+          11,
+          23,
+          25,
+          106
+        ],
+        "problem": "Объём бака отопления ДОО К23 указан как 100 и 200 л.",
+        "description": "На плане ИТП и плане дренажа бак К23 подписан как 100 л, а экспликация и спецификация предусматривают RM 200 PN10 объёмом 200 л. Это разные характеристики одной позиции. Само согласование подписей не заменяет проверку полезной вместимости по давлениям.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить однозначность характеристик оборудования в спецификации и связанных чертежах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-004",
+                "G-031",
+                "G-033"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-004",
+                  "G-031",
+                  "G-033"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить расчётный объём и привести обозначения К23 во всём комплекте к единому значению.",
+        "risk": "Ошибочная комплектация и недостаточная вместимость расширительного бака.",
+        "source_finding_ids": [
+          "G-004",
+          "G-031",
+          "G-033"
+        ],
+        "source_block_ids": [
+          "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "blk_06029d59a01b4b779037ffcee1ae5260"
+        ],
+        "related_block_ids": [
+          "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "blk_06029d59a01b4b779037ffcee1ae5260"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+            "page": 11
+          },
+          {
+            "type": "text",
+            "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+            "page": 23
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 25
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-004",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-031",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-033",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Одинаковое расхождение объёма К23: 100 л на плане и 200 л в экспликации; детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение объёма К23: 100 л на листе 14 и 200 л в экспликации на листе 2.1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-042:ecfe1ebab48bd184691d",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К23 на планах ИТП и дренажа 100 л; экспликация и спецификация RM200 PN10, 200 л.",
+          "verdict": "confirmed_prior_GRAPHIC_and_TEXT_identical_sources",
+          "limits": "Подтверждён конфликт характеристик одной позиции. Повторные проекции не отдельные устройства."
+        },
+        {
+          "claim": "Согласование подписей не заменяет проверки полезной вместимости.",
+          "verdict": "supported_distinct_scope",
+          "limits": "200 л не объявляется правильным расчётным объёмом; исходные условия и рабочие давления в этой строке не проверены."
+        },
+        {
+          "claim": "Возможна ошибочная комплектация или недостаточная вместимость.",
+          "verdict": "conditional_risk_not_observed",
+          "limits": "Фактическая поставка и недостаточность компенсации не установлены."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая ошибочная комплектация, ошибочная нагрузка в расчёте конструктора, правильность объёма200л и обязанность единой нумерации. Обобщение нумерации на остальные установки отдельно не подтверждено.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы о соответствии позиций, высотной базе, объёме и массе. Не превращать их в доказанные физические дефекты. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json",
+          "sha256": "0f1d4fb84c176ca0d580db069121b9d8112ce52047f0ac636243d2114f75159e",
+          "primary_adjudication": null,
+          "limits": "Подтверждено расхождение объёма единицы, не нехватка числа баков. Количества в таблицах определены; повторные проекции не являются дополнительными баками. Полная инвентаризация всех ёмкостей не выполнена. Совпадение подбора и спецификации не доказывает достаточность объёма: вопросы давления и температуры сохранены отдельно вB-ITP-F-023/024. Фактическая неверная поставка и ошибка строительного задания не установлены.",
+          "wording": "Согласовать объёмы баков в графике и таблицах: К22 подписан1000л на плане и разрезе18-18, а спецификация, экспликация и подбор задают2бака по1500л. К23 на плане подписан100л, тогда как таблицы и подбор задают1бак200л. Обновить подписи после согласования расчётных условий."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_61cbeb249f9e4bba8d0a30f6b4b3b79c.png",
+          "sha256": "9a098a71fc26249d70777e78f9bfe35539f7b32844d48bfdd8221ca2e51012c1",
+          "block_id": "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "СправавсерединеК23бакДОО100л.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_61cbeb249f9e4bba8d0a30f6b4b3b79c.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+          "sha256": "99f0948dd8e59ee31f68b9f79a58131e5fa3a0fc63e5fdfcb0a541f00871bb8c",
+          "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "СправавсерединеК23бакДОО100л.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-043",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-042"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_positions_levels_and_tank_mass"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-052",
+      "finding": {
+        "id": "F-052",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Нагрузки на основания",
+        "sheet": "Лист 12.1",
+        "page": 20,
+        "problem": "Масса заполненного бака LVF 400 с обвязкой указана меньше сухой массы.",
+        "description": "Для LVF 400 масса оборудования указана 91 кг, масса с обвязкой — 60 кг, на 31 кг меньше. Примечание листа определяет массу оборудования без теплоносителя, а массу с обвязкой — с теплоносителем. Эти значения физически несовместимы и не дают достоверной нагрузки на фундамент.",
+        "norm": "СП 20.13330.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 20.13330.2016",
+            "cited_designation": "СП 20.13330.2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к определению нагрузок от оборудования, его заполнения и обвязки на строительные конструкции.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-029",
+                "G-030"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-029",
+                  "G-030"
+                ],
+                "designation_source": "Подобран при объединении по перечню нормативных документов"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить сухую массу, массу обвязки и расчётного заполнения; исправить нагрузку на фундамент и передать данные в конструктивный раздел.",
+        "risk": "Занижение расчётной нагрузки и необоснованный подбор основания оборудования.",
+        "source_finding_ids": [
+          "G-029",
+          "G-030"
+        ],
+        "source_block_ids": [
+          "blk_693e53fec5744b27b721eb667e933ef5"
+        ],
+        "related_block_ids": [
+          "blk_693e53fec5744b27b721eb667e933ef5",
+          "blk_981b77a31c254f73aa67261d897a2987"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+            "page": 20
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-029",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-030",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одну ошибку: для LVF 400 масса с обвязкой 60 кг меньше массы оборудования 91 кг на 31 кг, вопреки примечанию об учете теплоносителя. Рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одну ошибку: для LVF 400 масса с обвязкой 60 кг меньше массы оборудования 91 кг на 31 кг, вопреки примечанию об учете теплоносителя. Рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-050:5cd9d3d1be70ff9681c3",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "LVF400: сухая масса 91 кг, масса с обвязкой 60 кг; по примечанию последняя включает теплоноситель.",
+          "verdict": "confirmed_prior_GRAPHIC_and_authoritative_TEXT",
+          "limits": "Разность 31 кг подтверждает внутреннее противоречие записей."
+        },
+        {
+          "claim": "Эти значения не дают достоверной исходной нагрузки на основание.",
+          "verdict": "supported_documentary_inconsistency",
+          "limits": "Не установлено, какую нагрузку фактически принял конструктор. Нельзя считать занижение конструкции на 31 кг доказанным."
+        },
+        {
+          "claim": "Уточнить сухую массу, обвязку, расчётное заполнение и передать исправленные данные.",
+          "verdict": "supported_scoped_remedy",
+          "limits": "Не назначать 491 кг автоматически: номинальные 400 л не определяют рабочее заполнение. Причина появления 60 кг не прослежена."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая ошибочная комплектация, ошибочная нагрузка в расчёте конструктора, правильность объёма200л и обязанность единой нумерации. Обобщение нумерации на остальные установки отдельно не подтверждено.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы о соответствии позиций, высотной базе, объёме и массе. Не превращать их в доказанные физические дефекты. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cf2c8c8d10574e858ad464481044e3de",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-050.json",
+          "sha256": "693016921491b5dd0c2c10b23f03b22e9269d9a9ba37245e1ccb25d73e2b7d14",
+          "primary_adjudication": null,
+          "limits": "Оба числа прочитаны на одном графическом фрагменте. В подборе отдельно указана массаLVF40060кг, в спецификации91кг; это возможный источник переноса, а не доказанная причина ошибки. Паспорт фактического исполнения, заполнение и принятая конструктором нагрузка не проверены. Не назначать исправленное значение автоматически, не заявлять доказанное занижение расчётной нагрузки основания.",
+          "wording": "Согласовать нагрузочную подпись LVF400 на плане фундаментов: масса91кг, масса с обвязкой60кг. Согласно примечанию масса с обвязкой включает теплоноситель; она записана на31кг меньше собственной. Уточнить массу принятого исполнения и значение для строительного задания."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+          "sha256": "054e48c413554acbe425a0a73a982a4f39c215d2b53aeb5877ccd77d8d686713",
+          "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "LVF400вверхнейцентральнойзоне:масса91кг,масса с обвязкой60кг.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-053",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-053"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_positions_levels_and_tank_mass"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Four current ITP findings independently scoped against frozen r2 reviews and identical source bytes; first-zone position numbering additionally read directly in authoritative r3 TEXT. All local evidence hashes and MD/PNG identity checked. No new graphic inspection, norm applicability or engineer acceptance claimed."
+}
