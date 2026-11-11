@@ -1,0 +1,998 @@
+{
+  "status": "four_ITP_mass_foundation_valve_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "4093827c6686be37a6fe22445f34bd3f72989a08ee13e6033d07d2a4aa2a6740",
+  "queue_after_sha256": "59fba158f8a63f723e88eec65f9a80c34193782b0402b7796015dc18ac7be0c4",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-050",
+      "finding": {
+        "id": "F-050",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Регулирующие клапаны",
+        "sheet": "Лист 10",
+        "page": [
+          17,
+          54
+        ],
+        "problem": "Расход и потери давления клапана отопления третьей зоны не согласованы с расчётом.",
+        "description": "Для поз. 29 VFM-2R-32-16 на разрезах 41-41 и 42-42 указаны G=10,7 м³/ч, Kv=16 м³/ч и ΔP=0,446. Пояснительная записка использует 9,55 м³/ч и 0,356 бар. На том же листе нагрузка контура указана 0,200 Гкал/ч, а мощность теплообменника — 0,246 Гкал/ч. Эти параметры требуют согласования по единому режиму с явным разделением нагрузки системы и запаса аппарата.",
+        "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 510.1325800.2022",
+            "cited_designation": "СП 510.1325800.2022",
+            "candidate_relevance": 0.9,
+            "reason": "Увязка расходов и гидравлических характеристик регулирующей арматуры с расчётным режимом системы.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-019"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-019"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить расчётный расход через клапан, пересчитать потери и согласовать подписи разрезов с гидравлическим расчётом.",
+        "risk": "Ошибочная настройка регулирования и несогласованный гидравлический баланс.",
+        "source_finding_ids": [
+          "G-019"
+        ],
+        "source_block_ids": [
+          "blk_b8c120f6cbc04397b8c5514a03fa3152"
+        ],
+        "related_block_ids": [
+          "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "blk_d0a62bc2e56f4d07bb33a73622429881",
+          "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+            "page": 17
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на несогласованность параметров клапана поз. 29: G=10,7 м³/ч и ΔР=0,446 на разрезах 41-41 и 42-42 против G=9,55 м³/ч и ΔР=0,356 бар в расчёте.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP40:e4eaac37781fedf2ad41",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На разрезах41-41и42-42поз29VFM-2R-32-16:DN32,G10,7,Kv16,ΔP0,446.",
+          "verdict": "confirmed_prior_GRAPHIC_review_identical_r2_bytes",
+          "limits": "Использован прежний просмотр при совпаденииSHA256; нового просмотра здесь не заявляется."
+        },
+        {
+          "claim": "ПЗдляотопления3зоны:G9,55,Kv16,ΔP0,356бар.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "РазностьG1,15м³/ч,относительно9,55около12,04%.",
+          "verdict": "confirmed_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "ЗначенияΔPполучаются из разныхGприодинаковомKv.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "(10,7/16)²=0,44723,а(9,55/16)²=0,35626. Указанное0,446не точный результат10,7;точность исходных значений неизвестна."
+        },
+        {
+          "claim": "Согласовать исходный режим и параметры клапана.",
+          "verdict": "supported_scoped_question",
+          "limits": "12%—разница опубликованных чисел,не универсальный допустимый предел."
+        },
+        {
+          "claim": "Неверно выбран клапан или не обеспечена тепловая мощность.",
+          "verdict": "not_established",
+          "limits": "Правильный режим и полная характеристика системы не установлены."
+        },
+        {
+          "claim": "Выдача помечает разрезtype=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "ИсходникIMAGE;проверен непосредственно,исходная выдача сохранена."
+        },
+        {
+          "claim": "На том же листе нагрузка0,200 и мощность аппарата0,246Гкал/ч.",
+          "verdict": "confirmed_prior_same_source_cross_row_context",
+          "limits": "Первый повторF051иF052 отдельно подтвердил эти подписи. Нагрузка системы и мощность аппарата с запасом не обязаны быть равны; согласовать режим, а не исправлять одно число на другое автоматически."
+        }
+      ],
+      "unsupported_additions": "Не выводить дефект основания или окончательный паспортный параметр только из расхождения документов; сохранять отдельные изделия при объединении.",
+      "novel_useful_content": "Проверены новые связи и сохранение самостоятельных тезисов; см. поштучные решения.",
+      "duplicate_burden": "F018contains_two_distinct_valve_identities; F050third_zone_regime_distinct_from_F019arithmetic; shared_image_not_duplicate",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+          "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json",
+            "sha256": "a2c3421f55b3430b3c2e3b512e6c99657e98a64fc5d2ad7f136fc97d14164834"
+          },
+          "limits": "Фактический недостаток мощности и отказ регулирования не доказаны; принадлежность исторической записи к дублю UNI-039 остаётся отдельным вопросом. Расходы и нагрузки связаны тематически, но причина различия не установлена. Не объявлять клапан непригодным: выбранное Kv16 больше обоих значений требуемого Kv13,51 и напечатанного14,45. Для0,200 против0,191 разность0,009Гкал/ч, или4,71% относительно0,191; это не допустимый процент и не доказанный запас. Не выпускать отдельный дублирующий дефект.",
+          "wording": "Согласовать параметры отопления III зоны: на разрезах Q=0,246 Гкал/ч и у клапана поз.29 G=10,7 м³/ч, ΔP=0,446; в ПЗ Q=0,191 и G=9,55, ΔP=0,356; подбор теплообменника 0,21965 учитывает запас 15%. Установить назначение нагрузок и единый расчётный режим, затем синхронизировать документы. Дополнительно на разрезе23-23 у Т13/Т23 подписано0,200Гкал/ч при80/60°C против табличных0,191; включить в ту же сверку режима III зоны."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+          "sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137",
+          "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез24-24поз30DN20,Kv6,3;разрезы41-41и42-42поз29DN32,G10,7,Kv16,ΔP0,446."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-050",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+          "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json",
+            "sha256": "a2c3421f55b3430b3c2e3b512e6c99657e98a64fc5d2ad7f136fc97d14164834"
+          },
+          "limits": "Фактический недостаток мощности и отказ регулирования не доказаны; принадлежность исторической записи к дублю UNI-039 остаётся отдельным вопросом. Расходы и нагрузки связаны тематически, но причина различия не установлена. Не объявлять клапан непригодным: выбранное Kv16 больше обоих значений требуемого Kv13,51 и напечатанного14,45. Для0,200 против0,191 разность0,009Гкал/ч, или4,71% относительно0,191; это не допустимый процент и не доказанный запас. Не выпускать отдельный дублирующий дефект.",
+          "wording": "Согласовать параметры отопления III зоны: на разрезах Q=0,246 Гкал/ч и у клапана поз.29 G=10,7 м³/ч, ΔP=0,446; в ПЗ Q=0,191 и G=9,55, ΔP=0,356; подбор теплообменника 0,21965 учитывает запас 15%. Установить назначение нагрузок и единый расчётный режим, затем синхронизировать документы. Дополнительно на разрезе23-23 у Т13/Т23 подписано0,200Гкал/ч при80/60°C против табличных0,191; включить в ту же сверку режима III зоны."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d0a62bc2e56f4d07bb33a73622429881.png",
+          "sha256": "813ec783eeaea997e75b97ece66d75b1bc6508fd8aaf1f02adf4e3dbed719013",
+          "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Разрез23-23:Т13иТ23отопления3зоныQ0,200Гкал/ч,G10,7м³/ч."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9ed40ebbf2814eddafb0cf03546ccd0d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+          "sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19",
+          "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Разрезы29-29и30-30:отоплениеIIIзоны100%,Q0,246Гкал/ч на аппарат."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-050_mass_or_valve_context"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-053",
+      "finding": {
+        "id": "F-053",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Нагрузки на основания",
+        "sheet": "Лист 12.1",
+        "page": 20,
+        "problem": "Масса бака LVF 400 с обвязкой и водой указана меньше собственной массы.",
+        "description": "На плане размещения оборудования приведены собственная масса LVF 400 91 кг и масса с обвязкой 60 кг. Примечания листа относят к последней также теплоноситель. Полученное уменьшение на 31 кг физически не соответствует указанному составу массы и искажает нагрузку на основание.",
+        "norm": "СП 20.13330.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 20.13330.2016",
+            "cited_designation": "СП 20.13330.2016",
+            "candidate_relevance": 0.9,
+            "reason": "Определение нагрузки от стационарного оборудования с учётом эксплуатационного заполнения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-027",
+                "G-028"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-027",
+                  "G-028"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать массу бака с водой и обвязкой и передать исправленную нагрузку в строительное задание.",
+        "risk": "Занижение расчётной нагрузки на основание и ошибки строительных решений.",
+        "source_finding_ids": [
+          "G-027",
+          "G-028"
+        ],
+        "source_block_ids": [
+          "blk_693e53fec5744b27b721eb667e933ef5"
+        ],
+        "related_block_ids": [
+          "blk_693e53fec5744b27b721eb667e933ef5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+            "page": 20
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-027",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-028",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания выявляют одно противоречие для LVF 400: масса с обвязкой и теплоносителем 60 кг меньше собственной массы 91 кг на 31 кг; детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания выявляют одно противоречие для LVF 400: масса с обвязкой и теплоносителем 60 кг меньше собственной массы 91 кг на 31 кг; детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-050:5cd9d3d1be70ff9681c3",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На плане фундаментовLVF400:масса91кг,масса с обвязкой60кг.",
+          "verdict": "confirmed_prior_GRAPHIC_review_identical_r2_bytes",
+          "limits": "Использован прежний просмотр при совпаденииSHA256; нового просмотра здесь не заявляется."
+        },
+        {
+          "claim": "По примечанию масса с обвязкой учитывает теплоноситель,собственная нет.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Записанная эксплуатационная масса на31кг меньше собственной.",
+          "verdict": "confirmed_documentary_arithmetic_inconsistency",
+          "limits": ""
+        },
+        {
+          "claim": "Фактически переданная ипринятая конструктором нагрузка занижена на31кг.",
+          "verdict": "not_established",
+          "limits": "Паспорт исполнения,фактическое заполнение ирасчёт конструктора не проверены; подпись сама внутренне противоречива."
+        },
+        {
+          "claim": "Ошибка возникла переносом60кг из экспликации.",
+          "verdict": "plausible_not_proven_cause",
+          "limits": "ЭкспликацияК19.2 содержит60кг,спецификация91кг; история формирования подписи не прослежена."
+        },
+        {
+          "claim": "Уточнить исходные массы ирасчётную нагрузку.",
+          "verdict": "supported_document_conflict",
+          "limits": "Не назначать491кг илидругую исправленную массу по предположению о полном заполнении400л."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "Исправленная масса должна быть рассчитана как91кг+400л воды.",
+          "verdict": "not_established_operating_fill",
+          "limits": "Вместимость не равна фактическому рабочему заполнению. Противоречие91/60кг подтверждено; исправленную нагрузку определяют для выбранного исполнения, обвязки и расчётного состояния."
+        }
+      ],
+      "unsupported_additions": "Не выводить дефект основания или окончательный паспортный параметр только из расхождения документов; сохранять отдельные изделия при объединении.",
+      "novel_useful_content": "Проверены новые связи и сохранение самостоятельных тезисов; см. поштучные решения.",
+      "duplicate_burden": "potential_overlap_F029_mass_reconciliation_keep_loaded_mass_invariant_separate",
+      "profile_and_section": "technical_document_conflict_core_preserved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cf2c8c8d10574e858ad464481044e3de",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-050.json",
+          "sha256": "693016921491b5dd0c2c10b23f03b22e9269d9a9ba37245e1ccb25d73e2b7d14",
+          "primary_adjudication": null,
+          "limits": "Оба числа прочитаны на одном графическом фрагменте. В подборе отдельно указана массаLVF40060кг, в спецификации91кг; это возможный источник переноса, а не доказанная причина ошибки. Паспорт фактического исполнения, заполнение и принятая конструктором нагрузка не проверены. Не назначать исправленное значение автоматически, не заявлять доказанное занижение расчётной нагрузки основания.",
+          "wording": "Согласовать нагрузочную подпись LVF400 на плане фундаментов: масса91кг, масса с обвязкой60кг. Согласно примечанию масса с обвязкой включает теплоноситель; она записана на31кг меньше собственной. Уточнить массу принятого исполнения и значение для строительного задания."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+          "sha256": "054e48c413554acbe425a0a73a982a4f39c215d2b53aeb5877ccd77d8d686713",
+          "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "LVF400вверхнейцентральнойзоне:масса91кг,масса с обвязкой60кг."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-053",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-053_mass_or_valve_context"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-055",
+      "finding": {
+        "id": "F-055",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Массы оборудования",
+        "sheet": "Лист 2",
+        "page": [
+          8,
+          70,
+          72,
+          73,
+          75
+        ],
+        "problem": "[Объединено 2 замечаний] Масса насоса К10 в экспликации отличается от технических данных.",
+        "description": "1) Масса насоса К10 в экспликации отличается от технических данных.\n2) Масса насоса К11 в экспликации отличается от технических данных.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Согласованность массы выбранного исполнения оборудования в документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-037",
+                "G-038",
+                "G-039"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-037"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить массу и комплектность К10 по данным изготовителя и исправить экспликацию.",
+        "risk": "Недостоверные данные для монтажа и расчёта нагрузок на основания.",
+        "source_finding_ids": [
+          "G-037",
+          "G-038",
+          "G-039",
+          "F-055",
+          "F-056"
+        ],
+        "source_block_ids": [
+          "blk_64d234df62024a40b06b044dcb8f4bc9",
+          "blk_396954f77098430281d203e5380eb32e"
+        ],
+        "related_block_ids": [
+          "blk_64d234df62024a40b06b044dcb8f4bc9",
+          "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "blk_396954f77098430281d203e5380eb32e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_64d234df62024a40b06b044dcb8f4bc9",
+            "page": 72
+          },
+          {
+            "type": "text",
+            "block_id": "blk_396954f77098430281d203e5380eb32e",
+            "page": 75
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-037",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-038",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-039",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение массы насоса К11 IL 40/140-2,2/2-R: 48,0 кг в экспликации на листе 2 и 57 кг в технических данных на странице PDF 73; разница — 9 кг на насос.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение массы насоса К11 IL 40/140-2,2/2-R: 48,0 кг в экспликации на листе 2 и 57 кг в технических данных на странице PDF 73; разница — 9 кг на насос.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sub_findings": [
+          {
+            "original_id": "F-055",
+            "problem": "Масса насоса К10 в экспликации отличается от технических данных.",
+            "sheet": "Лист 2",
+            "page": [
+              8,
+              70,
+              72
+            ],
+            "source_finding_ids": [
+              "G-037"
+            ]
+          },
+          {
+            "original_id": "F-056",
+            "problem": "Масса насоса К11 в экспликации отличается от технических данных.",
+            "sheet": "Лист 2",
+            "page": [
+              8,
+              73,
+              75
+            ],
+            "source_finding_ids": [
+              "G-038",
+              "G-039"
+            ]
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К11,IL40/140-2,2/2-R:экспликация48кг,спецификация57кг,техническийлист57кг,артикул2786083.",
+          "verdict": "confirmed_TEXT_same_model_article_binding",
+          "limits": ""
+        },
+        {
+          "claim": "Разница экспликации итехнического листа9кг.",
+          "verdict": "confirmed_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Правильна масса технического листа,следовательноэкспликацияошибочна.",
+          "verdict": "not_established",
+          "limits": "Нужно подтвердить исполнение и состав массы; согласованность части документов не устанавливает поставленное изделие."
+        },
+        {
+          "claim": "Неверны нагрузки фундаментов или монтажных средств.",
+          "verdict": "not_established",
+          "limits": "Не проверены расчёт конструктора,обвязка ифактическая поставка."
+        },
+        {
+          "claim": "Уточнить массу выбранного исполнения и согласовать документы.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Указанный ввыдаче блок типаtext содержит доказательство массы.",
+          "verdict": "refuted_evidence_route",
+          "limits": "Он являетсяIMAGE сгабаритами исхемой подключения; значения массы подтверждены другимTEXT блоком того же подбора."
+        },
+        {
+          "claim": "К10имеет87кг в экспликации и67кг вСО/техническом листе.",
+          "verdict": "confirmed_authoritative_TEXT_same_model_article",
+          "limits": "IL50/140-4/2-R,артикул2786092;разница20кг. Состав комплектации и переданная конструктору нагрузка не установлены."
+        },
+        {
+          "claim": "Объединённая выдача полно сохраняет два замечанияК10иК11.",
+          "verdict": "partial_merge_loss",
+          "limits": "Описание содержит только названия двух проблем без чисел, решение требует исправить лишьК10. К11с48/57кг нуждается в самостоятельной прослеживаемой части; один заголовок проК10 не покрывает её."
+        }
+      ],
+      "unsupported_additions": "Не выводить дефект основания или окончательный паспортный параметр только из расхождения документов; сохранять отдельные изделия при объединении.",
+      "novel_useful_content": "Проверены новые связи и сохранение самостоятельных тезисов; см. поштучные решения.",
+      "duplicate_burden": "two_distinct_equipment_claims_merged_not_duplicate",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
+          "sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9",
+          "primary_adjudication": null,
+          "limits": "Подтверждены различия записей, а не правильность одной массы или ошибка расчёта фундаментов. В примечаниях к планам уже разделены паспортная масса без теплоносителя и масса с обвязкой с учётом теплоносителя. Численные нагрузки графических планов и задания конструкторам здесь не проверены. Масса теплообменника в расчёте названа ориентировочной, уточняемой при поставке; документ запрещает использовать её в конструкторских чертежах. Ошибка монтажных средств и нормативное нарушение не доказаны.",
+          "wording": "Согласовать массы единиц оборудования в экспликации, спецификации и листах подбора: К9 —98/94/90кг; К10 —87/67/67; К11 —48/57/57; К12 —29/60/64; К14 —284/181/203; теплообменник К1 —650,88/458,01/458,01. Уточнить исполнение и состав каждой массы, не смешивая изделие, обвязку и заполнение."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_396954f77098430281d203e5380eb32e.png",
+          "sha256": "31ba80944012830d7222bb6907053322400d471911e18146498bec0fae13241a",
+          "block_id": "blk_396954f77098430281d203e5380eb32e",
+          "route": "direct_GRAPHIC_review_of_published_reference",
+          "observation": "Габаритные размеры и схема подключения;значение массы отсутствует на этом листе."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-055",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-055_mass_or_valve_context"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-054",
+      "finding": {
+        "id": "F-054",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Фундаменты оборудования",
+        "sheet": "Лист 12",
+        "page": 21,
+        "problem": "Размеры одного фундамента бака на плане противоречат выноске.",
+        "description": "Для фундамента бака у левой стены между осями Г10₂–Г11₂, слева от оси В1₂, в выноске указано 600×600×150 мм, а размерными линиями — 500×500 мм. Разница составляет 100 мм по каждой стороне.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Однозначность размеров конструктивного элемента в рабочем чертеже.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-029",
+                "G-030"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-029",
+                  "G-030"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить габариты основания по опорам бака и строительному расчёту, согласовать размерные линии и выноску.",
+        "risk": "Изготовление неподходящего основания и затраты на его переделку.",
+        "source_finding_ids": [
+          "G-029",
+          "G-030"
+        ],
+        "source_block_ids": [
+          "blk_981b77a31c254f73aa67261d897a2987"
+        ],
+        "related_block_ids": [
+          "blk_981b77a31c254f73aa67261d897a2987"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_981b77a31c254f73aa67261d897a2987",
+            "page": 21
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-029",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-030",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одно противоречие размеров фундамента бака на листе 12 у оси Г11₂: в выноске 600×600×150(h), на размерных линиях 500×500 мм. Детализация и рекомендации эквивалентны; различается оценка тяжести.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одно противоречие размеров фундамента бака на листе 12 у оси Г11₂: в выноске 600×600×150(h), на размерных линиях 500×500 мм. Детализация и рекомендации эквивалентны; различается оценка тяжести.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "У левой стены междуГ10₂иГ11₂ слева отВ1₂ выноска600×600×150,размеры500×500.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Выноска ведёт к тому же квадратному основанию. Разность100мм по каждой стороне; высота150мм размерной цепью не опровергнута."
+        },
+        {
+          "claim": "Правильны600мм либо500мм и изготовлено неподходящее основание.",
+          "verdict": "not_established",
+          "limits": "Опорная схема выбранного бака и строительный расчёт не проверены. Сохранить противоречие и запрос согласования, не назначать окончательные размеры автоматически."
+        },
+        {
+          "claim": "Графическое доказательство размеченоtype=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "Исходный блокIMAGE просмотрен непосредственно; выдача не изменена."
+        }
+      ],
+      "unsupported_additions": "Окончательные размеры, монтажный брак и потребность переделки не установлены.",
+      "novel_useful_content": "Новое относительно первого повтора подтверждённое локальное противоречие размерной линии и выноски.",
+      "duplicate_burden": "not_same_as_LVF400_mass_conflict",
+      "profile_and_section": "document_discrepancy_for_coordination",
+      "engineer_reuse": "no_new_same_claim_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_981b77a31c254f73aa67261d897a2987.png",
+          "sha256": "3cb700af6b7c1b3c41c11860f02195a7927e36c84a4e7a027629c4995c1c6aed",
+          "block_id": "blk_981b77a31c254f73aa67261d897a2987",
+          "route": "direct_GRAPHIC_review"
+        },
+        {
+          "path": "/tmp/itp_r2_foundation_detail.png",
+          "sha256": "d502b4fe61ba3f239df713b2cc442abc82adc77a980fa5106fd548851e140805",
+          "route": "direct_GRAPHIC_crop",
+          "crop_box": [
+            230,
+            980,
+            640,
+            1200
+          ],
+          "source_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_981b77a31c254f73aa67261d897a2987.png"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F054_foundation_dimension_conflict"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
