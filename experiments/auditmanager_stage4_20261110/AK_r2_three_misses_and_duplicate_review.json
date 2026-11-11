@@ -1,0 +1,237 @@
+{
+  "status": "bounded_three_target_repeat_review_not_full_r2_quality_review",
+  "discipline": "AK",
+  "repeat": 2,
+  "sealed_status": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/status/AK.json",
+    "sha256": "f7714b18591097011f25389946068d2688081c1c41b9a0d862b8b11ced7679ca"
+  },
+  "sealed_output": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "23f2f26b2037210e7d364cf48c55d42f62832e649a25b10b0f3eb4f1ab8a8c3b"
+  },
+  "evaluator": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/evaluator_release_errata_v2.json",
+    "sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76"
+  },
+  "r1_miss_index": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/baseline_r1_nine_technical_miss_index.json",
+    "sha256": "59b6b3b964ae40174d70e5ce08b66306654b222c63ca32b7a19c0c624394e291"
+  },
+  "read_scope": "Прочитаны problem, description и solution всех 74 строк; полный смысл и происхождение F-049/F-052. Истинность и полезность остальных строк не оценены.",
+  "targets": [
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
+      "coverage_r1": "absent",
+      "coverage_r2": "absent",
+      "finding_ids": [],
+      "reason": "F-018 описывает марки и адресаты в КЖ, F-023 — баланс 700/720/730 м и две длины 15 м. Ни один тезис не формулирует отсутствие индивидуальных марок двух участков ПЧ→M2/M3 на схеме.",
+      "r1_trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_drive_cable_marking_miss_trace.json",
+        "sha256": "13eb7c26dd827a811b3b2ddfc5a6f1411f9606b2020758c9853f3840396c3a3d"
+      }
+    },
+    {
+      "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+      "coverage_r1": "absent",
+      "coverage_r2": "absent",
+      "finding_ids": [],
+      "reason": "Не найдено сопоставление обслуживаемых помещений П4.1.1 в общих указаниях и на схеме. Замечания о названии других систем и назначении сигналов этот атом не покрывают.",
+      "r1_trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_KM_r1_three_graphic_miss_traces.json",
+        "sha256": "3561470ab25e9fd61996fc26480c967f0c52f7c26f64e0a0e00fcfd0a9432f50"
+      }
+    },
+    {
+      "target_id": "AK_F053_local_cable_balance:3ea87f3768012a815077",
+      "coverage_r1": "absent",
+      "coverage_r2": "absent",
+      "finding_ids": [],
+      "reason": "Нет локального баланса пяти моторных кабелей M1–M5 листа 25: 165 против 155 м. Другие кабельные суммы, включая F-021 и F-023, относятся к иным листам и группам.",
+      "r1_trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_KM_r1_three_graphic_miss_traces.json",
+        "sha256": "3561470ab25e9fd61996fc26480c967f0c52f7c26f64e0a0e00fcfd0a9432f50"
+      }
+    }
+  ],
+  "duplicate_observation": {
+    "finding_ids": [
+      "F-049",
+      "F-052"
+    ],
+    "same_source_candidate": "G-031",
+    "same_block": "blk_1421872a752e4019a31247d056c0e9bc",
+    "same_core_claim": "Линия 10 заслонки Y2 Пн5.1 ошибочно подписана как управление ПЧ; ПЧ M1 относится к другой линии.",
+    "rows": [
+      {
+        "id": "F-049",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_assignment",
+        "sheet": "Лист 15",
+        "page": 19,
+        "problem": "На функциональной схеме Пн5.1, лист 15, линия 10 от электропривода воздушной заслонки Y2 подписана «Управление ПЧ пуск/стоп, 0–100%». При этом для неё отмечен только DO, а преобразователь частоты двигателя М1 и сигналы AO/DO показаны на линии 11.",
+        "description": "На функциональной схеме Пн5.1, лист 15, линия 10 от электропривода воздушной заслонки Y2 подписана «Управление ПЧ пуск/стоп, 0–100%». При этом для неё отмечен только DO, а преобразователь частоты двигателя М1 и сигналы AO/DO показаны на линии 11.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Обозначить линию 10 как управление заслонкой Y2 и отнести подпись управления преобразователем частоты М1 к линии 11.",
+        "risk": "Неверная комплектация аналоговых выходов и отсутствие управления частью ПЧ.",
+        "source_finding_ids": [
+          "G-031"
+        ],
+        "source_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "related_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "page": 19
+          }
+        ],
+        "highlight_regions": [],
+        "source_stage": "stage01_atomicity_guard",
+        "atomicity_guard": {
+          "split_from": "F-046",
+          "reason": "distinct_nonrecommendational_candidates_same_block"
+        },
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-031",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      {
+        "id": "F-052",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Назначение сигналов",
+        "sheet": "Лист 15",
+        "page": 19,
+        "problem": "Управление заслонкой Y2 подписано как управление ПЧ.",
+        "description": "Линия 10 от воздушной заслонки Y2 названа «Управление ПЧ пуск/стоп, 0–100%», хотя для неё показан только DO. ПЧ двигателя М1 связан с другой линией.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Обозначить линию 10 как управление Y2 и согласовать подпись управления ПЧ с его фактическим каналом.",
+        "risk": "Ошибочная адресация команды заслонки или ПЧ.",
+        "source_finding_ids": [
+          "G-031"
+        ],
+        "source_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "related_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "page": 19
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-031",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      }
+    ],
+    "assessment": "Один и тот же основной тезис выпущен двумя строками. F-049 содержит отметку stage01_atomicity_guard. Это наблюдение о дублировании, не новая проверка технической истинности или доказательство полной причинной цепочки.",
+    "next_check": "Проследить G-031 до и после разделения составной строки; сохранить остальные самостоятельные тезисы того же блока."
+  },
+  "limits": [
+    "Три цели выбраны как все полностью отсутствующие технические атомы АК первой серии. Выборка не оценивает общую полноту второго прогона.",
+    "Повтор двух пропусков не доказывает невозможность обнаружения при третьем запуске.",
+    "74 строки против 66 не являются метрикой качества.",
+    "Никаких изменений в независимые прогоны, промпты или замороженный эталон не внесено."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
