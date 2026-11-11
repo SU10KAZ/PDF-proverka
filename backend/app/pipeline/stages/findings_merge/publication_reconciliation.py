@@ -61,13 +61,22 @@ INSTRUCTIONS = '''Reconcile this finding against the supplied primary sources.
 The earlier finding and addenda are claims, not evidence. Return JSON with
 packet_sha256 (provided by the caller) and parts. Split independently checkable
 claims. Each part has id, statement (current Russian wording), outcome
-(supported/question/refuted/needs_data/out_of_profile), reason, input_spans,
+(supported/question/refuted/needs_data/out_of_profile/superseded/provenance_only), reason, input_spans,
 evidence, and required_context. Every input character must be accounted for in
 exactly one input span: {unit_id,start,end,quote}, Python character offsets,
 end exclusive, quote exactly equal to the corresponding input text. Split an
 input unit if different clauses need different outcomes. Cover old caveats,
 headings and service references too; explain their removal without treating them
 as independent technical defects. Do not discard a true part of a mixed claim.
+Use exactly two top-level fields: packet_sha256 and parts. All decisions, including
+questions, obsolete limitations and service references, belong inside parts.
+Use superseded for an old context limitation now resolved by primary evidence;
+use provenance_only for a service reference or processing note, never for a
+technical claim. These are history-only outcomes, not questions for an engineer
+and not counted as false technical findings. A superseded outcome requires evidence.
+Do not repeat the same conflict in separate supported parts: combine complementary
+statements about the same issue and retain all their input spans and evidence.
+Parts are audit dispositions, not counts of independent project defects.
 Evidence entries: {block_id,type:text,quote:<literal authoritative text>} or
 {block_id,type:graphic,observation:<concrete observation in an attached image>}.
 Supported or refuted outcomes require evidence. Insufficient context is needs_data,
@@ -97,6 +106,8 @@ def reconcile_publication(finding, packet, response):
         raise InvalidPublication('packet_input_changed')
     if not isinstance(response, dict) or response.get('packet_sha256') != fingerprint(packet):
         raise InvalidPublication('response_packet_mismatch')
+    if set(response) != {'packet_sha256', 'parts'}:
+        raise InvalidPublication('unexpected_response_fields')
     parts = response.get('parts')
     if not isinstance(parts, list) or not parts:
         raise InvalidPublication('missing_parts')
@@ -104,6 +115,7 @@ def reconcile_publication(finding, packet, response):
     intervals = {key: [] for key in units}
     seen = set()
     result = {'technical_findings': [], 'questions': [], 'withdrawn': [], 'pending': [],
+              'history_only': [], 'part_counts_not_finding_counts': True,
               'archive': deepcopy(finding), 'packet_sha256': fingerprint(packet),
               'semantic_verified': False, 'candidate_coverage_updated': False}
     for part in parts:
@@ -113,7 +125,8 @@ def reconcile_publication(finding, packet, response):
             raise InvalidPublication('duplicate_part_id')
         seen.add(part['id'])
         route = {'supported': 'technical_findings', 'question': 'questions',
-                 'out_of_profile': 'questions', 'refuted': 'withdrawn', 'needs_data': 'pending'}.get(part.get('outcome'))
+                 'out_of_profile': 'questions', 'refuted': 'withdrawn', 'needs_data': 'pending',
+                 'superseded': 'history_only', 'provenance_only': 'history_only'}.get(part.get('outcome'))
         if route is None:
             raise InvalidPublication('invalid_outcome')
         spans = part.get('input_spans')
@@ -128,7 +141,7 @@ def reconcile_publication(finding, packet, response):
                 raise InvalidPublication('invalid_input_span')
             intervals[span['unit_id']].append((start, end))
         evidence = part.get('evidence')
-        if not isinstance(evidence, list) or (part['outcome'] in {'supported', 'refuted'} and not evidence):
+        if not isinstance(evidence, list) or (part['outcome'] in {'supported', 'refuted', 'superseded'} and not evidence):
             raise InvalidPublication('missing_evidence')
         for ev in evidence:
             if not isinstance(ev, dict) or not isinstance(ev.get('block_id'), str):

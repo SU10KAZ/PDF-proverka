@@ -101,3 +101,22 @@ def test_withdrawal_retains_explicit_reason_and_provenance_without_claiming_cove
     assert not result['technical_findings']
     assert result['archive'] == finding
     assert not result['candidate_coverage_updated']
+
+
+def test_misplaced_question_cannot_escape_complete_accounting():
+    finding, packet, response = example()
+    response['questions'] = [response['parts'].pop()]
+    with pytest.raises(InvalidPublication, match='unexpected_response_fields'):
+        reconcile_publication(finding, packet, response)
+
+
+def test_superseded_limitation_is_history_not_engineer_question_or_false_defect():
+    finding, packet, response = example()
+    response['parts'][0]['outcome'] = 'superseded'
+    result = reconcile_publication(finding, packet, response)
+    assert len(result['history_only']) == 1
+    assert result['questions'] == result['withdrawn'] == []
+    assert result['part_counts_not_finding_counts']
+    response['parts'][0]['evidence'] = []
+    with pytest.raises(InvalidPublication, match='missing_evidence'):
+        reconcile_publication(finding, packet, response)
