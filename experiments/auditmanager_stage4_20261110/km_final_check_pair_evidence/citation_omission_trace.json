@@ -1,0 +1,80 @@
+{
+  "request_sha256": "12660efb951e96eae4003ec5b12ac7677e1a6e04e43ef7a355f78fbe76fafeb7",
+  "status": "missing_quoted_dependency_fragments_confirmed",
+  "checked_fragments": 8,
+  "rows": [
+    {
+      "block_id": "blk_ba972bbe49b944208eba2b5a9161faa9",
+      "required_quote": "|  | Анкер |  | HSA-M10x90 |  |  |  | 28 |  |  |",
+      "literal_in_supplied_authoritative_text": true,
+      "included_in_final_citation": false,
+      "selected_quotes_from_same_block": [
+        "|  | Лист | 4 | 10х120х120 |  |  |  | C245 |  | 7 |"
+      ]
+    },
+    {
+      "block_id": "blk_e587f49a7bce4c7bac350d00c17ba616",
+      "required_quote": "|  | Анкер |  | HSA-M10x90 |  |  | 28 |  |  |  |",
+      "literal_in_supplied_authoritative_text": true,
+      "included_in_final_citation": false,
+      "selected_quotes_from_same_block": [
+        "|  | Лист | 4 | 10x120x120 |  |  |  | C245 |  | 7 |"
+      ]
+    },
+    {
+      "block_id": "blk_bfa3c6ea2ddc4f868883b3c60b38e04d",
+      "required_quote": "| Анкер |  | HSA-M10x90 |  |  |  | 28 |  |  |  |",
+      "literal_in_supplied_authoritative_text": true,
+      "included_in_final_citation": false,
+      "selected_quotes_from_same_block": [
+        "|  | Лист | 4 | 10x120x120 |  |  |  | C245 |  | 7 |"
+      ]
+    },
+    {
+      "block_id": "blk_2bb57db30b02415ebce2a71e46947bad",
+      "required_quote": "|  | Анкер |  | HSA-M10x90 |  |  | 8 |  |  |  |",
+      "literal_in_supplied_authoritative_text": true,
+      "included_in_final_citation": false,
+      "selected_quotes_from_same_block": [
+        "|  | Лист | 4 | 10x120x120 |  |  |  | C245 |  | 2 |"
+      ]
+    },
+    {
+      "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+      "required_quote": "|  |  | ЛК6 |  |  |  |\n| ОГМ14 | лист 9 | Ограждение металлическое ОГМ14 | 1 |  |  |\n| ОГМ15 | лист 9 | Ограждение металлическое ОГМ15 | 1 |  |  |\n| ОГМ16 | лист 9 | Ограждение металлическое ОГМ16 | 1 |  |  |\n| ОГМ21 | лист 10 | Ограждение металлическое ОГМ21 | 1 |  |  |",
+      "literal_in_supplied_authoritative_text": true,
+      "included_in_final_citation": false,
+      "selected_quotes_from_same_block": [
+        "| ОГМ22 | лист 10 | Ограждение металлическое ОГМ22 | 2 |  |  |\n| ОГМ23 | лист 10 | Ограждение металлическое ОГМ23 | 1 |  |  |\n| ОГМ24 | лист 10 | Ограждение металлическое ОГМ24 | 1 |  |  |\n| ОГМ25 | лист 10 | Ограждение металлическое ОГМ25 | 2 |  |  |"
+      ]
+    },
+    {
+      "block_id": "blk_5f00d7d0be874b0ead4105aad66a03ed",
+      "required_quote": "###### Ведомость элементов ограждения ОГМ 2 (2шт.)",
+      "literal_in_supplied_authoritative_text": true,
+      "included_in_final_citation": false,
+      "selected_quotes_from_same_block": [
+        "|  | Лист | 6 | 10х120х120 |  |  |  | C245 |  | 4 |"
+      ]
+    },
+    {
+      "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+      "required_quote": "##### Ведомость элементов ограждения ОГМ 5 (10 шт.)",
+      "literal_in_supplied_authoritative_text": true,
+      "included_in_final_citation": false,
+      "selected_quotes_from_same_block": [
+        "|  | Лист | 6 | 10x120x120 |  |  |  | C245 |  | 5 |"
+      ]
+    },
+    {
+      "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+      "required_quote": "#### Ведомость элементов ограждения ОГМ 6 (8 шт.)",
+      "literal_in_supplied_authoritative_text": true,
+      "included_in_final_citation": false,
+      "selected_quotes_from_same_block": [
+        "|  | Лист | 6 | 10х120х120 |  |  |  | C245 |  | 5 |"
+      ]
+    }
+  ],
+  "boundary": "Exact literal inclusion check confirms the cited omissions; it does not independently certify all calculation semantics or require every number to become a separate report row."
+}
