@@ -1,0 +1,352 @@
+{
+  "status": "partial_coordinator_coverage_review",
+  "discipline": "AR",
+  "repeat": 1,
+  "output_review_scope": {
+    "finding_ids": [
+      "F-001",
+      "F-002",
+      "F-003",
+      "F-004",
+      "F-005",
+      "F-006",
+      "F-007",
+      "F-008",
+      "F-009",
+      "F-010",
+      "F-011",
+      "F-012",
+      "F-013",
+      "F-014",
+      "F-015",
+      "F-016",
+      "F-017",
+      "F-018",
+      "F-019",
+      "F-020",
+      "F-021"
+    ],
+    "semantic_fields": [
+      "problem",
+      "description",
+      "solution",
+      "risk",
+      "norm",
+      "norm_quote"
+    ],
+    "method": "All21findings read in contiguous slices F001–011 and F012–021; no keyword-only absence inference.",
+    "limitation": "Reading does not establish truth of every assertion."
+  },
+  "mapped_atoms": [
+    {
+      "target_id": "AR14_K3_support_levels:11d2c61818f07c8b5a71",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json",
+          "sha256": "05111c82d10d6fb78c3da1b8772f8fd53762fe7ba14e599d4e65dd4e9c9b0696"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Остаток75мм по отметкамК-3 против диапазона25–50мм не сформулирован. F-004 о дробных количествах опор, аF-016 об объёме утеплителя; они не заменяют высотную привязку.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR17:b3834745b8377f227bbc",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-018"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR17.json",
+          "sha256": "2c7bce2f3456b9bebdf7059d5b3ee79a40c72b29a994684d937747fdce46a7fd"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        },
+        {
+          "source": "primary_adjudication",
+          "path": "experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json",
+          "sha256": "df73701f0cbb7275908c4ab51a94c3a5987c248b5e16d2dd3fc34968997bb98a"
+        }
+      ],
+      "reason": "ОГШ-1/2/3, ведомость5900/2800/1900 ивиды5700/2600/1690–1700 сопоставлены. Сохранено требование уточнить заполнение/полную конструкцию и границы измерения;200мм не объявлены универсальным допуском.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR35_unlabelled_areas:8b080f37f0ffc62859e0",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR35_unlabelled_areas.json",
+          "sha256": "7274cc7e622df36e93d23f17add55aa23bfc3c85446d0eda662dae68c24a265e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "В21строке нет шести неподписанных заштрихованных участков листа6 с эталонными координатами. Не утверждается их доказанная неполнота покрытия; отсутствует именно вопрос назначения.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR36_B-AR-F-005:d576dd306cbd1e602f34",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005",
+        "F-016"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+          "sha256": "c0e65e558fcbde7f84022893578b1c64f1bf53f716100b3106a804db4280d657"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Всовокупности сохранены10,8м²К-3,10,84/10,83м² слоёв,18,96м²плитки и1,24м³при130мм. Запрошены расчёт, границы/запас ифактическая площадь. Распределение одной темы по двум строкам отдельно учитывается как нагрузка, не два эталонных дефекта.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR39_lower_profile_and_rope:82b33aee103e9ee382ee",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json",
+          "sha256": "fab3cfc34776601f09f252dd037bc85315ede337f0fe1ffc5158c73957e3ae90"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Требование ведомости о металлическом профиле нижней граниОГН-4 и его согласование с узлами/канатом не сформулированы. ВысотаОГН-4F-021 — другой вопрос.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR39_lower_profile_and_rope:fef549df72bcc7f43cc2",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json",
+          "sha256": "fab3cfc34776601f09f252dd037bc85315ede337f0fe1ffc5158c73957e3ae90"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Ложное противопоставление спайдеров точечному креплению не повторено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR3_exit_elevation_identity:35d17b08445c321782dd",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR3_exit_elevation_identity.json",
+          "sha256": "65c2e351bb163c7c021872d4a4d92d6cc76da5a8084e72ab755f2e1a692dc2a3"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Отсутствие узла выхода или разделения его слоёв не утверждается. Иные вопросы гидроизоляции не заменяют этот отрицательный контроль.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR59_rope_load_path:63ef9a4878fe506c4a1f",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR59_rope_load_path.json",
+          "sha256": "4b6aa9839c0eacf44e35943d5a025230990997de3f5f0ff9cafab922635db986"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Связь каната альпинистов со стойкамиОГН-4 и вопрос расчётного пути усилий не представлены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR59_rope_load_path:e562ad115416cc435f9c",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR59_rope_load_path.json",
+          "sha256": "4b6aa9839c0eacf44e35943d5a025230990997de3f5f0ff9cafab922635db986"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Общее отсутствие ссылки на конструктивный расчётКМ8 не утверждается.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "historical_decisions_as_recorded": {
+    "experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json": "Принято",
+    "experiments/auditmanager_stage1_20261109/decisions/AR17.json": "Принято",
+    "experiments/auditmanager_stage1_20261109/decisions/AR35_unlabelled_areas.json": "Принято",
+    "experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json": "Принято",
+    "experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json": "Принято",
+    "experiments/auditmanager_stage1_20261109/decisions/AR3_exit_elevation_identity.json": "Отклонено",
+    "experiments/auditmanager_stage1_20261109/decisions/AR59_rope_load_path.json": "Принято"
+  },
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/AR_review.json",
+  "review_ledger_sha256": "2aedfab653be12a675f13c5b645a41709619f1b0efe8f89560862ac7743b70d5",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "AR",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 2,
+          "availability_unchecked": 2,
+          "unchecked": 2
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 21,
+          "availability_available": 6,
+          "absent": 4,
+          "full": 2,
+          "availability_unchecked": 15,
+          "unchecked": 15
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 10,
+          "availability_available": 3,
+          "absent": 3,
+          "availability_unchecked": 7,
+          "unchecked": 7
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 2
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "limits": [
+    "Историческое решение сохраняется отдельно от ограниченного source-reviewed тезиса.",
+    "Отсутствие отрицательного тезиса не доказывает выполнение фильтра.",
+    "Смысловая полнота темы не оценивает автоматически её раздел выдачи и число дублей."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
