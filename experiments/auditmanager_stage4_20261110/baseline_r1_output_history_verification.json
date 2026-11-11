@@ -1,0 +1,117 @@
+{
+  "status": "exact_receipt_replay_verified",
+  "queue_sha256": "32d4a77678e6e2dd72a25de5b32ce6bfc31bca35e1e7f979635e78098d4d77ad",
+  "transitions": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_end_cap_reference_output_review.json",
+      "sha256": "eb3d2a6f1a1c919a39d0bf713ceaaedaf721adc0a7c3a247d209fb4476fdb2d6"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_LK6_levels_output_review.json",
+      "sha256": "db56546435fb3be6a9802fcaf9778f85461fbad11ad223ffc94a6d80de7d0b3d"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_filling_dimensions_output_review.json",
+      "sha256": "b3a60ea79ac331a2bf5d7076173e64f65d0276554687cf84cee44029abe99a32"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_upper_flight_identity_output_review.json",
+      "sha256": "7fd64e68753604e6597a2cbce08fa691b6d56ab831291a19248790544a092c31"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_F017_core_preservation_review.json",
+      "sha256": "67e3e727915749c147e317fd5a410645505456566d3edbb8c73057b7b7379536"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_coating_scope_output_review.json",
+      "sha256": "3163ef56b23a9a50418a90fdd05625e82f0c32bbef31df8a9ca012d2b58c61e3"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_sheet_reference_and_level_output_review.json",
+      "sha256": "900e2ea166ce2cccd0b0fc64d5dc2b47a9f7292cec5303cc40970756128d150b"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_quantity_claims_output_review.json",
+      "sha256": "ee2fd89585d16c3b754442343dd2fa1c46c6b284707b8a91b86eb1dfa8aa1d9c"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_LK6_subtotal_arithmetic_review.json",
+      "sha256": "3c7148868468608dd49e592d43e85222a6cdf1cd22c4106bcb939406c5f14030"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r1_output_queue_append.json",
+      "sha256": "c43319e8b6624a7f1b314866802ead961b30289205ac1d05665414484b877379"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r1_rounding_and_piece_quantity_output_review.json",
+      "sha256": "7cf1d80cce7197a6790a3849e8455976bc1ddd73f658be29c2f7def7368fc232"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r1_specification_scope_output_review.json",
+      "sha256": "1a812350413540076f5b27011b22a018224ce708b1611fe90ec63fe3c6cd4f96"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r1_materials_and_funnel_output_review.json",
+      "sha256": "3acaf018630be33aa3f9fc298d80faa03dab9005b09df010a17e74f0fbb49563"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r1_new_graphic_level_conflicts_output_review.json",
+      "sha256": "d00d6af4c970274f9c05330ce81499ad94fab8c3c9e1c40d1ca1e6f58017de16"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r1_cross_reference_output_review.json",
+      "sha256": "a3d833938c496da685a797ff4156ce656627649eacd527cefeb64b7f7f36c0ed"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r1_remaining_output_reviews.json",
+      "sha256": "85e53550db44f9ae8c9f07a95de4b4c368bd60727cacaac74533b5a352b5ae2e"
+    }
+  ],
+  "counts": {
+    "AK": {
+      "rows": 66,
+      "assessed": 0,
+      "unchecked": 66
+    },
+    "AR": {
+      "rows": 21,
+      "assessed": 0,
+      "unchecked": 21
+    },
+    "ITP": {
+      "rows": 57,
+      "assessed": 0,
+      "unchecked": 57
+    },
+    "KM": {
+      "rows": 27,
+      "assessed": 12,
+      "unchecked": 15
+    },
+    "VK": {
+      "rows": 26,
+      "assessed": 26,
+      "unchecked": 0
+    }
+  },
+  "quality_acceptance": false,
+  "limits": "Verifies preservation and source binding, not factual truth, usefulness or resolved uncertainty.",
+  "negative_controls": [
+    {
+      "case": "removed_row",
+      "rejected": true,
+      "reason": "Current queue differs from complete receipt replay"
+    },
+    {
+      "case": "changed_original_finding",
+      "rejected": true,
+      "reason": "Current queue differs from complete receipt replay"
+    },
+    {
+      "case": "changed_completed_assessment",
+      "rejected": true,
+      "reason": "Current queue differs from complete receipt replay"
+    }
+  ],
+  "model_calls": 0
+}
