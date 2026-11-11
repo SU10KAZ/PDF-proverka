@@ -1,0 +1,24 @@
+{
+  "input_sha256": {
+    "/tmp/auditmanager_itp_pipe_velocity_bounded_review_20261111/workflow/candidate.json": "35a6e06b0cf36968e448c16c19c512df584718891623d602acb3bc08ab2e22d9",
+    "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/ITP/findings_verify.json": "3a3c2505680f1086348eebb0d72aad9c0a6eb9c356789dd0eb97b04d6da21c3a",
+    "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/02_work/document.md": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+  },
+  "binding": {
+    "entry_sha256": "6895ae627394161c119234b1780c79df24002f947c1bf7289d320381927d845e",
+    "document_sha256": "d4cc57e5bf30fad7c3a7589dc7358fb8bc66c89baa572de8b5de50f8107a5102",
+    "source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+  },
+  "model": "codex/gpt-6-astra",
+  "effort": "high",
+  "message_chars": 86256,
+  "image_count": 16,
+  "image_bytes": 24105466,
+  "baseline_count": 53,
+  "maximum_model_calls": 3,
+  "automatic_retries": 0,
+  "known_candidate_control": true,
+  "engineer_answers_supplied": false,
+  "expected_verdict_supplied": false,
+  "boundary": "Snapshot plus one candidate, not a full independent discovery audit. Original report never modified."
+}

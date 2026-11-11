@@ -1,0 +1,30 @@
+{
+  "status": "readjudication_needs_data_not_negative_control_pass",
+  "candidate_id": "B-KM-F-014",
+  "control_id": "H05-N01",
+  "model_verdict": "needs_data",
+  "exact_text_quotes_checked": 4,
+  "independently_viewed": [
+    "plan +9.110",
+    "lower section showing OGM4 +6.070 to +7.270 and OGM5 +7.270 to +9.110",
+    "OGM1-4 and OGM5-8 graphic details"
+  ],
+  "conclusion": "Prior refutation assigning OGM6 to +7.270 to +9.110 remains contradicted. Different detail geometry does not establish installed-instance identity. Keep factual target excluded pending resolved identity; no requirement to change a mark or installation is established.",
+  "limits": "No engineer verdict. Model interpretation of other levels is not promoted to independently verified evidence. Do not equate incorrect landing terminology with refutation of the entire cross-view discrepancy.",
+  "next_action": "Retain this as an unresolved identity control and prohibit using it as evidence that a suppression filter passed. No further repetitive request scheduled without a concrete new source or tracing method.",
+  "usage": {
+    "input_tokens": 20327,
+    "output_tokens": 6048,
+    "duration_ms": 131698,
+    "cost_source": "subscription"
+  },
+  "full_acceptance": false,
+  "artifact_sha256": {
+    "binding.json": "1ddf802f1897494f678e63bc59fccf05723718068bede77b551c73b4850ccde3",
+    "completion.json": "402eda95ba98fcaf4e87e3ac991d992dae083b9dc409808bee54cba353127ce3",
+    "request.json": "f204a70fc5011a37f8e140a8be10eadaf3b6735e5c9532af7e5e50150971d0b9",
+    "attempt.json": "49043dd371187138af95c74e53bd08c2a8afdfa60ab8361e65b7b7ded8d22c84",
+    "result.json": "417db73fa0002c6dcd12744c90826caea6dc4144ee9e4b736d2e521d85c80848",
+    "result_binding.json": "b182a446588eed18b16ffa3aa4e4f5c42a72a7465fa85ed5439b6c6ac811f134"
+  }
+}

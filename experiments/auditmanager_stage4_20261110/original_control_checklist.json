@@ -46,7 +46,7 @@
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
-          "sha256": "76320005c258aac4d64eba8fb5cd8e4f8df50843ba98b205586bb8979c73fa33"
+          "sha256": "461990a52660c28e36890b425475a2089bf768cae2196b46b341499913d513e6"
         }
       ],
       "full_acceptance_proven": false
@@ -440,7 +440,7 @@
       "hypothesis": "H05",
       "kind": "positive_controls",
       "original_control": "ИТП: расходы ветвейГВС сопоставить с режимомК15; толщины3/3.5 связать с теми же участками.",
-      "evidence_state": "partial_GVS_reported_wall_question_not_emitted_velocity_review_pending",
+      "evidence_state": "partial_GVS_reported_wall_not_emitted_velocity_profile_disputed",
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_GVS_combined_output_replay.json",
@@ -473,6 +473,10 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_pipe_runtime_followup_evidence/assessment.json",
           "sha256": "5065f5e7a71bb43d2b2499bdeceb091b46819812ef2130575a3e1a09d96aaa22"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_pipe_velocity_final_release_evidence/assessment.json",
+          "sha256": "17c9ce57630c066e9ac85da592d1fdf6b4880e81b939a83763c3843b2a54b245"
         }
       ],
       "full_acceptance_proven": false
@@ -508,11 +512,15 @@
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
-          "sha256": "76320005c258aac4d64eba8fb5cd8e4f8df50843ba98b205586bb8979c73fa33"
+          "sha256": "461990a52660c28e36890b425475a2089bf768cae2196b46b341499913d513e6"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_adjacent_flights_validated.json",
           "sha256": "6d2a7cdfafefb80c6043592c1c8603fa212be43a3a8cc218cb84150c07970655"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_readjudication_evidence/assessment.json",
+          "sha256": "28940f5cef55f377b54d4c48e48f3a2c10f1d69c9c8ed71ef4b6269bcfa846a4"
         }
       ],
       "full_acceptance_proven": false
@@ -735,7 +743,7 @@
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
-    "partial_GVS_reported_wall_question_not_emitted_velocity_review_pending": 1,
+    "partial_GVS_reported_wall_not_emitted_velocity_profile_disputed": 1,
     "partial_control_grouping_held_source_identity_unresolved": 1,
     "partial_instance_identity_question_preserved": 1,
     "synthetic_contract_only": 1

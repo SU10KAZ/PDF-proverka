@@ -22,7 +22,12 @@
       "evaluation_action": "Exclude this target from scored true/false claims and filter acceptance until source identity is re-adjudicated. Preserve original text and frozen release as historical evidence.",
       "requires_engineer_or_source_resolution": "Установить по выноскам и деталировке границы ОГМ4/ОГМ5/ОГМ6 на схеме +9.110; ошибка основания снятия сама по себе не подтверждает исходное замечание.",
       "historical_engineer_decision": null,
-      "full_claim_now_confirmed": false
+      "full_claim_now_confirmed": false,
+      "additional_source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/km_f014_readjudication_evidence/assessment.json",
+        "sha256": "28940f5cef55f377b54d4c48e48f3a2c10f1d69c9c8ed71ef4b6269bcfa846a4",
+        "outcome": "needs_data_after_detail_inspection; original exclusion retained"
+      }
     },
     {
       "candidate_id": "B-EOM-F-032",
