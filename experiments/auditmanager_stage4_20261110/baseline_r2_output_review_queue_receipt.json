@@ -1,0 +1,79 @@
+{
+  "status": "prepared_output_review_not_quality_verdict",
+  "repeat": 2,
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "sources": [
+    {
+      "discipline": "AK",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "23f2f26b2037210e7d364cf48c55d42f62832e649a25b10b0f3eb4f1ab8a8c3b",
+      "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_coverage_ledger.json",
+      "ledger_sha256": "449d0c8fb50834c3f647396ff56c34e27bd3c35538560c5367b84f62551a1618",
+      "coverage_status": "reviewed"
+    },
+    {
+      "discipline": "ITP",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027",
+      "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_coverage_ledger.json",
+      "ledger_sha256": "bd048fa48edc53cc95406086aa67879420eee8ff86c89905f0241e17b33e5445",
+      "coverage_status": "reviewed"
+    },
+    {
+      "discipline": "AR",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "19945dcbf049ddaac4c873aa6699b58b1a2bc9085e4788efc9b9d43cd73eda3e",
+      "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_completed_coverage_ledger.json",
+      "ledger_sha256": "bd862c6c4d1abe7c57b3c45dc28b488ddb8ddca8f96b5ecff2c2128b7c670795",
+      "coverage_status": "reviewed"
+    },
+    {
+      "discipline": "KM",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "d93486c6a6510ae841be839873e137a44c3241005e6060361017dce855a3e5d1",
+      "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r2_completed_coverage_ledger.json",
+      "ledger_sha256": "b79de5b362cff64fcc4c4553688eb2040b1fa41bf5c373835deb2262f8c088e5",
+      "coverage_status": "reviewed"
+    },
+    {
+      "discipline": "VK",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "6182e5efe3cb42c6924c22aec4caa065ddd49a6e1130d44dc73a157477cbd9cd",
+      "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_completed_coverage_ledger.json",
+      "ledger_sha256": "052cc9870b1727d14ffe47e24e903c2ec899bc59e0e5d3846d4b16b45c78e1da",
+      "coverage_status": "reviewed"
+    },
+    {
+      "discipline": "EOM",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "4b6101d8efa69bb635f953a84ce8d301b3ab5d0fca05ea0c7263afe52bcc54ca",
+      "coverage_status": "pending_review"
+    }
+  ],
+  "counts": {
+    "mapped_requires_addition_review": 147,
+    "unmapped_not_yet_classified": 58,
+    "coverage_review_pending": 48
+  },
+  "discipline_counts": {
+    "AK": 74,
+    "ITP": 57,
+    "AR": 21,
+    "KM": 25,
+    "VK": 28,
+    "EOM": 48
+  },
+  "rules": [
+    "Split compound rows into factual claims; assess remedies and consequences separately.",
+    "A matched historical target does not validate extra claims or prove engineer acceptance of the whole row.",
+    "No link means unclassified, not false or novel; EOM coverage is explicitly pending.",
+    "Reuse engineer decisions only for the same claim and source context.",
+    "Do not send this evaluator-only queue to independent discovery runs.",
+    "Multiple target links are not independent defects."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue.json",
+  "queue_sha256": "75ba3ee22aec8d5c1b14e9743984447f7dbb488e11531ce1911f1439ce424a08",
+  "findings": 253
+}
