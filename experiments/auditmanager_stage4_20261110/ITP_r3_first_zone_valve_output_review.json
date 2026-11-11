@@ -1,0 +1,169 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "837f0f93f5c1101b25bb358706383366b81e0621a935c54e1934ae39a5dbf2e5",
+  "queue_after_sha256": "eb6b5536c404627579665ff7bd2ae0c76b41b4a36929938b11db9bdcdd101990",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-047",
+      "finding": {
+        "id": "F-047",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Регулирующая арматура",
+        "sheet": "Лист 8",
+        "page": [
+          15,
+          53
+        ],
+        "problem": "Расход и потери клапана отопления первой зоны расходятся с расчётом.",
+        "description": "Для VFM-2R-100-140 на разрезе 40-40 указаны G=74,40 м³/ч и ΔР=0,282 бар. Расчёт использует 74,15 м³/ч при подборе и 74,12 м³/ч при определении потерь 0,280 бар. Kvs=140 м³/ч совпадает.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к согласованности расчётных параметров в графической и текстовой частях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-011"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Принять единый расход и пересчитать соответствующие потери, обновив подпись и расчёт.",
+        "risk": "Разночтения исходных данных при наладке регулирующего узла.",
+        "source_finding_ids": [
+          "G-011"
+        ],
+        "source_block_ids": [
+          "blk_6496640ac5e44e98a89acc7af56d0509"
+        ],
+        "related_block_ids": [
+          "blk_6496640ac5e44e98a89acc7af56d0509"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+            "page": 15
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 53
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Разрез40–40:VFM-2R-100-140 DN100,G74,40м³/ч,Kv140,ΔP0,282.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Выноска связана с поз27. ИсточникIMAGE, хотя выдача маркируетtext; самостоятельный просмотр подтверждает графику, не исправляет provenance исходной выдачи."
+        },
+        {
+          "claim": "ПЗ для того же клапанаG74,15, вформуле потерь74,12/140 и0,280бар.",
+          "verdict": "confirmed_direct_authoritative_TEXT",
+          "limits": "Модель/DN/Kv иназначение отопления1зоны совпадают."
+        },
+        {
+          "claim": "Различие потерь соответствует различию расходов.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "(74,4/140)²≈0,282416;(74,12/140)²≈0,280295, округляются0,282/0,280. Потери не самостоятельный второй дефект; источник замены74,15→74,12 не установлен."
+        },
+        {
+          "claim": "Согласовать исходный расход и подписи.",
+          "verdict": "supported_document_question",
+          "limits": "Неправильный клапан, нарушенное регулирование или фактическая ошибочная наладка не доказаны; малую разницу не превращать в универсальный допуск."
+        }
+      ],
+      "unsupported_additions": "Не установлены неправильный подбор клапана, фактическая ошибка наладки и причина изменения расхода.",
+      "novel_useful_content": "Прямые документальные основания вопроса подтверждены; новое инженерное принятие не установлено.",
+      "duplicate_burden": "Изменение потерь соответствует расходу; не считать отдельным независимым отказом. Атом74,15→74,12 ранее присутствовал во втором повторе, но не явно в текущемF015.",
+      "profile_and_section": "Отдельные вопросы и уточнения; фактическое расположение в итоговом отчёте не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; прямыеTEXT иGRAPHIC проверены отдельно.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png",
+          "sha256": "7354443aa6ecdf7232110223a7b30b0dd25276027e3006175c728eb1fdc35edd",
+          "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Left section40–40 label VFM-2R-100-140 DN100 G74.40 Kv140 deltaP0.282, position27."
+        }
+      ],
+      "disposition": "assessed_r3_direct_first_zone_valve"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Direct TEXT and GRAPHIC evaluation of final unchecked ITP F047. Model and position matched across calculation and section40–40; arithmetic independently computed. All54 rows assessed, including explicitly uncertain claims; this is not trial or production acceptance."
+}
