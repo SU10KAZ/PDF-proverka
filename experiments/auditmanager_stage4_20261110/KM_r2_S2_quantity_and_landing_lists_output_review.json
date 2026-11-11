@@ -1,0 +1,576 @@
+{
+  "status": "three_KM_quantity_and_landing_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "620d98043838d138d83404685dc8cc015b95d7b60d1126332970dc2bdee1c07e",
+  "queue_after_sha256": "defae61502bbb9ed44102a3cbd353ffcde07a1f4a24968af4cccbc9fd4a71ef3",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация",
+        "sheet": "Листы 2, 4",
+        "page": [
+          4,
+          6
+        ],
+        "problem": "В сводной спецификации секции С2 занижены количество анкеров и расход опорных пластин.",
+        "description": "На листе 2 указано 448 анкеров. Ведомости листа 4 дают 20+2×16+16+16+10×20+9×20+24=488 шт., на 40 шт. больше. Требуется 122 опорные пластины 10×120×120 мм. Их теоретическая масса без вычета отверстий составляет 0,137885 т против указанных 0,127 т.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить требования к полноте и соответствию количества изделий и материалов рабочим чертежам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать сводную спецификацию с ведомостями секции С2: учесть 488 анкеров и 122 пластины, уточнить массу пластин с учетом принятого способа подсчета.",
+        "risk": "Недопоставка крепежа и пластин, дополнительные закупки и задержки монтажа.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_addaa8965de54d218095d13652f30388",
+          "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+          "blk_ec977eb41e834dc8b7b332a66932a777"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 74,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM13_F004_S2_anchor_multiplicity:59a9339a0f210f950692",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "KM_F005_total_plate_balance:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "488/448 анкеров и122 пластины С2",
+          "verdict": "supported_historical_positive_same_scope"
+        },
+        {
+          "claim": "Теоретическая масса122пластин10×120×120 без отверстий равна0,137885т.",
+          "verdict": "numerical_discrepancy_under_stated_density",
+          "limits": "При условной плотности7850кг/м³ получается137,9088кг=0,1379088т, а не137,885кг. Разность0,0238кг не отменяет принятую инженером находку488/448. Масса готовых пластин и фактическая недопоставка не доказаны."
+        },
+        {
+          "claim": "Недостаточное количество крепежа и опорных деталей при закупке и монтаже.",
+          "verdict": "possible_consequence_not_observed"
+        }
+      ],
+      "unsupported_additions": "Не распространять инженерное принятие количества на новые массы и последствия; не объявлять пропуск записи отсутствием конструкции; не задавать приоритет одного вида без основания.",
+      "novel_useful_content": "Сохранена исторически принятая находка UA-013 по количеству анкеров; отдельная неточность массы не основание снимать её целиком.",
+      "duplicate_burden": "distinct_sections_do_not_merge_S2_and_LK6_quantities",
+      "profile_and_section": "technical_anchor_conflict_with_separate_mass_uncertainty",
+      "engineer_reuse": {
+        "historical": {
+          "control_id": "KM:13",
+          "finding_id": "UA-013",
+          "decision": "Принято",
+          "comment": "новое, в старом такого замечания нет.",
+          "later_learning": "Приняты488/448 и122/112; контроль кратности и сопутствующей массы.",
+          "distinction": "Позднее122/112 не превращает112 в документированное число пластин."
+        },
+        "scope": "Use historical acceptance only for the original quantity/repetition issue; new exact subtotals and factual shortage claims are not independently accepted."
+      },
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM13_F004_S2_anchor_multiplicity.json",
+          "sha256": "b039e259c55746828a55fdad1fbb9afe04bc99d2498ae858403e14b33bf19631"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-005"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-005",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-004_quantity_or_level_scope"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Схемы расположения",
+        "sheet": "Лист 3",
+        "page": 5,
+        "problem": "В перечне отметок площадок секции С2 пропущены два уровня с ограждениями ОГМ5.",
+        "description": "На схеме расположения в перечне отметок верхней на плане железобетонной плиты отсутствуют +22,550 и +32,630. На разрезе 1–1 обе площадки показаны с ОГМ5. Соответствующие этажные отметки +24,070 и +34,150 включены в схему.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Найти требования к полноте схем расположения и высотным привязкам металлических конструкций.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-003",
+                "G-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-003",
+                  "G-004"
+                ],
+                "designation_source": "Подобран при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать перечень отметок с разрезом 1–1, включив площадки +22,550 и +32,630.",
+        "risk": "Пропуск ограждений на двух площадках при чтении монтажной схемы.",
+        "source_finding_ids": [
+          "G-003",
+          "G-004"
+        ],
+        "source_block_ids": [
+          "blk_9dbddaba8e334be3ab857afe48df76ec"
+        ],
+        "related_block_ids": [
+          "blk_9dbddaba8e334be3ab857afe48df76ec",
+          "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "page": 5
+          },
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-003",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-004",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на пропуск +22.550 и +32.630 в перечне отметок плиты на схеме листа 3 при наличии этих площадок с ОГМ 5 на разрезе 1–1 и предлагают одинаковое исправление. Упоминание +24.070 и +34.150 справа лишь уточняет контекст; различие оценок серьёзности не является противоречием по факту.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на пропуск +22.550 и +32.630 в перечне отметок плиты на схеме листа 3 при наличии этих площадок с ОГМ 5 на разрезе 1–1 и предлагают одинаковое исправление. Упоминание +24.070 и +34.150 справа лишь уточняет контекст; различие оценок серьёзности не является противоречием по факту.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "absence_guard_downgraded": true,
+        "absence_guard_original_severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "absence_guard_evidence": "Отметки +22,550 и +32,630 приведены на разрезе 1-1 секции С2 на листе 3 с ограждениями ОГМ5."
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F012_level_list_scope:caf42e6feef6a3355c54",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На типовом плане С2 пропущены+22,550 и+32,630 в верхнем списке отметок.",
+          "verdict": "confirmed_cross_view_list_omission",
+          "limits": "Разрез показывает эти промежуточные площадки и ОГМ5; нижний список и заголовок содержат+24,070 и+34,150. Это пропуск в перечне, не доказанное физическое отсутствие ограждения."
+        },
+        {
+          "claim": "Согласовать перечень отметок+22,550/+32,630 с разрезом.",
+          "verdict": "supported_document_coordination_question",
+          "limits": "Подтверждён пропуск в перечне, а не физическое отсутствие ограждений."
+        },
+        {
+          "claim": "Изготовлено неподходящее ограждение либо ограждения пропущены.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Второй повтор также покрывает неоднозначность верхней схемы+39,350 и размеров3460/1470.",
+          "verdict": "not_covered_by_this_row",
+          "limits": "Эта самостоятельная часть первого повтора отсутствует в данной строке. Не считать её сохранённой по одному совпадениюID; покрытие другими строками требует отдельного сопоставления."
+        }
+      ],
+      "unsupported_additions": "Не распространять инженерное принятие количества на новые массы и последствия; не объявлять пропуск записи отсутствием конструкции; не задавать приоритет одного вида без основания.",
+      "novel_useful_content": "Сохранились два пропущенных уровня; самостоятельная часть верхней схемы в этой строке потеряна.",
+      "duplicate_burden": "distinct_geometric_or_list_address_not_an_additional_field_defect",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F012_level_list_scope.json",
+          "sha256": "f2c0052c8e3217c2fc0115deb2f4d7a426e4127d17ce0a4ca37e36645858abcd",
+          "primary_adjudication": null,
+          "limits": [
+            "Пропуск установлен только в конкретном списке; не утверждается отсутствие уровней или ограждений во всём проекте.",
+            "ВедомостьОГМ5 листа4 содержит10 изделий, и разрез показывает10ОГМ5; пропуск двух отметок не доказывает дефицит двух ограждений.",
+            "Непосредственная эксплуатационная опасность, недокомплект и отсутствие монтажа не доказаны. Автоматически увеличивать количествоОГМ5 нельзя."
+          ],
+          "wording": "Уточнить перечень отметок верхней на плане площадки типовой схемыС2: в нём отсутствуют+22.550 и+32.630, тогда как разрез1-1 показывает эти площадки с примыкающими маршамиОГМ5. Проверить область применения схемы и согласовать перечень с разрезом."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_9dbddaba8e334be3ab857afe48df76ec.png",
+          "sha256": "6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b",
+          "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "В верхнем перечне нет22,550/32,630, есть39,350; цепь1170/3160/1770."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8e8d4c0218c6473ab7885f5aed70bafd.png",
+          "sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+          "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Разрез показывает22,550/32,630 и верхнюю область37,510/39,350/41,190."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d2963ae2ab2841cd95de9c28e8cac089.png",
+          "sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ce2f8627036ee842",
+          "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Отдельный верхний план: цепь1170/3460/1470, ОГМ5 иОГМ8."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-012",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-012_quantity_or_level_scope"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Геометрия и привязки",
+        "sheet": "Лист 5",
+        "page": 7,
+        "problem": "Отметка площадки под уровнем +35,990 не согласована со схемой и разрезом.",
+        "description": "Последняя отметка левой железобетонной площадки на схеме указана +37,510. На разрезе 1–1 соответствующая площадка под уровнем +35,990 имеет отметку +34,150. Значение +37,510 относится к вышерасположенной площадке с ОГМ7. Разница составляет 3,360 м.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Найти требования к высотным отметкам и привязкам на схемах расположения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-015",
+                "G-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-015",
+                  "G-016"
+                ],
+                "designation_source": "Подобран при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать схему с разрезом 1–1, указав для соответствующей площадки отметку +34,150.",
+        "risk": "Ошибочная привязка ограждения к этажу и пропуск требуемой площадки при монтаже.",
+        "source_finding_ids": [
+          "G-015",
+          "G-016"
+        ],
+        "source_block_ids": [
+          "blk_f0a5333974ac4088b7778f525922b014"
+        ],
+        "related_block_ids": [
+          "blk_f0a5333974ac4088b7778f525922b014",
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+            "page": 7
+          },
+          {
+            "type": "image",
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-015",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одну ошибку: отметка левой площадки +37.510 вместо +34.150 под уровнем +35.990 на листе 5; основание — разрез 1-1, исправление одинаковое. Упоминание ОГМ 7 слева не меняет сути и не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одну ошибку: отметка левой площадки +37.510 вместо +34.150 под уровнем +35.990 на листе 5; основание — разрез 1-1, исправление одинаковое. Упоминание ОГМ 7 слева не меняет сути и не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 87,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F015_typical_level_list:bce51ca28ffba3fa98c3",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На типовой схеме для отметок +12,470…+35,990 последняя отметка левой, нижней смежной площадки указана +37,510. На разрезе 1–1 соответствующая площадка имеет отметку +34,150. Отметка +37,510 относится к следующему участку с ограждением ОГМ7. Разница отметок составляет 3,360 м.",
+          "verdict": "supported_in_reviewed_source_scope",
+          "limits": [
+            "Подтверждено противоречие документов, но приоритет разреза перед схемой не устанавливался поАР/КЖ.",
+            "Нельзя автоматически заменять любое37.510 на34.150:37.510 является реальным уровнем следующего марша.",
+            "Не подтверждены фактическая ошибка комплектации/монтажа и эксплуатационные последствия."
+          ]
+        },
+        {
+          "claim": "Заменить отметку соответствующей площадки на+34,150.",
+          "verdict": "requires_geometry_confirmation_before_replacement",
+          "limits": "Второй повтор убрал оговорку о проверке проектной геометрии. Разрез противоречит схеме, но его приоритет поАР/КЖ не установлен. Сохранить несогласованность, не вводить безусловную замену и не исправлять все реальные отметки+37,510."
+        },
+        {
+          "claim": "Ошибочная высотная привязка и применение ограждения к другому участку лестницы.",
+          "verdict": "hypothetical_not_observed"
+        }
+      ],
+      "unsupported_additions": "Не распространять инженерное принятие количества на новые массы и последствия; не объявлять пропуск записи отсутствием конструкции; не задавать приоритет одного вида без основания.",
+      "novel_useful_content": "То же противоречие отметок; новая безусловность решения не подтверждена источниками.",
+      "duplicate_burden": "keep_confirmed_level_list_conflict_F016_identity_depends_on_it",
+      "profile_and_section": "technical_document_conflict_legacy_main_route",
+      "engineer_reuse": "no_independent_same_claim_engineer_decision_in_frozen_record",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
+          "sha256": "86849d4e464c5efa654fd2e5aa1e08127b5859ee7c63a2ec2eddd62ecda17ea5",
+          "role": "frozen_source_adjudication_not_new_engineer_decision"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-015"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f8b3c96af858494c946ff4f1ceaa1fb5.png",
+          "sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f0a5333974ac4088b7778f525922b014.png",
+          "sha256": "afe14108cef59c53cc2e0518187d711a9fce8c09552044605c99c59611221a00",
+          "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-015",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-016_quantity_or_level_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
