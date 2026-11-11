@@ -1,0 +1,90 @@
+{
+  "status": "six_project_input_sizing_only",
+  "rows": [
+    {
+      "discipline": "AK",
+      "status": "fits",
+      "message_characters": 675575,
+      "budget": 1000000,
+      "over_budget": 0,
+      "request": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794378116658109344/request.json",
+      "request_sha256": "2131111ec9e46bf14037e9328be78239b03a7dea8199f3e74f0756fbb9a1bee5",
+      "md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "original_trailing_note_present": false,
+      "system_profile": "sealed historical request; not the refrozen current candidate",
+      "historical_md_matches_corrected_source": true
+    },
+    {
+      "discipline": "ITP",
+      "status": "fits",
+      "message_characters": 607609,
+      "budget": 1000000,
+      "over_budget": 0,
+      "request": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/requests/ITP/1794380628065361323/request.json",
+      "request_sha256": "b9ece8be2b47ac0f79c8b7be946015299a547b546208935f48680fc59354ab7e",
+      "md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "original_trailing_note_present": false,
+      "system_profile": "sealed historical request; not the refrozen current candidate",
+      "historical_md_matches_corrected_source": true
+    },
+    {
+      "discipline": "AR",
+      "status": "fits",
+      "message_characters": 211304,
+      "budget": 1000000,
+      "over_budget": 0,
+      "request": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/requests/AR/1794382511932838870/request.json",
+      "request_sha256": "907742081c84e3a885cd0db5a8a08a7515cdc2acad5b5f5e97da52e70b99a7c8",
+      "md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+      "original_trailing_note_present": false,
+      "system_profile": "sealed historical request; not the refrozen current candidate",
+      "historical_md_matches_corrected_source": true
+    },
+    {
+      "discipline": "KM",
+      "status": "fits",
+      "message_characters": 283611,
+      "budget": 1000000,
+      "over_budget": 0,
+      "request": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794384863138255291/request.json",
+      "request_sha256": "7399409adda2da8d490a9f8bc1f8d9dbac995f0a41e103f038411a1d6af7e101",
+      "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+      "original_trailing_note_present": false,
+      "system_profile": "sealed historical request; not the refrozen current candidate",
+      "historical_md_matches_corrected_source": true
+    },
+    {
+      "discipline": "VK",
+      "status": "fits",
+      "message_characters": 283486,
+      "budget": 1000000,
+      "over_budget": 0,
+      "request": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/requests/VK/1794386697366398851/request.json",
+      "request_sha256": "f3ccf0921a47a098cf31a5533329cd50caa2b8bf4cf6a270f88c1a50591aba90",
+      "md_sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+      "original_trailing_note_present": false,
+      "system_profile": "sealed historical request; not the refrozen current candidate",
+      "historical_md_matches_corrected_source": true
+    },
+    {
+      "discipline": "EOM",
+      "status": "fits",
+      "message_characters": 584884,
+      "budget": 1000000,
+      "over_budget": 0,
+      "request": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794390105414008225/request.json",
+      "request_sha256": "9aee0512729afb0a165a6ab91f2c0e98e64cbcd4389d7642582491cb412be60c",
+      "md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "original_trailing_note_present": false,
+      "system_profile": "sealed historical request; not the refrozen current candidate",
+      "historical_md_matches_corrected_source": true
+    }
+  ],
+  "model_calls": 0,
+  "limitations": [
+    "Uses sealed baseline repeat-1 detector outputs, not a new audit.",
+    "Historical merge template/profile retained for sizing only; final candidate preflight remains required.",
+    "No source or candidate was truncated; overflow is a planning requirement, not a failed model run."
+  ],
+  "production_acceptance": false
+}
