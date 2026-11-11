@@ -1,0 +1,195 @@
+{
+  "status": "localized_graphic_detection_miss_not_filter_removal",
+  "target_id": "KM9_LK5_landing_elevation:95ba2445f5ada28f5184",
+  "truth_source": {
+    "path": "experiments/auditmanager_stage1_20261109/decisions/KM9_LK5_landing_elevation.json",
+    "sha256": "258baafbac8c43c86e9a48ba228505f40cb9bd22ad945c8c03aa587ff06eb35b"
+  },
+  "final_output": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+  },
+  "blocks": [
+    {
+      "block_id": "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_074052__ensemble_codex-only_high/block_blk_fe7bfb2c1c0b469ca1c3e2cb30686758.json",
+      "sha256": "7bd6dfc2f63b021dd2bcbdd3bdd04e0f248d4eb3851db3e6c832ca33d13923c5",
+      "detectors": 2,
+      "all_detector_findings_empty": true,
+      "evidence_gate": {
+        "schema_version": 1,
+        "candidates": 0,
+        "published": 0,
+        "deferred": 0,
+        "min_confidence": 0.8,
+        "max_published_per_block": null,
+        "reason_counts": {}
+      },
+      "gap_search": {
+        "enabled": false,
+        "performed": false,
+        "status": "disabled",
+        "searched_categories": [],
+        "summary": "Оба списка замечаний пусты. Поиск новых проблем отключён.",
+        "findings_added": 0,
+        "duplicates_rejected": 0
+      },
+      "document_retrieval": {
+        "scope": "all_document_vector_text_other_pages",
+        "query_terms": [
+          "Три",
+          "схемы",
+          "расположения",
+          "металлического",
+          "ограждения",
+          "разных",
+          "отметках",
+          "лестничной",
+          "клетки",
+          "Показаны",
+          "позиции",
+          "ограждений",
+          "ОГМ",
+          "габаритные",
+          "размеры",
+          "маршей",
+          "площадки",
+          "оси",
+          "отметки",
+          "перекрытий"
+        ],
+        "candidate_hits": 50,
+        "selected_hits": 6,
+        "selected_pages": [
+          3,
+          6,
+          8,
+          10,
+          11,
+          12
+        ],
+        "status": "hits"
+      }
+    },
+    {
+      "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_074052__ensemble_codex-only_high/block_blk_9e54c5e5fb6b4b28ae2304bd06c49949.json",
+      "sha256": "f217c6e9cb46994dd32081f3c8df47eebfbbcfd3d7433311b2ee8eb3b8e04a38",
+      "detectors": 2,
+      "all_detector_findings_empty": true,
+      "evidence_gate": {
+        "schema_version": 1,
+        "candidates": 0,
+        "published": 0,
+        "deferred": 0,
+        "min_confidence": 0.8,
+        "max_published_per_block": null,
+        "reason_counts": {}
+      },
+      "gap_search": {
+        "enabled": false,
+        "performed": false,
+        "status": "disabled",
+        "searched_categories": [],
+        "summary": "Оба списка замечаний пусты. Дополнительный поиск отключён.",
+        "findings_added": 0,
+        "duplicates_rejected": 0
+      },
+      "document_retrieval": {
+        "scope": "all_document_vector_text_other_pages",
+        "query_terms": [
+          "ОГМ1–ОГМ20",
+          "Шесть",
+          "разрезов",
+          "лестничных",
+          "клеток",
+          "позициями",
+          "элементов",
+          "ОГМ1",
+          "ОГМ20",
+          "отметками",
+          "уровней",
+          "габаритными",
+          "размерами",
+          "маршей"
+        ],
+        "candidate_hits": 21,
+        "selected_hits": 6,
+        "selected_pages": [
+          8
+        ],
+        "status": "hits"
+      }
+    }
+  ],
+  "requests": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383447752400359/request.json",
+      "sha256": "bb47139d57a105b1deb060ae86fe3ecb7fdca541ec8382f2019fc5b27cdaa8a3",
+      "image_paths": [
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_9e54c5e5fb6b4b28ae2304bd06c49949.png"
+      ],
+      "target_ids_in_message_text": [
+        "blk_9e54c5e5fb6b4b28ae2304bd06c49949"
+      ],
+      "number_occurrences": {
+        "2[.,]350": 4,
+        "2[.,]500": 1
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383519839971911/request.json",
+      "sha256": "7c65eeeda4dd04deea8a08f5b184d69b9e576f092aefa21b2321a079ef4512b3",
+      "image_paths": [
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fe7bfb2c1c0b469ca1c3e2cb30686758.png"
+      ],
+      "target_ids_in_message_text": [
+        "blk_fe7bfb2c1c0b469ca1c3e2cb30686758"
+      ],
+      "number_occurrences": {
+        "2[.,]350": 3,
+        "2[.,]500": 0
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383519844042778/request.json",
+      "sha256": "7c65eeeda4dd04deea8a08f5b184d69b9e576f092aefa21b2321a079ef4512b3",
+      "image_paths": [
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fe7bfb2c1c0b469ca1c3e2cb30686758.png"
+      ],
+      "target_ids_in_message_text": [
+        "blk_fe7bfb2c1c0b469ca1c3e2cb30686758"
+      ],
+      "number_occurrences": {
+        "2[.,]350": 3,
+        "2[.,]500": 0
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383447750647399/request.json",
+      "sha256": "bb47139d57a105b1deb060ae86fe3ecb7fdca541ec8382f2019fc5b27cdaa8a3",
+      "image_paths": [
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_9e54c5e5fb6b4b28ae2304bd06c49949.png"
+      ],
+      "target_ids_in_message_text": [
+        "blk_9e54c5e5fb6b4b28ae2304bd06c49949"
+      ],
+      "number_occurrences": {
+        "2[.,]350": 4,
+        "2[.,]500": 1
+      }
+    }
+  ],
+  "conclusions": [
+    "Both source blocks were processed successfully by both detectors; neither detector produced a candidate on either block.",
+    "Evidence gates had no candidate to suppress; gap search was explicitly disabled.",
+    "Each recorded detector request had one source image. Section-request text contains both number patterns, so complete absence of the numbers is not an established cause."
+  ],
+  "limits": [
+    "Numeric occurrences do not establish that the model linked the same landing across views.",
+    "This trace localizes the miss to these graphic detection passes; it does not prove visual misreading, lack of attention, or a specific retrieval defect.",
+    "No frozen candidate was tuned using this result; the comparative series continues unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
