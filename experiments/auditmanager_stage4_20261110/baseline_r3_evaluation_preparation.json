@@ -11,9 +11,9 @@
       "final_sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34",
       "findings": 65,
       "ledger_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_coverage_ledger.json",
-      "ledger_sha256": "0d61db573f2341d4860e982f5c53037285c6d3d1733b4fa03c753254bde098ee",
+      "ledger_sha256": "7a4c3077660ae946e68142c71e892d00e8ab82fe5a2c6167730f43f23b12ec02",
       "targets": 100,
-      "unchecked_targets": 100
+      "unchecked_targets": 73
     },
     {
       "discipline": "ITP",
@@ -40,17 +40,26 @@
       "ledger_sha256": "743bca7f5fc6204fd5878e65c03462598d96ccb253016ca5aa2f90839083b389",
       "targets": 33,
       "unchecked_targets": 0
+    },
+    {
+      "discipline": "KM",
+      "repeat": 3,
+      "seal_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/status/KM.json",
+      "seal_sha256": "7774c82cd2e83ad3c627272306ba82b02755130fee46f6ff601c43f4667b5fcd",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "24144ca36a134832df47be32c1b795fc8923515017c46a3e07296ab7380ce60f",
+      "findings": 25,
+      "ledger_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/KM_coverage_ledger.json",
+      "ledger_sha256": "2ec5cc404329c79f5f27ddc0b012e7497431a22e86f190e4d82413609da62722",
+      "targets": 28,
+      "unchecked_targets": 28
     }
   ],
   "pending": [
     {
-      "discipline": "KM",
+      "discipline": "VK",
       "reason": "not_completed",
       "status": "running"
-    },
-    {
-      "discipline": "VK",
-      "reason": "no_completion_seal"
     },
     {
       "discipline": "EOM",
