@@ -1,0 +1,200 @@
+{
+  "status": "bounded_detector_stage_miss_traced",
+  "target_id": "EOM27_active_socket_circuits:46bf196510e24cc289cf",
+  "discipline": "EOM",
+  "repeat": 1,
+  "source_decision": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM27_active_socket_circuits.json",
+    "sha256": "539cb99a7e98600cef013c0847d9dc68ea77774c009848fae45ae4d535d828a1"
+  },
+  "coverage_ledger": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r1_completed_coverage_ledger.json",
+    "sha256": "37b9b611cc988bcf51c2c23d1adb2b11b93832af5c748642c73c7700798fa8f3"
+  },
+  "raw_detector_result": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_085302__ensemble_codex-only_high/block_blk_4e968dd71c7149aca85e4195d5c3de49.json",
+    "sha256": "5708165819d44684fe9c97e0b08f4d923f44b63dac38126a11d7740530b4395a"
+  },
+  "requests": [
+    {
+      "request": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387201849320580/request.json",
+        "sha256": "ba2e338875c8512d1e7e940585cb86d46de0c35ebacb707860bab6040bd9d795"
+      },
+      "attempts": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387201849320580/attempts.json",
+        "sha256": "ccb257d8c956644c0bf5807e7eb391b3fdcf530d2db4e2bc87e7e265da37362c"
+      },
+      "image_sources": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e968dd71c7149aca85e4195d5c3de49.png",
+          "sha256": "a5b8b99f7c248661b1a326103a59062fb9691488c4e6c7f2c5f6275e166e3bf5"
+        }
+      ],
+      "text_has_RP3_table_through_C2324": true,
+      "text_contains_C2326_C2327_identifiers": false,
+      "image_preserved_not_reextracted": true,
+      "model": "codex/gpt-6-astra",
+      "request_succeeded": true
+    },
+    {
+      "request": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387201852485614/request.json",
+        "sha256": "ba2e338875c8512d1e7e940585cb86d46de0c35ebacb707860bab6040bd9d795"
+      },
+      "attempts": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387201852485614/attempts.json",
+        "sha256": "de1c6c1c54cdb2e85b38a7b7a3af635a96be287a690988470bfd5e854afb96d3"
+      },
+      "image_sources": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e968dd71c7149aca85e4195d5c3de49.png",
+          "sha256": "a5b8b99f7c248661b1a326103a59062fb9691488c4e6c7f2c5f6275e166e3bf5"
+        }
+      ],
+      "text_has_RP3_table_through_C2324": true,
+      "text_contains_C2326_C2327_identifiers": false,
+      "image_preserved_not_reextracted": true,
+      "model": "codex/gpt-6-astra",
+      "request_succeeded": true
+    }
+  ],
+  "detector_leg_reviews": [
+    {
+      "leg": 1,
+      "findings": [
+        {
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "current_transformer",
+          "finding": "В проверке трансформаторов тока Wh1 и Wh2 на листе 2.1 для минимальной нагрузки подставлены 77 и 74 А вместо рассчитанных 23,9 и 30,6 А. Правильные вторичные токи составляют 0,34 и 0,38 А вместо 1,1 и 0,9 А; указанный критерий >0,1 А при этом сохраняется.",
+          "norm_quote": null,
+          "value_found": "159.3 × 0,15= 23.9A; 204.1 × 0,15= 30.6A; 77/70 = 1.1A > 0,1A; 74/80 = 0.9A > 0,1A",
+          "recommendation": "Исправить подстановки и результаты расчёта минимального вторичного тока для Wh1 и Wh2.",
+          "claim_type": "contradiction",
+          "problem_class": "inconsistent_minimum_current_calculation",
+          "affected_entity": "Wh1 и Wh2, строка 4 проверки трансформаторов тока",
+          "evidence_quote": "Строка 2: «159.3 × 0,15= 23.9A», «204.1 × 0,15= 30.6A»; строка 4 с формулой «Ip.мин/Kтт»: «77/70 = 1.1A», «74/80 = 0.9A».",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.99,
+          "counterevidence_checked": true,
+          "required_context": []
+        },
+        {
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "calculation",
+          "finding": "В таблице нагрузок на листе 2.1 формула для РП2 содержит установленную мощность 180 кВт и результат 57,6 кВт, тогда как для РП2 и его потребителя C221 указаны соответственно 240 и 69,6 кВт. Формула не соответствует значениям, принятым в таблице.",
+          "norm_quote": null,
+          "value_found": "Pp.=Py.к.*Kc=180*0,32=57,6 кВт; 240,0; 69,6",
+          "recommendation": "Согласовать формулу, установленную мощность и коэффициент спроса РП2 с принятым расчётом нагрузки C221.",
+          "claim_type": "contradiction",
+          "problem_class": "load_formula_table_mismatch",
+          "affected_entity": "РП2, потребитель C221",
+          "evidence_quote": "РП2: «Pp.=Py.к.*Kc=180*0,32=57,6 кВт», Py «240,0», Pp «69,6»; C221: Py «240,0», Pp «69,6».",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.99,
+          "counterevidence_checked": true,
+          "required_context": []
+        },
+        {
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "calculation",
+          "finding": "Для ПД.2.1 (C2520) на листе 2.1 при расчётной мощности 6 кВт и cos φ=0,80 указана полная мощность 6,88 кВА вместо 7,50 кВА. Указанный ток 10,5 А также не соответствует этим исходным данным: при принятом в расчётах листа напряжении 0,38 кВ он составляет около 11,4 А.",
+          "norm_quote": null,
+          "value_found": "C2520 | ПД.2.1 | 6 | 6 | 10,5 | 0,80 | 6,88",
+          "recommendation": "Пересчитать полную мощность и ток ПД.2.1 и учесть исправленные значения в итоговых нагрузках.",
+          "claim_type": "contradiction",
+          "problem_class": "inconsistent_power_current_calculation",
+          "affected_entity": "ПД.2.1, цепь C2520",
+          "evidence_quote": "В строке C2520 указаны Pp=6 кВт, cos φ=0,80, S=6,88 кВА и Ip=10,5 А; в проверке трансформаторов тока на том же листе используется «0,38x1,732».",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.98,
+          "counterevidence_checked": true,
+          "required_context": []
+        }
+      ],
+      "semantic_review": "All three concern minimum CT secondary current, RP2 formula mismatch and C2520 power/current. None states missing active C2326/C2327 rows in RP3; no retrieval request for those circuits is present."
+    },
+    {
+      "leg": 2,
+      "findings": [
+        {
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "calculation",
+          "finding": "В проверке трансформаторов тока Wh1 и Wh2 на листе 2.1 минимальные первичные токи составляют 23,9 и 30,6 А, но вторичные токи рассчитаны из 77 и 74 А. Правильные результаты — 0,34 и 0,38 А вместо 1,1 и 0,9 А; указанный критерий > 0,1 А при этом выполняется.",
+          "norm_quote": null,
+          "value_found": "159.3 × 0,15= 23.9A; 204.1 × 0,15= 30.6A; 77/70 = 1.1A > 0,1A; 74/80 = 0.9A > 0,1A",
+          "recommendation": "Пересчитать строку минимальных вторичных токов с использованием 23,9 и 30,6 А.",
+          "claim_type": "contradiction",
+          "problem_class": "inconsistent_calculation_inputs",
+          "affected_entity": "Wh1 и Wh2, проверка минимального тока цепи счётчика",
+          "evidence_quote": "В строке 2 указаны минимальные токи «23.9A» и «30.6A», а в строке 4 приведены расчёты «77/70 = 1.1A» и «74/80 = 0.9A».",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.99,
+          "counterevidence_checked": true,
+          "required_context": []
+        },
+        {
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "calculation",
+          "finding": "Для РП2 на листе 2.1 формула содержит установленную мощность 180 кВт и расчётную 57,6 кВт, тогда как числовые графы РП2 и отходящей линии C221 содержат соответственно 240 и 69,6 кВт. Обоснование расчётной нагрузки противоречит принятым значениям.",
+          "norm_quote": null,
+          "value_found": "Pp.=Py.к.*Kc=180*0,32=57,6 кВт; РП2: 240,0 | 69,6; C221: 240,0 | 69,6",
+          "recommendation": "Согласовать формулу РП2 с принятой установленной мощностью и коэффициентом спроса и уточнить зависимые расчёты.",
+          "claim_type": "contradiction",
+          "problem_class": "load_formula_table_mismatch",
+          "affected_entity": "РП2, линия C221 квартир 6–10 этажей",
+          "evidence_quote": "Строка РП2: «Pp.=Py.к.*Kc=180*0,32=57,6 кВт» при значениях Py «240,0» и Pp «69,6»; строка C221 повторяет «240,0» и «69,6».",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.99,
+          "counterevidence_checked": true,
+          "required_context": []
+        },
+        {
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "calculation",
+          "finding": "Для ПД.2.1, линия C2520, на листе 2.1 указаны Pp = 6 кВт и cos φ = 0,80, которым соответствует S = 7,50 кВА, а не 6,88 кВА. Приведённый ток 10,5 А также занижен относительно этих исходных данных: при 380 В расчёт даёт около 11,4 А.",
+          "norm_quote": null,
+          "value_found": "C2520 | ПД.2.1 | 6 | 6 | 10,5 | 0,80 | 6,88",
+          "recommendation": "Согласовать мощность ПД.2.1 с расчётными S и Ip и скорректировать зависимые расчёты нагрузки.",
+          "claim_type": "contradiction",
+          "problem_class": "power_current_calculation_mismatch",
+          "affected_entity": "ПД.2.1, линия C2520",
+          "evidence_quote": "В строке C2520 одновременно указаны Pp «6», cos φ «0,80», S «6,88» и Ip «10,5»; 6 / 0,80 = 7,50 кВА.",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.99,
+          "counterevidence_checked": true,
+          "required_context": []
+        }
+      ],
+      "semantic_review": "All three concern minimum CT secondary current, RP2 formula mismatch and C2520 power/current. None states missing active C2326/C2327 rows in RP3; no retrieval request for those circuits is present."
+    }
+  ],
+  "observations": [
+    "The selected schematic block was actually dispatched to both successful Astra detectors with one image and same-page RP3 load table.",
+    "Structured engineering description reports only three circuit/group entities N,N,PE; user-message text does not contain the two active circuit IDs.",
+    "Both detector outputs focus on the same three numerical topics. The specific active-circuit set discrepancy is absent from both outputs before their comparison.",
+    "Final absence was established in the completed coverage review; this trace localizes absence at this relevant detector block, not every possible route in the pipeline."
+  ],
+  "stage_assessment": {
+    "object_registry": "C2326/C2327 not represented in submitted text description; full source image supplied.",
+    "graphic_reading": "Internal model recognition not observable; cannot claim it saw or misread the circuit labels.",
+    "cross_document_operation": "No returned result or requested context evidences reconciliation of active circuit IDs against RP3. Internal execution unknown.",
+    "merge_filter": "No such candidate in these two detector outputs; downstream suppression is not demonstrated.",
+    "global_cause": "Other block and whole-text routes not exhaustively semantically traced in this artifact."
+  },
+  "hypothesis_for_frozen_trial_evaluation": "Check whether candidate object extraction plus explicit active/reserve circuit reconciliation recovers C2326/C2327 while preserving exclusion of reserves C2325/C2328. Do not inject these answers into independent audit prompts.",
+  "limits": [
+    "No new engineering truth adjudication; frozen same-version target reused.",
+    "Do not infer automatic +4kW or equipment failure without aggregation/mode review.",
+    "No comparison success or production acceptance.",
+    "Historical findings and engineer answers were not sent to independent runs."
+  ],
+  "model_calls": 0,
+  "production_changed": false
+}
