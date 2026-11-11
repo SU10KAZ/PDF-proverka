@@ -1,0 +1,163 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-042",
+      "status": "confirmed_document_conflict",
+      "review_reason": "Ва3.1/M3 связан с16,подписанным состоянием резервного;Ва3.1р/M4 связан с19,подписанным состоянием основного. Прослежены отдельные линии до номеров. Подтверждён конфликт подписи и показанного статического назначения,не алгоритм автоматической ротации и не фактическая диспетчеризация.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+        "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+        "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "independent_dot_count": null,
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-047",
+      "status": "confirmed_document_conflict",
+      "review_reason": "M1/Пн5.1→11 с подписью резервного,M2/Пн5.1рез→14 с подписью основного;M3/Вн5.1→26 резервного,M4/Вн5.1р→29 основного. Колонки15/30 относятся к перепаду давления,выдача их верно не включает. Требование согласовать подписи подтверждено.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+        "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+        "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "independent_dot_count": null,
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-048",
+      "status": "confirmed_document_conflict_solution_scope_caveat",
+      "review_reason": "Четыре символа UZ2,UZ3,UZ2,UZ3 в строке приборов по месту сопоставлены с перечнем UZ1–UZ4,4шт. СО9.2 предусматривает отдельные щиты Пн5.1/Вн5.1,поэтому локальное повторение возможно;нужна адресная связь с общим перечнем. Сохранить документальную несогласованность,но уточнить решение:полные обозначения с областью нумерации допустимы вместо обязательной глобальной перенумерации.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+        "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+        "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "start": 104170,
+          "end": 105769,
+          "sha256": "615a3e8076fe165418a2dad2c9e3d8125547a5299a4711d1e7175c559a246b6f"
+        },
+        {
+          "block_id": "blk_88d8dd46122c41148a81ba6b14c890eb",
+          "start": 443075,
+          "end": 445290,
+          "sha256": "3e4079125f33faa90a16e69f2289885f0bfdd9ded6393404781f88a60206c2d4"
+        }
+      ],
+      "independent_dot_count": null,
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-054",
+      "status": "confirmed_document_conflict",
+      "review_reason": "Независимо пересчитаны11точек DO в ШАУВ-1-К5АС при печатном итоге10. Учтён столбец27 за основной группой;точки других строк не включены. Выдача допускает исправление либо итога,либо неверной точки;нехватка фактически установленных модулей не доказана.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+        "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+        "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "independent_dot_count": {
+        "row": "DO",
+        "columns": [
+          2,
+          7,
+          9,
+          12,
+          15,
+          16,
+          17,
+          19,
+          21,
+          23,
+          27
+        ],
+        "count": 11,
+        "printed_total": 10
+      },
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-058",
+      "status": "confirmed_document_conflict",
+      "review_reason": "Независимо пересчитаны12точек DI в ШАУВ-3-К6ПЧ при печатном итоге10,включая ненумерованный Пожар отАПС. Утверждение12/10 верно;нехватка фактических входов не заявлена. Ссылку дополнения F-036 необходимо исправить как внутренний ID.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+        "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+        "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "independent_dot_count": {
+        "row": "DI",
+        "columns": [
+          3,
+          4,
+          5,
+          6,
+          8,
+          10,
+          11,
+          12,
+          15,
+          16,
+          17,
+          "Пожар от АПС"
+        ],
+        "count": 12,
+        "printed_total": 10
+      },
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-059",
+      "status": "confirmed_document_conflict",
+      "review_reason": "Независимо пересчитаны6точек DO при печатном итоге5. Вход Пожар не добавлен в выходы. Несогласованность внутри матрицы подтверждена;необходимость изменения реальной комплектации остаётся предметом сверки. Ссылка F-037 в дополнении — внутренний,а не финальный адрес.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+        "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+        "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "independent_dot_count": {
+        "row": "DO",
+        "columns": [
+          2,
+          8,
+          10,
+          11,
+          14,
+          16
+        ],
+        "count": 6,
+        "printed_total": 5
+      },
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}

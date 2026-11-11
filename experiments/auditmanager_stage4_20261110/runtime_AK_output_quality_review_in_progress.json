@@ -414,8 +414,14 @@
       "finding_id": "F-042",
       "problem": "Подписи состояния основного и резервного вытяжных вентиляторов переставлены.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Ва3.1/M3 связан с16,подписанным состоянием резервного;Ва3.1р/M4 связан с19,подписанным состоянием основного. Прослежены отдельные линии до номеров. Подтверждён конфликт подписи и показанного статического назначения,не алгоритм автоматической ротации и не фактическая диспетчеризация.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_signal_matrix_source_review_20261112.json",
+        "sha256": "696cef2225675edda4d5c44c03ad19bcfd6af7f4de207482ca565906121c55af"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-043",
@@ -456,15 +462,27 @@
       "finding_id": "F-047",
       "problem": "Переставлены подписи состояния основных и резервных вентиляторов Пн5.1 и Вн5.1.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "M1/Пн5.1→11 с подписью резервного,M2/Пн5.1рез→14 с подписью основного;M3/Вн5.1→26 резервного,M4/Вн5.1р→29 основного. Колонки15/30 относятся к перепаду давления,выдача их верно не включает. Требование согласовать подписи подтверждено.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_signal_matrix_source_review_20261112.json",
+        "sha256": "696cef2225675edda4d5c44c03ad19bcfd6af7f4de207482ca565906121c55af"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-048",
       "problem": "Обозначения четырёх преобразователей частоты повторяются и расходятся с перечнем элементов.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_solution_scope_caveat",
+      "engineer_decision": null,
+      "review_reason": "Четыре символа UZ2,UZ3,UZ2,UZ3 в строке приборов по месту сопоставлены с перечнем UZ1–UZ4,4шт. СО9.2 предусматривает отдельные щиты Пн5.1/Вн5.1,поэтому локальное повторение возможно;нужна адресная связь с общим перечнем. Сохранить документальную несогласованность,но уточнить решение:полные обозначения с областью нумерации допустимы вместо обязательной глобальной перенумерации.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_signal_matrix_source_review_20261112.json",
+        "sha256": "696cef2225675edda4d5c44c03ad19bcfd6af7f4de207482ca565906121c55af"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-049",
@@ -520,8 +538,14 @@
       "finding_id": "F-054",
       "problem": "Итог DO шкафа ШАУВ-1-К5АС не соответствует количеству отмеченных подключений.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Независимо пересчитаны11точек DO в ШАУВ-1-К5АС при печатном итоге10. Учтён столбец27 за основной группой;точки других строк не включены. Выдача допускает исправление либо итога,либо неверной точки;нехватка фактически установленных модулей не доказана.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_signal_matrix_source_review_20261112.json",
+        "sha256": "696cef2225675edda4d5c44c03ad19bcfd6af7f4de207482ca565906121c55af"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-055",
@@ -555,15 +579,27 @@
       "finding_id": "F-058",
       "problem": "Итог DI=10 не соответствует 12 подключениям в матрице ШАУВ-3-К6ПЧ.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Независимо пересчитаны12точек DI в ШАУВ-3-К6ПЧ при печатном итоге10,включая ненумерованный Пожар отАПС. Утверждение12/10 верно;нехватка фактических входов не заявлена. Ссылку дополнения F-036 необходимо исправить как внутренний ID.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_signal_matrix_source_review_20261112.json",
+        "sha256": "696cef2225675edda4d5c44c03ad19bcfd6af7f4de207482ca565906121c55af"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-059",
       "problem": "Итог DO=5 не соответствует 6 подключениям в матрице ШАУВ-3-К6ПЧ.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Независимо пересчитаны6точек DO при печатном итоге5. Вход Пожар не добавлен в выходы. Несогласованность внутри матрицы подтверждена;необходимость изменения реальной комплектации остаётся предметом сверки. Ссылка F-037 в дополнении — внутренний,а не финальный адрес.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_signal_matrix_source_review_20261112.json",
+        "sha256": "696cef2225675edda4d5c44c03ad19bcfd6af7f4de207482ca565906121c55af"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-060",
@@ -824,6 +860,6 @@
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 33,
-  "unchecked_findings": 52
+  "reviewed_findings": 39,
+  "unchecked_findings": 46
 }
