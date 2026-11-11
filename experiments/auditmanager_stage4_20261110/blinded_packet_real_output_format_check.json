@@ -1,0 +1,58 @@
+{
+  "status": "all_six_real_output_formats_accepted",
+  "purpose": "Local format and preservation smoke check using two copies of each same output; not comparison arms or independent reviews.",
+  "output_root": "/tmp/auditmanager_blind_packet_smoke_weair_by",
+  "runs": [
+    {
+      "discipline": "AK",
+      "source": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "source_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+      "rows": 132,
+      "public_sha256": "a543ce82f993a4f4dd8252919e61f325081986d4f5daed3e85c87ff18ec247f3",
+      "workload_measured": false
+    },
+    {
+      "discipline": "ITP",
+      "source": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "source_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+      "rows": 114,
+      "public_sha256": "a2990c1201c2ab1485c7f28768003271f6a20981b05786431d5fee42833799b5",
+      "workload_measured": false
+    },
+    {
+      "discipline": "AR",
+      "source": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "source_sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d",
+      "rows": 42,
+      "public_sha256": "c54c81ce165f19ff781ceab28e1eff4d08366707b72a94bb0e00ea55a4ba56b6",
+      "workload_measured": false
+    },
+    {
+      "discipline": "KM",
+      "source": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "source_sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+      "rows": 54,
+      "public_sha256": "fff1b7f0e06d0d9c2f9565132246b24083f5c1f2d9e620516c9bc6b6989480cb",
+      "workload_measured": false
+    },
+    {
+      "discipline": "VK",
+      "source": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "source_sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8",
+      "rows": 52,
+      "public_sha256": "b87b85c86b8ad1aef25fea49758064f267ed59c089661e1ad939045ea457637f",
+      "workload_measured": false
+    },
+    {
+      "discipline": "EOM",
+      "source": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "source_sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386",
+      "rows": 96,
+      "public_sha256": "2d44c5562836837d7789fb0646f50cdad0a93dd7a9856b12da1469c5280b0a73",
+      "workload_measured": false
+    }
+  ],
+  "script_sha256": "a333b4802d3389e603c3da67f65863a2f2bca3ad038430dee06ac4ba31a646c0",
+  "model_calls": 0,
+  "quality_acceptance": false
+}

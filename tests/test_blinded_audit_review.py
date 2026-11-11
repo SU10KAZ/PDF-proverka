@@ -47,3 +47,31 @@ def test_mixed_repeats_rejected(tmp_path):
     b = inputs(tmp_path); b[1]['repeat'] = 2
     with pytest.raises(ValueError, match='mix'):
         m.prepare(b, tmp_path/'public', tmp_path/'private')
+
+
+def test_multiple_project_pages_preserved_without_private_fields(tmp_path):
+    bindings = inputs(tmp_path)
+    for binding in bindings:
+        path = Path(binding['path'])
+        data = json.loads(path.read_text())
+        data['findings'][0]['page'] = [40, 78, 79, 80]
+        path.write_text(json.dumps(data))
+        binding['sha256'] = m.sha(path)
+    m.prepare(bindings, tmp_path/'public', tmp_path/'private')
+    text = (tmp_path/'public/review.json').read_text()
+    rows = json.loads(text)['rows']
+    assert all(row['finding']['page'] == [40, 78, 79, 80] for row in rows)
+    assert 'answer_secret' not in text and 'model_secret' not in text
+
+
+@pytest.mark.parametrize('pages', [[{'engineer_answer': 'answer_secret'}], [[40]], [True]])
+def test_structured_or_boolean_page_items_rejected_before_writing(tmp_path, pages):
+    bindings = inputs(tmp_path)
+    path = Path(bindings[0]['path'])
+    data = json.loads(path.read_text())
+    data['findings'][0]['page'] = pages
+    path.write_text(json.dumps(data))
+    bindings[0]['sha256'] = m.sha(path)
+    with pytest.raises(ValueError, match='page references'):
+        m.prepare(bindings, tmp_path/'public', tmp_path/'private')
+    assert not (tmp_path/'public').exists()

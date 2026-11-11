@@ -50,6 +50,11 @@ def prepare(bindings, public_dir, private_dir, *, seed=None):
             for name in SCALAR_FIELDS:
                 if name in finding:
                     value = finding[name]
+                    if name == 'page' and isinstance(value, list):
+                        if not all(type(page) in (int, str) for page in value):
+                            raise ValueError('Invalid project page references')
+                        visible[name] = list(value)
+                        continue
                     if value is not None and type(value) not in (str, int, float):
                         raise ValueError('Inspect unsupported visible-field shape: ' + name)
                     visible[name] = value
