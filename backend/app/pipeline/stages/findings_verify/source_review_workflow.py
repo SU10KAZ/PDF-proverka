@@ -44,7 +44,7 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
 
     Maximum five source reviews (initial plus four context revisions) and one
     adjudication, plus up to four explicitly selected source-only image readings.
-    Automatic region mode instead adds up to four region readings and one re-review.
+    Automatic region mode instead adds up to four region readings and up to two re-reviews.
     No retries/fallback. A saved result is reused only for the exact
     same request and executor identity. No original finding is changed here.
     """
@@ -61,7 +61,7 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
     binding={'queue':evidence_digest(queue),'finding':evidence_digest(finding),
              'md':evidence_digest(md),'executor_id':executor_id,'workflow_version':3,'max_images':max_images}
     if auto_graphic_regions:
-        binding['auto_graphic_regions'] = True
+        binding['auto_graphic_regions'] = 2
     if literal_image_hashes:
         binding['literal_image_hashes'] = list(literal_image_hashes)
     manifest=root/'binding.json'
@@ -131,20 +131,22 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
                     response, validation = repaired, repaired_validation
         if validation['errors']:raise ValueError('invalid_source_review')
         if auto_graphic_regions and step == 0:
-            from .graphic_region_reading import prepare_review_region_readings, reading_on_parent
+            from .graphic_region_reading import prepare_review_region_readings, reading_on_parent, region_was_read
             from .graphic_literal_reading import bind_literal_reading, attach_literal_readings
-            manifest = prepare_review_region_readings(request, response, root/'graphic_regions')
-            _write(root/'graphic_region_manifest.json', manifest)
             _write(root/'00_initial_validation.json', validation)
-            for index, region in enumerate(manifest['regions']):
-                literal = await call(region['request'], f'region_literal_{index}', 0)
-                readings.append(reading_on_parent(region, bind_literal_reading(region['request'], literal)))
-            _write(root/'independent_graphic_readings.json', readings)
-            if readings:
+            for region_round in range(2):
+                manifest = prepare_review_region_readings(request, response, root/'graphic_regions')
+                _write(root/f'graphic_region_manifest_{region_round}.json', manifest)
+                novel = [region for region in manifest['regions'] if not region_was_read(region, readings)]
+                if not novel:break
+                for index, region in enumerate(novel[:max(0,4-len(readings))]):
+                    literal = await call(region['request'], f'region_literal_{region_round}_{index}', 0)
+                    readings.append(reading_on_parent(region, bind_literal_reading(region['request'], literal)))
+                _write(root/'independent_graphic_readings.json', readings)
                 request = attach_literal_readings(request, readings)
-                response = await call(request, 'region_review', 0)
+                response = await call(request, f'region_review_{region_round}', 0)
                 validation = validate_source_review(response,current,[finding],md)
-                _write(root/'00_region_validation.json', validation)
+                _write(root/f'00_region_validation_{region_round}.json', validation)
                 if validation['errors']:raise ValueError('invalid_region_source_review')
         followup=prepare_review_followup(response,current,[finding],md,graphic_dir,max_images=max_images)
         _write(root/f'{step:02d}_followup.json',followup)
@@ -153,6 +155,21 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
             current=followup['expanded_queue']
             continue
         break
+    if auto_graphic_regions:
+        from .graphic_region_reading import prepare_review_region_readings, region_was_read
+        final_regions=prepare_review_region_readings(request,response,root/'graphic_regions')
+        pending=[r['source'] for r in final_regions['regions'] if not region_was_read(r,readings)]
+        unresolved_skips=final_regions.get('skipped',[])
+        region_coverage={'pending_regions':pending,'skipped':unresolved_skips,
+            'semantic_verified':False,'boundary':'Geometry coverage is not factual verification.'}
+        _write(root/'graphic_region_completion.json',region_coverage)
+        if pending or unresolved_skips:
+            report={'status':'not_completed','reason':'graphic_region_reading_budget_or_geometry',
+                'calls':calls,'pending_source_findings':[deepcopy(finding)],'queue':current,
+                'response':response,'region_coverage':region_coverage,
+                'semantic_acceptance':False,'original_findings_mutated':False}
+            _write(root/'candidate.json',report)
+            return report
     decision=await call(prepare_adjudication_request(request,response),'adjudication',5)
     entry={'queue':current,'response':response,'decision':decision}
     preview,receipts=apply_review_admissions({'findings':[finding]},[entry],md)
@@ -197,7 +214,7 @@ async def run_source_review_workflow_phase(output_dir, md, *, invoke, executor_i
         # cannot reuse earlier remote results.
         one={**queue,'packets':[packet],'pending_count':1}
         key_data={'packet':packet,'source':queue['source_md_sha256'],'executor':executor_id}
-        if auto_graphic_regions:key_data['auto_graphic_regions']=True
+        if auto_graphic_regions:key_data['auto_graphic_regions']=2
         key=evidence_digest(key_data)
         try:
             report=await run_source_review_workflow(one,packet['finding_snapshot'],md,root/'blocks_stage02_100',

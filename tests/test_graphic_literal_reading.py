@@ -97,10 +97,10 @@ async def test_auto_region_workflow_does_not_repeat_initial_review(tmp_path):
     actual.update(image_bindings=source['image_bindings'],image_paths=source['image_paths'])
     async def invoke(request,phase):
         calls.append(phase)
-        if phase=='region_literal_0':return {'json_data':literal}
+        if phase=='region_literal_0_0':return {'json_data':literal}
         payload=json.loads(request['messages'][1]['content'])
-        if phase in ('review','region_review'):
-            assert ('independent_graphic_readings_untrusted' in payload)==(phase=='region_review')
+        if phase in ('review','region_review_0'):
+            assert ('independent_graphic_readings_untrusted' in payload)==(phase=='region_review_0')
             data={k:payload[k] for k in ('finding_id','finding_sha256','source_md_sha256','context_sha256')}
             data['claims']=[{'claim_id':'C1','claim':'Source fact','status':'supported','reason':'source','evidence':[{'block_id':'t','quote':'Source fact'}]}]
         else:
@@ -111,4 +111,4 @@ async def test_auto_region_workflow_does_not_repeat_initial_review(tmp_path):
         for _ in range(2):
             result=await run_source_review_workflow(queue,finding,md,tmp_path,tmp_path/'workflow',invoke=invoke,executor_id='test',auto_graphic_regions=True)
             assert result['status']=='candidate_ready'
-    assert calls==['review','region_literal_0','region_review','adjudication']
+    assert calls==['review','region_literal_0_0','region_review_0','adjudication']

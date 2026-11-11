@@ -51,3 +51,19 @@ def test_reading_region_is_mapped_to_original_attached_pixels(tmp_path):
     assert mapped['image_sha256']==request['image_bindings'][0]['sha256']
     assert mapped['reading']['reading_uncertainties']==['edge cropped']
     assert mapped['derived_view']['original_reading']==raw
+
+
+def test_new_location_requires_new_reading_but_contained_location_does_not(tmp_path):
+    from copy import deepcopy
+    from backend.app.pipeline.stages.findings_verify.graphic_region_reading import region_was_read, reading_on_parent
+    from backend.app.pipeline.stages.findings_verify.graphic_literal_reading import bind_literal_reading
+    request,response=setup(tmp_path)
+    region,=prepare_review_region_readings(request,response,tmp_path/'regions')['regions']
+    reading=reading_on_parent(region,bind_literal_reading(region['request'],{'annotations':[],'reading_uncertainties':['unreadable']}))
+    assert region_was_read(region,[reading])
+    moved=deepcopy(region);moved['source']['proposed_bbox_norm_xyxy']=[0,0,0.2,0.2]
+    assert not region_was_read(moved,[reading])
+    moved['source']['proposed_bbox_norm_xyxy']=[0.45,0.2,0.55,0.6]
+    assert region_was_read(moved,[reading])
+    moved['source']['parent_image_sha256']='other version'
+    assert not region_was_read(moved,[reading])

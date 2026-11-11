@@ -132,6 +132,6 @@ if __name__=='__main__':
     p.add_argument('--populate-context-graphics',action='store_true')
     p.add_argument('--auto-graphic-regions',action='store_true')
     p.add_argument('--literal-image-hash',action='append',default=[])
-    p.add_argument('--workflow-name',choices=['workflow','workflow_auto_regions'],default='workflow')
+    p.add_argument('--workflow-name',choices=['workflow','workflow_auto_regions','workflow_auto_regions_v2'],default='workflow')
     p.add_argument('--execute',action='store_true')
     asyncio.run(main(p.parse_args()))

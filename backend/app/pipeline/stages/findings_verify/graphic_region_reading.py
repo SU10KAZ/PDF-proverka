@@ -88,3 +88,17 @@ def reading_on_parent(region, reading):
                                      (x0+right*(x1-x0))/width,(y0+bottom*(y1-y0))/height]
     result['boundary']='Untrusted source-only reading of a derived view; regions mapped to the attached parent image. Inspect parent pixels; no authoritative TEXT or defect verdict.'
     return result
+
+
+def region_was_read(region, readings):
+    """Geometric coverage only; never certifies the literal or defect conclusion."""
+    source=region['source'];width,height=source['parent_size']
+    box=source.get('proposed_bbox_norm_xyxy')
+    target=[box[0]*width,box[1]*height,box[2]*width,box[3]*height] if box else source['pixel_box']
+    for reading in readings:
+        prior=reading.get('derived_view',{}).get('geometry',{})
+        if (prior.get('block_id'),prior.get('parent_image_sha256'))!=(source['block_id'],source['parent_image_sha256']):continue
+        if prior.get('parent_size')!=source['parent_size']:continue
+        x0,y0,x1,y1=prior['pixel_box']
+        if x0<=target[0] and y0<=target[1] and x1>=target[2] and y1>=target[3]:return True
+    return False
