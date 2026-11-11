@@ -8,6 +8,8 @@ OUT=Path(__file__).parent
 # Explicit evidence mappings only. Unmapped controls are review work, not proof
 # that no evidence exists anywhere in the historical research corpus.
 EVIDENCE={
+ ('H06','negative_controls_and_limits',1):('bounded_inventory_identity_control',['ITP_pipe_distinct_materials_assessment.json','ITP_pipe_inv_008_validated.json']),
+ ('H06','positive_controls',1):('partial_control_pending_applicability_question_admission',['EOM_manufacturer_applicability_assessment.json','EOM_manufacturer_applicability_result.json']),
  ('H01','positive_controls',1):('partial_control_pending_F032_profile',['EOM_F001_question_output_replay.json','EOM_F030_question_output_replay.json','EOM_F032_output_replay.json','EOM_classic_profile_remaining.json']),
  ('H06','negative_controls_and_limits',0):('bounded_control_recorded',['EOM_shunt_identity_negative_pair.json','EOM_manufacturer_applicability_assessment.json']),
  ('H03','positive_controls',1):('partial_instance_identity_question_preserved',['EOM_instance_question_output_replay.json','EOM_instance_followup2_validated.json']),

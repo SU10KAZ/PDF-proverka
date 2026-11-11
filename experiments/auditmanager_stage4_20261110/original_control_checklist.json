@@ -499,8 +499,17 @@
       "hypothesis": "H06",
       "kind": "positive_controls",
       "original_control": "ЭОМ: совместимость расцепителя сQF3.20 проверить по конкретному изготовителю.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "partial_control_pending_applicability_question_admission",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_manufacturer_applicability_assessment.json",
+          "sha256": "f90a29b5f15f91b3d754a462e0a29f585c2cde8e0e3a2f8746274be2e5a87979"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_manufacturer_applicability_result.json",
+          "sha256": "08bab1e0d88cfc3cc843d91debc9252114b35444d1eb9b0e927bc83c2735aab1"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -548,8 +557,17 @@
       "hypothesis": "H06",
       "kind": "negative_controls_and_limits",
       "original_control": "ВГП65×4 и электросварная76×3.5 — разные трубы.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "bounded_inventory_identity_control",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_pipe_distinct_materials_assessment.json",
+          "sha256": "4a0b7b1a361f9177faf925df44e46f0f4ad41645ff080a561eb44dfcfa637275"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_pipe_inv_008_validated.json",
+          "sha256": "9185b5ae4a1f860cd9348ec30f994733dfcd7ac756ff998b7650fdbea0e6a7a6"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -629,15 +647,17 @@
   ],
   "counts": {
     "bounded_control_recorded": 22,
+    "bounded_inventory_identity_control": 1,
     "bounded_known_candidate_control": 1,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
     "partial_control_pending_F032_profile": 1,
+    "partial_control_pending_applicability_question_admission": 1,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
     "partial_instance_identity_question_preserved": 1,
-    "requires_explicit_evidence_review": 3,
+    "requires_explicit_evidence_review": 1,
     "synthetic_contract_only": 1
   },
   "boundaries": [

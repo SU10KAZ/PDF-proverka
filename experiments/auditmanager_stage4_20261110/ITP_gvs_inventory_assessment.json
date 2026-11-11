@@ -1,0 +1,13 @@
+{
+  "status": "inventory_complete_operations_started",
+  "objects": 55,
+  "duration_ms": 380144,
+  "selected_actual_object_ids": [
+    "pipe66_t411",
+    "k15_view"
+  ],
+  "history_or_answers_supplied": false,
+  "known_source_control": true,
+  "remaining": "Compare identities, operating regimes, flows and pump basis using source retrieval before issuing findings.",
+  "full_acceptance": false
+}

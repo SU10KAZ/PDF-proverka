@@ -1,0 +1,51 @@
+{
+  "control": "H06-N02",
+  "status": "bounded_inventory_identity_control",
+  "source_sha256": "4bfba5d919889bdcecf946768d3431720a32561c216a7dff390842952f486466",
+  "objects": [
+    {
+      "id": "inv_008",
+      "identity": "Трубопровод ИТП: стальная водогазопроводная оцинкованная труба Д=65х4,0 мм",
+      "scope": "СО, лист 6; материал, отдельные участки не обозначены",
+      "kind": "позиция спецификации материала",
+      "source_refs": [
+        "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Наименование, обозначение документа и количество",
+          "value": "Труба стальная водогазопроводная оцинкованная, Д=65х4,0 мм; ГОСТ 3262-75; 78.4 м",
+          "unit": null,
+          "source_ref": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "quote": "|  | Труба стальная водогазопроводная оцинкованная, Д=65х4,0 мм | ГОСТ 3262-75 |  |  | м | 78.4 |  |  |"
+        }
+      ]
+    },
+    {
+      "id": "inv_016",
+      "identity": "Трубопровод ИТП: стальные электросварные трубы Д=76х3,5 мм",
+      "scope": "СО, лист 6; материал, отдельные участки не обозначены",
+      "kind": "позиция спецификации материала",
+      "source_refs": [
+        "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Наименование, обозначение документа и количество",
+          "value": "Трубы стальные электросварные, Д=76х3,5 мм; ГОСТ 10704-91; 91.2 м",
+          "unit": null,
+          "source_ref": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "quote": "|  | Трубы стальные электросварные, Д=76х3,5 мм | ГОСТ 10704-91 |  |  | м | 91.2 |  |  |"
+        }
+      ]
+    }
+  ],
+  "quotes_verified_in_named_source_blocks": true,
+  "interpretation": "Two different material rows and product standards are preserved as separate objects; no conversion of nominal DN65 into an external 65 mm diameter.",
+  "operation_evidence": "ITP_pipe_inv_008_validated.json",
+  "limitations": [
+    "Physical allocation of these materials to particular pipe segments remains unresolved.",
+    "The operation did not explicitly test a supplied false claim equating these two positions; absence of findings is not proof of filter quality."
+  ],
+  "full_acceptance": false
+}
