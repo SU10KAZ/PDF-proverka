@@ -1,0 +1,42 @@
+{
+  "status": "failed_audit_receipts_verified_not_quality_evaluation",
+  "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_inventory/classic_control/status/AK.json",
+  "status_sha256": "ef8de154fd4c6fbe0a7045e40db78e95684c9e761cdfad4900213261cf33453a",
+  "wall_seconds": 3043.478351831436,
+  "request_count": 211,
+  "attempt_count": 211,
+  "failed_model_attempts": 0,
+  "verified_request_artifacts": 633,
+  "request_counts_by_stage": {
+    "block_analysis": 140,
+    "block_analysis_dual_review": 70,
+    "text_analysis": 1
+  },
+  "usage_totals": {
+    "input_tokens": 4265500,
+    "output_tokens": 152323,
+    "cached_tokens": 1739392,
+    "cache_write_tokens": 0,
+    "reasoning_tokens": 40706,
+    "cost_usd": 0.0,
+    "duration_ms": 4724199
+  },
+  "actual_monetary_cost_usd": null,
+  "intermediate_text_analysis": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_inventory/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+    "sha256": "025043181a05d0ae687f83ad6f2148874b8810b0425cc5f00a49aded4e073ad5",
+    "text_candidates": 30,
+    "object_records": 25
+  },
+  "inventory_model_calls": 0,
+  "final_findings_present": false,
+  "model_calls_in_this_check": 0,
+  "production_acceptance": false,
+  "limits": [
+    "30 text candidates and 25 object records are intermediate outputs, not validated engineering findings.",
+    "Do not score absence of a final output as zero recall or correct rejection.",
+    "The failed run is excluded from completed quality comparisons but its resource cost remains counted.",
+    "Zero failed model attempts does not imply successful audit; failure occurred in local packet construction.",
+    "Subscription monetary cost is unknown; duration sum is not wall time."
+  ]
+}
