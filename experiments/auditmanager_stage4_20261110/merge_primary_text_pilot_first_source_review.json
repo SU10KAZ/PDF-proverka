@@ -1,0 +1,374 @@
+{
+  "status": "first_primary_source_reviews_partial_pilot_assessment",
+  "review_initial_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_review_initial.json",
+  "review_initial_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "source_md": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+  },
+  "reviewed": [
+    {
+      "kind": "output_finding",
+      "id": "F-001",
+      "original_model_finding": {
+        "id": "F-001",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кабельные линии",
+        "report_section": "technical_findings",
+        "sheet": "Лист 26",
+        "page": [
+          30,
+          63,
+          64
+        ],
+        "problem": "Для линии П4.1.3-9 указаны два разных сечения.",
+        "description": "В кабельном журнале, листы 5 и 6, одна линия от ШАУВ-2-К4ПЧ к электронагревателю длиной 15 м записана как ППГнг(А)-HF 4×2,5 и 4×4,0. Локальная ведомость основного комплекта, лист 26, содержит 15 м исполнения 4×4,0. Две записи не подтверждают наличие двух физических линий.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Определить расчетное исполнение по мощности, фазности и защите нагревателя; оставить единственную согласованную запись линии в журнале и ведомости.",
+        "risk": "Неоднозначный заказ кабеля и подключение нагревателя по несогласованному сечению.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_c5ecdd6fe0d145118c604b663f84bba8"
+        ],
+        "related_block_ids": [
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "blk_b2b11f12b2c24e10bebb7fb32c3680f5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+            "page": 63
+          },
+          {
+            "type": "text",
+            "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+            "page": 64
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+            "page": 30
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_textual_cross_section_conflict",
+      "reason": "КЖ 5 и 6 содержат одну марку П4.1.3-9, тот же шкаф, нагреватель и длину 15 м, но 4х2,5 и 4x4,0. В локальной ведомости листа26 есть 15 м 4x4,0. Это конфликт записей, не доказательство двух физических кабелей или правильности одного сечения.",
+      "evidence": [
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "md_span_sha256": "fa926184379362b8d7d66af6ef80e363227b786525e4c4e62e2af8efe7ac53cc",
+          "md_character_start": 359757,
+          "md_character_end": 362382,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 5 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| П4.1.3-9 | ШАУВ-2-К4ПЧ | Электронагреватель | ППГнг(А)-HF | 4х2,5 | 15 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 10/5 |  |"
+          ]
+        },
+        {
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "md_span_sha256": "899dc247db77b7021b33a7cc6d7175d2c322ba909f985462c8a43e4e4ac67a8c",
+          "md_character_start": 362382,
+          "md_character_end": 364959,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 6 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| П4.1.3-9 | ШАУВ-2-К4ПЧ | Электронагреватель системы П4.1.3 | ППГнг(А)-HF | 4x4,0 | 15 | лоток 100х100, труба гофр. | ППГнг(А)-HF 4x4,0 | 10/5 |  |"
+          ]
+        },
+        {
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "md_span_sha256": "c34742a55bd1489d791e14b7061b5f6e552b772bedc7ef9114bd502924783139",
+          "md_character_start": 164256,
+          "md_character_end": 165307,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 26 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-2-К4ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "|  | Кабель ППГнг(A)-HF 4x4,0мм² | 15 | м |"
+          ]
+        }
+      ],
+      "engineer_decision_for_this_pilot_wording": "not_obtained",
+      "remaining": "No independent electrical sizing performed; solution correctly requests selection."
+    },
+    {
+      "kind": "output_finding",
+      "id": "F-007",
+      "original_model_finding": {
+        "id": "F-007",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Количество приборов",
+        "report_section": "technical_findings",
+        "sheet": "Листы 14, 20",
+        "page": [
+          18,
+          24,
+          72,
+          73,
+          82,
+          83,
+          97,
+          100
+        ],
+        "problem": "Для двух обозначенных канальных датчиков в перечнях указана одна штука.",
+        "description": "На листах 14 и 20 строка ТЕ3, ТЕ4 содержит 1 датчик Pt1000 с зондом 260 мм. Спецификация ШАУВ-3-К5ПЧ и ШАУВ-2-К6ПЧ, позиции 8.6 и 14.6, предусматривает по 2 шт. Журнал содержит отдельные подключения ТЕ3 и ТЕ4 для каждого шкафа. Подтвержден конфликт количества в перечнях; нехватка закупаемых датчиков не установлена. Графические изображения двух приборов не просмотрены.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать перечни с двумя индивидуальными подключениями и спецификацией; исправить количество после проверки схем.",
+        "risk": "Неоднозначность комплектации и приемки приборов.",
+        "source_finding_ids": [
+          "T-007",
+          "G-023",
+          "G-047",
+          "G-049"
+        ],
+        "source_block_ids": [
+          "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "blk_5b5187b5afb740efb6423fa40c399349",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "blk_bdfeffa5dba44748bf80fcc48b97c618",
+          "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b"
+        ],
+        "related_block_ids": [
+          "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "blk_54608a880c2545aa926c442d213988c3",
+          "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "blk_917406a6b2804ee2abedff901eb85582"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+            "page": 18
+          },
+          {
+            "type": "text",
+            "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+            "page": 24
+          },
+          {
+            "type": "text",
+            "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+            "page": 97
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+            "page": 100
+          },
+          {
+            "type": "text",
+            "block_id": "blk_bdfeffa5dba44748bf80fcc48b97c618",
+            "page": 73
+          },
+          {
+            "type": "text",
+            "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+            "page": 83
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_textual_quantity_conflict",
+      "reason": "В перечнях листов14 и20 ТЕ3,ТЕ4 имеют количество1; позиции8.6 и14.6 спецификации дают2. КЖ отдельно адресует ТЕ3 иТЕ4. Корректно сохранено расхождение перечней и не утверждается недостаточная закупка.",
+      "evidence": [
+        {
+          "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "md_span_sha256": "d71823e7c1eb93a6e6c7621d67769b762f7bbb4af7e5736e6ad707cbe36a9e7c",
+          "md_character_start": 97032,
+          "md_character_end": 98632,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 14 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П5.1.1, П5.1.3 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1 |  |"
+          ]
+        },
+        {
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "md_span_sha256": "9bca0c4a8f7bc1302052554c4e2c66ab4fa16187d401ede300913c5b8e1ac844",
+          "md_character_start": 130512,
+          "md_character_end": 132110,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 20 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П6.1.1, П6.1.4 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1 |  |"
+          ]
+        },
+        {
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "md_span_sha256": "329c7db63dc9f545eb3700042e8d9a0331f6f15a399bd0e5fa50c7466d371690",
+          "md_character_start": 440474,
+          "md_character_end": 443075,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 4 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| 7 | Шкаф ШАУВ-2-К5ПЧ |  |  |  |  |  |  |  |",
+            "| 8 | Шкаф ШАУВ-3-К5ПЧ |  |  |  |  |  |  |  |",
+            "| 8.6 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |"
+          ]
+        },
+        {
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "md_span_sha256": "52b019673ec133c34788afa344835bcdc2cd45e0dee21d5379a7759ff39eda43",
+          "md_character_start": 447851,
+          "md_character_end": 450496,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 7 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| 13 | Шкаф ШАУВ-1-К6ПЧ |  |  |  |  |  |  |  |",
+            "| 14 | Шкаф ШАУВ-2-К6ПЧ |  |  |  |  |  |  |  |",
+            "| 14.6 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |",
+            "| 15 | Шкаф ШАУВ-3-К6ПЧ |  |  |  |  |  |  |  |"
+          ]
+        },
+        {
+          "block_id": "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "md_span_sha256": "1099e7f6aa7e5f15b5794021aafc5f88050e845bc7aff4e8e8efdadc0854ffa5",
+          "md_character_start": 381123,
+          "md_character_end": 383737,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 14 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| П5.1.1-3 | ШАУВ-3-К5ПЧ | ТЕ3 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 15 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 10/5 |  |"
+          ]
+        },
+        {
+          "block_id": "blk_bdfeffa5dba44748bf80fcc48b97c618",
+          "md_span_sha256": "c672fd865677c95192f1525112053022777758998667c7604b4b9cb48b5940e9",
+          "md_character_start": 383737,
+          "md_character_end": 386225,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 15 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| П5.1.3-1 | ШАУВ-З-К5ПЧ | ТЕ4 | КСПЭВПГнг(A)-HF | 1х2х0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(A)-HF 1х2х0,75 | 10/5 |  |",
+            "| Пн5.1.-3 | ШАУВ-4-К5ПЧ | ТЕ3 | КСПЭВПГнг(A)-HF | 1х2х0,75 | 35 | лоток 100х100, труба гофр. | КСПЭВПГнг(A)-HF 1х2х0,75 | 30/5 |  |"
+          ]
+        },
+        {
+          "block_id": "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "md_span_sha256": "ff350aaae8c47cfda58794d11ed5804a3c7feb9c5fdeb7671fb97e7923a10d4d",
+          "md_character_start": 405279,
+          "md_character_end": 407398,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 24 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| П6.1.1-3 | ШАУВ-2-К6ПЧ | ТЕ3 | КСПЭВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(A)-HF 1x2x0,75 | 10/5 |  |"
+          ]
+        },
+        {
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "md_span_sha256": "b4f34e5983b621d2bcff5cbd81930de663eb63591296520b3f61433b5ae81b96",
+          "md_character_start": 407398,
+          "md_character_end": 409924,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 25 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| Пб.1.4-1 | ШАУВ-2-К6ПЧ | ТЕ4 | КСПЭВПГнг(A)-HF | 1x2x0,75 | 15 | лоток 100х100, труба гофр. | КСПЭВПГнг(A)-HF 1x2x0,75 | 10/5 |  |"
+          ]
+        }
+      ],
+      "engineer_decision_for_this_pilot_wording": "not_obtained",
+      "remaining": "This confirms the text claim only; linked graphic signal-column claims remain unverified."
+    },
+    {
+      "kind": "candidate_decision",
+      "id": "G-088",
+      "original_candidate": {
+        "id": "G-088",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "На схеме внешних подключений ШАУВ-2-К6ПЧ, лист 38, показаны два реле температуры: TS1 системы П6.1.1 и TS2 системы П6.1.4. В спецификации оборудования, лист 7, позиция 14.8, для этого шкафа предусмотрено только одно реле температуры.\n\nРекомендация: Согласовать количество реле температуры в спецификации с двумя устройствами, показанными на схеме подключений.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_40bad73db9d44699955a7a4682f309a8",
+        "value_found": "TS1; TS2; «Реле температуры (капиллярный термостат)» — 1 шт.",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-088",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/33/findings/1",
+        "candidate_id": "G-088",
+        "decision": "refuted",
+        "reason": "Вывод о необходимости второго отдельного капиллярного реле в позиции 14.8 не учитывает первичную границу поставки: ТС1 указан как капиллярное реле, а ТС2 прямо обозначен комплектным с электронагревателем. Поэтому два разных прибора нельзя сравнивать с одной строкой отдельной поставки как недостачу. Незаполненное количество ТС2 сохранено в адресном вопросе.",
+        "source_refs": [
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_5b5187b5afb740efb6423fa40c399349"
+        ]
+      },
+      "assessment": "refutation_supported_for_extra_separate_capillary_relay_claim",
+      "reason": "Перечень разделяет ТС1: отдельное капиллярное реле1шт., и ТС2: комплектно с электронагревателем. В позиции14.8 отдельной поставки1шт. Сравнивать оба разных прибора со строкой14.8 и требовать второе отдельное капиллярное реле необоснованно. Пустое количествоТС2 остаётся вопросом; фактическая комплектная поставка не доказана.",
+      "evidence": [
+        {
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "md_span_sha256": "9bca0c4a8f7bc1302052554c4e2c66ab4fa16187d401ede300913c5b8e1ac844",
+          "md_character_start": 130512,
+          "md_character_end": 132110,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 20 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П6.1.1, П6.1.4 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |",
+            "| ТС2 | Термостат |  | (комплектно с электронагревателем) |"
+          ]
+        },
+        {
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "md_span_sha256": "52b019673ec133c34788afa344835bcdc2cd45e0dee21d5379a7759ff39eda43",
+          "md_character_start": 447851,
+          "md_character_end": 450496,
+          "inspected_lines": [
+            "> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 7 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+            "| 13 | Шкаф ШАУВ-1-К6ПЧ |  |  |  |  |  |  |  |",
+            "| 14 | Шкаф ШАУВ-2-К6ПЧ |  |  |  |  |  |  |  |",
+            "| 14.8 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |",
+            "| 15 | Шкаф ШАУВ-3-К6ПЧ |  |  |  |  |  |  |  |"
+          ]
+        }
+      ],
+      "engineer_decision_for_this_pilot_wording": "not_obtained",
+      "remaining": "No graphic topology or physical installation conclusion; do not treat all temperature-device discrepancies as refuted."
+    }
+  ],
+  "control_pair": {
+    "false_inference_to_remove": "G-088: two differently supplied thermostat types imply a second separately purchased capillary relay",
+    "useful_finding_to_keep": "F-007: same named sensor set conflicts between element list and specification",
+    "rule_boundary": "Compare object identity, type and supply boundary before treating counts as shortages; retain independently supported documentation conflicts.",
+    "pair_scope": "Primary-source pilot pair; engineer-labelled historical pair still requires explicit mapping."
+  },
+  "reviewed_output_findings": 2,
+  "remaining_output_findings": 34,
+  "production_acceptance": false
+}
