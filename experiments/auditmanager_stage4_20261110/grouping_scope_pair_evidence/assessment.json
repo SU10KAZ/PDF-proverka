@@ -1,0 +1,114 @@
+{
+  "status": "scope_pair_inconclusive_do_not_enable_automatic_grouping",
+  "reviews": {
+    "AK_00": {
+      "action": "group",
+      "reason": "На всех пяти изображениях прослеживается один конкретный предмет замечания: повторяющиеся номера у отдельных шкафных подключений без различающих обозначений клеммников возле соответствующих групп. Общий заголовок сохраняет уровень локальной неоднозначности, а действие предусматривает отдельное сопоставление каждого шкафа с документацией изготовителя. Группирование не подтверждает физическое объединение цепей, ошибку монтажа или каждое утверждение участников.",
+      "checks": {
+        "shared_issue": "pass",
+        "corrective_action": "pass",
+        "individual_scopes": "pass",
+        "uncertainty_and_quantities": "pass",
+        "source_scope_and_identity": "pass"
+      },
+      "inherited_member_issues": [
+        {
+          "member_ids": [
+            "C-003"
+          ],
+          "issue": "В C-003 используется обозначение «ШАУВ-3-К5ПЧ», тогда как переданные метаданные штампа содержат «ШАУВ-З-К5ПЧ». Тождество этих точных написаний не подтверждается решением о группировании; метаданные не исправляются по изображению.",
+          "evidence": [
+            {
+              "type": "metadata",
+              "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+              "quote": "Шкаф автоматики и управления ШАУВ-З-К5ПЧ. Схема внешних подключений"
+            },
+            {
+              "type": "image",
+              "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+              "image_sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2",
+              "bbox_norm_xyxy": [
+                0.008,
+                0.775,
+                0.049,
+                0.815
+              ],
+              "observation": "В левом верхнем углу нижнего шкафного контура читается обозначение «ШАУВ-3-К5ПЧ». Это наблюдение не устанавливает эквивалентность написанию с буквой «З» в метаданных штампа."
+            }
+          ]
+        }
+      ],
+      "input_tokens": 25306,
+      "output_tokens": 2788,
+      "duration_ms": 62197
+    },
+    "EOM_01": {
+      "action": "group",
+      "reason": "Объединение допустимо как представление одного локального вопроса учёта FRHF 5×35 в конкретном подразделе листа 5. Заголовок ограничен сопоставлением с представленным подразделом, а действие требует отдельной привязки каждой цепи и проверки других документов. Они не устанавливают принадлежность спорного листа к ЭОМ 2-1, общий дефицит или дефект поставки. Одобрение группировки не подтверждает все утверждения участников.",
+      "checks": {
+        "shared_issue": "pass",
+        "corrective_action": "pass",
+        "individual_scopes": "pass",
+        "uncertainty_and_quantities": "pass",
+        "source_scope_and_identity": "pass"
+      },
+      "inherited_member_issues": [
+        {
+          "member_ids": [
+            "F-050"
+          ],
+          "issue": "Принадлежность приложенной схемы к ЭОМ 2-1 остаётся неподтверждённой: предоставленный штамп содержит «ПД-00580716-ЗОМ 2-1». Совпадение названия ВРУ-2 и номера листа с ведомостью не устанавливает тождество обозначений. Группировка не удостоверяет применимость спецификации ЭОМ 2-1.СО к этой цепи.",
+          "evidence": [
+            {
+              "type": "metadata",
+              "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+              "quote": "Code: ПД-00580716-ЗОМ 2-1 | Stage: Р | Sheet: 2.2"
+            },
+            {
+              "type": "text",
+              "block_id": "blk_84e0cee1c8a145c482898b1c10b3a24b",
+              "quote": "| 2 | *Схема однолинейная принципиальная ВРУ-2* | на 2-х листах |"
+            }
+          ]
+        }
+      ],
+      "input_tokens": 27391,
+      "output_tokens": 3051,
+      "duration_ms": 68532
+    }
+  },
+  "AK_runtime": "AK_automatic_group_phase_replay.json: five original member objects and visible descriptions retained in one Excel row; exact recorded requests replayed without inference.",
+  "EOM_disagreement": "Prior two source reviews held the unqualified heading because applicability to one member was uncertain; revised rule admitted it as a local comparison preserving inherited uncertainty. This is unresolved semantic interpretation, not proof of improvement.",
+  "decision": "Keep grouping_invoke unset in paired candidate. Use existing classical grouping and preserve separate findings; do not claim the extra grouping method passed its negative control.",
+  "configuration_enabled": false,
+  "positive_control_bounded_passed": true,
+  "confirmed_negative_control_passed": false,
+  "guardrail": "Never tune toward a desired group count by repeatedly querying until agreement. This pair is archived as inconclusive; no additional adjudication call is scheduled without new evidence or a clearer output contract.",
+  "next_engineer_question": "Does the common EOM heading imply applicability of one specification to both circuits, or is it a properly bounded local comparison? If grouping is acceptable, must the applicability uncertainty be visible beside the heading?",
+  "model_calls": 2,
+  "known_development_control": true,
+  "full_stage4_acceptance": false,
+  "production_changed": false,
+  "files": {
+    "AK_00/attempt.json": "e7a0ff4d4119c0ed40f237131cffe3e15365a29192791e4efc99112bc71c7a1e",
+    "AK_00/decision.json": "4efefd5aff241ce0fcd93075ac042ec73dc32c3c0e3e983fca7278aeb8ded67a",
+    "AK_00/output_preview.json": "717521a7bee17ad615abefae43c0ff8173adebbbb6213ba90d6cbe3fbc212685",
+    "AK_00/preparation.json": "8b0092ebeab6fc358b7905961709f3368d376e79e2e3f89797c97e825384c34e",
+    "AK_00/receipt.json": "728ce34f5dd4d418776e9758284ccfdeafae1a90fd9272156bcc8313473bc6d4",
+    "AK_00/request.json": "356120b287a21bd8a99e4452332f5465294d3ce5c207fcebe90f7b536efb8a1d",
+    "AK_00/result.json": "9a234352b8c55dada24f4b9a558c4002f334efcf21d2243ba23096ade8815b6e",
+    "AK_00/result_binding.json": "56216e88983758f7bc3177bb83bfae1a3886b28ab69bcd50b90c12a04e81ca19",
+    "EOM_00/preparation.json": "a5d1020650899e4b1190e52a260477bfda872a9088218137cf16bd267b32ba0d",
+    "EOM_01/attempt.json": "0d2d3d72fb7aa5fefa2c1060a326c88870a49212cbbc980f8e6edc04e97318dd",
+    "EOM_01/decision.json": "02a592431ceef90747a9bb8f3e3e7a069dad8c710c6171434782b7a602897204",
+    "EOM_01/output_preview.json": "577a7d1a88def9fea1e6764d64c75ccf0b7bd6783d71abc2410c5dea3abb0802",
+    "EOM_01/preparation.json": "fc00193709b541c6e08ef79c69551f63d7ffd1114c28671d1d0b4db4c37377c1",
+    "EOM_01/receipt.json": "86dc6bdadeaed5af0ad11e3d1d74f4cf1e5c61d88d287c5f1a270d2dced1bac6",
+    "EOM_01/request.json": "ebe1f8a2476226ab17f97405efde7e4e30ca3291eb88e0159cfe8cf5912a1082",
+    "EOM_01/result.json": "b4255c09f1551f453b33403128ce1d1019de30e4cae6e103c4729aa54df11a80",
+    "EOM_01/result_binding.json": "8f9f5d410c59a1cf99ed85b5792a2c55e8332cf835f629b9e4a527d62cdb4b4b",
+    "AK_runtime/report.xlsx": "7f1b72df0b8c8911ce0a4822bedfe79cd7f0826bc30069f05ae8139f05de7376",
+    "AK_runtime/03_findings.json": "7b7dd297d69aa6ae957845074ace33c6a4954ce5f0b2040746e69cb4c5ff9bff",
+    "AK_runtime/03_grouping_workflow_results.json": "739789b905876f69e9ee79d66f070b2224fe25c5e3401aad5de0f1792dc81a5a"
+  }
+}

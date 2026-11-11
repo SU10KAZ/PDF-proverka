@@ -1,0 +1,55 @@
+{
+  "status": "general_grouping_phase_and_excel_passed",
+  "input_candidates": 5,
+  "output_rows": 1,
+  "all_five_original_members_exactly_preserved": true,
+  "member_claims_actions_risks_norms_visible": true,
+  "new_model_calls": 0,
+  "exact_recorded_requests": [
+    "0ad483bd98ec33ee9f46c9a5cf036cf1210345b3b462a7464912287c4fb5c9b1",
+    "6da2f58ba3bcd5c4e191453ea9797c332b8831cf280bfbbbbd61d8b72a429ae3"
+  ],
+  "calls_this_replay": [
+    {
+      "phase": "group_proposal",
+      "request_sha256": "0ad483bd98ec33ee9f46c9a5cf036cf1210345b3b462a7464912287c4fb5c9b1"
+    },
+    {
+      "phase": "group_review_000",
+      "request_sha256": "6da2f58ba3bcd5c4e191453ea9797c332b8831cf280bfbbbbd61d8b72a429ae3"
+    }
+  ],
+  "rerun_idempotent": true,
+  "inherited_member_issues_preserved_in_review": [
+    {
+      "member_ids": [
+        "C-003"
+      ],
+      "issue": "В C-003 используется обозначение «ШАУВ-3-К5ПЧ», тогда как переданные метаданные штампа содержат «ШАУВ-З-К5ПЧ». Тождество этих точных написаний не подтверждается решением о группировании; метаданные не исправляются по изображению.",
+      "evidence": [
+        {
+          "type": "metadata",
+          "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+          "quote": "Шкаф автоматики и управления ШАУВ-З-К5ПЧ. Схема внешних подключений"
+        },
+        {
+          "type": "image",
+          "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+          "image_sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2",
+          "bbox_norm_xyxy": [
+            0.008,
+            0.775,
+            0.049,
+            0.815
+          ],
+          "observation": "В левом верхнем углу нижнего шкафного контура читается обозначение «ШАУВ-3-К5ПЧ». Это наблюдение не устанавливает эквивалентность написанию с буквой «З» в метаданных штампа."
+        }
+      ]
+    }
+  ],
+  "whole_project_discovery": false,
+  "full_stage4_acceptance": false,
+  "boundary": "Five selected real model candidates, without normalized shared titles; no assertion that all member engineering facts or routing are independently certified.",
+  "output_sha256": "7b7dd297d69aa6ae957845074ace33c6a4954ce5f0b2040746e69cb4c5ff9bff",
+  "xlsx_sha256": "7f1b72df0b8c8911ce0a4822bedfe79cd7f0826bc30069f05ae8139f05de7376"
+}

@@ -1,0 +1,12 @@
+{
+  "status": "applied",
+  "member_ids": [
+    "C-001",
+    "C-002",
+    "C-003",
+    "C-004",
+    "C-005"
+  ],
+  "surviving_id": "C-001",
+  "semantic_certified": false
+}

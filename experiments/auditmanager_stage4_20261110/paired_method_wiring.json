@@ -36,5 +36,10 @@
   ],
   "new_model_calls": 0,
   "full_six_comparison_started": false,
-  "final_check_control": "KM_automatic_citation_release_replay.json"
+  "final_check_control": "KM_automatic_citation_release_replay.json",
+  "automatic_grouping": {
+    "enabled": false,
+    "reason": "AK bounded positive control passed; EOM negative control remains semantically disputed. No model grouping hook in shared candidate.",
+    "evidence": "grouping_scope_pair_evidence/assessment.json"
+  }
 }

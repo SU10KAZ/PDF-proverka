@@ -51,12 +51,12 @@
       "entry": "backend/app/pipeline/stages/findings_merge/group_workflow_phase.py:run_grouping_phase",
       "activation": "PipelineStageContext.grouping_invoke with explicit budgets; default off and not yet enabled in paired candidate.",
       "verified": "tests/test_group_workflow_phase.py: real verifier hook, preservation on hold, atomic commit recovery, source-change rejection.",
-      "boundary": "AK/EOM real scope pair pending. No whole-project grouping or workload improvement established."
+      "boundary": "Real AK control preserves five members; EOM scope pair is semantically inconclusive. Keep automatic grouping disabled in paired candidate."
     }
   ],
   "remaining_integration": [
     "Freeze individual method variants and budgets before contribution comparisons; combined candidate alone does not isolate seven hypotheses.",
-    "Grouping proposal/review and atomic runtime hook implemented; validate AK/EOM pair before enabling it in the shared candidate.",
+    "Automatic grouping deliberately remains disabled: grouping_scope_pair_evidence/assessment.json records an inconclusive negative control. Revisit only with clarified output contract or independent engineering decision.",
     "Resolve remaining original control cases and profile disagreements without suppressing useful cores.",
     "Freeze evaluator and actual execution plan; run matched comparisons and preserve full source/usage provenance."
   ],
