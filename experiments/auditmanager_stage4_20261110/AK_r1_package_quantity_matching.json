@@ -1,0 +1,450 @@
+{
+  "status": "coordinator_coverage_matching_with_separate_output_limits",
+  "discipline": "AK",
+  "repeat": 1,
+  "mapped_atoms": [
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-006",
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+          "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Числа61/43 и группа5 сохранены, допускается учёт в другом документе, но явная ссылка схемы на АК1-ПА не указана. Исходный узкий вопрос границ комплектов превращён в заголовок о18 недостающих комплектах; полное соответствие эталонной оговорке не засчитывается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:f0a1212b87b41e035c75",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+          "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Нет буквального или смыслового утверждения об отсутствии подключения группы5 вообще: F-007 ограничивает отсутствие строкамиКЖ. Это не оправдывает требование добавить кабель без проверки АК1-ПА; оно вынесено отдельной оговоркой.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Общее описание без внешнего питания названо; схемаБУРР-1М с220В/QF1 явно не раскрыта. Автомат в перечне не заменяет изложение конкретного противоречия питания.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Сопоставлены БУРР-1М/дваБИС-1М локального перечня и3HaierTD0027170RU/6адаптеровСО. Документальный конфликт исполнений сохранён. Техническая несовместимость из заголовка отдельно не подтверждена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Явно сопоставлено примечание для1сплит-системы с управлением двумя кондиционерами. Сохранён вопрос единицы комплекта; оценка правильности раздела выдачи пока не выполнена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-013"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F005_surface_sensor_quantity.json",
+          "sha256": "48b97c42cfa0b0277fb9cf701da41869de070db06fd4ec75fb99b0a388d1e722"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Для того же ШАУВ-4-К4ПЧ сопоставлены2накладных датчикаСО с1TE2 перечня. Условие уточнения назначения дополнительного датчика оставлено; безусловная избыточная поставка не зачтена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-013"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json",
+          "sha256": "7dfe111f83f7d778b22f32158e23e25225b08f4f4ec3226926ddce63dfb1ef6a"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Для ШАУВ-2-К4ПЧ названы позиции2.5/2.7 против одногоTE1 перечня. Связь с одним датчиком на схеме и единственной линиейКЖП4.1.3-1 в итоговой формулировке отсутствует; полный заданный контекст не засчитывается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Лист14: названы два отдельныхTE3/TE4, количество1 перечня и2вСО8.6. Это документальный конфликт, не доказанная недопоставка.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Лист20: названы два отдельныхTE3/TE4, количество1 перечня и2вСО14.6. Это документальный конфликт, не доказанная недопоставка.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Пустое количествоТС2 листа20 прямо названо; предложено заполнить количество и комплектность, отсутствие защиты не объявлено. Раздел выдачи отдельно не оценён.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-013"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json",
+          "sha256": "c9bf31b3153a37963b0821177ba1398e145ddd70d03bda5a6432545628397940"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Для ШАУВ-3-К6ПЧ прямо сопоставлены2канальных датчикаСО с1TE3. Смысл количества одного шкафа сохранён; назначение второго прибора и фактический заказ не установлены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-009"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+          "sha256": "e529470f6f3da971b8308855d675cc4bf91e1a69e5f30a031c95a68db74da154"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Лист23/У4.3–У4.6: переченьM3–M6=2 против четырёх отдельных двигателей схемы. Расхождение сохранено; безусловное исправление на4 требует согласованияОВ и комплектации.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-010"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+          "sha256": "e529470f6f3da971b8308855d675cc4bf91e1a69e5f30a031c95a68db74da154"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Лист23: переченьY1/Y2=4 против двух клапанов двух смесительных узлов. Расхождение сохранено; безусловный выбор схемы как правильного документа не подтверждён.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/AK_review.json",
+  "review_ledger_sha256": "092e4ccb1d070b38056194ca5372a9b18c935422a86456321ac45ebbb55a2987",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "AK",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 55,
+          "availability_available": 19,
+          "partial": 6,
+          "absent": 1,
+          "full": 12,
+          "availability_unchecked": 36,
+          "unchecked": 36
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 23,
+          "availability_available": 3,
+          "partial": 1,
+          "full": 2,
+          "availability_unchecked": 20,
+          "unchecked": 20
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 22,
+          "availability_available": 5,
+          "absent": 5,
+          "availability_unchecked": 17,
+          "unchecked": 17
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 14
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "historical_engineer_confirmation": "Not established for these blind candidates; use frozen source-reviewed truth, do not relabel as engineer accepted.",
+  "output_issues": [
+    {
+      "finding_ids": [
+        "F-006",
+        "F-007"
+      ],
+      "issue": "Already-present cross-package reference AK1-ПА omitted; addition to AK2-ПА not established without checking adjacent scope."
+    },
+    {
+      "finding_ids": [
+        "F-014"
+      ],
+      "issue": "Heading asserts incompatible equipment; source review establishes designation conflict only, manufacturer compatibility unverified."
+    },
+    {
+      "finding_ids": [
+        "F-009",
+        "F-010"
+      ],
+      "issue": "Definitive replacement counts lack conditional agreement with OV/manufacturer; coverage credit is limited to document discrepancy."
+    }
+  ],
+  "limits": [
+    "Novel assertions and actual report-section routing remain separately unevaluated.",
+    "Absence of a false claim earns no filter credit.",
+    "Source evidence was reused after hash checks; no new engineer review performed."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
