@@ -1,0 +1,297 @@
+{
+  "status": "last_two_ITP_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "0fe52ff06cae5bb1e846d4753582a98c08f34e010dc98e5425c036287b0f7fae",
+  "queue_after_sha256": "ee89d3e534d477ddd00c192d83fb8a7e97a0ca3894ee37a61419c065b46f74a2",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-022",
+      "finding": {
+        "id": "F-022",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Трубопроводы",
+        "sheet": "Листы 6., 7, 8, 9",
+        "page": [
+          29,
+          45,
+          46,
+          47
+        ],
+        "problem": "Расчётные размеры оцинкованных труб не согласованы с заказываемым сортаментом.",
+        "description": "Спецификация использует обозначения «Д=15×2,8» и «Д=50×3,5» по ГОСТ 3262-75 фактически через условный проход. В расчётах приняты наружные размеры 57×3,0, 76×3,0, 89×3,0 и 32×2,5 мм. Для водогазопроводных труб DN50 соответствует наружному диаметру 60 мм, DN32 — 42,3 мм. Расчётные сечения и реальные изделия не идентифицированы однозначно.",
+        "norm": "ГОСТ 3262-75 (норматив-кандидат), пункт не подтверждён; ГОСТ 10704-91 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 3262-75",
+            "cited_designation": "ГОСТ 3262-75",
+            "candidate_relevance": 0.98,
+            "reason": "Соотношение условного прохода, наружного диаметра и толщины стенки водогазопроводных труб.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-022"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 10704-91",
+            "cited_designation": "ГОСТ 10704-91",
+            "candidate_relevance": 0.9,
+            "reason": "Сортамент электросварных труб при сопоставлении с расчётными наружными диаметрами.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-022"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Разделить обозначения DN и наружного диаметра, согласовать сортамент и пересчитать гидравлику по внутренним сечениям заказываемых труб.",
+        "risk": "Несовместимость труб и соединений, ошибки расчётных сопротивлений.",
+        "source_finding_ids": [
+          "T-022"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 77,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "СОзадаётД=15×2,8иД=50×3,5по3262-75;расчёты содержатØ57×3,0,Ø76×3,0,Ø89×3,0иØ32×2,5.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Размеры присутствуют, но совпадение назначения конкретных участков с каждой строкой заказа не установлено."
+        },
+        {
+          "claim": "DN50соответствуетнаружному60мм,DN32—42,3мм.",
+          "verdict": "confirmed_standard_table1_scope",
+          "limits": "Таблица1ГОСТ3262-75подтверждена в публикации стандарта на сайтеНТПЗ. Таблица2для лёгкой серии под накатку резьбы имеет другие размеры; не превращать правило таблицы1в универсальное для всех исполнений."
+        },
+        {
+          "claim": "Обозначение15×2,8само по себе ошибочно,поскольку15не наружный диаметр.",
+          "verdict": "not_supported_designation_semantics",
+          "limits": "Примеры стандарта используют условный проход×стенку. БукваДвСОнеоднозначна, но запись по3262не доказывает заказ физически невозможной трубы."
+        },
+        {
+          "claim": "Конкретные расчётные сечения не соответствуют конкретным заказываемым трубам.",
+          "verdict": "not_established_object_binding",
+          "limits": "ВСОесть также электросварные трубы, в том числе57×3,5и76×3,5. Сначала построить связь участка,марки,материала,сортамента и толщины. Не менятьВГПна электросварные и не пересчитывать весь проект по одной догадке."
+        },
+        {
+          "claim": "Нужно уточнитьDN,наружныйдиаметр и связь расчёта с заказом.",
+          "verdict": "supported_scoped_question",
+          "limits": "Невозможность сборки и ошибка сопротивлений конкретного участка не доказаны."
+        }
+      ],
+      "unsupported_additions": "Не превращать разные обозначения иPNв доказанную несовместимость без геометрии иусловий;количество изделий не число дефектов.",
+      "novel_useful_content": "Новый вопрос к идентификации сортамента;табличные числа подтверждены,конкретное ошибочное сопряжение не установлено.",
+      "duplicate_burden": "distinct_pipe_identity_and_NN14_flange_selection_atoms",
+      "profile_and_section": "scoped_document_coordination",
+      "engineer_reuse": "no_new_same_claim_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fa4cca816905454ab134c787b1d1862a",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_155f820c42d94fe282878a3bd85a0ffe",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "url": "https://ntpz.ru/gosty/upload/ГОСТ%203262-75.%20Трубы%20стальные%20водогазопроводные.%20Технические%20условия.pdf",
+          "route": "web_open_standard_reproduction_on_manufacturer_site",
+          "title": "ГОСТ3262-75,таблицы1/2и примеры обозначений",
+          "checked_facts": {
+            "table1": {
+              "DN32_OD_mm": 42.3,
+              "DN50_OD_mm": 60
+            },
+            "table2_roll_thread_light_series": {
+              "DN32_OD_mm": 41,
+              "DN50_OD_mm": 59
+            }
+          },
+          "limits": "Проверены размеры и смысл обозначения, не современная юридическая применимость и не фактическая поставка."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-022_connection_selection_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-027",
+      "finding": {
+        "id": "F-027",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Фланцевые соединения",
+        "sheet": "Лист 11.",
+        "page": [
+          34,
+          61,
+          62
+        ],
+        "problem": "Ответные фланцы теплообменников НН14 не согласованы с присоединениями аппаратов.",
+        "description": "Заказаны 16 фланцев DN50 PN16 по ГОСТ 33259-2015. Расчётные листы НН14 предусматривают соединения DN50 PN25 по РДАМ.711142.029 и ответные фланцы по РДАМ.711142.029-08. Требуется сопоставить давление, размеры, уплотнительные поверхности и комплект поставки. Наличие фланца PN25 не повышает допустимое давление корпуса аппарата.",
+        "norm": "ГОСТ 33259-2015 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 33259-2015",
+            "cited_designation": "ГОСТ 33259-2015",
+            "candidate_relevance": 0.98,
+            "reason": "Исполнения, присоединительные размеры и номинальные давления фланцев.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-027"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-027"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать ответные фланцы с изготовителем теплообменников и исправить спецификацию с учётом фактического комплекта поставки.",
+        "risk": "Несовместимость присоединений или недостаточная допустимая нагрузка фланцевого соединения.",
+        "source_finding_ids": [
+          "T-027"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 79,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "СОзадаёт16приварныхфланцевDN50Ру16по33259-2015дляНН14.",
+          "verdict": "confirmed_authoritative_TEXT_explicit_equipment_association",
+          "limits": "ПринадлежностьНН14 указана прямо в примечании строки, а не выведена из одинаковогоDN."
+        },
+        {
+          "claim": "ЛистыНН14задают соединенияДу50Ру25иответные50-25-01-1-B-Ст.20-IV-dв59поРДАМ.711142.029-08.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Проверены блоки99/100:теплообменникиотопления3зоныиДОО. ВпортахF1–F4 одинаковое исполнение ответных фланцев."
+        },
+        {
+          "claim": "16фланцев означают16несовместимых или опасных соединений.",
+          "verdict": "not_established_count_not_defect_count",
+          "limits": "Полная поставка,комплектные фланцы,размеры сверловки,уплотнения и допустимые давления при температуре не проверены. РазныеPNсами не доказывают геометрическую несовместимость."
+        },
+        {
+          "claim": "Нужно согласовать исполнение фланцевНН14междуСОирасчётными листами.",
+          "verdict": "supported_documented_equipment_selection_conflict",
+          "limits": "Сохранить конкретный конфликтPNиобозначений;не выбирать автоматическую замену без подтверждения изготовителя и состава поставки."
+        },
+        {
+          "claim": "ФланецPN25повышает допустимое давление корпуса.",
+          "verdict": "not_supported_separate_parameters",
+          "limits": "Расчётное16кгс/см²и пробное22влистах названы отдельно от присоединенийРу25. Не заменять предел аппарата маркировкой фланца."
+        }
+      ],
+      "unsupported_additions": "Не превращать разные обозначения иPNв доказанную несовместимость без геометрии иусловий;количество изделий не число дефектов.",
+      "novel_useful_content": "Новое подтверждённое документальное расхождение исполнения фланцев с явной привязкойНН14;не доказанный монтажный отказ.",
+      "duplicate_burden": "distinct_pipe_identity_and_NN14_flange_selection_atoms",
+      "profile_and_section": "scoped_document_coordination",
+      "engineer_reuse": "no_new_same_claim_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fd984f8c5d03427497ffd926feaf8ed5",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e1be6cad926466483206d5c758dd238",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-027_connection_selection_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
