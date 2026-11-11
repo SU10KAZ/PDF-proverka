@@ -1,0 +1,226 @@
+{
+  "status": "detector_level_omission_confirmed_for_repeat3_scope",
+  "target_id": "EOM11:7985c84eea058c206240",
+  "repeat": 3,
+  "requests": [
+    {
+      "request_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794415630020140127/request.json",
+      "request_sha256": "3c4c7c47cd6e8a5e6cf416ce85d3c6720a22291ed62a03fb10d2a9c7d53da351",
+      "response_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794415630020140127/response_1.json",
+      "response_sha256": "8bbded73bc041cb5d00c02022c63b1dd605e7b0b0679a5f32928f1d29c9bdf24",
+      "model": "codex/gpt-6-astra",
+      "stage": "block_analysis",
+      "image_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8fac348a820c41aeb2d941339987da14.png": "0eb4286aeca07a3e7755216036b8253b936d2fc12034dddca7f78fb0bd6879c7"
+      },
+      "finding_count": 0,
+      "raw_findings": [],
+      "required_context": [],
+      "context_inventory": {
+        "block_id_markers": [
+          "blk_8fac348a820c41aeb2d941339987da14"
+        ],
+        "specification_block_marker_present": false,
+        "exact_HF_subsection_present": false,
+        "exact_FRHF_subsection_present": false
+      },
+      "semantic_assessment": "No candidate about FRHF5x35 or its specification reconciliation; responses inspected in full. Other findings concern CT/load calculations and VRU label."
+    },
+    {
+      "request_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794415630022050767/request.json",
+      "request_sha256": "3c4c7c47cd6e8a5e6cf416ce85d3c6720a22291ed62a03fb10d2a9c7d53da351",
+      "response_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794415630022050767/response_1.json",
+      "response_sha256": "8bbded73bc041cb5d00c02022c63b1dd605e7b0b0679a5f32928f1d29c9bdf24",
+      "model": "codex/gpt-6-astra",
+      "stage": "block_analysis",
+      "image_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8fac348a820c41aeb2d941339987da14.png": "0eb4286aeca07a3e7755216036b8253b936d2fc12034dddca7f78fb0bd6879c7"
+      },
+      "finding_count": 0,
+      "raw_findings": [],
+      "required_context": [],
+      "context_inventory": {
+        "block_id_markers": [
+          "blk_8fac348a820c41aeb2d941339987da14"
+        ],
+        "specification_block_marker_present": false,
+        "exact_HF_subsection_present": false,
+        "exact_FRHF_subsection_present": false
+      },
+      "semantic_assessment": "No candidate about FRHF5x35 or its specification reconciliation; responses inspected in full. Other findings concern CT/load calculations and VRU label."
+    },
+    {
+      "request_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794415698337781207/request.json",
+      "request_sha256": "5c2f6e362f2fff3e7cd5602e95aea46766da43ac9afd2ab5338d99ffe753cecc",
+      "response_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794415698337781207/response_1.json",
+      "response_sha256": "98ae663f11798b5b6d9a8b82d9eae08aeb515060793399938291e35cc79cdfa2",
+      "model": "codex/gpt-6-astra",
+      "stage": "block_analysis",
+      "image_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_513e35c4f8a7432986e9a498d4573996.png": "a01102c8349160a0b2f4a2f050c1821c1a185575010318cdbc589a1a80b09798"
+      },
+      "finding_count": 3,
+      "raw_findings": [
+        {
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "current_transformer",
+          "finding": "В проверке трансформаторов тока Wh1 и Wh2 строка 4 противоречит строке 2: вместо минимальных первичных токов 39,4 и 28,6 А использованы 77 и 74 А. Вторичные токи составляют около 0,39 и 0,36 А, а не 0,8 и 0,9 А; указанный порог 0,1 А при этом соблюдается.",
+          "norm_quote": null,
+          "value_found": "262.4 × 0,15= 39.4А; 190.5 × 0,15= 28.6А; 77/100 = 0.8А > 0,1А; 74/80 = 0.9А > 0,1А",
+          "recommendation": "Исправить подстановки и результаты строки 4 по минимальным токам из строки 2.",
+          "claim_type": "contradiction",
+          "problem_class": "inconsistent_minimum_metering_current",
+          "affected_entity": "ВРУ-3, таблица проверки трансформаторов тока Wh1 и Wh2, строки 2 и 4, лист 3",
+          "evidence_quote": "Строка 2: «262.4 × 0,15= 39.4А», «190.5 × 0,15= 28.6А»; строка 4: «77/100 = 0.8А > 0,1А», «74/80 = 0.9А > 0,1А».",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.99,
+          "counterevidence_checked": true,
+          "required_context": []
+        },
+        {
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "current_transformer",
+          "finding": "При выборе трансформаторов тока Wh1 и Wh2 принят аварийный ток 465,1 А, тогда как таблица нагрузок с компенсацией указывает 471,4 А для режима «Авар. Пожар». Проверка перегрузки выполнена с меньшим током, чем максимальный ток на этом же листе.",
+          "norm_quote": null,
+          "value_found": "Iаб=465,1; 465.1/1,2=387.6; Авар. Пожар — Ip 471,4",
+          "recommendation": "Согласовать максимальный расчётный ток в таблицах нагрузок и выбора трансформаторов тока и пересчитать проверку перегрузки.",
+          "claim_type": "contradiction",
+          "problem_class": "inconsistent_emergency_design_current",
+          "affected_entity": "ВРУ-3, расчёт выбора трансформаторов тока Wh1 и Wh2, лист 3",
+          "evidence_quote": "Для обеих секций в проверке трансформаторов тока указано «Iаб=465,1» и «465.1/1,2=387.6»; в таблице нагрузок с компенсацией для режима «Авар. Пожар» указан ток «471,4». Примечание определяет Ip.аб как аварийный или наибольший ток на вводе.",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.98,
+          "counterevidence_checked": true,
+          "required_context": []
+        },
+        {
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "documentation",
+          "finding": "В примечании 10 к схеме ВРУ-3 указание о выводе распределительных линий сверху отнесено к ВРУ-1. Марка оборудования в монтажном указании противоречит обозначению изображённого ВРУ.",
+          "norm_quote": null,
+          "value_found": "Вывод распределительных линий от панелей ВРУ-1 осуществить сверху",
+          "recommendation": "Исправить марку оборудования в примечании 10 на ВРУ-3.",
+          "claim_type": "contradiction",
+          "problem_class": "incorrect_equipment_reference",
+          "affected_entity": "ВРУ-3, примечание 10, лист 3",
+          "evidence_quote": "Название листа: «Схема однолинейная принципиальная ВРУ-3»; обозначение сборки: «ВРУ -3»; примечание 10: «Вывод распределительных линий от панелей ВРУ-1 осуществить сверху».",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.99,
+          "counterevidence_checked": true,
+          "required_context": []
+        }
+      ],
+      "required_context": [
+        [],
+        [],
+        []
+      ],
+      "context_inventory": {
+        "block_id_markers": [
+          "blk_513e35c4f8a7432986e9a498d4573996",
+          "blk_bbe90602"
+        ],
+        "specification_block_marker_present": false,
+        "exact_HF_subsection_present": false,
+        "exact_FRHF_subsection_present": false
+      },
+      "semantic_assessment": "No candidate about FRHF5x35 or its specification reconciliation; responses inspected in full. Other findings concern CT/load calculations and VRU label."
+    },
+    {
+      "request_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794415698345147711/request.json",
+      "request_sha256": "5c2f6e362f2fff3e7cd5602e95aea46766da43ac9afd2ab5338d99ffe753cecc",
+      "response_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794415698345147711/response_1.json",
+      "response_sha256": "44498a48d62b761ae72679b1420b0398be25f339ca94e9171c532318b753ae03",
+      "model": "codex/gpt-6-astra",
+      "stage": "block_analysis",
+      "image_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_513e35c4f8a7432986e9a498d4573996.png": "a01102c8349160a0b2f4a2f050c1821c1a185575010318cdbc589a1a80b09798"
+      },
+      "finding_count": 3,
+      "raw_findings": [
+        {
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "current_transformer",
+          "finding": "В проверке трансформаторов тока Wh1 и Wh2 минимальные первичные токи из строки 2 заменены в строке 4 другими значениями: вместо 39,4 и 28,6 А использованы 77 и 74 А. Вторичные токи должны составлять около 0,394 и 0,358 А; указанные 0,8 и 0,9 А завышены. При исправлении условие превышения 0,1 А сохраняется.",
+          "norm_quote": null,
+          "value_found": "262.4 × 0,15= 39.4А; 190.5 × 0,15= 28.6А; 77/100 = 0.8А > 0,1А; 74/80 = 0.9А > 0,1А",
+          "recommendation": "Пересчитать строку 4 с минимальными первичными токами из строки 2.",
+          "claim_type": "contradiction",
+          "problem_class": "inconsistent_minimum_metering_current",
+          "affected_entity": "ВРУ-3, таблица проверки трансформаторов тока Wh1 и Wh2, строки 2 и 4, лист 3",
+          "evidence_quote": "Строка 2: «262.4 × 0,15= 39.4А», «190.5 × 0,15= 28.6А»; строка 4: «77/100 = 0.8А > 0,1А», «74/80 = 0.9А > 0,1А».",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.99,
+          "counterevidence_checked": true,
+          "required_context": []
+        },
+        {
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "calculation",
+          "finding": "Исходные данные проверки трансформаторов тока ВРУ-3 расходятся с таблицей нагрузок с компенсацией реактивной мощности на том же листе. Для ввода 2 указаны разные полные мощности рабочего режима — 125,4 и 123,2 кВА; для выбора трансформаторов тока принят максимальный ток 465,1 А при указанном токе режима «Авар. Пожар» 471,4 А.",
+          "norm_quote": null,
+          "value_found": "Sp=125.4; Iаб=465,1; Ввод 2: S=123,2; Авар. Пожар: Ip=471,4",
+          "recommendation": "Согласовать таблицу нагрузок и проверку трансформаторов тока по полной мощности ввода 2 и максимальному расчетному току.",
+          "claim_type": "contradiction",
+          "problem_class": "inconsistent_current_transformer_calculation_inputs",
+          "affected_entity": "ВРУ-3, исходные данные проверки Wh1 и Wh2 и таблица нагрузок с компенсацией, лист 3",
+          "evidence_quote": "В проверке Wh2: «Sp=125.4»; для Wh1 и Wh2: «Iаб=465,1». В таблице нагрузок с компенсацией: «Ввод 2» — S=123,2 кВА; «Авар. Пожар» — Ip=471,4. Пояснение определяет Ip.аб как расчетный аварийный или наибольший ток на вводе.",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.97,
+          "counterevidence_checked": true,
+          "required_context": []
+        },
+        {
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "documentation",
+          "finding": "В примечании 10 схемы ВРУ-3 направление вывода распределительных линий указано для ВРУ-1. Обозначение оборудования в монтажном указании не совпадает с обозначением изображенной сборки.",
+          "norm_quote": null,
+          "value_found": "Вывод распределительных линий от панелей ВРУ-1 осуществить сверху",
+          "recommendation": "Исправить обозначение оборудования в примечании 10 на ВРУ-3.",
+          "claim_type": "contradiction",
+          "problem_class": "incorrect_equipment_reference",
+          "affected_entity": "ВРУ-3, примечание 10, лист 3",
+          "evidence_quote": "Наименование листа: «Схема однолинейная принципиальная ВРУ-3»; подпись сборки: «ВРУ -3»; примечание 10: «Вывод распределительных линий от панелей ВРУ-1 осуществить сверху».",
+          "evidence_kind": "same_page",
+          "context_status": "sufficient",
+          "confidence": 0.99,
+          "counterevidence_checked": true,
+          "required_context": []
+        }
+      ],
+      "required_context": [
+        [],
+        [],
+        []
+      ],
+      "context_inventory": {
+        "block_id_markers": [
+          "blk_513e35c4f8a7432986e9a498d4573996",
+          "blk_bbe90602"
+        ],
+        "specification_block_marker_present": false,
+        "exact_HF_subsection_present": false,
+        "exact_FRHF_subsection_present": false
+      },
+      "semantic_assessment": "No candidate about FRHF5x35 or its specification reconciliation; responses inspected in full. Other findings concern CT/load calculations and VRU label."
+    }
+  ],
+  "conclusions": [
+    "Both independent detectors returned no findings for the C2513 drawing.",
+    "Both independent detectors returned three unrelated findings for the C3510 drawing; all required_context lists are empty.",
+    "This cable-specification candidate was not emitted by these four detector calls, so its absence at this boundary is not attributable to the later merge or final release filter.",
+    "The exact reference specification subsections and their block marker are absent from these request texts. This byte-level check alone does not exclude paraphrased information elsewhere.",
+    "The fulfilled block analysis status did not establish completion of the cross-document cable-inventory operation."
+  ],
+  "unresolved": [
+    "Whether text analysis had sufficient graphic cable attributes and performed the cross-document operation.",
+    "Whether graphic detection should enumerate objects and request the specification; the counterfactual benefit needs paired experimental results.",
+    "Other repeats raw-detector omission not yet adjudicated here."
+  ],
+  "production_acceptance": false
+}
