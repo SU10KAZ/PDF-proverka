@@ -1,0 +1,211 @@
+{
+  "status": "mixed_valid_core_and_false_phase_operand_reviewed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "98e4014ba8cfc1993bf0ac2646be5bd8758c4325efc6b45b9af0264cdc4ab394",
+  "queue_after_sha256": "4729638bfcd133c650a1642341e5772341ef17e764d399de67ca9c151736614c",
+  "reviewer": "Codex direct graphic group-to-phase tracing",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-036",
+      "finding": {
+        "id": "F-036",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Фазное распределение нагрузок",
+        "sheet": "Лист 7",
+        "page": 10,
+        "problem": "Вводной ток 1.ЩС не учитывает нагрузку наиболее нагруженной фазы.",
+        "description": "Для щита указан ток 10,3 А. К фазе A подключены группы 1.ЩС-2 и 1.ЩС-4 с токами 0,5 и 26,2 А: суммарно 26,7 А. Даже при применении указанного Кс=0,9 получается около 24 А. Сводное значение не соответствует показанному распределению однофазных нагрузок.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить выбор питающих проводников по фактической расчетной нагрузке фаз.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-026",
+                "G-027"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-026",
+                  "G-027"
+                ],
+                "designation_source": "Подбор при объединении замечаний"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Рассчитать токи каждой фазы с обоснованными коэффициентами спроса, скорректировать распределение групп и проверить ввод по наиболее нагруженной фазе.",
+        "risk": "Недооценка фазного тока, перегрузка линии или отключение ввода.",
+        "source_finding_ids": [
+          "G-026",
+          "G-027"
+        ],
+        "source_block_ids": [
+          "blk_fbd847573ddd408aae3067c0c1bb9dde"
+        ],
+        "related_block_ids": [
+          "blk_fbd847573ddd408aae3067c0c1bb9dde"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_fbd847573ddd408aae3067c0c1bb9dde",
+            "page": 10
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-026",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-027",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на несоответствие Iр=10,3 А нагрузке фазы A с группой 1.ЩС-4 на 26,2 А. Левое дополнительно учитывает группу 1.ЩС-2 на 0,5 А, рассчитывает сумму 26,7 А и проверяет её с Кс=0,9 — около 24 А.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на несоответствие Iр=10,3 А нагрузке фазы A с группой 1.ЩС-4 на 26,2 А. Левое дополнительно учитывает группу 1.ЩС-2 на 0,5 А, рассчитывает сумму 26,7 А и проверяет её с Кс=0,9 — около 24 А.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F014_phase_A_current:d972a6b9f556089a8923",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Группа1.ЩС-2 с0,5А подключена кфазеA.",
+          "verdict": "refuted_direct_GRAPHIC_phase_label",
+          "limits": "УQFD2 показанаC;подписьA относится кQF4. На этой же увеличенной областиQF3 такжеC."
+        },
+        {
+          "claim": "Группа1.ЩС-4:26,2А наA;сводный ток10,3А.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Проверены таблица нагрузки,номер группы,линияQF4 иобщая таблица."
+        },
+        {
+          "claim": "Суммарный ток фазыA равен0,5+26,2=26,7А;послеКс около24А.",
+          "verdict": "unsupported_wrong_phase_membership",
+          "limits": "Арифметика суммы верна, но состав слагаемых не соответствует показанным фазам. Точный фазный ток и применимостьКсщита кфазе отдельно не установлены."
+        },
+        {
+          "claim": "Нужен фазный расчёт срежимами и проверка ввода.",
+          "verdict": "supported_scoped_question",
+          "limits": "Сохранить исходное10,3 против26,2 безложной привязкигруппы2. Не назначать24А правильным током."
+        },
+        {
+          "claim": "Перегрузка линии или отключение ввода.",
+          "verdict": "not_established_operational_consequence",
+          "limits": "QF3.21,условия прокладки,режимы ипаспорт нагрузки не проверены."
+        }
+      ],
+      "unsupported_additions": "false_phase_assignment_in_otherwise_useful_question",
+      "novel_useful_content": "known_phase_current_question_preserved_new_operand_rejected",
+      "duplicate_burden": "one_composite_row_do_not_discard_confirmed_core",
+      "profile_and_section": "questions_and_clarifications_after_correcting_false_phase_operand",
+      "engineer_reuse": "Direct source review; no new engineer acceptance.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fbd847573ddd408aae3067c0c1bb9dde.png",
+          "sha256": "6c610cf7b193518b3cf25efbc313a316d21adfdc4eba7fab5b7bdf664946c475",
+          "route": "directly_viewed_GRAPHIC",
+          "block_id": "blk_fbd847573ddd408aae3067c0c1bb9dde"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/EOM_r2_SHS_phase_labels.png",
+          "sha256": "24ad1adae046acf4db7f8babb5523313974731f15f4baa648d9b4132ced588df",
+          "route": "directly_viewed_graphic_crop",
+          "source_box": [
+            420,
+            180,
+            740,
+            300
+          ],
+          "resized_to": [
+            1600,
+            600
+          ]
+        }
+      ],
+      "disposition": "assessed_preserve_phase_question_remove_false_group2_phase_assignment"
+    }
+  ],
+  "limits": [
+    "No TEXT correction; branch labels read from IMAGE.",
+    "This output assessment does not change the frozen target match: the original10.3/26.2 core is present.",
+    "No universal tolerance or automatic current replacement introduced."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
