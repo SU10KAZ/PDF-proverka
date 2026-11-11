@@ -33,7 +33,8 @@ def build():
                 'AK_r1_inventory_terminal_failure.json',
                 'AK_r1_inventory_failed_run_accounting.json',
                 'AK_large_image_prior_transport.json',
-                'inventory_budget_candidate_six_input_preflight.json']
+                'inventory_budget_candidate_six_input_preflight.json',
+                'merge_pilot_expected_candidate_population.json']
     docs={name:read(HERE/name) for name in sources}
     coverage=docs[sources[0]];stability=docs[sources[1]];runtime=docs[sources[2]];sections=docs[sources[3]]
     plan=read(HERE.parent/'auditmanager_stage1_20261109/sequential_plan.json')
@@ -50,7 +51,7 @@ def build():
     body+='<p>Основная модель: gpt-6-astra, high; два графических детектора и судья. Текущая серия не использует Claude или OpenRouter. Критерии приёмки сохраняются из исходного протокола.</p>'
     recovery=docs['AK_r1_all_text_recovery_admission_replay.json']['summary']
     body+='<h2>Обнаруженные потери в первом экспериментальном АК</h2>'
-    body+='<p>Промежуточное объединение отложило все 146 кандидатов с решением «нужны данные» и выпустило ноль замечаний. Промпт требует проверки первичных источников, но запрос содержит два результата предыдущих анализов, без изображений и инструментов чтения исходников. Затем выполняется восстановление по отдельным пакетам с контекстом. Это промежуточное наблюдение, а не итоговый результат прогона.</p>'
+    body+='<p>Промежуточное объединение выдало 146 решений «нужны данные» и ноль замечаний. Полный вход содержит 147 кандидатов: 28 текстовых, 118 графических и один запрос предварительного поиска; полноту решений нужно оценивать по всем 147. Промпт требует проверки первичных источников, но запрос содержит два результата предыдущих анализов, без изображений и инструментов чтения исходников. Затем выполняется восстановление по отдельным пакетам с контекстом. Это промежуточное наблюдение, а не итоговый результат прогона.</p>'
     body+=table(['Проверка текстового восстановления','Количество'],[
         ('Завершённые первичные запросы',recovery['requests']),
         ('Предложенные моделью замечания',recovery['raw_findings']),

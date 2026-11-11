@@ -1,0 +1,902 @@
+{
+  "status": "input_candidate_population_fixed_before_paired_semantic_review",
+  "request_path": "/tmp/auditmanager_merge_primary_text_pilot_20261111/control_request.json",
+  "request_sha256": "1d1e7bd57a4bb0dbcf7b12e00ced6bf06d91925c52b6ddd14c30c284a74d8d33",
+  "candidate_count": 147,
+  "by_origin": {
+    "text": 28,
+    "prescan": 1,
+    "graphic": 118
+  },
+  "deferred_by_origin": {
+    "prescan": 1,
+    "graphic": 11
+  },
+  "candidates": [
+    {
+      "origin": "text",
+      "pointer": "/text_findings/0",
+      "source_id": "T-001",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/1",
+      "source_id": "T-002",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/2",
+      "source_id": "T-003",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/3",
+      "source_id": "T-004",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/4",
+      "source_id": "T-005",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/5",
+      "source_id": "T-006",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/6",
+      "source_id": "T-007",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/7",
+      "source_id": "T-008",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/8",
+      "source_id": "T-009",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/9",
+      "source_id": "T-010",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/10",
+      "source_id": "T-011",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/11",
+      "source_id": "T-012",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/12",
+      "source_id": "T-013",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/13",
+      "source_id": "T-014",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/14",
+      "source_id": "T-015",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/15",
+      "source_id": "T-016",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/16",
+      "source_id": "T-017",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/17",
+      "source_id": "T-018",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/18",
+      "source_id": "T-019",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/19",
+      "source_id": "T-020",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/20",
+      "source_id": "T-021",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/21",
+      "source_id": "T-022",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/22",
+      "source_id": "T-023",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/23",
+      "source_id": "T-024",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/24",
+      "source_id": "T-025",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/25",
+      "source_id": "T-026",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/26",
+      "source_id": "T-027",
+      "deferred": false
+    },
+    {
+      "origin": "text",
+      "pointer": "/text_findings/27",
+      "source_id": "T-028",
+      "deferred": false
+    },
+    {
+      "origin": "prescan",
+      "pointer": "/prescan_review_requests/0",
+      "source_id": "P-80198eb0a0c3dd9d6bcca394",
+      "deferred": true
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/0/findings/0",
+      "source_id": "G-001",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/0/findings/1",
+      "source_id": "G-002",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/0/findings/2",
+      "source_id": "G-003",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/findings/0",
+      "source_id": "G-004",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/findings/1",
+      "source_id": "G-005",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/findings/2",
+      "source_id": "G-006",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/findings/3",
+      "source_id": "G-007",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/findings/4",
+      "source_id": "G-008",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/deferred_findings/0",
+      "source_id": "D-7f7eafb60591ff43920af614",
+      "deferred": true
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/4/findings/0",
+      "source_id": "G-009",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/4/findings/1",
+      "source_id": "G-010",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/0",
+      "source_id": "G-011",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/1",
+      "source_id": "G-012",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/2",
+      "source_id": "G-013",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/3",
+      "source_id": "G-014",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/4",
+      "source_id": "G-015",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/6/findings/0",
+      "source_id": "G-016",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/6/findings/1",
+      "source_id": "G-017",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/6/findings/2",
+      "source_id": "G-018",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/6/findings/3",
+      "source_id": "G-019",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/6/findings/4",
+      "source_id": "G-020",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/8/findings/0",
+      "source_id": "G-021",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/8/findings/1",
+      "source_id": "G-022",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/findings/0",
+      "source_id": "G-023",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/findings/1",
+      "source_id": "G-024",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/findings/2",
+      "source_id": "G-025",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/findings/3",
+      "source_id": "G-026",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/findings/4",
+      "source_id": "G-027",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/deferred_findings/0",
+      "source_id": "D-451cf4437752785fcf014651",
+      "deferred": true
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/10/findings/0",
+      "source_id": "G-028",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/10/findings/1",
+      "source_id": "G-029",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/10/findings/2",
+      "source_id": "G-030",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/10/findings/3",
+      "source_id": "G-031",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/10/findings/4",
+      "source_id": "G-032",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/11/findings/0",
+      "source_id": "G-033",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/11/findings/1",
+      "source_id": "G-034",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/11/findings/2",
+      "source_id": "G-035",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/11/deferred_findings/0",
+      "source_id": "D-fb673cefb3898638861f1299",
+      "deferred": true
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/findings/0",
+      "source_id": "G-036",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/findings/1",
+      "source_id": "G-037",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/findings/2",
+      "source_id": "G-038",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/findings/3",
+      "source_id": "G-039",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/findings/4",
+      "source_id": "G-040",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/deferred_findings/0",
+      "source_id": "D-2a75404be9733cbab96558d1",
+      "deferred": true
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/13/findings/0",
+      "source_id": "G-041",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/13/findings/1",
+      "source_id": "G-042",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/13/findings/2",
+      "source_id": "G-043",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/13/findings/3",
+      "source_id": "G-044",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/14/findings/0",
+      "source_id": "G-045",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/14/findings/1",
+      "source_id": "G-046",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/15/findings/0",
+      "source_id": "G-047",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/15/findings/1",
+      "source_id": "G-048",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/15/findings/2",
+      "source_id": "G-049",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/15/findings/3",
+      "source_id": "G-050",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/16/findings/0",
+      "source_id": "G-051",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/16/findings/1",
+      "source_id": "G-052",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/16/findings/2",
+      "source_id": "G-053",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/17/findings/0",
+      "source_id": "G-054",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/17/findings/1",
+      "source_id": "G-055",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/17/findings/2",
+      "source_id": "G-056",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/18/findings/0",
+      "source_id": "G-057",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/18/findings/1",
+      "source_id": "G-058",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/18/deferred_findings/0",
+      "source_id": "D-88572b5b92a44934d1200f63",
+      "deferred": true
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/18/deferred_findings/1",
+      "source_id": "D-beded76386513df5c54dedef",
+      "deferred": true
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/19/findings/0",
+      "source_id": "G-059",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/19/findings/1",
+      "source_id": "G-060",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/20/findings/0",
+      "source_id": "G-061",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/20/findings/1",
+      "source_id": "G-062",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/21/findings/0",
+      "source_id": "G-063",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/21/findings/1",
+      "source_id": "G-064",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/22/findings/0",
+      "source_id": "G-065",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/22/findings/1",
+      "source_id": "G-066",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/23/findings/0",
+      "source_id": "G-067",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/23/findings/1",
+      "source_id": "G-068",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/24/findings/0",
+      "source_id": "G-069",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/26/findings/0",
+      "source_id": "G-070",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/26/findings/1",
+      "source_id": "G-071",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/27/findings/0",
+      "source_id": "G-072",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/27/findings/1",
+      "source_id": "G-073",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/28/findings/0",
+      "source_id": "G-074",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/28/findings/1",
+      "source_id": "G-075",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/28/deferred_findings/0",
+      "source_id": "D-e2f45dc625cc56af7134aba9",
+      "deferred": true
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/29/findings/0",
+      "source_id": "G-076",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/0",
+      "source_id": "G-077",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/1",
+      "source_id": "G-078",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/2",
+      "source_id": "G-079",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/3",
+      "source_id": "G-080",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/4",
+      "source_id": "G-081",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/5",
+      "source_id": "G-082",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/6",
+      "source_id": "G-083",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/31/findings/0",
+      "source_id": "G-084",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/31/findings/1",
+      "source_id": "G-085",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/32/findings/0",
+      "source_id": "G-086",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/32/deferred_findings/0",
+      "source_id": "D-798aaadc7718df147d4eb053",
+      "deferred": true
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/33/findings/0",
+      "source_id": "G-087",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/33/findings/1",
+      "source_id": "G-088",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/34/findings/0",
+      "source_id": "G-089",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/35/findings/0",
+      "source_id": "G-090",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/35/findings/1",
+      "source_id": "G-091",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/35/findings/2",
+      "source_id": "G-092",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/35/findings/3",
+      "source_id": "G-093",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/36/findings/0",
+      "source_id": "G-094",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/36/findings/1",
+      "source_id": "G-095",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/38/findings/0",
+      "source_id": "G-096",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/38/findings/1",
+      "source_id": "G-097",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/40/deferred_findings/0",
+      "source_id": "D-aed74214926fc9d966f9e854",
+      "deferred": true
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/55/findings/0",
+      "source_id": "G-098",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/55/findings/1",
+      "source_id": "G-099",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/60/findings/0",
+      "source_id": "G-100",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/60/findings/1",
+      "source_id": "G-101",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/63/findings/0",
+      "source_id": "G-102",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/63/findings/1",
+      "source_id": "G-103",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/64/findings/0",
+      "source_id": "G-104",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/64/deferred_findings/0",
+      "source_id": "D-792d00bce4b70937c9f38806",
+      "deferred": true
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/66/findings/0",
+      "source_id": "G-105",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/66/findings/1",
+      "source_id": "G-106",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/68/findings/0",
+      "source_id": "G-107",
+      "deferred": false
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/68/deferred_findings/0",
+      "source_id": "D-bb7d7e1bec45b1e1cc322381",
+      "deferred": true
+    }
+  ],
+  "clarification": "146 is the sum of text and graphic candidates, not the full input population: one additional prescan request must also receive a traceable disposition. Prior statement about 146 needs_data decisions describes the model response, not complete coverage of all inputs.",
+  "semantic_results_read": false,
+  "production_acceptance": false
+}
