@@ -1,0 +1,16 @@
+{
+  "source_root": "/tmp/auditmanager_km_quantity_operations_20261110/obj_09/context_3",
+  "source_candidate_sha256": "b6a1455a565c1b761cdaa608c9783a613df9906cf343aede1a548357fa988b85",
+  "source_finding_id": "O-5c33fe4ed39d24fe11f33d5b",
+  "request_sha256": "13d32069b131947e6e704505d85efc729a10fff2174133d10affde2dfcae29cb",
+  "original_graphic_bindings": [],
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0,
+  "history_or_engineer_answers_supplied": false,
+  "evaluator_corrections_supplied": false,
+  "message_chars": 21896,
+  "images": 0,
+  "image_bytes": 0,
+  "known_candidate_control": true,
+  "semantic_acceptance": false
+}
