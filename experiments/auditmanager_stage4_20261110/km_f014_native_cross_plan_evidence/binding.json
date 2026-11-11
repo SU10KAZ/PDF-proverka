@@ -1,0 +1,25 @@
+{
+  "baseline_sha256": "d85048316ccca845e1cac247c6896671cdd78283848f73e2ad1ecf5ed226fa02",
+  "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "source_context_ids": [
+    "blk_69c102e8922e48c982c254c05fb2e093",
+    "blk_6d4c4daf192546de9f1dce661aafe577",
+    "blk_f0a5333974ac4088b7778f525922b014",
+    "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+    "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+    "blk_eff2811805d64c26b34d72e41ecbb194",
+    "blk_2f6153fc7d8243798ccea08249042194",
+    "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+    "blk_30cfd1306b554f0483179e8e36c3ef41",
+    "blk_6361593a2045407a94dff35af62ca5c3"
+  ],
+  "prior_responses_or_engineer_answers_supplied": false,
+  "known_candidate_control": true,
+  "source_context_selection": "Adjacent plans, section and detail tables; no previous verdict or special cross-plan instruction supplied.",
+  "maximum_new_calls": 6,
+  "message_chars": 14462,
+  "images": 7,
+  "image_bytes": 2401168,
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0
+}

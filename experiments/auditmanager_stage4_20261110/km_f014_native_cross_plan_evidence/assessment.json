@@ -1,0 +1,38 @@
+{
+  "status": "native_review_retained_core_final_release_pending",
+  "control": "KM F-014",
+  "known_candidate_not_blind_discovery": true,
+  "context_selection": "Coordinator selected adjacent plans and section. Native prompts were unchanged; no prior response, engineering answer or expected conclusion supplied.",
+  "model": "codex/gpt-6-astra",
+  "calls": [
+    {
+      "phase": "review",
+      "step": 0,
+      "reused": false
+    },
+    {
+      "phase": "adjudication",
+      "step": 5,
+      "reused": false
+    }
+  ],
+  "admission_receipts": [
+    {
+      "finding_id": "F-014",
+      "status": "applied",
+      "action": "revise"
+    }
+  ],
+  "supported_core": "Discrepancy OGM6/OGM4 for the flight +6.070 to +7.270, with corrected original landing wording.",
+  "other_claims": "Original operational severity and normative applicability remain unconfirmed; adjudicator proposes substantial technical routing and conditional risk.",
+  "semantic_crosscheck": "Consistent with independently inspected adjacent-plan/section correspondence documented in km_f014_cross_plan_trace_evidence/assessment.json; inference limits there remain applicable.",
+  "limits": [
+    "This does not prove autonomous retrieval of adjacent plans.",
+    "Candidate readiness is not final release or independent ground truth.",
+    "No full comparative improvement demonstrated.",
+    "Frozen evaluator v2 unchanged."
+  ],
+  "next": "Separate final wording/source check, then exact preservation and Excel export replay if released.",
+  "production_changed": false,
+  "stage4_complete": false
+}
