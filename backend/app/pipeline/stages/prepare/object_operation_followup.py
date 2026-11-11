@@ -48,6 +48,9 @@ def verify_operation_source_binding(request):
     try:
         if hashlib.sha256(Path(binding['md_path']).read_bytes()).hexdigest()!=binding['md_sha256']:
             return 'md_version_changed'
+        if binding.get('graphic_source') is not None:
+            from .object_graphic_followup import verify_graphic_source
+            verify_graphic_source(binding['graphic_source'])
         packet=json.loads(request.messages[-1]['content'])
         for bid,path in zip(packet['attached_image_ids_in_order'],request.image_paths,strict=True):
             try:
@@ -77,6 +80,12 @@ def build_object_operation_followup(request, raw_payload):
         sources={h.group(2):{'block_id':h.group(2),'kind':h.group(1).upper(),
             'content':md[h.start():headers[i+1].start() if i+1<len(headers) else len(md)]}
             for i,h in enumerate(headers)}
+        if len(sources) != len(headers):
+            raise ValueError('Ambiguous MD block IDs')
+        from .object_graphic_followup import prepare_graphic_followup
+        graphic_followup, graphic_receipt = prepare_graphic_followup(request, raw_payload, sources)
+        if graphic_followup is not None:
+            return graphic_followup, graphic_receipt
         original={'messages':request.messages,'image_paths':[str(p) for p in request.image_paths]}
         old_images=[_bound_attachment(binding,bid,path) for bid,path in
             zip(packet['attached_image_ids_in_order'],request.image_paths,strict=True)]
@@ -85,6 +94,8 @@ def build_object_operation_followup(request, raw_payload):
             expected_request_sha256=evidence_digest(original),expected_md_sha256=binding['md_sha256'],
             original_image_hashes=hashes,original_image_bindings=old_images,graph=binding['graph'])
         receipt={k:v for k,v in prepared.items() if k not in ('request','images','searches')}
+        if graphic_receipt['status'] != 'no_graphic_detail_request':
+            receipt['graphic_detail'] = graphic_receipt
         if prepared['status']!='prepared':return None,receipt
         next_request=prepared['request'];next_packet=json.loads(next_request['messages'][-1]['content'])
         # Stable root name keeps at most three revisions addressable separately.

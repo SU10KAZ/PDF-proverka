@@ -7,7 +7,7 @@ from backend.app.pipeline.stages.block_context.contract import resolve_blocks_di
 from backend.app.pipeline.stages.text_analysis.object_registry import reconcile_object_registry
 
 
-def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable_followup=False):
+def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable_followup=False, graphic_detail_source=None):
     from .codex_targeted_findings import CodexTargetedPass
     output_dir, md_path = Path(output_dir), Path(md_path)
     text_path = output_dir/'02_text_analysis.json'
@@ -35,10 +35,16 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable
     index_path = crops/'index.json'
     index = json.loads(index_path.read_text()) if index_path.is_file() else {}
     files = {b.get('block_id'):b.get('file') for b in index.get('blocks',[]) if isinstance(b,dict)}
+    if graphic_detail_source is not None and not enable_followup:
+        raise ValueError("Graphic detail recovery requires followups")
     continuation_source = None
     if enable_followup:
         from .object_operation_followup import freeze_operation_sources
         continuation_source = freeze_operation_sources(md_path, crops, files, graph)
+        if graphic_detail_source is not None:
+            from .object_graphic_followup import verify_graphic_source
+            verify_graphic_source(graphic_detail_source)
+            continuation_source["graphic_source"] = dict(graphic_detail_source)
     passes, backlog, planned = [], [], []
     for obj in coverage['objects']:
         operations = [r for r in coverage['operations'] if r['object_id']==obj['id'] and r['status'] in ('not_checked','needs_data')]
@@ -164,6 +170,9 @@ whole-project coverage or silently add an operation outside the supplied list.''
         if any(operation['operation'] == 'calculation_consistency' for operation in operations):
             from .calculation_consistency import CALCULATION_INSTRUCTIONS
             instructions += CALCULATION_INSTRUCTIONS
+        if graphic_detail_source is not None:
+            from .object_graphic_followup import GRAPHIC_DETAIL_INSTRUCTIONS
+            instructions += GRAPHIC_DETAIL_INSTRUCTIONS
         instructions += INVENTORY_NAVIGATION_INSTRUCTIONS
         if any(operation['operation'] == 'quantity_balance' for operation in operations):
             from .quantity_provenance import QUANTITY_PROVENANCE_INSTRUCTIONS

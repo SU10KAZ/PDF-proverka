@@ -1,0 +1,98 @@
+from copy import deepcopy
+from dataclasses import replace
+import hashlib
+import json
+from pathlib import Path
+import fitz
+import pytest
+
+from backend.app.pipeline.stages.prepare.codex_targeted_findings import CodexTargetedPass
+from backend.app.pipeline.stages.prepare.object_operation_followup import (
+    freeze_operation_sources, build_object_operation_followup, verify_operation_source_binding)
+from backend.app.pipeline.stages.prepare.object_graphic_followup import freeze_graphic_source
+
+
+def setup(tmp_path):
+    pdf = tmp_path/'source.pdf'
+    doc = fitz.open(); page = doc.new_page(width=300, height=200)
+    page.draw_line((20,20),(280,180)); doc.save(pdf)
+    image = tmp_path/'g.png'; page.get_pixmap().save(image); doc.close()
+    blocks = tmp_path/'blocks.json'
+    blocks.write_text(json.dumps({'coordinate_space':'normalized_page_top_left','blocks':[
+        {'block_id':'g','block_type':'image','coords_norm':[0.1,0.1,0.9,0.9],'page_index':0}]}))
+    md = tmp_path/'document.md'
+    graphic = '### BLOCK #1 [GRAPHIC]: g\nSource diagram\n'
+    text = '### BLOCK #2 [TEXT]: t\nAuthoritative text\n'
+    md.write_text(graphic + text)
+    binding = freeze_operation_sources(md,tmp_path,{'g':'g.png'},None)
+    binding['graphic_source'] = freeze_graphic_source(pdf,blocks,tmp_path/'details')
+    packet = {'object':{'id':'obj'},'operations':[{'operation':'document_links'}],
+              'attached_image_ids_in_order':['g'],'allowed_source_refs':['g','t'],'omitted':[],
+              'source_context':[{'block_id':'g','kind':'GRAPHIC','content':graphic},
+                                {'block_id':'t','kind':'TEXT','content':text}]}
+    request = CodexTargetedPass('object_operations_test','result.json',
+                               [{'role':'system','content':'Inspect sources'},
+                                {'role':'user','content':json.dumps(packet)}],
+                               (image,),continuation_source=binding)
+    payload = {'object_operation_results':[{'object_id':'obj','operation':'document_links',
+               'status':'needs_data','reason':'Unreadable branches', 'source_refs':['g'],
+               'graphic_detail_requests':[{'block_id':'g','reason':'Read branch labels'}]}],
+               'findings':[{'problem':'Preserve earlier candidate'}]}
+    return request,payload,pdf,blocks,md
+
+
+def test_full_graphic_details_preserve_sources_findings_and_binding(tmp_path):
+    request,payload,*_ = setup(tmp_path)
+    original = deepcopy(request.messages)
+    followup,receipt = build_object_operation_followup(request,payload)
+    assert receipt['status']=='prepared' and receipt['route']=='graphic_detail'
+    assert len(followup.image_paths)==10 and followup.image_paths[0]==str(request.image_paths[0])
+    old = json.loads(request.messages[-1]['content']); new = json.loads(followup.messages[-1]['content'])
+    assert new['source_context']==old['source_context']
+    assert new['operations']==old['operations']
+    assert new['prior_operation_response_untrusted']==payload
+    assert new['context_revision']==1 and new['attached_image_ids_in_order']==['g']*10
+    assert new['graphic_detail_views'][0]['semantic_verified'] is False
+    assert request.messages==original
+    assert verify_operation_source_binding(followup) is None
+    repeat,limit = build_object_operation_followup(followup,payload)
+    assert repeat is None and limit['graphic_detail']['status']=='graphic_details_already_supplied'
+    Path(followup.image_paths[-1]).write_bytes(b'changed')
+    assert verify_operation_source_binding(followup)=='image_bytes_changed'
+
+
+@pytest.mark.parametrize('changed',['pdf','blocks','md'])
+def test_changed_sources_refuse_details(tmp_path,changed):
+    request,payload,pdf,blocks,md = setup(tmp_path)
+    path = {'pdf':pdf,'blocks':blocks,'md':md}[changed]
+    path.write_bytes(path.read_bytes()+b'changed')
+    followup,receipt = build_object_operation_followup(request,payload)
+    assert followup is None and receipt['status']=='context_preparation_failed'
+    assert not (tmp_path/'details').exists()
+
+
+def test_authoritative_text_cannot_be_requested_as_graphic(tmp_path):
+    request,payload,*_ = setup(tmp_path)
+    payload['object_operation_results'][0]['graphic_detail_requests'][0]['block_id']='t'
+    followup,receipt = build_object_operation_followup(request,payload)
+    assert followup is None and 'supplied GRAPHIC' in receipt['reason']
+    assert not (tmp_path/'details').exists()
+
+
+def test_full_image_budget_preserves_previous_views(tmp_path):
+    request,payload,*_ = setup(tmp_path)
+    packet = json.loads(request.messages[-1]['content'])
+    packet['attached_image_ids_in_order']=['g']*16
+    request = replace(request,image_paths=request.image_paths*16,
+                      messages=[request.messages[0],{'role':'user','content':json.dumps(packet)}])
+    followup,receipt = build_object_operation_followup(request,payload)
+    assert followup is None and receipt['graphic_detail']['status']=='graphic_image_budget'
+    assert not (tmp_path/'details').exists()
+
+
+def test_no_explicit_request_does_not_render(tmp_path):
+    request,payload,*_ = setup(tmp_path)
+    del payload['object_operation_results'][0]['graphic_detail_requests']
+    followup,receipt = build_object_operation_followup(request,payload)
+    assert followup is None
+    assert not (tmp_path/'details').exists()
