@@ -1,0 +1,775 @@
+{
+  "status": "three_signal_matrix_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "8257f596226624d811ae68676088be0f548d2e69c81d4a4c032fcd08811e5439",
+  "queue_after_sha256": "5e8e9733c481db945531813a34e5dcb15fd270da3538d6f4c8a61851b25bb347",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-041",
+      "finding": {
+        "id": "F-041",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Направление сигналов",
+        "sheet": "Лист 8",
+        "page": 12,
+        "problem": "Сигналы состояния заслонок обозначены как аналоговые выходы.",
+        "description": "Сигналы 11 и 13 приводов Y2 и Y3 названы «Состояние заслонки (0..100%)», но отнесены к AO. Название обратной связи не соответствует направлению сигнала из шкафа к приводу.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность назначения и направления сигналов автоматизации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-007",
+                "G-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-007",
+                  "G-008"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Для задания положения указать управление заслонкой; для обратной связи показать соответствующие входы.",
+        "risk": "Ошибочная комплектация каналов и отсутствие требуемой обратной связи.",
+        "source_finding_ids": [
+          "G-007",
+          "G-008"
+        ],
+        "source_block_ids": [
+          "blk_aa15c30f0e7e48988cadcac795e1ccff"
+        ],
+        "related_block_ids": [
+          "blk_aa15c30f0e7e48988cadcac795e1ccff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+            "page": 12
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-008",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают противоречие между названием сигналов 11 и 13 «Состояние заслонки (0..100%.)» приводов Y2 и Y3 и их отнесением к аналоговым выходам AO.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают противоречие между названием сигналов 11 и 13 «Состояние заслонки (0..100%.)» приводов Y2 и Y3 и их отнесением к аналоговым выходам AO.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F036_damper_signal_direction:8298b8f671c60e21b030",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Колонки11 и13 лист8 названы «Состояние заслонки (0..100%)» и имеют точки в AO.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Перечень задаёт У2/У3 как плавно регулируемые приводы24В.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Название обратной связи не согласовано с направлением аналогового выхода.",
+          "verdict": "supported_signal_semantics_conflict",
+          "limits": "Уточнить: выход задания или вход фактического положения; наличие плавного регулирования не устанавливает наличие обратной связи."
+        },
+        {
+          "claim": "Нужно автоматически заменить AO на AI или добавить два входных модуля.",
+          "verdict": "not_established",
+          "limits": "Возможна ошибка подписи задания. Паспорт привода, принципиальная схема и состав модулей не проверены."
+        },
+        {
+          "claim": "Обратная связь фактически отсутствует и шкаф укомплектован неверно.",
+          "verdict": "not_established",
+          "limits": "Подтверждён конфликт документа, а не реализованной системы."
+        },
+        {
+          "claim": "Подтверждено нарушение ГОСТ21.408-2013.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; конкретный пункт не проверен."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One semantic conflict covering Y2 and Y3; not two established hardware failures.",
+      "profile_and_section": "technical_signal_identity_no_automatic_hardware_change",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_0457419703024673bb4328b18d47501e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F036_damper_signal_direction.json",
+          "sha256": "679a411c9e04b0c8c1987471b621d8fdc5d6935a1db687f71aefcf1cec7b07eb",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждено несоответствие смысла подписи и указанного направления в функциональной таблице. Не доказано физическое подключение обратной связи к выходу.",
+            "Перечень предусматривает плавное регулирование24В для У2/У3: это допускает объяснение AO как команды. Автоматическая замена AO на AI не обоснована.",
+            "Общие данные требуют контроля положения, но не устанавливают для этих приводов именно непрерывный аналоговый способ. Отсутствие любого контроля не доказано.",
+            "Заводские схемы, паспорта приводов, программа контроллера и фактическая реализация не проверены. Конкретное нормативное нарушение не установлено.",
+            "Решение инженера по кандидату отсутствует; подтверждённый вывод ограничен согласованием назначения сигналов."
+          ],
+          "wording": "Согласовать назначение сигналов11/13 заслонок Y2/Y3 на листе8: подписи называют состояние0…100%, но матрица относит их к AO. Если это команды плавного регулирования, уточнить подписи; если обратная связь — определить её действительный вход по схеме шкафа и привода."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+          "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+          "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Columns11/13 labelled damper state0–100%, dots in AO; Y2/Y3 symbols attached."
+        }
+      ],
+      "disposition": "assessed_preserve_damper_signal_direction_ambiguity"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-045",
+      "finding": {
+        "id": "F-045",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Аналоговое управление",
+        "sheet": "Лист 14",
+        "page": 18,
+        "problem": "Заявленное регулирование двух ПЧ и клапана не согласовано с двумя выходами AO.",
+        "description": "Для клапана Y3 и преобразователей UZ1, UZ2 заявлены три функции аналогового управления, но итог составляет AO=2. Уточняющее описание матрицы показывает отсутствие AO в столбце 10 ПЧ системы П5.1.1: там отмечены только DI и DO. Два AO отнесены к клапану и ПЧ П5.1.3.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту отображения каналов регулирования и соответствие матрицы заявленным функциям.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-021",
+                "G-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-021",
+                  "G-023"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Показать канал задания скорости ПЧ П5.1.1 и согласовать матрицу, итог AO и состав модулей.",
+        "risk": "Невозможность реализовать заявленное регулирование скорости вентилятора.",
+        "source_finding_ids": [
+          "G-021",
+          "G-023"
+        ],
+        "source_block_ids": [
+          "blk_07ee87d0cd9b46359b3c2b177440fe89"
+        ],
+        "related_block_ids": [
+          "blk_07ee87d0cd9b46359b3c2b177440fe89"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+            "page": 18
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-023",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания относятся к несогласованности AO 2 с управлением клапаном Y3 и двумя ПЧ. Правое уточняет место недостающего AO: столбец 10 для ПЧ П5.1.1, где показаны только DI и DO.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания относятся к несогласованности AO 2 с управлением клапаном Y3 и двумя ПЧ. Правое уточняет место недостающего AO: столбец 10 для ПЧ П5.1.1, где показаны только DI и DO.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Лист14: AO=2; точки AO в7 (клапан) и18 (ПЧП5.1.3), отсутствуют в10 (ПЧП5.1.1), где имеются DI/DO.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Колонки10 и18 обе содержат управление ПЧ пуск/стоп,0–100%; перечень включает два преобразователя.",
+          "verdict": "confirmed_TEXT_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Итог AO противоречит количеству реально нарисованных точек.",
+          "verdict": "refuted_for_this_matrix",
+          "limits": "Итог2 совпадает с двумя точками; конфликт между заявленной функцией колонки10 и показанными каналами."
+        },
+        {
+          "claim": "Уточнить канал задания скорости П5.1.1 и согласовать матрицу с выбранным способом управления.",
+          "verdict": "supported_function_to_channel_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Невозможно реализовать регулирование скорости или обязательно не хватает одного модуля AO.",
+          "verdict": "not_established",
+          "limits": "CAN к другому шкафу виден, но не доказывает управление этим ПЧ по сети. Полная схема, интерфейсная привязка и модули не проверены; не объявлять ни наличие альтернативы, ни её невозможность."
+        },
+        {
+          "claim": "Подтверждено нарушение ГОСТ21.408-2013.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; конкретный пункт не проверен."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "source_confirmed_function_channel_conflict_engineer_acceptance_not_established",
+      "duplicate_burden": "One missing depicted command route for P5.1.1; AO total2 is arithmetically correct for drawn dots.",
+      "profile_and_section": "technical_function_channel_mapping_no_proven_hardware_shortage",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+          "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+          "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "AO points7/18 only; column10 UZ1 DI/DO but no AO, despite0–100% caption; CAN ends at another cabinet."
+        }
+      ],
+      "disposition": "assessed_preserve_missing_depicted_speed_command_route"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-048",
+      "finding": {
+        "id": "F-048",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Количество каналов",
+        "sheet": "Листы 18, 21",
+        "page": [
+          22,
+          25
+        ],
+        "problem": "Итоговые количества дискретных каналов занижены относительно матриц.",
+        "description": "Для ШАУВ-1-К5АС указано DO=10 при 11 подключениях: шесть заслонок, насос и четыре ПЧ. Для ШАУВ-3-К6ПЧ указано DI=10 и DO=5 при 12 входах и 6 выходах по матрице.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность итогов каналов с подключениями и составом средств автоматизации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-036",
+                "G-037",
+                "G-045",
+                "G-046"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-036",
+                  "G-037",
+                  "G-045",
+                  "G-046"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить итоги на DO=11 для ШАУВ-1-К5АС и DI=12, DO=6 для ШАУВ-3-К6ПЧ; проверить комплектацию модулей.",
+        "risk": "Недостаток каналов при изготовлении шкафов.",
+        "source_finding_ids": [
+          "G-036",
+          "G-037",
+          "G-045",
+          "G-046"
+        ],
+        "source_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9",
+          "blk_7785cb8293734c16b18fc1aff53c761f"
+        ],
+        "related_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9",
+          "blk_7785cb8293734c16b18fc1aff53c761f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+            "page": 22
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+            "page": 25
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-036",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-037",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-045",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-046",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одинаковое расхождение: для ШАУВ-1-К5АС указано «DO 10» при 11 подключениях в строке DO. Перечисление потребителей справа уточняет подсчёт, не добавляя отдельной проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одинаковое расхождение: для ШАУВ-1-К5АС указано «DO 10» при 11 подключениях в строке DO. Перечисление потребителей справа уточняет подсчёт, не добавляя отдельной проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Лист18 DO: колонки2,6,9,12,14,16,17,19,21,23,27 —11 точек против итога10.",
+          "verdict": "confirmed_direct_GRAPHIC_count",
+          "limits": ""
+        },
+        {
+          "claim": "Лист21 DI:3,4,5,6,8,10,11,12,15,16,17 и пожар —12 точек против10.",
+          "verdict": "confirmed_direct_GRAPHIC_count",
+          "limits": ""
+        },
+        {
+          "claim": "Лист21 DO:2,8,10,11,14,16 —6 точек против5.",
+          "verdict": "confirmed_direct_GRAPHIC_count",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать итоги с матрицами и проверить состав каналов шкафа.",
+          "verdict": "supported_internal_count_conflict",
+          "limits": "11/12/6 — числа показанных точек, не паспортная вместимость конкретных модулей."
+        },
+        {
+          "claim": "При изготовлении обязательно не хватит каналов.",
+          "verdict": "not_established",
+          "limits": "Состав и резерв модулей, заводские схемы и фактическая комплектация не исследованы."
+        },
+        {
+          "claim": "Подтверждено нарушение ГОСТ21.408-2013.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; конкретный пункт не проверен."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "Two cabinet matrices, three incorrect totals; avoid separate generic findings per consumer.",
+      "profile_and_section": "technical_document_counts_no_proven_installed_shortage",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08",
+          "primary_adjudication": null,
+          "limits": [
+            "Подсчитаны точки функциональной матрицы, не аппаратные каналы установленного контроллера. Состав модулей, резервы и внутренние схемы шкафа не проверены.",
+            "F048 правильно обнаружил несогласованность, но неверно ограничил полный подсчёт DI числом11: это только нумерованные колонки без входа АПС. Не следует снимать полезный факт целиком из-за этой ошибки.",
+            "Раздельные точки управления основным и резервным вентиляторами посчитаны отдельно. Попеременная работа сама по себе не доказывает общий аппаратный выход; аппаратная реализация не установлена.",
+            "Три записи относятся к одной матрице и не являются тремя независимыми дефектами. Решение инженера по этим blind-кандидатам не установлено."
+          ],
+          "wording": "Лист21, шкаф ШАУВ-3-К6ПЧ: согласовать итоговые количества дискретных сигналов с матрицей. В строке DI отмечены12 подключений, включая Пожар от АПС, при итоге10; в строке DO —6 при итоге5. Проверить назначение каналов и исправить несогласованность итогов."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08",
+          "primary_adjudication": null,
+          "limits": [
+            "Подсчитаны точки функциональной матрицы, не аппаратные каналы установленного контроллера. Состав модулей, резервы и внутренние схемы шкафа не проверены.",
+            "F048 правильно обнаружил несогласованность, но неверно ограничил полный подсчёт DI числом11: это только нумерованные колонки без входа АПС. Не следует снимать полезный факт целиком из-за этой ошибки.",
+            "Раздельные точки управления основным и резервным вентиляторами посчитаны отдельно. Попеременная работа сама по себе не доказывает общий аппаратный выход; аппаратная реализация не установлена.",
+            "Три записи относятся к одной матрице и не являются тремя независимыми дефектами. Решение инженера по этим blind-кандидатам не установлено."
+          ],
+          "wording": "Лист21, шкаф ШАУВ-3-К6ПЧ: согласовать итоговые количества дискретных сигналов с матрицей. В строке DI отмечены12 подключений, включая Пожар от АПС, при итоге10; в строке DO —6 при итоге5. Проверить назначение каналов и исправить несогласованность итогов."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+          "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+          "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Sheet18 SHAUV-1-K5AS DO row11 connection dots, printed total10. Six damper controls, pump, four drives."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+          "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+          "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Sheet21 SHAUV-3-K6PCh DI12 dots including fire, printed10; DO6 dots, printed5."
+        }
+      ],
+      "disposition": "assessed_preserve_three_matrix_total_discrepancies",
+      "checked_counts": {
+        "sheet18_DO_columns": [
+          2,
+          6,
+          9,
+          12,
+          14,
+          16,
+          17,
+          19,
+          21,
+          23,
+          27
+        ],
+        "sheet21_DI_columns": [
+          3,
+          4,
+          5,
+          6,
+          8,
+          10,
+          11,
+          12,
+          15,
+          16,
+          17,
+          "fire"
+        ],
+        "sheet21_DO_columns": [
+          2,
+          8,
+          10,
+          11,
+          14,
+          16
+        ]
+      }
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_0457419703024673bb4328b18d47501e",
+      "authoritative_TEXT": "### BLOCK #28 [TEXT]: blk_0457419703024673bb4328b18d47501e\n\n> **Created:** 2026-09-28 07:28:41 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/9Z7-VfG1AcoQ_XZM-q1M)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 8 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П4.1.3, П4.1.4. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2, ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 2 |  |\n| ТС1 | Теромастат | 1 | (комплектно с электронагревателем) |\n| PDS2, PDS4 | Датчик давления дифференциальный 20-200 Па | 2 |  |\n| PDS1, PDS3 | Датчик давления дифференциальный 50-500 Па | 2 |  |\n| У1 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В | 1 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| У2, У3 | Электропривод воздушной заслонки без возвратной пружиной, плавное регулирование 24 В | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| SC UZ1, SC UZ2 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001Н | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+      "authoritative_TEXT": "### BLOCK #51 [TEXT]: blk_b8b4eb72d9e84ebe9aa166bbb7ed401d\n\n> **Created:** 2026-09-28 07:28:48 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/0SJxrdWbNMDc_vk3ehS9)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 14 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П5.1.1, П5.1.3 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-Н2/Pt | 1 |  |\n| ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1 |  |\n| ТС2 | Термостат | 1 | (комплектно с электронагревателем) |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS2, PDS4 | Датчик давления дифференциальный 20-200 Па | 2 |  |\n| PDS1, PDS3, PDS5 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| Y1-Y2 | Электропривод воздушной заслонки | 2 | Учтено в разделе 1ЗАВ-РД-ОВ2.2-ПА |\n| Y3 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 1ЗАВ-РД-ОВ1.2-ПА |\n| M1-M2 | Электродвигатель вентилятора | 2 | Учтено в разделе 1ЗАВ-РД-ОВ2.2-ПА |\n| M3 | Электродвигатель насоса | 1 | Учтено в разделе 1ЗАВ-РД-ОВ1.2-ПА |\n| SC UZ1 - SC UZ2 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001H | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+      "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+      "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Columns11/13 labelled damper state0–100%, dots in AO; Y2/Y3 symbols attached."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+      "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+      "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "AO points7/18 only; column10 UZ1 DI/DO but no AO, despite0–100% caption; CAN ends at another cabinet."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+      "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+      "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Sheet18 SHAUV-1-K5AS DO row11 connection dots, printed total10. Six damper controls, pump, four drives."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+      "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+      "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Sheet21 SHAUV-3-K6PCh DI12 dots including fire, printed10; DO6 dots, printed5."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F036_damper_signal_direction.json",
+      "sha256": "679a411c9e04b0c8c1987471b621d8fdc5d6935a1db687f71aefcf1cec7b07eb",
+      "primary_adjudication": null,
+      "limits": [
+        "Подтверждено несоответствие смысла подписи и указанного направления в функциональной таблице. Не доказано физическое подключение обратной связи к выходу.",
+        "Перечень предусматривает плавное регулирование24В для У2/У3: это допускает объяснение AO как команды. Автоматическая замена AO на AI не обоснована.",
+        "Общие данные требуют контроля положения, но не устанавливают для этих приводов именно непрерывный аналоговый способ. Отсутствие любого контроля не доказано.",
+        "Заводские схемы, паспорта приводов, программа контроллера и фактическая реализация не проверены. Конкретное нормативное нарушение не установлено.",
+        "Решение инженера по кандидату отсутствует; подтверждённый вывод ограничен согласованием назначения сигналов."
+      ],
+      "wording": "Согласовать назначение сигналов11/13 заслонок Y2/Y3 на листе8: подписи называют состояние0…100%, но матрица относит их к AO. Если это команды плавного регулирования, уточнить подписи; если обратная связь — определить её действительный вход по схеме шкафа и привода."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+      "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08",
+      "primary_adjudication": null,
+      "limits": [
+        "Подсчитаны точки функциональной матрицы, не аппаратные каналы установленного контроллера. Состав модулей, резервы и внутренние схемы шкафа не проверены.",
+        "F048 правильно обнаружил несогласованность, но неверно ограничил полный подсчёт DI числом11: это только нумерованные колонки без входа АПС. Не следует снимать полезный факт целиком из-за этой ошибки.",
+        "Раздельные точки управления основным и резервным вентиляторами посчитаны отдельно. Попеременная работа сама по себе не доказывает общий аппаратный выход; аппаратная реализация не установлена.",
+        "Три записи относятся к одной матрице и не являются тремя независимыми дефектами. Решение инженера по этим blind-кандидатам не установлено."
+      ],
+      "wording": "Лист21, шкаф ШАУВ-3-К6ПЧ: согласовать итоговые количества дискретных сигналов с матрицей. В строке DI отмечены12 подключений, включая Пожар от АПС, при итоге10; в строке DO —6 при итоге5. Проверить назначение каналов и исправить несогласованность итогов."
+    }
+  ],
+  "limits": [
+    "Drawn connection counts are not installed module capacity.",
+    "No automatic AO to AI conversion without signal semantics.",
+    "Frozen evaluator, independent run inputs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
