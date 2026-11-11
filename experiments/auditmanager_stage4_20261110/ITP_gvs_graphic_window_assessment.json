@@ -1,0 +1,25 @@
+{
+  "status": "source_supported_candidate_not_yet_reported",
+  "model": "codex/gpt-6-astra",
+  "observations": [
+    {
+      "path": "/tmp/auditmanager_itp_gvs_graphic_window_20261111/tiles_0/detail_tile_0.png",
+      "sha256": "310827197e4a90d39c50e4bf375874c4a40c239ec0ef65a1453325650c31d3e9",
+      "directly_viewed": true,
+      "observation": "Т411: G=2,73 м³/ч, Ø45×2,5оц, T=55 °C, P=8,06 бар; циркуляция ГВС жилья 1-й зоны."
+    },
+    {
+      "path": "/tmp/auditmanager_itp_gvs_graphic_window_20261111/tiles_1/detail_tile_0.png",
+      "sha256": "847037c08616aa20e44353c005fda5c0a0f36e7f9b4f878eb2326f550c8a5375",
+      "directly_viewed": true,
+      "observation": "Т411: G=5,89 м³/ч, Ø45×2,5оц, T=55 °C, P=8,06 бар; циркуляция ГВС жилья 1-й зоны."
+    }
+  ],
+  "arithmetic_check": "5.89 - 2.73 = 3.16 m3/h",
+  "findings": 1,
+  "finding_scope": "Same fully labelled T411 branch differs between principle drawing and section; no pump insufficiency claim.",
+  "historical_control_relation": "Related but narrower than H-ITP-58 branch sum/pump comparison. Does not close the full historical compound control or the unrelated pipe-wall clause.",
+  "mechanism_observed": "Detailed graphic context enabled explicit same-instance comparison after prior passes remained needs_data.",
+  "remaining": "Source review and canonical severity, then actual report admission. Physical design flow and consequences remain unresolved.",
+  "full_acceptance": false
+}
