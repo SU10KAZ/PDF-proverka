@@ -1,0 +1,334 @@
+{
+  "status": "source_checked_two_editorial_occurrences",
+  "queue_before_sha256": "155b040396eaaacb95c53bf9cdfc65236f0336449202dd03d4d44f19c7d20c02",
+  "queue_after_sha256": "1cf55307b62f0354a3e3ef8d397009a7e1bdd1cf540f4d0b55ad82bcff21c43c",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Документация",
+        "sheet": "Лист 4",
+        "page": 6,
+        "problem": "Выноска заглушки в узле Д ссылается на отсутствующий пункт примечаний.",
+        "description": "Выноска «Заглушка (см. п.п.6)» направляет к пункту 6, хотя примечания листа заканчиваются пунктом 5. Требования к установке заглушек приведены в пункте 4.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к оформлению узлов и ссылок на технические указания.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-007"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить ссылку выноски заглушки на пункт 4 примечаний листа.",
+        "risk": "Неверное толкование требований к установке заглушек.",
+        "source_finding_ids": [
+          "G-007"
+        ],
+        "source_block_ids": [
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d"
+        ],
+        "related_block_ids": [
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "blk_02786cefba4641928c7e149eda44f872"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "blk_02786cefba4641928c7e149eda44f872",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания относятся к ссылке «Заглушка (см. п.п.6)» в узле Д: пункт 6 отсутствует, указания по заглушкам приведены в пункте 4.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 49,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Выноска заглушки узла Д ссылается на пункт 6 на листе 4",
+          "verdict": "supported_by_viewed_graphic"
+        },
+        {
+          "claim": "На этом листе примечания заканчиваются пунктом 5; заглушки описаны в пункте 4",
+          "verdict": "supported_by_authoritative_TEXT"
+        },
+        {
+          "claim": "Неверное толкование требований или неправильное выполнение работ",
+          "verdict": "hypothetical_consequence_not_observed",
+          "note": "Полный текст требования и решение заглушки присутствуют. Производственный дефект не доказан."
+        }
+      ],
+      "unsupported_additions": "consequence_not_established_as_fact",
+      "novel_useful_content": "confirmed_editorial_discrepancy_engineer_utility_unreviewed",
+      "duplicate_burden": "same_correction_two_distinct_sheet_addresses_grouping_candidate",
+      "profile_and_section": "editorial_question_recommended_no_explicit_question_section",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_02786cefba4641928c7e149eda44f872",
+          "authoritative_TEXT": "### BLOCK #30 [TEXT]: blk_02786cefba4641928c7e149eda44f872\n\n> **Created:** 2026-10-21 13:32:37 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/HX-ErnWgMKW11FPba0Ng)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...6, 8 | Organization: GLOBUS ПРОЕКТ | Revisions: Не указано\n\n1. Размеры и отметки высот в метрах, остальные в миллиметрах.\n\n2. Сварные швы выполнять полуавтоматической по ГОСТ 14771-76 или ручной дуговой сваркой по ГОСТ 5264-80* электродами Э42 по ГОСТ 9467-75*.\n\n3. Катеты сварных швов выполнять по наименьшей толщине свариваемых элементов, но не более 1,2Т, где Т - наименьшая толщина свариваемых элементов.\n\n4. Заглушки устанавливать при помощи сварки на торцах поручней, если нет примыкающих ограждений и на концах стоек, листом толщиной 3мм.\n\n5. Схему расположения ограждений см. л.4.\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cfd1c741a6fa4cd99c3eccd1d42afc7d.png",
+          "sha256": "b9a65fa02aecbc35f4fa72c98c2daba4002bbbc9a303ffadda7617686ee52c84",
+          "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "directly_viewed": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-014"
+        }
+      ],
+      "disposition": "source_checked_editorial_question_pending_engineer_utility"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Документация",
+        "sheet": "Лист 6",
+        "page": 8,
+        "problem": "Выноска заглушки узла Д ссылается на отсутствующий пункт 6.",
+        "description": "Указания по заглушкам приведены в пункте 4 примечаний листа 6, а выноска содержит «Заглушка (см. п.6)». Переданный перечень примечаний заканчивается пунктом 5.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к оформлению узлов и ссылок на технические указания.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-024"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-024"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить ссылку в выноске заглушки на пункт 4 примечаний листа 6.",
+        "risk": "Неоднозначное выполнение требований к заглушкам при изготовлении.",
+        "source_finding_ids": [
+          "G-024"
+        ],
+        "source_block_ids": [
+          "blk_49d947c318c3478582a39740abda8658"
+        ],
+        "related_block_ids": [
+          "blk_49d947c318c3478582a39740abda8658"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_49d947c318c3478582a39740abda8658",
+            "page": 8
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-024",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 51,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Выноска заглушки узла Д ссылается на пункт 6 на листе 6",
+          "verdict": "supported_by_viewed_graphic"
+        },
+        {
+          "claim": "На этом листе примечания заканчиваются пунктом 5; заглушки описаны в пункте 4",
+          "verdict": "supported_by_authoritative_TEXT"
+        },
+        {
+          "claim": "Неверное толкование требований или неправильное выполнение работ",
+          "verdict": "hypothetical_consequence_not_observed",
+          "note": "Полный текст требования и решение заглушки присутствуют. Производственный дефект не доказан."
+        }
+      ],
+      "unsupported_additions": "consequence_not_established_as_fact",
+      "novel_useful_content": "confirmed_editorial_discrepancy_engineer_utility_unreviewed",
+      "duplicate_burden": "same_correction_two_distinct_sheet_addresses_grouping_candidate",
+      "profile_and_section": "editorial_question_recommended_no_explicit_question_section",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_9d85769870054701b8f16e3f8d203864",
+          "authoritative_TEXT": "### BLOCK #52 [TEXT]: blk_9d85769870054701b8f16e3f8d203864\n\n> **Created:** 2026-10-21 13:32:40 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/ykVCXQppKCHwAYedHIHX)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n1. Размеры и отметки высот в метрах, остальные в миллиметрах.\n\n2. Сварные швы выполнять полуавтоматической по ГОСТ 14771-76 или ручной дуговой сваркой по ГОСТ 5264-80* электродами Э42 по ГОСТ 9467-75*.\n\n3. Катеты сварных швов выполнять по наименьшей толщине свариваемых элементов, но не более 1,2Т, где Т - наименьшая толщина свариваемых элементов.\n\n4. Заглушки устанавливать при помощи сварки на торцах поручней, если нет примыкающих ограждений и на концах стоек, листом толщиной 3мм.\n\n5. Схему расположения ограждений см. л.5.\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_49d947c318c3478582a39740abda8658.png",
+          "sha256": "a787fed35399dd8f5d5e0366b8e16ccf37c1df34157d46ffae8503f1e46a286d",
+          "block_id": "blk_49d947c318c3478582a39740abda8658",
+          "directly_viewed": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-018"
+        }
+      ],
+      "disposition": "source_checked_editorial_question_pending_engineer_utility"
+    }
+  ],
+  "grouping_recommendation": {
+    "members": [
+      "F-014",
+      "F-018"
+    ],
+    "proposed_wording": "На листах 4 и 6 в узле Д исправить ссылку заглушки с пункта 6 на пункт 4 примечаний соответствующего листа.",
+    "scope": "One editorial correction with two preserved addresses; not two demonstrated technical defects.",
+    "applied_to_runtime": false
+  },
+  "limits": [
+    "Engineer usefulness and actual review time remain unmeasured.",
+    "Not proof of novelty relative to every historical audit.",
+    "No production or frozen trial changes."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
