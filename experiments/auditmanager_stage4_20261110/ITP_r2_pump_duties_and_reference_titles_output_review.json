@@ -1,0 +1,694 @@
+{
+  "status": "four_ITP_pump_and_title_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "3e8b64dbddabcf757351caf6aef80f01b54c573433a5c18823b2f0bfb2a6598f",
+  "queue_after_sha256": "bb9d0230dba302fe6fe339ccc83c2943f4ea4ba1924fe611f9cc7c7baefbd054",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Подбор насосов",
+        "sheet": "Листы 13, 14",
+        "page": [
+          51,
+          52,
+          67,
+          70,
+          73,
+          76,
+          79,
+          82
+        ],
+        "problem": "Исходные точки подбора насосов не согласованы с гидравлическим расчётом.",
+        "description": "Для отопления первой зоны рассчитаны 74,15 м³/ч и 15,2 м, в подбор переданы 78 м³/ч и 20 м, выбранная точка — 82,83 м³/ч и 22,53 м. Для второй зоны расчётный напор 15,4 м заменён в подборе на 20 м. Частотное регулирование предусмотрено, поэтому фактический перерасход энергии не доказан.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Обоснование параметров и типоразмеров насосного оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-015"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Представить характеристику сети, состав расчётных потерь и рабочие точки при расчётной частоте; по результату подтвердить или изменить типоразмеры.",
+        "risk": "Избыточные капитальные затраты и возможное снижение энергетической эффективности.",
+        "source_finding_ids": [
+          "T-015"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 81,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Для зоны 1 ПЗ задаёт 74,15 м³/ч при 15,2 м, лист подбора принимает 78 при 20 и публикует рабочую точку 82,83 при 22,53.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Для зоны 2 ПЗ задаёт 44 м³/ч при 15,4 м, лист подбора принимает 45 при 20.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Технический лист публикует рабочий напор 21,91, ПЗ 21,29; это отдельный уже разобранный тезис F-017."
+        },
+        {
+          "claim": "Частотное регулирование предусмотрено.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Экспликация К9 и К10 прямо указывает преобразователь SK-712/w. Не считать насосы обязательно работающими на полной частоте."
+        },
+        {
+          "claim": "Никакой запас в расчёте не указан.",
+          "verdict": "refuted_broad_reading",
+          "limits": "ПЗ включает 5 м с обозначением «зап» в расчёт 15,2/15,4. Это не объясняет автоматически дальнейший переход к 20 м, но исключает утверждение о полном отсутствии запаса."
+        },
+        {
+          "claim": "Переход от расчётных значений ПЗ к исходным точкам подбора не объяснён в проверенных расчётных строках.",
+          "verdict": "confirmed_bounded_document_comparison",
+          "limits": "Отдельный расчёт регулирования, раздел АТМ и все возможные приложения не проверены. Отсутствие характеристик или расчётных частот во всём проекте не установлено."
+        },
+        {
+          "claim": "Полезно согласовать рабочие точки и основание перехода к входам подбора.",
+          "verdict": "supported_unmapped_question",
+          "limits": "Практическая полезность этого нового вопроса инженером не оценена. Не требовать замены насоса только из-за превышения номинальной точки."
+        },
+        {
+          "claim": "Избыточное энергопотребление и работа вне предпочтительной области доказаны.",
+          "verdict": "not_established",
+          "limits": "Нужны характеристика системы, фактический режим регулирования, продолжительность режимов и сопоставимый вариант. Мощность двигателя и табличная точка сами по себе не дают фактический расход энергии."
+        },
+        {
+          "claim": "Превышение точки подбора доказывает избыточные капитальные затраты.",
+          "verdict": "not_established_cost_comparison",
+          "limits": "Цены сопоставимых исполнений, закупка и жизненный цикл не проверены. Частотное регулирование и запас5м уже предусмотрены; переход к20м требует объяснения, но не автоматической замены."
+        },
+        {
+          "claim": "Строка покрывает отдельный вопрос о напоре вентиляцииДОО39,9/24,9м.",
+          "verdict": "not_covered_by_this_row",
+          "limits": "Это отопление1/2зон, а не вентиляция. Нельзя считать прежнийF014сохранённым за счёт общего упоминания насосов; покрытие всей выдачей проверяется отдельно."
+        }
+      ],
+      "unsupported_additions": "Не выводить непригодность насоса из различия полей без режима; редакционное исправление названия не доказывает технического нарушения или текущей применимости нормы.",
+      "novel_useful_content": "Сохранены прежние вопросы; проверены границы новых последствий и маршруты доказательств.",
+      "duplicate_burden": "Selection-basis question distinct from F-014 ventilation head boundary and F-017 inconsistent published head; do not duplicate F-017 in energy-benefit counts.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_432d08b6de194751ae756f627e3e5bb8",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-015",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-015_pump_or_editorial_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-017",
+      "finding": {
+        "id": "F-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Характеристики насосов",
+        "sheet": "Листы 2, 1., 13",
+        "page": [
+          8,
+          24,
+          51,
+          70,
+          72,
+          76
+        ],
+        "problem": "Напоры насосов в проекте и технических данных противоречат друг другу.",
+        "description": "Для К10 IL 50/140-4/2-R при расходе 47,08 м³/ч в проекте указано 21,29 м, а в технических данных — 21,91 м; разница 0,62 м. Для насоса ДОО технический лист одновременно задаёт рабочий напор 16,98 м и максимальный 16,64 м. По этим противоречиям нельзя окончательно утверждать недостижимость рабочей точки.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Достоверность характеристик оборудования, используемых в расчётах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-017",
+                "G-035",
+                "G-036"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-017",
+                  "G-035",
+                  "G-036"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Получить согласованные характеристики изготовителя и привести расчёт, экспликацию и спецификацию к единым рабочим точкам.",
+        "risk": "Ошибочная настройка насосов и неподтверждённое обеспечение расчётного режима.",
+        "source_finding_ids": [
+          "T-017",
+          "G-035",
+          "G-036"
+        ],
+        "source_block_ids": [
+          "blk_64d234df62024a40b06b044dcb8f4bc9"
+        ],
+        "related_block_ids": [
+          "blk_64d234df62024a40b06b044dcb8f4bc9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_64d234df62024a40b06b044dcb8f4bc9",
+            "page": 72
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-035",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-036",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение напора насоса К10 IL 50/140-4/2-R: 21,91 м против 21,29 м при расходе 47,08 м³/ч в тех же источниках. Указание разницы 0,62 м не является существенным дополнением; различие оценок серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение напора насоса К10 IL 50/140-4/2-R: 21,91 м против 21,29 м при расходе 47,08 м³/ч в тех же источниках. Указание разницы 0,62 м не является существенным дополнением; различие оценок серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 87,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-017:05e18fdb07cf5bb1bc8b",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "H-ITP-63:7ba4e763f9b6758d0f09",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Для К10 при 47,08 м³/ч ПЗ, экспликация и СО указывают 21,29 м; технический лист IL50/140-4/2-R, артикул 2786092, — 21,91 м.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Разность 0,62 м не является универсальным допуском; правильное значение не выбирается по большинству документов."
+        },
+        {
+          "claim": "В листе насоса ДОО IL40/220-1,5/4-R рабочая точка содержит 16,98 м, поле максимального напора — 16,64 м.",
+          "verdict": "confirmed_internal_document_difference",
+          "limits": "Разность 0,34 м. Название «Фактическая рабочая точка» обозначает поле подбора, а не натурное испытание."
+        },
+        {
+          "claim": "Нужно согласовать характеристики выбранных исполнений и значения напора.",
+          "verdict": "supported_scoped_question",
+          "limits": "Кривые, режимы и объяснение изготовителя здесь не установлены; непригодность насоса не доказана."
+        },
+        {
+          "claim": "Указанный блок blk_64d234df62024a40b06b044dcb8f4bc9 прямо доказывает числовой конфликт напоров.",
+          "verdict": "refuted_by_direct_graphic",
+          "limits": "На изображении габаритные размеры и схема подключения Δ; значения 21,29/21,91 и 16,98/16,64 в нём не показаны. Числовой тезис подтверждён другими TEXT-блоками."
+        },
+        {
+          "claim": "В выдаче графический блок обозначен type=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "Дополнительно подтверждена нерелевантная прямая ссылка на изображение; этап появления неверной привязки в этой записи не установлен."
+        },
+        {
+          "claim": "Ошибочная наладка или эксплуатационный отказ уже произошли.",
+          "verdict": "not_established",
+          "limits": "Риск не приравнивается к наблюдённому последствию."
+        },
+        {
+          "claim": "По противоречию16,98/16,64 доказана недостижимость рабочей точки.",
+          "verdict": "not_established_and_explicitly_qualified_in_r2",
+          "limits": "Второй повтор правильно ограничивает вывод. Нужны согласованные определения полей, исполнение, частота и характеристика, а не автоматический вывод об отказе."
+        }
+      ],
+      "unsupported_additions": "Не выводить непригодность насоса из различия полей без режима; редакционное исправление названия не доказывает технического нарушения или текущей применимости нормы.",
+      "novel_useful_content": "Сохранены прежние вопросы; проверены границы новых последствий и маршруты доказательств.",
+      "duplicate_burden": "Two distinct pump objects within one output row; K10 repeated across documents is one discrepancy, not three independent defects. Separate from F-015 selection reserve.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-017.json",
+          "sha256": "74771a0b6daae9eabd6757acee99d68e3f5ee7bb36d07325f9e22017d22bfc27",
+          "primary_adjudication": null,
+          "limits": "Первичное основание — TEXT страницы 76, а не ошибочная ссылка исходного замечания на страницу 78. «Фактическая» — название поля подбора, не натурное испытание. Режимы, частота и кривая не сверены; непригодность насоса и неверная электрическая защита не доказаны.",
+          "wording": "Уточнить технический лист насоса К12: в разделе «Фактическая рабочая точка» напор 16,98 м, в «Данных продукта» максимальный напор 16,64 м. Получить согласованную характеристику и объяснение этих двух значений."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-ITP-63.json",
+          "sha256": "ec886ea171d16f2c81f3c31963104eeae8dd14400b7a53af1c76b644ff88c610",
+          "primary_adjudication": null,
+          "limits": null,
+          "wording": "Уточнить напор выбранного насоса отопления2-й зоны IL50/140-4/2-R, артикул2786092: при расходе47,08м³/ч ПЗ указывает21,29м, технический лист21,91м."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_64d234df62024a40b06b044dcb8f4bc9.png",
+          "sha256": "34e4d8eea4b9128f856f6793d5b330b666d8954956dd96c27b98c5678f1a7351",
+          "block_id": "blk_64d234df62024a40b06b044dcb8f4bc9",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Dimensional views and delta connection diagram; no compared head values."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-017",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-017_pump_or_editorial_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-056",
+      "finding": {
+        "id": "F-056",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "В ведомости неверно указано название СП 510.1325800.2022.",
+        "description": "Строка MD 243: «|  | СП 510.1325800.2022 | Проектирование тепловых пунктов |  |». Правильное название — «Тепловые пункты и системы внутреннего теплоснабжения». Оно также приведено в MD 998: «СП 510.1325800.2022 Тепловые пункты и системы внутреннего теплоснабжения». Таким образом, название одного документа в ведомости и примечаниях различается.",
+        "page": null,
+        "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Указать в ведомости название «Тепловые пункты и системы внутреннего теплоснабжения».",
+        "risk": "Неоднозначная идентификация нормативного документа при проверке и использовании комплекта.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+            "page": null,
+            "md_lines": "строка 243"
+          },
+          {
+            "type": "text",
+            "block_id": "blk_981b77a31c254f73aa67261d897a2987",
+            "page": null,
+            "md_lines": "строка 998"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Листы 1, 12",
+        "candidate_norm_references": [
+          {
+            "designation": "СП 510.1325800.2022",
+            "cited_designation": "СП 510.1325800.2022",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 2,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "formal_reference_category",
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Ведомость называет СП510 «Проектирование тепловых пунктов».",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Полное название по официальной карточке Росстандарта — «Тепловые пункты и системы внутреннего теплоснабжения».",
+          "verdict": "confirmed_primary_catalog_title",
+          "limits": ""
+        },
+        {
+          "claim": "То же полное название присутствует в примечаниях двух планов проекта.",
+          "verdict": "confirmed_prior_direct_GRAPHIC_review_identical_r2_bytes",
+          "limits": "Примечания проверены по растру в первом повторе;SHA256источников совпали. Строка998MDявляется описаниемIMAGE, а не самостоятельным авторитетнымTEXT."
+        },
+        {
+          "claim": "Разные названия при одинаковом полном обозначении требуют редакционного согласования.",
+          "verdict": "supported_editorial_question",
+          "limits": "Само по себе не доказывает неверное проектирование или отсутствие применённой нормы."
+        },
+        {
+          "claim": "Ссылка на строку998сама является достаточным текстовым доказательством.",
+          "verdict": "not_authoritative_TEXT_route",
+          "limits": "Смысл подтверждён прежним визуальным просмотром того же изображения, а не доверием к описанию изображения."
+        }
+      ],
+      "unsupported_additions": "Не выводить непригодность насоса из различия полей без режима; редакционное исправление названия не доказывает технического нарушения или текущей применимости нормы.",
+      "novel_useful_content": "Сохранены прежние вопросы; проверены границы новых последствий и маршруты доказательств.",
+      "duplicate_burden": "One title correction across register, PZ and plans; repeated mentions are not independent technical defects.",
+      "profile_and_section": "questions_clarifications_editorial",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F053_standard_title.json",
+          "sha256": "48b25ee12d05eb09a1826215610c1a59dfe0f759cbf315a2d0f57949a5950513",
+          "primary_adjudication": null,
+          "limits": "Полное числовое обозначение и год одинаковы: применение разных документов, невозможность идентификации и последствия для монтажа не доказаны. Проверка не подтверждает правильность ссылки на7.2 или технического решения двери/шва. Исходную привязку к строке969/другому плану не переносить: здесь подтверждён конкретный план лист3. B-ITP-F-034 содержит тот же тезис и дополнительные непроверенные вопросы, поэтому целиком не закрывается.",
+          "wording": "В ведомости ссылочных документов ИТП.ТМ, лист1, и общих данных ИТП.ТМ.ПЗ, лист3, привести название СП510.1325800.2022 к официальному: «Тепловые пункты и системы внутреннего теплоснабжения». В просмотренном плане ИТП, лист3, это название уже приведено. Замечание относится к оформлению ссылок."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+          "primary_adjudication": null,
+          "limits": "Подтверждена отмена конкретного приказа и локальная неполнота ссылок, не нарушение фактической эксплуатации. ТЗ проекта ссылается на договор15.09.2025, позднее даты отмены; окончательная дата выпуска и договорная нормативная база требуют проверки. В ведомости реквизиты№115 присутствуют, поэтому «во всём проекте нет реквизитов» неверно. Отсутствие реквизитов правилучёта вУУТЭ не установлено. Содержание конкретных конфликтующих требованийСП74/СНиП не выявлено.",
+          "wording": "Согласовать нормативные ссылки: в ведомости указан приказМинэнерго24.03.2003№115, отменённый с01.09.2025 приказом14.05.2025№511; вПЗ правила эксплуатации и учёта названы без реквизитов. Уточнить применимые документы и согласовать перечни. НазваниеСП510 исправить совместно сF-053; совместное упоминаниеСП74 иСНиП3.05.03-85 само по себе не считать техническим противоречием."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+          "sha256": "054e48c413554acbe425a0a73a982a4f39c215d2b53aeb5877ccd77d8d686713",
+          "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Bottom35% viewed: note explicitly gives full title of SP510. No verification of clause7.2 substance in this title review."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_981b77a31c254f73aa67261d897a2987.png",
+          "sha256": "3cb700af6b7c1b3c41c11860f02195a7927e36c84a4e7a027629c4995c1c6aed",
+          "block_id": "blk_981b77a31c254f73aa67261d897a2987",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Bottom35% viewed: note explicitly gives full title of SP510. No verification of clause7.2 substance in this title review."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-056",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-056_pump_or_editorial_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-057",
+      "finding": {
+        "id": "F-057",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "В монтажных указаниях неверно назван СНиП 3.05.03-85.",
+        "description": "В строке MD 264 приведена ссылка: «СНиП 3.05.03-85 \"Правила производства и приемки работ\"». Название СНиП 3.05.03-85 — «Тепловые сети»; указанная в проекте формулировка не является названием этого документа. Замечание касается наименования, а не неподтверждённого статуса действия.",
+        "page": null,
+        "norm": "СНиП 3.05.03-85 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Исправить название СНиП 3.05.03-85 на «Тепловые сети».",
+        "risk": "Ошибочная идентификация документа, на который ссылаются требования к монтажу и приёмке.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+            "page": null,
+            "md_lines": "строка 264"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Лист 1",
+        "candidate_norm_references": [
+          {
+            "designation": "СНиП 3.05.03-85",
+            "cited_designation": "СНиП 3.05.03-85",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 48,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "formal_reference_category"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Монтажные указания называют СНиП3.05.03-85 «Правила производства и приемки работ».",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Название самого СНиП3.05.03-85 — «Тепловые сети».",
+          "verdict": "confirmed_primary_catalog_historical_title",
+          "limits": "Использована карточка государственного портала Молдовы для идентичности советского документа, не для текущего статуса в РФ."
+        },
+        {
+          "claim": "Исправление названия является самостоятельным редакционным вопросом, а не повтором численного замечания F-006.",
+          "verdict": "supported_editorial_question",
+          "limits": "Общий исходный абзац не означает одинаковый предмет замечания."
+        },
+        {
+          "claim": "Эта проверка подтверждает применимость СНиП сегодня или конкретное нарушение его пункта.",
+          "verdict": "not_established",
+          "limits": "Проверено только название. Не делать автоматическую замену требований по карточке иной юрисдикции."
+        },
+        {
+          "claim": "Замечание ограничено историческим названием, а не нынешним статусом документа.",
+          "verdict": "appropriate_scope_preserved",
+          "limits": "Новая проверка действия норм не выполнялась. Не переносить статус документа из каталога другой юрисдикции; прежнее первичное свидетельство используется только для названия."
+        }
+      ],
+      "unsupported_additions": "Не выводить непригодность насоса из различия полей без режима; редакционное исправление названия не доказывает технического нарушения или текущей применимости нормы.",
+      "novel_useful_content": "Сохранены прежние вопросы; проверены границы новых последствий и маршруты доказательств.",
+      "duplicate_burden": "Separate from F-006 test pressure; group editorial norm-title fixes in questions section to limit engineer burden.",
+      "profile_and_section": "questions_clarifications_editorial",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-057",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-057_pump_or_editorial_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
