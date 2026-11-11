@@ -1,0 +1,477 @@
+{
+  "status": "two_pressure_range_output_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "8ac363cc5317810582a1789f88a566b3fc4bae934618d93c719e8f9ed65a9754",
+  "queue_after_sha256": "82f0c06aa3e76e043529b236c5bb28a5880af745c8c1c369ff0312ccda18267a",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-042",
+      "finding": {
+        "id": "F-042",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Диапазоны приборов",
+        "sheet": "Листы 9, 13",
+        "page": [
+          13,
+          17,
+          97
+        ],
+        "problem": "Диапазоны реле PDS3 систем Пкр4.1 и Пкр5.1 не согласованы.",
+        "description": "Функциональные схемы задают для PDS3 диапазон 20–200 Па, перечни элементов для PDS1–PDS3 — 50–500 Па. Для Пкр5.1 диапазон 50–500 Па также указан в спецификации. Уставка 50 Па входит в оба диапазона, но не устраняет различие характеристик приборов.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность диапазонов измерения и контроля в документации автоматизации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-009",
+                "G-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-009",
+                  "G-018"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить требуемые диапазоны PDS3 и согласовать схемы, перечни и спецификацию.",
+        "risk": "Неоднозначный выбор реле и невозможность настройки части предусмотренного диапазона.",
+        "source_finding_ids": [
+          "G-009",
+          "G-018"
+        ],
+        "source_block_ids": [
+          "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "blk_4e142b330766407099c7d561f0a8eb6a"
+        ],
+        "related_block_ids": [
+          "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "blk_4e142b330766407099c7d561f0a8eb6a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+            "page": 13
+          },
+          {
+            "type": "text",
+            "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+            "page": 17
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие: диапазон PDS3 на функциональной схеме 20–200 Па, а в перечне элементов для PDS1–PDS3 — 50–500 Па. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одно несоответствие диапазона PDS3: 20–200 Па на функциональной схеме и 50–500 Па в перечне элементов и спецификации. Уточнение справа об участке 20–50 Па непосредственно следует из этих чисел и не добавляет существенной детализации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "PDS3 Пкр4.1 и Пкр5.1: таблица сигналов20–200Па, уставка50Па; перечниPDS1–PDS3 задают50–500Па.",
+          "verdict": "confirmed_authoritative_TEXT_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "СО7.3 дляШАУВ-2-К5ПЧ содержит3 датчика50–500Па; шкаф на схемеПкр5.1 совпадает.",
+          "verdict": "confirmed_cross_document_identity",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать диапазон одного и того же прибора между документами.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "50Па входит в оба диапазона; это не снимает расхождения характеристик."
+        },
+        {
+          "claim": "Невозможность настройки части предусмотренного диапазона.",
+          "verdict": "conditional_range_difference_not_operational_failure",
+          "limits": "Интервал20–50Па не входит в50–500Па, но необходимость уставки в этом интервале проектом здесь не установлена. Физическая непригодность при50Па, гистерезис и точность без паспорта не доказаны."
+        },
+        {
+          "claim": "ГОСТ21.408-2013 нарушен.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; подтверждён документный конфликт, а не конкретное нормативное нарушение."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "Two addressed instances of systemic range conflict; combine theme with F-012/F-043 while retaining object addresses, not repeated generic rows.",
+      "profile_and_section": "technical_core_preserve_no_proven_sensor_failure",
+      "engineer_reuse": "AK57/UNI-057 historically accepted; F-042 covers Pkr4.1/Pkr5.1 only, not all six historical addresses. Original failure explanation retained in source but not adopted as demonstrated.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+            "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+          },
+          "limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+          "wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+          "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78",
+          "route": "historical_engineer_decision_and_later_auditor_scope"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+          "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0",
+          "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Pkr4.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-3-K4PCh. Right register not used to override TEXT."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+          "sha256": "4abaff5efb5a1c9a6466cb37fc407035b9aa2c5cb6afe3a9dfa885c05c4aff01",
+          "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Pkr5.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-2-K5PCh."
+        }
+      ],
+      "disposition": "assessed_preserve_two_address_pressure_range_conflict"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-043",
+      "finding": {
+        "id": "F-043",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Диапазоны приборов",
+        "sheet": "Лист 22",
+        "page": 26,
+        "problem": "Для PDS2–PDS4 заданы разные диапазоны в таблице сигналов и перечне.",
+        "description": "Таблица сигналов Па5.1/Ва5.1 указывает 20–200 Па, перечень элементов — 50–500 Па. Примечание об уточнении рабочих значений при наладке не устанавливает единый диапазон закупаемых приборов.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность характеристик приборов в схеме автоматизации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-052"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-052"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить диапазон каждого PDS2–PDS4 и исправить противоречащие записи.",
+        "risk": "Закупка приборов с характеристиками, отличающимися от задания на контроль.",
+        "source_finding_ids": [
+          "G-052"
+        ],
+        "source_block_ids": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "related_block_ids": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "page": 26
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-052",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Па5.1/Ва5.1/Ва5.1р: PDS2/PDS3/PDS4 уставки100Па и диапазоны20–200Па в сигнальных колонках9/18/24.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Перечень лист22 задаётPDS1–PDS4 количеством4 с диапазоном50–500Па.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Примечание об уточнении рабочих значений приПНР присутствует.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Само по себе не определяет, какую запись диапазона изменить."
+        },
+        {
+          "claim": "Согласовать диапазоны трёх адресных приборов.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "Уставка100Па входит в оба диапазона; работоспособность и паспорт не установлены."
+        },
+        {
+          "claim": "Закуплены неверные приборы.",
+          "verdict": "not_established",
+          "limits": "Подтверждена неоднозначность проектных характеристик, фактическая поставка не проверена."
+        },
+        {
+          "claim": "ГОСТ21.408-2013 нарушен.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; не засчитывается как подтверждённое нарушение пункта."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "source_confirmed_additional_addresses_engineer_acceptance_not_established",
+      "duplicate_burden": "Same systemic theme as F-042/F-012, different cabinet and sensor addresses; preserve addresses under combined theme.",
+      "profile_and_section": "technical_core_no_proven_sensor_failure",
+      "engineer_reuse": "No new engineer decision. Pa5.1/Va5.1 are not automatically the Pa3.1/Va3.1 addresses accepted in AK57.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "PDS2 supply Pa5.1, PDS3 exhaust Va5.1, PDS4 reserve Va5.1r:100Pa labels,20–200Pa columns9/18/24; PDS1 filter50–500Pa; commissioning note visible."
+        }
+      ],
+      "disposition": "assessed_preserve_additional_addressed_pressure_range_conflict"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+      "authoritative_TEXT": "### BLOCK #32 [TEXT]: blk_6414183ffe264f65a253b3d6a5155da1\n\n> **Created:** 2026-09-28 07:28:42 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/VA9k7MNHTr40PRgUMCpM)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 9 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточная система Пкр4.1. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS1-PDS3 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| Y1 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В DA5FU230-DS | 1 |  |\n| Y2 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1, M2 | Электродвигатель вентилятора | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M3 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ1, SC UZ2 | Преобразователь частоты 3,7 кВт 380В, E5-MINI-005H | 2 |  |\n\nПримечание:\n\n. Пределные рабочие значения измеряемых величин уточняются при ПНР\n\n## Page 14 — Sheet 10 — Приточные системы П4.1.1, Пм4.1 Функциональная схема автоматизации\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+      "authoritative_TEXT": "### BLOCK #48 [TEXT]: blk_08e6971dafd541b2a40e0aa270404a4e\n\n> **Created:** 2026-09-28 07:28:47 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/KLbk4zM3uBW8QC0MKb2U)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 13 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточная система Пкр5.1. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-Н2/Pt | 1 |  |\n| ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS1-PDS3 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| Y1 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В DA5FU230-DS | 1 |  |\n| Y2 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1, M3 | Электродвигатель вентилятора | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M2 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ1, SC UZ2 | Преобразователь частоты 3,7 кВт 380В, E5-MINI-005H | 2 |  |\n\nПримечание:\n\n1. Предельные рабочие значения измеряемых величин уточняются при ПНР\n\n## Page 18 — Sheet 14 — Приточные системы П5.1.1, П5.1.3 Функциональная схема автоматизации\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+      "authoritative_TEXT": "### BLOCK #246 [TEXT]: blk_576ad6ac1cff48f79ac223f56ba405ae\n\n> **Created:** 2026-09-28 07:29:55 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/dxyDJ1cOBjDSS0ZWIwEm)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 4 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 7 | Шкаф ШАУВ-2-К5ПЧ |  |  |  |  |  |  |  |\n| 7.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 7.2 | Преобразователь частоты 3,7 кВт 380В | Веспер | E5-MINI-005H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для Пкр 5.1) |\n| 7.3 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 7.4 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 7.5 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 7.6 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 7.7 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 7.8 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В |  | DA5FU230-DS | Ноосоп | шт. | 1 |  |  |\n| 8 | Шкаф ШАУВ-3-К5ПЧ |  |  |  |  |  |  |  |\n| 8.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 8.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 8.3 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 8.4 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 8.5 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 8.6 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 8.7 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 8.8 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 98 — Sheet 5\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_3963ce75beb642a0a5fe85d9dada94b3",
+      "authoritative_TEXT": "### BLOCK #82 [TEXT]: blk_3963ce75beb642a0a5fe85d9dada94b3\n\n> **Created:** 2026-09-28 07:28:58 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/mZrdLL-psBGcQYjIRMdl)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 22 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточная система Па5.1, вытяжная система Ва5.1. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS1-PDS4 | Датчик давления дифференциальный 50-500 Па | 4 |  |\n| Y1-Y6 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В DA5FU230-DS | 6 |  |\n| Y7 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M3, M5 | Электродвигатель вентилятора | 4 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M4 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SCUZ2 -SCUZ3 | Преобразователь частоты 3,7 кВт 380В, E5-MINI-005H | 2 |  |\n| SCUZ1, SCUZ4 | Преобразователь частоты 2,2 кВт 380В, E5-MINI-003H | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+      "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0",
+      "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Pkr4.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-3-K4PCh. Right register not used to override TEXT."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+      "sha256": "4abaff5efb5a1c9a6466cb37fc407035b9aa2c5cb6afe3a9dfa885c05c4aff01",
+      "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Pkr5.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-2-K5PCh."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+      "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+      "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "PDS2 supply Pa5.1, PDS3 exhaust Va5.1, PDS4 reserve Va5.1r:100Pa labels,20–200Pa columns9/18/24; PDS1 filter50–500Pa; commissioning note visible."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+      "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+      "primary_adjudication": {
+        "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+        "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+      },
+      "limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+      "wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+      "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78",
+      "route": "historical_engineer_decision_and_later_auditor_scope"
+    }
+  ],
+  "limits": [
+    "Range disagreement does not prove physical failure at shared setpoints.",
+    "Historical engineer acceptance is reused only for matching objects and claims.",
+    "Frozen evaluator, independent run inputs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
