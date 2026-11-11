@@ -1,0 +1,92 @@
+{
+  "scope": "Runner plumbing only; no comparison freeze or execution.",
+  "projects": [
+    {
+      "discipline": "AK",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/AK/01_input/project_info.json",
+      "sha256": "7782d77f5005ca0ecc8363b4329dba03cbb59cac3467fa534e9b23bd7fa60462",
+      "metadata": {
+        "project_id": "method-comparison-AK",
+        "name": "AK",
+        "section": "AK",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      }
+    },
+    {
+      "discipline": "ITP",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/ITP/01_input/project_info.json",
+      "sha256": "30906f590d06a8556728ac7edf39e511baa120084e5c44cdfeaae8a6f04c415b",
+      "metadata": {
+        "project_id": "method-comparison-ITP",
+        "name": "ITP",
+        "section": "ITP",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      }
+    },
+    {
+      "discipline": "AR",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/AR/01_input/project_info.json",
+      "sha256": "887bf6875f5806b445d6b7a89b98224f14c0c385a59dcedba4c7899b467d4ae6",
+      "metadata": {
+        "project_id": "method-comparison-AR",
+        "name": "AR",
+        "section": "AR",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      }
+    },
+    {
+      "discipline": "KM",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/KM/01_input/project_info.json",
+      "sha256": "cfad5d2d590129de86e9e4f20a42e5abca0973a5adc0f6e8cb628529239406fd",
+      "metadata": {
+        "project_id": "method-comparison-KM",
+        "name": "KM",
+        "section": "KM",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      }
+    },
+    {
+      "discipline": "VK",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/VK/01_input/project_info.json",
+      "sha256": "f4f6b07a2cd4b4fec7ebc85327a77bdb2e54150805f5558521c647c656fcc645",
+      "metadata": {
+        "project_id": "method-comparison-VK",
+        "name": "VK",
+        "section": "VK",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      }
+    },
+    {
+      "discipline": "EOM",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/EOM/01_input/project_info.json",
+      "sha256": "c8cbfb6e4e5cd05d53d22ac37eea871d977612cc055a1fc2e5e1f818962116c9",
+      "metadata": {
+        "project_id": "method-comparison-EOM",
+        "name": "EOM",
+        "section": "EOM",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      }
+    }
+  ],
+  "metadata_source": "Fixed discipline and manifest-verified source paths only.",
+  "engineer_answers_or_prior_findings_used": false,
+  "new_model_calls": 0
+}

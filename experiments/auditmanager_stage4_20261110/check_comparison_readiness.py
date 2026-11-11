@@ -11,6 +11,8 @@ def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 def main():
     package=json.loads((OUT/'six_project_input_package.json').read_text())
+    metadata=json.loads((OUT/'six_runner_metadata_manifest.json').read_text())
+    metadata_by_disc={r['discipline']:r for r in metadata['projects']}
     rows=[]
     for project in package['projects']:
         root=Path(project['root']);failures=[]
@@ -21,8 +23,12 @@ def main():
         graph=json.loads(graph_path.read_text())
         md_sha=sha(root/'02_work/document.md')
         if graph.get('source_md_sha256')!=md_sha:failures.append('document_graph_source_hash')
+        meta=metadata_by_disc[project['discipline']]
+        metadata_path=root/'01_input/project_info.json'
+        if str(metadata_path)!=meta['path'] or sha(metadata_path)!=meta['sha256']:
+            failures.append('runner_metadata_hash')
         actual={str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()}
-        extras=sorted(actual-set(project['files'])-{'03_analysis/runs/candidate/document_graph.json'})
+        extras=sorted(actual-set(project['files'])-{'03_analysis/runs/candidate/document_graph.json','01_input/project_info.json'})
         rows.append({'discipline':project['discipline'],'root':str(root),
             'frozen_source_files_checked':len(project['files']),'source_failures':failures,
             'additional_files_requiring_inspection':extras,
@@ -33,10 +39,10 @@ def main():
         'projects':rows,'source_files_verified':all(not r['source_failures'] for r in rows),
         'additional_files_absent':all(not r['additional_files_requiring_inspection'] for r in rows),
         'document_graphs_present_and_bound':all('document_graph_source_hash' not in r['source_failures'] for r in rows),
-        'authorization_state':'Standing direct Codex CLI authorization is recorded in AGENTS.md. OpenRouter remains per-request only. Old package execution_authorized=false is historical packaging state, not a pending user question.',
+        'authorization_state':'Standing direct Codex CLI authorization was supplied by the user in this thread. OpenRouter remains per-request only. Old package execution_authorized=false is historical packaging state, not a pending user question.',
         'remaining_execution_gates':['Finish original stage4 controls and freeze selected implementation and prompts.',
             'Prepare actual paired classic/candidate runners with identical Astra topology, effort, inputs and scopes; historical mixed-model control cannot establish method effect.',
-            'Prepare source-only runner metadata and verify provider restrictions and answer isolation.',
+            'Source-only runner metadata is prepared; verify effective provider restrictions and answer isolation in the paired runner.',
             'Freeze evaluator with documented errata holds before scoring; no answers provided to search executors.',
             'Record processes, request provenance, retries, usage and output hashes for all six projects; evaluate new-project transfer separately.'],
         'full_six_project_run_started':False,'new_model_calls':0,'stage4_complete':False}
