@@ -331,6 +331,18 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_repeated_instances_source_review.json",
           "sha256": "e13f3983be53aa4452ae305e8cce41922e7b7b3f22f36f27dfcc8551f9d5f832"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_classic_overlap_review.json",
+          "sha256": "560d5261fea804e893697568d94be0f476a7a18a8838149a862afcbbce14b640"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_literal_quantity_trace.json",
+          "sha256": "16be4901fb47d533c17e6bcbdaec3c1b7e22080347351f59c93e10be19cc6ca0"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_complete_literal_quantity_trace.json",
+          "sha256": "aafdc71602181f6735d6f9d724f3c421eac55bb202a706449236c67fb3286ea7"
         }
       ],
       "full_acceptance_proven": false
@@ -425,6 +437,14 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_pipe_graphic_window_assessment.json",
           "sha256": "b629e0c2fb4c6181a79ef79849fd7fe988834a3e4cc40289fedde386502dfda1"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_automatic_regions_output_replay.json",
+          "sha256": "692ed7b04c6441340fdea6aa707e00ac2c15dbba78e6f38ad9ce369ad24cecf9"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_automatic_literal_output_replay.json",
+          "sha256": "e476592876418388b4bccae441446c5962ef70c9adbbaf638bcdad4254ee4bdd"
         }
       ],
       "full_acceptance_proven": false
