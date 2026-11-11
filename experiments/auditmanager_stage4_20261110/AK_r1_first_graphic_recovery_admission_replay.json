@@ -1,0 +1,109 @@
+{
+  "status": "first_seven_graphic_recovery_structural_replay_not_final_quality",
+  "run": "AK_r1_classic_current",
+  "rows": [
+    {
+      "request_id": "1794422955512332928",
+      "attached_images": 1,
+      "raw_findings": 0,
+      "admitted_findings": 0,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422955512332928/request.json": "eb0b3fe1a060523faae4d4f654fd21a1c1a0c28113e92a0598344414f45c1cdd",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422955512332928/response_1.json": "f6b00a2334bb4aad59f7213a2d24a844f6e85e5db26d0d5ad793086226878215"
+      }
+    },
+    {
+      "request_id": "1794422980918405264",
+      "attached_images": 1,
+      "raw_findings": 3,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 3
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422980918405264/request.json": "8c719baf21a898415ac195ee0e21eb70ce0d66e2e20ff36da792f4e690da599e",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422980918405264/response_1.json": "45fb6c1fd24044256fc274d9b4459f86c8d1f006ca406e8ab4f1d1a076bd3c65"
+      }
+    },
+    {
+      "request_id": "1794423031988765518",
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423031988765518/request.json": "043087d787fa3aecdae924aca011b0dc87763dd284bd594131d4a1ed50711c78",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423031988765518/response_1.json": "53b0ff014eec9dc32129d4c74ae5918edf1de422185e28c8ffc91f9da1211b65"
+      }
+    },
+    {
+      "request_id": "1794423055960796272",
+      "attached_images": 1,
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 2
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423055960796272/request.json": "65ac7c3e5c6d5385159764aa95099db3033194fa5fa03d9bc2696de67b6dd8c7",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423055960796272/response_1.json": "2b84ef481cb09d3a50b5db99139b816d456cfb110baabe622e700c21f2caface"
+      }
+    },
+    {
+      "request_id": "1794423130101409150",
+      "attached_images": 1,
+      "raw_findings": 3,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 3
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423130101409150/request.json": "389a575637a54426680fb3d7e50d6ea8ef686c98861d0bbdb723df14c9ba0400",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423130101409150/response_1.json": "affe4b7dbf45585a7af2ce212891cdf99a9d4e5b5d32631c7e12d76b10b88f88"
+      }
+    },
+    {
+      "request_id": "1794423179395803023",
+      "attached_images": 1,
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending_reasons": {},
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423179395803023/request.json": "fbef52ed2ebb86753e0d83537c19474d40e90a29b717c7a60baa6b6f53b2c43d",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423179395803023/response_1.json": "5fbc6241cd6bd2538372273539af5bda8ff400a47f52699797b59e565412e552"
+      }
+    },
+    {
+      "request_id": "1794423203439840615",
+      "attached_images": 1,
+      "raw_findings": 3,
+      "admitted_findings": 0,
+      "pending_reasons": {
+        "missing_inspected_source_reference": 3
+      },
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423203439840615/request.json": "7178223bdeaf66a65f3844c58c4b66cf838e8de7573aaa64618899502af7fc5f",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423203439840615/response_1.json": "e658aa7a39f8f995270c36bdf0f496c87cdc6b05e9e54db81dfebe4e05a3829f"
+      }
+    }
+  ],
+  "summary": {
+    "requests": 7,
+    "raw_findings": 13,
+    "admitted_findings": 2,
+    "pending_reasons": {
+      "missing_inspected_source_reference": 11
+    }
+  },
+  "validator_path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/prepare/candidate_recovery.py",
+  "validator_sha256": "e6f9ac142f19a0f16eec368e972a7fec548e1a3e6a10a3d9e29a9ab2071dd57e",
+  "limits": [
+    "No image interpretation was independently verified in this structural replay.",
+    "Model refuted and needs_data decisions are not evaluator verdicts.",
+    "Remaining graphic requests and context followups are still running.",
+    "Not a count of confirmed useful findings lost from the final report."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
