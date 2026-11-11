@@ -1,0 +1,357 @@
+{
+  "case": "AK baseline_r1 F-063 / G-095",
+  "status": "detector_origin_and_output_survival_confirmed",
+  "model": "codex/gpt-6-astra",
+  "review_source": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_dimension_endpoint_false_positive_output_review.json",
+    "sha256": "73c28e50378eab5431b6dbdb87cbb8947f8173e73d113846b0c2a59fc4dce1b3"
+  },
+  "raw_source": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_054120__ensemble_codex-only_high/block_blk_69a0cd3b48964764884d44fb2e0597e5.json",
+    "sha256": "5b1ee595cbeebdf0db1b0806ddf462516b4dc24a6b0f2f6db84d01d7bc7775bb"
+  },
+  "requests": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794377423476935357/request.json",
+      "sha256": "9e37ba078f4f43887bb3f6af8bd430e558feece5ee68f763cb466248ff9f30a3",
+      "image_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_69a0cd3b48964764884d44fb2e0597e5.png": "d7258eb89275719bc7f4e5c1237693f4b0563ffa79f269538915549a0da1eef8"
+      },
+      "neighbor_vector_excerpt": ".850\n5.Г\n1250\nEI 60\nУзел Б\nЛ-1\nП.В\n950\nУзел Б\n152\n5.В\n3\n-1,750\n2600\n9600\n1706\nВторой свет\n5.Т.1\n5.Б\nна - 1 этаж\n3450\nСУК1-2\n-5.850\nП.А\n101,00\n300\n5.А\nФоркамера\n500\n7050\n1750\n4850\n2650\n16800\nП.42\n5.1\n5.2\n5.3\n5.4\n5.5\nна 1 этаж\nСУК2-2\nСУК3-2\nСУК4-2\nСУК5-2\nБП-1\nОписание (подска",
+      "neighbor_raster_in_image_list": false
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/requests/AK/1794377423480855947/request.json",
+      "sha256": "9e37ba078f4f43887bb3f6af8bd430e558feece5ee68f763cb466248ff9f30a3",
+      "image_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_69a0cd3b48964764884d44fb2e0597e5.png": "d7258eb89275719bc7f4e5c1237693f4b0563ffa79f269538915549a0da1eef8"
+      },
+      "neighbor_vector_excerpt": ".850\n5.Г\n1250\nEI 60\nУзел Б\nЛ-1\nП.В\n950\nУзел Б\n152\n5.В\n3\n-1,750\n2600\n9600\n1706\nВторой свет\n5.Т.1\n5.Б\nна - 1 этаж\n3450\nСУК1-2\n-5.850\nП.А\n101,00\n300\n5.А\nФоркамера\n500\n7050\n1750\n4850\n2650\n16800\nП.42\n5.1\n5.2\n5.3\n5.4\n5.5\nна 1 этаж\nСУК2-2\nСУК3-2\nСУК4-2\nСУК5-2\nБП-1\nОписание (подска",
+      "neighbor_raster_in_image_list": false
+    }
+  ],
+  "first_detector_finding": {
+    "severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "category": "dimensions",
+    "finding": "На листе 52 общий размер между осями 5.1–5.5 на плане 1 этажа составляет 16300 мм, а на плане технического пространства — 16800 мм. При этом одинаковая цепочка межосевых размеров 7050 + 1750 + 4850 + 2650 даёт 16300 мм; расхождение составляет 500 мм.",
+    "norm_quote": null,
+    "value_found": "7050; 1750; 4850; 2650; 16300; 16800",
+    "recommendation": "Согласовать общий размер на плане технического пространства с межосевой размерной цепочкой и планом 1 этажа.",
+    "claim_type": "contradiction",
+    "problem_class": "overall_dimension_mismatch",
+    "affected_entity": "Размерная цепь осей 5.1–5.5 на планах 1 этажа и технического пространства, лист 52",
+    "evidence_quote": "План 1 этажа: «7050 1750 4850 2650 16300»; соседний план технического пространства: «7050 1750 4850 2650 16800».",
+    "evidence_kind": "same_page",
+    "context_status": "sufficient",
+    "confidence": 0.93,
+    "counterevidence_checked": true,
+    "required_context": []
+  },
+  "second_detector_findings": [],
+  "comparison": {
+    "schema_version": 1,
+    "status": "ok",
+    "reviewer_model": "codex/gpt-6-astra",
+    "relationships": [],
+    "unmatched_refs": [
+      "codex:001"
+    ],
+    "counts": {
+      "matches": 0,
+      "extensions": 0,
+      "new": 1,
+      "disputed": 0,
+      "gap_findings": 0
+    },
+    "gap_search": {
+      "enabled": false,
+      "performed": false,
+      "status": "disabled",
+      "searched_categories": [],
+      "summary": "Поиск новых проблем отключён. В правом списке замечаний нет; замечание codex:001 остаётся несопоставленным.",
+      "findings_added": 0,
+      "duplicates_rejected": 0
+    },
+    "comparison_models": [
+      "codex/gpt-6-astra::leg:1",
+      "codex/gpt-6-astra::leg:2"
+    ]
+  },
+  "evidence_gate": {
+    "schema_version": 1,
+    "candidates": 1,
+    "published": 1,
+    "deferred": 0,
+    "min_confidence": 0.8,
+    "max_published_per_block": null,
+    "reason_counts": {}
+  },
+  "published_candidate": {
+    "severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "category": "dimensions",
+    "finding": "На листе 52 общий размер между осями 5.1–5.5 на плане 1 этажа составляет 16300 мм, а на плане технического пространства — 16800 мм. При этом одинаковая цепочка межосевых размеров 7050 + 1750 + 4850 + 2650 даёт 16300 мм; расхождение составляет 500 мм.",
+    "norm_quote": null,
+    "value_found": "7050; 1750; 4850; 2650; 16300; 16800",
+    "recommendation": "Согласовать общий размер на плане технического пространства с межосевой размерной цепочкой и планом 1 этажа.",
+    "claim_type": "contradiction",
+    "problem_class": "overall_dimension_mismatch",
+    "affected_entity": "Размерная цепь осей 5.1–5.5 на планах 1 этажа и технического пространства, лист 52",
+    "evidence_quote": "План 1 этажа: «7050 1750 4850 2650 16300»; соседний план технического пространства: «7050 1750 4850 2650 16800».",
+    "evidence_kind": "same_page",
+    "context_status": "sufficient",
+    "confidence": 0.93,
+    "counterevidence_checked": true,
+    "required_context": [],
+    "_detector_model": "codex/gpt-6-astra",
+    "_detector_comparison_id": "codex/gpt-6-astra::leg:1",
+    "_detector_run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+    "_detector_ref": "codex:001",
+    "_comparison": {
+      "schema_version": 1,
+      "relation": "new",
+      "role": "unique_detector_finding",
+      "counterpart_refs": [],
+      "confidence": 1.0,
+      "reason": "Другой независимый детектор не вернул смысловой аналог.",
+      "reviewer_model": "codex/gpt-6-astra",
+      "origin": "dual_comparison"
+    },
+    "_evidence_gate": {
+      "status": "published",
+      "reasons": []
+    }
+  },
+  "base_output": {
+    "source": {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+      "sha256": "095c81a9703d8b05d96b5dec730fc9f642ae7f760709cff420b4d928d7467b48"
+    },
+    "matching_findings": [
+      {
+        "id": "F-062",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Размерные цепи",
+        "sheet": "Лист 52",
+        "page": 56,
+        "problem": "Общий размер между осями 5.1–5.5 расходится на двух планах.",
+        "description": "На плане первого этажа указан размер 16300 мм, на плане технического пространства — 16800 мм. Одинаковая цепочка 7050 + 1750 + 4850 + 2650 даёт 16300 мм. Разность составляет 500 мм.",
+        "norm": "ГОСТ Р 21.101-2020 — норматив-кандидат; актуальный статус по входным данным требует уточнения.",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Найти требования к нанесению размеров и согласованности чертежей.",
+            "provenance": {
+              "source_finding_ids": [
+                "G-095"
+              ],
+              "designation_source": "Подбор при консолидации"
+            }
+          }
+        ],
+        "solution": "Сверить архитектурную основу и исправить общий размер технического пространства либо составляющие размерной цепи.",
+        "risk": "Ошибочные привязки оборудования и определение длин трасс.",
+        "source_finding_ids": [
+          "G-095"
+        ],
+        "source_block_ids": [
+          "blk_69a0cd3b48964764884d44fb2e0597e5"
+        ],
+        "related_block_ids": [
+          "blk_69a0cd3b48964764884d44fb2e0597e5",
+          "blk_7519332eea8f44cca60ee966f3ef72aa"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_69a0cd3b48964764884d44fb2e0597e5",
+            "page": 56
+          }
+        ],
+        "highlight_regions": []
+      },
+      {
+        "id": "F-063",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Монтажные размеры",
+        "sheet": "Лист 53",
+        "page": 57,
+        "problem": "Размерная цепь установки ШАУВ-1-К6-ПЧ не замыкается.",
+        "description": "Высота шкафа 1400 мм и расстояние от пола до низа 1000 мм дают отметку верха 2400 мм. Общий размер до верха указан 1800 мм. Расхождение составляет 600 мм.",
+        "norm": "ГОСТ Р 21.101-2020 — норматив-кандидат; актуальный статус по входным данным требует уточнения.",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к однозначности размеров и монтажных привязок на чертежах.",
+            "provenance": {
+              "source_finding_ids": [
+                "G-098",
+                "G-099"
+              ],
+              "designation_source": "Подбор при консолидации"
+            }
+          }
+        ],
+        "solution": "Уточнить габарит шкафа и высоту установки, затем согласовать все вертикальные размеры.",
+        "risk": "Установка шкафа на неверной высоте и затруднение обслуживания.",
+        "source_finding_ids": [
+          "G-098",
+          "G-099"
+        ],
+        "source_block_ids": [
+          "blk_d52bf811660e42b59acdce0038f9fbf0"
+        ],
+        "related_block_ids": [
+          "blk_d52bf811660e42b59acdce0038f9fbf0",
+          "blk_47b4422b84f2413495ab9da6b8332760"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d52bf811660e42b59acdce0038f9fbf0",
+            "page": 57
+          }
+        ],
+        "highlight_regions": []
+      }
+    ]
+  },
+  "final_output": {
+    "source": {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+    },
+    "finding": {
+      "id": "F-063",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "Размерные цепи",
+      "sheet": "Лист 52",
+      "page": 56,
+      "problem": "Общий размер между осями 5.1–5.5 расходится на двух планах.",
+      "description": "На плане первого этажа указан размер 16300 мм, на плане технического пространства — 16800 мм. Одинаковая цепочка 7050 + 1750 + 4850 + 2650 даёт 16300 мм. Разность составляет 500 мм.",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.85,
+          "reason": "Найти требования к нанесению размеров и согласованности чертежей.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-095"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-095"
+              ],
+              "designation_source": "Подбор при консолидации"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить архитектурную основу и исправить общий размер технического пространства либо составляющие размерной цепи.",
+      "risk": "Ошибочные привязки оборудования и определение длин трасс.",
+      "source_finding_ids": [
+        "G-095"
+      ],
+      "source_block_ids": [
+        "blk_69a0cd3b48964764884d44fb2e0597e5"
+      ],
+      "related_block_ids": [
+        "blk_69a0cd3b48964764884d44fb2e0597e5",
+        "blk_7519332eea8f44cca60ee966f3ef72aa"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_69a0cd3b48964764884d44fb2e0597e5",
+          "page": 56
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-095",
+            "mode": "independent",
+            "detected_at": "2026-11-11T05:41:19.017534+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6-astra",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 55,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    }
+  },
+  "causal_conclusions": [
+    {
+      "stage": "input_context",
+      "finding": "Neighbor vector text already contains500 andP.42; only first-floor raster attached. This is not complete absence of the counterevidence; spatial relation in neighboring raster was unavailable in these detector requests."
+    },
+    {
+      "stage": "graphic_analysis",
+      "finding": "First detector compares totals as same endpoints, excludes500, declares context sufficient and counterevidence_checked=true. Second detector empty result is not a refutation."
+    },
+    {
+      "stage": "comparison_and_gate",
+      "finding": "Comparison marks unique candidate new; gate publishes it with no reasons. These local receipts show survival despite unproved endpoint binding, not factual approval by independent engineers."
+    },
+    {
+      "stage": "merge_and_final",
+      "finding": "Same false dimension claim survives in base and finalF-063; error existed before final consolidation. No claim that later stage independently introduced it."
+    }
+  ],
+  "recommended_behavior": "Require endpoint and segment provenance for a cross-drawing dimension contradiction. If necessary retrieve the neighbor raster. A self-reported checked flag is insufficient to prove equivalent endpoints. Verify full chain before issuing correction. Preserve F-064 where same endpoints remain inconsistent.",
+  "validation_limits": [
+    "Post-output DEV diagnosis, not a blind trial.",
+    "No runtime or frozen input changed.",
+    "This trace alone does not prove a proposed gate improves recall/precision; evaluate control pair and full trial.",
+    "No PDF text re-extracted; archived request payload read as execution evidence."
+  ],
+  "production_acceptance": false
+}
