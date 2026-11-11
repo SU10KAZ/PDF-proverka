@@ -29,14 +29,16 @@ def observe():
         folders=list((base/'requests'/disc).glob('*'))
         attempts=[a for folder in folders for a in read(folder/'attempts.json') or [] if isinstance(a,dict)]
         usage={}
-        for key in ('input_tokens','output_tokens','duration_ms'):
+        for key in ('input_tokens','output_tokens','cached_tokens','duration_ms'):
             values=[a.get('usage',{}).get(key) for a in attempts if isinstance(a.get('usage'),dict)]
             usage[key]={'recorded_sum':sum(v for v in values if type(v) in (int,float) and v>=0),
                         'missing_attempt_values':len(attempts)-sum(type(v) in (int,float) and v>=0 for v in values)}
         rows.append({'discipline':disc,'repeat':run['repeat'],'status':state.get('status',run['status']),
             'process':process(run.get('pid'),'paired_runner'),'block_progress':state.get('block_progress'),
             'stages':state.get('stages',{}),'request_records_created':len(folders),
-            'completed_attempt_receipts':len(attempts),'failed_attempt_receipts':sum(a.get('is_error') is True for a in attempts),
+            'completed_attempt_receipts':len(attempts),
+            'models_in_attempt_receipts':sorted({str(a.get('reported_model') or a.get('model') or 'unknown') for a in attempts}),
+            'cost_sources':sorted({str(a.get('cost_source') or 'unknown') for a in attempts}),'failed_attempt_receipts':sum(a.get('is_error') is True for a in attempts),
             'usage_lower_bounds':usage,'wall_seconds':round((state.get('finished') or time.time())-(state.get('started') or time.time()),1)})
     return {'observed_at_epoch':time.time(),'model':'gpt-6-astra','reasoning_effort':'high',
         'continuation_status':continuation.get('status'),'continuation_process':process(continuation.get('pid'),'continue_context_baseline_collection'),
