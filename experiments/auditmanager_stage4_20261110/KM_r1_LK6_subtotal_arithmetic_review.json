@@ -1,0 +1,230 @@
+{
+  "status": "additional_subtotal_arithmetic_checked_profile_identity_unresolved",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "28b57e2929ca7d502015405ebedb6a2620a948240a963c9354e0700efa3402fc",
+  "queue_after_sha256": "b77752b0c8f033bd8e914ade1290838fd4870e5478749c151c2d45a8e25eecbb",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификации",
+        "sheet": "Листы 2, 7, 9, 10",
+        "page": [
+          4,
+          9,
+          11,
+          12
+        ],
+        "problem": "Сводная спецификация ЛК6 не учитывает 40 анкеров относительно ведомостей с повторяемостью изделий.",
+        "description": "Для ЛК6 предусмотрено по два ОГМ22 и ОГМ25. С учётом повторяемости получается 57 опорных пластин и 228 анкеров, тогда как в технической спецификации указано 188 анкеров. Разница 40 шт. соответствует одному ОГМ22 и одному ОГМ25: 12 + 28. Эти изделия также содержат 10 пластин, 5,870 м круглой трубы, 11,920 м трубы 40×40×3 и 31,920 м трубы 25×25×3. Пропуск повторных экземпляров является вероятной причиной; распределение труб по сечениям требует проверки по оригиналу.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к комплектности спецификаций металлопроката и учёту количества элементов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить повторяемость ОГМ22 и ОГМ25 и пересчитать сводную спецификацию ЛК6 по согласованным ведомостям.",
+        "risk": "Недопоставка анкеров, пластин и труб, дополнительные закупки и задержка монтажа.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_b9096ac74f95416da66cc607a9828c3f",
+          "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+          "blk_1ab59db7d11b4521a1cd065b1ff8812b"
+        ],
+        "related_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_b9096ac74f95416da66cc607a9828c3f",
+          "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+          "blk_1ab59db7d11b4521a1cd065b1ff8812b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+            "page": 9
+          },
+          {
+            "type": "text",
+            "block_id": "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+            "page": 11
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1ab59db7d11b4521a1cd065b1ff8812b",
+            "page": 12
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 95,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM14_LK6_repetitions_conditional_totals:f37239acceec07686153",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "KM_F005_total_plate_balance:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ОГМ22/25 по2 и57 пластин",
+          "verdict": "supported_by_frozen_source_review"
+        },
+        {
+          "claim": "228 анкеров и недоучёт40",
+          "verdict": "conditional_total_overstated_as_confirmed",
+          "note": "В авторитетном TEXT смысл28 в строках ОГМ21/24 остаётся неустановленным; положение числа нельзя исправлять растром."
+        },
+        {
+          "claim": "10 пластин,5,870м круглой,11,920м40×40×3,31,920м25×25×3",
+          "verdict": "arithmetic_supported_profile_identity_insufficient_data",
+          "note": "Все добавочные длины воспроизведены из двух ведомостей. В ячейках Эскиз нет формы сечения; отнесение к круглой/квадратной трубе не доказано этими таблицами. Текст выдачи признаёт необходимость сверки распределения сечений. Суммы не являются доказанной недопоставкой.",
+          "calculation_breakdown": [
+            {
+              "quantity": "position2_length_m",
+              "expression": "1.735+4.135",
+              "result": "5.870",
+              "scope": "one OGM22 and one OGM25; round section not established by these blank sketch cells"
+            },
+            {
+              "quantity": "remaining_40x3_lengths_m",
+              "expression": "1.250+1.155+1.235+6*1.180+1.200",
+              "result": "11.920",
+              "scope": "one extra instance each; square section requires linked graphic evidence"
+            },
+            {
+              "quantity": "25x3_lengths_m",
+              "expression": "1.535+4*1.000+3*1.015+5*0.640+19*1.025+0.665",
+              "result": "31.920",
+              "scope": "blank section sketches do not independently establish square tube"
+            },
+            {
+              "quantity": "plates",
+              "expression": "3+7",
+              "result": 10
+            },
+            {
+              "quantity": "anchors_two_extra_instances",
+              "expression": "12+28",
+              "result": 40,
+              "scope": "these two schedule rows; not proof of 228 overall because OGM21/24 ambiguity is separate"
+            }
+          ]
+        },
+        {
+          "claim": "Пропуск повторных экземпляров — вероятная причина",
+          "verdict": "hypothesis_explicitly_qualified_not_proven_cause"
+        },
+        {
+          "claim": "Недопоставка анкеров, пластин и труб, дополнительные закупки и задержка монтажа.",
+          "verdict": "possible_consequence_not_observed"
+        }
+      ],
+      "unsupported_additions": "anchor_total_overstated_profile_lengths_conditional",
+      "novel_useful_content": "historical_positive_core_not_new_discovery",
+      "duplicate_burden": "distinct_sections_do_not_merge_S2_and_LK6_quantities",
+      "profile_and_section": "conditional_quantity_question_overstated_as_deficit",
+      "engineer_reuse": {
+        "historical": {
+          "control_id": "KM:14",
+          "finding_id": "UA-014",
+          "decision": "Принято",
+          "comment": "новое, в старом такого замечания нет.",
+          "later_learning": "Приняты вторые ОГМ22/25; количественный корень включает также все профили, не только анкеры."
+        },
+        "scope": "Use historical acceptance only for the original quantity/repetition issue; new exact subtotals and factual shortage claims are not independently accepted."
+      },
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM14_LK6_repetitions_conditional_totals.json",
+          "sha256": "ef42022ce9ccb4895b2cc4bb11aacc050a7d72636e26bd45375b95a0c663a3b4"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-004"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+          "authoritative_TEXT": "### BLOCK #105 [TEXT]: blk_e69fc79ed47d40ecb1fd922bd60777c3\n\n> **Created:** 2026-10-21 13:32:50 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/m5HJIWQMALA03IkZV__R)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 10 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения лестниц. Секция С2, С3. | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ22\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ22 |  | 1 | 40x3 | Конструктивно |  |  | C245 | L=1,250м | 1 |\n|  |  | 1а | 40x3 |  |  |  | C245 | L=1,155м | 1 |\n|  |  | 1б | 40x3 |  |  |  | C245 | L=1,235м | 1 |\n|  |  | 2 | 40x3 |  |  |  | C245 | L=1,735м | 1 |\n|  |  | 3 | 25x3 |  |  |  | C245 | L=1,535м | 1 |\n|  | Лист | 4 | 10x120x120 |  |  |  | C245 |  | 3 |\n|  |  | 5 | 25x3 |  |  |  | C245 | L=1,000м | 4 |\n|  |  | 5а | 25x3 |  |  |  | C245 | L=1,015м | 3 |\n|  | Анкер |  | HSA-M10x90 |  |  |  |  |  | 12 |\n\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_1ab59db7d11b4521a1cd065b1ff8812b",
+          "authoritative_TEXT": "### BLOCK #106 [TEXT]: blk_1ab59db7d11b4521a1cd065b1ff8812b\n\n> **Created:** 2026-10-21 13:32:50 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/bkVgoKB7UTvEYn2zjcI1)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 10 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения лестниц. Секция С2, С3. | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ25\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ25 |  | 1 | 40x3 | Конструктивно |  |  | C245 | L=1,180м | 6 |\n|  |  | 1а | 40x3 |  |  |  | C245 | L=1,200м | 1 |\n|  |  | 2 | 40x3 |  |  |  | C245 | L=4,135м | 1 |\n|  |  | 3 | 25x3 |  |  |  | C245 | L=0,640м | 5 |\n|  | Лист | 4 | 10x120x120 |  |  |  | C245 |  | 7 |\n|  |  | 5 | 25x3 |  |  |  | C245 | L=1,025м | 19 |\n|  |  | 6 | 25x3 |  |  |  | C245 | L=0,665м | 1 |\n|  | Анкер |  | HSA-M10x90 |  |  |  |  |  | 28 |\n\n"
+        }
+      ],
+      "disposition": "assessed_conditional_subtotals_and_unresolved_profile_identity"
+    }
+  ],
+  "limits": [
+    "Insufficient profile identity is retained, not converted to falsehood or accepted quantities.",
+    "A correct 12+28 subtotal does not resolve the different OGM21/24 rows in the overall total.",
+    "No raster correction of authoritative TEXT or universal four-anchor rule.",
+    "No runtime or production change."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
