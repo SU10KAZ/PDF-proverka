@@ -1,0 +1,210 @@
+{
+  "status": "partial_stage_trace_not_final_root_cause",
+  "target_id": "EOM11:7985c84eea058c206240",
+  "primary_check": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM11_both_lines_source_check.json",
+    "sha256": "e3ec650ec4a4018cbb7a98b37de89d710f45f3bf069a81682a7631f96b49dcd5"
+  },
+  "runs": [
+    {
+      "repeat": 1,
+      "stages": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+          "sha256": "13bd97f9e0742ad01021faa514a905216ef354a33c46d447bf3d050601449699",
+          "items": 85,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "5e3ed412a2573d7fc370389c762ac79d246db4f848aab5fa9110ee5633e7e0ce",
+          "items": 31,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "4cd0690b887cecc8d3d23bf9e29e47f77c5974a3bcdd53e3603efbcded99f95b",
+          "items": 47,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings_review.json",
+          "sha256": "55b1a99ce81edc7fc880d2e635a6775c9d8f2f3a736aafa29972439ef273ff6e",
+          "items": 48,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        }
+      ],
+      "relevant_blocks": [
+        {
+          "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+          "analysis_status": "analyzed",
+          "detectors_failed": [],
+          "finding_ids": [],
+          "finding_texts": []
+        },
+        {
+          "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+          "analysis_status": "analyzed",
+          "detectors_failed": [],
+          "finding_ids": [
+            "G-007",
+            "G-008",
+            "G-009",
+            "G-010",
+            "G-011",
+            "G-012"
+          ],
+          "finding_texts": [
+            "В таблице проверки трансформаторов тока ВРУ-3 минимальные первичные токи составляют 39,4 А и 28,6 А, но при проверке цепей Wh1 и Wh2 подставлены 77 А и 74 А. Вторичные токи должны составлять около 0,39 А и 0,36 А вместо указанных 0,8 А и 0,9 А; приведённый критерий >0,1 А сохраняется.\n\nРекомендация: В строке проверки минимального тока цепей счётчиков подставить значения из строки 2 и исправить результаты вычислений.",
+            "В таблице проверки трансформаторов тока ВРУ-3 при расчёте минимального вторичного тока использованы 77 и 74 А вместо рассчитанных в строке 2 значений 39,4 и 28,6 А. Правильные вторичные токи составляют 0,394 и 0,358 А вместо 0,8 и 0,9 А; указанный порог 0,1 А при этом соблюдается.\n\nРекомендация: Пересчитать строку 4 таблицы проверки трансформаторов тока по минимальным токам из строки 2.",
+            "Для ввода 2 ВРУ-3 после компенсации указана полная мощность 123,2 кВА при активной мощности 121,6 кВт и cos φ=0,97. Расчёт 121,6/0,97 даёт 125,4 кВА; это же значение приведено в таблице проверки трансформатора тока Wh2.\n\nРекомендация: Согласовать полную мощность ввода 2 в таблице нагрузок с расчётом и таблицей проверки Wh2.",
+            "Исходные данные проверки трансформаторов тока ВРУ-3 расходятся с таблицей нагрузок на этом же листе: аварийный ток принят 465,1 А, тогда как для режима «Авар. Пожар» с компенсацией указан ток 471,4 А. Для рабочего режима ввода 2 в проверке принято S=125,4 кВА, а в таблице нагрузок с компенсацией — 123,2 кВА.\n\nРекомендация: Согласовать исходные данные проверки трансформаторов тока с расчётом нагрузок и пересчитать проверку по максимальному расчётному режиму.",
+            "В примечании 10 на схеме ВРУ-3 указано осуществлять вывод распределительных линий от панелей ВРУ-1. Обозначение оборудования в монтажном указании противоречит обозначению изображённого ВРУ-3.\n\nРекомендация: Исправить обозначение оборудования в примечании 10 на ВРУ-3.",
+            "В примечании 10 схемы ВРУ-3 указано выполнение вывода распределительных линий от панелей ВРУ-1. Обозначение оборудования в монтажном указании расходится с обозначением изображённой сборки ВРУ-3.\n\nРекомендация: Исправить обозначение сборки в примечании 10 на ВРУ-3."
+          ]
+        }
+      ]
+    },
+    {
+      "repeat": 2,
+      "stages": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+          "sha256": "d02d7b0b7c44db6e4bc70c8cc04acb92dece5b0286951c106a487a7bf59da35f",
+          "items": 85,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "218527ebfe117f80cc595abe870ffd57ac4071bfef5285441ab89d2a5c251a7e",
+          "items": 31,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "c96e54d2a92bc9e26ce36fa689d4958a862ad0827a822ce898fde0058d7a40d2",
+          "items": 46,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings_review.json",
+          "sha256": "2b82369863011b92d883b47833b67325741b3981ac6915a19bb2512c94ccd79a",
+          "items": 48,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        }
+      ],
+      "relevant_blocks": [
+        {
+          "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+          "analysis_status": "analyzed",
+          "detectors_failed": [],
+          "finding_ids": [],
+          "finding_texts": []
+        },
+        {
+          "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+          "analysis_status": "analyzed",
+          "detectors_failed": [],
+          "finding_ids": [
+            "G-007",
+            "G-008",
+            "G-009",
+            "G-010",
+            "G-011",
+            "G-012",
+            "G-013"
+          ],
+          "finding_texts": [
+            "В таблице проверки трансформаторов тока ВРУ-3 минимальные первичные токи составляют 39,4 А и 28,6 А, однако вторичные токи рассчитаны из 77 А и 74 А. По указанным коэффициентам трансформации результаты должны составлять 0,394 А и 0,358 А вместо 0,8 А и 0,9 А; превышение порога 0,1 А сохраняется.\n\nРекомендация: Пересчитать строку минимальных вторичных токов Wh1 и Wh2 по первичным токам из строки 2.",
+            "Для ввода 2 ВРУ-3 после компенсации указана полная мощность 123,2 кВА при Pp=121,6 кВт и cos φ=0,97. Эти значения дают S≈125,4 кВА, что также указано в расчёте Wh2 на этом листе; значение 123,2 кВА противоречит исходным данным и расчёту учёта.\n\nРекомендация: Согласовать полную мощность ввода 2 в таблице нагрузок и расчёте Wh2 и скорректировать зависимые итоги.",
+            "В таблице проверки трансформаторов тока ВРУ-3, лист 3, при расчете минимального вторичного тока Wh1 и Wh2 использованы 77 и 74 А вместо рассчитанных выше 39,4 и 28,6 А. Правильные вторичные токи составляют 0,394 и 0,358 А; указанный порог 0,1 А сохраняется, но приведенный расчет ошибочен.\n\nРекомендация: Пересчитать строку минимального вторичного тока с использованием 39,4 и 28,6 А из строки 2.",
+            "Для ввода 2 ВРУ-3 с компенсацией реактивной мощности указана полная мощность 123,2 кВА при Pp=121,6 кВт и cos φ=0,97. Эти исходные данные дают 125,4 кВА; именно 125,4 кВА приведено в проверке трансформатора тока Wh2 на том же листе.\n\nРекомендация: Исправить полную мощность ввода 2 и согласовать связанные расчетные значения в таблицах листа 3.",
+            "На листе схемы ВРУ-3 примечание 10 задаёт вывод распределительных линий от ВРУ-1. Марка оборудования в монтажном указании не соответствует обозначению изображённой сборки.\n\nРекомендация: Исправить обозначение оборудования в примечании 10 на ВРУ-3.",
+            "Для выбора трансформаторов тока Wh1 и Wh2 принят аварийный ток 465,1 А, тогда как таблица нагрузок ВРУ-3 с компенсацией указывает 471,4 А в режиме «Авар. Пожар». Проверка перегрузки выполнена по току ниже указанного на этом же листе максимального значения.\n\nРекомендация: Согласовать аварийный ток в расчётах и повторить проверку трансформаторов тока по максимальному расчётному режиму.",
+            "В проверке трансформаторов тока Wh1 и Wh2 ВРУ-3 принят аварийный ток 465,1 А, тогда как таблица нагрузок этого же листа указывает 471,4 А для режима «Авар. Пожар» с компенсацией реактивной мощности. Проверка выбора выполнена с меньшим значением, чем приведенный на листе максимальный ток.\n\nРекомендация: Согласовать максимальный расчетный ток в таблицах нагрузок и проверки трансформаторов тока и обновить расчет их выбора."
+          ]
+        }
+      ]
+    },
+    {
+      "repeat": 3,
+      "stages": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+          "sha256": "dbcd8ac9f7ed4b0639d1de2a42c2d93b3951a8d965606bc31a390e997640734f",
+          "items": 85,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "8737e134f157ec7f83dfb5cba1e718c13cef65c7946cadff66e2037077c37395",
+          "items": 29,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "1ce6edc355b6d4b64e939551ff6f1a2c16511675e73eadff0c6411844a80c004",
+          "items": 43,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings_review.json",
+          "sha256": "ed055a8736299d150c84c08300788b97a8472952a68fb4e48639454bab5e236c",
+          "items": 46,
+          "lexical_candidate_indices": [],
+          "absence_proof": false
+        }
+      ],
+      "relevant_blocks": [
+        {
+          "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+          "analysis_status": "analyzed",
+          "detectors_failed": [],
+          "finding_ids": [],
+          "finding_texts": []
+        },
+        {
+          "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+          "analysis_status": "analyzed",
+          "detectors_failed": [],
+          "finding_ids": [
+            "G-005",
+            "G-006",
+            "G-007",
+            "G-008"
+          ],
+          "finding_texts": [
+            "В примечании 10 к схеме ВРУ-3 указание о выводе распределительных линий сверху отнесено к ВРУ-1. Марка оборудования в монтажном указании противоречит обозначению изображённого ВРУ.\n\nРекомендация: Исправить марку оборудования в примечании 10 на ВРУ-3.",
+            "В проверке трансформаторов тока Wh1 и Wh2 минимальные первичные токи из строки 2 заменены в строке 4 другими значениями: вместо 39,4 и 28,6 А использованы 77 и 74 А. Вторичные токи должны составлять около 0,394 и 0,358 А; указанные 0,8 и 0,9 А завышены. При исправлении условие превышения 0,1 А сохраняется.\n\nРекомендация: Пересчитать строку 4 с минимальными первичными токами из строки 2.",
+            "При выборе трансформаторов тока Wh1 и Wh2 принят аварийный ток 465,1 А, тогда как таблица нагрузок с компенсацией указывает 471,4 А для режима «Авар. Пожар». Проверка перегрузки выполнена с меньшим током, чем максимальный ток на этом же листе.\n\nРекомендация: Согласовать максимальный расчётный ток в таблицах нагрузок и выбора трансформаторов тока и пересчитать проверку перегрузки.",
+            "Исходные данные проверки трансформаторов тока ВРУ-3 расходятся с таблицей нагрузок с компенсацией реактивной мощности на том же листе. Для ввода 2 указаны разные полные мощности рабочего режима — 125,4 и 123,2 кВА; для выбора трансформаторов тока принят максимальный ток 465,1 А при указанном токе режима «Авар. Пожар» 471,4 А.\n\nРекомендация: Согласовать таблицу нагрузок и проверку трансформаторов тока по полной мощности ввода 2 и максимальному расчетному току."
+          ]
+        }
+      ]
+    }
+  ],
+  "observations": [
+    "Both required drawing blocks have analyzed receipts and no detector failures in all3repeats. This does not establish correct reading of cable labels.",
+    "The first relevant block emits zero findings in all3repeats.",
+    "All four emitted findings for the second relevant block in repeat3 were read: they address VRU label and CT/load calculations, not the cable-to-specification relation.",
+    "The limited lexical search found no target markers across the listed intermediate artifact items; this is a localization aid, not semantic proof of absence everywhere.",
+    "No evidence yet that final release filtering removed this particular candidate."
+  ],
+  "next_checks": [
+    "Inspect independent detector and judge raw responses for these two blocks to distinguish discovery omission from stage01 suppression.",
+    "Inspect actual detector context for availability of specification subdivision and cross-document instructions.",
+    "Semantically inspect complete text-stage candidates before declaring cross-document operation unperformed."
+  ],
+  "production_acceptance": false
+}
