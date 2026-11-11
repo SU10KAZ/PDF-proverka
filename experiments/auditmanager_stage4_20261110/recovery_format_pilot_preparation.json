@@ -1,0 +1,19 @@
+{
+  "status": "prepared_not_dispatched",
+  "request_path": "/tmp/auditmanager_recovery_format_pilot_20261111/AK_T002_request.json",
+  "request_sha256": "87d8b50de27fc82aec342dd7aec64ffdbfca5907e48a473e0c7906509bbbe887",
+  "model": "codex/gpt-6-astra",
+  "case": "AK T-002 split technical discrepancy and duplicate-record question",
+  "original_raw_findings": 2,
+  "original_admitted_findings": 0,
+  "desired_checks": [
+    "Structured evidence per child claim survives admission.",
+    "Technical discrepancy and question remain separately classified.",
+    "No conversion of duplicate records into additional physical cables.",
+    "No invented severity values; preserve source candidate links.",
+    "Failed correction stays pending and does not cause an unbounded loop."
+  ],
+  "dispatch_constraint": "Do not overlap measured comparative model calls; dispatch in a separate controlled measurement window.",
+  "model_calls": 0,
+  "production_acceptance": false
+}
