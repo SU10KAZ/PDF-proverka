@@ -1,0 +1,23 @@
+{
+  "scope": "Automatic known-object candidate plus executor-selected literal crop, admission and actual Excel export. Not a complete blind project audit.",
+  "baseline_sha256": "3a3c2505680f1086348eebb0d72aad9c0a6eb9c356789dd0eb97b04d6da21c3a",
+  "source_candidate_sha256": "b7b1f501669bdaaf97dee27ae2cb40d334b639dd4e3f2f727710ca231df4a79f",
+  "original_rows_retained_exactly": 53,
+  "final_rows": 54,
+  "added_id": "F-054",
+  "source_value_corrected": "2,78 -> 2,73",
+  "arithmetic_corrected": "3,11 -> 3,16",
+  "useful_discrepancy_retained": true,
+  "original_wrong_claim_archived": true,
+  "autonomous_detail_selection_proven": false,
+  "full_acceptance": false,
+  "broader_pilot_composition": "Separate baseline branch. Do not append to the existing 55-row GVS report: its F054 already covers T411/T412. Broader rows are not removed or replaced.",
+  "excel_path": "/tmp/auditmanager_itp_automatic_t411_literal_workflow_20261111/output/report.xlsx",
+  "receipts": [
+    {
+      "finding_id": "ITP-automatic-T411",
+      "status": "applied",
+      "action": "revise"
+    }
+  ]
+}

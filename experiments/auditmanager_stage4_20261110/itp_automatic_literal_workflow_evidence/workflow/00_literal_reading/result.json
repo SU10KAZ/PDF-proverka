@@ -1,0 +1,39 @@
+{
+  "text": "{\"annotations\":[{\"literal\":\"Т411 ⌀45х2,5оц ГВС, циркуляционный жилья\",\"bbox_norm_xyxy\":[0.079,0.313,0.794,0.527]},{\"literal\":\"1-ая зона Т=55 °С, G=2,73 м³/ч, Р=8,06 бар\",\"bbox_norm_xyxy\":[0.079,0.527,0.818,0.781]}],\"reading_uncertainties\":[]}",
+  "json_data": {
+    "annotations": [
+      {
+        "literal": "Т411 ⌀45х2,5оц ГВС, циркуляционный жилья",
+        "bbox_norm_xyxy": [
+          0.079,
+          0.313,
+          0.794,
+          0.527
+        ]
+      },
+      {
+        "literal": "1-ая зона Т=55 °С, G=2,73 м³/ч, Р=8,06 бар",
+        "bbox_norm_xyxy": [
+          0.079,
+          0.527,
+          0.818,
+          0.781
+        ]
+      }
+    ],
+    "reading_uncertainties": []
+  },
+  "input_tokens": 10964,
+  "output_tokens": 389,
+  "cost_usd": 0.0,
+  "duration_ms": 17632,
+  "model": "codex/gpt-6-astra",
+  "is_error": false,
+  "error_message": "",
+  "cached_tokens": 10240,
+  "cache_write_tokens": 0,
+  "reasoning_tokens": 280,
+  "cost_source": "subscription",
+  "response_id": "01a1c833-0b42-7281-95d4-772c04681dc3",
+  "finish_reason": "stop"
+}

@@ -1,0 +1,241 @@
+{
+  "scope": "Same-version classical output overlap review; not automatic duplicate suppression or full semantic acceptance.",
+  "baseline": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/KM/findings_verify.json",
+  "baseline_sha256": "d85048316ccca845e1cac247c6896671cdd78283848f73e2ad1ecf5ed226fa02",
+  "baseline_count": 26,
+  "source_candidate": "experiments/auditmanager_stage4_20261110/km_lk6_quantity_full_context_evidence/workflow/candidate.json",
+  "source_candidate_sha256": "f8f113db4120c936cdf2510ed285ca2ec7a207ed1c42c15f1607c47bd88f14df",
+  "overlaps": [
+    {
+      "finding_id": "F-005",
+      "original": {
+        "id": "F-005",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "documentation",
+        "sheet": "Листы 2, 7, 9, 10",
+        "page": [
+          4,
+          9,
+          11,
+          12
+        ],
+        "problem": "Для ЛК6 в сводной спецификации не хватает 40 анкеров.",
+        "description": "По спецификации расположения и ведомостям элементов ЛК6 требуется 228 анкеров, тогда как на листе 2 указано 188. Для 57 опорных пластин 10×120×120 мм расчётная масса составляет 64,433 кг против 53 кг в сводной спецификации. С учётом секции С2 суммарная потребность по деталировочным ведомостям составляет 1748 анкеров вместо 1668 и 437 опорных пластин массой 493,985 кг вместо 472 кг листа толщиной 10 мм.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить согласованность сводной спецификации с ведомостями элементов и схемой расположения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-005"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать количество анкеров и пластин по маркам ЛК6 и обновить сводную спецификацию.",
+        "risk": "Недопоставка крепежа и листового металла, дополнительные закупки при монтаже.",
+        "source_finding_ids": [
+          "T-005"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_b9096ac74f95416da66cc607a9828c3f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "covered": "LK6 anchors: 188 literal summary; 172 confirmed subtotal plus unresolved quantities for OGM21 and OGM24; 228/40 conditional.",
+      "not_covered": [
+        "57 plates and mass 64.433 versus 53 kg",
+        "section C2 aggregate 1748 versus 1668 anchors",
+        "437 plates and aggregate mass 493.985 versus 472 kg"
+      ],
+      "required_action": "Review remaining clauses before replacement. Do not automatically suppress the original compound finding or certify its aggregate claims."
+    },
+    {
+      "finding_id": "F-017",
+      "original": {
+        "id": "F-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "На схеме ЛК6 указана марка ОГМ26, отсутствующая в спецификации и ведомости элементов.",
+        "description": "На схеме ограждения ЛК6 на отметке −0,700 указано ОГМ26, тогда как спецификация к схемам расположения и ведомости элементов содержат марки только до ОГМ25. Состав и детали ОГМ26 не определены.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить однозначность обозначения марки на схеме и наличие изделия в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-020",
+                "G-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-020",
+                  "G-021"
+                ],
+                "designation_source": "inferred from finding context"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить марку на схеме; если ОГМ26 является отдельным изделием, добавить его количество и рабочий чертёж.",
+        "risk": "Невозможно однозначно изготовить и поставить ограждение указанной площадки.",
+        "source_finding_ids": [
+          "G-020",
+          "G-021"
+        ],
+        "source_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba"
+        ],
+        "related_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba",
+          "blk_1849759086c445e687f8c0e2b424250b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-06T23:48:47.021565+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-sol",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-06T23:48:47.021565+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одну проблему: марка ОГМ26 на схеме ЛК6 на отметке −0.700 отсутствует в спецификации. Различия в оценке последствий и упоминание ведомости элементов не меняют сути замечания.",
+              "reviewer_model": "codex/gpt-6.1-sol",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на одну проблему: марка ОГМ26 на схеме ЛК6 на отметке −0.700 отсутствует в спецификации. Различия в оценке последствий и упоминание ведомости элементов не меняют сути замечания.",
+              "reviewer_model": "codex/gpt-6.1-sol",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 47,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "covered": "OGM26 marking absent from specification; current review proposes correspondence to OGM25.",
+      "not_covered": [
+        "Independent confirmation of exact physical segment correspondence in new review"
+      ],
+      "required_action": "Keep existing source lineage. Link any accepted marking correction to F-017; do not append a duplicate technical finding."
+    }
+  ],
+  "new_independent_defects_proven": 0,
+  "baseline_modified": false,
+  "full_acceptance": false
+}

@@ -1,0 +1,59 @@
+{
+  "source_root": "/tmp/auditmanager_itp_automatic_graphic_control_v4_20261111/step_02",
+  "source_candidate_sha256": "4411702c1998357a17971ca98e8bfb47ee3b3608ba97826472a12f1a66b6a27a",
+  "source_finding_id": "O-2f9cda3a49ad313d4a9b45f1",
+  "request_sha256": "e5b5f77d32ebf96d71db675e273ac7115147bdcfdd290ea3d47639cdd79c05ca",
+  "original_graphic_bindings": [
+    {
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png",
+      "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2"
+    },
+    {
+      "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+      "sha256": "99f0948dd8e59ee31f68b9f79a58131e5fa3a0fc63e5fdfcb0a541f00871bb8c"
+    },
+    {
+      "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+      "sha256": "b912407176437e746a465c78e72293ad851026cb26d5f2dfb5b3fdcb597f8301"
+    },
+    {
+      "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png",
+      "sha256": "7354443aa6ecdf7232110223a7b30b0dd25276027e3006175c728eb1fdc35edd"
+    },
+    {
+      "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_7527066e645e47bb917a9fc17fb82ccc.png",
+      "sha256": "f33722b2cc7117e431c01cf6c19c274f7b07a0a4042a6ce7cea7349ab1db9e49"
+    },
+    {
+      "block_id": "blk_8e4e78d833774d1094ea7fc72932c0ff",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_8e4e78d833774d1094ea7fc72932c0ff.png",
+      "sha256": "89a963ddc75e1cd7a81dee28b10d2ff797f2383be5d965d2e05407587df3215f"
+    },
+    {
+      "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+      "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af"
+    },
+    {
+      "block_id": "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_d4b7a506870a4c3dbe5a3d19eb26dfdc.png",
+      "sha256": "53d497514b8c168918c9e9fd00680a2497bf1297f7672b747996c56e8aedba33"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0,
+  "history_or_engineer_answers_supplied": false,
+  "evaluator_corrections_supplied": false,
+  "message_chars": 57514,
+  "images": 16,
+  "image_bytes": 22238104,
+  "known_candidate_control": true,
+  "semantic_acceptance": false,
+  "additional_graphic_manifest_sha256": "8646560e139bb264766e6ade8e4c6a61d7995ae0da710d0db945ce4267067263",
+  "graphic_selection": "Executor-selected orientation/detail control; not an automatic model-requested crop."
+}

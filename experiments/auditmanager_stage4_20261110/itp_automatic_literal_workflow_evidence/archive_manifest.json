@@ -1,0 +1,82 @@
+{
+  "files": [
+    {
+      "path": "finding.json",
+      "sha256": "6b4d71f487e09065990dd3706e361e50e03bc11819d8b30705f1cd5dccb162ce"
+    },
+    {
+      "path": "initial_request.json",
+      "sha256": "3f5011ce48b8748420e1293bc1a480f57f5085b343c5c4320fbe9354a973b869"
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "87a43ea9432608cee0076975ecdd408063237e97db63fe762b7e513da3ff6ab0"
+    },
+    {
+      "path": "output/03_findings.json",
+      "sha256": "9c990713c54db9a744cd88afc5424b8e1aa5bc7332d0c3815db21a9dfd6d3891"
+    },
+    {
+      "path": "queue.json",
+      "sha256": "5ba953338f38a725e8a45aab842edfcaa986cca4fee7528141c1da05e5cedf61"
+    },
+    {
+      "path": "workflow/00_followup.json",
+      "sha256": "69cf904b43ce1e860e9f3faab91a4d27f73e002f84364282432f963c6a4b06b3"
+    },
+    {
+      "path": "workflow/00_literal_reading/attempt.json",
+      "sha256": "19fed9205afbdc5d856ba5e38c08887e8d9e977d7599b9b3fc93e6c0c9fd0b78"
+    },
+    {
+      "path": "workflow/00_literal_reading/request.json",
+      "sha256": "ec268f51ccfecc17b8d1ecceed91c08f06a20f9ee05fae256a9aef2be47e6900"
+    },
+    {
+      "path": "workflow/00_literal_reading/result.json",
+      "sha256": "322b5b4e6b67dfd442be173a5da38cfe36cc3c5569c384fbd5a7966cc7792903"
+    },
+    {
+      "path": "workflow/00_review/attempt.json",
+      "sha256": "5ef4617c4625bc73564fdc3b5d741b60fcccf6f8984cad48811677a5e421828b"
+    },
+    {
+      "path": "workflow/00_review/request.json",
+      "sha256": "e75bd309fb9055761dc6c35e38cc509040971edb60fe46efc269bc36fd06ffaf"
+    },
+    {
+      "path": "workflow/00_review/result.json",
+      "sha256": "3026ed639222000a27f3d7b5110978eb4432e784e6a3f2427666051b4d49f1e9"
+    },
+    {
+      "path": "workflow/00_validation.json",
+      "sha256": "67a860d9e3781f2015017e65951646fed00398ed9c92f3ea26af413895a35410"
+    },
+    {
+      "path": "workflow/05_adjudication/attempt.json",
+      "sha256": "2f1ef70ea2bcf65e8670879cce646ba2769423e139dd07d48bda4953675bcf32"
+    },
+    {
+      "path": "workflow/05_adjudication/request.json",
+      "sha256": "e1f3b6689a8bc404803cf37ee460881ddddd30572410309f2be0f8b91afcde56"
+    },
+    {
+      "path": "workflow/05_adjudication/result.json",
+      "sha256": "9997d77f722f8feb0cddb97950ce2d6efa8777dc988a22f8d4839488abd24cff"
+    },
+    {
+      "path": "workflow/binding.json",
+      "sha256": "d173e8651b1dbcba1851d143ceb6cebe836b1d2b587cff5dbd720223139c31b6"
+    },
+    {
+      "path": "workflow/candidate.json",
+      "sha256": "b7b1f501669bdaaf97dee27ae2cb40d334b639dd4e3f2f727710ca231df4a79f"
+    },
+    {
+      "path": "workflow/independent_graphic_readings.json",
+      "sha256": "4421977b18f621bd43bb569c75d7a9c364d039359f739ab713a3935f773163a6"
+    }
+  ],
+  "source_root": "/tmp/auditmanager_itp_automatic_t411_literal_workflow_20261111",
+  "scope": "Control evidence; source graphic hashes bind separately retained project images."
+}

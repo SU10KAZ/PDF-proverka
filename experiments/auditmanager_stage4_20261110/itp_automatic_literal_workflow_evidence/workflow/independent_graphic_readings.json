@@ -1,0 +1,33 @@
+[
+  {
+    "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+    "image_sha256": "cfbaf9c7231db3ceea4e5d2325a789c2b814a55479c0a915e374b71f82bbeb5e",
+    "request_sha256": "3565246f3c40c3d6a233d3add8927fcca4b1194c860ce23ed7bf80f3ebe84e75",
+    "response_sha256": "ad0144a6882ac46e9d36226b69a4840a61cd23a79e1bcef8b94a3d3deab8a7b1",
+    "reading": {
+      "annotations": [
+        {
+          "literal": "Т411 ⌀45х2,5оц ГВС, циркуляционный жилья",
+          "bbox_norm_xyxy": [
+            0.079,
+            0.313,
+            0.794,
+            0.527
+          ]
+        },
+        {
+          "literal": "1-ая зона Т=55 °С, G=2,73 м³/ч, Р=8,06 бар",
+          "bbox_norm_xyxy": [
+            0.079,
+            0.527,
+            0.818,
+            0.781
+          ]
+        }
+      ],
+      "reading_uncertainties": []
+    },
+    "semantic_verified": false,
+    "boundary": "Source-only model observation. Recheck the attached image; never authoritative TEXT."
+  }
+]
