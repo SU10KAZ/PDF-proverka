@@ -1,0 +1,360 @@
+{
+  "status": "OGM9_context_uncertainty_localized_to_text_only_merge",
+  "project": "ЖК Событие6.1 ПД-00580716-КМ1.2",
+  "repeat": 1,
+  "model": "codex/gpt-6-astra",
+  "source_artifacts": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_074052__ensemble_codex-only_high/block_blk_eb2afbd2b4c14b3ba20b6cea72f825b8.json",
+      "sha256": "6465ca4da3b3f90d0f652fbfedc45a15406ec075b9a0344c26673400dceb51ba"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eb2afbd2b4c14b3ba20b6cea72f825b8.png",
+      "sha256": "8b54d8e786656ea8fcc6d152e9ab679a8548b41d18b30941543a9ab011f61ef0"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/audit_trail/03_findings_merge_2026-11-11T11-20-46.json",
+      "sha256": "46af8a85fbff9922cbbd29e1c00a5d66361aa8db7127906c715e95db06c0fe18"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+      "sha256": "ec7af9dab69b792d2668895dfe01bc0b4d29dbf8cb47f88a4cb5830f1ecd0c75"
+    }
+  ],
+  "requests": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383838300999836/request.json",
+      "sha256": "6d7b9ce175049b0b77137c2072c7b6279d8a89a81ca18699a355f34d8a9cbcce",
+      "stage": "block_analysis",
+      "model": "codex/gpt-6-astra",
+      "image_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eb2afbd2b4c14b3ba20b6cea72f825b8.png": "8b54d8e786656ea8fcc6d152e9ab679a8548b41d18b30941543a9ab011f61ef0"
+      },
+      "allowed_tools": "",
+      "messages_characters": 32562
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383838299910343/request.json",
+      "sha256": "6d7b9ce175049b0b77137c2072c7b6279d8a89a81ca18699a355f34d8a9cbcce",
+      "stage": "block_analysis",
+      "model": "codex/gpt-6-astra",
+      "image_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eb2afbd2b4c14b3ba20b6cea72f825b8.png": "8b54d8e786656ea8fcc6d152e9ab679a8548b41d18b30941543a9ab011f61ef0"
+      },
+      "allowed_tools": "",
+      "messages_characters": 32562
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794383908782266676/request.json",
+      "sha256": "6f09a1b4c9341760dd33deb118d97db3cac6d760d2d1e165c87c46aa829ddd76",
+      "stage": "block_analysis_dual_review",
+      "model": "codex/gpt-6-astra",
+      "image_hashes": {},
+      "allowed_tools": "",
+      "messages_characters": 31083
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/requests/KM/1794384863138255291/request.json",
+      "sha256": "7399409adda2da8d490a9f8bc1f8d9dbac995f0a41e103f038411a1d6af7e101",
+      "stage": "findings_merge",
+      "model": "codex/gpt-6-astra",
+      "image_hashes": {},
+      "allowed_tools": "",
+      "messages_characters": 258999
+    }
+  ],
+  "stage_sequence": [
+    {
+      "stage": "block_analysis",
+      "observed": "Оба детектора получили одно и то же изображение ОГМ9; оба нашли разность3400/3300.",
+      "detector_findings": [
+        [
+          {
+            "severity": "ЭКОНОМИЧЕСКОЕ",
+            "category": "documentation",
+            "finding": "На развертке ОГМ9 листа 9 длина поручня поз. 2 указана 3400 мм, а в ведомости элементов — 3300 мм. Расхождение составляет 100 мм.",
+            "norm_quote": null,
+            "value_found": "3400; поз. 2 — L=3,300м",
+            "recommendation": "Согласовать длину поручня поз. 2 ОГМ9 на развертке и в ведомости элементов.",
+            "claim_type": "contradiction",
+            "problem_class": "drawing_schedule_length_mismatch",
+            "affected_entity": "ОГМ9, поручень поз. 2, лист 9",
+            "evidence_quote": "На изображении ОГМ9 вдоль поручня поз. 2 проставлен размер «3400»; в ведомости ОГМ9 для поз. 2 указано «40x3», «L=3,300м», количество 1.",
+            "evidence_kind": "same_page",
+            "context_status": "sufficient",
+            "confidence": 0.93,
+            "counterevidence_checked": true,
+            "required_context": []
+          }
+        ],
+        [
+          {
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+            "category": "documentation",
+            "finding": "На развертке ОГМ9 указан размер поручня 3400 мм, а в ведомости для позиции 2 — длина 3300 мм. Для установления причины разницы 100 мм необходимы узлы Д и Е листа 4, на которые ссылается развертка.",
+            "norm_quote": null,
+            "value_found": "3400; L=3,300м; по Д(4); по Е(4)",
+            "recommendation": "Сопоставить размер поручня и длину позиции 2 с конструкцией соединений по узлам Д и Е листа 4.",
+            "claim_type": "context_gap",
+            "problem_class": "handrail_length_reconciliation",
+            "affected_entity": "ОГМ9, поручень позиции 2, лист 9",
+            "evidence_quote": "На изображении ОГМ9 вдоль поручня указан размер 3400 и ссылки «по Д(4)», «по Е(4)»; в ведомости ОГМ9 позиция 2 имеет L=3,300м. Аналогичная разница 100 мм присутствует у ОГМ10 и ОГМ14.",
+            "evidence_kind": "same_page",
+            "context_status": "needs_retrieval",
+            "confidence": 0.94,
+            "counterevidence_checked": true,
+            "required_context": [
+              "Узлы Д и Е на листе 4 с размерами соединений поручней и границами элементов"
+            ]
+          }
+        ]
+      ]
+    },
+    {
+      "stage": "dual_review_and_evidence_gate",
+      "observed": "Сравнение признало второй тезис расширением первого. Опубликован исходный contradiction; context_gap второй ветви отложен. Ни один детектор не упал.",
+      "comparison": {
+        "schema_version": 1,
+        "status": "ok",
+        "reviewer_model": "codex/gpt-6-astra",
+        "relationships": [
+          {
+            "left_ref": "codex:001",
+            "right_ref": "codex:002",
+            "relation": "extension",
+            "extends": "right",
+            "confidence": 0.98,
+            "reason": "Оба замечания указывают на разницу 100 мм между размером 3400 мм на развертке ОГМ9 и L=3,300м для поз. 2 в ведомости. Правое существенно дополняет левое ссылками «по Д(4)», «по Е(4)» и необходимостью проверить конструкцию соединений для установления причины расхождения."
+          }
+        ],
+        "unmatched_refs": [],
+        "counts": {
+          "matches": 0,
+          "extensions": 1,
+          "new": 0,
+          "disputed": 0,
+          "gap_findings": 0
+        },
+        "gap_search": {
+          "enabled": false,
+          "performed": false,
+          "status": "disabled",
+          "searched_categories": [],
+          "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+          "findings_added": 0,
+          "duplicates_rejected": 0
+        },
+        "comparison_models": [
+          "codex/gpt-6-astra::leg:1",
+          "codex/gpt-6-astra::leg:2"
+        ]
+      },
+      "gate": {
+        "schema_version": 1,
+        "candidates": 2,
+        "published": 1,
+        "deferred": 1,
+        "min_confidence": 0.8,
+        "max_published_per_block": null,
+        "reason_counts": {
+          "insufficient_context": 1,
+          "non_publishable_claim_type": 1
+        }
+      }
+    },
+    {
+      "stage": "findings_merge",
+      "observed": "Текстовый вызов без вложенных изображений и без доступных инструментов. В его ответе появляется фраза об отсутствии прямых изображений и категория ПРОВЕРИТЬ ПО СМЕЖНЫМ.",
+      "finding": {
+        "id": "F-024",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Размеры деталей",
+        "sheet": "Листы 4, 9",
+        "page": [
+          6,
+          11
+        ],
+        "problem": "Требуется проверить соответствие размера поручня ОГМ9 длине детали с учётом концевых сопряжений.",
+        "description": "На развёртке ОГМ9 указан размер 3400 мм, а для позиции 2 в ведомости — 3300 мм. Разница составляет 100 мм. Сопоставление детекторов дополнено указанием на ссылки «по Д(4)» и «по Е(4)»: без границ детали и размеров сопряжений нельзя установить, является ли разница ошибкой либо следствием конструкции соединений. Прямые изображения этих размеров на данном этапе отсутствуют.",
+        "norm": "ГОСТ 21.502-2016 — нормативный кандидат, статус не проверен.",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к указанию размеров деталей, узлов сопряжений и их согласованию с ведомостями.",
+            "clause_candidate": null,
+            "quote_candidate": null,
+            "provenance": {
+              "source_finding_ids": [
+                "G-034"
+              ],
+              "designation_source": "Подбор при консолидации"
+            }
+          }
+        ],
+        "solution": "Сопоставить размер 3400 мм с границами позиции 2 по узлам Д и Е листа 4. При подтверждении ошибки исправить чертёж или ведомость; при конструктивно обусловленной разнице уточнить размерные привязки.",
+        "risk": "При ошибке длины возможны неверная заготовка поручня и переделка; до проверки сопряжений наличие дефекта не установлено.",
+        "source_finding_ids": [
+          "G-034"
+        ],
+        "source_block_ids": [
+          "blk_eb2afbd2b4c14b3ba20b6cea72f825b8"
+        ],
+        "related_block_ids": [
+          "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "blk_2a44dd3981b94cc2bc63d79e8d2f2264"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+            "page": 11
+          }
+        ],
+        "highlight_regions": []
+      }
+    },
+    {
+      "stage": "final_output",
+      "observed": "Описание сохранилось в окончательном F-024. Это ослабление подтверждённого атома, не полное исчезновение строки.",
+      "finding": {
+        "id": "F-024",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Размеры деталей",
+        "sheet": "Листы 4, 9",
+        "page": [
+          6,
+          11
+        ],
+        "problem": "Требуется проверить соответствие размера поручня ОГМ9 длине детали с учётом концевых сопряжений.",
+        "description": "На развёртке ОГМ9 указан размер 3400 мм, а для позиции 2 в ведомости — 3300 мм. Разница составляет 100 мм. Сопоставление детекторов дополнено указанием на ссылки «по Д(4)» и «по Е(4)»: без границ детали и размеров сопряжений нельзя установить, является ли разница ошибкой либо следствием конструкции соединений. Прямые изображения этих размеров на данном этапе отсутствуют.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к указанию размеров деталей, узлов сопряжений и их согласованию с ведомостями.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-034"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-034"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сопоставить размер 3400 мм с границами позиции 2 по узлам Д и Е листа 4. При подтверждении ошибки исправить чертёж или ведомость; при конструктивно обусловленной разнице уточнить размерные привязки.",
+        "risk": "При ошибке длины возможны неверная заготовка поручня и переделка; до проверки сопряжений наличие дефекта не установлено.",
+        "source_finding_ids": [
+          "G-034"
+        ],
+        "source_block_ids": [
+          "blk_eb2afbd2b4c14b3ba20b6cea72f825b8"
+        ],
+        "related_block_ids": [
+          "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "blk_2a44dd3981b94cc2bc63d79e8d2f2264"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+            "page": 11
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-034",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания указывают на разницу 100 мм между размером 3400 мм на развертке ОГМ9 и L=3,300м для поз. 2 в ведомости. Правое существенно дополняет левое ссылками «по Д(4)», «по Е(4)» и необходимостью проверить конструкцию соединений для установления причины расхождения.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "rework",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      }
+    }
+  ],
+  "code_reference": {
+    "path": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_with_catalog/backend/app/pipeline/stages/findings_merge/runner.py",
+    "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+    "function": "run_findings_merge",
+    "line": 558,
+    "call_line": 593,
+    "scope": "Обёртка вызывает claude_runner.run_findings_merge, затем post-merge операции. Фактический состав входа устанавливается request.json, а не именем runner."
+  },
+  "recommended_behavior": "Сохранять отдельно найденное расхождение и незакрытый вопрос о сопряжении. Запрос конкретных узлов должен приводить к их получению и проверке, либо оставаться явным ограничением; отсутствие изображения в текстовом вызове объединения не является отсутствием источника в проекте. Не подавлять числовое расхождение без контрдоказательства из связанного узла.",
+  "limits": [
+    "Трасса устанавливает место изменения формулировки, не внутренний мотив модели.",
+    "Причинную пользу нового способа обработки должен показать замороженный сравнительный эксперимент.",
+    "Исторические ответы инженеров не передавались в независимые прогоны.",
+    "Нельзя автоматически объявлять все разности100мм дефектами изготовления.",
+    "Новые журналы не изменяют замороженные промпты или текущую серию."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
