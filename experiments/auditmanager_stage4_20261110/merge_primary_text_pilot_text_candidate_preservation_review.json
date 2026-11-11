@@ -1,0 +1,1129 @@
+{
+  "status": "all_28_text_candidate_transfers_reviewed",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "T-001",
+      "origin": "text",
+      "pointer": "/text_findings/0",
+      "original_candidate": {
+        "id": "T-001",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable",
+        "report_section": "technical_findings",
+        "source": "Кабельный журнал, листы 5 и 6; основной комплект, лист 26",
+        "finding": "Линия П4.1.3-9 от ШАУВ-2-К4ПЧ к электронагревателю приведена дважды с одинаковой длиной 15 м, но с разными сечениями: ППГнг(А)-HF 4×2,5 и 4×4,0. Перечень кабелей листа 26 предусматривает 4×4,0. Требуется установить единственное расчетное исполнение линии и исправить обе записи; считать их двумя независимыми кабелями оснований нет.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_c5ecdd6fe0d145118c604b663f84bba8"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/0",
+        "candidate_id": "T-001",
+        "decision": "retained",
+        "reason": "Первичный журнал подтверждает одну маркировку П4.1.3-9 с исполнениями 4×2,5 и 4×4,0; локальная ведомость содержит 4×4,0. Сохранено без утверждения о двух физических линиях.",
+        "source_refs": [
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_c5ecdd6fe0d145118c604b663f84bba8"
+        ]
+      },
+      "final_finding_id": "F-001",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены одна марка линии, 15 м, конфликт 4×2,5/4×4,0 и запрет считать записи двумя кабелями.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_first_source_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-002",
+      "origin": "text",
+      "pointer": "/text_findings/1",
+      "original_candidate": {
+        "id": "T-002",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "source": "Кабельный журнал, листы 7–8 и 25–26",
+        "finding": "В кабельном журнале повторены П4.1.1-6, П4.1.1-7 и Пм4.1-1…Пм4.1-5; для части повторов Пм4.1 изменена разбивка длины по способам прокладки. На листах 25 и 26 повторен весь набор из 14 строк Пб.1.1-7…Пб.1.1-11 и Пб.1.4-1…Пб.1.4-9. Необходимо обозначить действующие записи и исключить неоднозначность подсчета. Повторные строки не доказывают наличие дополнительных физических линий.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "blk_8c1c32681acd42c79d8190b013bbbf0c"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/1",
+        "candidate_id": "T-002",
+        "decision": "retained",
+        "reason": "Повторные строки и изменения разбивки трасс подтверждены первичными страницами журнала. Повторы не учтены как дополнительные кабели.",
+        "source_refs": [
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "blk_8c1c32681acd42c79d8190b013bbbf0c"
+        ]
+      },
+      "final_finding_id": "F-002",
+      "assessment": "core_preserved_output_section_split_required",
+      "reason": "Сохранены обе группы повторов и изменение разбивки трассы. Требуется разделить техническое расхождение и вопрос о дублях, а не публиковать всё одной технической строкой.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F002_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-003",
+      "origin": "text",
+      "pointer": "/text_findings/2",
+      "original_candidate": {
+        "id": "T-003",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "source": "Перечни элементов листов 9, 13, 15; кабельный журнал, листы 6–7, 13–14, 16–17",
+        "finding": "Назначения двигателей не согласованы с концами кабелей. Для Пкр4.1 перечень относит M1 и M2 к вентиляторам, M3 к насосу, но линия Пкр4.1-13 кабелем 3×1,5 вновь заканчивается на M2. Для Пкр5.1 в перечне насос обозначен M2, второй вентилятор M3, тогда как журнал относит кабель 4×2,5 к M2, а 3×1,5 к M3. Для Пн5.1 насос обозначен M5, но линия Пн5.1.-21 кабелем 3×1,5 заканчивается на M1, уже указанном для вентилятора. Согласовать позиционные обозначения и подключения.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_6414183ffe264f65a253b3d6a5155da1",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "blk_ba2cc771448645a5b9a7203af971680b",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "blk_af7d76cf48cd48db813eee8d44227292",
+          "blk_0074662f330048ff843342b285e6a016"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/2",
+        "candidate_id": "T-003",
+        "decision": "retained",
+        "reason": "Подтверждены все три адресных конфликта Пкр4.1, Пкр5.1 и Пн5.1 между перечнями двигателей и журналом.",
+        "source_refs": [
+          "blk_6414183ffe264f65a253b3d6a5155da1",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "blk_ba2cc771448645a5b9a7203af971680b",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "blk_af7d76cf48cd48db813eee8d44227292",
+          "blk_0074662f330048ff843342b285e6a016"
+        ]
+      },
+      "final_finding_id": "F-003",
+      "assessment": "claims_transferred_but_full_confirmation_unsupported",
+      "reason": "Все три эпизода перенесены, но решение «подтверждены все три» необоснованно для Пкр5.1: разные сечения не доказывают перестановку двигателей. Сохранение текста не равно доказанности. Нужны разделение тезисов и графика.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-004",
+      "origin": "text",
+      "pointer": "/text_findings/3",
+      "original_candidate": {
+        "id": "T-004",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "source": "Перечень элементов листа 11; кабельный журнал, лист 9",
+        "finding": "Для Па3.1/Ва3.1 перечень элементов содержит вентиляторы M1–M3 и насос M4. Кабельный журнал использует M4 для вентилятора Ва3.1, M2 для линии 3×1,5 приточной установки и дополнительно M5 для второй линии вентилятора Па3.1. Состав и назначения двигателей в двух текстовых источниках различаются. Требуется согласовать перечень с фактической схемой основного и резервного оборудования, не приравнивая количество преобразователей к количеству работающих двигателей.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/3",
+        "candidate_id": "T-004",
+        "decision": "retained",
+        "reason": "Перечень М1–М4 и адреса М2, М4, М5 в журнале подтверждают конфликт. Число работающих двигателей по количеству ПЧ не выводилось.",
+        "source_refs": [
+          "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6"
+        ]
+      },
+      "final_finding_id": "F-004",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены перечень М1–М4 и адрес М5, отсутствующий в нём. Утверждение исходного кандидата, что М4 обязательно вентилятор, обоснованно сужено до адреса кабеля и неопределённости графики.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F004_F006_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-005",
+      "origin": "text",
+      "pointer": "/text_findings/4",
+      "original_candidate": {
+        "id": "T-005",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "source": "Кабельный журнал, листы 21–22",
+        "finding": "В подразделе Па4.1/Ва4.1 линии между ШАУВ-1-К5АС и ШАУВ-1-К5АС.ПЧ длиной 330 м обозначены Ва3.1-3ПЧ, Ва3.1-4ПЧ и Ва3.1-RS, то есть имеют обозначения другой системы. Для тех же шкафов ранее приведены силовые соединения Ва4.1-3 и Ва4.1-4 длиной 10 м. Необходимо установить назначение длинных линий, их конечные устройства и уникальные маркировки; по имеющимся записям нельзя подтвердить трассы от отдельных ПЧ к двигателям.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_c13afb271fc74ce4a28b79e59652ee51",
+          "blk_3e1eb0838e6b4a33b9a090a9c4b998dd"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/4",
+        "candidate_id": "T-005",
+        "decision": "retained",
+        "reason": "В подразделе К5АС действительно записаны Ва3.1-3ПЧ, Ва3.1-4ПЧ, Ва3.1-RS по 330 м и межшкафные Ва4.1-3, -4 по 10 м. Концы моторных линий остаются неустановленными.",
+        "source_refs": [
+          "blk_c13afb271fc74ce4a28b79e59652ee51",
+          "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+          "blk_96a99d46f82645bebdf992507a3e3ec6"
+        ]
+      },
+      "final_finding_id": "F-005",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены К5АС, чужие марки Ва3.1, 330 м и прежние межшкафные 10 м; назначение моторных линий остаётся открытым, а не опровергнутым.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F004_F006_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-006",
+      "origin": "text",
+      "pointer": "/text_findings/5",
+      "original_candidate": {
+        "id": "T-006",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "source": "Основной комплект, лист 10; спецификация, лист 2, позиции 4.4 и 4.5",
+        "finding": "Для ШАУВ-4-К4ПЧ перечень элементов предусматривает один датчик давления 20–200 Па и три датчика 50–500 Па. В спецификации количества переставлены: соответственно три и один. Общее количество четыре совпадает, но состав по диапазонам различается. Согласовать диапазон каждого PDS с его назначением и уставкой.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_3dfcda405820460b84179ebf65d182d1"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/5",
+        "candidate_id": "T-006",
+        "decision": "retained",
+        "reason": "Первичные таблицы подтверждают состав 1/3 против 3/1 по диапазонам реле. Равное общее количество не устраняет конфликт.",
+        "source_refs": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_3dfcda405820460b84179ebf65d182d1"
+        ]
+      },
+      "final_finding_id": "F-006",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены оба диапазона и перестановка количества 1/3 против 3/1; равенство общей суммы не подавило находку.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F004_F006_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-007",
+      "origin": "text",
+      "pointer": "/text_findings/6",
+      "original_candidate": {
+        "id": "T-007",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "source": "Перечни элементов листов 14 и 20; спецификация, позиции 8.6 и 14.6; кабельный журнал",
+        "finding": "В перечнях элементов П5.1.1/П5.1.3 и П6.1.1/П6.1.4 строка «ТЕ3, ТЕ4» имеет количество 1. Спецификация предусматривает по два канальных датчика, а кабельный журнал содержит отдельные подключения ТЕ3 и ТЕ4. Исправить количество в перечнях после согласования состава; нехватка закупаемых датчиков по этим строкам не установлена.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "blk_5b5187b5afb740efb6423fa40c399349",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "blk_bdfeffa5dba44748bf80fcc48b97c618",
+          "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/6",
+        "candidate_id": "T-007",
+        "decision": "retained",
+        "reason": "Количество 1 в двух перечнях противоречит двум отдельным подключениям и двум приборам в спецификации. Закупочная недостача не установлена; графического повышения серьезности нет.",
+        "source_refs": [
+          "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "blk_5b5187b5afb740efb6423fa40c399349",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "blk_bdfeffa5dba44748bf80fcc48b97c618",
+          "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b"
+        ]
+      },
+      "final_finding_id": "F-007",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены оба шкафа, количество 1/2, самостоятельные адреса ТЕ3/ТЕ4 и отсутствие доказанной закупочной недостачи.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_first_source_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-008",
+      "origin": "text",
+      "pointer": "/text_findings/7",
+      "original_candidate": {
+        "id": "T-008",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Спецификация, листы 1, 2 и 8; перечни элементов листов 8, 10 и 21",
+        "finding": "Уточнить назначения дополнительных датчиков в спецификации: для ШАУВ-2-К4ПЧ наружный датчик записан дважды, в позициях 2.5 и 2.7, при одном ТЕ1 в перечне; для ШАУВ-4-К4ПЧ указаны два накладных датчика при одном ТЕ2; для ШАУВ-3-К6ПЧ указаны два канальных датчика при одном ТЕ3. Индивидуальные марки дополнительных приборов и признак запаса не приведены, поэтому избыточная закупка пока не доказана.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_192d323532434ee1aba250ffaac80b47",
+          "blk_0457419703024673bb4328b18d47501e",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_a4846024d95044a09f7a24d76da41c31"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/7",
+        "candidate_id": "T-008",
+        "decision": "retained",
+        "reason": "Все три различия количества подтверждены. Назначение дополнительных приборов и резерв не раскрыты, поэтому сохранен вопрос.",
+        "source_refs": [
+          "blk_192d323532434ee1aba250ffaac80b47",
+          "blk_0457419703024673bb4328b18d47501e",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_a4846024d95044a09f7a24d76da41c31"
+        ]
+      },
+      "final_finding_id": "F-008",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Все три различия количества сохранены как вопросы о назначении и резерве, без требования сократить закупку.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-009",
+      "origin": "text",
+      "pointer": "/text_findings/8",
+      "original_candidate": {
+        "id": "T-009",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Основной комплект, лист 23, перечень элементов и условные обозначения",
+        "finding": "Для тепловых завес строка M3–M6 содержит четыре позиционных обозначения двигателей, но количество 2; строка Y1, Y2 содержит два обозначения клапанов, но количество 4. Требуется раскрыть соответствие физических изделий, групповых обозначений и смесительных комплектов. Без этого нельзя обоснованно изменять закупочное количество.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_1afb9b9bff5242cca6f364f218b96506"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/8",
+        "candidate_id": "T-009",
+        "decision": "retained",
+        "reason": "Перечень и легенда подтверждают неоднозначность М3–М6 и Y1,Y2. Физические количества и комплектность по ОВ не установлены.",
+        "source_refs": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_1afb9b9bff5242cca6f364f218b96506"
+        ]
+      },
+      "final_finding_id": "F-009",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены М3–М6/2 и Y1,Y2/4; физическое количество и комплектность оставлены вопросом.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-010",
+      "origin": "text",
+      "pointer": "/text_findings/9",
+      "original_candidate": {
+        "id": "T-010",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Общие данные, лист 3, пункт 5; ведомость чертежей, лист 1",
+        "finding": "В одном описании четырех тепловых завес сначала указаны У1, У2, У3, У4, затем ведущая У4.3 и ведомые У4.4–У4.6. Ведомость чертежей использует второй набор. Уточнить соответствие обозначений внутри описания. Само применение буквы «У» не является доказанной ошибкой и не требует переименования завес в ВТЗ.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_3555a6e6bcc443c39eaba461232ceec3",
+          "blk_6e394962eb18407fb17b09f063c30a5c",
+          "blk_c68be533b2c24e4799dde6fb256694f4"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/9",
+        "candidate_id": "T-010",
+        "decision": "retained",
+        "reason": "Два набора обозначений четырех завес присутствуют в одном первичном описании. Требование переименовать букву «У» не вводилось.",
+        "source_refs": [
+          "blk_3555a6e6bcc443c39eaba461232ceec3",
+          "blk_6e394962eb18407fb17b09f063c30a5c",
+          "blk_c68be533b2c24e4799dde6fb256694f4"
+        ]
+      },
+      "final_finding_id": "F-010",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены два набора обозначений и отсутствие запрета на букву У.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-011",
+      "origin": "text",
+      "pointer": "/text_findings/10",
+      "original_candidate": {
+        "id": "T-011",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "source": "Общие данные, лист 4, пункт 7; спецификация, лист 9, позиция 20.1",
+        "finding": "Алгоритм подогрева противодымного притока предусматривает датчик-реле «Спрут Т-06» с управляющим сигналом на пускатель электрокалорифера. В спецификации выбран другой прибор — МВТ 3280, NTC10К, с погружной частью 200 мм. Терморезистивный выход и релейная команда требуют разных входных цепей. Необходимо согласовать прибор, вход шкафа и реализацию уставки 18 °C; наличие совместимого преобразования сигнала в шкафу из предоставленного текста не установлено.",
+        "norm": "Проект 13АВ-РД-АК2-ПА, лист 4, пункт 7",
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/10",
+        "candidate_id": "T-011",
+        "decision": "retained",
+        "reason": "Подтвержден конфликт «Спрут Т-06» и МВТ 3280 NTC10К. Схема преобразования сигнала отсутствует; неработоспособность шкафа не объявлена доказанной.",
+        "source_refs": [
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_db759e961c1045b2822ce177cef0a17f",
+          "blk_a256f98d4e01408d90baba99d8b2cc19"
+        ]
+      },
+      "final_finding_id": "F-011",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены Спрут Т-06, МВТ3280, NTC10К, 18 °C и вопрос преобразования сигнала; добавлен подтверждённый текстом контекст шести применений.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-012",
+      "origin": "text",
+      "pointer": "/text_findings/11",
+      "original_candidate": {
+        "id": "T-012",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "source": "Общие данные, лист 3, пункт 4; основной комплект, лист 42; спецификация, лист 9",
+        "finding": "Состав управления кондиционерами не согласован: на листе 42 указаны БУРР-1М и два БИС-1М производства «Алекс электроникс», связанные радиоканалом; в спецификации — согласователь TD0027170RU Haier и адаптеры Haier. Общие данные одновременно заявляют отсутствие необходимости во внешнем питании и дополнительных устройствах сопряжения. Необходимо выбрать конкретное исполнение и согласовать его питание, интерфейсы, комплектность и количество управляемых кондиционеров. Примечание о перечне для одной сплит-системы также требует уточнения, поскольку описана работа пары кондиционеров.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_52496725d0f247bf913f197b2ed305ac",
+          "blk_ed9c75d3fd26408c88f163f107138612",
+          "blk_400b84df0f63420ab16fb5c330de54b7",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/11",
+        "candidate_id": "T-012",
+        "decision": "retained",
+        "reason": "Подтверждены разные изготовители и исполнения согласователей, наличие адаптеров и несовпадение единицы типового применения. Вопросы питания и интерфейсов сохранены.",
+        "source_refs": [
+          "blk_52496725d0f247bf913f197b2ed305ac",
+          "blk_ed9c75d3fd26408c88f163f107138612",
+          "blk_400b84df0f63420ab16fb5c330de54b7",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ]
+      },
+      "final_finding_id": "F-012",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены изготовители, типы контроллеров, радиоканал, питание, адаптеры и неоднозначность единицы комплекта; добавленные количества проверены в исходной спецификации.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-013",
+      "origin": "text",
+      "pointer": "/text_findings/12",
+      "original_candidate": {
+        "id": "T-013",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Таблица применимости листа 54; кабельный журнал, листы 31–35; спецификация, позиция 19.2",
+        "finding": "Таблица применимости перечисляет 19 датчиков зоны 3, 20 зоны 4 и 22 зоны 5, всего 61. Спецификация содержит 43 сигнализатора, а журнал перечисляет линии групп 1–4, без группы 5.1–5.18. Разность 18 совпадает с размером этой группы, но ее принадлежность поставке другого комплекта текстом не установлена. Требуется указать раздел поставки и подключения группы 5.1–5.18. Нехватка 18 датчиков не подтверждена.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "blk_7b41b193ccad4f559ba654a2248576d5",
+          "blk_3eda565e44cb443c8143585904b82ced",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_a256f98d4e01408d90baba99d8b2cc19"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/12",
+        "candidate_id": "T-013",
+        "decision": "retained",
+        "reason": "Подтверждены 61 адрес, 43 изделия и отсутствие группы 5 в предоставленном полном подразделе журнала. Разность не признана недостачей; сохранен вопрос о границе поставки и покрытия.",
+        "source_refs": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "blk_7b41b193ccad4f559ba654a2248576d5",
+          "blk_3eda565e44cb443c8143585904b82ced",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_6ba4df04a74d4e8d8db22cb4db7aff4f"
+        ]
+      },
+      "final_finding_id": "F-013",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены 61/43, группа5.1–5.18 и неизвестная граница поставки. Добавлен корректный запрет доказывать дефицит делением всей площади на проектные 200 м².",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F013_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-014",
+      "origin": "text",
+      "pointer": "/text_findings/13",
+      "original_candidate": {
+        "id": "T-014",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "calculation",
+        "report_section": "technical_findings",
+        "source": "Основной комплект, лист 26; кабельный журнал, листы 5–6",
+        "finding": "Для ШАУВ-2-К4ПЧ восемь линий КСПВПГнг(А)-HF 1×2×0,75 по 15 м дают 120 м, тогда как перечень листа 26 содержит 50 м. Три линии экранированного КСПЭВПГнг(А)-HF 1×2×0,75 длиной 20, 15 и 15 м дают 50 м вместо 105 м. Исполнения и суммы в перечне необходимо согласовать с журналом; экранированный и неэкранированный кабели не взаимозаменяются при подсчете.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/13",
+        "candidate_id": "T-014",
+        "decision": "retained",
+        "reason": "Состав слагаемых и точные исполнения проверены по первичному журналу. Подтверждены 120/50 м против 50/105 м ведомости.",
+        "source_refs": [
+          "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396"
+        ]
+      },
+      "final_finding_id": "F-014",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены оба исполнения, суммы120/50 и50/105, раздельный подсчёт и ограничение фактической закупки.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-015",
+      "origin": "text",
+      "pointer": "/text_findings/14",
+      "original_candidate": {
+        "id": "T-015",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "calculation",
+        "report_section": "technical_findings",
+        "source": "Основной комплект, лист 33; кабельный журнал, лист 16, линия Пн5.1.-10",
+        "finding": "Для линии Пн5.1.-10 от ШАУВ-4-К5ПЧ к ХТ1 журнал задает 35 м КСПЭВПГнг(А)-HF 2×2×0,75. В перечне кабелей этого шкафа на листе 33 указано только 15 м того же исполнения. Расхождение составляет 20 м; требуется согласовать длину и сводное количество.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_bcea3caf8104407b919f6960e2c12274",
+          "blk_af7d76cf48cd48db813eee8d44227292"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/14",
+        "candidate_id": "T-015",
+        "decision": "retained",
+        "reason": "Первичный журнал подтверждает 35 м линии Пн5.1.-10 против 15 м того же исполнения в ведомости.",
+        "source_refs": [
+          "blk_bcea3caf8104407b919f6960e2c12274",
+          "blk_af7d76cf48cd48db813eee8d44227292"
+        ]
+      },
+      "final_finding_id": "F-015",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены адрес линии Пн5.1.-10, точное исполнение и35/15 м; разность20 указана в заголовке.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-016",
+      "origin": "text",
+      "pointer": "/text_findings/15",
+      "original_candidate": {
+        "id": "T-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "calculation",
+        "report_section": "technical_findings",
+        "source": "Основной комплект, лист 29; кабельный журнал, листы 9–10",
+        "finding": "В пределах комплекта Па3.1/Ва3.1 журнал содержит 640 м ППГнг(А)-HF 3×1,5: две линии по 20 м и пять по 120 м. Перечень листа 29 содержит 620 м. Для ППГнг(А)-HF 4×2,5 журнал дает 310 м: две линии по 20 м, две по 120 м и две по 15 м, тогда как перечень содержит 290 м. В обоих случаях расхождение 20 м. При пересчете сохранены отдельные линии питания вынесенного шкафа ПЧ.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_3705aceeb77e406ebacc38fcaf7f2d28"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/15",
+        "candidate_id": "T-016",
+        "decision": "retained",
+        "reason": "Пересчет первичных строк дает 640 и 310 м против 620 и 290 м. Межшкафные кабели сохранены отдельными линиями.",
+        "source_refs": [
+          "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_3705aceeb77e406ebacc38fcaf7f2d28"
+        ]
+      },
+      "final_finding_id": "F-016",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены640/620 и310/290 м, обе разности20 и отдельные межшкафные линии15 м.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-017",
+      "origin": "text",
+      "pointer": "/text_findings/16",
+      "original_candidate": {
+        "id": "T-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable",
+        "report_section": "technical_findings",
+        "source": "Основной комплект, лист 35; кабельный журнал, лист 19, линия По5.1-9",
+        "finding": "Питание электронагревателя По5.1-9 задано в журнале кабелем ППГнг(А)-HF 4×4,0 длиной 10 м. Перечень листа 35 не содержит этого исполнения и вместо него содержит 10 м ППГнг(А)-HF 3×2,5. Необходимо согласовать число жил и сечение с электрической схемой нагревателя и расчетом. Это различие нельзя устранить простым пересчетом метража.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/16",
+        "candidate_id": "T-017",
+        "decision": "retained",
+        "reason": "Подтвержден конфликт номенклатуры локальной ведомости и линии По5.1-9 журнала. Правильное исполнение без параметров нагревателя не выбрано.",
+        "source_refs": [
+          "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ]
+      },
+      "final_finding_id": "F-017",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранён конфликт локальной номенклатуры3×2,5/4×4,0; прямая принадлежность3×2,5 нагревателю обоснованно оставлена непроверенной.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-018",
+      "origin": "text",
+      "pointer": "/text_findings/17",
+      "original_candidate": {
+        "id": "T-018",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "source": "Основной комплект, лист 28; кабельный журнал, лист 7; спецификация, листы 9–10",
+        "finding": "Для линии П4.1.1-4 к двигателю M1 журнал предусматривает ППГнг(А)-НФ 3×2,5 длиной 20 м; перечень листа 28 содержит ППГнг(А)-HF 3×2,5 в том же количестве. В сводной спецификации отсутствует позиция силового кабеля 3×2,5. Требуется согласовать запись исполнения и включение линии в поставку; заменять ее кабелем 4×2,5 без проектного решения нельзя.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_45a5493bf459424ea614bc2de6d6e514",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/17",
+        "candidate_id": "T-018",
+        "decision": "retained",
+        "reason": "Исполнение 3×2,5 есть в журнале и локальной ведомости, но отсутствует в полном разделе сводных кабелей. Разница НФ/HF сохранена.",
+        "source_refs": [
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_45a5493bf459424ea614bc2de6d6e514",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ]
+      },
+      "final_finding_id": "F-018",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены3×2,5,20 м, отсутствие в своде, буквальная разница НФ/HF и запрет автоматической замены4×2,5.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-019",
+      "origin": "text",
+      "pointer": "/text_findings/18",
+      "original_candidate": {
+        "id": "T-019",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "cable",
+        "report_section": "questions",
+        "source": "Кабельный журнал; перечни кабелей; спецификация, позиции 21.4 и 21.5",
+        "finding": "Марки контрольных кабелей записаны неодинаково: в спецификации КСПВППГнг(А)-HF, в перечнях КСПВПГнг(А)-HF, в части строк журнала КСВПГнг(А)-HF и КСПВПнг(А)-HF. Встречается также запись НФ вместо HF. Требуется подтвердить точное заводское обозначение и привести документы к нему. Без технических условий нельзя объявлять варианты равнозначными или несуществующими.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_019b790b96c0452e9b83c348ec3d429c",
+          "blk_13604b1cfe21408f85c2bc28e358b012",
+          "blk_7b41b193ccad4f559ba654a2248576d5",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/18",
+        "candidate_id": "T-019",
+        "decision": "retained",
+        "reason": "Разные написания марок подтверждены. Без технических условий они не объявлены равнозначными или несуществующими.",
+        "source_refs": [
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_019b790b96c0452e9b83c348ec3d429c",
+          "blk_13604b1cfe21408f85c2bc28e358b012",
+          "blk_7b41b193ccad4f559ba654a2248576d5",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad"
+        ]
+      },
+      "final_finding_id": "F-019",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены варианты маркировки и невозможность объявлять эквивалентность без ТУ; дополнены конкретными четырьмя линиями В6 и связью СКЗ45 м.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-020",
+      "origin": "text",
+      "pointer": "/text_findings/19",
+      "original_candidate": {
+        "id": "T-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "fire_safety",
+        "report_section": "questions",
+        "source": "Кабельный журнал, лист 35; спецификация, позиции 21.11, 22.1 и 22.2",
+        "finding": "Линии температурного контроля противодымных систем выполнены кабелем FRHF с прокладкой в гофротрубе; спецификация содержит общую ПВХ-гофру и держатели. Требуется указать применяемую огнестойкую кабельную линию, ее крепления, допустимую трассу и подтвержденное время работоспособности для этих шести контуров. Наличие FRHF само по себе не подтверждает огнестойкость всей линии; по предоставленному тексту ее несоответствие также окончательно не установлено.",
+        "norm": "Федеральный закон № 123-ФЗ, статья 82, часть 2; применимость и редакцию проверить на нормативном этапе",
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/19",
+        "candidate_id": "T-020",
+        "decision": "retained",
+        "reason": "FRHF, гофротруба и общие держатели подтверждены текстом. Сохранен вопрос о конструкции линии, роли при пожаре и требуемом времени работы.",
+        "source_refs": [
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ]
+      },
+      "final_finding_id": "F-020",
+      "assessment": "core_preserved_with_unsupported_added_statement",
+      "reason": "Вопрос о конструкции линии и времени работы сохранён, но добавлено неверно широкое «роль при пожаре не установлена»: пункт7 её описывает. Требуется сузить формулировку.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-021",
+      "origin": "text",
+      "pointer": "/text_findings/20",
+      "original_candidate": {
+        "id": "T-021",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "report_section": "technical_findings",
+        "source": "Общие данные, лист 4, пункт 6",
+        "finding": "Уставки сигнализации СО обоснованы утратившим силу ГН 2.2.5.1313-03. Необходимо заменить нормативное основание и проверить отдельно предупредительную и аварийную уставки с учетом действующих требований и назначения автостоянки. Автоматически считать уставку 100 мг/м³ допустимой постоянной концентрацией нельзя.",
+        "norm": "ГН 2.2.5.1313-03; действующее основание для СО подлежит установлению на нормативном этапе",
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/20",
+        "candidate_id": "T-021",
+        "decision": "retained",
+        "reason": "Ссылка на ГН и уставки подтверждены. Утрата силы не проверена первичным нормативным документом, поэтому сохранен вопрос без публикации непроверенного статуса как факта.",
+        "source_refs": [
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ]
+      },
+      "final_finding_id": "F-021",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Вопрос об уставках сохранён. Статус отмены нормативной ссылки осторожно понижен до непроверенного в данном пакете; поздняя внешняя проверка подтвердила отмену. Это не потеря самого вопроса и не подтверждение неправильных уставок.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F021_F022_normative_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-022",
+      "origin": "text",
+      "pointer": "/text_findings/21",
+      "original_candidate": {
+        "id": "T-022",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "report_section": "questions",
+        "source": "Общие данные, листы 2 и 4",
+        "finding": "Исправить обозначение «ГОСТ 21.4.08-2013» на идентифицируемую ссылку на правила выполнения документации автоматизации. Для «ТУ-газ-86», которым обоснована высота установки газоанализаторов, привести полное наименование и реквизиты либо заменить ссылкой на применимое руководство выбранного прибора.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_adc4052a68344abf9c8f56861b9294d1",
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/21",
+        "candidate_id": "T-022",
+        "decision": "retained",
+        "reason": "Обозначения ГОСТ 21.4.08-2013 и ТУ-газ-86 подтверждены. Сохранено уточнение реквизитов, без вывода о неправильной высоте 1,5 м.",
+        "source_refs": [
+          "blk_adc4052a68344abf9c8f56861b9294d1",
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ]
+      },
+      "final_finding_id": "F-022",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены обе проблемные ссылки, высота1,5 м не объявлена ошибочной. Поздняя карточка Росстандарта подтверждает отличие обозначения ГОСТ; ТУ ещё не идентифицированы.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-023",
+      "origin": "text",
+      "pointer": "/text_findings/22",
+      "original_candidate": {
+        "id": "T-023",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Общие данные, лист 2, пункт 2.1; лист 4, пункт 8",
+        "finding": "Для электропитания шкафов указаны разные комплекты: в описании приточных систем 13АВ-РД-ЭМ2-ПА, в пункте электропитания 13АВ-РД-ЭМ-КЗ. Требуется указать применимый комплект для каждой группы шкафов и раздельных вводов I и II категорий. Само распределение работ между АК и ЭМ является нормальной практикой; вопрос вызван несовпадающими адресными ссылками.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_76e892431d7d4c48a09aba49a57b223c",
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_f30f5e10b54f415392e7e149a87dae24"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/22",
+        "candidate_id": "T-023",
+        "decision": "retained",
+        "reason": "Разные ссылки ЭМ2-ПА и ЭМ-КЗ подтверждены первичным текстом. Требование I категории сохранено только для защиты водяных калориферов.",
+        "source_refs": [
+          "blk_76e892431d7d4c48a09aba49a57b223c",
+          "blk_f30f5e10b54f415392e7e149a87dae24",
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ]
+      },
+      "final_finding_id": "F-023",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены разные комплекты ЭМ и разделение категорий питания; распределение работ между дисциплинами не объявлено ошибкой.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-024",
+      "origin": "text",
+      "pointer": "/text_findings/23",
+      "original_candidate": {
+        "id": "T-024",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Общие данные, лист 2, алгоритм защиты калорифера",
+        "finding": "Рабочая защита от замораживания задана условием «обратный теплоноситель ≤20 °C или наружный воздух ≤3 °C» с полным открытием клапана и отключением регулирования температуры. При буквальном исполнении наружная температура ниже +3 °C постоянно активирует этот режим даже при прогретом калорифере. Уточнить, действительно ли контролируется наружный воздух, либо воздух после калорифера, и задать условия выхода из защиты и признания прогрева неэффективным.",
+        "norm": "Проект 13АВ-РД-АК2-ПА, лист 2, пункт 2.1",
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_a5c923d5f33046ad9585e4102dc033c7",
+          "blk_76e892431d7d4c48a09aba49a57b223c"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/23",
+        "candidate_id": "T-024",
+        "decision": "retained",
+        "reason": "На одном листе непосредственно подтвержден конфликт «воздух после калорифера» и «наружный воздух ≤3 °C». Перенесено в технические замечания с сохранением неопределенности исправления и исходной серьезности.",
+        "source_refs": [
+          "blk_a5c923d5f33046ad9585e4102dc033c7",
+          "blk_76e892431d7d4c48a09aba49a57b223c"
+        ]
+      },
+      "final_finding_id": "F-024",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены условие ИЛИ,20/+3 °C, отключение регулирования и вопрос выхода из защиты; добавлен различающий предварительный прогрев контекст40 °C.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-025",
+      "origin": "text",
+      "pointer": "/text_findings/24",
+      "original_candidate": {
+        "id": "T-025",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Таблицы кровельных креплений листов 48, 50, 53; спецификация, лист 10",
+        "finding": "В таблицах кровельного крепления указан двойной подвес BSD4120 и четыре консоли на комплект с одной плитой. Спецификация содержит подвес BSD2120, 15 плит и 15 консолей. Требуется согласовать исполнение подвеса и привязать типовые комплекты опор к количествам поставки. Нельзя автоматически считать все 15 плит одинаковыми четырехконсольными опорами и объявлять нехватку 45 консолей без такой привязки.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_56331ec5845f4d73be99b93df1faec9c",
+          "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/24",
+        "candidate_id": "T-025",
+        "decision": "retained",
+        "reason": "Подтвержден конфликт BSD4120/BSD2120, объединенный с графическим кандидатом на основании первичных таблиц. Принята эксплуатационная оценка конфликта исполнения; количественный вопрос сохранен без недостачи 45 консолей.",
+        "source_refs": [
+          "blk_56331ec5845f4d73be99b93df1faec9c",
+          "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ]
+      },
+      "final_finding_id": "F-025",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены BSD4120/BSD2120, четыре консоли типового узла,15 плит/консолей и запрет автоматически выводить недостачу45.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-026",
+      "origin": "text",
+      "pointer": "/text_findings/25",
+      "original_candidate": {
+        "id": "T-026",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Спецификация, листы 10–11",
+        "finding": "Уточнить закупочные идентификаторы: код 35341 присвоен и лотку 100×100, и треугольной бирке; BSD2120 указан и для подвеса, и в строке стальной трубы Ду 32. Позиция 21.10 повторена для разных интерфейсных кабелей 3×2×0,78 и 2×2×0,78. Эти записи не позволяют однозначно адресовать изделия при заказе.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_f4bf6dec4072413fa43043bf27d880eb"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/25",
+        "candidate_id": "T-026",
+        "decision": "retained",
+        "reason": "Подтверждены повторные обозначения 35341, BSD2120 и номер позиции 21.10. Правильные каталожные коды не выдуманы.",
+        "source_refs": [
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_f4bf6dec4072413fa43043bf27d880eb"
+        ]
+      },
+      "final_finding_id": "F-026",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены повторы35341,BSD2120 и21.10; правильные каталожные коды не выдуманы.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-027",
+      "origin": "text",
+      "pointer": "/text_findings/26",
+      "original_candidate": {
+        "id": "T-027",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Спецификация, лист 8, позиции 16.2 и 16.3; таблица применимости листа 54",
+        "finding": "В составе ШАУВ-1-К6АС преобразователи частоты подписаны как предназначенные для Ва4.1 и Па4.1. Таблица применимости относит этот шкаф к Па5.1/Ва5.1, а Па4.1/Ва4.1 — к ШАУВ-1-К5АС. Согласовать адреса систем в примечаниях спецификации; мощности преобразователей при этом нельзя переносить между шкафами автоматически.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_3963ce75beb642a0a5fe85d9dada94b3"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/26",
+        "candidate_id": "T-027",
+        "decision": "retained",
+        "reason": "Спецификация и первичная таблица применимости подтверждают неверную адресацию примечаний ПЧ. Перенос мощностей не рекомендован.",
+        "source_refs": [
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_3963ce75beb642a0a5fe85d9dada94b3"
+        ]
+      },
+      "final_finding_id": "F-027",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранены шкафК6АС, позиции16.2/16.3 и оба набора систем; перенос мощностей между шкафами не предложен.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    },
+    {
+      "source_id": "T-028",
+      "origin": "text",
+      "pointer": "/text_findings/27",
+      "original_candidate": {
+        "id": "T-028",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Реестр отклонений РД от ПД, страница 105",
+        "finding": "В реестре отклонений рассматриваемого комплекта АК2-ПА указан раздел «13АВ-РД-АК-КЗ Книга 1». Требуется подтвердить принадлежность записи об отказе от Modbus-RTU и переходе на CAN/Ethernet именно данному комплекту либо исправить обозначение раздела.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_e1d470118a394e9a9e75718113a9b37d",
+          "blk_e298f80a8fbc4796ac98687118263a56"
+        ]
+      },
+      "model_decision": {
+        "origin": "text",
+        "pointer": "/text_findings/27",
+        "candidate_id": "T-028",
+        "decision": "retained",
+        "reason": "Иной шифр в реестре подтвержден первичной строкой и титулом АК2-ПА. Сохранен вопрос о принадлежности изменения протоколов.",
+        "source_refs": [
+          "blk_e1d470118a394e9a9e75718113a9b37d",
+          "blk_e298f80a8fbc4796ac98687118263a56",
+          "blk_3a701ccb1ff24442a4885446ad4adf55"
+        ]
+      },
+      "final_finding_id": "F-028",
+      "assessment": "core_preserved_with_evidence_scope_limits",
+      "reason": "Сохранён вопрос о принадлежности строки реестра АК-КЗ к АК2-ПА и изменении протоколов.",
+      "output_source_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "preservation_assessed": true,
+      "all_original_claims_factually_verified": false,
+      "factual_verification_scope": "See individual output source review; this record assesses transfer, not new factual verification."
+    }
+  ],
+  "confirmed_silent_loss_of_entire_text_candidate": 0,
+  "important_limits": "All 28 have an output counterpart. This is not 28 confirmed independent defects, and does not establish retention against engineer gold. T003 factual overreach and T020 added wording require correction.",
+  "production_acceptance": false
+}
