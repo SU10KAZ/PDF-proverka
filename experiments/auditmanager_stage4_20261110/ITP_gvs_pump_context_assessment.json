@@ -1,0 +1,13 @@
+{
+  "status": "expanded_circulation_candidate_found",
+  "source_only_known_control": true,
+  "previous_operation_answer_supplied": false,
+  "observed_candidate": "T411/T412 graphic labels differ between principle scheme (2.73/1.57) and section (5.89/3.13); sums 4.30/9.02 versus selected K15 duty 4.31.",
+  "remaining": [
+    "Verify connection and pump label on actual graphic before semantic admission.",
+    "Review broader candidate and prevent duplicate output of the narrower T411 finding.",
+    "Supply-side branch discrepancy and same-pipe 3/3.5 wall scope are not closed."
+  ],
+  "no_pump_insufficiency_claim": true,
+  "full_acceptance": false
+}
