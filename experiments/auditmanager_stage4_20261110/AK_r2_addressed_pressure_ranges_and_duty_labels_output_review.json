@@ -1,0 +1,838 @@
+{
+  "status": "four_AK_range_duty_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "31c046896b371f78c71dd957157c90e202b65b71d1658aba37e0fc924000ad67",
+  "queue_after_sha256": "836003105b217807600ceded2639bf39210216b8e93ea4ff5d82bed09787a3bf",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-043",
+      "finding": {
+        "id": "F-043",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Диапазоны приборов",
+        "sheet": "Лист 9",
+        "page": 13,
+        "problem": "Диапазон PDS3 системы Пкр4.1 задан противоречиво.",
+        "description": "Таблица сигналов указывает 20–200 Па, перечень элементов для PDS1–PDS3 — 50–500 Па. Само расхождение не доказывает непригодность прибора при уставке внутри пересечения диапазонов.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Установить требуемую уставку контроля вентилятора и согласовать диапазон PDS3 в документах.",
+        "risk": "Неоднозначный выбор прибора и настройка контроля вентилятора.",
+        "source_finding_ids": [
+          "G-010",
+          "G-011"
+        ],
+        "source_block_ids": [
+          "blk_28e6a3fa2bff45aabce4aed90feff741"
+        ],
+        "related_block_ids": [
+          "blk_28e6a3fa2bff45aabce4aed90feff741"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+            "page": 13
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие: диапазон PDS3 на функциональной схеме — 20–200 Па, в перечне элементов для PDS1–PDS3 — 50–500 Па. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие: диапазон PDS3 на функциональной схеме — 20–200 Па, в перечне элементов для PDS1–PDS3 — 50–500 Па. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "PDS3 Пкр4.1: таблица сигналов 20–200 Па, уставка 50 Па; перечень PDS1–PDS3 задаёт 50–500 Па.",
+          "verdict": "confirmed_authoritative_TEXT_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Согласовать диапазон одного и того же прибора между документами.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "50Па входит в оба диапазона; это не снимает расхождения характеристик."
+        },
+        {
+          "claim": "Невозможность настройки части предусмотренного диапазона.",
+          "verdict": "conditional_range_difference_not_operational_failure",
+          "limits": "Интервал20–50Па не входит в50–500Па, но необходимость уставки в этом интервале проектом здесь не установлена. Физическая непригодность при50Па, гистерезис и точность без паспорта не доказаны."
+        },
+        {
+          "claim": "ГОСТ21.408-2013 нарушен.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; подтверждён документный конфликт, а не конкретное нормативное нарушение."
+        },
+        {
+          "claim": "Текущая строка покрывает обе системы Пкр4.1 и Пкр5.1.",
+          "verdict": "not_asserted_single_system_scope",
+          "limits": "Прежняя составная строка разделена: F-043 только Пкр4.1, F-046 только Пкр5.1. Сохранность оценивать по адресным приборам, а не считать разделение приростом обнаружения."
+        }
+      ],
+      "unsupported_additions": "Различие диапазонов не доказывает отказ при уставке внутри пересечения; подписи основной/резервный не доказывают ошибку программы. Составные исторические строки учитывать по отдельным адресным тезисам.",
+      "novel_useful_content": "Сверены границы разделённых строк второго повтора с прежними подтверждениями идентичных источников; нового просмотра графики не заявляется.",
+      "duplicate_burden": "Одна адресная система и одно реле PDS3; общая прежняя строка разделена на две без новых самостоятельных дефектов.",
+      "profile_and_section": "technical_core_preserve_no_proven_sensor_failure",
+      "engineer_reuse": "AK57/UNI-057 historically accepted; F-042 covers Pkr4.1/Pkr5.1 only, not all six historical addresses. Original failure explanation retained in source but not adopted as demonstrated.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+            "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+          },
+          "limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+          "wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+          "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78",
+          "route": "historical_engineer_decision_and_later_auditor_scope"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+          "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0",
+          "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pkr4.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-3-K4PCh. Right register not used to override TEXT."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+          "sha256": "4abaff5efb5a1c9a6466cb37fc407035b9aa2c5cb6afe3a9dfa885c05c4aff01",
+          "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pkr5.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-2-K5PCh."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-042",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-043_addressed_range_or_duty_label"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-046",
+      "finding": {
+        "id": "F-046",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Диапазоны приборов",
+        "sheet": "Лист 13",
+        "page": 17,
+        "problem": "Диапазон PDS3 системы Пкр5.1 не согласован со спецификацией.",
+        "description": "Таблица сигналов содержит 20–200 Па, перечень элементов и спецификация — 50–500 Па.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Установить требуемую уставку и согласовать диапазон PDS3 во всех документах.",
+        "risk": "Ошибки выбора и настройки реле контроля вентилятора.",
+        "source_finding_ids": [
+          "G-020",
+          "G-021"
+        ],
+        "source_block_ids": [
+          "blk_4e142b330766407099c7d561f0a8eb6a"
+        ],
+        "related_block_ids": [
+          "blk_4e142b330766407099c7d561f0a8eb6a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+            "page": 17
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно несоответствие диапазона PDS3 системы Пкр5.1: 20–200 Па в таблице сигналов функциональной схемы и 50–500 Па в перечне элементов и спецификации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно несоответствие диапазона PDS3 системы Пкр5.1: 20–200 Па в таблице сигналов функциональной схемы и 50–500 Па в перечне элементов и спецификации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "PDS3 Пкр5.1: таблица сигналов 20–200 Па, уставка 50 Па; перечень PDS1–PDS3 задаёт 50–500 Па.",
+          "verdict": "confirmed_authoritative_TEXT_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "СО7.3 дляШАУВ-2-К5ПЧ содержит3 датчика50–500Па; шкаф на схемеПкр5.1 совпадает.",
+          "verdict": "confirmed_cross_document_identity",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать диапазон одного и того же прибора между документами.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "50Па входит в оба диапазона; это не снимает расхождения характеристик."
+        },
+        {
+          "claim": "Невозможность настройки части предусмотренного диапазона.",
+          "verdict": "conditional_range_difference_not_operational_failure",
+          "limits": "Интервал20–50Па не входит в50–500Па, но необходимость уставки в этом интервале проектом здесь не установлена. Физическая непригодность при50Па, гистерезис и точность без паспорта не доказаны."
+        },
+        {
+          "claim": "ГОСТ21.408-2013 нарушен.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; подтверждён документный конфликт, а не конкретное нормативное нарушение."
+        },
+        {
+          "claim": "Текущая строка покрывает обе системы Пкр4.1 и Пкр5.1.",
+          "verdict": "not_asserted_single_system_scope",
+          "limits": "Прежняя составная строка разделена: F-043 только Пкр4.1, F-046 только Пкр5.1. Сохранность оценивать по адресным приборам, а не считать разделение приростом обнаружения."
+        }
+      ],
+      "unsupported_additions": "Различие диапазонов не доказывает отказ при уставке внутри пересечения; подписи основной/резервный не доказывают ошибку программы. Составные исторические строки учитывать по отдельным адресным тезисам.",
+      "novel_useful_content": "Сверены границы разделённых строк второго повтора с прежними подтверждениями идентичных источников; нового просмотра графики не заявляется.",
+      "duplicate_burden": "Одна адресная система и одно реле PDS3; общая прежняя строка разделена на две без новых самостоятельных дефектов.",
+      "profile_and_section": "technical_core_preserve_no_proven_sensor_failure",
+      "engineer_reuse": "AK57/UNI-057 historically accepted; F-042 covers Pkr4.1/Pkr5.1 only, not all six historical addresses. Original failure explanation retained in source but not adopted as demonstrated.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+            "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+          },
+          "limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+          "wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+          "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78",
+          "route": "historical_engineer_decision_and_later_auditor_scope"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+          "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0",
+          "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pkr4.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-3-K4PCh. Right register not used to override TEXT."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+          "sha256": "4abaff5efb5a1c9a6466cb37fc407035b9aa2c5cb6afe3a9dfa885c05c4aff01",
+          "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pkr5.1 PDS3 fan pressure set50Pa, signal column11 range20–200Pa, cabinet SHAUV-2-K5PCh."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-042",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-046_addressed_range_or_duty_label"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-044",
+      "finding": {
+        "id": "F-044",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Назначение сигналов",
+        "sheet": "Лист 11",
+        "page": 15,
+        "problem": "Перепутаны сигналы состояния основного и резервного вентиляторов Ва3.1.",
+        "description": "Канал 16 связан с М3 основного Ва3.1, но назван резервным; канал 19 связан с М4 резервного Ва3.1р, но назван основным.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать подписи каналов 16 и 19 с фактическим назначением вентиляторов после уточнения марок двигателей.",
+        "risk": "Ошибочная индикация и нарушение переключения на резерв.",
+        "source_finding_ids": [
+          "G-017",
+          "G-018"
+        ],
+        "source_block_ids": [
+          "blk_2aeda93ede5444ebb33f638cd45586f2"
+        ],
+        "related_block_ids": [
+          "blk_2aeda93ede5444ebb33f638cd45586f2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+            "page": 15
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают перестановку подписей каналов 16 и 19: М3/Ва3.1 назван резервным, а М4/Ва3.1р — основным.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают перестановку подписей каналов 16 и 19: М3/Ва3.1 назван резервным, а М4/Ва3.1р — основным.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Лист11: Ва3.1/M3 связан с колонкой16 «рез.», Ва3.1р/M4 с19 «осн.».",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Общие указания предусматривают периодическую замену рабочего и резервного вентилятора для уравнивания наработки.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Перепутаны физические агрегаты в программе управления или диспетчеризации.",
+          "verdict": "not_established",
+          "limits": "Подтверждена неоднозначность статических обозначений и подписей состояний. Программные теги, алгоритм привязки ролей и АРМ не проверены. Номера колонок не считать аппаратными адресами."
+        },
+        {
+          "claim": "Согласовать подписи и пояснить, относятся ли они к физическому агрегату или текущей роли при ротации.",
+          "verdict": "supported_scoped_technical_coordination",
+          "limits": "Не выполнять автоматическую перестановку сигналов."
+        },
+        {
+          "claim": "Номера 16 и 19 являются установленными аппаратными адресами каналов.",
+          "verdict": "not_established",
+          "limits": "Проверены номера колонок функциональной таблицы; адреса модулей и программные теги не исследованы. Ротация рабочего и резервного агрегата требует пояснения смысла подписей."
+        }
+      ],
+      "unsupported_additions": "Различие диапазонов не доказывает отказ при уставке внутри пересечения; подписи основной/резервный не доказывают ошибку программы. Составные исторические строки учитывать по отдельным адресным тезисам.",
+      "novel_useful_content": "Сверены границы разделённых строк второго повтора с прежними подтверждениями идентичных источников; нового просмотра графики не заявляется.",
+      "duplicate_burden": "Сохранена только система Ва3.1/Ва3.1р. Другие две системы из прежней составной строки этой находке не приписываются.",
+      "profile_and_section": "technical_identity_core_dynamic_roles_require_clarification",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+          "primary_adjudication": null,
+          "limits": [
+            "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Это допускает динамические роли, но в проверенных подписях связь динамической роли с конкретным агрегатом не пояснена. Подтверждена неоднозначность документации, не неправильная реализация ротации.",
+            "Номера — колонки/линии функциональных схем, не установленные аппаратные адреса или программные теги.",
+            "Программа контроллера, таблица тегов и экраны АРМ не проверены. Нельзя автоматически менять сигналы или утверждать показ состояния другого вентилятора.",
+            "Исходные номера15 и30 на листе15 неверны. Ошибка этой части не опровергает отдельные подтверждённые расхождения.",
+            "Нормативное нарушение и историческое решение инженера не установлены."
+          ],
+          "wording": "Согласовать подписи состояний основного и резервного вентиляторов со статическими обозначениями агрегатов: лист11, Ва3.1/M3→16 «рез.» и Ва3.1р/M4→19 «осн.»; лист15, Пн5.1/M1→11 «рез.», Пн5.1 рез/M2→14 «осн.», Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.». Уточнить, обозначают ли подписи физические агрегаты или текущие роли при ротации."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+          "primary_adjudication": null,
+          "limits": [
+            "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Это допускает динамические роли, но в проверенных подписях связь динамической роли с конкретным агрегатом не пояснена. Подтверждена неоднозначность документации, не неправильная реализация ротации.",
+            "Номера — колонки/линии функциональных схем, не установленные аппаратные адреса или программные теги.",
+            "Программа контроллера, таблица тегов и экраны АРМ не проверены. Нельзя автоматически менять сигналы или утверждать показ состояния другого вентилятора.",
+            "Исходные номера15 и30 на листе15 неверны. Ошибка этой части не опровергает отдельные подтверждённые расхождения.",
+            "Нормативное нарушение и историческое решение инженера не установлены."
+          ],
+          "wording": "Согласовать подписи состояний основного и резервного вентиляторов со статическими обозначениями агрегатов: лист11, Ва3.1/M3→16 «рез.» и Ва3.1р/M4→19 «осн.»; лист15, Пн5.1/M1→11 «рез.», Пн5.1 рез/M2→14 «осн.», Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.». Уточнить, обозначают ли подписи физические агрегаты или текущие роли при ротации."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+          "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet11 M3/Va3.1 to16 reserve; M4/Va3.1r to19 main."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet15 four fan states11/14/26/29 conflict with static main/reserve labels;15/30 are pressure columns, not states."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet22 M2/Va5.1 to16 reserve; M3/Va5.1r to19 main."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-044",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-044_addressed_range_or_duty_label"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-059",
+      "finding": {
+        "id": "F-059",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Назначение сигналов",
+        "sheet": "Лист 22",
+        "page": 26,
+        "problem": "Перепутаны подписи основного и резервного вентиляторов Ва5.1.",
+        "description": "Сигнал 16 от М2 системы Ва5.1 назван состоянием резервного вентилятора, сигнал 19 от М3 системы Ва5.1р — основного.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать подписи сигналов 16 и 19 с основным Ва5.1 и резервным Ва5.1р.",
+        "risk": "Ошибочная индикация и нарушение алгоритма резервирования.",
+        "source_finding_ids": [
+          "G-055",
+          "G-058"
+        ],
+        "source_block_ids": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "related_block_ids": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "page": 26
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-055",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-058",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковую перестановку подписей: сигнал 16 от М2 системы Ва5.1 назван резервным, а сигнал 19 от М3 системы Ва5.1р — основным.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковую перестановку подписей: сигнал 16 от М2 системы Ва5.1 назван резервным, а сигнал 19 от М3 системы Ва5.1р — основным.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Лист22: Ва5.1/M2→16 «рез.», Ва5.1р/M3→19 «осн.».",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Общие указания предусматривают периодическую замену рабочего и резервного вентилятора для уравнивания наработки.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Перепутаны физические агрегаты в программе управления или диспетчеризации.",
+          "verdict": "not_established",
+          "limits": "Подтверждена неоднозначность статических обозначений и подписей состояний. Программные теги, алгоритм привязки ролей и АРМ не проверены. Номера колонок не считать аппаратными адресами."
+        },
+        {
+          "claim": "Согласовать подписи и пояснить, относятся ли они к физическому агрегату или текущей роли при ротации.",
+          "verdict": "supported_scoped_technical_coordination",
+          "limits": "Не выполнять автоматическую перестановку сигналов."
+        },
+        {
+          "claim": "Номера 16 и 19 являются установленными аппаратными адресами каналов.",
+          "verdict": "not_established",
+          "limits": "Проверены номера колонок функциональной таблицы; адреса модулей и программные теги не исследованы. Ротация рабочего и резервного агрегата требует пояснения смысла подписей."
+        }
+      ],
+      "unsupported_additions": "Различие диапазонов не доказывает отказ при уставке внутри пересечения; подписи основной/резервный не доказывают ошибку программы. Составные исторические строки учитывать по отдельным адресным тезисам.",
+      "novel_useful_content": "Сверены границы разделённых строк второго повтора с прежними подтверждениями идентичных источников; нового просмотра графики не заявляется.",
+      "duplicate_burden": "Сохранена только система Ва5.1/Ва5.1р. Другие две системы из прежней составной строки этой находке не приписываются.",
+      "profile_and_section": "technical_identity_core_dynamic_roles_require_clarification",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+          "primary_adjudication": null,
+          "limits": [
+            "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Это допускает динамические роли, но в проверенных подписях связь динамической роли с конкретным агрегатом не пояснена. Подтверждена неоднозначность документации, не неправильная реализация ротации.",
+            "Номера — колонки/линии функциональных схем, не установленные аппаратные адреса или программные теги.",
+            "Программа контроллера, таблица тегов и экраны АРМ не проверены. Нельзя автоматически менять сигналы или утверждать показ состояния другого вентилятора.",
+            "Исходные номера15 и30 на листе15 неверны. Ошибка этой части не опровергает отдельные подтверждённые расхождения.",
+            "Нормативное нарушение и историческое решение инженера не установлены."
+          ],
+          "wording": "Согласовать подписи состояний основного и резервного вентиляторов со статическими обозначениями агрегатов: лист11, Ва3.1/M3→16 «рез.» и Ва3.1р/M4→19 «осн.»; лист15, Пн5.1/M1→11 «рез.», Пн5.1 рез/M2→14 «осн.», Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.». Уточнить, обозначают ли подписи физические агрегаты или текущие роли при ротации."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+          "primary_adjudication": null,
+          "limits": [
+            "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Это допускает динамические роли, но в проверенных подписях связь динамической роли с конкретным агрегатом не пояснена. Подтверждена неоднозначность документации, не неправильная реализация ротации.",
+            "Номера — колонки/линии функциональных схем, не установленные аппаратные адреса или программные теги.",
+            "Программа контроллера, таблица тегов и экраны АРМ не проверены. Нельзя автоматически менять сигналы или утверждать показ состояния другого вентилятора.",
+            "Исходные номера15 и30 на листе15 неверны. Ошибка этой части не опровергает отдельные подтверждённые расхождения.",
+            "Нормативное нарушение и историческое решение инженера не установлены."
+          ],
+          "wording": "Согласовать подписи состояний основного и резервного вентиляторов со статическими обозначениями агрегатов: лист11, Ва3.1/M3→16 «рез.» и Ва3.1р/M4→19 «осн.»; лист15, Пн5.1/M1→11 «рез.», Пн5.1 рез/M2→14 «осн.», Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.». Уточнить, обозначают ли подписи физические агрегаты или текущие роли при ротации."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+          "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet11 M3/Va3.1 to16 reserve; M4/Va3.1r to19 main."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet15 four fan states11/14/26/29 conflict with static main/reserve labels;15/30 are pressure columns, not states."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet22 M2/Va5.1 to16 reserve; M3/Va5.1r to19 main."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-044",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-059_addressed_range_or_duty_label"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
