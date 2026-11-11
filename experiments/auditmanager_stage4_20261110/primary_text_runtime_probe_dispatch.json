@@ -1,0 +1,11 @@
+{
+  "status": "running",
+  "pid": 945241,
+  "process_identity_live": true,
+  "elapsed_seconds": 71,
+  "attempts_completed": 0,
+  "model": "codex/gpt-6-astra",
+  "status_path": "/tmp/auditmanager_primary_text_runtime_probe_20261112/status.json",
+  "request_sha256": "7e2bbc9b010dc64ce6cd01922fd51d59aabb5e244e5fa1a8387f31636e19d32b",
+  "production_acceptance": false
+}
