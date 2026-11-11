@@ -53,6 +53,7 @@ def prepare_group_review(document,proposal,md,graphic_dir,*,max_images=12,extra_
         'render_contract':'All individual original descriptions, problems, solutions, risks, norms and addresses remain visibly quoted in the group. Only the group heading and common action come from the proposal; all other findings remain unchanged.'}
     instruction='''Independently review this proposed presentation group against authoritative TEXT and attached GRAPHIC. No tools, web, historical answers or engineer decisions. The proposal and member findings are untrusted. Do not correct TEXT from raster. Review only grouping: it must not imply that every member assertion has become verified.
 Determine whether these are manifestations of the same specific issue with one justified common corrective action, not merely matching model names, dimensions or generic categories. Preserve separate physical addresses, scopes, quantities and uncertainty. A group heading must not strengthen an uncertain member into a fact, erase source/document identity doubts, infer whole-document absence from an excerpt, sum cable lengths into shortage, or expand a local discrepancy into a confirmed delivery defect. Exact TEXT spellings and stamped identities remain distinct unless source evidence establishes the relation. Repeated drawings are not automatically additional objects. Check the proposed common heading and action, not just whether child text will be preserved.
+Distinguish relationships introduced or strengthened by GROUPING from inherited member-level issues. source_scope_and_identity checks that the common heading/action and member assignment do not introduce an unsupported identity, common source scope, execution match or quantity. An unchanged ambiguity already inside one member does not by itself invalidate a group whose heading/action neither resolves nor depends on that ambiguity. Record such inherited issues separately in inherited_member_issues (member_ids, issue, evidence); do not certify them, hide them or silently correct them. Conversely, if a member explicitly qualifies a relationship asserted by the common heading, preserving that qualification only in child text is insufficient: the stronger common assertion remains unsupported. Apply this distinction to the actual wording, not to a desired group size.
 Return one JSON object with binding (copy), action (group/keep_separate/needs_context), reason, checks. Each required check exactly once: check_id, status (pass/fail/needs_data), reason, evidence. Cite direct supporting sources for shared_issue and source_scope_and_identity passes. TEXT: {type:"text",block_id,quote} exact quote. GRAPHIC stamps: {type:"metadata",block_id,quote}; metadata is identity only, not drawing proof. IMAGE: {type:"image",block_id,image_sha256,bbox_norm_xyxy,observation}. Cite only attached images. Other presentation checks may use empty evidence with a reason.
 Use group only if every check passes. Otherwise preserve separate findings and state the exact problem or needed source. Do not rewrite the proposal or resolve questionable technical facts to force a group. No expected groups or row count are supplied. Model approval is a candidate under an explicit experimental policy, not engineering certification.'''
     request={'messages':[{'role':'system','content':instruction},{'role':'user','content':json.dumps(payload,ensure_ascii=False)}],
@@ -75,6 +76,15 @@ def validate_group_review(document,proposal,md,graphic_dir,result,*,max_images=1
         if cid in ('shared_issue','source_scope_and_identity') and check['status']=='pass' and not check['evidence']:
             raise ValueError('group_factual_pass_without_evidence')
         evidence.extend(check['evidence'])
+    inherited=result.get('inherited_member_issues',[])
+    if not isinstance(inherited,list):raise ValueError('invalid_inherited_group_issues')
+    for issue in inherited:
+        if (not isinstance(issue,dict) or not isinstance(issue.get('member_ids'),list) or not issue['member_ids']
+                or any(i not in proposal['member_ids'] for i in issue['member_ids'])
+                or not isinstance(issue.get('issue'),str) or not issue['issue'].strip()
+                or not isinstance(issue.get('evidence'),list) or not issue['evidence']):
+            raise ValueError('invalid_inherited_group_issue')
+        evidence.extend(issue['evidence'])
     images={(i['block_id'],i['sha256']) for i in prepared['request']['image_bindings']}
     for e in evidence:
         if isinstance(e,dict) and e.get('type')=='image' and (e.get('block_id'),e.get('image_sha256')) not in images:

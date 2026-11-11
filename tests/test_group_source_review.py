@@ -78,3 +78,14 @@ def test_retrieved_context_is_authoritative_and_invalidates_old_verdict(tmp_path
         validate_group_review(doc,proposal,md,tmp_path,result,extra_text_block_ids=['index'])
     with pytest.raises(ValueError,match='requires_authoritative_text'):
         prepare_group_review(doc,proposal,md,tmp_path,extra_text_block_ids=['unknown'])
+
+
+def test_inherited_issue_is_source_bound_and_not_a_new_certified_finding(tmp_path):
+    doc,proposal,md,result=setup(tmp_path)
+    result['inherited_member_issues']=[{'member_ids':['A'],'issue':'An inherited source limitation remains unresolved',
+        'evidence':[{'type':'text','block_id':'b','quote':'Shared specification'}]}]
+    decision=validate_group_review(doc,proposal,md,tmp_path,result)
+    assert decision['semantic_certified'] is False and decision['source_review']['inherited_member_issues']
+    result['inherited_member_issues'][0]['evidence'][0]['quote']='fabricated'
+    with pytest.raises(ValueError,match='invalid_group_source_evidence'):
+        validate_group_review(doc,proposal,md,tmp_path,result)
