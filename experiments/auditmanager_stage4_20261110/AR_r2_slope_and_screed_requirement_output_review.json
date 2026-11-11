@@ -1,0 +1,328 @@
+{
+  "status": "two_AR_graphic_and_requirement_findings_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "5fe095959772edb88c7f8742d0288cefa4a78ebcc406e0bec82806b74203dc62",
+  "queue_after_sha256": "c68e9eb6f29ae8f91151ac876d5398311c2cd3f7d0f86d26b7c08127d4b426f5",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кровля и водоотведение",
+        "sheet": "Лист 3",
+        "page": 5,
+        "problem": "Для участка К-1 указаны уклоны 1,2% и 1,3%, требующие проверки по требованиям к принятому кровельному ковру.",
+        "description": "На участке К-1 внутри контура ОГШ-1 показаны уклоны скатов к воронке В-1 величиной 1,2% и 1,3%. В исходном графическом замечании для рулонной битумно-полимерной кровли приведён минимальный уклон 1,5%. Указанные значения меньше этого ориентира на 0,3 и 0,2 процентного пункта. Применимость требования к данным участкам и соответствующая редакция таблицы требуют нормативной верификации.",
+        "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 17.13330.2017",
+            "cited_designation": "СП 17.13330.2017",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить минимальные уклоны для принятого рулонного битумно-полимерного покрытия и условия их применения к скатам и локальным участкам водосбора.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-002"
+                ],
+                "designation_source": "Нормативное указание в исходном графическом замечании"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": "Минимальный уклон кровли из рулонных битумосодержащих материалов — 1,5%."
+          }
+        ],
+        "solution": "Проверить назначение участков с уклонами 1,2% и 1,3% и применимый нормативный минимум. При подтверждении требования 1,5% скорректировать разуклонку и отметки к воронке.",
+        "risk": "Застой воды, увеличение времени увлажнения покрытия и вероятность протечек.",
+        "source_finding_ids": [
+          "G-002"
+        ],
+        "source_block_ids": [
+          "blk_092e358681fc45ada6058a3f894b2582"
+        ],
+        "related_block_ids": [
+          "blk_092e358681fc45ada6058a3f894b2582"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-002",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "На верхнем участкеК-1 рядомОГШ-1 иВ-1 есть уклоны1,2% и1,3%.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Применимый минимальный уклон здесь1,5%.",
+          "verdict": "unverified_normative_and_surface_binding",
+          "limits": "Точный пункт, принятая кровельная система ифизическая поверхность стрелок не установлены. Не превращать исходный ориентир вуниверсальный допуск."
+        },
+        {
+          "claim": "Корректировать разуклонку обязательно.",
+          "verdict": "not_established_before_applicability_check",
+          "limits": ""
+        },
+        {
+          "claim": "Проверить привязку уклонов иприменимое требование.",
+          "verdict": "supported_scoped_question",
+          "limits": "Наличие чисел подтверждено; недостаточный отвод воды или фактические застои не установлены."
+        },
+        {
+          "claim": "Нормативный кандидат является проверенным пунктом нарушения.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "Отличия от условного ориентира1,5% равны0,3 и0,2 процентного пункта.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "Арифметика не подтверждает применимость ориентира к поверхности и редакции проекта."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "Повтор первого прогона; новое самостоятельное нарушение не установлено.",
+      "duplicate_burden": "distinct_atomic_scope_keep_partial_supported_content",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_092e358681fc45ada6058a3f894b2582.png",
+          "sha256": "102c52c1d31987aebc078ec45b62cab5e3621e444917a3769dd821fb93e2d0f6",
+          "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+          "route": "current_direct_GRAPHIC_with_enlarged_detail",
+          "observation": "В верхнем участке К-1 подтверждены1,2% и1,3%; подпись1,3% частично пересекается с красной выноскойВ.1, проверена на увеличенном фрагменте."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_scope_review_reused",
+          "finding_id": "F-014"
+        }
+      ],
+      "disposition": "assessed_r2_slope_values_confirmed_requirement_applicability_unresolved"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Основание кровельного ковра",
+        "sheet": "Лист 12",
+        "page": 14,
+        "problem": "Марка стяжки М100 под гидроизоляцией требует проверки по минимальной прочности основания.",
+        "description": "В узле Н примыкания кровли к аэратору предусмотрена стяжка из цементно-песчаного раствора М100 толщиной 40 мм с армированием базальтовой сеткой 50×50 мм. Марке М100 соответствует прочность порядка 10 МПа. Исходное графическое замечание приводит требование не менее 15 МПа для цементно-песчаного основания под водоизоляционный ковёр; точный пункт и применимость требования к данной конструкции требуют нормативной верификации.",
+        "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 17.13330.2017",
+            "cited_designation": "СП 17.13330.2017",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить минимальную прочность цементно-песчаной стяжки, служащей основанием под водоизоляционный ковёр, с учётом принятой конструкции кровли.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-021"
+                ],
+                "designation_source": "Нормативное указание в исходном графическом замечании"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": "Прочность на сжатие цементно-песчаной выравнивающей стяжки под водоизоляционный ковёр — не менее 15 МПа."
+          }
+        ],
+        "solution": "Подтвердить применимую минимальную прочность основания. При подтверждении требования 15 МПа назначить раствор с обеспеченной прочностью не ниже этого значения, согласовать марку и проверить аналогичные составы кровли.",
+        "risk": "Разрушение или растрескивание основания, повреждение гидроизоляции и протечки.",
+        "source_finding_ids": [
+          "G-021"
+        ],
+        "source_block_ids": [
+          "blk_92176a1688834431be9993398cf049be"
+        ],
+        "related_block_ids": [
+          "blk_92176a1688834431be9993398cf049be"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_92176a1688834431be9993398cf049be",
+            "page": 14
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "УзелН содержит армированную стяжкуЦПСМ100 толщиной40мм с базальтовой сеткой50×50 под гидроизоляцией.",
+          "verdict": "confirmed_current_direct_GRAPHIC",
+          "limits": "Отдельная нижняя выравнивающая стяжкаМ100 толщиной30мм — другой слой; не смешивать."
+        },
+        {
+          "claim": "Требование15МПа универсально применяется к этому основанию поСП17.13330.2017.",
+          "verdict": "unsupported_universal_threshold_counterevidence_found",
+          "limits": "В просмотренной репродукцииСП сИзм.1–5 п.5.1.4г предусматривает монолитную цементно-песчаную стяжку не тоньше40мм марки не нижеМ100. Применимая к проекту редакция ещё не установлена."
+        },
+        {
+          "claim": "М100 численно соответствует порядку10МПа.",
+          "verdict": "not_used_as_sufficient_compliance_evidence",
+          "limits": "Даже приблизительная связь обозначения и прочности не устанавливает обязательный минимум15МПа; паспорт и испытания смеси не проверены."
+        },
+        {
+          "claim": "Нужно повысить марку раствора и исправить аналогичные составы.",
+          "verdict": "not_justified_without_applicable_requirement",
+          "limits": "Текущая условная формулировка не доказывает основание для изменения проекта."
+        },
+        {
+          "claim": "Есть разрушение основания, повреждение гидроизоляции или протечки.",
+          "verdict": "not_established",
+          "limits": "Риски в строке не являются наблюдаемыми дефектами."
+        }
+      ],
+      "unsupported_additions": "Порог15МПа не подтверждён для проекта; найдено конкретное контрсвидетельство в редакцииСП. Не считать числовое сравнение доказанным нарушением.",
+      "novel_useful_content": "Новый кандидат второго повтора, но техническая полезность не подтверждена. Проверка редакции необходима прежде чем направлять требование о заменеМ100.",
+      "duplicate_burden": "Самостоятельный нормативный вопрос; повторМ100 в других слоях не умножает число дефектов.",
+      "profile_and_section": "unresolved_normative_candidate_not_confirmed_technical_defect",
+      "engineer_reuse": "Решение инженера по этому новому кандидату не установлено.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_92176a1688834431be9993398cf049be.png",
+          "sha256": "8f8e500648f3f60780fe4561d2732f45cd1d199f07fc5ae3f04f6f4a8c434f09",
+          "route": "current_direct_GRAPHIC_original_resolution",
+          "block_id": "blk_92176a1688834431be9993398cf049be",
+          "observation": "УзелН:под гидроизоляцией стяжкаЦПСМ100,40мм,сетка50×50. НижняяМ10030мм находится под пароизоляцией."
+        },
+        {
+          "url": "https://www.doerken.com/ru/ru/content/preview/28737/file/СП%2017.13330.2017%20Кровли.%20Актуализированная%20редакция%20СНиП%20II-26-76%20%28с%20Изменениями%20N%201%2C%202%2C%203%29.pdf",
+          "route": "primary_norm_document_reproduction_hosted_by_manufacturer_web_text_open",
+          "checked": "2026-11-11",
+          "section": "5.1.4г, страница14 репродукции сИзм.1–5",
+          "fact": "Для монолитных цементно-песчаных стяжек установлены40мм иМ100; абзац помечен изменениями1,2,4.",
+          "limits": "Имя URL перечисляет1–3, содержимое заголовка1–5; источник не официальный реестр. Не доказаны текущий юридический статус, редакция нормативной базы проекта и требования конкретной кровельной системы."
+        }
+      ],
+      "disposition": "assessed_r2_screed_M100_candidate_threshold_not_supported"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": "Source facts checked; unresolved applicability remains excluded from confirmed technical defects."
+}
