@@ -1,0 +1,170 @@
+{
+  "status": "runtime_metadata_proposal_not_runnable_trial",
+  "manifest_path": "experiments/auditmanager_stage4_20261110/six_runner_metadata_manifest.json",
+  "manifest_sha256": "9c822441a96b1c36478006b45bfd994c2ce097769d3b43839481a9bafdf5f18d",
+  "registry_sha256": "9a926e56e3a8b90c054b70fe4ff2f70673a2aad3f000142209c68f96ebe7daa4",
+  "projects": [
+    {
+      "evaluation_discipline": "AK",
+      "runtime_profile": "SS",
+      "source_path": "/tmp/auditmanager_six_candidate_inputs_20261110/AK/01_input/project_info.json",
+      "source_sha256": "7782d77f5005ca0ecc8363b4329dba03cbb59cac3467fa534e9b23bd7fa60462",
+      "proposed_metadata": {
+        "project_id": "method-comparison-AK",
+        "name": "AK",
+        "section": "SS",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      },
+      "profile_files": {
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/SS/checklist.md": "4efe2296d18124aae441a05d01f8ea70ddace7ec4cd6608362796a0003b020f6",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/SS/compact_strategy.md": "a250d799d740c7f3573fc38bc7e684df32e7a413046230f44c4b3a76944e7a35",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/SS/config.json": "8db02b7818f2d8a52a1830641aabfd8b2094c9d9b8967985451d2df0b44a8ca2",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/SS/drawing_types.md": "8a2e1c23105da4aca67eadf9e811e38508607c4b8e865b3844af0a1bbf6366e2",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/SS/finding_categories.md": "ff8193946f57ecfbc0e9c10f4be0f41f74c3decfe67257f16d9ebb398b0719c9",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/SS/norms_reference.md": "a3f7dcf0b5b9e5f4dc7718563294ab500d7a7b28f462e0a6d2b101feb8c14780",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/SS/project_params.md": "d36990b5b154eb3351939f5f1a6d4457db17c6da9caf475e7c84bbdc2ca03637",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/SS/role.md": "bce9846d362a4994e82dd6fbc9c026c96de91c8eb27a4c654bb2b403cf48fc7f",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/SS/triage_table.md": "9a5faba0e7f6d17395321af983fc10ca3dd0d9490d12b08e3554bdbc0d72f36a"
+      }
+    },
+    {
+      "evaluation_discipline": "ITP",
+      "runtime_profile": "ITP",
+      "source_path": "/tmp/auditmanager_six_candidate_inputs_20261110/ITP/01_input/project_info.json",
+      "source_sha256": "30906f590d06a8556728ac7edf39e511baa120084e5c44cdfeaae8a6f04c415b",
+      "proposed_metadata": {
+        "project_id": "method-comparison-ITP",
+        "name": "ITP",
+        "section": "ITP",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      },
+      "profile_files": {
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/ITP/checklist.md": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/ITP/compact_strategy.md": "1d0adfd9a5e9ee13a7c92951d65c7136b6bcd7599e528029856eaed53d7134f3",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/ITP/config.json": "265041b46246dbb226579e1d86d0d11658a27d66e2180a882e8e4d22233bc2c6",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/ITP/drawing_types.md": "5ba8823dd2d2a8291dd9c17dc4a9d9a480af8dc3ade9b8a48efa652d0858b1ee",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/ITP/finding_categories.md": "113fe584e10e12b5c28ec4bb4342b58bd8277e1724cbfb8a712ac53fbdbe7e13",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/ITP/norms_reference.md": "6f2006a9f1af5b1585ac84ed1a920c670be82c634d02acc79fb9354213a05b79",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/ITP/project_params.md": "0fbb238e3fe676e744610e4af63caed85014e30a4b3eb9b0652bc1f4fba19796",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/ITP/role.md": "18cb5f3e4f321b3f9eb526e0702d3f7bc49e972c4555bd0ab02b0f86d1bc2ca1",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/ITP/triage_table.md": "a22cb4330d06008dd6fa49530ceadea9ecc60d59760a0aeb3b6cd475d7fd996a"
+      }
+    },
+    {
+      "evaluation_discipline": "AR",
+      "runtime_profile": "AR",
+      "source_path": "/tmp/auditmanager_six_candidate_inputs_20261110/AR/01_input/project_info.json",
+      "source_sha256": "887bf6875f5806b445d6b7a89b98224f14c0c385a59dcedba4c7899b467d4ae6",
+      "proposed_metadata": {
+        "project_id": "method-comparison-AR",
+        "name": "AR",
+        "section": "AR",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      },
+      "profile_files": {
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/AR/checklist.md": "eccb7879023a126427fd61a0ed36237eb42bbebd4bec63c4009004247d7f3179",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/AR/compact_strategy.md": "5004efa53188a2423dedc3605ca261f628ff449e01dfbe18cf81cf3ef00ddea9",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/AR/config.json": "ece283a76e7975a79c92b998eaf6e4babc129ca2c862dbd610633cccfc2d36b5",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/AR/drawing_types.md": "38ef910c11c71d03819a37c258933bcf4c851ac2cce31bace2681d8fde8fa45e",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/AR/finding_categories.md": "e0591c94b2f385a837872f37f5ef32eb057131265c32283e5f732b2c1fa236ce",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/AR/norms_reference.md": "15362a671e97f9ac97cb9b0b161acc0f047befaa9207a4185f1805d4ade55bad",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/AR/project_params.md": "5d827feac80cf85760af4a1d3f8509e15defb0df771c09ea83e475e172a80f35",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/AR/role.md": "fda944f74c4a0bd7cd77339f2c2f8519f55d59e899be03da212f93d2ad432203",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/AR/triage_table.md": "837ab2bbfdc0dbb1c0c62754326869fe2f94e4e09f0b510d9b6ed643de64385a"
+      }
+    },
+    {
+      "evaluation_discipline": "KM",
+      "runtime_profile": "KM",
+      "source_path": "/tmp/auditmanager_six_candidate_inputs_20261110/KM/01_input/project_info.json",
+      "source_sha256": "cfad5d2d590129de86e9e4f20a42e5abca0973a5adc0f6e8cb628529239406fd",
+      "proposed_metadata": {
+        "project_id": "method-comparison-KM",
+        "name": "KM",
+        "section": "KM",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      },
+      "profile_files": {
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/KM/checklist.md": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/KM/compact_strategy.md": "b1e9f6f9606d2d64cf4eff1bf4d1bd6352dfd7aeb8e878fc55e25bffa67dd574",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/KM/config.json": "a0de4025b1f51e10f9a430bcd00022da8cb9ce64de4a4ce6af4ce09787ad8e0d",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/KM/drawing_types.md": "63e89356ed9e993d1872af34c92e96d974e5920cd08e5d5307f7615582509bb3",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/KM/finding_categories.md": "c6002c08dfbf69b88a38b5127e25a8d016a57947dceff04a7a6deb0f179c29af",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/KM/norms_reference.md": "8fe088d2eb7b0557b682a84c05011bbac3c9c7555972780d235a665707647c58",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/KM/project_params.md": "8ddfed0a615de7c59cc6d1c38f1de402a0a79ff859474ee65d8dbbe8bdb4e6af",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/KM/role.md": "e07abb3b3a69300b01bf2e974ed1fa35c93c41068d96cabe83775291de071920",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/KM/triage_table.md": "36398f51b22e2ee47ce9d4a99342751016c1bdb2285ab7810a945c89c074d4d0"
+      }
+    },
+    {
+      "evaluation_discipline": "VK",
+      "runtime_profile": "VK",
+      "source_path": "/tmp/auditmanager_six_candidate_inputs_20261110/VK/01_input/project_info.json",
+      "source_sha256": "f4f6b07a2cd4b4fec7ebc85327a77bdb2e54150805f5558521c647c656fcc645",
+      "proposed_metadata": {
+        "project_id": "method-comparison-VK",
+        "name": "VK",
+        "section": "VK",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      },
+      "profile_files": {
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/VK/checklist.md": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/VK/compact_strategy.md": "b7f11c94097b6a0b1def5c02c8a30bd8a79ab8a646947cf2ca6fb40ba12925d7",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/VK/config.json": "9996f9c156013d8fa80242eb96549d3eba8617e8e12be2875657e1086212fe6a",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/VK/drawing_types.md": "b6e1ed44f153d0e3e61f25c17da7aff5bd5bdd917356e48b6a0336302e802a20",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/VK/finding_categories.md": "84f8c7bb03f58c603ae42c8e9286872142922e5bbeef84a27e1f47b6feff5977",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/VK/norms_reference.md": "1537cf81e0dfb35902acbd78e7bf24530c66b6ff58b3f63155c1acb885d71a1a",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/VK/project_params.md": "45c73d4b95b95da870598020fc4f747d8201adab0dde1d5d9e13cfb1b6905724",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/VK/role.md": "5140872cd9a8be7e6ca091fcc95a11e54c665b5a93ae5004f93e1377b5927781",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/VK/triage_table.md": "78b404fdea10851a5752722b0f871549306e032c2d0682fd3d6f4df9da1df9aa"
+      }
+    },
+    {
+      "evaluation_discipline": "EOM",
+      "runtime_profile": "EOM",
+      "source_path": "/tmp/auditmanager_six_candidate_inputs_20261110/EOM/01_input/project_info.json",
+      "source_sha256": "c8cbfb6e4e5cd05d53d22ac37eea871d977612cc055a1fc2e5e1f818962116c9",
+      "proposed_metadata": {
+        "project_id": "method-comparison-EOM",
+        "name": "EOM",
+        "section": "EOM",
+        "description": "",
+        "md_file": "02_work/document.md",
+        "pdf_file": "02_work/document.pdf",
+        "blocks_json_file": "02_work/blocks.json"
+      },
+      "profile_files": {
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/EOM/checklist.md": "2835479eeb630d894349903ad601d3b6ce2cac1c05386f1a5601b58390d8664e",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/EOM/config.json": "d6bdeb5bf43177880184fc25f94fedccbcfbe7c80ad0910f31cf27b6bb895d3c",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/EOM/drawing_types.md": "4ccdc7c558465433e0f250114594fcb6b9b0a12dab0dc6f4a29fcf317a7574ed",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/EOM/finding_categories.md": "902fce3a4a4854dbb94bd86b042860d5ea2b0f8ad6d8ae8b85905498cf00475d",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/EOM/norms_reference.md": "83043fbd2ff89ef61efd37577b80b597529d4801fb63a5568027068d5ad2dedd",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/EOM/project_params.md": "28506c8d3f9fc26addc6034f9529a5202229d49e0ec557f00c9832ca65a45c0b",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/EOM/role.md": "949c503f0eca15b1fd99e29e3abcdaa801cbfd7481ed698e492f1cbcbaef53f0",
+        "/home/coder/projects/PDF-proverka/prompts/disciplines/EOM/triage_table.md": "5bcc50b4b352f6287c6b6d167f39da1863c92eb02c0752abf5eaf345546a61db"
+      }
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "remaining": [
+    "Build a separate immutable input package and freeze comparison.",
+    "Do not substitute these metadata into ongoing or sealed runs.",
+    "Validate the selected source revision profiles again at dispatch."
+  ]
+}
