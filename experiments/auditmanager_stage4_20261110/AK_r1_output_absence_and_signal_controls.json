@@ -1,0 +1,309 @@
+{
+  "status": "bounded_output_coverage_review",
+  "discipline": "AK",
+  "repeat": 1,
+  "review_scope": {
+    "finding_ids": [
+      "F-001",
+      "F-002",
+      "F-003",
+      "F-004",
+      "F-005",
+      "F-006",
+      "F-007",
+      "F-008",
+      "F-009",
+      "F-010",
+      "F-011",
+      "F-012",
+      "F-013",
+      "F-014",
+      "F-015",
+      "F-016",
+      "F-017",
+      "F-018",
+      "F-019",
+      "F-020",
+      "F-021",
+      "F-022",
+      "F-023",
+      "F-024",
+      "F-025",
+      "F-026",
+      "F-027",
+      "F-028",
+      "F-029",
+      "F-030",
+      "F-031",
+      "F-032",
+      "F-033",
+      "F-034",
+      "F-035",
+      "F-036",
+      "F-037",
+      "F-038",
+      "F-039",
+      "F-040",
+      "F-041",
+      "F-042",
+      "F-043",
+      "F-044",
+      "F-045",
+      "F-046",
+      "F-047",
+      "F-048",
+      "F-049",
+      "F-050",
+      "F-051",
+      "F-052",
+      "F-053",
+      "F-054",
+      "F-055",
+      "F-056",
+      "F-057",
+      "F-058",
+      "F-059",
+      "F-060",
+      "F-061",
+      "F-062",
+      "F-063",
+      "F-064",
+      "F-065",
+      "F-066"
+    ],
+    "semantic_fields": [
+      "problem",
+      "description",
+      "solution",
+      "risk",
+      "norm",
+      "norm_quote"
+    ],
+    "method": "Coordinator read all 66 findings in contiguous slices F001–017, F018–033, F034–048, F049–066; reviewed middle normative fields separately. Metadata IDs alone do not count as published claims.",
+    "limitations": "Whole-output reading supports absence assessment, not truth validation of every output assertion."
+  },
+  "mapped_atoms": [
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Ни одна из66 строк не формулирует отсутствие индивидуальных марок двух участков ПЧ→M2/M3 по15м. F-023 говорит о неясных концах в КЖ, F-059 использует длины15м в сумме, но не утверждает отсутствие маркировки на схеме. Смежные тезисы не заменяют этот атом.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK7:4c7010afca7e2923c94b",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK7.json",
+          "sha256": "244524861dafa21ed85aa490e087c7ea10a654b59f18184b137f99eade018260"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        },
+        {
+          "source": "primary_adjudication",
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AK7_primary_check.json",
+          "sha256": "03559d66b582f6bfe450b0acebc1134162473b95714ffa16f5eef58a44cd77d6"
+        }
+      ],
+      "reason": "Ложный тезис о трёх отмеченных точкахAO при итоге2 на листе14 не повторён. F-045 говорит о трёх функциях управления при двухAO и прямо указывает отсутствие отметки в столбце10; это иной тезис, его техническая правильность здесь не подтверждается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK65_F043_UZ_identity:ab637698bce5025cb6df",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+          "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Утверждения о совпадении обозначений схемы с общим перечнем нет. F-046 прямо указывает различие UZ2/3/2/3 и UZ1–4. Успех фильтра не выводится из отсутствия обратного утверждения.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK57:d6f8484b24bc88adcab5",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        },
+        {
+          "source": "primary_adjudication",
+          "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+          "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+        }
+      ],
+      "reason": "Утверждение, что50/100Па находятся вне диапазона50–500Па, не обнаружено ни в одной из66строк. F-042 прямо признаёт вхождение50Па в оба диапазона; остальные PDS-замечания не утверждают обратное.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-048"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Для того же ШАУВ-3-К6ПЧ F-048 явно указываетDI10/12 иDO5/6. Совпадает узкий документальный подсчёт; недостаток аппаратных каналов и требование дополнительных модулей не засчитываются. Решения инженера по этому исходному кандидату нет, основание — замороженная первичная проверка.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:fc51b8e1100da48a87ec",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Ложный полный подсчётDI11 для листа21 не повторён. F-048 указывает12, не11; DO11 в том же замечании относится к другому шкафу ШАУВ-1-К5АС и не является повтором этого ложного тезиса.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-048"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Для того же ШАУВ-3-К6ПЧ F-048 явно указываетDI10/12 иDO5/6. Совпадает узкий документальный подсчёт; недостаток аппаратных каналов и требование дополнительных модулей не засчитываются. Решения инженера по этому исходному кандидату нет, основание — замороженная первичная проверка.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/AK_review.json",
+  "review_ledger_sha256": "5ffb457c636b11b0d7a1db467f931bb235d3f1b9c3ed3dc6d81ab0e1178fc731",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "AK",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 55,
+          "availability_available": 10,
+          "partial": 4,
+          "absent": 1,
+          "full": 5,
+          "availability_unchecked": 45,
+          "unchecked": 45
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 23,
+          "availability_unchecked": 23,
+          "unchecked": 23
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 22,
+          "availability_available": 4,
+          "absent": 4,
+          "availability_unchecked": 18,
+          "unchecked": 18
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 5
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "filter_credit": false,
+  "limits": [
+    "Отсутствие ложного утверждения не доказывает, что фильтр был выполнен.",
+    "Положительный атом подсчёта сигналов основан на первичной проверке, а не выдуманном принятии инженером.",
+    "Полное чтение выдачи не равно завершению100эталонных сопоставлений или оценке всех новых утверждений."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
