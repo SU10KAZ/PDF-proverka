@@ -1,0 +1,411 @@
+{
+  "status": "addressed_cable_mark_identity_review",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "79706c1bbdc846113b6f7cc7c7f9bf75a676b6f78fb139d5232c089b4ae6fe98",
+  "queue_after_sha256": "8363fa68d770ea72844665ebc7ff112052267f4d6c0dd28c07a612b107672a58",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-025",
+      "finding": {
+        "id": "F-025",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Марки кабелей",
+        "sheet": "Листы 37, 40",
+        "page": [
+          33,
+          41,
+          44,
+          59,
+          60,
+          61,
+          67,
+          81,
+          93,
+          102,
+          103
+        ],
+        "problem": "Марки сигнальных кабелей и экранирование не согласованы между документами.",
+        "description": "Встречаются КСВПГнг(А)-HF, КСПВПГнг(А)-HF, КСПВППГнг(А)-HF и КСПВПнг(А)-HF. Для В6.1.1-4, В6.1.2-1, В6.1.2-4 и В6.1.4-1 схема задаёт КСПВПГнг(А)-HF, журнал — КСВПГнг(А)-HF 1×2×0,75. Для входа СКЗ ШАУВ-1-К6АС длиной 45 м указаны КСПВПГнг(А)-HF и КСПВПнг(А)-HF. Линия Па3.1-8 указана в журнале без экрана, в локальном перечне — с экраном. Эквивалентность обозначений не установлена.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить однозначность технических обозначений материалов для закупки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-024",
+                "G-081",
+                "G-082",
+                "G-089",
+                "G-090"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-024"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить записи с оригиналом и номенклатурой изготовителя, назначить точные марки и требуемое экранирование каждой линии.",
+        "risk": "Закупка другого изделия и снижение помехоустойчивости измерительных цепей.",
+        "source_finding_ids": [
+          "T-024",
+          "G-081",
+          "G-082",
+          "G-089",
+          "G-090"
+        ],
+        "source_block_ids": [
+          "blk_b8712be58c8b43f6ac75cfa6420d5479",
+          "blk_47163e69651c48528b3e054d5a5db095"
+        ],
+        "related_block_ids": [
+          "blk_b8712be58c8b43f6ac75cfa6420d5479",
+          "blk_47163e69651c48528b3e054d5a5db095",
+          "blk_019b790b96c0452e9b83c348ec3d429c",
+          "blk_1a4171f394c2454988fe52061ab6e215",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b8712be58c8b43f6ac75cfa6420d5479",
+            "page": 41
+          },
+          {
+            "type": "text",
+            "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+            "page": 44
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-081",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-082",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-089",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-090",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение марок КСПВПГнг(А)-HF и КСВПГнг(A)-HF 1х2х0,75 для линий В6.1.1-4, В6.1.2-1, В6.1.2-4 и В6.1.4-1 между схемой листа 37 и кабельным журналом листа 23. Различие категорий и степени важности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение марок КСПВПГнг(А)-HF и КСВПГнг(A)-HF 1х2х0,75 для линий В6.1.1-4, В6.1.2-1, В6.1.2-4 и В6.1.4-1 между схемой листа 37 и кабельным журналом листа 23. Различие категорий и степени важности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают различие марок кабеля входа СКЗ: КСПВПГнг(А)-HF на схеме и КСПВПнг(А)-HF в журнале при одинаковых сечении 1х2х0,75 и длине 45 м. Разная оценка тяжести не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 87,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Для В6.1.1-4, В6.1.2-1, В6.1.2-4, В6.1.4-1 графика задаёт КСПВПГнг(А)-HF, журнал КСВПГнг(A)-HF1x2x0,75.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC_four_addressed_lines",
+          "limits": "Сечение и30м совпадают; различие марки не стирать нормализацией."
+        },
+        {
+          "claim": "Для входа СКЗ К6АС45м графика содержит КСПВПГнг(А)-HF, журнал КСПВПнг(A)-HF.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "В СО21.4/21.5 записано КСПВППГнг(А)-HF.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Наличие четвёртого варианта не доказывает автоматически другой физический материал."
+        },
+        {
+          "claim": "Для Па3.1-8 журнал содержит КСПВПГнг(А)-HF2х2х0,75, локальная ведомость КСПЭВПГнг(A)-HF2x2x0,75; обе записи20м.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Требуемое экранирование и точная номенклатура Па3.1-8 должны быть согласованы.",
+          "verdict": "supported_specification_question",
+          "limits": "Зафиксировано различие с буквойЭ; паспорт конкретных изделий и требования входа контроллера здесь не проверены."
+        },
+        {
+          "claim": "Названия эквивалентны и их можно объединить автоматически.",
+          "verdict": "not_established",
+          "limits": "Не установлены ТУ/каталожные номера, позволяющие доказать эквивалентность."
+        },
+        {
+          "claim": "Закуплен другой кабель или снижена помехоустойчивость.",
+          "verdict": "not_established",
+          "limits": "Заказ, поставка, помеховая обстановка и испытания не исследованы."
+        },
+        {
+          "claim": "Это ошибки OCR, которые надо исправить повторным распознаванием.",
+          "verdict": "not_established",
+          "limits": "Авторитетный TEXT сохранён без переизвлечения."
+        },
+        {
+          "claim": "Подтверждено нарушение ГОСТ21.110-2013 п.4.1.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативный кандидат не проверен как нарушенный пункт."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "source_supported_document_conflicts_no_new_engineer_acceptance",
+      "duplicate_burden": "Group repeated spelling variants with addressed examples; preserve Pa3.1-8 screening question separately. Do not multiply defect count by each letter difference or repeat cable-length findings F018/F059.",
+      "profile_and_section": "technical_material_identity_conflicts_plus_screening_question",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+          "sha256": "d0ba9aaabb16c1ce4b6b16f7aaa9bbe3903ca1b7084bd043e6e1007636fbabfb",
+          "primary_adjudication": null,
+          "limits": [
+            "В TEXT КЖ идентификаторы начинаются с латинской B; исходное написание сохранено в доказательствах. Соответствие схеме устанавливается по шкафу, номеру линии, оконечному устройству, сечению и длине, а не только замене букв.",
+            "7040 м в СО — сводный объём; его принадлежность только четырём линиям не утверждается.",
+            "Различие конструкций, правильная закупочная марка, фактическая поставка и работоспособность не установлены. Возможная опечатка не устраняет документальное расхождение.",
+            "Историческое решение инженера для этого независимого кандидата не установлено."
+          ],
+          "wording": "Согласовать марку контрольного кабеля 1×2×0,75: на схеме листа37 и в локальных ведомостях листов25/37 — КСПВПГнг(А)-HF; в КЖ лист23 для четырёх линий шкафа ШАУВ-1-К6ПЧ — КСВПГнг(A)-HF; в СО лист9 поз.21.4 — КСПВППГнг(А)-HF. Сохранить адреса линий и установить согласованное обозначение."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+          "sha256": "d0ba9aaabb16c1ce4b6b16f7aaa9bbe3903ca1b7084bd043e6e1007636fbabfb",
+          "primary_adjudication": null,
+          "limits": [
+            "В TEXT КЖ идентификаторы начинаются с латинской B; исходное написание сохранено в доказательствах. Соответствие схеме устанавливается по шкафу, номеру линии, оконечному устройству, сечению и длине, а не только замене букв.",
+            "7040 м в СО — сводный объём; его принадлежность только четырём линиям не утверждается.",
+            "Различие конструкций, правильная закупочная марка, фактическая поставка и работоспособность не установлены. Возможная опечатка не устраняет документальное расхождение.",
+            "Историческое решение инженера для этого независимого кандидата не установлено."
+          ],
+          "wording": "Согласовать марку контрольного кабеля 1×2×0,75: на схеме листа37 и в локальных ведомостях листов25/37 — КСПВПГнг(А)-HF; в КЖ лист23 для четырёх линий шкафа ШАУВ-1-К6ПЧ — КСВПГнг(A)-HF; в СО лист9 поз.21.4 — КСПВППГнг(А)-HF. Сохранить адреса линий и установить согласованное обозначение."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8712be58c8b43f6ac75cfa6420d5479.png",
+          "sha256": "1e2341ee22473618e8dd909d53c863618bd86d002b9d77d0b4b5e71ef6e9c0ba",
+          "block_id": "blk_b8712be58c8b43f6ac75cfa6420d5479",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Four addressed K6PCh signal lines show КСПВПГнг(А)-HF1x2x0.75."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+          "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+          "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "SKZ input45m shows КСПВПГнг(А)-HF1x2x0.75; crop[2480,300,2610,650]scale3 inspected."
+        }
+      ],
+      "disposition": "assessed_preserve_addressed_cable_mark_conflicts_no_equivalence_assumption"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+      "authoritative_TEXT": "### BLOCK #230 [TEXT]: blk_aa193b92cd134c37853e3c8ec6ccd32d\n\n> **Created:** 2026-09-28 07:29:46 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/PEWuACZoNT2ScQA1H1t-)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 23 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| B6.1.1-4 | ШАУВ-1-К6ПЧ | XТ1 | КСВПГнг(A)-HF | 1x2x0,75 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | КСВПГнг(A)-HF 1x2x0,75 | 20/2/3/ 5 |  |\n| B6.1.2-1 | ШАУВ-1-К6ПЧ | PDS2 | КСВПГнг(A)-HF | 1x2x0,75 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | КСВПГнг(A)-HF 1x2x0,75 | 20/2/3/ 5 |  |\n| B6.1.2-2 | ШАУВ-1-К6ПЧ | M2 | ППГнг(A)-HF | 4x2,5 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | ППГнг(A)-HF 4x2,5 | 20/2/3/ 5 |  |\n| B6.1.2-3 | ШАУВ-1-К6ПЧ | XТ2 | ППГнг(A)-HF | 3x1,5 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | ППГнг(A)-HF 3x1,5 | 20/2/3/ 5 |  |\n| B6.1.2-4 | ШАУВ-1-К6ПЧ | XТ2 | КСВПГнг(A)-HF | 1x2x0,75 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | КСВПГнг(A)-HF 1x2x0,75 | 20/2/3/ 5 |  |\n| B6.1.4-1 | ШАУВ-1-К6ПЧ | PDS3 | КСВПГнг(A)-HF | 1x2x0,75 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | КСВПГнг(A)-HF 1x2x0,75 | 20/2/3/ 5 |  |\n\n## Page 82 — Sheet 24\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+      "authoritative_TEXT": "### BLOCK #242 [TEXT]: blk_a256f98d4e01408d90baba99d8b2cc19\n\n> **Created:** 2026-09-28 07:29:53 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/K_jKTyPPQPvVY2rAEVtK)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 35 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| СУКЗ-1 | СУ-К33 | ШАУВ-1-К6АС | КСПВПнг(A)-HF | 1х2х0,75 | 45 | лоток 100x100, лоток 50x50, труба гофр. | КСПВПнг(A)-HF 1х2х0,75 | 10/30/5 |  |\n| Противодымные приточные системы |  |  |  |  |  |  |  |  |  |\n| ПД4.1.4-1 | ТЕ1 (ПД 4.1.4) | ЩУ-ПД4.1.4 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 45 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 45 |  |\n| ПД4.1.21.2-1 | ТЕ1 (ПД4.1.21.2) | ЩУ-ПД4.1.21.2 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 35 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 35 |  |\n| ПД5.1.4-1 | ТЕ1 (ПД5.1.4) | ЩУ-ПД5.1.4 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 105 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 105 |  |\n| ПД5.1.21.2-1 | ТЕ1 (ПД5.1.21.2) | ЩУ-ПД5.1.21.2 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 105 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 105 |  |\n| ПД6.1.4-1 | ТЕ1 (ПД6.1.4) | ЩУ-ПД6.1.4 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 65 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 65 |  |\n| ПД6.1.21.2-1 | ТЕ1 (ПД6.1.21.2) | ЩУ-ПД6.1.21.2 | КСРЭПнг(A)-FRHF | 2х2х1,13 | 65 | труба гофр. | КСРЭПнг(A)-FRHF 2х2х1,13 | 65 |  |\n|  |  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n\n## Page 94 — Sheet 1 — Спецификация оборудования, изделий и материалов\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+      "authoritative_TEXT": "### BLOCK #216 [TEXT]: blk_2ad1534d9efb41548a02a2b2a6020ba6\n\n> **Created:** 2026-09-28 07:29:39 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Er7OMfl801QYJoPYPSRF)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 9 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Па3.1-2 | ШАУВ-1-К4АС | ТЕ2 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-3 | ШАУВ-1-К4АС | ТЕ3 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-4 | ШАУВ-1-К4АС | ТС1 | КСПВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-5 | ШАУВ-1-К4АС | PDS1 | КСПВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-6 | ШАУВ-1-К4АС | PDS2 | КСПВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-7 | ШАУВ-1-К4АС | M1 | ППГнг(А)-HF | 4х2,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 15/5 |  |\n| Па3.1-8 | ШАУВ-1-К4АС | XТ1 | КСПВПГнг(А)-HF | 2х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 2х2х0,75 | 15/5 |  |\n| Па3.1-9 | ШАУВ-1-К4АС | XТ2 | ППГнг(А)-HF | 3х1,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 15/5 |  |\n| Па3.1-10 | ШАУВ-1-К4АС | XТ2 | КСПВПГнг(А)-HF | 1х2х0,75 | 20 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15/5 |  |\n| Па3.1-11 | ШАУВ-1-К4АС | M2 | ППГнг(А)-HF | 3х1,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 15/5 |  |\n| Па3.1-12 | ШАУВ-1-К4АС | M5 | ППГнг(А)-HF | 4х2,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 15/5 |  |\n| Ва3.1-1 | ШАУВ-1-К4АС | PDS3 | КСПВПГнг(А)-HF | 1х2х0,75 | 120 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 110/10 |  |\n| Ва3.1-2 | ШАУВ-1-К4АС | PDS4 | КСПВПГнг(А)-HF | 1х2х0,75 | 120 | лоток 100x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 110/10 |  |\n| Ва3.1-3 | ШАУВ-1-К4АС.ПЧ | M3 | ППГнг(А)-HF | 4х2,5 | 120 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 110/10 |  |\n| Ва3.1-4 | ШАУВ-1-К4АС.ПЧ | M4 | ППГнг(А)-HF | 4х2,5 | 120 | лоток 100x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 110/10 |  |\n\n## Page 68 — Sheet 10\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+      "authoritative_TEXT": "### BLOCK #106 [TEXT]: blk_94e2f96d2883406394e0ebcbbf3cbbd7\n\n> **Created:** 2026-09-28 07:29:05 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/YWdvOl8hRA1-oG6Y1dx5)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 29 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Шкаф автоматики и управления ШАУВ-1-К4АС. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 930 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 65 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 20 | м |\n|  | Кабель КИС-Пнг(A)-HF 2x2x0,60 мм² | 120 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 620 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 290 | м |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+      "authoritative_TEXT": "### BLOCK #251 [TEXT]: blk_b8f98350127c4603bb6811846ec13309\n\n> **Created:** 2026-09-28 07:29:57 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/JD825dNrJgioLdV32EKM)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 9 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 17 | Тепловые завесы |  |  |  |  |  |  |  |\n| 17.1 | Концевой выключатель | ВП15К21 |  | АО «НПО «Тепломаш» | шт. | 1 |  |  |\n| 17.2 | Блок диспетчеризации МК | КЭВ-Б/ЛОК-МК |  | АО «НПО «Тепломаш» | шт. | 1 |  |  |\n| 18 | Основное оборудование сплин систем |  |  |  |  |  |  |  |\n| 18.1 | Согласователь работы 2-х кондиционеров | TD0027170RU | БУРР | Haier | шт. | 3 |  |  |\n| 18.2 | Адаптер |  |  | Haier | шт. | 6 |  |  |\n| 19 | Система контроля загазованности |  |  |  |  |  |  |  |\n| 19.1 | Блок питания и сигнализации БПС-3-И | ИБЯЛ.426479.046-01 |  | Аналитприбор | шт. | 3 |  |  |\n| 19.2 | Сигнализатор загазованности СТГ-3-И-СО | ИБЯЛ 413411051-20 |  | Аналитприбор | шт. | 43 |  |  |\n| 19.3 | Коробка соединительная КСИ | ИБЯЛ 413411051-20 |  | Аналитприбор | шт. | 43 |  |  |\n| 19.4 | Светозвуковой оповещатель \"Внимание! Загазованность!\" | \"ЛЮКС-24-К МС\" |  | Электротехника и Автоматика | шт. | 1 |  |  |\n| 20 | Система противодымной вентиляции |  |  |  |  |  |  |  |\n| 20.1 | Термопреобразователь сопротивления канальный, чувствительный элемент NTC10К, длина погружной части датчика 200 мм | МВТ 3280 | 097У0112 | Ридан | шт. | 6 |  |  |\n| 21 | Кабели и провода |  |  |  |  |  |  |  |\n| 21.1 | Кабель силовой с медными жилами | ППГнг(А)-HF 3x1,5 |  | Ивановский кабельный завод | м | 3945 |  |  |\n| 21.2 | Кабель силовой с медными жилами | ППГнг(А)-HF 4x2,5 |  | Ивановский кабельный завод | м | 2060 |  |  |\n| 21.3 | Кабель силовой с медными жилами | ППГнг(А)-HF 4x4,0 |  | Ивановский кабельный завод | м | 60 |  |  |\n| 21.4 | Кабель контрольный с медными жилами | КСПВППГнг(А)-HF 1x2x0,75 |  | Паритет | м | 7040 |  |  |\n| 21.5 | Кабель контрольный с медными жилами | КСПВППГнг(А)-HF 4x2x0,75 |  | Паритет | м | 20 |  |  |\n\n## Page 103 — Sheet 10\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8712be58c8b43f6ac75cfa6420d5479.png",
+      "sha256": "1e2341ee22473618e8dd909d53c863618bd86d002b9d77d0b4b5e71ef6e9c0ba",
+      "block_id": "blk_b8712be58c8b43f6ac75cfa6420d5479",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Four addressed K6PCh signal lines show КСПВПГнг(А)-HF1x2x0.75."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+      "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+      "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "SKZ input45m shows КСПВПГнг(А)-HF1x2x0.75; crop[2480,300,2610,650]scale3 inspected."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+      "sha256": "d0ba9aaabb16c1ce4b6b16f7aaa9bbe3903ca1b7084bd043e6e1007636fbabfb",
+      "primary_adjudication": null,
+      "limits": [
+        "В TEXT КЖ идентификаторы начинаются с латинской B; исходное написание сохранено в доказательствах. Соответствие схеме устанавливается по шкафу, номеру линии, оконечному устройству, сечению и длине, а не только замене букв.",
+        "7040 м в СО — сводный объём; его принадлежность только четырём линиям не утверждается.",
+        "Различие конструкций, правильная закупочная марка, фактическая поставка и работоспособность не установлены. Возможная опечатка не устраняет документальное расхождение.",
+        "Историческое решение инженера для этого независимого кандидата не установлено."
+      ],
+      "wording": "Согласовать марку контрольного кабеля 1×2×0,75: на схеме листа37 и в локальных ведомостях листов25/37 — КСПВПГнг(А)-HF; в КЖ лист23 для четырёх линий шкафа ШАУВ-1-К6ПЧ — КСВПГнг(A)-HF; в СО лист9 поз.21.4 — КСПВППГнг(А)-HF. Сохранить адреса линий и установить согласованное обозначение."
+    }
+  ],
+  "limits": [
+    "Manufacturer equivalence and actual interference not checked.",
+    "No OCR correction or automatic normalization.",
+    "No frozen evaluator or production change."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
