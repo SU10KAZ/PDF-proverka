@@ -1,0 +1,277 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "cf30092eb374c378decf5470cb0d8daeb6f33e105682c72c64b2dc2059b9e5ef",
+  "queue_after_sha256": "5e2d69c9421f1226274baf07e15dd31db663b64a52eb881ad4b20639d56fcb37",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-030",
+      "finding": {
+        "id": "F-030",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Соединения трубопроводов",
+        "sheet": "Листы 7., 8., 9.",
+        "page": [
+          30,
+          31,
+          32,
+          151
+        ],
+        "problem": "Грувлочные соединения малых диаметров не согласованы с техническим заданием.",
+        "description": "Техническое задание требует для оцинкованных труб до DN50 включительно резьбовые оцинкованные фитинги. Спецификация содержит грувлочные муфты, отводы и переходы DN25–DN50. Принадлежность этих изделий конкретным системам требует уточнения.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Установить назначение грувлочных изделий и согласовать соединения водоснабжения с техническим заданием либо оформить изменение требования.",
+        "risk": "Несогласованная закупка и необходимость замены соединений при приёмке.",
+        "source_finding_ids": [
+          "T-030"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_4f09992bf47245e9a6f8a27ddda67b86",
+          "blk_f23a8028a5d34e3e92bf1c3cfcdecf85"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 30
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 151
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP68_grooved_scope:98fe6084bffb8305b8ed",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ТЗ5.3.1.4 требует оцинкованные резьбовые фитинги при диаметре≤50мм.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Контекст5.3.1.3–5 относится к водоснабжению. Не переносить правило автоматически на все трубопроводыИТП; текст говорит «диаметр», без уточненияDN."
+        },
+        {
+          "claim": "СО содержит грувлочные изделия32/40/50 и переходы65×40/65×50/80×40/80×50.",
+          "verdict": "confirmed_bounded_TEXT_inventory",
+          "limits": "Прочитаны блоки60/64/66. Все заявленные отводы иDN25 этим просмотром отдельно не подтверждены; числовые коды не подменяют паспортные размеры."
+        },
+        {
+          "claim": "Нужна принадлежность изделий к конкретным оцинкованным системам.",
+          "verdict": "supported_applicability_question",
+          "limits": "Текущая строка правильно сохраняет неопределённость. Без связи изделия, материала, участка и применимогоТЗ техническое нарушение не установлено. Количество деталей не число дефектов."
+        }
+      ],
+      "unsupported_additions": "Не установлены применимость ко всем трубам, чужое происхождениеТЗ или фактический монтажный дефект.",
+      "novel_useful_content": "Прямые документальные основания вопроса подтверждены; новое инженерное принятие не установлено.",
+      "duplicate_burden": "Общая неопределённость применимостиТЗ не отменяет самостоятельные документальные конфликты; количество изделий не число дефектов.",
+      "profile_and_section": "Отдельные вопросы и уточнения; фактическое расположение в итоговом отчёте не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; вывод опирается на прямойTEXT.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a7ba21ea8083491389a223015720c9cb",
+          "route": "direct_authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r3_direct_requirement_scope_and_project_stage"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-040",
+      "finding": {
+        "id": "F-040",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Идентификация объекта",
+        "sheet": null,
+        "page": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          114,
+          115
+        ],
+        "problem": "Этап строительства на титульных листах отличается от этапа технического задания.",
+        "description": "Титульные листы относят объект к этапу 1, приложенное техническое задание на тот же кадастровый участок — к этапу 2. Применимость задания к представленному комплекту не установлена однозначно.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к идентификации объекта и оформлению титульных листов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-040"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-040"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подтвердить применимость задания и унифицировать наименование объекта и этап строительства.",
+        "risk": "Применение требований другого этапа и неоднозначность согласования документации.",
+        "source_finding_ids": [
+          "T-040"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_8c5527e3317248dca7d78ca059f0ec46"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 1
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 114
+          }
+        ],
+        "highlight_regions": [],
+        "sheet_unavailable": true,
+        "sheet_unavailable_reason": "page_not_in_map",
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-040:7f53850450a0df3ef46e",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В текстах титулов этап1, в приложенномТЗ этап2; участок77:07:0013002:4706 совпадает.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Блоки4–6 и152/153; рекламное название такжеСобытие6.2. Это текстовая проверка, не новый просмотр штампов."
+        },
+        {
+          "claim": "ПрименимостьТЗ к данному комплекту неоднозначна.",
+          "verdict": "supported_document_identity_question",
+          "limits": "Совпадение участка не доказывает одинаковый этап. Но различие этапа не доказывает, чтоТЗ чужое или все его требования неприменимы."
+        },
+        {
+          "claim": "Нужно согласовать редакцию и область действия задания.",
+          "verdict": "supported_question_separate_from_technical_defect",
+          "limits": "Договорные приложения и история выпуска не проверены. Не снимать все найденные конфликты автоматически, не утверждать ошибочный монтаж."
+        }
+      ],
+      "unsupported_additions": "Не установлены применимость ко всем трубам, чужое происхождениеТЗ или фактический монтажный дефект.",
+      "novel_useful_content": "Прямые документальные основания вопроса подтверждены; новое инженерное принятие не установлено.",
+      "duplicate_burden": "Общая неопределённость применимостиТЗ не отменяет самостоятельные документальные конфликты; количество изделий не число дефектов.",
+      "profile_and_section": "Отдельные вопросы и уточнения; фактическое расположение в итоговом отчёте не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; вывод опирается на прямойTEXT.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a1ca949836874a73b2e5918a5b35aa5a",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_66a1a7edb1534631908982534b83cf8c",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9c3fa43ddda943a2bc19432c3caa124a",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_35ff8683b1cf4be2abdef61740ddda2e",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f508344fc15b43cc99862e7da6625d25",
+          "route": "direct_authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r3_direct_requirement_scope_and_project_stage"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Direct authoritative TEXT evaluation of F030/F040; bounded fitting inventory and water-supply clause context, same cadastral parcel with differing construction stages. No external norm inference, graphic inspection or engineer acceptance."
+}
