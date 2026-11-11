@@ -1,0 +1,806 @@
+{
+  "status": "verified_baseline_runtime_not_cost_acceptance",
+  "trial_sha256": "e8868d688a4525c54871ff4310b39ea490c225f13129c2fe9e5d6dc0791f4c8b",
+  "runs": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/status/AK.json",
+      "status_sha256": "65985578df0f69ae910d2c4547dbb699a5d463db6a71705ed1914f831203e469",
+      "final_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+      "snapshot_sha256": "b4677f5677783d1c81656b2249aefd4b739716c214f67b56101ef45913f5cdc9",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 645,
+      "requests": 215,
+      "attempts": 215,
+      "failed_attempts": 0,
+      "wall_seconds": 3343.933670282364,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 4669126,
+        "output_tokens": 150745,
+        "cached_tokens": 1229440,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 47009,
+        "cost_usd": 0.0,
+        "duration_ms": 5319063
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 215,
+          "input_tokens": 4669126,
+          "output_tokens": 150745,
+          "cached_tokens": 1229440,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 47009,
+          "cost_usd": 0.0,
+          "duration_ms": 5319063
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/status/ITP.json",
+      "status_sha256": "40f66b5223de86d7334bbedac1cd489e17098f93ad680a1622f89aa44eba0af5",
+      "final_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+      "snapshot_sha256": "84a01e631b3af305078b79b82d03ecc241d532d99e4b7c5868e469492ccd499f",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 447,
+      "requests": 149,
+      "attempts": 149,
+      "failed_attempts": 0,
+      "wall_seconds": 2279.9369580745697,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 3084148,
+        "output_tokens": 89170,
+        "cached_tokens": 1054976,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 22565,
+        "cost_usd": 0.0,
+        "duration_ms": 3327164
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 149,
+          "input_tokens": 3084148,
+          "output_tokens": 89170,
+          "cached_tokens": 1054976,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 22565,
+          "cost_usd": 0.0,
+          "duration_ms": 3327164
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "AR",
+      "repeat": 1,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/status/AR.json",
+      "status_sha256": "504bc7a33468efc7d3b9ef1f147dbb7df4c06826cd89a27e69002d19b0cb79d2",
+      "final_sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d",
+      "snapshot_sha256": "093584626d0d05815a911a3084df0b4d66276caa26adcecbdd01bc6f22034090",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 393,
+      "requests": 131,
+      "attempts": 131,
+      "failed_attempts": 0,
+      "wall_seconds": 1545.1524794101715,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 2775701,
+        "output_tokens": 52703,
+        "cached_tokens": 1030784,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 18200,
+        "cost_usd": 0.0,
+        "duration_ms": 2448935
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 131,
+          "input_tokens": 2775701,
+          "output_tokens": 52703,
+          "cached_tokens": 1030784,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 18200,
+          "cost_usd": 0.0,
+          "duration_ms": 2448935
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/status/KM.json",
+      "status_sha256": "92ee6e29d00359e8735e94d4469c901ccba176022bde7928791a0c259069cd5e",
+      "final_sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+      "snapshot_sha256": "7649db6e5c6f25000d1d2079dd79aab1ac305ea73120d5c5c602be1923ae2520",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 501,
+      "requests": 167,
+      "attempts": 167,
+      "failed_attempts": 0,
+      "wall_seconds": 2582.6308817863464,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 3790962,
+        "output_tokens": 87948,
+        "cached_tokens": 1241728,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 39668,
+        "cost_usd": 0.0,
+        "duration_ms": 4072467
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 167,
+          "input_tokens": 3790962,
+          "output_tokens": 87948,
+          "cached_tokens": 1241728,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 39668,
+          "cost_usd": 0.0,
+          "duration_ms": 4072467
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "VK",
+      "repeat": 1,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/status/VK.json",
+      "status_sha256": "5d7a728a1756ee772b4c010b2963c00f3125ab3cc22cb360296ba60091821fc4",
+      "final_sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8",
+      "snapshot_sha256": "6a801766bc2e8c03cc354f3c820fefe266fc963639eb958b4d55cc00856bd26b",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 327,
+      "requests": 109,
+      "attempts": 109,
+      "failed_attempts": 0,
+      "wall_seconds": 1739.9481596946716,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 2444795,
+        "output_tokens": 60577,
+        "cached_tokens": 878208,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 22124,
+        "cost_usd": 0.0,
+        "duration_ms": 2472886
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 109,
+          "input_tokens": 2444795,
+          "output_tokens": 60577,
+          "cached_tokens": 878208,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 22124,
+          "cost_usd": 0.0,
+          "duration_ms": 2472886
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/status/EOM.json",
+      "status_sha256": "53ecb20efcf85f1693555fa881b64391ef4c88009bc8e3c48526f7d877bae5de",
+      "final_sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386",
+      "snapshot_sha256": "105500ed416feb3b714a848eba7423bd4d94c08ef1acc43408158b40a824ab7b",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 783,
+      "requests": 261,
+      "attempts": 261,
+      "failed_attempts": 0,
+      "wall_seconds": 3606.1852717399597,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 5891926,
+        "output_tokens": 107414,
+        "cached_tokens": 2180992,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 33654,
+        "cost_usd": 0.0,
+        "duration_ms": 4736921
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 261,
+          "input_tokens": 5891926,
+          "output_tokens": 107414,
+          "cached_tokens": 2180992,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 33654,
+          "cost_usd": 0.0,
+          "duration_ms": 4736921
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/status/AK.json",
+      "status_sha256": "f7714b18591097011f25389946068d2688081c1c41b9a0d862b8b11ced7679ca",
+      "final_sha256": "23f2f26b2037210e7d364cf48c55d42f62832e649a25b10b0f3eb4f1ab8a8c3b",
+      "snapshot_sha256": "e26e85aa7b315e9e01bf48e78fdd2eb7f5b1b9bae420559d9da0ce4b76f5bc4b",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 645,
+      "requests": 215,
+      "attempts": 215,
+      "failed_attempts": 0,
+      "wall_seconds": 3368.6966428756714,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 4671675,
+        "output_tokens": 145607,
+        "cached_tokens": 1767296,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 45167,
+        "cost_usd": 0.0,
+        "duration_ms": 5375950
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 215,
+          "input_tokens": 4671675,
+          "output_tokens": 145607,
+          "cached_tokens": 1767296,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 45167,
+          "cost_usd": 0.0,
+          "duration_ms": 5375950
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/status/ITP.json",
+      "status_sha256": "9ee258eab1876f033c9967b746d246c70b98a8f9c492e9c65311a7edefbd4a85",
+      "final_sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027",
+      "snapshot_sha256": "83e8c278a82ee2947083f813304e7d5aa53798efd7a8d3f7c30695e93095d50c",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 447,
+      "requests": 149,
+      "attempts": 149,
+      "failed_attempts": 0,
+      "wall_seconds": 2166.1978912353516,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 3085871,
+        "output_tokens": 89817,
+        "cached_tokens": 1207680,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 21690,
+        "cost_usd": 0.0,
+        "duration_ms": 3115650
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 149,
+          "input_tokens": 3085871,
+          "output_tokens": 89817,
+          "cached_tokens": 1207680,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 21690,
+          "cost_usd": 0.0,
+          "duration_ms": 3115650
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/status/AR.json",
+      "status_sha256": "80b365f3dabe6629c9123dc1f58e83a0d6bdca3e10aa3db1db18cc86567fd075",
+      "final_sha256": "19945dcbf049ddaac4c873aa6699b58b1a2bc9085e4788efc9b9d43cd73eda3e",
+      "snapshot_sha256": "39fe7cf92a7f114315db7942697abd798a4b234aa677a6639dead3af659ff73f",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 393,
+      "requests": 131,
+      "attempts": 131,
+      "failed_attempts": 0,
+      "wall_seconds": 1498.5394678115845,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 2774760,
+        "output_tokens": 55153,
+        "cached_tokens": 1067392,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 19580,
+        "cost_usd": 0.0,
+        "duration_ms": 2316158
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 131,
+          "input_tokens": 2774760,
+          "output_tokens": 55153,
+          "cached_tokens": 1067392,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 19580,
+          "cost_usd": 0.0,
+          "duration_ms": 2316158
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/status/KM.json",
+      "status_sha256": "fff871ec2646f55e5f5707ee9a98ae7b2e4e9ef69640c83c52aa93927bc89e4f",
+      "final_sha256": "d93486c6a6510ae841be839873e137a44c3241005e6060361017dce855a3e5d1",
+      "snapshot_sha256": "4ba886847c8175f5e85868dfb71ff175f8611897431f580c7ca2579d7f0be993",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 501,
+      "requests": 167,
+      "attempts": 167,
+      "failed_attempts": 0,
+      "wall_seconds": 2204.905859231949,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 3785748,
+        "output_tokens": 79893,
+        "cached_tokens": 1362816,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 38009,
+        "cost_usd": 0.0,
+        "duration_ms": 3590972
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 167,
+          "input_tokens": 3785748,
+          "output_tokens": 79893,
+          "cached_tokens": 1362816,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 38009,
+          "cost_usd": 0.0,
+          "duration_ms": 3590972
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/status/VK.json",
+      "status_sha256": "3040ee51985cb514b5a0ca2c83ee77eaf9b541008f4de4182dffa3fa58a76683",
+      "final_sha256": "6182e5efe3cb42c6924c22aec4caa065ddd49a6e1130d44dc73a157477cbd9cd",
+      "snapshot_sha256": "0b60c5a631e018b28ad094b2c55e58ddd6ba09a9374509e29a36bbd47b623860",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 327,
+      "requests": 109,
+      "attempts": 109,
+      "failed_attempts": 0,
+      "wall_seconds": 1450.6830122470856,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 2441876,
+        "output_tokens": 52816,
+        "cached_tokens": 877184,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 19237,
+        "cost_usd": 0.0,
+        "duration_ms": 2168305
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 109,
+          "input_tokens": 2441876,
+          "output_tokens": 52816,
+          "cached_tokens": 877184,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 19237,
+          "cost_usd": 0.0,
+          "duration_ms": 2168305
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/status/EOM.json",
+      "status_sha256": "714b2c422f36931c8c324f26e464028f62e387f26d0a09d7393cab96c4eb7167",
+      "final_sha256": "4b6101d8efa69bb635f953a84ce8d301b3ab5d0fca05ea0c7263afe52bcc54ca",
+      "snapshot_sha256": "3fffe8bd4d89c6cc47f3d9c4c9cc793738ddca5cb7059fa81f392a185699d0d5",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 783,
+      "requests": 261,
+      "attempts": 261,
+      "failed_attempts": 0,
+      "wall_seconds": 3512.6761116981506,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 5892052,
+        "output_tokens": 109506,
+        "cached_tokens": 2116864,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 33238,
+        "cost_usd": 0.0,
+        "duration_ms": 4655643
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 261,
+          "input_tokens": 5892052,
+          "output_tokens": 109506,
+          "cached_tokens": 2116864,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 33238,
+          "cost_usd": 0.0,
+          "duration_ms": 4655643
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/status/AK.json",
+      "status_sha256": "185a2a746d2a80b718816a905eabe1c105b45dcaa8b164345a26797e9ad2a444",
+      "final_sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34",
+      "snapshot_sha256": "9de30fe26d4f22c92431331dfd3a74f009f30f90dbffd6e1bec33bb3d60e5b0b",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 645,
+      "requests": 215,
+      "attempts": 215,
+      "failed_attempts": 0,
+      "wall_seconds": 3550.3985047340393,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 4669467,
+        "output_tokens": 149698,
+        "cached_tokens": 1680256,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 47314,
+        "cost_usd": 0.0,
+        "duration_ms": 5701453
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 215,
+          "input_tokens": 4669467,
+          "output_tokens": 149698,
+          "cached_tokens": 1680256,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 47314,
+          "cost_usd": 0.0,
+          "duration_ms": 5701453
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/status/ITP.json",
+      "status_sha256": "ce32d5f75f8d8f2c7d295e020d3211dcfac5f4a30e9a3585a26b49e652fe730c",
+      "final_sha256": "aa76592c061f7c75196ee2c35c606de32dd98c383243ddb22357d35dde54c89b",
+      "snapshot_sha256": "b8b8a4861ce0c4203545e737fbbc37fd39b07f93bec05702053729f3686948d7",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 447,
+      "requests": 149,
+      "attempts": 149,
+      "failed_attempts": 0,
+      "wall_seconds": 2136.9974026679993,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 3082760,
+        "output_tokens": 88192,
+        "cached_tokens": 1208064,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 20907,
+        "cost_usd": 0.0,
+        "duration_ms": 3124354
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 149,
+          "input_tokens": 3082760,
+          "output_tokens": 88192,
+          "cached_tokens": 1208064,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 20907,
+          "cost_usd": 0.0,
+          "duration_ms": 3124354
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "AR",
+      "repeat": 3,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/status/AR.json",
+      "status_sha256": "72e7731be06b26258a713b17d2c18de6b3d7dcec876175539b87771a17932943",
+      "final_sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+      "snapshot_sha256": "64c89bdf64b81f21ab07ace27acb4ebb66acbd70d8f6cf59a7ff18aaa6fa99b2",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 393,
+      "requests": 131,
+      "attempts": 131,
+      "failed_attempts": 0,
+      "wall_seconds": 1474.5593280792236,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 2772624,
+        "output_tokens": 52582,
+        "cached_tokens": 1077248,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 18382,
+        "cost_usd": 0.0,
+        "duration_ms": 2270466
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 131,
+          "input_tokens": 2772624,
+          "output_tokens": 52582,
+          "cached_tokens": 1077248,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 18382,
+          "cost_usd": 0.0,
+          "duration_ms": 2270466
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "KM",
+      "repeat": 3,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/status/KM.json",
+      "status_sha256": "7774c82cd2e83ad3c627272306ba82b02755130fee46f6ff601c43f4667b5fcd",
+      "final_sha256": "24144ca36a134832df47be32c1b795fc8923515017c46a3e07296ab7380ce60f",
+      "snapshot_sha256": "2e3fc1461d07c29417545e10aa256ab07a17592002eabcd4a49346b640adce39",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 501,
+      "requests": 167,
+      "attempts": 167,
+      "failed_attempts": 0,
+      "wall_seconds": 2062.7213122844696,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 3787694,
+        "output_tokens": 78747,
+        "cached_tokens": 1369728,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 34936,
+        "cost_usd": 0.0,
+        "duration_ms": 3345972
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 167,
+          "input_tokens": 3787694,
+          "output_tokens": 78747,
+          "cached_tokens": 1369728,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 34936,
+          "cost_usd": 0.0,
+          "duration_ms": 3345972
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "VK",
+      "repeat": 3,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/status/VK.json",
+      "status_sha256": "725595e05528e74e0b77cd804ca746adb3f29910b517ab85d985ad869b2d90c8",
+      "final_sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+      "snapshot_sha256": "c12dc91c9d5d09504b721e325edca8c1adb8dade675002ae1ddd0e396bac9a70",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 327,
+      "requests": 109,
+      "attempts": 109,
+      "failed_attempts": 0,
+      "wall_seconds": 1366.9259114265442,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 2444192,
+        "output_tokens": 49668,
+        "cached_tokens": 915456,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 17449,
+        "cost_usd": 0.0,
+        "duration_ms": 2064377
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 109,
+          "input_tokens": 2444192,
+          "output_tokens": 49668,
+          "cached_tokens": 915456,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 17449,
+          "cost_usd": 0.0,
+          "duration_ms": 2064377
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/status/EOM.json",
+      "status_sha256": "67034537b842711a4d855fcec7e508b2cd09edacb7a27c615d31794175a20a64",
+      "final_sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+      "snapshot_sha256": "d3252b1e58ef534afea4743eb8e6f5855f73d5ff6ed6435dc18965d0ddb62bd2",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 783,
+      "requests": 261,
+      "attempts": 261,
+      "failed_attempts": 0,
+      "wall_seconds": 3153.858745574951,
+      "semantic_results_read": false,
+      "quality_accepted": false,
+      "tokens": {
+        "input_tokens": 5886921,
+        "output_tokens": 100718,
+        "cached_tokens": 2109568,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 32363,
+        "cost_usd": 0.0,
+        "duration_ms": 4056352
+      },
+      "by_model_and_cost_source": [
+        {
+          "model": "codex/gpt-6-astra",
+          "cost_source": "subscription",
+          "attempts": 261,
+          "input_tokens": 5886921,
+          "output_tokens": 100718,
+          "cached_tokens": 2109568,
+          "cache_write_tokens": 0,
+          "reasoning_tokens": 32363,
+          "cost_usd": 0.0,
+          "duration_ms": 4056352
+        }
+      ],
+      "actual_monetary_cost_usd": null,
+      "monetary_cost_fully_measured": false
+    }
+  ],
+  "request_totals": {
+    "input_tokens": 67952298,
+    "output_tokens": 1600954,
+    "cached_tokens": 24375680,
+    "reasoning_tokens": 531492,
+    "requests": 3096,
+    "attempts": 3096,
+    "failed_attempts": 0
+  },
+  "wall_time": {
+    "sum_run_seconds": 43044.9476108551,
+    "median_seconds": 2185.55187523365,
+    "p95_nearest_rank_seconds": 3606.1852717399597,
+    "min_seconds": 1366.9259114265442,
+    "max_seconds": 3606.1852717399597
+  },
+  "by_discipline": {
+    "AK": {
+      "runs": 3,
+      "min_seconds": 3343.933670282364,
+      "median_seconds": 3368.6966428756714,
+      "max_seconds": 3550.3985047340393
+    },
+    "AR": {
+      "runs": 3,
+      "min_seconds": 1474.5593280792236,
+      "median_seconds": 1498.5394678115845,
+      "max_seconds": 1545.1524794101715
+    },
+    "EOM": {
+      "runs": 3,
+      "min_seconds": 3153.858745574951,
+      "median_seconds": 3512.6761116981506,
+      "max_seconds": 3606.1852717399597
+    },
+    "ITP": {
+      "runs": 3,
+      "min_seconds": 2136.9974026679993,
+      "median_seconds": 2166.1978912353516,
+      "max_seconds": 2279.9369580745697
+    },
+    "KM": {
+      "runs": 3,
+      "min_seconds": 2062.7213122844696,
+      "median_seconds": 2204.905859231949,
+      "max_seconds": 2582.6308817863464
+    },
+    "VK": {
+      "runs": 3,
+      "min_seconds": 1366.9259114265442,
+      "median_seconds": 1450.6830122470856,
+      "max_seconds": 1739.9481596946716
+    }
+  },
+  "production_acceptance": false,
+  "limits": [
+    "Subscription cost_usd=0 is not actual free usage; monetary cost and quota percentage are not measured.",
+    "Input tokens include repeated and cached context; do not treat as unique project text or billable dollars.",
+    "Summed request duration differs from wall time because operations overlap. Sum of run wall times is not total calendar elapsed time.",
+    "P95 uses nearest-rank with only18 heterogeneous runs; compare matched disciplines and repeats before acceptance.",
+    "No paired experimental runtime ratio, engineer time or transferability acceptance yet."
+  ]
+}
