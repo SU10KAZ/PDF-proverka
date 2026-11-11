@@ -50,9 +50,9 @@
       "final_sha256": "24144ca36a134832df47be32c1b795fc8923515017c46a3e07296ab7380ce60f",
       "findings": 25,
       "ledger_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/KM_coverage_ledger.json",
-      "ledger_sha256": "2ec5cc404329c79f5f27ddc0b012e7497431a22e86f190e4d82413609da62722",
+      "ledger_sha256": "79515eb1000d61bc5d8fbcc332d4e161d7626fd67e2375fc7a7b77a26fc66512",
       "targets": 28,
-      "unchecked_targets": 28
+      "unchecked_targets": 1
     }
   ],
   "pending": [
