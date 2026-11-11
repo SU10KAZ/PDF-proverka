@@ -380,20 +380,68 @@
     },
     {
       "target_id": "VK_F017_F028_cross_references:e41c019d214dddc2adbd",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-019"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json",
+          "sha256": "3b9bdd5ae305bfa08f477c45706ea5b839ced2270c0aa0fa4477f7e919f84dbf"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-019",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Все шесть адресных ссылок листов19/20/21 и направления17/18/23 сохранены. Дополнительные ссылки листа18 оцениваются отдельно; это не глобальная замена22на23.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F024_riser_labels:f44954b8bdd41b2ea649",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-021"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F024_riser_labels.json",
+          "sha256": "c521ebd56bdcd601648f2bba29be378bdf57734b9251f3f7e1bbbd5dcc43c1f5"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-021",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Сопоставлены первыйК1.1-1/К1.1-3.5 и седьмойК1.1-7/К1.1-2.1, предложено проверить марки. Остальные пять пар — дополнительная область проверки качества.",
       "section_assessment": "unchecked"
     },
     {
@@ -434,11 +482,35 @@
     },
     {
       "target_id": "VK20_sensor_count_identity:composite:1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",
+          "sha256": "3578c3e05b80511d0099d88947437916b5e5a6ebf51ecb954e5a6a3864d79ea7"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-005",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Есть30стояков/25датчиков и требование поименной увязки с объединениями и исключением1этажа. Нет22выносокДЗ8+14 и их сопоставления. Разность5не доказывает дефицит; не дополнять находку контекстом оценщика.",
       "section_assessment": "unchecked"
     },
     {
@@ -461,56 +533,200 @@
     },
     {
       "target_id": "VK_F001_revision_interval:composite:1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-002"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F001_revision_interval.json",
+          "sha256": "79bc3fdfe1e64b0c5c7a6f7cb2b6343303ffa8549cb671f94ae6c06e33872e03"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-002",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Есть2/6/10,разностьномеров4 и формулировка через3этажа. Нет различения трёх промежуточных этажей и проверки первого/последнего жилого этажа; противоречие заявлено сильнее эталонного вопроса.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F002_revision_compensator_inventory:composite:1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F002_revision_compensator_inventory.json",
+          "sha256": "37e68f7608b3f3fadbc1ff458cf06e0a66ab06ee536959a3ee17a0acbe076489"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-003",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "7ППревизийØ110,30стояков,90условныхмест и требование поштучной ведомости сохранены. Чугун не засчитан как автоматическая замена,83не объявлены доказанной недостачей.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F002_revision_compensator_inventory:composite:2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F002_revision_compensator_inventory.json",
+          "sha256": "37e68f7608b3f3fadbc1ff458cf06e0a66ab06ee536959a3ee17a0acbe076489"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-004",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "17компенсационныхпатрубков увязаны с поэтажным требованием; назначен подсчёт по стоякам. Учетверённая длина не превращена в68изделий. Дополнительные270узлов и806,4м оцениваются отдельно.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F005_fitting_pressure:composite:1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-008"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F005_fitting_pressure.json",
+          "sha256": "d664c9be4e8783c858f95081a7bdd835b22159b57c485a4df5adae1a0408346b"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-008",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Выделены4отводаPolytronStiltePlus45°110К2,требование1МПа и проверка адресов/паспортов; нет артикулаSTPL1011045 и явного конфликтаПП/НПВХ.0,5бар отнесены к описаниюК1, не к доказанному пределу паспорта, но полного состава цели нет.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F006_test_criterion:composite:1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-016"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F006_test_criterion.json",
+          "sha256": "8de36f9d965c639b3b294ae1a2230ff52558f1750c107d647263ae1d8bb996f5"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-016",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "Сохранено различие75%расхода и75%приборов с проверкой редакции и участков без квартирных приборов. Нет разграничения приборовМОП,нет точной привязкип7.5.1 базовогоСП; полная цель не восстановлена.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "VK_F009_pipe_125_inventory:composite:1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-009"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F009_pipe_125_inventory.json",
+          "sha256": "841874d6b0fce166bb0a0222ebc8cfe4a015cd33e59413d62f02186a20fbede9"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-009",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "К2.1:495,5м,250креплений,одинотводDN125 и отсутствие отдельных соединителей,проверка трасс сохранены. Не считать доказанным избыток закупки;К1 оценивается самостоятельной целью.",
       "section_assessment": "unchecked"
     },
     {
@@ -524,11 +740,35 @@
     },
     {
       "target_id": "VK_F013_drain_assembly_scope:composite:1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F013_drain_assembly_scope.json",
+          "sha256": "51f2e39a7857fc364ed2dc076d1601c1f1d3e881aa3ee0968085461f31447dea"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+          "finding_id": "F-014",
+          "checked_fields": [
+            "problem",
+            "description",
+            "solution",
+            "risk"
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "identical_source_TEXT_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md"
+        }
+      ],
+      "reason": "12комплектов110с подогревом связаны сHL62.1H/1,HL65H,116010 и вопросом границ состава. Наличие модели признано, повторный дозаказ компонентов автоматически не требуется. МатериалыППREHAU/BIS — отдельная цель, не покрытая одним упоминанием состава.",
       "section_assessment": "unchecked"
     },
     {
