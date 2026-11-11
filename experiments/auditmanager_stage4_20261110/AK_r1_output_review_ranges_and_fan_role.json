@@ -1,0 +1,462 @@
+{
+  "status": "three_source_reviews_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/experimental/AK_r1_classic_current/output_review_queue.json",
+  "queue_before_sha256": "03b0399ff5de623d2baf32003ab14d9a03eb2ce60ca2f7316ba0932e09bd8361",
+  "queue_after_sha256": "e7ea276d20fc8703f1c7836d8e4b5b43d67d450d0efe3984cbdfa697a3a9f03a",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_specification",
+        "finding": "Требуется уточнить соотношение диапазонов давления на листе 18: в таблице сигналов для PDS2–PDS4, столбцы 10, 20 и 26, указано 20–200 Па, а в перечне элементов для PDS1–PDS4 — 50–500 Па. Являются ли значения таблицы требуемым диапазоном настройки приборов или рабочими значениями контролируемого перепада? Уставка 100 Па, показанная у PDS2–PDS4, входит в оба диапазона, поэтому непригодность выбранных приборов этими данными не подтверждается. Примечание об уточнении рабочих значений при ПНР не объясняет назначение различающихся диапазонов.\n\nРекомендация: Уточнить назначение диапазонов и согласовать требования таблицы сигналов с перечнем элементов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_560cb89105bd46158749d4d59c9e52f9",
+        "source_refs": [
+          "blk_560cb89105bd46158749d4d59c9e52f9",
+          "blk_51ab9fc59a1a45e98c268dec561eed08",
+          "blk_0c226b1bdd7e4c09a187610f7c580cfe"
+        ],
+        "value_found": "Таблица сигналов: 20–200 Па; перечень элементов: 50–500 Па; уставка: 100 Па",
+        "highlight_regions": [],
+        "source_finding_ids": [
+          "G-044"
+        ],
+        "report_section": "questions",
+        "evidence": [
+          {
+            "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_51ab9fc59a1a45e98c268dec561eed08",
+            "type": "text",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_0c226b1bdd7e4c09a187610f7c580cfe",
+            "type": "text",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_c51a95d91fea1908",
+        "problem": "Требуется уточнить соотношение диапазонов давления на листе 18: в таблице сигналов для PDS2–PDS4, столбцы 10, 20 и 26, указано 20–200 Па, а в перечне элементов для PDS1–PDS4 — 50–500 Па. Являются ли значения таблицы требуемым диапазоном настройки приборов или рабочими значениями контролируемого перепада? Уставка 100 Па, показанная у PDS2–PDS4, входит в оба диапазона, поэтому непригодность выбранных приборов этими данными не подтверждается. Примечание об уточнении рабочих значений при ПНР не объясняет назначение различающихся диапазонов.\n\nРекомендация: Уточнить назначение диапазонов и согласовать требования таблицы сигналов с перечнем элементов.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-044",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 18",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 52,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "20–200 Pa in signal table versus 50–500 Pa in element list; 100 Pa within both.",
+          "assessment": "confirmed_difference_with_compatible_setpoint",
+          "limits": "Different range meanings may be intentional; does not prove unsuitable hardware."
+        },
+        {
+          "claim": "Pressure signal columns are 10,20,26.",
+          "assessment": "partly_refuted_locator",
+          "correction": "10,20,24; column26 is dispatch Ethernet."
+        },
+        {
+          "claim": "Ask for range meaning and coordination, accounting for commissioning note.",
+          "assessment": "supported_question",
+          "limits": "Do not universalize the project values or require replacement without additional evidence."
+        }
+      ],
+      "unsupported_additions": "incorrect_third_column_26_instead_of_24",
+      "novel_useful_content": "supported_question_outside_frozen_target_addresses",
+      "duplicate_burden": "distinct_object_addresses_in_current_output",
+      "profile_and_section": "questions_section_appropriate",
+      "engineer_reuse": "none_no_same_claim_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+          "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+          "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "PDS2/PDS3/PDS4 have 100 Pa thresholds. Signal table pressure ranges 20–200 Pa are at columns10,20,24. Column26 is Ethernet dispatch connection, not the third pressure signal."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_51ab9fc59a1a45e98c268dec561eed08",
+          "route": "authoritative_TEXT",
+          "quote": "| PDS1-PDS4 | Датчик давления дифференциальный 50-500 Па | 4 |  |"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_0c226b1bdd7e4c09a187610f7c580cfe",
+          "route": "authoritative_TEXT",
+          "quote": "1. Предельные рабочие значения измеряемых величин уточняются при ПНР"
+        }
+      ],
+      "disposition": "assessed_preserve_question_correct_third_column"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "instrument_range",
+        "finding": "На листе 22 для PDS2–PDS4 указаны разные диапазоны перепада давления: в таблице сигналов, столбцы 10, 20 и 26, — 20–200 Па, а в перечне элементов, строка PDS1-PDS4, — 50–500 Па. Следует согласовать указанные диапазоны либо пояснить различие между диапазоном контролируемой величины и диапазоном настройки приборов. Уставка 100 Па входит в оба диапазона; невозможность работы приборов этим расхождением не подтверждается.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+        "value_found": "Таблица сигналов: «Перепад давления на вентиляторе системы (20...200 Па)»; перечень элементов: «PDS1-PDS4 — Датчик давления дифференциальный 50-500 Па».",
+        "highlight_regions": [],
+        "source_finding_ids": [
+          "G-054",
+          "G-055"
+        ],
+        "source_refs": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "blk_a970f948644547ba84c30f918250b8dc"
+        ],
+        "report_section": "questions",
+        "evidence": [
+          {
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "type": "graphic",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_3963ce75beb642a0a5fe85d9dada94b3",
+            "type": "text",
+            "origin": "model_source_refs"
+          },
+          {
+            "block_id": "blk_a970f948644547ba84c30f918250b8dc",
+            "type": "text",
+            "origin": "model_source_refs"
+          }
+        ],
+        "recovery_evidence_adapted_from": "source_refs",
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_fca4ddc4d2607995",
+        "problem": "На листе 22 для PDS2–PDS4 указаны разные диапазоны перепада давления: в таблице сигналов, столбцы 10, 20 и 26, — 20–200 Па, а в перечне элементов, строка PDS1-PDS4, — 50–500 Па. Следует согласовать указанные диапазоны либо пояснить различие между диапазоном контролируемой величины и диапазоном настройки приборов. Уставка 100 Па входит в оба диапазона; невозможность работы приборов этим расхождением не подтверждается.",
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-054",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-055",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение диапазонов PDS2–PDS4: 20–200 Па в таблице сигналов и 50–500 Па в перечне элементов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение диапазонов PDS2–PDS4: 20–200 Па в таблице сигналов и 50–500 Па в перечне элементов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 22",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 52,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "20–200 Pa in signal table versus 50–500 Pa in element list; 100 Pa within both.",
+          "assessment": "confirmed_difference_with_compatible_setpoint",
+          "limits": "Different range meanings may be intentional; does not prove unsuitable hardware."
+        },
+        {
+          "claim": "Pressure signal columns are 10,20,26.",
+          "assessment": "partly_refuted_locator",
+          "correction": "10,20,24; column26 is dispatch Ethernet."
+        },
+        {
+          "claim": "Ask for range meaning and coordination, accounting for commissioning note.",
+          "assessment": "supported_question",
+          "limits": "Do not universalize the project values or require replacement without additional evidence."
+        }
+      ],
+      "unsupported_additions": "incorrect_third_column_26_instead_of_24",
+      "novel_useful_content": "supported_question_outside_frozen_target_addresses",
+      "duplicate_burden": "distinct_object_addresses_in_current_output",
+      "profile_and_section": "questions_section_appropriate",
+      "engineer_reuse": "none_no_same_claim_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "PDS2/PDS3/PDS4 have 100 Pa thresholds. Signal table pressure ranges 20–200 Pa are at columns10,20,24. Column26 is Ethernet dispatch connection, not the third pressure signal."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "route": "authoritative_TEXT",
+          "quote": "| PDS1-PDS4 | Датчик давления дифференциальный 50-500 Па | 4 |  |"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a970f948644547ba84c30f918250b8dc",
+          "route": "authoritative_TEXT",
+          "quote": "1. Предельные рабочие значения измеряемых величин уточняются при ПНР"
+        }
+      ],
+      "disposition": "assessed_preserve_question_correct_third_column"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-026",
+      "finding": {
+        "object_id": "O-07",
+        "operation": "identity_across_views",
+        "severity": "medium",
+        "problem": "Противоречивое назначение вентилятора В5.1.2: основной на функциональной схеме и резервный на схеме подключений.",
+        "description": "На листе 12 В5.1.2 с двигателем M2 показана отдельной вытяжной системой помещения ЭОМ; соответствующая колонка 7 матрицы сигналов предусматривает управление основным ПЧ. На листе 30 тот же M2, подключенный кабелем В5.1.2-2, назван электродвигателем резервного вентилятора В5.1.2. Кабельный журнал подтверждает связь В5.1.2-2 с M2 данного шкафа. Таким образом, конфликт относится к роли одного и того же экземпляра, а не к двум разным двигателям. Ошибка монтажа, фактический алгоритм резервирования и влияние на расчет нагрузки этими источниками не установлены.",
+        "solution": "По технологической схеме В5.1.2 и алгоритму управления установить назначение M2 и согласовать подпись схемы подключений с функциональной схемой. Если предусмотрено резервирование, явно указать резервируемый агрегат, обслуживаемую систему и условия переключения; затем проверить расчет нагрузки для принятого режима.",
+        "page": "16, 34",
+        "sheet": "12, 30",
+        "evidence": [
+          {
+            "block_id": "blk_7f0ded1542d042b6aaf092e908080247",
+            "sheet": "12",
+            "location": "Средняя ветвь В5.1.2, двигатель M2; колонка 7 матрицы сигналов.",
+            "description": "Ветвь обслуживает помещение ЭОМ; подпись управления ПЧ содержит обозначение основного агрегата."
+          },
+          {
+            "block_id": "blk_38e7d6593d7a422393e785455ec02cd6",
+            "sheet": "30",
+            "location": "Заголовок столбца M2 и линия кабеля В5.1.2-2 к шкафным зажимам 14–16 и PE.",
+            "description": "M2 обозначен как электродвигатель резервного вентилятора В5.1.2."
+          },
+          {
+            "block_id": "blk_df3cdadab3a842838e93efc37d7c76c2",
+            "sheet": "12",
+            "location": "Кабельный журнал, строка B5.1.2-2.",
+            "description": "Начало линии — ШАУВ-1-К5ПЧ, конец — M2; это подтверждает идентичность подключаемого экземпляра."
+          },
+          {
+            "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+            "sheet": "2",
+            "quote": "вытяжная система В5.1.2, Помещение ЭОМ"
+          }
+        ],
+        "report_section": "technical_findings",
+        "operation_semantic_verified": false,
+        "source_finding_ids": [
+          "O-182cbde3c690a81bc72310e5"
+        ],
+        "operation_candidate_lineage": [
+          {
+            "source_finding_id": "O-182cbde3c690a81bc72310e5",
+            "status": "requires_semantic_review",
+            "source_claim": "problem: Противоречивое назначение вентилятора В5.1.2: основной на функциональной схеме и резервный на схеме подключений.\ndescription: На листе 12 В5.1.2 с двигателем M2 показана отдельной вытяжной системой помещения ЭОМ; соответствующая колонка 7 матрицы сигналов предусматривает управление основным ПЧ. На листе 30 тот же M2, подключенный кабелем В5.1.2-2, назван электродвигателем резервного вентилятора В5.1.2. Кабельный журнал подтверждает связь В5.1.2-2 с M2 данного шкафа. Таким образом, конфликт относится к роли одного и того же экземпляра, а не к двум разным двигателям. Ошибка монтажа, фактический алгоритм резервирования и влияние на расчет нагрузки этими источниками не установлены.\nsolution: По технологической схеме В5.1.2 и алгоритму управления установить назначение M2 и согласовать подпись схемы подключений с функциональной схемой. Если предусмотрено резервирование, явно указать резервируемый агрегат, обслуживаемую систему и условия переключения; затем проверить расчет нагрузки для принятого режима.",
+            "existing_block_ids": [
+              "blk_7f0ded1542d042b6aaf092e908080247",
+              "blk_38e7d6593d7a422393e785455ec02cd6",
+              "blk_df3cdadab3a842838e93efc37d7c76c2",
+              "blk_adc4052a68344abf9c8f56861b9294d1"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "id": "F-026",
+        "source_stage": "object_operations_c88b753b5560a786",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "norm": null,
+        "norm_quote": null,
+        "quality": {
+          "practicality_score": 78,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "O-182cbde3c690a81bc72310e5",
+            "source_claim": "problem: Противоречивое назначение вентилятора В5.1.2: основной на функциональной схеме и резервный на схеме подключений.\ndescription: На листе 12 В5.1.2 с двигателем M2 показана отдельной вытяжной системой помещения ЭОМ; соответствующая колонка 7 матрицы сигналов предусматривает управление основным ПЧ. На листе 30 тот же M2, подключенный кабелем В5.1.2-2, назван электродвигателем резервного вентилятора В5.1.2. Кабельный журнал подтверждает связь В5.1.2-2 с M2 данного шкафа. Таким образом, конфликт относится к роли одного и того же экземпляра, а не к двум разным двигателям. Ошибка монтажа, фактический алгоритм резервирования и влияние на расчет нагрузки этими источниками не установлены.\nsolution: По технологической схеме В5.1.2 и алгоритму управления установить назначение M2 и согласовать подпись схемы подключений с функциональной схемой. Если предусмотрено резервирование, явно указать резервируемый агрегат, обслуживаемую систему и условия переключения; затем проверить расчет нагрузки для принятого режима.",
+            "block_ids": [
+              "blk_7f0ded1542d042b6aaf092e908080247",
+              "blk_38e7d6593d7a422393e785455ec02cd6",
+              "blk_df3cdadab3a842838e93efc37d7c76c2",
+              "blk_adc4052a68344abf9c8f56861b9294d1"
+            ]
+          }
+        ]
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Same В5.1.2/M2 is main on functional signal table and reserve on connection drawing.",
+          "assessment": "confirmed_same_object_role_wording_conflict",
+          "limits": "Identity established by system, cabinet, motor and cable, not M2 label alone."
+        },
+        {
+          "claim": "Actual wiring failure, reserve algorithm or load impact not established.",
+          "assessment": "appropriate_limit",
+          "limits": "No installed equipment or commissioning inspected."
+        }
+      ],
+      "unsupported_additions": "none_established_in_bounded_wording",
+      "novel_useful_content": "supported_role_conflict_outside_frozen_targets_engineer_value_unmeasured",
+      "duplicate_burden": "distinct_object_addresses_in_current_output",
+      "profile_and_section": "technical_document_consistency_section_appropriate",
+      "engineer_reuse": "none_no_same_claim_engineer_verdict",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7f0ded1542d042b6aaf092e908080247.png",
+          "sha256": "1c34d8bb7004891b63324e073bc2ad4b34246253881ae155a5632a5381f6cf3a",
+          "block_id": "blk_7f0ded1542d042b6aaf092e908080247",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "Middle system В5.1.2 serves ЭОМ room; motorM2; column7 explicitly says main frequency drive. Cabinet ШАУВ-1-К5ПЧ."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_38e7d6593d7a422393e785455ec02cd6.png",
+          "sha256": "a40921084f530c112a4d72557af9c5105a65b8c2c1bd3021cf6419a266340300",
+          "block_id": "blk_38e7d6593d7a422393e785455ec02cd6",
+          "route": "direct_GRAPHIC_inspection",
+          "observation": "M2 header says reserve fan В5.1.2; cableВ5.1.2-2 connects cabinetterminals14–16/PE to motor."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_df3cdadab3a842838e93efc37d7c76c2",
+          "route": "authoritative_TEXT",
+          "quote": "| B5.1.2-2 | ШАУВ-1-К5ПЧ | M2 | ППГнг(A)-HF | 4x2,5 | 30 | лоток 100х100, труба гофр., труба водогазопроводная, в металлорукаве | ППГнг(A)-HF 4x2,5 | 20/2/3/ 5 |  |"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+          "route": "authoritative_TEXT",
+          "quote": "- вытяжная система В5.1.2, Помещение ЭОМ;"
+        }
+      ],
+      "disposition": "assessed_preserve_role_conflict_without_operational_failure_claim"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
