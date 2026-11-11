@@ -1,0 +1,501 @@
+{
+  "status": "two_AK_supply_assembly_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "5d8033d33ed2641d6103144188af5d0dc6ea8a71b2ba95746d37c0c4a2fd9453",
+  "queue_after_sha256": "12a640a286fe4bdb129a32fc1ef3bb03b7e3e881fc8d86e7d4371a9d28475aec",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-005",
+      "finding": {
+        "id": "F-005",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Пожарная безопасность",
+        "sheet": "Листы 35, 10",
+        "page": [
+          93,
+          103
+        ],
+        "problem": "Не определено исполнение огнестойких линий датчиков противодымной вентиляции в сборе.",
+        "description": "Шесть линий общей длиной 420 м выполнены КСРЭПнг(А)-FRHF с прокладкой в гофротрубе. Не раскрыты огнестойкие крепления, кабеленесущая система и подтверждённое время работоспособности линии. Индекс FRHF кабеля сам по себе этого не подтверждает.",
+        "norm": "ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к сохранению работоспособности кабельных линий систем противопожарной защиты.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-005"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать конструкцию всей линии, требуемое время работы и подтверждающую документацию на кабель, крепления и способ монтажа.",
+        "risk": "Преждевременный отказ контроля подогрева воздуха при пожаре.",
+        "source_finding_ids": [
+          "T-005"
+        ],
+        "source_block_ids": [
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "related_block_ids": [
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_400a32e7aac048e6a9d6da65c598995f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+            "page": 93
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 97,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Шесть адресных линий ТЕ1 противодымных приточных систем записаны кабелем КСРЭПнг(A)-FRHF2х2х1,13 и способом прокладки труба гофр.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "КЖ35: ПД4.1.4-1, ПД4.1.21.2-1, ПД5.1.4-1, ПД5.1.21.2-1, ПД6.1.4-1, ПД6.1.21.2-1. Сумма45+35+105+105+65+65=420м совпадает с СО21.11."
+        },
+        {
+          "claim": "СО содержит ПВХ-гофротрубу DKC91520 и держатель51020.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Наличие в общей СО само по себе не доказывает точный состав крепления каждой из шести линий."
+        },
+        {
+          "claim": "В КЖ35 и СО10 не идентифицированы испытанный состав линии и требуемое время работоспособности.",
+          "verdict": "confirmed_local_documentation_gap",
+          "limits": "Проверка общих указаний лист4 выявила требования к проходкам, но они не идентифицируют состав этих линий. Не доказано отсутствие подтверждения во всех смежных разделах и заводских документах."
+        },
+        {
+          "claim": "123-ФЗ ст.82ч.2 требует сохранения работоспособности перечисленных систем, включая противодымную защиту, на время выполнения функций.",
+          "verdict": "confirmed_primary_act_republication_general_requirement",
+          "limits": "Прочитан текст статьи, опубликованный КонсультантПлюс. Конкретное время для этих цепей и применимость редакции к проекту не установлены."
+        },
+        {
+          "claim": "Марка FRHF сама по себе доказывает пригодность всей смонтированной линии.",
+          "verdict": "not_established",
+          "limits": "Проектная марка кабеля не содержит проверенного состава трассы, опор и условий испытания всей сборки."
+        },
+        {
+          "claim": "Все линии в ПВХ-гофре недопустимы либо держатель51020 всегда запрещён.",
+          "verdict": "not_established_no_universal_ban",
+          "limits": "Не проверены испытанная сборка и допустимые способы её монтажа. Поиск инструкции ОКЛ не завершился доступным проверенным текстом; результаты поисковой выдачи не использованы как сертификат."
+        },
+        {
+          "claim": "Нужно установить для этих цепей требуемое время, состав и условия монтажа либо дать ссылку на соответствующее подтверждение.",
+          "verdict": "supported_scoped_followup_question",
+          "limits": "Запрашивать адресное обоснование, а не автоматически заменять трубы или назначать универсальные интервалы крепления."
+        },
+        {
+          "claim": "При пожаре будет потерян контроль температуры или установлен факт нарушения огнестойкости.",
+          "verdict": "not_established",
+          "limits": "Исполнительная линия, испытания и полный комплект обоснования не проверены. Возможное последствие не считать наблюдавшимся отказом."
+        },
+        {
+          "claim": "Во всём проекте отсутствует подтверждение огнестойкости линий.",
+          "verdict": "not_established_global_absence",
+          "limits": "Подтверждён локальный пробел в просмотренных КЖ, СО и общих указаниях. 420 м — сумма шести строк, а не протяжённость доказанно негодной линии. Предыдущая правовая ссылка не проверялась заново, применимость редакции и конкретное требуемое время не установлены."
+        }
+      ],
+      "unsupported_additions": "Локальное отсутствие сведений не доказывает отсутствие во всех поставках. Буквальное НФ/HF не объединять без обоснования. Не считать проектные количества фактической недопоставкой или отказом.",
+      "novel_useful_content": "Сверены ограничения текущей выдачи; для F-025 дополнительно прочитана адресная строка авторитетного MD и выявлено различие буквального обозначения марки.",
+      "duplicate_burden": "One assembly substantiation question with six addressed lines, not six proven failures; separate from cabinet label F053 and penetration detail F062.",
+      "profile_and_section": "questions_clarifications_fire_line_performance_evidence",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "url": "https://www.consultant.ru/document/cons_doc_LAW_78699/71a2397f45dc498720c1471f9aad80770ad6e8cf/",
+          "access_date": "2026-11-11",
+          "route": "primary_normative_act_republished_text",
+          "verified_fact": "Article82part2 requires listed fire protection wiring to retain function during fire for time necessary to perform functions.",
+          "limits": "General requirement only; project edition applicability, circuit-specific duration and actual noncompliance not established."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-005",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-005_bounded_supply_and_assembly_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-025",
+      "finding": {
+        "id": "F-025",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Количество кабеля",
+        "sheet": "Листы 28, 35, 7, 9, 10",
+        "page": [
+          32,
+          39,
+          65,
+          102,
+          103
+        ],
+        "problem": "В сводной спецификации отсутствует подтверждённый объём кабеля 3×2,5.",
+        "description": "Для П4.1.1-4 журнал и локальный перечень предусматривают 20 м ППГнг(А)-HF 3×2,5. Такой типоразмер отсутствует в сводной спецификации. Ещё 10 м указаны для По5.1, но эта запись противоречит журналу; автоматически добавлять все 30 м нельзя.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту сводной спецификации кабелей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-024"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-024"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Добавить 20 м для П4.1.1-4; объём для По5.1 включить после выбора правильного кабеля.",
+        "risk": "Недостаток кабеля или ошибочное включение несогласованного типоразмера.",
+        "source_finding_ids": [
+          "T-024"
+        ],
+        "source_block_ids": [
+          "blk_45a5493bf459424ea614bc2de6d6e514",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "related_block_ids": [
+          "blk_45a5493bf459424ea614bc2de6d6e514",
+          "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+            "page": 32
+          },
+          {
+            "type": "text",
+            "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+            "page": 65
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Локальные перечни дают20м и10м ППГнг(A)-HF3×2,5; весь раздел21СО не содержит отдельной такой позиции.",
+          "verdict": "confirmed_authoritative_TEXT_local_absence",
+          "limits": "Отсутствие относится к разделу21, не ко всем договорам и поставкам."
+        },
+        {
+          "claim": "Сумма90 строк локальных перечней16055м,12 кабельных строкСО16025м; разность30м.",
+          "verdict": "confirmed_independent_calculation",
+          "limits": "Учтена строка435м с единицейМ; это сумма записей разных марок, не доказательство поимённого соответствия всех остальных линий."
+        },
+        {
+          "claim": "Все30м являются подтверждённой недопоставкой и должны быть добавлены.",
+          "verdict": "not_established",
+          "limits": "10м относится к По5.1-9 с конфликтом3×2,5/4×4. Нельзя суммировать альтернативные исполнения или переносить разность документации на закупку."
+        },
+        {
+          "claim": "Согласовать спорную линию, включить подтверждённые позиции и пересчитать итог.",
+          "verdict": "supported_technical_document_scope",
+          "limits": "Сохранить находку и условие исходной выдачи; арифметическое совпадение не доказывает отсутствие других компенсирующих расхождений."
+        },
+        {
+          "claim": "В журнале П4.1.1-4 буквально указан ППГнг(А)-HF 3×2,5 длиной 20 м.",
+          "verdict": "literal_mark_mismatch_in_authoritative_TEXT",
+          "limits": "Строка журнала содержит ППГнг(А)-НФ, а не HF, при 3х2,5 и 20 м. Число жил, длина и адрес совпадают с заявленными, но тождество марок не установлено. Не исправлять авторитетный TEXT по растру и не переносить закупочную марку автоматически."
+        },
+        {
+          "claim": "Все 30 м надо безусловно добавить в СО.",
+          "verdict": "not_asserted_in_r2_explicitly_qualified",
+          "limits": "Второй повтор явно удерживает спорные 10 м По5.1 до выбора кабеля. Для оставшихся 20 м сохранить отсутствие позиции в разделе21, но перед добавлением согласовать марку НФ/HF и принадлежность линии."
+        },
+        {
+          "claim": "Второй повтор самостоятельно сообщил общие суммы 16055 и 16025 м.",
+          "verdict": "not_asserted_in_r2",
+          "limits": "Прежняя проверка сумм остаётся контекстом, но текущая строка не заявляет эти общие числа и не получает за них дополнительную полноту."
+        }
+      ],
+      "unsupported_additions": "Локальное отсутствие сведений не доказывает отсутствие во всех поставках. Буквальное НФ/HF не объединять без обоснования. Не считать проектные количества фактической недопоставкой или отказом.",
+      "novel_useful_content": "Сверены ограничения текущей выдачи; для F-025 дополнительно прочитана адресная строка авторитетного MD и выявлено различие буквального обозначения марки.",
+      "duplicate_burden": "Specification scope distinct from line conflict F-019, but its10m component is the same unresolved line; no double credit for defect count.",
+      "profile_and_section": "technical_core_preserve_no_automatic_30m_order",
+      "engineer_reuse": "Historical contexts retained verbatim with original adjudication fields; no new engineer decision or observed procurement outcome inferred.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_13604b1cfe21408f85c2bc28e358b012",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_45a5493bf459424ea614bc2de6d6e514",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_9452de6a38544362a666f8840bac39f0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_e178b622d57744289e5dc16b07c095ea",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f3174d2279ab4a0489629cf4e2e586c2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_bcea3caf8104407b919f6960e2c12274",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_00e0c797491740a0bd6b3608d9929284",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a3ebf964570e4e669569795872f6001b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6bbabd59d82d4e83b042b44cd3c88b3c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_61196f6075564ba4bd4091b481cae12c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_82df3363fc824144b9390f2cd6635937",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_419647cb4cd74c26b4c46942b49756e7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c1399ff966ec45aa94b7a3724d717361",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_ccdbdf2f95244267b70dfeb983accd44",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_007f9aae26ea48a897d8a356ff7ca895",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_57ebcc215b52427c8b10b61a7202b14d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+          "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f",
+          "primary_adjudication": null,
+          "limits": [
+            "Прочитан весь раздел21 СО, включая продолжение лист10 до раздела22. Отсутствие позиции относится к этому разделу, а не ко всем договорам поставки.",
+            "КЖ П4.1.1-4 буквально содержит суффикс НФ; TEXT не исправлен по графике. Сечение3×2,5 и длина20м совпадают со схемой.",
+            "Равенство четырёх локальных количеств4×4 сумме60м в СО не доказывает документированного распределения сводной позиции по линиям.",
+            "30м — сумма опубликованных локальных ведомостей, не установленный объём недопоставки. Итог70м4×4 условен и не является указанием к закупке.",
+            "Фактическая закупка, поставка, пригодность сечений и обязательность нормативной ссылки не проверены.",
+            "Историческое принятие и комментарий о закупке сохранены отдельно от позднего ограниченного вывода. Для B-AK-F-019 самостоятельное решение инженера отсутствует."
+          ],
+          "wording": "Согласовать отсутствующую в разделе21 СО позицию ППГнг(А)-HF3×2,5: схема и ведомость лист28 содержат20м линии П4.1.1-4, схема и ведомость лист35 —10м По5.1-9. Для По5.1-9 предварительно разрешить конфликт с КЖ, где указано4×4,0. После выбора согласованного исполнения пересчитать сводные объёмы; не суммировать альтернативные исполнения одной линии."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-020",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT_addressed_line",
+          "line_number": 4768,
+          "quote": "| П4.1.1-4 | ШАУВ-4-К4ПЧ | M1 | ППГнг(А)-НФ | 3х2,5 | 20 | лоток 100x100, труба гофр. | ППГнг(А)-НФ 3х2,5 | 15/5 |  |"
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-025_bounded_supply_and_assembly_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
