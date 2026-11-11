@@ -113,6 +113,13 @@ class PipelineStageContext:
     source_final_check_max_findings: int = field(default=0)
     source_final_check_complete_citations: bool = field(default=False)
 
+    # Experimental presentation grouping; independent source review required.
+    grouping_invoke: Optional[Callable[..., Awaitable[dict]]] = field(default=None)
+    grouping_executor_id: Optional[str] = field(default=None)
+    grouping_max_groups: int = field(default=0)
+    grouping_max_findings: int = field(default=256)
+    grouping_max_chars: int = field(default=250000)
+
     # Source-only object discovery, explicitly enabled for candidate trials.
     # The injected executor owns authorization; classic findings are not sent.
     inventory_invoke: Optional[Callable[..., Awaitable[dict]]] = field(default=None)

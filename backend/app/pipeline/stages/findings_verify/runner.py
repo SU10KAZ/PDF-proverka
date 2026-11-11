@@ -78,6 +78,10 @@ class FindingsVerifyResult:
     final_release_applied: int = 0
     final_release_held: int = 0
     final_release_not_completed: int = 0
+    group_workflow_proposed: int = 0
+    group_workflow_applied: int = 0
+    group_workflow_unresolved: int = 0
+    group_workflow_not_attempted: int = 0
     reviewed_groups_applied: int = 0
     reviewed_groups_not_applied: int = 0
     error: Optional[str] = None
@@ -362,6 +366,30 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
             await ctx.log(f"Финальная проверка не завершена: {exc}", 'warn')
             result.error = (result.error + f"; final_release: {exc}") if result.error else f"final_release: {exc}"
 
+    if getattr(ctx, 'grouping_invoke', None) is not None:
+        try:
+            from ..findings_merge.group_workflow_phase import run_grouping_phase
+            from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
+            from backend.app.pipeline.stages.block_context.contract import resolve_blocks_dir
+            group_md = resolve_document_markdown(Path(output_dir))
+            if group_md is None:
+                raise ValueError('grouping_source_md_missing')
+            workflow = await run_grouping_phase(
+                Path(output_dir), group_md, resolve_blocks_dir(Path(output_dir)),
+                invoke=ctx.grouping_invoke, executor_id=getattr(ctx, 'grouping_executor_id', None),
+                max_groups=getattr(ctx, 'grouping_max_groups', 0),
+                max_findings=getattr(ctx, 'grouping_max_findings', 256),
+                max_chars=getattr(ctx, 'grouping_max_chars', 250000), is_cancelled=ctx.is_cancelled,
+            )
+            result.group_workflow_proposed = workflow['proposed_groups']
+            result.group_workflow_applied = workflow['applied']
+            result.group_workflow_unresolved = workflow['needs_context'] + workflow['not_eligible'] + workflow['not_completed']
+            result.group_workflow_not_attempted = workflow['not_attempted']
+            await ctx.log(f"Проверка групп: предложено {workflow['proposed_groups']}, применено {workflow['applied']}, не разрешено {result.group_workflow_unresolved}, не запускалось {workflow['not_attempted']}")
+        except Exception as exc:
+            await ctx.log(f"Проверка групп не завершена: {exc}", 'warn')
+            result.error = (result.error + f"; grouping_workflow: {exc}") if result.error else f"grouping_workflow: {exc}"
+
     # Explicit grouping inbox only; raw proposals never authorize a merge.
     try:
         from ..findings_merge.reviewed_grouping import run_group_admission_phase
@@ -411,6 +439,10 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
             "final_release_not_completed": result.final_release_not_completed,
             "source_review_applied": result.source_review_applied,
             "source_review_not_applied": result.source_review_not_applied,
+            "group_workflow_proposed": result.group_workflow_proposed,
+            "group_workflow_applied": result.group_workflow_applied,
+            "group_workflow_unresolved": result.group_workflow_unresolved,
+            "group_workflow_not_attempted": result.group_workflow_not_attempted,
             "reviewed_groups_applied": result.reviewed_groups_applied,
             "reviewed_groups_not_applied": result.reviewed_groups_not_applied,
             "absence_candidates": result.absence_candidates,
