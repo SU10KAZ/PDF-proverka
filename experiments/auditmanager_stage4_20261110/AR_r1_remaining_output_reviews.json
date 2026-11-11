@@ -1,0 +1,1019 @@
+{
+  "status": "AR_first_pass_complete_uncertain_claims_retained",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "fd756cb40265aea45774f5ad29e485f110290b345c60b298288cc749701270a9",
+  "queue_after_sha256": "599604f3d7765323ab089e55654b49d3f1674445a20e4f15819b8464448de13d",
+  "reviewer": "coordinator_TEXT_GRAPHIC_primary_catalog_scope_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 1,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "В общих указаниях и перечне документов приведены несогласованные редакции строительных правил.",
+        "description": "Для организации строительства одновременно указаны СП 48.13330.2011 и СП 48.13330.2019. В требованиях к зимним работам приведён СП 45.13330.2012. Текстовый этап сообщает о замене редакций 2011 и 2012 годов; основания замены и применимость редакций к проекту в рамках консолидации не проверены.",
+        "norm": "СП 48.13330.2011 (норматив-кандидат), пункт не подтверждён; СП 48.13330.2019 (норматив-кандидат), пункт не подтверждён; СП 45.13330.2012 (норматив-кандидат), пункт не подтверждён; СП 45.13330.2017 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 48.13330.2011",
+            "cited_designation": "СП 48.13330.2011",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить статус указанного в общих указаниях документа и условия его применения к проекту.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 48.13330.2019",
+            "cited_designation": "СП 48.13330.2019",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить сведения о замене прежней редакции и согласовать требования по организации строительства.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 45.13330.2012",
+            "cited_designation": "СП 45.13330.2012",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить статус документа, указанного в требованиях к зимним работам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 45.13330.2017",
+            "cited_designation": "СП 45.13330.2017",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить сведения о замене прежней редакции и применимость документа к предусмотренным работам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить применимые к проекту редакции и привести общие указания и ведомость ссылочных документов к согласованному составу.",
+        "risk": "Неоднозначность требований к производству и приёмке работ.",
+        "source_finding_ids": [
+          "T-002"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 3
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 38,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F001_sp_editions:0fa6c5d50247757e829d",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AR_F001_sp_editions:8f90690c3dc52ad03760",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пункт15 о зимних работах содержитСП48.13330.2011 и45.13330.2012;переченьСП48.13330.2019.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать редакции с нормативной базой проекта.",
+          "verdict": "supported_reference_question",
+          "limits": ""
+        },
+        {
+          "claim": "Замена редакции сама доказывает техническое нарушение.",
+          "verdict": "not_established",
+          "limits": "Исторический разбор содержит первичные метаданные замен; конкретные требования, переходные положения и применимость здесь не проверены. Не переносить их на дефект работ."
+        },
+        {
+          "claim": "СП45 заведомо вне проекта кровли.",
+          "verdict": "not_established",
+          "limits": "Общий перечень относится к зимним работам; смежные работы иППР не проверены."
+        },
+        {
+          "claim": "Нормативный кандидат является проверенным пунктом нарушения.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_atomic_scope_keep_partial_supported_content",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_6ef90a858b8e47e1ac668fa68744b9f2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_2c751cd478764bae9d5e0b1df794ad89",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+          "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3",
+          "primary_adjudication": null,
+          "limits": "Пункт15 относится к зимним работам. Не проверены применимость редакций к дате/основаниям разработки, переходные положения, ППР и конкретные различия требований. Нет доказательства, что подрядчик уже применил или обязательно применит неверные требования. НаличиеСП45 в кровельном альбоме само по себе не доказывает непрофильность: ссылка находится в общем перечне, а смежные работы не проверены. Из дат официальной карточки не выводится самостоятельное юридическое заключение.",
+          "wording": "В АР6.2, лист1, п.15 о зимних работах содержит СП48.13330.2011 иСП45.13330.2012, тогда как ведомость ссылается наСП48.13330.2019. Уточнить применимые редакции и согласовать ссылки: официально подтверждены замены48.13330.2011→48.13330.2019 и45.13330.2012→45.13330.2017."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+          "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3",
+          "primary_adjudication": null,
+          "limits": "Пункт15 относится к зимним работам. Не проверены применимость редакций к дате/основаниям разработки, переходные положения, ППР и конкретные различия требований. Нет доказательства, что подрядчик уже применил или обязательно применит неверные требования. НаличиеСП45 в кровельном альбоме само по себе не доказывает непрофильность: ссылка находится в общем перечне, а смежные работы не проверены. Из дат официальной карточки не выводится самостоятельное юридическое заключение.",
+          "wording": "В АР6.2, лист1, п.15 о зимних работах содержит СП48.13330.2011 иСП45.13330.2012, тогда как ведомость ссылается наСП48.13330.2019. Уточнить применимые редакции и согласовать ссылки: официально подтверждены замены48.13330.2011→48.13330.2019 и45.13330.2012→45.13330.2017."
+        }
+      ],
+      "disposition": "assessed_SP_reference_question_without_applicability_claim"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 1,
+      "finding_id": "F-003",
+      "finding": {
+        "id": "F-003",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Нормативные ссылки",
+        "sheet": "Листы 1, 7",
+        "page": [
+          3,
+          9
+        ],
+        "problem": "Ссылки на стандарты мастик, рулонных материалов и растворов требуют проверки редакций.",
+        "description": "В документации приведены ГОСТ 30693-2000, ГОСТ 30547-97 и ГОСТ 28013-98. Текстовый этап сообщает об их замене соответственно ГОСТ 30693-2021, ГОСТ 30547-2023 и ГОСТ 28013-2023. Применимость заменяющих стандартов к предусмотренной продукции и основания их использования в данном проекте не подтверждены.",
+        "norm": "ГОСТ 30693-2000 (норматив-кандидат), пункт не подтверждён; ГОСТ 30693-2021 (норматив-кандидат), пункт не подтверждён; ГОСТ 30547-97 (норматив-кандидат), пункт не подтверждён; ГОСТ 30547-2023 (норматив-кандидат), пункт не подтверждён; ГОСТ 28013-98 (норматив-кандидат), пункт не подтверждён; ГОСТ 28013-2023 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 30693-2000",
+            "cited_designation": "ГОСТ 30693-2000",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить статус исходной ссылки на стандарт кровельных и гидроизоляционных мастик.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 30693-2021",
+            "cited_designation": "ГОСТ 30693-2021",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить сведения о замене стандарта и применимость требований к выбранным мастикам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 30547-97",
+            "cited_designation": "ГОСТ 30547-97",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить статус исходной ссылки на стандарт рулонных кровельных материалов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 30547-2023",
+            "cited_designation": "ГОСТ 30547-2023",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить сведения о замене стандарта и применимость требований к выбранной гидроизоляции.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 28013-98",
+            "cited_designation": "ГОСТ 28013-98",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить статус исходной ссылки на стандарт строительных растворов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 28013-2023",
+            "cited_designation": "ГОСТ 28013-2023",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить сведения о замене стандарта и применимость требований к предусмотренным растворам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить документы на выбранную продукцию и применимые редакции стандартов, затем согласованно исправить ссылки в ведомостях и общих данных.",
+        "risk": "Противоречивые требования к поставляемой продукции и документам её приёмки.",
+        "source_finding_ids": [
+          "T-003"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 38,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F002_partial_and_territorial_norm_status:a1b917235764b9e63b56",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AR_F002_partial_and_territorial_norm_status:06e66d3f9cf1ce259b54",
+          "route": "negative",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В ссылках30693-2000 и30547-97;встрокахстяжек28013-98.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "30547-97 полностью заменён30547-2023.",
+          "verdict": "contradicted_by_primary_catalog_metadata",
+          "limits": "Каталог сохраняет действующий статус и указывает частичную связь32805-2014. Существование любого документа сгодом2023 отдельно не устанавливалось."
+        },
+        {
+          "claim": "28013-98 заменён28013-2023.",
+          "verdict": "unsupported_successor_claim",
+          "limits": "Первичный каталог указывает территориальное применение58766-2019, не заявленный полный преемник."
+        },
+        {
+          "claim": "30693-2000 заменён30693-2021.",
+          "verdict": "not_verified_in_this_review",
+          "limits": "Не считать ошибкой или подтверждением по аналогии с двумя другими стандартами."
+        },
+        {
+          "claim": "Требуется уточнение ссылок для выбранной продукции.",
+          "verdict": "supported_scoped_question",
+          "limits": "Техноэласт иТехнобарьер заданы такжеСТО; наличие старой ссылки не доказывает непригодности материала."
+        },
+        {
+          "claim": "Оговорка текстовый этап сообщает устраняет ошибочные сведения о преемниках.",
+          "verdict": "false_information_still_present",
+          "limits": "Атрибуция не заменяет проверку. Сохранить вопрос28013 иуточнить статус30547; не удалять составную строку целиком."
+        },
+        {
+          "claim": "Нормативный кандидат является проверенным пунктом нарушения.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_atomic_scope_keep_partial_supported_content",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_2c751cd478764bae9d5e0b1df794ad89",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F002_partial_and_territorial_norm_status.json",
+          "sha256": "2c85ef621182df1b1f713ce2ba903963ecdce531f31872f7962518c83a440338",
+          "primary_adjudication": null,
+          "limits": "Полная отмена30547-97 опровергнута, но применимость его оставшейся части к конкретным изделиям не проверена. Техноэласт иТехнобарьер в ведомости имеют собственныеСТО; их соответствие/противоречиеГОСТ не установлено. Для28013 подтверждён территориальный статус, а не негодность ЦПС или обязательная замена материала. Паспорта, применимость документа к стяжке, дата нормативной базы проекта и конкретные отличия приёмочных требований не проверены. Отсутствие подтверждения редакций30547-2020/28013-2023 не используется как доказательство их несуществования вообще.",
+          "wording": "В ведомости материалов АР6.2, лист7, для выравнивающих и армированных стяжек ЦПС М100 К-1/К-3/К-4 указанГОСТ28013-98. Уточнить применимый документ и характеристики смеси с учётом официального указания использовать вРФ ГОСТ Р58766-2019 с01.07.2022. Требование заменитьГОСТ30547-97 целиком на30547-2020 исключить: подтверждена лишь частичная замена требований на32805-2014."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F002_partial_and_territorial_norm_status.json",
+          "sha256": "2c85ef621182df1b1f713ce2ba903963ecdce531f31872f7962518c83a440338",
+          "primary_adjudication": null,
+          "limits": "Полная отмена30547-97 опровергнута, но применимость его оставшейся части к конкретным изделиям не проверена. Техноэласт иТехнобарьер в ведомости имеют собственныеСТО; их соответствие/противоречиеГОСТ не установлено. Для28013 подтверждён территориальный статус, а не негодность ЦПС или обязательная замена материала. Паспорта, применимость документа к стяжке, дата нормативной базы проекта и конкретные отличия приёмочных требований не проверены. Отсутствие подтверждения редакций30547-2020/28013-2023 не используется как доказательство их несуществования вообще.",
+          "wording": "В ведомости материалов АР6.2, лист7, для выравнивающих и армированных стяжек ЦПС М100 К-1/К-3/К-4 указанГОСТ28013-98. Уточнить применимый документ и характеристики смеси с учётом официального указания использовать вРФ ГОСТ Р58766-2019 с01.07.2022. Требование заменитьГОСТ30547-97 целиком на30547-2020 исключить: подтверждена лишь частичная замена требований на32805-2014."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/2c391324-de10-4c36-9bfa-89a61d1ce505",
+          "checked": "2026-11-11",
+          "source": "Росстандарт",
+          "facts": "ГОСТ30547-97 действует;полный заменяющий не указан;32805-2014 заменяет часть требований к кровельным битумосодержащим основным материалам."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/3d4caa14-1369-4bc4-96b1-6177ead7525d",
+          "checked": "2026-11-11",
+          "source": "Росстандарт",
+          "facts": "ГОСТ28013-98 утратил силу вРФ;на территорииРФ пользоватьсяГОСТ Р58766-2019;полный заменяющий не указан."
+        }
+      ],
+      "disposition": "assessed_partial_and_territorial_replacement_error_repeated"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 1,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Пожарная безопасность",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Требуется уточнить основание отнесения детского клуба к классу Ф3.6.",
+        "description": "В общих данных к Ф3.6 отнесены «подсобные и бытовые помещения, детский клуб» без раскрытия назначения клуба. Состав занятий, возраст посетителей и режим пребывания не приведены. Представленные сведения не позволяют подтвердить выбранный класс функциональной пожарной опасности.",
+        "norm": "ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить классификацию помещений по функциональной пожарной опасности применительно к фактическому назначению детского клуба.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить функции клуба и режим пребывания детей, затем согласовать классификацию с разделом пожарной безопасности и применимыми СТУ.",
+        "risk": "При неверной классификации могут быть приняты неподходящие требования к эвакуации и противопожарному разделению помещений.",
+        "source_finding_ids": [
+          "T-011"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 3
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 68,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F009_club_classification_scope:4e28ba265a83e035660e",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Общие данные относят подсобные и бытовые помещения,детский клуб кФ3.6.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Назначение и режим клуба в этом блоке не раскрыты.",
+          "verdict": "confirmed_bounded_absence",
+          "limits": ""
+        },
+        {
+          "claim": "Обоснование класса отсутствует во всём проекте либоФ3.6ошибочен.",
+          "verdict": "not_established",
+          "limits": "Блок ссылается наПД,ТЗ,СТУПБ. Эти документы, фактическая функция, режим иприменимые требования не проверены."
+        },
+        {
+          "claim": "Уточнить функцию иобоснование в пожарном профиле.",
+          "verdict": "supported_cross_profile_question",
+          "limits": "Учитывать отдельно от кровельных технических дефектов; не менять класс по слову детский."
+        },
+        {
+          "claim": "Нормативный кандидат является проверенным пунктом нарушения.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_atomic_scope_keep_partial_supported_content",
+      "profile_and_section": "questions_and_clarifications_outside_roof_technical_profile",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F009_club_classification_scope.json",
+          "sha256": "61976229e7eab9c4d96c6917b2954409fdafba9d960a76a0583702a0b3396796",
+          "primary_adjudication": null,
+          "limits": "Полностью прочитан блок общих данных. Он ссылается на проектную документацию, техническое задание и СТУ ПБ, но не раскрывает режим работы клуба. Непроверенное обоснование в смежном разделе нельзя считать отсутствующим. Само название клуба не является достаточным доказательством другого класса. Применимые нормативные положения, технология клуба, возраст посетителей, режим пребывания, эвакуация и отделение помещения не проверены. Нормативное нарушение, необходимость изменения класса и влияние на кровельные решения не установлены.",
+          "wording": "В общих данных ПД-00580716-АР6.2 к Ф3.6 отнесены «подсобные и бытовые помещения, детский клуб». Для профильной проверки уточните назначение и режим работы клуба и ссылку на обоснование класса в проектной документации/разделе пожарной безопасности. По этому кровельному тому ошибочность класса не установлена."
+        }
+      ],
+      "disposition": "assessed_club_classification_cross_profile_question"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 1,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кровля",
+        "sheet": "Лист 3",
+        "page": 5,
+        "problem": "На участке К-1 указаны уклоны 1,2% и 1,3%, требующие проверки относительно минимального уклона кровли.",
+        "description": "По результату анализа плана на верхнем участке К-1 у экрана ОГШ-1 показаны уклоны скатов 1,2% и 1,3%. В исходном замечании для рулонной битумосодержащей кровли приведён нормативный ориентир 1,5%. Применимость этого предела к обозначенным поверхностям и точный текст требования подлежат нормативной проверке.",
+        "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 17.13330.2017",
+            "cited_designation": "СП 17.13330.2017",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить минимальные уклоны для принятого рулонного битумосодержащего покрытия и условия применения требования к указанным скатам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-001"
+                ],
+                "designation_source": "Нормативная подсказка графического замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": "Минимальный уклон кровли из рулонных битумосодержащих материалов — 1,5%."
+          }
+        ],
+        "solution": "Проверить, к какой поверхности относятся обозначенные уклоны, и согласовать их с требованиями к принятой кровельной системе. При подтверждении предела 1,5% скорректировать разуклонку с сохранением отвода воды к В-1.",
+        "risk": "Застой воды и ускоренное повреждение гидроизоляции при недостаточном уклоне водоотводящей поверхности.",
+        "source_finding_ids": [
+          "G-001"
+        ],
+        "source_block_ids": [
+          "blk_092e358681fc45ada6058a3f894b2582"
+        ],
+        "related_block_ids": [
+          "blk_092e358681fc45ada6058a3f894b2582"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T071505Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:15:05.456058+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "На верхнем участкеК-1 рядомОГШ-1 иВ-1 есть уклоны1,2% и1,3%.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Применимый минимальный уклон здесь1,5%.",
+          "verdict": "unverified_normative_and_surface_binding",
+          "limits": "Точный пункт, принятая кровельная система ифизическая поверхность стрелок не установлены. Не превращать исходный ориентир вуниверсальный допуск."
+        },
+        {
+          "claim": "Корректировать разуклонку обязательно.",
+          "verdict": "not_established_before_applicability_check",
+          "limits": ""
+        },
+        {
+          "claim": "Проверить привязку уклонов иприменимое требование.",
+          "verdict": "supported_scoped_question",
+          "limits": "Наличие чисел подтверждено; недостаточный отвод воды или фактические застои не установлены."
+        },
+        {
+          "claim": "Нормативный кандидат является проверенным пунктом нарушения.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_graphic_candidate_not_confirmed_violation",
+      "duplicate_burden": "distinct_atomic_scope_keep_partial_supported_content",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_092e358681fc45ada6058a3f894b2582.png",
+          "sha256": "102c52c1d31987aebc078ec45b62cab5e3621e444917a3769dd821fb93e2d0f6",
+          "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+          "route": "direct_GRAPHIC_review",
+          "observation": "ВерхнийК-1:стрелки1,2% и1,3%,В-1,ОГШ-1;всередине другойК-1также1,3%,что не смешивается с исходным адресом."
+        }
+      ],
+      "disposition": "assessed_K1_slope_candidate_requires_normative_surface_binding"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 1,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кровля",
+        "sheet": "Лист 11",
+        "page": 13,
+        "problem": "В узле Ж показано непосредственное сварное соединение ПВХ-фартука с битумно-полимерной гидроизоляцией.",
+        "description": "В узле Ж указан фартук из ПВХ-мембраны, сварной шов 30 мм и гидроизоляция Техноэласт ЭПП в два слоя. По результатам анализа узла шов относится к сопряжению ПВХ-фартука с битумно-полимерным материалом. Непосредственное сварное соединение этих материалов не обеспечивает предусмотренный способ герметизации; совместимый переход в описании не указан.",
+        "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 17.13330.2017",
+            "cited_designation": "СП 17.13330.2017",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к герметичному сопряжению водоизоляционного ковра с водоприёмными элементами и применению совместимых материалов. Конкретный переход дополнительно проверить по техническим решениям изготовителей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-020",
+                "G-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-020",
+                  "G-021"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Применить фартук воронки, совместимый с битумно-полимерной кровлей, либо разработать подтверждённый изготовителями переход. Указать материалы, последовательность слоёв и способ герметизации соединения.",
+        "risk": "Разгерметизация примыкания воронки, протечки и увлажнение нижележащих слоёв кровли.",
+        "source_finding_ids": [
+          "G-020",
+          "G-021"
+        ],
+        "source_block_ids": [
+          "blk_6aa88dbbee66440da2e544563775c9d9"
+        ],
+        "related_block_ids": [
+          "blk_6aa88dbbee66440da2e544563775c9d9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_6aa88dbbee66440da2e544563775c9d9",
+            "page": 13
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T071505Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:15:05.456058+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T071505Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:15:05.456058+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно сопряжение в узле Ж листа 11: непосредственное сварное соединение ПВХ-фартука с Техноэласт ЭПП швом 30 мм и связанный риск негерметичности. Существенных различий в детализации нет.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно сопряжение в узле Ж листа 11: непосредственное сварное соединение ПВХ-фартука с Техноэласт ЭПП швом 30 мм и связанный риск негерметичности. Существенных различий в детализации нет.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "УзелЖ содержитПВХ-фартук поз.1,жидкийПВХ поз.13,ТехноэластЭПП поз.14,выноску Сварнойшов30мм.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Показан именно непосредственный сварной контактПВХ с битумным материалом.",
+          "verdict": "insufficient_interface_resolution",
+          "limits": "На общем узле видны обозначения и слои, но однозначная пара свариваемых поверхностей ивозможный переход не установлены. Наличие обоих материалов не заменяет трассировку концов выносок."
+        },
+        {
+          "claim": "Соединение не обеспечивает герметизацию.",
+          "verdict": "not_established",
+          "limits": "Техническое решение производителя, точная марка фартука, переходные слои ииспытания не проверены. Нормативный кандидат не подтверждает категоричное заключение."
+        },
+        {
+          "claim": "Нужно заменить фартук.",
+          "verdict": "premature_remedy",
+          "limits": "Сначала идентифицировать соединяемые поверхности иподтвердить совместимость решения; сохранить адресный вопрос без обязательной замены."
+        },
+        {
+          "claim": "Нормативный кандидат является проверенным пунктом нарушения.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_candidate_needs_interface_and_manufacturer_evidence",
+      "duplicate_burden": "distinct_atomic_scope_keep_partial_supported_content",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6aa88dbbee66440da2e544563775c9d9.png",
+          "sha256": "97abf62860b312f0d53b15dcc56a5ad81b6c26d876a47f735c33d8580800a4c2",
+          "block_id": "blk_6aa88dbbee66440da2e544563775c9d9",
+          "route": "direct_GRAPHIC_review",
+          "observation": "ПравыйузелЖ:перечень1ПВХ-фартук,13жидкийПВХ,14ТехноэластЭПП;сварнойшов30мм;воронка с обжимнымфланцем.Прямая сварная пара неустановлена."
+        }
+      ],
+      "disposition": "assessed_PVC_bitumen_interface_candidate_unresolved_not_confirmed_defect"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+      "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+      "block_id": "blk_6ef90a858b8e47e1ac668fa68744b9f2",
+      "authoritative_TEXT": "### BLOCK #8 [TEXT]: blk_6ef90a858b8e47e1ac668fa68744b9f2\n\n> **Created:** 2026-10-19 11:55:24 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/3b2MVkOnfAUJmZ6sqg2J)\n> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 1 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное наздание ЖК Событие 6.1) | Наименование листа: Архитектурные решения. Надземная часть. Секция 2, 3. Кровля | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n12. На все используемые материалы должны быть сертификаты РФ.\n\n13. Данный альбом см. совместно с альбомами КЖ, КМ, ОВ, ВК, ЭОМ.\n\n14. После завершения кровельных работ провести испытание состояния кровельных конструкций и материалов.\n\n15. Мероприятия по производству работ в зимнее время:\nСтроительные работы в зимних условиях должны производиться с соблюдением требований соответствующих нормативных документов:\n\n- СП 48.13330.2011 \"Организация строительства\",\n- СП 45.13330.2012 \"Земляные сооружения. Основания и фундаменты\",\n- СП 70.13330.2012 \"Несущие и ограждающие конструкции\",\n- СП 71.13330.2017 \"Изоляционные и отделочные покрытия\",\n- СНиП 12-03-2001 \"Безопасность труда в строительстве\".\n\n16. Стены шахт, ниши ОВ, ВК, ЭОМ, СС выкладывать после монтажа и изоляции инженерного оборудования, воздуховодов и трубопроводов.\n\n17. РД соответствует техническому заданию на разработку рабочей документации, выпущенным техническим условиям, требованиям действующих технических регламентов, стандартов, сводов правил, других документов, содержащих установленные требования.\n\n18. Все элементы благоустройства эксплуатируемой кровли (МАФ) см. раздел АР7.2.\n\n19. Скрытые работы, подлежащие освидетельствованию с составлением акта (по форме приложения №3 к Приказу от 16 мая 2023 года N 344/пр Минстроя РФ) : - устройство бетонных и железобетонных монолитных конструкций; - устройство кладочных конструкций (в т.ч. армирование, гидро- пароизоляция и пр.); - монтаж конструктивных элементов и ограждающих конструкций зданий и сооружений; - работы по устройству пароизоляции и гидроизоляции стилобата, покрытий, перекрытий, входов, полов; - работы по утеплению внутренних и наружных стен, полов, перекрытий; - работы по устройству защитных стяжек по гидроизоляции и теплоизоляции; - работы по устройству примыканий кровли к парапетам и другим элементам.\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+      "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+      "block_id": "blk_2c751cd478764bae9d5e0b1df794ad89",
+      "authoritative_TEXT": "### BLOCK #10 [TEXT]: blk_2c751cd478764bae9d5e0b1df794ad89\n\n> **Created:** 2026-10-19 11:55:24 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Pk4YixPDJpz00D_-nqLv)\n> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 1 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное наздание ЖК Событие 6.1) | Наименование листа: Архитектурные решения. Надземная часть. Секция 2, 3. Кровля | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость ссылочных и прилагаемых документов. Раздел АР6.2\n\n| Обозначение | Наименование | Примечание |\n|---|---|---|\n| - | Федеральный закон №384-ФЗ \"Технический регламент о безопасности зданий и сооружений\" |  |\n| - | Федеральный закон №123-ФЗ \"Технический регламент о требованиях пожарной безопасности\" |  |\n| СП 54.13330.2022 | \"Здания жилые многоквартирные\" |  |\n| СП 118.13330.2022 | \"Общественные здания и сооружения\" |  |\n| СП 17.13330.2017 | \"Кровли\" |  |\n| СП 29.13330.2011 | \"Полы\" |  |\n| СП 71.13330.2017 | \"Изоляционные и отделочные покрытия\" |  |\n| СП 48.13330.2019 | \"Организация строительства. СНиП 12-01-2004\" |  |\n| СНиП 12-03-2001 | \"Безопасность труда в строительстве. Часть 1. Общие требования\" |  |\n| СНиП 12-04-2002 | \"Безопасность труда в строительстве. Часть 2. Строительное производство\" |  |\n| ГОСТ 2715-75 | \"Сетки металлические проволочные. Типы, основные параметры и размеры\" |  |\n| ГОСТ 30693-2000 | \"Мастики кровельные и гидроизоляционные. Общие технические условия\" |  |\n| ГОСТ 30547-97 | \"Материалы рулонные кровельные и гидроизоляционные. Общие технические условия\" |  |\n|  | Реестр отступлений от стадии П |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+      "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+      "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+      "authoritative_TEXT": "### BLOCK #42 [TEXT]: blk_d79ac3d31db644eea9b53e1860e4c51c\n\n> **Created:** 2026-10-19 11:55:47 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/h-e-bfOSr8k07EIk9u94)\n> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 7 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное назнание ЖК Событие 6.1) | Наименование листа: Ведомость покрытий кровли, балконов и террас, тех.ниш 2, 3 секций | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость материалов кровли, технических ниш. Секция 2, 3\n\n| Тип материала | Обозначение | Кол-во | Ед. изм. |\n| --- | --- | --- | --- |\n| **K-1** |  |  |  |\n| Балластная засыпка гравием | ГОСТ 8267-93 | 39,87 | м³ |\n| Выравнивающая стяжка из ЦПС М100 | ГОСТ 28013-98 | 11,97 | м³ |\n| Гидроизоляция рулонная битумно-полимерная Техноэласт ЭПП в 2 слоя | СТО 72746455-3.1.11-2015 | 398,72 | м² |\n| Пароизоляция рулонная битумно-полимерная Технобарьер | СТО 72746455-3.1.9-2014 | 399,05 | м² |\n| Противопожарная защитная мембрана ТЕХНОНИКОЛЬ АЛЬФА ПРОФ НГ | СТО 72746455-3.4.2-2014 | 398,72 | м² |\n| Стяжка из ЦПС М100 с армированием базальтовыми сетками с ячейкой 50х50 мм | ГОСТ 28013-98 | 19,94 | м³ |\n| Уклонообразующий слой из керамзитобетона фр. 10-20 мм | ГОСТ 25820-2014 | 35,08 | м³ |\n| Утеплитель экструзионный пенополистирол XPS Carbon Prof | СТО 72746455-3.3.1-2012 | 79,81 | м³ |\n| **K-3** |  |  |  |\n| Выравнивающая стяжка из ЦПС М100 | ГОСТ 28013-98 | 0,22 | м³ |\n| Геотекстиль термообработанный 300 г/м.кв | ЛР31/2016 от 28.04.16 | 10,84 | м² |\n| Гидроизоляция рулонная битумно-полимерная Техноэласт ЭПП в 2 слоя | СТО 72746455-3.1.11-2015 | 10,84 | м² |\n| Опора регулируемая HILST, серия LIFT (или аналог) | ТУ 22.23.19-017-42053482-2020 | 75,82 | шт. |\n| Пароизоляция рулонная битумно-полимерная Технобарьер | СТО 72746455-3.1.9-2014 | 10,83 | м² |\n| Плитка тротуарная из натурального камня габ.размерами 600х600х40 мм (по согласованию) | ГОСТ 9480-2012 | 18,96 | м² |\n| Плиты теплоизоляционные Технониколь LOGICPIR² PROF Ф/Ф | СТО 72746455-3.8.1-2017 | 1,24 | м³ |\n| Стяжка из ЦПС М100 с армированием базальтовыми сетками с ячейкой 50х50 мм | ГОСТ 28013-98 | 0,43 | м³ |\n| **K-4** |  |  |  |\n| Выравнивающая стяжка из ЦПС М100 | ГОСТ 28013-98 | 15,53 | м³ |\n| Гидроизоляция рулонная битумно-полимерная Техноэласт ЭПП в 2 слоя | СТО 72746455-3.1.11-2015 | 517,72 | м² |\n| Опора регулируемая HILST, серия LIFT (или аналог) | ТУ 22.23.19-017-42053482-2020 | 2 144,84 | шт. |\n| Парозоляционная пленка Технониколь МАСТЕР БАРЬЕР 3.0 | СТО 72746455-3.9.52-2024 | 517,63 | м² |\n| Пароизоляция рулонная битумно-полимерная Технобарьер | СТО 72746455-3.1.9-2014 | 517,63 | м² |\n| Плитка тротуарная из натурального камня габ.размерами 600х600х40 мм (по согласованию) | ГОСТ 9480-2012 | 536,21 | м² |\n| Противопожарная защитная мембрана ТЕХНОНИКОЛЬ АЛЬФА ПРОФ НГ | СТО 72746455-3.4.2-2014 | 517,72 | м² |\n| Стяжка из ЦПС М100 с армированием базальтовыми сетками с ячейкой 50х50 мм | ГОСТ 28013-98 | 20,71 | м³ |\n| Уклонообразующий слой из керамзитобетона фр. 20-40 мм | ГОСТ 25820-2014 | 69,31 | м³ |\n| Утеплитель экструзионный пенополистирол XPS Carbon Prof | СТО 72746455-3.3.1-2012 | 103,53 | м³ |\n| **K-5** |  |  |  |\n| Панели теплоизоляционные ¼Эндвич ТЕХНОНИКОЛЬ Ц-XPS½ | ТУ 22.21.41-036-72746455-2009 | 1,28 | м³ |\n| Утеплитель экструзионный пенополистирол XPS Carbon Prof | СТО 72746455-3.3.1-2012 | 2,56 | м³ |\n\n## Page 10 — Sheet 8 — Ведомость наружных ограждений, шумозащитных экранов. Схемы ограждений. Узлы\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+      "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+      "block_id": "blk_ae58e44ff89a43deb9ed9088e9778125",
+      "authoritative_TEXT": "### BLOCK #6 [TEXT]: blk_ae58e44ff89a43deb9ed9088e9778125\n\n> **Created:** 2026-10-19 11:55:24 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/R0fs3vsLT9RRFjOCavqD)\n> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 1 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное наздание ЖК Событие 6.1) | Наименование листа: Архитектурные решения. Надземная часть. Секция 2, 3. Кровля | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nОбщие данные:\n\nРабочая документация разработана на основании:\n\n-Договора № от 17.11.2025 на разработку рабочей документации на объект капитального строительства\n\nМногофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу:\n\nг. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, этап 2\n\n(рекламное название ЖК Событие 6.1), на земельном участке с кадастровым номером 77:07:0013002:4706\n\n-проектной документации №ПД-00260560, получившей положительное заключение\n\n-технического задания\n\nОсновные условия для проектирования :\n\nПроект разработан для строительства в II климатическом районе, подрайон В.\n\nРасчетная температура наружного воздуха, равная средней температуре минус 14,5°С наиболее холодного месяца.\n\nВетровой район I\n\nРасчетная сейсмичность района строительства – 5.\n\nУровень ответственности объекта- повышенный\n\nФактическая степень огнестойкости – I\n\nКласс конструктивной пожарной опасности – С0\n\nКласс пожарной опасности строительных конструкций – К0\n\nМаксимально допустимая высота зданий – без ограничений\n\nРасчетный срок эксплуатации здания – не менее 100 лет.\n\nКласс функциональной пожарной опасности:\n\nОбъект – многоквартирный жилой дом класса функциональной пожарной опасности Ф1.3 с помещениями общественного назначения и со встроенной (и пристроенной) автостоянкой класса Ф5.2.\n\nПомещения, группы помещений и функциональные зоны по функциональной пожарной опасности, размещаемые на Объекте, относятся к подклассам:\n\nФ1.3 – жилые многоквартирные дома;\n\nФ3.1 – организации торговли;\n\nФ3.2 – организации общественного питания;\n\nФ3.5 – помещения для посетителей организаций бытового и коммунального обслуживания с нерасчетным числом посадочных мест для посетителей;\n\nФ3.6 – подсобные и бытовые помещения, детский клуб;\n\nФ4.3 – банки, административные помещения (офисы, кабинеты) и т.п.;\n\nФ5.1 – производственные и технические помещения;\n\nФ5.2 – стоянки для автомобилей без технического обслуживания и ремонта, складские помещения, архивы.\n\nДеление на пожарные отсеки:\n\nВ соответствии с п. 4.2. СТУ ПБ объект разделен на 5 пожарных отсеков:\n\n- пожарный отсек встроенной подземной автостоянки класса функциональной пожарной опасности Ф5.2 со встроенными помещениями других классов функциональной пожарной опасности (технические классы Ф5.1, помещения внеквартирных кладовых класса Ф5.2 и др.) с площадью этажа в пределах\n\nпожарного отсека не более 10000 м²;\n\n- пожарные отсеки, включающие наземную часть здания (секции 2 и 3) высотой не более 75 м, в том числе помещения общественного назначения на первом этаже – площадь этажа в пределах пожарного отсека – не более 2500 м². Класс функциональной пожарной опасности Ф1.3;\n\n- пожарные отсеки, включающие наземную часть здания (секция 1) высотой более 75 м (с разделением на пожарные отсеки по вертикали: первый пожарный отсек высотой не более 75 м (в том числе помещения общественного назначения на первом этаже), каждый последующий отсек высотой не более 60 м), в том числе, с размещением крышной котельной (АИТ) – площадь этажа в пределах пожарного отсека – не более 2000 м². Класс функциональной пожарной опасности Ф1.3.\n\nОбщие указания :\n\n1. За отметку 0.000 принят уровень чистого пола 1-го этажа 1 секции, что соответствует абсолютной отметке 162.050\n\n2. Ж/Д конструкции см. разделы -КЖО-2-КЖО-4.\n\n3. Решения по отделке МОН см. разделы –АИ0.1.\n\n4. Мероприятия по обеспечению доступа МГН см. раздел АР2\n\n5. Все размеры перед началом работ проверить по месту. О несоответствии размеров уведомить разработчика рабочей документации.\n\n6. Все изменения согласовывать с Заказчиком и разработчиком рабочей документации.\n\n7. Все размеры, в пределах сформированных проектом объёмно-планировочных и дизайнерских решений, уточняются компанией-подрядчиком на основании натурных обмеров и в соответствии с собственными технологическими требованиями и регламентами.\n\n8. В случае выявления непредвиденных работ и решений при выполнении работ по чертежам данной марки подрядчик обязан поставить в известность представителя технического надзора заказчика и уведомить разработчика рабочей документации.\n\n9. В случае выявления несоответствий решений комплектов рабочей документации необходимо уведомить разработчика рабочей документации.\n\n10. Все изменения, вносимые в проект Заказчиком или Исполнителем работ, должны в обязательном порядке согласовываться с разработчиком рабочей документации.\n\n11. Все работы производить в соответствии с рабочей документацией, проектом производства работ, СП 71.13330.2017 “Изоляционные и отделочные покрытия”.\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+      "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3",
+      "primary_adjudication": null,
+      "limits": "Пункт15 относится к зимним работам. Не проверены применимость редакций к дате/основаниям разработки, переходные положения, ППР и конкретные различия требований. Нет доказательства, что подрядчик уже применил или обязательно применит неверные требования. НаличиеСП45 в кровельном альбоме само по себе не доказывает непрофильность: ссылка находится в общем перечне, а смежные работы не проверены. Из дат официальной карточки не выводится самостоятельное юридическое заключение.",
+      "wording": "В АР6.2, лист1, п.15 о зимних работах содержит СП48.13330.2011 иСП45.13330.2012, тогда как ведомость ссылается наСП48.13330.2019. Уточнить применимые редакции и согласовать ссылки: официально подтверждены замены48.13330.2011→48.13330.2019 и45.13330.2012→45.13330.2017."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F002_partial_and_territorial_norm_status.json",
+      "sha256": "2c85ef621182df1b1f713ce2ba903963ecdce531f31872f7962518c83a440338",
+      "primary_adjudication": null,
+      "limits": "Полная отмена30547-97 опровергнута, но применимость его оставшейся части к конкретным изделиям не проверена. Техноэласт иТехнобарьер в ведомости имеют собственныеСТО; их соответствие/противоречиеГОСТ не установлено. Для28013 подтверждён территориальный статус, а не негодность ЦПС или обязательная замена материала. Паспорта, применимость документа к стяжке, дата нормативной базы проекта и конкретные отличия приёмочных требований не проверены. Отсутствие подтверждения редакций30547-2020/28013-2023 не используется как доказательство их несуществования вообще.",
+      "wording": "В ведомости материалов АР6.2, лист7, для выравнивающих и армированных стяжек ЦПС М100 К-1/К-3/К-4 указанГОСТ28013-98. Уточнить применимый документ и характеристики смеси с учётом официального указания использовать вРФ ГОСТ Р58766-2019 с01.07.2022. Требование заменитьГОСТ30547-97 целиком на30547-2020 исключить: подтверждена лишь частичная замена требований на32805-2014."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F009_club_classification_scope.json",
+      "sha256": "61976229e7eab9c4d96c6917b2954409fdafba9d960a76a0583702a0b3396796",
+      "primary_adjudication": null,
+      "limits": "Полностью прочитан блок общих данных. Он ссылается на проектную документацию, техническое задание и СТУ ПБ, но не раскрывает режим работы клуба. Непроверенное обоснование в смежном разделе нельзя считать отсутствующим. Само название клуба не является достаточным доказательством другого класса. Применимые нормативные положения, технология клуба, возраст посетителей, режим пребывания, эвакуация и отделение помещения не проверены. Нормативное нарушение, необходимость изменения класса и влияние на кровельные решения не установлены.",
+      "wording": "В общих данных ПД-00580716-АР6.2 к Ф3.6 отнесены «подсобные и бытовые помещения, детский клуб». Для профильной проверки уточните назначение и режим работы клуба и ссылку на обоснование класса в проектной документации/разделе пожарной безопасности. По этому кровельному тому ошибочность класса не установлена."
+    }
+  ],
+  "external_evidence": [
+    {
+      "url": "https://protect.gost.ru/gost/details/2c391324-de10-4c36-9bfa-89a61d1ce505",
+      "checked": "2026-11-11",
+      "source": "Росстандарт",
+      "facts": "ГОСТ30547-97 действует;полный заменяющий не указан;32805-2014 заменяет часть требований к кровельным битумосодержащим основным материалам."
+    },
+    {
+      "url": "https://protect.gost.ru/gost/details/3d4caa14-1369-4bc4-96b1-6177ead7525d",
+      "checked": "2026-11-11",
+      "source": "Росстандарт",
+      "facts": "ГОСТ28013-98 утратил силу вРФ;на территорииРФ пользоватьсяГОСТ Р58766-2019;полный заменяющий не указан."
+    }
+  ],
+  "limits": [
+    "First-pass assessment is not full engineering resolution.",
+    "Slope applicability and welded interface remain unscored pending further evidence.",
+    "No new engineer decisions; no frozen evaluator or model input changes."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
