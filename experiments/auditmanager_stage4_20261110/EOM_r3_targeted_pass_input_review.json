@@ -1,0 +1,51 @@
+{
+  "status": "targeted_pass_input_contract_review_not_full_blinding_certificate",
+  "scope": "Frozen baseline EOM repeat3 specialized passes",
+  "source": {
+    "path": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_with_catalog/backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+    "sha256": "301857b35ba09999cba3e4f58d9a61e4157365c0a686c7385947f96e0d836274",
+    "functions": {
+      "_read_existing_findings": 244,
+      "_keyword_context": 252,
+      "_norm_status_rows": 296,
+      "_norm_status_hints": 319,
+      "_json_user": 420,
+      "_eom_messages": 495,
+      "_docnorm_messages": 595
+    }
+  },
+  "requests": [
+    {
+      "stage": "alia_docnorm_audit",
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794418685942064112/request.json",
+      "sha256": "eb2a29122cd0dc98a038e7fe61b37948699b254edfc79fb4289670d4ea379f19",
+      "images": 0,
+      "system_text": "Ты выполняешь ОБЯЗАТЕЛЬНЫЙ ИСЧЕРПЫВАЮЩИЙ аудит нормативной части РД.\nЭто глобальная проверка всего документа, а не локального фрагмента.\n\nНе используй Claude baseline. Ниже только MD-контекст и уже найденные Codex findings.\nБлок LOCAL VERIFIED NORM STATUS считается авторитетной локальной проверкой статуса.\n\nОбязательные проверки:\n1. Перебери КАЖДУЮ строку ведомости ссылочных документов. Нельзя ограничиваться первыми\n   найденными устаревшими СП или общим замечанием «есть неактуальные редакции».\n2. Для КАЖДОЙ реально процитированной нормы со статусом cancelled/obsolete/replaced в\n   LOCAL VERIFIED NORM STATUS верни замечание, если точное обозначение ещё не названо в\n   существующем finding. Отменённый стандарт нельзя потерять из-за наличия общего finding\n   про другие устаревшие редакции.\n3. Проверь тематическую применимость каждой строки к указанной дисциплине. Например, для\n   интерьеров стандарты исключительно на изготовление конструкционного бетона или заполнителей\n   не являются профильными, если в комплекте нет соответствующего проектного решения.\n   Перечисли точные обозначения и названия нерелевантных строк. Стандарты на готовые стальные\n   профили/уголки, крепёж и другие изделия могут быть нужны в интерьерных узлах: не объявляй их\n   нерелевантными только потому, что их применение не попало в выбранное текстовое окно.\n   Не придумывай отсутствующие нормы.\n4. Отдельно проверь дубли, конфликтующие редакции, неверное название и явные ошибки обозначения.\n5. В каждом finding процитируй точную строку MD и обозначение нормы. Если данных недостаточно,\n   не публикуй замечание.\n\nПеред ответом внутренне составь receipt: число строк в ведомости и исход для каждой строки.\nВерни только новые/недублирующие доказанные замечания. Строго один JSON object без Markdown.",
+      "same_run_findings_context_label_present": true,
+      "local_catalog_label_present": true
+    },
+    {
+      "stage": "alia_eom_protection_audit",
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794418674532708320/request.json",
+      "sha256": "53b3ffd95e0ae28f77534e3a16b3fffea85fffd13d5616df2e76b3092af09fbf",
+      "images": 0,
+      "system_text": "Ты выполняешь targeted audit для ЭОМ/ЭМ: защитные аппараты, токи КЗ, расчетные токи,\nкабельные линии СПЗ/ПЭСПЗ/ОКЛ и согласованность обозначений линий.\n\nНе используй Claude baseline. Ниже только MD-контекст и уже найденные Codex findings.\n\nОбязательные проверки:\n1. Для каждой линии с автоматом C-характеристики и указанным Iкз в конце линии пересчитай кратность:\n   `Iкз_А / In`. Если Iкз задан в кА, умножь на 1000. Для C-характеристики зона мгновенного\n   расцепления 5-10 In; при кратности <= 10 гарантированное мгновенное отключение не подтверждено.\n   Не объединяй разные группы QF/щитов/кратностей. Примеры отдельных групп: `QF5.2`,\n   `QF3.29...QF4.14`, `QF4.11/QF4.12`, `QF5.1.1`.\n2. Сверь расчетный ток нагрузки `Iр` с номиналом автомата.\n3. Если таблица условных обозначений требует один номинал автомата, а на схеме указан другой,\n   выдай отдельное замечание.\n4. Для линий СПЗ/ПЭСПЗ/ОКЛ и огнезащитных коробов проверь предел огнестойкости, габариты,\n   отметки прокладки и однозначность участка применения.\n5. Сверь обозначения одной отходящей линии между планом, видом шкафа, спецификацией и схемой.\n\nВерни только новые/недублирующие или уточняющие замечания. Строго один JSON object без Markdown.",
+      "same_run_findings_context_label_present": true,
+      "local_catalog_label_present": false
+    }
+  ],
+  "observations": [
+    "Existing findings are read from the current version output03_findings.json, not an engineer workbook.",
+    "Targeted project context is selected from currentMD by fixed keywords/windows with character caps.",
+    "Normative hints come from localnorms/norms_db.json and matching cited designations. Their factual correctness is not established by the authoritative wording in the prompt.",
+    "EOM system prompt includes fixed example identifiersQF5.2,QF3.29...QF4.14,QF4.11/QF4.12,QF5.1.1; these are implementation-specific prior knowledge, not newly discovered project facts.",
+    "The two inspected requests contain current-run findings and source context; the inspected builder functions do not load engineer answers or the evaluator."
+  ],
+  "limits": [
+    "No whole-system no-leakage certificate: only these two passes and their input builders inspected.",
+    "Fixed example identifiers and prompts predate this frozen comparison; six known projects remain DEV-known, not newly blind.",
+    "Absence of history imports in these functions does not prove absence of all prior knowledge or normative catalogue errors.",
+    "Do not count targeted passes as independent confirmations of the same findings they receive."
+  ],
+  "production_acceptance": false
+}
