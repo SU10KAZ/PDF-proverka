@@ -8,7 +8,7 @@ OUT=Path(__file__).parent
 # Explicit evidence mappings only. Unmapped controls are review work, not proof
 # that no evidence exists anywhere in the historical research corpus.
 EVIDENCE={
- ('H05','positive_controls',1):('partial_GVS_conflict_reported_pipe_and_pump_scope_pending',['ITP_GVS_combined_output_replay.json','ITP_GVS_circulation_output_replay.json','ITP_gvs_graphic_window_assessment.json','ITP_pipe_graphic_window_assessment.json','ITP_automatic_regions_output_replay.json','ITP_automatic_literal_output_replay.json']),
+ ('H05','positive_controls',1):('partial_GVS_reported_wall_question_not_emitted_velocity_review_pending',['ITP_GVS_combined_output_replay.json','ITP_GVS_circulation_output_replay.json','ITP_gvs_graphic_window_assessment.json','ITP_pipe_graphic_window_assessment.json','ITP_automatic_regions_output_replay.json','ITP_automatic_literal_output_replay.json','ITP_pipe_candidate_trace.json','itp_pipe_runtime_followup_evidence/assessment.json']),
  ('H06','negative_controls_and_limits',1):('bounded_inventory_identity_control',['ITP_pipe_distinct_materials_assessment.json','ITP_pipe_inv_008_validated.json']),
  ('H06','positive_controls',1):('bounded_control_recorded',['EOM_manufacturer_applicability_assessment.json','EOM_manufacturer_applicability_result.json','EOM_manufacturer_question_output_replay.json','EOM_shunt_identity_negative_pair.json']),
  ('H01','positive_controls',1):('bounded_facts_recorded_F032_routing_disputed',['EOM_F001_question_output_replay.json','EOM_F030_question_output_replay.json','EOM_F032_output_replay.json','EOM_F032_profile_disagreement.json','benchmark_errata.json']),
