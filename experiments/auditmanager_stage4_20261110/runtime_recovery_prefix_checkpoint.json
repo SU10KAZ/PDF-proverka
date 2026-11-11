@@ -1,0 +1,46 @@
+{
+  "status": "structural_snapshot_unadjudicated",
+  "summary": {
+    "successful_packets_replayed": 28,
+    "base_findings": 35,
+    "merged_findings": 70,
+    "pending_candidates": 101,
+    "pending_subclaims": 135,
+    "pending_reasons": {
+      "needs_data": 63,
+      "subclaim_not_emitted": 72
+    },
+    "published_addenda": 22,
+    "target_binding_repairs": 121,
+    "unresolved_target_bindings": 0
+  },
+  "queue_snapshots": [
+    {
+      "root": "/tmp/auditmanager_primary_text_runtime_recovery_results_20261112",
+      "status": "running",
+      "completed_packets": 25,
+      "planned_ready": 42
+    },
+    {
+      "root": "/tmp/auditmanager_primary_text_runtime_recovery_split_results_20261112",
+      "status": "completed_unadjudicated",
+      "completed_packets": 2,
+      "planned_ready": 2
+    },
+    {
+      "root": "/tmp/auditmanager_runtime_recovery_graphic_detail_results_20261112",
+      "status": "completed_unadjudicated",
+      "completed_packets": 1,
+      "planned_ready": 1
+    }
+  ],
+  "limits": [
+    "Running queues contribute only the completed prefix, not a complete project result.",
+    "Publication and address checks do not establish factual truth or engineering usefulness.",
+    "Known false symbol finding may remain in this diagnostic; do not publish as accepted report."
+  ],
+  "production_acceptance": false,
+  "snapshot": "/tmp/auditmanager_recovery_snapshot_20261112_02.json",
+  "snapshot_sha256": "e2fb59d2e6add7d8856738035648cd9e37969522c63ec5e56c45da865c94543f",
+  "next_action": "Check publication of pending retained subclaims linked to newly created findings; source-adjudicate retained candidates before quality acceptance."
+}
