@@ -1,0 +1,820 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "0f7ad584e475f68aadf226ad3778420a57668b0196f877f1e9d2418563933b96",
+  "queue_after_sha256": "85a7be5618d8d498239b5965af6f1a38c7ec0b3608d9a9e2e288add273a3d082",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-045",
+      "finding": {
+        "id": "F-045",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Регулирование скорости",
+        "sheet": "Лист 14",
+        "page": 18,
+        "problem": "Для ПЧ вентилятора П5.1.1 не показан канал задания скорости.",
+        "description": "Для SC UZ1 заявлено управление «пуск/стоп, 0–100%», но матрица содержит только DI и DO. Два учтённых AO назначены клапану теплоносителя и ПЧ П5.1.3.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Полнота отображения каналов управления частотным преобразователем.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-025"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-025"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Показать канал задания скорости SC UZ1; при аналоговом управлении добавить AO и скорректировать итог.",
+        "risk": "Невозможность предусмотренного регулирования производительности П5.1.1.",
+        "source_finding_ids": [
+          "G-025"
+        ],
+        "source_block_ids": [
+          "blk_07ee87d0cd9b46359b3c2b177440fe89"
+        ],
+        "related_block_ids": [
+          "blk_07ee87d0cd9b46359b3c2b177440fe89"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+            "page": 18
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-025",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "П5.1.1 SC UZ1: заявлены пуск/стоп и 0–100%, показаны DI/DO без AO.",
+          "verdict": "confirmed_prior_GRAPHIC_and_TEXT",
+          "limits": "Два AO действительно заняты клапаном и ПЧ П5.1.3; текущая строка правильно не объявляет итог AO=2 арифметически ошибочным."
+        },
+        {
+          "claim": "Показать канал задания скорости, при аналоговом управлении добавить AO.",
+          "verdict": "supported_conditional_remedy",
+          "limits": "Управление именно этим ПЧ по сети не установлено. Ни невозможность регулирования, ни дефицит физического модуля не доказаны."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не доказаны фактический отказ, несовместимость интерфейсных клемм, отсутствие модулей AO и тождество цепей БУРР/кондиционеров. Подтверждённые графические конфликты сохранены отдельно.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Канал скорости и полярность сохраняют техническое основание на схеме; назначение интерфейсных выводов и граница питания требуют уточнения. Фактическое распределение разделов отчёта не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+          "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+          "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "AO points7/18 only; column10 UZ1 DI/DO but no AO, despite0–100% caption; CAN ends at another cabinet.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-045",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-047"
+        }
+      ],
+      "disposition": "assessed_r3_interface_and_circuit_identity"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-051",
+      "finding": {
+        "id": "F-051",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Подключение реле давления",
+        "sheet": "Лист 22",
+        "page": 26,
+        "problem": "Полярность PDS3 и PDS4 вытяжных вентиляторов Ва5.1 показана обратной.",
+        "description": "У Ва5.1 и Ва5.1р «+» подключён к стороне всасывания, «−» — к нагнетанию. Перепад имеет обратный знак относительно уставки 100 Па.",
+        "norm": "СП 77.13330.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 77.13330.2016",
+            "cited_designation": "СП 77.13330.2016",
+            "candidate_relevance": 0.8,
+            "reason": "Правильность подключения приборов и измерительных линий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-054"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-054"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать подключения с паспортом реле: положительный отбор со стороны нагнетания, отрицательный — со стороны всасывания.",
+        "risk": "Ложный сигнал отказа вентилятора и нарушение резервирования.",
+        "source_finding_ids": [
+          "G-054"
+        ],
+        "source_block_ids": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "related_block_ids": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "page": 26
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-054",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Ва5.1/Ва5.1р: плюс на всасывании справа, минус на нагнетании слева при уставке100Па.",
+          "verdict": "confirmed_prior_GRAPHIC_same_sources",
+          "limits": "Вывод привязан к направлению потока конкретных вентиляторов, не универсальному правилу расположения плюса справа или слева."
+        },
+        {
+          "claim": "Обратный знак относительно положительного прироста давления.",
+          "verdict": "supported_schematic_polarity_conflict",
+          "limits": "Реальные давления, трубки и срабатывание не измерены; паспорт прибора не проверен."
+        },
+        {
+          "claim": "Согласовать отборы с паспортом и направлением потока.",
+          "verdict": "supported_drawing_followup",
+          "limits": "Не переносить ориентацию типового рисунка на любой вентилятор без определения направления. Фактический отказ не доказан."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не доказаны фактический отказ, несовместимость интерфейсных клемм, отсутствие модулей AO и тождество цепей БУРР/кондиционеров. Подтверждённые графические конфликты сохранены отдельно.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Канал скорости и полярность сохраняют техническое основание на схеме; назначение интерфейсных выводов и граница питания требуют уточнения. Фактическое распределение разделов отчёта не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Ва5.1/Ва5.1р: room at right, discharge at left; PDS3/PDS4 minus taps left, plus taps right, set100Pa.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_376a5509078c414695cf158c16c9ac10.png",
+          "sha256": "8cd460535047039ee20c3b6f2d7fcdd8e77c31c29674ce4b7a30858aa3545d7a",
+          "block_id": "blk_376a5509078c414695cf158c16c9ac10",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Typical fan mounting P2(-) left/P1(+) right; filter mounting P1(+) left/P2(-) right. No universal left/right sign rule inferred.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_376a5509078c414695cf158c16c9ac10.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-052",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-060"
+        }
+      ],
+      "disposition": "assessed_r3_interface_and_circuit_identity"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-059",
+      "finding": {
+        "id": "F-059",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Интерфейс диспетчеризации",
+        "sheet": "Лист 41",
+        "page": 45,
+        "problem": "Линия RS-485 БД-ТЗ1 показана на клеммах входа концевого выключателя.",
+        "description": "Интерфейс к ЩД-АСУД.И.5.1ПЧ подключён к клеммам «КВ», «Uпд». Эти же обозначения использованы для входа SQ1 ворот, что противоречит назначению интерфейсной линии.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Однозначное и функционально согласованное обозначение внешних подключений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-096",
+                "G-097"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-096",
+                  "G-097"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить клеммы интерфейса согласно документации изготовителя КЭВ-БЛОК-МК.",
+        "risk": "Отсутствие связи с диспетчеризацией и ошибочное подключение входных цепей.",
+        "source_finding_ids": [
+          "G-096",
+          "G-097"
+        ],
+        "source_block_ids": [
+          "blk_e7bf605cde374aec808e8a5deb78ce97"
+        ],
+        "related_block_ids": [
+          "blk_e7bf605cde374aec808e8a5deb78ce97"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+            "page": 45
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-096",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-097",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на подключение RS-485 к клеммам «КВ Uпд», обозначающим также вход SQ1, на листе 41 БД-ТЗ1. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на подключение RS-485 к клеммам «КВ Uпд», обозначающим также вход SQ1, на листе 41 БД-ТЗ1. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "RS-485 БД-ТЗ1 к ЩД-АСУД.И.5.1ПЧ изображён на КВ/Uпд, такие подписи также у SQ1.",
+          "verdict": "confirmed_prior_GRAPHIC",
+          "limits": "Совпадение обозначений не доказывает физически общую пару или исключительное назначение входа."
+        },
+        {
+          "claim": "Клеммы являются входом концевика, поэтому интерфейс подключён ошибочно.",
+          "verdict": "stronger_than_available_evidence",
+          "limits": "Без заводской схемы конкретного КЭВ-БЛОК-МК это вопрос назначения выводов, не доказанная несовместимость."
+        },
+        {
+          "claim": "Исправить клеммы согласно документации изготовителя.",
+          "verdict": "verify_before_correction",
+          "limits": "Сначала установить назначение и необходимость исправления. Не переносить линию автоматически на видимые A/B другой группы; отсутствие связи и повреждение не подтверждены."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не доказаны фактический отказ, несовместимость интерфейсных клемм, отсутствие модулей AO и тождество цепей БУРР/кондиционеров. Подтверждённые графические конфликты сохранены отдельно.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Канал скорости и полярность сохраняют техническое основание на схеме; назначение интерфейсных выводов и граница питания требуют уточнения. Фактическое распределение разделов отчёта не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+          "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+          "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Original resolution: bridgesY1–Y2/M1–M2/TS1–TS2 and chainU4.3–U4.6 shown; RS485 and SQ1 captions bothKB/Upd at block side; separate remote-control group includesA/B.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-061",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-068"
+        }
+      ],
+      "disposition": "assessed_r3_interface_and_circuit_identity"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-060",
+      "finding": {
+        "id": "F-060",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Ссылки на электропитание",
+        "sheet": "Лист 42",
+        "page": 46,
+        "problem": "Питание БУРР-1М отнесено к двум разным комплектам.",
+        "description": "У ввода 220 В указан 21/24-ГК-К5-ЭМ, а примечание 2 относит питающие кабели к 13АВ-РД-ЭМ-К5. Шифры не согласованы.",
+        "norm": "ГОСТ Р 2.105-2019 (норматив-кандидат), кандидат п. 5.2.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 2.105-2019",
+            "cited_designation": "ГОСТ Р 2.105-2019",
+            "candidate_relevance": 0.85,
+            "reason": "Однозначность ссылок на смежную документацию.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-098",
+                "G-099"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-098",
+                  "G-099"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": "5.2.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "После выбора системы согласования кондиционеров указать фактический комплект её электропитания во всех надписях.",
+        "risk": "Пропуск питания контроллера или обращение к постороннему комплекту.",
+        "source_finding_ids": [
+          "G-098",
+          "G-099"
+        ],
+        "source_block_ids": [
+          "blk_8de25b2b318647aeac8b3298fe03a98c"
+        ],
+        "related_block_ids": [
+          "blk_8de25b2b318647aeac8b3298fe03a98c",
+          "blk_66ba3cf1e99c46a292deb3fecd22f58a",
+          "blk_045c688307e949da8a39ce4c49b8db7e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+            "page": 46
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-098",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-099",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое несогласование ссылок электропитания на листе 42: 21/24-ГК-К5-ЭМ у ввода БУРР-1М и 13АВ-РД-ЭМ-К5 в примечании 2; детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое несогласование ссылок электропитания на листе 42: 21/24-ГК-К5-ЭМ у ввода БУРР-1М и 13АВ-РД-ЭМ-К5 в примечании 2; детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "У ввода БУРР220В указан21/24-ГК-К5-ЭМ; примечание2 содержит13АВ-РД-ЭМ-К5.",
+          "verdict": "confirmed_same_source_TEXT_and_prior_GRAPHIC",
+          "limits": "Буквальные ссылки различаются."
+        },
+        {
+          "claim": "Два шифра относятся к одной цепи питания БУРР.",
+          "verdict": "not_established_object_identity",
+          "limits": "Примечание упоминает питающие и межблочные кабели внутренних/наружных блоков; питание БУРР может иметь другую границу. Текущая формулировка предполагает тождество цепей без подтверждения."
+        },
+        {
+          "claim": "Указать фактический комплект питания.",
+          "verdict": "supported_boundary_question_before_relabeling",
+          "limits": "Сначала сверить область примечания и смежные комплекты; не заменять все ссылки одним шифром автоматически. Это отдельно от подтверждённого конфликта одного ввода F004."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не доказаны фактический отказ, несовместимость интерфейсных клемм, отсутствие модулей AO и тождество цепей БУРР/кондиционеров. Подтверждённые графические конфликты сохранены отдельно.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Канал скорости и полярность сохраняют техническое основание на схеме; назначение интерфейсных выводов и граница питания требуют уточнения. Фактическое распределение разделов отчёта не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_76e892431d7d4c48a09aba49a57b223c",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F033_power_reference_scope.json",
+          "sha256": "9c240dda69a02709b23452f71dd767d98d4719b50a184253a9911e6ab23eb836",
+          "primary_adjudication": null,
+          "limits": [
+            "Примечание2 описывает в том числе кабели между внутренними и наружными блоками; его охват вводом БУРР не установлен. Разные шифры не доказаны как взаимоисключающие ссылки на одну цепь.",
+            "Шифр ЭМ-КЗ сохранён буквально из TEXT; не исправляется на К3 по предположению.",
+            "Смежные комплекты и задания на электропитание не проверены. Отсутствие цепей, неверное напряжение, ошибка монтажа и фактическая неработоспособность не установлены.",
+            "Шаблонная ссылка относится к противодымным системам и не является доказательством отсутствия питания БУРР. Верный заменяющий документ не установлен.",
+            "Это вопросы координации и оформления, а не доказанные технические дефекты электроснабжения."
+          ],
+          "wording": "Уточнить распределение ссылок на питание: БУРР-1М на лист42 отнесён к21/24-ГК-К5-ЭМ, питающие и межблочные кабели по примечанию2 — к13АВ-РД-ЭМ-К5; общие данные указывают13АВ-РД-ЭМ-КЗ и13АВ-РД-ЭМ2-ПА для шкафов. Определить применимый комплект для каждой группы оборудования. Отдельно заменить шаблонную ссылку «лист6 примера РД pdf» в разделе7 на точный документ и лист."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1c493988cdf14cee9ad351ef2e706470.png",
+          "sha256": "fa028d82f0e5f818dd38743f9b5d6fb88006621d52993253769127266e375b24",
+          "block_id": "blk_1c493988cdf14cee9ad351ef2e706470",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Same380V input: header13АВ-РД-ЭМ2-ПА; cable13АВ-РД-ЭМ-К4.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1c493988cdf14cee9ad351ef2e706470.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+          "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+          "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "BURR1M220V supply21/24-ГК-К5-ЭМ; this does not alone identify supply of split-system blocks.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-030",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_e1d470118a394e9a9e75718113a9b37d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F028_change_register_scope.json",
+          "sha256": "4d6c40af5a9db18ddf520f1f06842a8cc958439af0f690fd5cf2020d5b19fc05",
+          "primary_adjudication": null,
+          "limits": [
+            "В авторитетном TEXT строки реестра стоит кириллическоеКЗ; не исправлено наК3. В ведомости отдельно указанАК-К3 для корпуса3 иАК2-ПА для автостоянкиП.24–П.48. Возможность опечатки не устанавливает нужное исправление.",
+            "Штамп реестра содержитАК2-ПА.РО, а ведомость прилагаемых документов включает однолистовой реестр. Это подтверждает включение документа, но не применимость конкретной строки кАК2-ПА.",
+            "Строка касается диспетчеризации шкафов общеобменной вентиляции. Не доказывает запрет любогоRS-485, в частности интерфейса сигнализаторов газоанализа листа6. ПротоколModbus-RTU и физический интерфейсRS-485 не следует отождествлять при проверке этого утверждения.",
+            "Архитектура книги2, исходнаяПД, согласование изменения и фактическая конфигурация не проверены. Не доказаны несовместимость или отказ системы."
+          ],
+          "wording": "Уточнить принадлежность строки1 реестра отклонений: приложение обозначено13АВ-РД-АК2-ПА.РО, а в строке указан13АВ-РД-АК-КЗ Книга1. Подтвердить, относится ли описанная замена диспетчеризации шкафов общеобменной вентиляции сModbus-RTU наCAN/Ethernet к рассматриваемому комплекту автостоянки, и согласовать шифр записи."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT_curtain_supply_reference_comparison",
+          "snippets": [
+            {
+              "block": "### BLOCK #12 [TEXT]: blk_52496725d0f247bf913f197b2ed305ac",
+              "lines": [
+                "Завеса управляется с помощью проводного блока диспетчеризации МК с электронным термостатом и пультом дистанционного управления КАТ1-П. Завесы учтены в разделе 1ЗАВ-РД-ОВ1.1-ПА."
+              ]
+            },
+            {
+              "block": "### BLOCK #85 [TEXT]: blk_6e54eb477b59421dbea94ef657f05a46",
+              "lines": [
+                "| M3-M6 | Электродвигатель вентилятора в комплекте с завесой | 2 | Учтено в разделе ЗАВ-РД-ОВ1.2-ПА |"
+              ]
+            }
+          ],
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-035"
+        }
+      ],
+      "disposition": "assessed_r3_interface_and_circuit_identity"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Four current interface and circuit findings assessed using four frozen prior rows; current scope and stronger claims checked separately. Source hashes and r3 MD/PNG identity verified. No new graphic inspection, passport check or engineer decision claimed."
+}
