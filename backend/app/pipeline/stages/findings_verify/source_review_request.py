@@ -93,6 +93,13 @@ work recorded upstream. Missing bounded context alone never justifies a question
 assertions from display_fields (risk, consequence, severity and normative text)
 in your review; these fields are not established facts or verified requirements. A source address or
 matching quote does not prove the claim. Do not correct TEXT using raster.
+For tables preserve the header-to-cell mapping, including blank cells. A number
+in another column is not a literal quantity. Distinguish directly stated counts
+from derived counts: a derived count needs an explicit source-backed relationship
+applicable to the same object, execution and scope. A repeated ratio in other
+assemblies is not by itself that relationship. If a quantity cell is blank and
+that relationship is unverified, keep the count and dependent totals conditional
+or needs_data; never silently move the number, substitute zero or certify a total.
 For arithmetic enumerate source rows and reproduce the operation. Distinguish
 annotation conflicts from physical defects and operating-mode assumptions.
 Return JSON: finding_id, finding_sha256, source_md_sha256, context_sha256, claims.
