@@ -107,6 +107,11 @@ class PipelineStageContext:
     source_review_max_findings: int = field(default=0)
     source_review_auto_graphic_regions: bool = field(default=False)
 
+    # Separate final wording/source check; opt-in for candidate comparison only.
+    source_final_check_invoke: Optional[Callable[..., Awaitable[dict]]] = field(default=None)
+    source_final_check_executor_id: Optional[str] = field(default=None)
+    source_final_check_max_findings: int = field(default=0)
+
     # Source-only object discovery, explicitly enabled for candidate trials.
     # The injected executor owns authorization; classic findings are not sent.
     inventory_invoke: Optional[Callable[..., Awaitable[dict]]] = field(default=None)

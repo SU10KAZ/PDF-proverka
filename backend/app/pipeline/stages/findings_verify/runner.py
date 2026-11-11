@@ -72,6 +72,9 @@ class FindingsVerifyResult:
     source_review_workflows_failed: int = 0
     source_review_applied: int = 0
     source_review_not_applied: int = 0
+    final_release_applied: int = 0
+    final_release_held: int = 0
+    final_release_not_completed: int = 0
     reviewed_groups_applied: int = 0
     reviewed_groups_not_applied: int = 0
     error: Optional[str] = None
@@ -328,6 +331,29 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
     except (OSError, ValueError, TypeError, KeyError) as exc:
         await ctx.log(f"Решения проверки источников не применены: {exc}", "warn")
         result.error = (result.error + f"; source_review: {exc}") if result.error else f"source_review: {exc}"
+
+    # A separately invoked final check sees source data and final wording,
+    # without the prior review verdict. The original survives holds/failures.
+    if getattr(ctx, 'source_final_check_invoke', None) is not None:
+        try:
+            from .source_review_release_workflow import run_final_release_phase
+            from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
+            final_md_path = resolve_document_markdown(Path(output_dir))
+            if final_md_path is None:
+                raise ValueError('final_check_source_missing')
+            release = await run_final_release_phase(
+                Path(output_dir), final_md_path, invoke=ctx.source_final_check_invoke,
+                executor_id=getattr(ctx, 'source_final_check_executor_id', None),
+                max_findings=getattr(ctx, 'source_final_check_max_findings', 0),
+                is_cancelled=ctx.is_cancelled,
+            )
+            result.final_release_applied = release['applied']
+            result.final_release_held = release['held']
+            result.final_release_not_completed = release['not_completed'] + release['not_attempted']
+            await ctx.log(f"Финальная проверка: применено {release['applied']}, удержано {release['held']}, незавершено {result.final_release_not_completed}")
+        except Exception as exc:
+            await ctx.log(f"Финальная проверка не завершена: {exc}", 'warn')
+            result.error = (result.error + f"; final_release: {exc}") if result.error else f"final_release: {exc}"
 
     # Explicit grouping inbox only; raw proposals never authorize a merge.
     try:
