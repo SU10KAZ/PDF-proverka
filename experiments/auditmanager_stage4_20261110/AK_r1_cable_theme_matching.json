@@ -1,0 +1,97 @@
+{
+  "status": "partial_coordinator_semantic_matching",
+  "discipline": "AK",
+  "repeat": 1,
+  "output_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/AK_review.json",
+  "review_ledger_sha256": "09345366c8ecd182869c41598f761578ffbb0470c6fea6159540405387a2cf9f",
+  "historical_engineer_decision": "Принято",
+  "historical_case": "13АВ-РД-АК2-ПА_V1::UNI-100",
+  "source_MD_identical": true,
+  "historical_graphic_evidence_hashes_verified": true,
+  "mapped_atoms": [
+    {
+      "target_id": "AK100_F015_drive_cable_graph:efafe11e28c59a6064d1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-023"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+        },
+        {
+          "source": "same_version_MD",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+          "finding_id": "F-023"
+        }
+      ],
+      "reason": "Названы все три повторные марки Ва3.1 в группе Па4.1/Ва4.1, но не сформулировано прямое расхождение с Ва4.1-3ПЧ/-4ПЧ/-RS на схеме. Сходная тема не равна полному междокументному атому.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25d3c70866a6e840202d",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-023"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+        },
+        {
+          "source": "same_version_MD",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+          "finding_id": "F-023"
+        }
+      ],
+      "reason": "Указано, что самостоятельные подключения к вытяжным двигателям в группе журнала не прослеживаются; точные участки ПЧ→M2/M3 и их индивидуальные границы не названы. Полное совпадение не засчитывается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-059"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+        },
+        {
+          "source": "same_version_MD",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+          "finding_id": "F-059"
+        }
+      ],
+      "reason": "Для того же ШАУВ-1-К5АС прямо сопоставлены ведомость 700 м и сумма шести участков схемы 730 м с формулой 2×330+2×20+2×15. Окончательный объём признан неустановленным; фактическая закупка не засчитывается как доказанный факт.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "remaining_atom": "Individual missing marks of PCh→M2/M3 remains unchecked; limited search does not prove absence in the entire output.",
+  "quality_rates_available": false,
+  "new_engineer_review": false,
+  "scope": "Coverage matching only; no blanket validation of all assertions in F-023/F-059, no candidate tuning, no method acceptance."
+}
