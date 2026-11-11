@@ -1,0 +1,809 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/EOM_output_review_queue.json",
+  "queue_before_sha256": "c410e058d9dee4174c3b2f75a1ec9c283ce6d25195f17639bf7fb55f40b97652",
+  "queue_after_sha256": "7c4e1ab3b911cdf9e38b781c487cdcc216af42c56a5b82a818fb62902bcbc822",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт нагрузок",
+        "sheet": "Лист 2.1",
+        "page": 4,
+        "problem": "Формула нагрузки РП2 ВРУ-2 противоречит числовым значениям таблицы.",
+        "description": "Формула 180×0,32=57,6 кВт не соответствует указанным Ру=240,0 кВт и Рр=69,6 кВт. Последние значения повторены для группы С221 и соответствуют коэффициенту спроса 0,29.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён; ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить определение расчётной нагрузки и применение коэффициентов спроса.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001",
+                "G-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить выбор проводников по согласованным расчётным нагрузкам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001",
+                "G-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить исходную установленную мощность и коэффициент спроса РП2, исправить формулу и проверить зависимые токи, кабели и аппараты.",
+        "risk": "Выбор питающей линии и оборудования по несогласованной нагрузке.",
+        "source_finding_ids": [
+          "T-001",
+          "G-002"
+        ],
+        "source_block_ids": [
+          "blk_4e968dd71c7149aca85e4195d5c3de49"
+        ],
+        "related_block_ids": [
+          "blk_4e968dd71c7149aca85e4195d5c3de49"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+            "page": 4
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-002",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-EOM-F-002:589046b033f782342a04",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "180×0,32=57,6 против240/69,6;69,6/240=0,29.",
+          "verdict": "confirmed_same_source_TEXT_and_arithmetic",
+          "limits": "0,29 — отношение опубликованных чисел, не доказанно правильный коэффициент спроса. С221повторяет значения,не независимая ошибка."
+        },
+        {
+          "claim": "Согласовать мощность, спрос и зависимые параметры.",
+          "verdict": "supported_scoped_question",
+          "limits": "Неверный подбор линии или оборудования не доказан; правильную редакцию нельзя выбирать большинством."
+        },
+        {
+          "claim": "Фактическая ошибка защиты или подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Оборудование, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены неокруглённые исходные, единицаIp, пожарный смыслPp.лож, фактический подбор и отказ оборудования.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы расчётных исходных данных, не объявлять физические последствия и не исправлятьTEXTдогадкой. Разделы отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+          "route": "byte_verified_same_version_source_and_prior_adjudication",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-002.json",
+          "sha256": "2851662c79803e5a4e8d362f3c73fee55915522fab48395fe380e426b4dd512d",
+          "primary_adjudication": null,
+          "limits": "Правильный коэффициент и нагрузка не установлены; неверный выбор оборудования не доказан.",
+          "wording": "Увязать формулу РП2 180×0,32=57,6кВт с табличными240кВт и69,6кВт.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-002.json",
+          "route": "byte_verified_same_version_source_and_prior_adjudication"
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-004"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_initial_load"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Расчёт нагрузок",
+        "sheet": "Лист 2.1",
+        "page": 4,
+        "problem": "Итоги РП5 ВРУ-2 не совпадают с суммой перечисленных нагрузок.",
+        "description": "По текстовой таблице сумма установленных мощностей составляет 94,5 кВт вместо 94,1 кВт. Сумма всех расчётных нагрузок — 89,9 кВт вместо 89,5 кВт пожарного режима. Разница 0,4 кВт совпадает с нагрузкой клапанов ОЗК и ДУ; состав одновременно работающих потребителей требует уточнения.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён; ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить состав нагрузок и расчёт режимов работы.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить соответствие выбора проводников расчётной нагрузке.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Раскрыть состав пожарного режима, проверить включение клапанов и пересчитать итоги РП5 и вводов.",
+        "risk": "Недостоверные исходные данные для проверки питания противопожарных потребителей.",
+        "source_finding_ids": [
+          "T-002"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 4
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 90,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-EOM-F-003:26a778e20220ace19772",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Опубликованные суммыРП5:94,5/89,9 вместо94,1/89,5;разница0,4 совпадает склапанами.",
+          "verdict": "confirmed_bounded_TEXT_sum",
+          "limits": "Совпадение не доказывает пропуск клапанов. Неокруглённые исходные и состав режима не установлены."
+        },
+        {
+          "claim": "89,5 — пожарный режим.",
+          "verdict": "unsupported_silent_label_reinterpretation",
+          "limits": "АвторитетныйTEXT буквальноPp.лож; нельзя молча заменять распознанное название на пожарный режим."
+        },
+        {
+          "claim": "Уточнить состав и пересчитать итог.",
+          "verdict": "supported_conditional_question",
+          "limits": "Не объявлять итог технически ошибочным до проверки округления/одновременности; нарушение питанияСПЗне доказано."
+        },
+        {
+          "claim": "Фактическая ошибка защиты или подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Оборудование, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены неокруглённые исходные, единицаIp, пожарный смыслPp.лож, фактический подбор и отказ оборудования.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы расчётных исходных данных, не объявлять физические последствия и не исправлятьTEXTдогадкой. Разделы отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+          "route": "byte_verified_same_version_source_and_prior_adjudication",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+          "sha256": "0577c89529c7aadb1f5f57385d56f6cf8748477b1df25539747380ce45aca248",
+          "primary_adjudication": null,
+          "limits": "Совпадение разности с C2518 не доказывает причину ошибки. Название режима сохраняется буквально из TEXT; одновременность работы и неверный подбор оборудования не установлены. Суммирование опубликованных округлённых строк не доказывает ошибку итогового расчёта по неокруглённым данным. В связанном UNI-028 поздняя оценка ссылается на иной перерасчёт; сам перерасчёт пока не проверен. Тезис о технически неверном итоге не включать в положительные метрики до разрешения точности и состава режима.",
+          "wording": "Проверить итоги РП5: сумма перечисленных Py94,5кВт против94,1; сумма перечисленных Pp89,9кВт против89,5 в строке «Pp.лож». Расхождения по0,4кВт совпадают с мощностью C2518.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+          "route": "byte_verified_same_version_source_and_prior_adjudication"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json",
+          "sha256": "6ec81943e3282643c6afdba57f11970e973a2a86b2afb5d28ca09687c5194b16",
+          "primary_adjudication": null,
+          "limits": "Изображение подтверждает подписи, не паспортную мощность. 6,88×0,80=5,504 кВт согласуется с округлёнными 5,5 кВт; число 6 без десятичных знаков может быть округлением. Без исходного расчёта нельзя объявить такое объяснение ни доказанным, ни опровергнутым. В авторитетном TEXT заголовок Ip имеет единицу кВт; табличное 10,5 не исправляется автоматически на амперы. Ранее вычисленные 11,4 А — условный расчёт для трёхфазных 380 В и точных 6 кВт, а не установленная ошибка табличного тока. Неправильный подбор кабеля/защиты и недостаточность питания не доказаны.",
+          "wording": "Согласовать исходные данные и точность представления C2520 / ПД2.1: в таблице указаны Py=Pp=6 кВт, cosφ=0,80 и S=6,88 кВА, на схеме — две мощности по 5,5 кВт. Если 6 кВт являются точным расчётным значением, S должно быть 7,50 кВА; если это округлённое представление 5,5 кВт, пояснить точность. Итоги РП5 проверять по неокруглённым исходным данным и составу режима.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json",
+          "route": "byte_verified_same_version_source_and_prior_adjudication"
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-005"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_initial_load"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-003",
+      "finding": {
+        "id": "F-003",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт нагрузок",
+        "sheet": "Лист 2.1",
+        "page": 4,
+        "problem": "Полная мощность и ток ПД.2.1 не соответствуют активной мощности.",
+        "description": "Для ПД.2.1 группы С2520 приведены Рр=6 кВт, cosφ=0,80, S=6,88 кВА и Iр=10,5 А. При этих исходных данных S=7,50 кВА, а ток при 380 В составляет около 11,4 А. Табличные полная мощность и ток соответствуют активной мощности около 5,5 кВт.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.3.2; СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить выбор проводников по уточнённому току нагрузки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003",
+                "G-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность расчётных электрических нагрузок.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003",
+                "G-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить электрическую мощность ПД.2.1, согласовать все графы, пересчитать итоги и проверить кабель и защиту.",
+        "risk": "Занижение расчётного тока и зависимых нагрузок.",
+        "source_finding_ids": [
+          "T-003",
+          "G-004"
+        ],
+        "source_block_ids": [
+          "blk_4e968dd71c7149aca85e4195d5c3de49"
+        ],
+        "related_block_ids": [
+          "blk_4e968dd71c7149aca85e4195d5c3de49"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+            "page": 4
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-004",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-EOM-F-004:90fc50f60a8f39d5e2cb",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "C2520:6кВт,cos0,80,S6,88,Ip10,5.",
+          "verdict": "confirmed_literal_TEXT_values",
+          "limits": "ЕдиницаIpвTEXTкВт,неА. Текущая строка молча исправляет её; фактическая единица не установлена."
+        },
+        {
+          "claim": "При точных6кВт S7,50кВА,I≈11,395А при380В.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "6может быть округлённым представлением5,5. Это не установленная ошибка табличного тока."
+        },
+        {
+          "claim": "S6,88и10,5 соответствуютпримерно5,5кВт.",
+          "verdict": "conditional_numeric_compatibility",
+          "limits": "Числовая совместимость не доказывает исходную мощность. Текущая строка не приводит отдельное свидетельство схемы5,5."
+        },
+        {
+          "claim": "Уточнить мощность и зависимые расчёты.",
+          "verdict": "supported_question_not_proven_underpower",
+          "limits": "Занижение тока, ошибка кабеля/защиты и недостаточность питания не доказаны."
+        },
+        {
+          "claim": "Фактическая ошибка защиты или подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Оборудование, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены неокруглённые исходные, единицаIp, пожарный смыслPp.лож, фактический подбор и отказ оборудования.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы расчётных исходных данных, не объявлять физические последствия и не исправлятьTEXTдогадкой. Разделы отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+          "route": "byte_verified_same_version_source_and_prior_adjudication",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+          "sha256": "0577c89529c7aadb1f5f57385d56f6cf8748477b1df25539747380ce45aca248",
+          "primary_adjudication": null,
+          "limits": "Совпадение разности с C2518 не доказывает причину ошибки. Название режима сохраняется буквально из TEXT; одновременность работы и неверный подбор оборудования не установлены. Суммирование опубликованных округлённых строк не доказывает ошибку итогового расчёта по неокруглённым данным. В связанном UNI-028 поздняя оценка ссылается на иной перерасчёт; сам перерасчёт пока не проверен. Тезис о технически неверном итоге не включать в положительные метрики до разрешения точности и состава режима.",
+          "wording": "Проверить итоги РП5: сумма перечисленных Py94,5кВт против94,1; сумма перечисленных Pp89,9кВт против89,5 в строке «Pp.лож». Расхождения по0,4кВт совпадают с мощностью C2518.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+          "route": "byte_verified_same_version_source_and_prior_adjudication"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json",
+          "sha256": "6ec81943e3282643c6afdba57f11970e973a2a86b2afb5d28ca09687c5194b16",
+          "primary_adjudication": null,
+          "limits": "Изображение подтверждает подписи, не паспортную мощность. 6,88×0,80=5,504 кВт согласуется с округлёнными 5,5 кВт; число 6 без десятичных знаков может быть округлением. Без исходного расчёта нельзя объявить такое объяснение ни доказанным, ни опровергнутым. В авторитетном TEXT заголовок Ip имеет единицу кВт; табличное 10,5 не исправляется автоматически на амперы. Ранее вычисленные 11,4 А — условный расчёт для трёхфазных 380 В и точных 6 кВт, а не установленная ошибка табличного тока. Неправильный подбор кабеля/защиты и недостаточность питания не доказаны.",
+          "wording": "Согласовать исходные данные и точность представления C2520 / ПД2.1: в таблице указаны Py=Pp=6 кВт, cosφ=0,80 и S=6,88 кВА, на схеме — две мощности по 5,5 кВт. Если 6 кВт являются точным расчётным значением, S должно быть 7,50 кВА; если это округлённое представление 5,5 кВт, пояснить точность. Итоги РП5 проверять по неокруглённым исходным данным и составу режима.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json",
+          "route": "byte_verified_same_version_source_and_prior_adjudication"
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-005"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_initial_load"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-005",
+      "finding": {
+        "id": "F-005",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт нагрузок",
+        "sheet": "Лист 4",
+        "page": 7,
+        "problem": "Формулы расчётных режимов ВРУ-К не соответствуют нагрузкам потребителей.",
+        "description": "Для ввода 1 формула даёт 125,1 кВт при табличной сумме 100,0 кВт. Для ввода 2 записано 25+25+25+25+25=100 кВт, хотя сумма равна 125 кВт, а потребители таблицы дают 83,2 кВт. Послеаварийная формула содержит 225,1 кВт вместо 183,2 кВт.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён; ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить расчёт нагрузок вводов по составу потребителей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-005",
+                "G-009",
+                "G-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-005"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить исходные нагрузки для выбора проводников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-005",
+                "G-009",
+                "G-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-005"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Заменить формулы согласованным расчётом РП1, РП2 и послеаварийного режима.",
+        "risk": "Неоднозначные исходные данные для выбора вводов и оборудования.",
+        "source_finding_ids": [
+          "T-005",
+          "G-009",
+          "G-010"
+        ],
+        "source_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "related_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "image_only"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:008"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают все расхождения формул и итогов: 125,1 против 100,0 кВт, 225,1 против 183,2 кВт, а также неверное равенство для ввода 2 при табличных 83,2 кВт.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают все расхождения формул и итогов: 125,1 против 100,0 кВт, 225,1 против 183,2 кВт, а также неверное равенство для ввода 2 при табличных 83,2 кВт.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-EOM-F-006:70a5bb3630cd86d67bdf",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-EOM-F-006:9b2481431ea0814f9774",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-EOM-F-006:50e2ed9a377d8e0af479",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Формулы вводов125,1/100 против100/83,2;пять25дают125;послеаварийно225,1против183,2.",
+          "verdict": "confirmed_same_source_TEXT_and_arithmetic",
+          "limits": "Не назначать225,1или183,2 автоматически правильной нагрузкой. Сравниваются разные представления одной расчётной темы."
+        },
+        {
+          "claim": "Согласовать состав и формулы режимов.",
+          "verdict": "supported_scoped_question",
+          "limits": "Причина, хронология и фактическая ошибка выбора оборудования не установлены."
+        },
+        {
+          "claim": "Фактическая ошибка защиты или подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Оборудование, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены неокруглённые исходные, единицаIp, пожарный смыслPp.лож, фактический подбор и отказ оборудования.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы расчётных исходных данных, не объявлять физические последствия и не исправлятьTEXTдогадкой. Разделы отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+          "route": "byte_verified_same_version_source_and_prior_adjudication",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4",
+          "primary_adjudication": null,
+          "limits": "Исходная проектная нагрузка и необходимость изменения оборудования не установлены; не назначать225,1 автоматически.",
+          "wording": "Согласовать формулы вводов ВРУ-К с числовыми столбцами: пять слагаемых25 дают125, а не100; послеаварийная формула225,1 отличается от табличных183,2.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "route": "byte_verified_same_version_source_and_prior_adjudication"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4",
+          "primary_adjudication": null,
+          "limits": "Исходная проектная нагрузка и необходимость изменения оборудования не установлены; не назначать225,1 автоматически.",
+          "wording": "Согласовать формулы вводов ВРУ-К с числовыми столбцами: пять слагаемых25 дают125, а не100; послеаварийная формула225,1 отличается от табличных183,2.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "route": "byte_verified_same_version_source_and_prior_adjudication"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4",
+          "primary_adjudication": null,
+          "limits": "Исходная проектная нагрузка и необходимость изменения оборудования не установлены; не назначать225,1 автоматически.",
+          "wording": "Согласовать формулы вводов ВРУ-К с числовыми столбцами: пять слагаемых25 дают125, а не100; послеаварийная формула225,1 отличается от табличных183,2.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "route": "byte_verified_same_version_source_and_prior_adjudication"
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-007"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_initial_load"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Four current EOM findings reviewed against frozen r2 atomic reviews; r3 MD/PNG identity and all evidence hashes checked. New units and regime reinterpretations explicitly rejected; rounding retained. No new graphic inspection, norm verification or engineer acceptance."
+}
