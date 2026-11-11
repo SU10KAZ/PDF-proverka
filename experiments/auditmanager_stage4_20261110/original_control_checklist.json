@@ -400,8 +400,21 @@
       "hypothesis": "H05",
       "kind": "positive_controls",
       "original_control": "ИТП: расходы ветвейГВС сопоставить с режимомК15; толщины3/3.5 связать с теми же участками.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "partial_GVS_conflict_reported_pipe_and_pump_scope_pending",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_T411_output_replay.json",
+          "sha256": "11dbf801501c361035f2db1438565deb802ca17a7bc604ee6e2b33a83b03f7cc"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_gvs_graphic_window_assessment.json",
+          "sha256": "9455bbb51307a76c4cf8d5b01e7bd9d8d71d3c60fd8f30928ef86f63cacc5d40"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_pipe_graphic_window_assessment.json",
+          "sha256": "b629e0c2fb4c6181a79ef79849fd7fe988834a3e4cc40289fedde386502dfda1"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -652,12 +665,12 @@
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
+    "partial_GVS_conflict_reported_pipe_and_pump_scope_pending": 1,
     "partial_control_pending_F032_profile": 1,
     "partial_control_pending_applicability_question_admission": 1,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
     "partial_instance_identity_question_preserved": 1,
-    "requires_explicit_evidence_review": 1,
     "synthetic_contract_only": 1
   },
   "boundaries": [

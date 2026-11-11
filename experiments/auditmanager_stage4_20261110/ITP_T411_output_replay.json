@@ -1,0 +1,26 @@
+{
+  "scope": "Known-source recovered T411 conflict through source admission, merge and Excel; not full-project discovery acceptance.",
+  "source_candidate_sha256": "3b75c49e37c9a22bd14ded5b64f07cd1200b9c4d605085a9a49ec56882d632bc",
+  "baseline_sha256": "3a3c2505680f1086348eebb0d72aad9c0a6eb9c356789dd0eb97b04d6da21c3a",
+  "receipts": [
+    {
+      "finding_id": "ITP-T411-flow-conflict",
+      "status": "applied",
+      "action": "revise"
+    }
+  ],
+  "prior_findings_preserved_exactly": 53,
+  "final_findings": 54,
+  "new_finding_id": "F-054",
+  "related_baseline_findings_preserved": [
+    "F-011"
+  ],
+  "local_duplicate_review": "F-011 addresses arithmetic/units in PZ circulation calculation; T411 addresses conflicting branch-flow labels between drawings. Distinct source propositions retained.",
+  "historical_compound_control_closed": false,
+  "full_acceptance": false,
+  "limitations": [
+    "Pump insufficiency and full branch balance remain unresolved.",
+    "The 53-row baseline includes unreviewed findings; preservation is not truth certification.",
+    "Other prior ITP pilots are not all composed into this snapshot."
+  ]
+}
