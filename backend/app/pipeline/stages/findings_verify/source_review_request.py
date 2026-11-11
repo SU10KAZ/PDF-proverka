@@ -100,8 +100,14 @@ applicable to the same object, execution and scope. A repeated ratio in other
 assemblies is not by itself that relationship. If a quantity cell is blank and
 that relationship is unverified, keep the count and dependent totals conditional
 or needs_data; never silently move the number, substitute zero or certify a total.
-For arithmetic enumerate source rows and reproduce the operation. Distinguish
-annotation conflicts from physical defects and operating-mode assumptions.
+For arithmetic enumerate source rows and reproduce the operation. Attach exact
+evidence quotes for the operand rows AND the headers, object membership and
+multiplicities needed to connect those operands to the stated scope. A component
+row alone does not establish how many assemblies contain it. For conditional
+counts cite the blank quantity cells with their column context; do not cite only
+an unrelated material row from the same block. Preserve these dependency links
+in claim evidence so final report citations can be independently followed.
+Distinguish annotation conflicts from physical defects and operating-mode assumptions.
 Return JSON: finding_id, finding_sha256, source_md_sha256, context_sha256, claims.
 Each claim: claim_id, claim, status (supported/refuted/needs_data), reason, evidence.
 TEXT evidence: {type:"text", block_id, quote}, an exact quote from supplied text.
