@@ -1,0 +1,802 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "e6b40208768e70c3edd2bb8d43b02577c087dddc7755db5ff454505f3f4fcbd1",
+  "queue_after_sha256": "86d7e6f82be1273056cc10c647fe0c19f194235a7d20b124d84a1cf5c09b3d51",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Циркуляция ГВС",
+        "sheet": "Листы 12, 13",
+        "page": [
+          50,
+          51
+        ],
+        "problem": "Расчёт циркуляционных расходов ГВС содержит усечение значений и несогласованные формулы.",
+        "description": "Без промежуточного усечения тепловые потери равны 0,033667; 0,0175; 0,0065 Гкал/ч, а расходы циркуляции — 4,377; 2,275; 0,845 м³/ч. Для второй зоны подстановка 0,016 даёт 2,08, а не 2,21 м³/ч. Формула «Gцирк макс=1,5×Qцирк» размерностно некорректна при тепловой размерности Q.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён; СП 41-101-95 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить обоснование расчётных параметров циркуляции.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 41-101-95",
+            "cited_designation": "СП 41-101-95",
+            "candidate_relevance": 0.75,
+            "reason": "Проверить применимость использованной проектом методики расчёта циркуляции ГВС.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Ссылка исходного расчёта"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить размерности и подстановки, округлять конечные результаты и проверить рабочие точки насосов по уточнённым расходам.",
+        "risk": "Недостаточная циркуляция и снижение температуры ГВС в удалённых участках.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_fed30df45d124919a8b7cc13253733b1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 50
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 51
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-011:f633e04640a9e4e3c71a",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-011:13234a067319a117c786",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "По опубликованной формуле без промежуточного усечения потери0,033667/0,0175/0,0065 и расходы4,376667/2,275/0,845.",
+          "verdict": "confirmed_project_formula_arithmetic",
+          "limits": "Проверка арифметики не подтверждает физическую модель или обязательные уставки."
+        },
+        {
+          "claim": "1,3×0,016×1000/10 даёт2,08, не2,21.",
+          "verdict": "confirmed_arithmetic",
+          "limits": "2,21 получается при0,017 строкой выше. Ошибочный операнд или результат окончательно не выбран.4,29 и0,78 воспроизводятся из опубликованных усечённых0,033 и0,006."
+        },
+        {
+          "claim": "Gцирк макс=1,5×Qцирк при тепловой размерностиQ не согласована по размерности.",
+          "verdict": "confirmed_written_dimension_conflict",
+          "limits": "Не установлено, ошибочен символQ или пропущено преобразование; не исправлять догадкой."
+        },
+        {
+          "claim": "Уточнить расчёт и проверить рабочие точки насосов.",
+          "verdict": "supported_scoped_question",
+          "limits": "Недостаточная циркуляция и снижение температуры не доказаны; расход без характеристики системы не определяет отказ."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический недостаток циркуляции, ошибочный максимальный расход ввода, неправильная наладка и окончательная нагрузка.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы о формулах, размерностях и нагрузках. Не превращать арифметическое расхождение в доказанный отказ системы. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fed30df45d124919a8b7cc13253733b1",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-011.json",
+          "sha256": "8a084a320ad746b20cbd7831a159cca9581237cd62b98235ce6b11553998e0de",
+          "primary_adjudication": null,
+          "limits": "Без промежуточного округления получаются 4,376666…; 2,275; 0,845 м³/ч. Это расчёт по опубликованным исходным данным, не утверждение об обязательных новых уставках. 4,29 и 0,78 правильно получены из уже округлённых 0,033 и 0,006. Допустимая точность и влияние на систему не установлены; неправильная настройка и необходимость замены насосов не доказаны. Нормативное нарушение не заявляется.",
+          "wording": "Согласовать расчёт циркуляции ГВС: во второй зоне результат 2,21 соответствует Qцирк=0,017 из предыдущей строки, но в подстановке стоит 0,016, что даёт 2,08. Уточнить запись Gцирк макс=1,5×Qцирк, где Qцирк определена как тепловая мощность, и используемую точность промежуточных вычислений."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-013",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fed30df45d124919a8b7cc13253733b1",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-014"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_circulation_and_load"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-013",
+      "finding": {
+        "id": "F-013",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Схема ГВС",
+        "sheet": "Листы 6, 10",
+        "page": [
+          44,
+          48,
+          159
+        ],
+        "problem": "Средний расход сетевой воды ГВС рассчитан для параметров другой схемы.",
+        "description": "В расчёте использованы температура после первой ступени 30 °С и температура горячей воды 55 °С. Проект и техническое задание предусматривают одноступенчатую схему и 65 °С; первая ступень в принятом решении отсутствует.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Пересчитать средний расход для фактической одноступенчатой схемы и установить его использование в расчётах учёта и летних режимов.",
+        "risk": "Ошибочная оценка расходов сетевой воды, диапазонов учёта и летней работы ИТП.",
+        "source_finding_ids": [
+          "T-013"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 44
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 159
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 37,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F010_GVS_formula:e2d706356b5cbdcedb39",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Формула содержит30°Cпосле первой ступени и55°C, аПЗ/ТЗ задают одноступенчатую схему и65°C.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Два аппарата по50% не означают две последовательные ступени."
+        },
+        {
+          "claim": "Согласовать формулу среднего расхода с принятой схемой и температурным балансом.",
+          "verdict": "supported_internal_document_question",
+          "limits": "Нельзя объявлять30°C вообще недопустимыми: циркуляция/смешение и баланс не проверены."
+        },
+        {
+          "claim": "Проверить использование результата для учёта и летних режимов.",
+          "verdict": "followup_not_proven_downstream_error",
+          "limits": "Фактическое использование среднего значения не прослежено. Максимальный ввод261,50 использует54,05 максимальногоГВС, а не средние значения; его занижение этой формулой не доказано."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический недостаток циркуляции, ошибочный максимальный расход ввода, неправильная наладка и окончательная нагрузка.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы о формулах, размерностях и нагрузках. Не превращать арифметическое расхождение в доказанный отказ системы. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a5c04128f54f404e900b3ee4e3a854ba",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_dc124e4fb56849bbba6c4e2db3e948e3",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F010_GVS_formula.json",
+          "sha256": "370abff31e496cbfad890ab79c2379f01d1dbb05fa320d5f3f64af72a9eac867",
+          "primary_adjudication": null,
+          "limits": "Подтверждено внутреннее несогласование формулы и описания. Не установлены нормативное нарушение, фактическая двухступенчатая схема, неверный подбор теплообменников или необходимость их замены. Правильные расходы для фактической схемы не определены. Два аппарата по 50% не означают две ступени. Величина 30 °С не признана универсально недопустимой.",
+          "wording": "В ПЗ, лист 6, средние расходы сетевой воды ГВС рассчитаны с t′=30 °С, определённой как температура после первой ступени подогрева. На листе 10 для всех трёх зон указана одноступенчатая схема. Пояснить физический смысл и основание t′=30 °С для принятой схемы и согласовать описание с расчётом; при неподтверждении применимости формулы уточнить расчёт."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-021",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_dc124e4fb56849bbba6c4e2db3e948e3",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-013"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_circulation_and_load"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-048",
+      "finding": {
+        "id": "F-048",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Тепловые нагрузки",
+        "sheet": "Лист 9",
+        "page": 16,
+        "problem": "Для подачи и обратки одного отопительного контура указаны разные нагрузки.",
+        "description": "На листе разрезов 18-18…21-21 для отопления жилья, МОП и технических помещений указаны Т111: 1,229 Гкал/ч и Т211: 1,225 Гкал/ч. В обеих подписях расход равен 61,45 м³/ч. Разница нагрузок составляет 0,004 Гкал/ч. Несоответствие повторяется в нескольких фрагментах одного листа.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к согласованности параметров одной системы на рабочих чертежах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-014",
+                "G-015",
+                "G-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-014",
+                  "G-015",
+                  "G-016"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить границы контура и нагрузку с окончательным расчётом; согласовать подписи Т111 и Т211.",
+        "risk": "Использование разных исходных нагрузок при проверке и наладке системы.",
+        "source_finding_ids": [
+          "G-014",
+          "G-015",
+          "G-016"
+        ],
+        "source_block_ids": [
+          "blk_27af51f0cd26488ea08ffa55589b0c3e",
+          "blk_8e4e78d833774d1094ea7fc72932c0ff"
+        ],
+        "related_block_ids": [
+          "blk_27af51f0cd26488ea08ffa55589b0c3e",
+          "blk_8e4e78d833774d1094ea7fc72932c0ff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+            "page": 16
+          },
+          {
+            "type": "text",
+            "block_id": "blk_8e4e78d833774d1094ea7fc72932c0ff",
+            "page": 16
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-014",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-015",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение нагрузок Т111 (1,229 Гкал/ч) и Т211 (1,225 Гкал/ч) при расходе 61,45 м³/ч. Указание разности 0,004 Гкал/ч справа не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение нагрузок Т111 (1,229 Гкал/ч) и Т211 (1,225 Гкал/ч) при расходе 61,45 м³/ч. Указание разности 0,004 Гкал/ч справа не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Т111:1,229 иТ211:1,225Гкал/ч при одинаковом61,45м³/ч.",
+          "verdict": "confirmed_prior_GRAPHIC_and_arithmetic",
+          "limits": "Разность0,004; это один конфликт парных подписей, не два независимых дефекта."
+        },
+        {
+          "claim": "Расхождение повторяется в нескольких фрагментах.",
+          "verdict": "location_scope_not_additional_defect_count",
+          "limits": "Дополнительные адреса отдельно не перепроверены. Повторение не увеличивает число независимых дефектов."
+        },
+        {
+          "claim": "Сверить границы контура и исходную нагрузку.",
+          "verdict": "supported_scoped_question",
+          "limits": "Разность подписей не измерение теплопотерь; ошибочная наладка или выбор оборудования не установлены."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический недостаток циркуляции, ошибочный максимальный расход ввода, неправильная наладка и окончательная нагрузка.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы о формулах, размерностях и нагрузках. Не превращать арифметическое расхождение в доказанный отказ системы. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_27af51f0cd26488ea08ffa55589b0c3e.png",
+          "sha256": "9ae3ec6ff303ff8f3b6317bd8cfa1b49ab22653581184818e10d9f0393bf4c7a",
+          "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Pipe leaders, equipment identity and parameter labels inspected; see claim_reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_27af51f0cd26488ea08ffa55589b0c3e.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8e4e78d833774d1094ea7fc72932c0ff.png",
+          "sha256": "89a963ddc75e1cd7a81dee28b10d2ff797f2383be5d965d2e05407587df3215f",
+          "block_id": "blk_8e4e78d833774d1094ea7fc72932c0ff",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Pipe leaders, equipment identity and parameter labels inspected; see claim_reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8e4e78d833774d1094ea7fc72932c0ff.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-049",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-049"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_circulation_and_load"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-049",
+      "finding": {
+        "id": "F-049",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Тепловые нагрузки",
+        "sheet": "Лист 10",
+        "page": [
+          17,
+          42
+        ],
+        "problem": "Нагрузка отопления третьей зоны на разрезе отличается от расчётной таблицы.",
+        "description": "На разрезе 23-23 для Т13 и Т23 указано 0,200 Гкал/ч, в таблице записки — 0,191 Гкал/ч. Разница равна 0,009 Гкал/ч, около 4,7%. Назначение возможной надбавки не пояснено.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к согласованности нагрузок в расчёте и на чертежах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-021",
+                "G-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-021",
+                  "G-022"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить окончательную нагрузку, отдельно обозначить запас при его применении и обновить подписи и расчёты.",
+        "risk": "Несогласованный подбор оборудования и настройка расхода отопления третьей зоны.",
+        "source_finding_ids": [
+          "G-021",
+          "G-022"
+        ],
+        "source_block_ids": [
+          "blk_d0a62bc2e56f4d07bb33a73622429881"
+        ],
+        "related_block_ids": [
+          "blk_d0a62bc2e56f4d07bb33a73622429881",
+          "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 42
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-022",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно расхождение нагрузки отопления 3-й зоны: 0,200 Гкал/ч на разрезе 23-23 против 0,191 Гкал/ч в пояснительной записке, разница 0,009 Гкал/ч (4,7%). Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно расхождение нагрузки отопления 3-й зоны: 0,200 Гкал/ч на разрезе 23-23 против 0,191 Гкал/ч в пояснительной записке, разница 0,009 Гкал/ч (4,7%). Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP40:bbd2b9236034c12aec3c",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Т13/Т23 на23–23:0,200Гкал/ч против0,191ПЗ.",
+          "verdict": "confirmed_prior_GRAPHIC_and_TEXT",
+          "limits": "Разность0,009;0,009/0,191≈4,71%. Процент не допустимый порог и не доказательство отказа."
+        },
+        {
+          "claim": "Назначение возможной надбавки не пояснено.",
+          "verdict": "unresolved_explanation",
+          "limits": "Резерв или разные режимы могут объяснить числа только после подтверждения. Возможное объяснение не основание снять вопрос."
+        },
+        {
+          "claim": "Согласовать нагрузку и отдельно обозначить подтверждённый запас.",
+          "verdict": "supported_document_question",
+          "limits": "Окончательная нагрузка и причина расхождения не установлены. Связь с текущимF051 по теплообменнику той же зоны требует сохранения отдельных исходных подписей, а не суммирования их как физических отказов."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический недостаток циркуляции, ошибочный максимальный расход ввода, неправильная наладка и окончательная нагрузка.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы о формулах, размерностях и нагрузках. Не превращать арифметическое расхождение в доказанный отказ системы. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+          "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json",
+            "sha256": "a2c3421f55b3430b3c2e3b512e6c99657e98a64fc5d2ad7f136fc97d14164834"
+          },
+          "limits": "Фактический недостаток мощности и отказ регулирования не доказаны; принадлежность исторической записи к дублю UNI-039 остаётся отдельным вопросом. Расходы и нагрузки связаны тематически, но причина различия не установлена. Не объявлять клапан непригодным: выбранное Kv16 больше обоих значений требуемого Kv13,51 и напечатанного14,45. Для0,200 против0,191 разность0,009Гкал/ч, или4,71% относительно0,191; это не допустимый процент и не доказанный запас. Не выпускать отдельный дублирующий дефект.",
+          "wording": "Согласовать параметры отопления III зоны: на разрезах Q=0,246 Гкал/ч и у клапана поз.29 G=10,7 м³/ч, ΔP=0,446; в ПЗ Q=0,191 и G=9,55, ΔP=0,356; подбор теплообменника 0,21965 учитывает запас 15%. Установить назначение нагрузок и единый расчётный режим, затем синхронизировать документы. Дополнительно на разрезе23-23 у Т13/Т23 подписано0,200Гкал/ч при80/60°C против табличных0,191; включить в ту же сверку режима III зоны."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d0a62bc2e56f4d07bb33a73622429881.png",
+          "sha256": "813ec783eeaea997e75b97ece66d75b1bc6508fd8aaf1f02adf4e3dbed719013",
+          "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез23-23:Т13иТ23отопления3зоныQ0,200Гкал/ч,G10,7м³/ч.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d0a62bc2e56f4d07bb33a73622429881.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-051",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-051"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_circulation_and_load"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Four current ITP findings reviewed against frozen prior atomic evidence with identical r3 MD/PNG hashes. Arithmetic independently checked; current claims about downstream use, repeated locations and possible reserve constrained separately. No new raster inspection, engineer decision or norm applicability verification."
+}
