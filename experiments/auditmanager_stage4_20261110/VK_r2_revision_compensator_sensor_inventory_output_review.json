@@ -1,0 +1,479 @@
+{
+  "status": "three_VK_inventory_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "9dcdeaa7d7cefd56d278f75297fb9214d567e3d7d08d2f92efde6c10b2c00271",
+  "queue_after_sha256": "a5a3b956c25d91ddc90069f981f3dc66486468c08fe9095f198a86ccd7951540",
+  "reviewed_rows": [
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-003",
+      "finding": {
+        "id": "F-003",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектность спецификации",
+        "sheet": "Листы 1, 19, 20, 02",
+        "page": [
+          3,
+          21,
+          22,
+          31
+        ],
+        "problem": "Количество ревизий К1 в спецификации не согласовано с числом стояков и этажами установки.",
+        "description": "Ведомость предусматривает 30 основных стояков К1: 10 в секции С2 и 20 в секции С3. При установке ревизий на трёх этажах каждого стояка требуется 90 изделий, тогда как специфицировано 7 полипропиленовых ревизий диаметром 110 мм. Расчёт 90 шт. условен до подтверждения применимости общего решения ко всем стоякам.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к включению предусмотренных рабочими чертежами изделий в спецификацию.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Составить подсчёт ревизий по каждому стояку и этажу после согласования периодичности установки; исправить спецификацию и явно обозначить исключения.",
+        "risk": "Недокомплект ревизий может привести к дополнительным закупкам и отсутствию предусмотренного доступа для прочистки.",
+        "source_finding_ids": [
+          "T-003"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_0322283990a44921bed00f2feff715a4",
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 94,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F002_revision_compensator_inventory:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Ведомость перечисляет30основных марокК1;СО содержит7ППревизий и17компенсационных патрубков.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Разные виды сущностей. ВК1 дополнительно присутствуют чугунные ревизии3+3+2шт.;их взаимозаменяемость сПП не установлена."
+        },
+        {
+          "claim": "90ревизий либо минимум30патрубков — доказанная потребность.",
+          "verdict": "not_established_without_object_and_floor_binding",
+          "limits": "30×3=90 верно условно. Фактическая протяжённость,материалы и применимость по этажам каждого стояка не установлены."
+        },
+        {
+          "claim": "Нужно составить привязку изделий к стоякам и этажам.",
+          "verdict": "supported_scoped_inventory_question",
+          "limits": "Не назначать точный дефицит или количество добавления до сверки."
+        }
+      ],
+      "unsupported_additions": "Недопоставка и отсутствие защиты не установлены. Точные количества требуют реестра мест установки;числа стояков и изделий автоматически не отождествлять.",
+      "novel_useful_content": "Ранее составной вопрос разделён. Часть о99противопожарных муфтах в этих двух строках отсутствует;это локальное отсутствие,а не утверждение о полном отсутствии темы во всей выдаче.",
+      "duplicate_burden": "Два разных вида изделий из одной составной строки первого повтора:ревизииF-003 ипатрубкиF-004. Это не полные дубли;можно объединить в один запрос с сохранением обеих проверок.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_1d17a25462884606ae486c345090fe20",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_686c23c287f1430199897dff70be0878",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F002_revision_compensator_inventory.json",
+          "sha256": "37e68f7608b3f3fadbc1ff458cf06e0a66ab06ee536959a3ee17a0acbe076489",
+          "primary_adjudication": null,
+          "limits": "30 основных стояков следуют из диапазоновК1-2.1…2.10 иК1-3.1…3.20; дополнительные ветви и фактическая протяжённость каждого стояка не пересчитаны. 30×3=90 — условное число мест при трёх ревизиях на каждом из30 стояков, а не самостоятельный поузловой обмер. ВК1 также указаны чугунные ревизииDN100:3+2шт. иDN150:3шт.; они не автоматически заменяют полипропиленовыеØ110. Семь чугунных ревизийК1.1 и10 полипропиленовых плюс7 чугунныхК2.1 нельзя автоматически перенести вК1. «Учетверенная длина» патрубка — характеристика изделия, не множитель количества17шт. Точный дефицит, фактическая закупка и необходимость конкретного числа добавлений не установлены; недостаток изделий не объявлен технически опровергнутым.",
+          "wording": "Сверить две позиции комплектностиК1 с местами установки: (1)7 полипропиленовых ревизийØ110 при30 основных стояках по ведомости и указании устанавливать ревизии на2,6,10-м этажах; (2)17 компенсационных патрубковDN110 при общем требовании поэтажной установки. Составить привязку каждого изделия к стояку и этажу и согласовать количества."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F002_revision_compensator_inventory.json",
+          "sha256": "37e68f7608b3f3fadbc1ff458cf06e0a66ab06ee536959a3ee17a0acbe076489",
+          "primary_adjudication": null,
+          "limits": "30 основных стояков следуют из диапазоновК1-2.1…2.10 иК1-3.1…3.20; дополнительные ветви и фактическая протяжённость каждого стояка не пересчитаны. 30×3=90 — условное число мест при трёх ревизиях на каждом из30 стояков, а не самостоятельный поузловой обмер. ВК1 также указаны чугунные ревизииDN100:3+2шт. иDN150:3шт.; они не автоматически заменяют полипропиленовыеØ110. Семь чугунных ревизийК1.1 и10 полипропиленовых плюс7 чугунныхК2.1 нельзя автоматически перенести вК1. «Учетверенная длина» патрубка — характеристика изделия, не множитель количества17шт. Точный дефицит, фактическая закупка и необходимость конкретного числа добавлений не установлены; недостаток изделий не объявлен технически опровергнутым.",
+          "wording": "Сверить две позиции комплектностиК1 с местами установки: (1)7 полипропиленовых ревизийØ110 при30 основных стояках по ведомости и указании устанавливать ревизии на2,6,10-м этажах; (2)17 компенсационных патрубковDN110 при общем требовании поэтажной установки. Составить привязку каждого изделия к стояку и этажу и согласовать количества."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-004",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_conditional_multicomponent_inventory_question"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектность спецификации",
+        "sheet": "Листы 1, 2, 02",
+        "page": [
+          3,
+          4,
+          31
+        ],
+        "problem": "Количество компенсационных патрубков не согласовано с поэтажной установкой на стояках К1.",
+        "description": "Общие указания предусматривают компенсационные патрубки на каждом этаже полипропиленовых стояков К1. При 30 основных стояках в спецификации указано 17 патрубков — меньше даже одного изделия на каждый стояк. Наличие иных компенсирующих элементов и исключений не установлено.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить отражение в спецификации компенсационных элементов, предусмотренных общими указаниями и схемами.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Выполнить поэтажный подсчёт патрубков, проверить альтернативные способы компенсации и согласовать количества со схемами.",
+        "risk": "Возможны недокомплект и монтаж без предусмотренной компенсации перемещений трубопроводов.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 84,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F002_revision_compensator_inventory:composite:2",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Ведомость перечисляет30основных марокК1;СО содержит7ППревизий и17компенсационных патрубков.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Разные виды сущностей. ВК1 дополнительно присутствуют чугунные ревизии3+3+2шт.;их взаимозаменяемость сПП не установлена."
+        },
+        {
+          "claim": "90ревизий либо минимум30патрубков — доказанная потребность.",
+          "verdict": "not_established_without_object_and_floor_binding",
+          "limits": "30×3=90 верно условно. Фактическая протяжённость,материалы и применимость по этажам каждого стояка не установлены."
+        },
+        {
+          "claim": "Нужно составить привязку изделий к стоякам и этажам.",
+          "verdict": "supported_scoped_inventory_question",
+          "limits": "Не назначать точный дефицит или количество добавления до сверки."
+        },
+        {
+          "claim": "Учетверенная длина позволяет считать17изделий как68компенсаторов.",
+          "verdict": "unsupported_quantity_multiplier",
+          "limits": "Длина — характеристика изделия,не число самостоятельных единиц."
+        }
+      ],
+      "unsupported_additions": "Недопоставка и отсутствие защиты не установлены. Точные количества требуют реестра мест установки;числа стояков и изделий автоматически не отождествлять.",
+      "novel_useful_content": "Ранее составной вопрос разделён. Часть о99противопожарных муфтах в этих двух строках отсутствует;это локальное отсутствие,а не утверждение о полном отсутствии темы во всей выдаче.",
+      "duplicate_burden": "Два разных вида изделий из одной составной строки первого повтора:ревизииF-003 ипатрубкиF-004. Это не полные дубли;можно объединить в один запрос с сохранением обеих проверок.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_1d17a25462884606ae486c345090fe20",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_686c23c287f1430199897dff70be0878",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F002_revision_compensator_inventory.json",
+          "sha256": "37e68f7608b3f3fadbc1ff458cf06e0a66ab06ee536959a3ee17a0acbe076489",
+          "primary_adjudication": null,
+          "limits": "30 основных стояков следуют из диапазоновК1-2.1…2.10 иК1-3.1…3.20; дополнительные ветви и фактическая протяжённость каждого стояка не пересчитаны. 30×3=90 — условное число мест при трёх ревизиях на каждом из30 стояков, а не самостоятельный поузловой обмер. ВК1 также указаны чугунные ревизииDN100:3+2шт. иDN150:3шт.; они не автоматически заменяют полипропиленовыеØ110. Семь чугунных ревизийК1.1 и10 полипропиленовых плюс7 чугунныхК2.1 нельзя автоматически перенести вК1. «Учетверенная длина» патрубка — характеристика изделия, не множитель количества17шт. Точный дефицит, фактическая закупка и необходимость конкретного числа добавлений не установлены; недостаток изделий не объявлен технически опровергнутым.",
+          "wording": "Сверить две позиции комплектностиК1 с местами установки: (1)7 полипропиленовых ревизийØ110 при30 основных стояках по ведомости и указании устанавливать ревизии на2,6,10-м этажах; (2)17 компенсационных патрубковDN110 при общем требовании поэтажной установки. Составить привязку каждого изделия к стояку и этажу и согласовать количества."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F002_revision_compensator_inventory.json",
+          "sha256": "37e68f7608b3f3fadbc1ff458cf06e0a66ab06ee536959a3ee17a0acbe076489",
+          "primary_adjudication": null,
+          "limits": "30 основных стояков следуют из диапазоновК1-2.1…2.10 иК1-3.1…3.20; дополнительные ветви и фактическая протяжённость каждого стояка не пересчитаны. 30×3=90 — условное число мест при трёх ревизиях на каждом из30 стояков, а не самостоятельный поузловой обмер. ВК1 также указаны чугунные ревизииDN100:3+2шт. иDN150:3шт.; они не автоматически заменяют полипропиленовыеØ110. Семь чугунных ревизийК1.1 и10 полипропиленовых плюс7 чугунныхК2.1 нельзя автоматически перенести вК1. «Учетверенная длина» патрубка — характеристика изделия, не множитель количества17шт. Точный дефицит, фактическая закупка и необходимость конкретного числа добавлений не установлены; недостаток изделий не объявлен технически опровергнутым.",
+          "wording": "Сверить две позиции комплектностиК1 с местами установки: (1)7 полипропиленовых ревизийØ110 при30 основных стояках по ведомости и указании устанавливать ревизии на2,6,10-м этажах; (2)17 компенсационных патрубковDN110 при общем требовании поэтажной установки. Составить привязку каждого изделия к стояку и этажу и согласовать количества."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-004",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_conditional_multicomponent_inventory_question"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-005",
+      "finding": {
+        "id": "F-005",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Контроль засоров",
+        "sheet": "Листы 1, 2, 01",
+        "page": [
+          3,
+          4,
+          30
+        ],
+        "problem": "Количество датчиков засора меньше числа основных стояков, подлежащих контролю по общим указаниям.",
+        "description": "Общие указания предусматривают датчик на каждом канализационном стояке в нижнем техническом пространстве. В ведомости перечислено 30 основных стояков жилой части, в спецификации — 25 датчиков. При применении требования ко всем основным стоякам разница составляет не менее 5 шт. Исключение для опусков приборов первого этажа это расхождение не объясняет.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие количества датчиков принятому проектному перечню контролируемых стояков.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-005"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Составить перечень контролируемых стояков с датчиками и обоснованными исключениями, затем исправить спецификацию.",
+        "risk": "Часть стояков может остаться без предусмотренного обнаружения засора и сигнализации.",
+        "source_finding_ids": [
+          "T-005"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_1d17a25462884606ae486c345090fe20",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 38,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK20_sensor_count_identity:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В СО 25 GS-Blockage D110; ведомость перечисляет 10 марок К1 секции 2 и 20 секции 3.",
+          "verdict": "confirmed_TEXT_counts_of_different_entities",
+          "limits": ""
+        },
+        {
+          "claim": "В техпространстве +5,320 требуется датчик на каждом канализационном стояке, кроме опусков приборов 1-го этажа.",
+          "verdict": "confirmed_project_requirement",
+          "limits": ""
+        },
+        {
+          "claim": "Не обеспечены пять мест установки.",
+          "verdict": "insufficient_object_binding",
+          "limits": "30−25=5 арифметически верно, но марки верхних стояков не привязаны поимённо к независимым местам установки с учётом продолжений, объединений и исключений. Заголовок категоричнее условного описания."
+        },
+        {
+          "claim": "Составить перечень контролируемых стояков и согласовать его с СО и АК.",
+          "verdict": "scoped_question_supported",
+          "limits": "Эталон также требует увязать 22 выноски ДЗ; эта часть отсутствует в выдаче. Исторический подсчёт выносок не пересматривался как новый осмотр графики."
+        },
+        {
+          "claim": "Отсутствие сигнализации и аварийное заполнение.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "ГОСТ 21.110-2013 п.4.1",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; нормативный кандидат не засчитывается как проверенное нарушение."
+        },
+        {
+          "claim": "Не менее5датчиков — доказанный нижний предел недокомплекта.",
+          "verdict": "unsupported_lower_bound_without_unique_installation_registry",
+          "limits": "30−25=5 — разность чисел марок и изделий;поимённая связь мест на+5,320,объединений иисключений не установлена. Формулировка «не менее» не усиливает доказательство."
+        }
+      ],
+      "unsupported_additions": "Недопоставка и отсутствие защиты не установлены. Точные количества требуют реестра мест установки;числа стояков и изделий автоматически не отождествлять.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_1d17a25462884606ae486c345090fe20",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_686c23c287f1430199897dff70be0878",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",
+          "sha256": "3578c3e05b80511d0099d88947437916b5e5a6ebf51ecb954e5a6a3864d79ea7",
+          "primary_adjudication": null,
+          "limits": "Подтверждены числа разных сущностей: 30 основных стояков, 22 подписи на двух изображениях и 25 приборов в СО. Не доказано, что каждая подпись однозначно соответствует отдельному устройству, что эти аксонометрии содержат все места установки и что каждому из 30 стояков требуется отдельный датчик после учёта нижних продолжений. На изображениях есть ссылки на смежный ВК0-2. Раздел АК не сверен. Недостача пяти датчиков, три лишних прибора и точное количество для закупки не установлены. Заголовок исходного замечания о датчиках затопления неточен: источник называет датчики засора.",
+          "wording": "Согласовать ведомость датчиков засора К1 с местами установки: в СО указано 25 GS-Blockage D110, на двух аксонометриях техпространства отмечены 22 выноски ДЗ (8 + 14), а схемы основных стояков содержат 30 обозначений. Общие указания требуют датчик на каждом канализационном стояке в техпространстве, исключая опуски от приборов 1-го этажа. Нужна поименная увязка стояков, датчиков, продолжений и исключений, после которой уточняется СО и/или графика."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-005",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_sensor_mapping_question_remove_unproven_five_shortage"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": "Specification inconsistencies do not prove physical supply failures. Reused evidence bound to identical current source hashes."
+}
