@@ -1,0 +1,584 @@
+{
+  "status": "coordinator_coverage_matching",
+  "discipline": "AK",
+  "repeat": 1,
+  "mapped_atoms": [
+    {
+      "target_id": "AK_F011_curtain_connection_scope:0e3aed92411e9239d012",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-029"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+          "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Сопоставлены именно У1–У4 иУ4.3–У4.6 в общих данных; иной индекс не навязывается. Вопрос соответствия обозначений сохранён.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:d373990f04c6f3880335",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-035"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+          "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Заголовок и фраза о неидентифицированных соединениях второй группы воспроизводят часть исходного отрицательного тезиса. Описание привязано к журналу и допускает комплектную проводку, поэтому полное утверждение об отсутствии соединений во всём проекте не засчитывается. Известное изображение межприборных связей не учтено явно.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:e86ce5509b0bfea4981d",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-035"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+          "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "ГруппыY/M/TS названы и допускается комплектная проводка, но показанные схемой межприборные участкиY1–Y2/M1–M2/TS1–TS2 не прослежены. Узкий вопрос учёта уже показанных соединений сохранён лишь частично.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-016"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F012_cable_section_conflict.json",
+          "sha256": "adda5976fdc931fee477376e4e53dc398de605c62cba05511adc92776b58090d"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "П4.1.3-9, два сечения4×2,5/4×4 и одинаковые15м названы; окончательное сечение оставлено до расчёта и согласования.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-015"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+          "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Все семь марок первого набора и сумма165м приведены; поля page/sheet содержат листы7/8. Различия разбивки трассы признаны.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-015"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+          "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Указаны14строк/210м и листы25/26, но конкретные14марок второго набора не приведены. Сходство суммы и местоположения не заменяет адресный реестр.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:b911bab30a5f2b93c3e1",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+          "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Дословная идентичность строк первого набора не утверждается; F-015 прямо отмечает различие распределения длин по способам прокладки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-021"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Насос Пкр4.1 сопоставлен по назначению: M3 схемы иM2 журнала. Номер линии в тексте не указан, но объект и конфликт адресов однозначно соответствуют эталону; фактическая перестановка не зачтена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:10548e1eff411e685ffd",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Полное отсутствие насосной линииПкр4.1 не утверждается; F-021 описывает конфликт существующих адресов.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:242d00252ded0af6828a",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-021"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Обе конкретные линииПкр5.1-9/-13 и их назначения вентилятор/насос сопоставлены со схемами. БуквальноеМЗ авторитетногоTEXT модель передаёт какМ3; смысловое покрытие не оправдывает такую нормализацию.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:03bfe4c21a069237b772",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "ИзолированнаяF-021 содержит паруM1/M5, однакоF-057 для того же насосаПн5.1 явно добавляетM2 на схеме внешних подключений. Во всей выдаче нет только двух обозначений; распределение по двум замечаниям создаёт отдельный вопрос объединения.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-021",
+        "F-057"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "В совокупностиF-021/F-057 сохраняютM1КЖ, M5 функциональной схемы иM2 схемы подключений для насосаПн5.1. Полнота учитывается по всей выдаче; качество объединения этих сведений отдельно не зачтено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-022"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Для Па3.1/Ва3.1 лист11 явно сопоставленM2: насос на схеме и вентилятор в перечне.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-022"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Для того же листа11 M4 сопоставлен как вентилятор схемы и насос перечня.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-022"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Перечислен полный состав двигателей перечняM1–M3/M4, дополнительныйM5 схемы и его линияКЖ; узкое отсутствиеM5 в перечне сохранено, отсутствие поставки не зачтено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-034"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F018_drive_system_assignment.json",
+          "sha256": "62cb406cdf423f7781c27e355c359c2d507189af8b12a26d34f7380119ed6eeb"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "ШкафШАУВ-1-К6АС и позицииСО16.2/16.3 связаны сВа4.1/Па4.1 противВа5.1/Па5.1 схемы. Необходимость замены изделий не утверждается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-019"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F020_heater_cable_conflict.json",
+          "sha256": "f6dbf031fc8ba16fd61cd5ebad1825e32f84c0bd4cd39527accb1a6230d293f2"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "По5.1-9:10м,3×2,5 схемы против4×4КЖ сохранены; выбор исполнения оставлен по паспорту и защите.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:e96e359fd83734e6c3fa",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F021_cable_reading_balance.json",
+          "sha256": "e1221c563cfdf13442cf7197a43f4a81a8ce262ec4f68a3bbd2c69a5afa1d6fc"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Ошибочное чтение5×4,15м кM4Пкр6.1 в66строках не повторено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:c6f3ad54ccd603f4f796",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F021_cable_reading_balance.json",
+          "sha256": "e1221c563cfdf13442cf7197a43f4a81a8ce262ec4f68a3bbd2c69a5afa1d6fc"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Отсутствие кабеляM4Пкр6.1 в локальной ведомости в66строках не утверждается. Другие конфликты адресов этой системы не являются повтором данного тезиса.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/AK_review.json",
+  "review_ledger_sha256": "d49633e77758d4a383dd70131a8691776f2db488cd932c8e9497a7292d21cf6c",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "AK",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 55,
+          "availability_available": 30,
+          "partial": 7,
+          "absent": 1,
+          "full": 22,
+          "availability_unchecked": 25,
+          "unchecked": 25
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 23,
+          "availability_available": 5,
+          "partial": 2,
+          "full": 3,
+          "availability_unchecked": 18,
+          "unchecked": 18
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 22,
+          "availability_available": 11,
+          "absent": 10,
+          "partial": 1,
+          "availability_unchecked": 11,
+          "unchecked": 11
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 25
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "engineer_confirmation": "Not established for these original blind candidates; frozen source adjudications reused without claiming new engineer approval.",
+  "limits": [
+    "Полное покрытие не означает корректность всех рекомендаций и нормативных ссылок.",
+    "Пропуски и повтор ложных утверждений оценены по всей выдаче, не по ключевым словам.",
+    "Отсутствие ошибки не доказывает работу фильтра.",
+    "ПодменаМЗ→М3 и распределение трёх адресов насоса по двум замечаниям требуют отдельной оценки качества формулировок."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
