@@ -1,0 +1,280 @@
+{
+  "status": "one_stage_identity_and_context_link_review",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "14c48435f8e28e8c36602d161b8d67a2bfc39e79b07a494c51e00a4a70b1ca4c",
+  "queue_after_sha256": "9436b4f1c560e40a6dbd0fd0adf963d44de612ae50e959833363eaf6e07e2cf9",
+  "reviewer": "coordinator_authoritative_TEXT_identity_review",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-039",
+      "finding": {
+        "id": "F-039",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Идентификация документации",
+        "sheet": null,
+        "page": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          114,
+          115
+        ],
+        "problem": "Этап строительства и наименование раздела не согласованы.",
+        "description": "Титульные листы относят объект к этапу 1, приложенное техническое задание — к этапу 2 при совпадающих названии и кадастровом участке. Для комплекта ИТП одновременно использованы заголовки конструктивных и тепломеханических решений.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить этап строительства и наименование раздела, подтвердить применимость технического задания к выпускаемому комплекту.",
+        "risk": "Применение требований другого этапа и ошибки согласования документации.",
+        "source_finding_ids": [
+          "T-040"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_35ff8683b1cf4be2abdef61740ddda2e",
+          "blk_8c5527e3317248dca7d78ca059f0ec46"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 1
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 114
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 115
+          }
+        ],
+        "highlight_regions": [],
+        "sheet_unavailable": true,
+        "sheet_unavailable_reason": "page_not_in_map",
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-007:0725100843103b391be5",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-040:7f53850450a0df3ef46e",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "H-ITP-64:0a12321728e29d5b1832",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Титульные листы комплекта указывают этап 1, титул приложенного ТЗ — этап 2.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Оба текста также упоминают квартал 3 и вторую очередь. Очередь и этап — разные поля; упоминание второй очереди не снимает расхождение этапов."
+        },
+        {
+          "claim": "Название Событие 6.2, адрес и участок 77:07:0013002:4706 совпадают.",
+          "verdict": "confirmed_object_identifiers",
+          "limits": "Совпадение участка не доказывает тождество строительных этапов."
+        },
+        {
+          "claim": "В заголовках комплекта ИТП одновременно присутствуют конструктивные и тепломеханические решения.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Первые два титула содержат «КОНСТРУКТИВНЫЕ И ОБЪЕМНО-ПЛАНИРОВОЧНЫЕ РЕШЕНИЯ», титул блока 4 — «КОНСТРУКТИВНЫЕ РЕШЕНИЯ», рядом с ИТП/тепломеханическими решениями."
+        },
+        {
+          "claim": "Следует уточнить этап и заголовки и подтвердить применимость ТЗ.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не выбирать правильный номер автоматически; различие реквизитов не доказывает чужое ТЗ или неприменимость всех его требований."
+        },
+        {
+          "claim": "Применение требований другого объекта или этапа уже доказано.",
+          "verdict": "not_established",
+          "limits": "Подтверждено расхождение реквизитов, а не происхождение ошибки или фактическое использование чужого задания."
+        },
+        {
+          "claim": "F-039 самостоятельно обнаруживает конфликт категории электроснабжения либо отсутствие кода работ.",
+          "verdict": "not_supported_by_output_wording",
+          "limits": "Связи с B-ITP-F-007 и H-ITP-64 касаются применимости ТЗ. В F-039 нет тезисов II/I или отсутствия графы. Эти находки проверяются в F-009 и F-038; не засчитывать контекстную связь как независимое обнаружение."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One stage-identity question across repeated titles plus title wording; contextual dependencies on F-009/F-038 do not create extra findings.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_006ed1728d2f4d84b4e633526ac14481",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_984621d535974a2ebd51b5ed8dd3c153",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a1ca949836874a73b2e5918a5b35aa5a",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_66a1a7edb1534631908982534b83cf8c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9c3fa43ddda943a2bc19432c3caa124a",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_35ff8683b1cf4be2abdef61740ddda2e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-007.json",
+          "sha256": "80725162dc61ad03bf5e1c5301f9349e232eb695808ce2d524e94a2fb8b35d9c",
+          "primary_adjudication": null,
+          "limits": "Подтверждено противоречие требований. Фактическая недостаточная надёжность не доказана без схем питания и резервирования. Требование отдельного ВРУ и учёта приведено в ТЗ, но их отсутствие не установлено; отдельное замечание об отсутствии не выпускать.",
+          "wording": "Согласовать задание на электроснабжение ИТП: ПЗ, лист 19, задаёт категорию II, а ТЗ, п. 5.2.6.1, — первую категорию с технологическим резервированием. Отразить согласованное решение в смежном электротехническом разделе."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-040.json",
+          "sha256": "749b9a919d92ecdcb6ece7c7fcb5744d01a593cea646ae56fbe7d9d0973f2566",
+          "primary_adjudication": null,
+          "limits": "Совпадение участка не доказывает тождество этапов; различие этапов не доказывает чужое ТЗ. Пункт1.4 «В одну очередь» не снимает расхождение поля «этап». Не выбирать правильный номер без согласованного задания и не объявлять все требования ТЗ неприменимыми.",
+          "wording": "Уточнить обозначение этапа: титулы ИТП.ТМ указывают этап1, а п.1.1 приложенного ТЗ — этап2; адрес, название Событие6.2 и кадастровый номер77:07:0013002:4706 совпадают. Подтвердить применимость приложенного ТЗ и согласовать наименование."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-ITP-64.json",
+          "sha256": "a19c036e2038bc59c340d9147430c370a05bc48bbdcb8c2de0e60d8f2d5f245b",
+          "primary_adjudication": null,
+          "limits": "Сметные файлы и отдельно переданные Excel не проверены; непоставка оборудования не доказана.",
+          "wording": "Уточнить выполнение п.5.18.3.1 ТЗ: в шапках СО PDF24–38 нет требуемой колонки «Код работ». «Код изделия» является другой графой."
+        }
+      ],
+      "disposition": "assessed_preserve_stage_and_title_identity_question_qualify_context_links"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+      "authoritative_TEXT": "### BLOCK #1 [TEXT]: blk_8c5527e3317248dca7d78ca059f0ec46\n\n> **Created:** 2026-10-20 11:48:44 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/RS1NPbLmMtGpHsQgSk3g)\n\nООО «СУ-10»\n117335, город Москва, улица Вавилова, дом 69/75,\nпом I, ком 7, оф 806\n\nЗаказчик – ООО «ДС Строй»\n\n**«Многофункциональная комплексная жилищная застройка», расположенная по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, этап 1 (рекламное название Событие 6.2), на земельном участке с кадастровым номером\n77:07:0013002:4706\"**\n\nРАБОЧАЯ ДОКУМЕНТАЦИЯ\n\nКОНСТРУКТИВНЫЕ И ОБЪЕМНО-ПЛАНИРОВОЧНЫЕ РЕШЕНИЯ\n\nИНДИВИДУАЛЬНЫЙ ТЕПЛОВОЙ ПУНКТ.\nТЕПЛОМЕХАНИЧЕСКИЕ РЕШЕНИЯ\n\nПД-00542664-ИТП.ТМ\n\n| Изм | №док | Подп. | Дата |\n|---|---|---|---|\n|  |  |  |  |\n|  |  |  |  |\n|  |  |  |  |\n|  |  |  |  |\n|  |  |  |  |\n\nМосква\n2026\n\n## Page 2\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_006ed1728d2f4d84b4e633526ac14481",
+      "authoritative_TEXT": "### BLOCK #2 [TEXT]: blk_006ed1728d2f4d84b4e633526ac14481\n\n> **Created:** 2026-10-20 11:48:45 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/4apPWmptGIgxCJ5vFsne)\n\nIC\n\nООО «СУ-10»\n\n117335, город Москва, улица Вавилова, дом 69/75,\nпом I, ком 7, оф 806\n\nЗаказчик – ООО «ДС Строй»\n\n**«Многофункциональная комплексная жилищная застройка», расположенная по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, этап 1 (рекламное название Событие 6.2), на земельном участке с кадастровым номером\n77:07:0013002:4706\"**\n\nРАБОЧАЯ ДОКУМЕНТАЦИЯ\n\nКОНСТРУКТИВНЫЕ И ОБЪЕМНО-ПЛАНИРОВОЧНЫЕ РЕШЕНИЯ\n\nИНДИВИДУАЛЬНЫЙ ТЕПЛОВОЙ ПУНКТ.\nТЕПЛОМЕХАНИЧЕСКИЕ РЕШЕНИЯ\n\nПД-00542664-ИТП.ТМ\n\n| Изм | №док | Подп. | Дата |\n|---|---|---|---|\n|  |  |  |  |\n|  |  |  |  |\n|  |  |  |  |\n|  |  |  |  |\n|  |  |  |  |\n\nГлавный инженер проекта\n\nКазаков Е. И.\n\nМосква\n2026\n\n## Page 3\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_984621d535974a2ebd51b5ed8dd3c153",
+      "authoritative_TEXT": "### BLOCK #3 [TEXT]: blk_984621d535974a2ebd51b5ed8dd3c153\n\n> **Created:** 2026-10-20 11:48:45 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/OPRH4yGhA8fOUSPt0yuJ)\n\nООО «ЮНИПРО»\nИНН/КПП 7718610541/770901001\nТЕЛЕФОН: +7 (495)198-43-41\nHTTP: //WWW.UPGROUP.RU\nE-MAIL: OFFICE@UPGROUP.RU\n\n«Объединение профессиональных проектировщиков «РСП»\nВыписка СРО-П-209-14032019\n\n«Многофункциональная комплексная жилая застройка», расположенная по\nадресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и\nплатформой «Матвеевское», квартал 3, 2-я очередь, этап 1 (рекламное\nназвание Событие 6.2), на земельном участке с кадастровым номером\n77:07:0013002:4706\"\n\n##### Рабочая документация\n\nИТП. Тепломеханические решения\n\n**ПД-00542664-ИТП.ТМ**\n\nУНИКАЛЬНЫЕ ПРОЕКТНЫЕ РЕШЕНИЯ\n\nМосква, 2026 г.\n\n## Page 4\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_a1ca949836874a73b2e5918a5b35aa5a",
+      "authoritative_TEXT": "### BLOCK #4 [TEXT]: blk_a1ca949836874a73b2e5918a5b35aa5a\n\n> **Created:** 2026-10-20 11:48:46 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/1fDdtbVCOzj7xUF91zgp)\n\nОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ «ЮНИПРО»\n\n109004, Москва г, вн.тер.г. муниципальный округ Таганский, ул. Николаянская, д.3б, стр.1 • ИНН/КПП 7718610541/770901001\n\nТЕЛЕФОН: +7 (495) 198-43-41 • HTTP://WWW.UPGROUP.RU • E-MAIL: OFFICE@UPGROUP.RU\n\nУ Н И К А Л Ы Е\n\nП Р О Е К Т Н Ы Е\n\nР Е Ш Е Н И Я\n\n##### «Объединение профессиональных проектировщиков «РСП» Выписка СРО-П-209-14032019\n\n«Многофункциональная комплексная жилищная застройка», расположенная по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, этап 1 (рекламное название Событие 6.2), на земельном участке с кадастровым номером 77:07:0013002:4706\"\n\n#### Рабочая документация\n\nКОНСТРУКТИВНЫЕ РЕШЕНИЯ\n\nИТП. Тепломеханические решения\n\n**ПД-00542664-ИТП.ТМ**\n\nГенеральный директор\n\nВ.А. Китайкин\n\nГлавный инженер проекта\n\nС.А. Демиденко\n\nМосква, 2026 г.\n\n## Page 5\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_66a1a7edb1534631908982534b83cf8c",
+      "authoritative_TEXT": "### BLOCK #5 [TEXT]: blk_66a1a7edb1534631908982534b83cf8c\n\n> **Created:** 2026-10-20 11:48:48 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/ABpVcJ1mNpWb-rna80--)\n\nООО «ПИ ВНИС»\nг. Москва, ул. Фридриха Энгельса, д. 75, стр.11, офис 605\n\n«Многофункциональная комплексная жилищная застройка», расположенная по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, этап 1 (рекламное название Событие 6.2), на земельном участке с кадастровым номером 77:07:0013002:4706\"\n\n##### Рабочая документация\n\n**ПД-00542664-ИТП.ТМ**\n\nИТП. Тепломеханические решения\n\nг. Москва, 2026 г.\n\n## Page 6\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_9c3fa43ddda943a2bc19432c3caa124a",
+      "authoritative_TEXT": "### BLOCK #6 [TEXT]: blk_9c3fa43ddda943a2bc19432c3caa124a\n\n> **Created:** 2026-10-20 11:48:49 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/g_NDfx35Oa5YiO4sfO3X)\n\nООО «ПИ ВНИС»\nг. Москва, ул. Фридриха Энгельса, д. 75, стр.11, офис 605\n\n«Многофункциональная комплексная жилищная застройка», расположенная по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, этап 1 (рекламное название Событие 6.2), на земельном участке с кадастровым номером 77:07:0013002:4706\"\n\n##### Рабочая документация\n\n**ПД-00542664-ИТП.ТМ**\n\nИТП. Тепломеханические решения\n\nГенеральный директор\n\nГИП\n\nШагун М.А.\n\nШагун М.А.\n\nг. Москва, 2026 г.\n\n## Page 7 — Sheet 1 — Общие данные\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_35ff8683b1cf4be2abdef61740ddda2e",
+      "authoritative_TEXT": "### BLOCK #152 [TEXT]: blk_35ff8683b1cf4be2abdef61740ddda2e\n\n> **Created:** 2026-10-20 11:50:02 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/_85rhqUFEqVHpyb44Hxu)\n\nПриложение 2\n\nк договору подряда № 15-09/25-РД от 15.09.2025\n\n##### ТЕХНИЧЕСКОЕ ЗАДАНИЕ\n\nна проектирование объекта\n\n*стадия «Рабочая документация» («РД»)*\n\n*класса «Бизнес»*\n\n*Многофункциональная комплексная жилая застройка с подземной автостоянкой\n(квартал 3, 2-я очередь, корпус 2)*\n\nпо адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой\n«Матвеевское», квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.2), на\nземельном участке с кадастровым номером 77:07:0013002:4706.\n\nМосква\n\n2024 г.\n\n## Page 115\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-007.json",
+      "sha256": "80725162dc61ad03bf5e1c5301f9349e232eb695808ce2d524e94a2fb8b35d9c",
+      "primary_adjudication": null,
+      "limits": "Подтверждено противоречие требований. Фактическая недостаточная надёжность не доказана без схем питания и резервирования. Требование отдельного ВРУ и учёта приведено в ТЗ, но их отсутствие не установлено; отдельное замечание об отсутствии не выпускать.",
+      "wording": "Согласовать задание на электроснабжение ИТП: ПЗ, лист 19, задаёт категорию II, а ТЗ, п. 5.2.6.1, — первую категорию с технологическим резервированием. Отразить согласованное решение в смежном электротехническом разделе."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-040.json",
+      "sha256": "749b9a919d92ecdcb6ece7c7fcb5744d01a593cea646ae56fbe7d9d0973f2566",
+      "primary_adjudication": null,
+      "limits": "Совпадение участка не доказывает тождество этапов; различие этапов не доказывает чужое ТЗ. Пункт1.4 «В одну очередь» не снимает расхождение поля «этап». Не выбирать правильный номер без согласованного задания и не объявлять все требования ТЗ неприменимыми.",
+      "wording": "Уточнить обозначение этапа: титулы ИТП.ТМ указывают этап1, а п.1.1 приложенного ТЗ — этап2; адрес, название Событие6.2 и кадастровый номер77:07:0013002:4706 совпадают. Подтвердить применимость приложенного ТЗ и согласовать наименование."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-ITP-64.json",
+      "sha256": "a19c036e2038bc59c340d9147430c370a05bc48bbdcb8c2de0e60d8f2d5f245b",
+      "primary_adjudication": null,
+      "limits": "Сметные файлы и отдельно переданные Excel не проверены; непоставка оборудования не доказана.",
+      "wording": "Уточнить выполнение п.5.18.3.1 ТЗ: в шапках СО PDF24–38 нет требуемой колонки «Код работ». «Код изделия» является другой графой."
+    }
+  ],
+  "limits": [
+    "Shared cadastral parcel does not resolve stage identity.",
+    "No blanket dismissal of project TZ requirements.",
+    "Frozen target_links left intact; contextual relations must not count as separate detection in final scoring.",
+    "No runtime or production changes."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
