@@ -1,0 +1,8 @@
+{
+  "queue": "728c1a4a1f93f2c00c1e839c5258e60f2ae12beee85bb48de66bcbe3ec0bf7df",
+  "finding": "d09e8a0fded51dcaaaecf77570ab6a3013c2f24330479e9c549884263cb3cf14",
+  "md": "61082e98031b3f4e3ceb656c079bb98ac84eccd0dfa0f831269096b4ee2d61a2",
+  "executor_id": "direct-codex-gpt-6-astra-high",
+  "workflow_version": 3,
+  "max_images": 16
+}

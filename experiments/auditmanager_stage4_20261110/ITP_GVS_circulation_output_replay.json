@@ -1,0 +1,25 @@
+{
+  "scope": "Known-source broader circulation finding through source admission, merge and Excel; narrow pilot superseded with explicit provenance.",
+  "source_candidate_sha256": "2ab7802ccf3d8ebb8e635508130ffc7aa7d5a383a386e2672911f73bc01a4347",
+  "baseline_sha256": "3a3c2505680f1086348eebb0d72aad9c0a6eb9c356789dd0eb97b04d6da21c3a",
+  "source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+  "receipts": [
+    {
+      "finding_id": "ITP-GVS-circulation-conflict",
+      "status": "applied",
+      "action": "revise"
+    }
+  ],
+  "prior_findings_preserved_exactly": 53,
+  "final_findings": 54,
+  "new_finding_id": "F-054",
+  "narrow_pilot_emitted_as_duplicate": false,
+  "historical_compound_control_closed": false,
+  "full_acceptance": false,
+  "limitations": [
+    "Known-source context was executor-selected; not an independent full audit.",
+    "Supply-flow discrepancy and pipe thickness scope remain separate pending controls.",
+    "Preserving baseline rows does not certify their truth.",
+    "Other ITP corrections have not all been composed into this snapshot."
+  ]
+}
