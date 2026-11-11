@@ -1,0 +1,746 @@
+{
+  "status": "four_ITP_balance_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "59fba158f8a63f723e88eec65f9a80c34193782b0402b7796015dc18ac7be0c4",
+  "queue_after_sha256": "5d1a4afc3573292cd667ebed1bbf3035d9df528eb61599b013513e56997694b1",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Тепловые нагрузки",
+        "sheet": "Листы 1, 4, 5, 6",
+        "page": [
+          7,
+          42,
+          43,
+          44,
+          109
+        ],
+        "problem": "Недостаточно пояснено уменьшение суммарной нагрузки ГВС.",
+        "description": "Сумма максимумов зон составляет 1,286 Гкал/ч, общий максимум принят 1,081 Гкал/ч. На общих данных уменьшение связано с неравномерностью, поэтому ошибка сложения не установлена. В таблице пояснительной записки основание уменьшения не раскрыто. Разница равна 0,205 Гкал/ч; подразумеваемый коэффициент — 0,84059, разница массового расхода при перепаде 20 °C — около 10,25 т/ч в принятом приближении.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.75,
+            "reason": "Расчётное обоснование общего максимума нагрузки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Привести расчёт общего максимума и явно отделить его от суммы зональных максимумов.",
+        "risk": "Неоднозначные исходные данные для подбора оборудования ввода и согласования мощности источника.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 53,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Сумма зон0,728+0,377+0,181=1,286,ПЗитого1,081.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Общий максимум1,081является доказанной ошибкой сложения.",
+          "verdict": "not_supported_explicitly_qualified_by_output",
+          "limits": "Анкета выделяет общий максимум корпуса1,081;общие показатели прямо называют учёт коэффициента неравномерности."
+        },
+        {
+          "claim": "Отношение1,081/1,286≈0,84059.",
+          "verdict": "confirmed_ratio_only",
+          "limits": "Не универсальный коэффициент и не восстановленная методика расчёта."
+        },
+        {
+          "claim": "Объяснение учёта неравномерности отсутствует во всём проекте.",
+          "verdict": "refuted_if_generalized",
+          "limits": "Оно есть в заголовке общих показателей;у строкиИТОГОПЗлокально не повторено. Исходный замечание сохраняет общие данные как контекст."
+        },
+        {
+          "claim": "Уточнить подпись/ссылку уИТОГОПЗ.",
+          "verdict": "supported_editorial_question",
+          "limits": "Обязательность повторять объяснение и польза отдельной строки инженером не подтверждены. Нельзя автоматически заменить1,081на1,286."
+        },
+        {
+          "claim": "Полный вывод коэффициента уже проверен.",
+          "verdict": "not_established",
+          "limits": "Первичный вероятностный/потребительский расчёт не исследован."
+        },
+        {
+          "claim": "Разность0,205Гкал/ч соответствует10,25т/ч при перепаде20°C.",
+          "verdict": "conditional_arithmetic_only",
+          "limits": "(1,286−1,081)×1000/20=10,25 при принятой теплоёмкости1ккал/(кг·°C). Это не фактический дефицит расхода и не обоснование отменить неодновременность. Отношение0,84059 не универсальный коэффициент."
+        }
+      ],
+      "unsupported_additions": "Разделять средний/максимальный режим, объём/расход, часовой интервал и состав контуров. Не превращать вычисленный коэффициент или разность в универсальную норму либо доказательство отказа.",
+      "novel_useful_content": "Сохранены вопросы к исходным данным; новые арифметические тезисы проверены с явными условиями.",
+      "duplicate_burden": "distinct_circulation_arithmetic_average_network_flow_and_common_maximum_scope; no_count_inflation_from_three_zones",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_095853a82158483ab52761fde61dd652",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-034",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-012_balance_and_operating_mode_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-013",
+      "finding": {
+        "id": "F-013",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Расчёт ГВС",
+        "sheet": "Листы 6, 10",
+        "page": [
+          44,
+          48,
+          159
+        ],
+        "problem": "Средний расход греющей воды рассчитан с параметрами отсутствующей первой ступени ГВС.",
+        "description": "В формуле приняты температура после первой ступени 30 °C и множитель ((55−30)/(55−5)+0,2)=0,7. Пояснительная записка и пункты 5.8.1.3–5.8.1.4 технического задания предусматривают одноступенчатую схему с температурой ГВС 65 °C. Основание применения параметров двухступенчатой схемы отсутствует.",
+        "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 510.1325800.2022",
+            "cited_designation": "СП 510.1325800.2022",
+            "candidate_relevance": 0.9,
+            "reason": "Расчёт расходов греющей воды в зависимости от принятой схемы ГВС.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать средний режим для одноступенчатой схемы и температуры 65 °C либо документально обосновать применимость использованной формулы.",
+        "risk": "Занижение расхода греющей воды и неверная оценка режимов ГВС.",
+        "source_finding_ids": [
+          "T-013"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 27,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F010_GVS_formula:e2d706356b5cbdcedb39",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В формуле среднего расходаt′=30°Cназвано температурой после первой ступени.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "ПЗ описывает одноступенчатую схему;ТЗ5.8.1.4требует закрытую одноступенчатуюГВС.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Обосновать температурный баланс и согласовать формулу с принятой схемой.",
+          "verdict": "supported_internal_document_question",
+          "limits": ""
+        },
+        {
+          "claim": "Два теплообменника по50%означают две последовательные ступени.",
+          "verdict": "not_supported",
+          "limits": "Количество параллельных аппаратов само по себе не определяет число ступеней."
+        },
+        {
+          "claim": "30°Cвообще недопустимы на входеГВС.",
+          "verdict": "not_established",
+          "limits": "Смешение/циркуляция и конкретный баланс требуют отдельной проверки."
+        },
+        {
+          "claim": "Общий максимальный расход261,50опровергнут этой формулой.",
+          "verdict": "not_established",
+          "limits": "Сумма ввода в том жеTEXT использует54,05максимальногоГВС,а не средние7,07/3,67/1,36;выдача правильно ограничивает вывод."
+        },
+        {
+          "claim": "Формула использует55°C,30°Cпосле первой ступени и множитель0,7, аТЗзадаётГВС5–65°C.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": "(55−30)/(55−5)+0,2=0,7;ТЗ5.8.1.3–4 подтверждает температуры и одноступенчатую схему. Это внутренний вопрос к формуле, не независимая проверка нормативной применимости её всех коэффициентов."
+        },
+        {
+          "claim": "Средняя формула доказывает занижение максимального расхода ввода.",
+          "verdict": "not_established_different_regime",
+          "limits": "Сумма261,50использует54,05максимальногоГВС. Нельзя переносить проблему среднего режима на максимальный без отдельного расчёта."
+        }
+      ],
+      "unsupported_additions": "Разделять средний/максимальный режим, объём/расход, часовой интервал и состав контуров. Не превращать вычисленный коэффициент или разность в универсальную норму либо доказательство отказа.",
+      "novel_useful_content": "Сохранены вопросы к исходным данным; новые арифметические тезисы проверены с явными условиями.",
+      "duplicate_burden": "distinct_circulation_arithmetic_average_network_flow_and_common_maximum_scope; no_count_inflation_from_three_zones",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a5c04128f54f404e900b3ee4e3a854ba",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_dc124e4fb56849bbba6c4e2db3e948e3",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F010_GVS_formula.json",
+          "sha256": "370abff31e496cbfad890ab79c2379f01d1dbb05fa320d5f3f64af72a9eac867",
+          "primary_adjudication": null,
+          "limits": "Подтверждено внутреннее несогласование формулы и описания. Не установлены нормативное нарушение, фактическая двухступенчатая схема, неверный подбор теплообменников или необходимость их замены. Правильные расходы для фактической схемы не определены. Два аппарата по 50% не означают две ступени. Величина 30 °С не признана универсально недопустимой.",
+          "wording": "В ПЗ, лист 6, средние расходы сетевой воды ГВС рассчитаны с t′=30 °С, определённой как температура после первой ступени подогрева. На листе 10 для всех трёх зон указана одноступенчатая схема. Пояснить физический смысл и основание t′=30 °С для принятой схемы и согласовать описание с расчётом; при неподтверждении применимости формулы уточнить расчёт."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-021",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_dc124e4fb56849bbba6c4e2db3e948e3",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-013_balance_and_operating_mode_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-033",
+      "finding": {
+        "id": "F-033",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Подпитка и водоподготовка",
+        "sheet": "Лист 9",
+        "page": [
+          47,
+          94,
+          97,
+          100,
+          103,
+          106,
+          107,
+          110,
+          111,
+          112,
+          113
+        ],
+        "problem": "Расходы подпитки основаны на несогласованных объёмах и неопределённом времени заполнения.",
+        "description": "Расходы определены как 20% объёма и подразумевают объёмы 31,15/18,30/4,50/1,40/18,15 м³ для трёх зон отопления, ДОО и вентиляции. Подборы баков используют 20,676/13,016/1,883/1,458/27,0 м³, анкеты — другие значения. Временной интервал для преобразования 20% объёма в расход не указан. Итог 14,70 м³/ч арифметически верен, но исходное обоснование не согласовано.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.85,
+            "reason": "Обоснование производительности подпитки и водоподготовки по согласованным исходным данным.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-033"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-033"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать объёмы контуров, разделить первоначальное заполнение и эксплуатационную подпитку, указать время заполнения и проверить производительность ХВП.",
+        "risk": "Необоснованная производительность оборудования и недостаточная либо избыточная подача подпиточной воды.",
+        "source_finding_ids": [
+          "T-033"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 77,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-020:e9f7120697b89e6da747",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-020:2052d4e286115c641e7f",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-020:ddebb96399a114f724d6",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-020:c729cc29afbee39e2ed0",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ПЗ задаёт подпитку как 20% объёма, расходы 6,23/3,66/0,90/0,28/3,63 м³/ч; сумма 14,70 м³/ч верна.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Расходы 6,23 и 3,63 подразумевают объёмы 31,15 и 18,15 м³.",
+          "verdict": "conditionally_correct_arithmetic",
+          "limits": "Только если 20% трактовать как часовую долю. Коэффициент времени в записи ПЗ не раскрыт; эти объёмы не измерены и прямо не опубликованы."
+        },
+        {
+          "claim": "Анкеты дают 24,9255 м³ для первой зоны.",
+          "verdict": "confirmed_sum_with_scope_qualification",
+          "limits": "Это сумма жилья Т1.1:20,4255, коммерции Т1.1.1:1,0 и автостоянки Т1.1.2:3,5. Не отдельная строка анкеты. Принадлежность общему подпитываемому контуру и включение объёма ИТП требуют проверки схемы."
+        },
+        {
+          "claim": "Анкеты дают 14,3 м³ для вентиляции.",
+          "verdict": "confirmed_sum_with_scope_qualification",
+          "limits": "Сумма Т1.4.1–Т1.4.4:1,2+2,7+8,6+1,8. Полный объём контура с ИТП не установлен."
+        },
+        {
+          "claim": "Подбор отопления первой зоны использует 20676 л, вентиляции — 27000 л.",
+          "verdict": "confirmed_authoritative_TEXT_and_unit_conversion",
+          "limits": "20,676 и 27 м³. Различие опубликованных исходных данных подтверждено, их одинаковый состав ещё не доказан."
+        },
+        {
+          "claim": "Необходимо согласовать состав объёмов, режим подпитки или заполнения, время и одновременность.",
+          "verdict": "supported_scoped_question",
+          "limits": "Сохранить вопрос о прослеживаемости расчёта; не выбирать правильный объём по большинству документов."
+        },
+        {
+          "claim": "Производительность ХВП или подпитки фактически неверна.",
+          "verdict": "not_established",
+          "limits": "Риск в выдаче не равен доказанному отказу. Не доказана нехватка воды, недостаточность баков или необходимость замены оборудования. 20% не универсальная норма."
+        },
+        {
+          "claim": "Расходы подразумевают31,15/18,30/4,50/1,40/18,15м³.",
+          "verdict": "confirmed_conditional_reverse_calculation",
+          "limits": "Все пять результатов получаются делением6,23/3,66/0,90/0,28/3,63на0,2 только при часовой доле. Временная база не указана; это не опубликованные или измеренные объёмы. Привязка зон берётся из заголовков, а не повторённого индексаVотопл2."
+        },
+        {
+          "claim": "Дополнительные подборы содержат13,016/1,883/1,458м³ для2/3зоны иДОО.",
+          "verdict": "confirmed_authoritative_TEXT_unit_conversion",
+          "limits": "13016/1883/1458л в соответствующих подборах. Разность с обратным расчётом не доказывает одинаковый состав контуров или неверный окончательный объём."
+        }
+      ],
+      "unsupported_additions": "Разделять средний/максимальный режим, объём/расход, часовой интервал и состав контуров. Не превращать вычисленный коэффициент или разность в универсальную норму либо доказательство отказа.",
+      "novel_useful_content": "Сохранены вопросы к исходным данным; новые арифметические тезисы проверены с явными условиями.",
+      "duplicate_burden": "Related to F-010 and F-012 through shared volume inputs; F-040 addresses makeup flow and time regime. Do not multiply one underlying input inconsistency across calculations.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_950ad44af3d645539b95e38ddad3a8e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ee2f019eb36f4a43afab4649bd118c31",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b4fb33513ca44182af058d09c8ab2dbb",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-040",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-033_balance_and_operating_mode_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-034",
+      "finding": {
+        "id": "F-034",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Подбор теплообменников ГВС",
+        "sheet": "Листы 7, 10, 12, 13",
+        "page": [
+          45,
+          48,
+          50,
+          51,
+          64,
+          65,
+          66
+        ],
+        "problem": "Не раскрыто происхождение температуры 16,54 °C на входе теплообменников ГВС.",
+        "description": "Расчёт трубопроводов использует нагрев от 5 до 65 °C, а три подбора теплообменников — вход нагреваемой воды 16,54 °C. Это может быть температурой смеси ХВС и циркуляционной воды, но баланс смешения и соответствующий режим не приведены, хотя циркуляционные расходы зон различаются.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Расчётное обоснование исходных температур и мощности теплообменников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-034"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-034"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Привести баланс смешения по зонам и проверку аппаратов при максимальном водоразборе, циркуляции и пуске.",
+        "risk": "Неподтверждённая способность теплообменников обеспечить требуемую температуру в отдельных режимах.",
+        "source_finding_ids": [
+          "T-034"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 35,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F009_GVS_inlet_temperature:06cdf2a18fcf30aafead",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В трёх подборах ГВС w203119579–581 холодная сторона имеет вход 16,54 °C и выход 65 °C.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Проверены все три листа, не только первый. Массовые расходы по холодной стороне 8,65/4,48/2,15 т/ч относятся к соответствующим аппаратам."
+        },
+        {
+          "claim": "ПЗ рассчитывает расход нагреваемой воды для зон 1–3 с разностью температур 65−5 °C.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "На том же листе отдельно указаны циркуляционные расходы 4,29/2,21/0,78. Их арифметические исходные данные проверялись отдельно в F-013."
+        },
+        {
+          "claim": "Различие 5 °C и 16,54 °C само по себе доказывает ошибку.",
+          "verdict": "not_supported_explicitly_qualified_in_output",
+          "limits": "Температура исходной холодной воды и температура смеси на входе аппарата могут относиться к разным точкам. Наличие циркуляции не доказывает конкретный баланс смешения."
+        },
+        {
+          "claim": "В проверенных листах подбора и расчёте трубопроводов не приведён явный баланс потоков, дающий 16,54 °C по зонам.",
+          "verdict": "confirmed_bounded_document_scope",
+          "limits": "Отсутствие обоснования во всём комплекте не установлено; исходные ОЛ 01934422–24 и смежный раздел не проверены, подробная топология смешения и температура возврата не установлены."
+        },
+        {
+          "claim": "Требуется уточнить расчётный режим водоразбора и циркуляции и связать входные параметры подбора с балансом.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не присваивать автоматически одинаковую температуру возврата всем зонам, не смешивать т/ч и м³/ч без плотности."
+        },
+        {
+          "claim": "Теплообменники недостаточны, требуется увеличение площади или замена.",
+          "verdict": "not_established",
+          "limits": "Выдача формулирует вопрос к исходным данным; фактическая производительность и нарушение нормы не доказаны."
+        },
+        {
+          "claim": "Нужно проверить максимальный водоразбор, циркуляцию и пуск.",
+          "verdict": "reasonable_followup_scope_not_three_proven_failures",
+          "limits": "Новые названия режимов не доказывают отказ в каждом. Требуются граничные условия, топология смешения, расход и температура возврата каждой зоны. Температура16,54сама по себе не опровергнута."
+        }
+      ],
+      "unsupported_additions": "Разделять средний/максимальный режим, объём/расход, часовой интервал и состав контуров. Не превращать вычисленный коэффициент или разность в универсальную норму либо доказательство отказа.",
+      "novel_useful_content": "Сохранены вопросы к исходным данным; новые арифметические тезисы проверены с явными условиями.",
+      "duplicate_burden": "F-041 concerns mixed inlet temperature; F-013 concerns circulation arithmetic, F-021 concerns one-stage versus assumed first-stage language. Shared circulation inputs are not independent confirmations of inadequate exchangers.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_df17c007b7cf4eef8eca49f51580a275",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7963858ada7a4aa2bd63ef6009ec7b6f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fa4cca816905454ab134c787b1d1862a",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F009_GVS_inlet_temperature.json",
+          "sha256": "3105d42ff9d51573ed429301e98e68c83ef5967b37dd3d7f64806bb506c6d000",
+          "primary_adjudication": null,
+          "limits": "Параметры системы и температура смеси у аппарата не тождественны. Отсутствие баланса во всём комплекте не установлено; исходные ОЛ №01934422–24 и смежный раздел не проверены. Атрибуция 5–65 °С техническому заданию не подтверждена этой проверкой. Подробные соединения схемы и фактическая температура возврата не установлены. Нормативное нарушение, необходимость увеличения площади и недостаточная производительность не доказаны.",
+          "wording": "Уточнить основание температуры 16,54 °С на входе холодной стороны в расчётах w203119579–581 и её связь с параметрами системы 5–65 °С в ПЗ. Для согласования нужен режим совместного водоразбора и циркуляции. Это вопрос к исходным данным подбора, а не доказанная недостаточность теплообменников."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-041",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-034_balance_and_operating_mode_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
