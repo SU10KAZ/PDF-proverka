@@ -1,0 +1,122 @@
+{
+  "status": "verified_first_paired_runtime_not_population_acceptance",
+  "seal": {
+    "variant": "classic_current",
+    "discipline": "AK",
+    "repeat": 1,
+    "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current",
+    "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/status/AK.json",
+    "status_sha256": "91482f2f3eadb06af780511d700e0feb415140fa26cd6613a950633aaa3463bb",
+    "input_manifest_sha256": "631af51bfe3587058e41df7e8ed41631ea08f9dc8ea34b7aff152a4cddba25df",
+    "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "final_sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+    "snapshot_sha256": "6a7d9fd93e64b942b9d42241f23d1fd03c5ea28e6665da17a4603c292860de88",
+    "request_artifacts_verified": 927,
+    "quality_accepted": false
+  },
+  "baseline_runtime_path": "experiments/auditmanager_stage4_20261110/baseline_runtime_summary.json",
+  "baseline_runtime_sha256": "f2f556688d1c031a3cdc888b369a3ff304543e1ccef43a4bb523b94be10c5f06",
+  "metrics": {
+    "input_tokens": {
+      "baseline": 4669126,
+      "experimental": 7208191,
+      "ratio": 1.5437987751883329
+    },
+    "output_tokens": {
+      "baseline": 150745,
+      "experimental": 290462,
+      "ratio": 1.9268433447212179
+    },
+    "cached_tokens": {
+      "baseline": 1229440,
+      "experimental": 2494720,
+      "ratio": 2.0291514836022904
+    },
+    "wall_seconds": {
+      "baseline": 3343.933670282364,
+      "experimental": 6489.246013879776,
+      "ratio": 1.9406024920738993
+    },
+    "requests": {
+      "baseline": 215,
+      "experimental": 309,
+      "ratio": 1.4372093023255814
+    }
+  },
+  "experimental_by_stage": {
+    "block_analysis_dual_review": {
+      "attempts": 70,
+      "input_tokens": 1261533,
+      "output_tokens": 8750,
+      "cached_tokens": 565248,
+      "duration_ms": 532228
+    },
+    "block_analysis": {
+      "attempts": 140,
+      "input_tokens": 2794158,
+      "output_tokens": 74847,
+      "cached_tokens": 1151232,
+      "duration_ms": 2833833
+    },
+    "object_operations": {
+      "attempts": 8,
+      "input_tokens": 466945,
+      "output_tokens": 20499,
+      "cached_tokens": 65536,
+      "duration_ms": 497280
+    },
+    "candidate_recovery_primary": {
+      "attempts": 70,
+      "input_tokens": 1274225,
+      "output_tokens": 77088,
+      "cached_tokens": 557056,
+      "duration_ms": 1966851
+    },
+    "candidate_recovery_context": {
+      "attempts": 16,
+      "input_tokens": 656269,
+      "output_tokens": 22183,
+      "cached_tokens": 122880,
+      "duration_ms": 551476
+    },
+    "alia_docnorm_audit": {
+      "attempts": 1,
+      "input_tokens": 47720,
+      "output_tokens": 1476,
+      "cached_tokens": 8192,
+      "duration_ms": 43234
+    },
+    "absence_verification": {
+      "attempts": 2,
+      "input_tokens": 213496,
+      "output_tokens": 663,
+      "cached_tokens": 8192,
+      "duration_ms": 25562
+    },
+    "text_analysis": {
+      "attempts": 1,
+      "input_tokens": 210214,
+      "output_tokens": 62794,
+      "cached_tokens": 8192,
+      "duration_ms": 1264653
+    },
+    "findings_merge": {
+      "attempts": 1,
+      "input_tokens": 283631,
+      "output_tokens": 22162,
+      "cached_tokens": 8192,
+      "duration_ms": 453235
+    }
+  },
+  "failed_attempts": 0,
+  "monetary_cost": null,
+  "quota_percent": null,
+  "decision": "First paired AK wall time exceeds +30% allowance; no release acceptance. Full matched repeats still required.",
+  "limits": [
+    "Single pair, not p95 or cross-discipline estimate.",
+    "Token ratios are resource indicators, not subscription monetary cost.",
+    "Summed request duration differs from wall time due to parallel work.",
+    "No attribution of all slowdown to one method without comparing matching request stages."
+  ],
+  "production_acceptance": false
+}
