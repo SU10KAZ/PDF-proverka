@@ -1,0 +1,4316 @@
+{
+  "status": "additional_source_inventory_not_reserve_assignment",
+  "read_scope": [
+    "Directory names",
+    "current_version.txt metadata",
+    "file existence"
+  ],
+  "not_read": [
+    "Source MD/PDF contents",
+    "comparison outputs",
+    "findings",
+    "engineer decisions"
+  ],
+  "rows": [
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-АР1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-АР1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-АР2.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-АР2.1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-АР2.2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-АР2.2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-АР2.3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-АР2.3",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-АР2.4",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-АР2.4",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-АР2.5",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-АР2.5",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-АР2.6",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-АР2.6",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-АР2.7",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-АР2.7",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-АР2.8",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-АР2.8",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-АР3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-АР3",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-ИОС2.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-ИОС2.1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-ИОС2.2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-ИОС2.2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-ИОС3.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-ИОС3.1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-ИОС4.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-ИОС4.1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-ИОС4.1(ОВ1)",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-ИОС4.1(ОВ1)",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-ИОС4.1(ОВ2)",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-ИОС4.1(ОВ2)",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_1",
+      "document_directory": "СТ26-01-14-ИОС5.6",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_1/documents/СТ26-01-14-ИОС5.6",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26-01-14-ОВ3-1-РД_",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26-01-14-ОВ3-1-РД_",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26-01-14-ОВ3-2-РД",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26-01-14-ОВ3-2-РД",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26-01-14-ОВ3-3-РД_",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26-01-14-ОВ3-3-РД_",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР0-АС-1-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР0-АС-1-РД_V2",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-1-1-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-1-1-РД_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-1-2-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-1-2-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-2-1-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-2-1-РД_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-2-2-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-2-2-РД_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-3-1-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-3-1-РД_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-3-2-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-3-2-РД_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-4-1-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-4-1-РД_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-4-2-РД_V3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-4-2-РД_V3",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-5-1-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-5-1-РД_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-5-2-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-5-2-РД_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-6-1-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-6-1-РД_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-6-2-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-6-2-РД_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-7-1-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-7-1-РД_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-7-2-РД_V4",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-7-2-РД_V4",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АР1-А-Е,Ф-РД_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АР1-А-Е,Ф-РД_V2",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-АУГП-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-АУГП-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-1-1-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-1-1-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-1-2-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-1-2-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-2-1-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-2-1-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-2-2-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-2-2-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-3_1-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-3_1-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-3_2-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-3_2-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-4-1-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-4-1-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-4-2-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-4-2-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-5-1-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-5-1-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-5-2-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-5-2-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-6-1-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-6-1-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-6-2-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-6-2-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-7-1-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-7-1-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-7-2-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-7-2-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК-АС-1-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК-АС-1-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ВК.НС-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ВК.НС-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ1-1-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ1-1-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ1-3-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ1-3-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ1-5-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ1-5-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ1-6-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ1-6-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ1-7-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ1-7-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ1-АС-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ1-АС-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ1-Г-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ1-Г-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ1-Д-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ1-Д-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ2-1-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ2-1-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ2-2-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ2-2-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ2-3-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ2-3-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ2-4-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ2-4-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ2-5-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ2-5-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ2-7-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ2-7-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ2-АС-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ2-АС-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ3-4-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ3-4-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ3-5-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ3-5-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ3-6-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ3-6-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ОВ3-7-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ОВ3-7-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ПТ-АС-РД",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ПТ-АС-РД",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ПТ.НС-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ПТ.НС-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ПТ1-1-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ПТ1-1-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ПТ2-2-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ПТ2-2-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ПТ3-3-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ПТ3-3-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ПТ4-4-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ПТ4-4-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ПТ5-5-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ПТ5-5-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ПТ6-6-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ПТ6-6-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14-ПТ7-7-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14-ПТ7-7-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14_ВК-АС-2-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14_ВК-АС-2-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "256_Primavera_K14_Spartak",
+      "stage_directory": "stage_2",
+      "document_directory": "СТ26_01-14_ОВ2-6-РД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/comparison/stage_2/documents/СТ26_01-14_ОВ2-6-РД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "13АВ-РД-АР0.1-ПА_V2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/13АВ-РД-АР0.1-ПА_V2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДЗ-КР6.7",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДЗ-КР6.7",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-АР1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-АР1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-АР2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-АР2",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ИКЕО",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИКЕО",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС-2.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-2.1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС-3.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-3.1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС-4.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС-4.2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.2",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС-4.3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.3",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС1.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС1.1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС5.5",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС5.5",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-КР1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-КР1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-КР2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-КР2",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ОДИ",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ОДИ",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ООС1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ООС1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ПЗ",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ПЗ",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ПЗУ",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ПЗУ",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-ДС3-ПОС",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ПОС",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-П-ИОС5.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-П-ИОС5.2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.2",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-П-ИОС5.3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.3",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ-03-П-ИОС5.4",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.4",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "АА_БЭ–03-ДС3–ЭЭ",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ–03-ДС3–ЭЭ",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "ИП_БЭ-_03-ДС3-КР5",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/ИП_БЭ-_03-ДС3-КР5",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_1",
+      "document_directory": "Страница_52_из_АА_БЭ-03-ДС3-ИОС1.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/Страница_52_из_АА_БЭ-03-ДС3-ИОС1.1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "13АВ-РД-АР0.1-ПА_V3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/13АВ-РД-АР0.1-ПА_V3",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА-БЭ-03-ДС3-ИОС1.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА.БЭ-03-ПЗ-Корр_Итог",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА.БЭ-03-ПЗ-Корр_Итог",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-6.2-Корр_ТХ_ВТ",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-6.2-Корр_ТХ_ВТ",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-АР1-КОРР",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-АР1-КОРР",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-АР2-КОРР",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-АР2-КОРР",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [
+        "AR"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-ДС3-10-ОДИ",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-10-ОДИ",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-ДС3-6-ПОС",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-6-ПОС",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-ДС3-8.1-ООС1_v3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-8.1-ООС1_v3",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС4.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС4.1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС4.2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС4.2",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС5.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС5.2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.2",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС5.3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.3",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС5.4",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.4",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-ДС3-ИОС5.5",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.5",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-ДС3-ПЗУ",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ПЗУ",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ-03-КР2-4.2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-КР2-4.2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "АА_БЭ–ДС3–ЭЭ_20260301",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ–ДС3–ЭЭ_20260301",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "ААБЭ-03-ДС3-ИОС2.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС2.1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "ААБЭ-03-ДС3-ИОС2.2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС2.2",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "ААБЭ-03-ДС3-ИОС3.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС3.1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "ААБЭ-03-ДС3-ИОС4.3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС4.3",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "ААБЭ-03-ИКЕО",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ИКЕО",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "ААБЭ-03-ИОС6-Корр_Том_6.1_ТХ_автостоянки",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ИОС6-Корр_Том_6.1_ТХ_автостоянки",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+      "stage_directory": "stage_2",
+      "document_directory": "Страница_21_из_АА-БЭ-03-ДС3-ИОС1.1_—_копия",
+      "path": "/srv/auditmanager/data/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/Страница_21_из_АА-БЭ-03-ДС3-ИОС1.1_—_копия",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-01-01-05_ИОС1.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-01-01-05_ИОС1.1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-01-02-08_ИОС1.2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-01-02-08_ИОС1.2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-02-01-07_ИОС2.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-02-01-07_ИОС2.1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-02-03-13_ИОС2.3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-02-03-13_ИОС2.3",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-03-01-07_ИОС3.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-03-01-07_ИОС3.1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-04-01-04_ИОС4.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-04-01-04_ИОС4.1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-04-02-09_ИОС4.2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-04-02-09_ИОС4.2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-04-03-07_ИОС4.3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-04-03-07_ИОС4.3",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-05-01-06_ИОС5.1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-05-01-06_ИОС5.1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-05-02-04_ИОС5.2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-05-02-04_ИОС5.2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-05-03-11_ИОС5.3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-05-03-11_ИОС5.3",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_1",
+      "document_directory": "01-05-05-04-04_ИОС5.4",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_1/documents/01-05-05-04-04_ИОС5.4",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "4623-ГК-ПЧ-ВК2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/4623-ГК-ПЧ-ВК2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "94_24-ГК-ИТП.ЭОМ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/94_24-ГК-ИТП.ЭОМ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "EOM",
+        "ITP"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "94_24_ГК_1_ОВ1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/94_24_ГК_1_ОВ1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95-24-ГК-1-ОВ3",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95-24-ГК-1-ОВ3",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95-24-ПЧ-ЭМ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95-24-ПЧ-ЭМ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-АК_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-АК_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-АСКУВ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-АСКУВ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-АСКУТ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-АСКУТ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-АСКУЭ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-АСКУЭ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-АСУД.И_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-АСУД.И_V1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-АХС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-АХС_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-ВК2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-ВК2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-ОВ2",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-ОВ2",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-ПС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-ПС_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-ПТ",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-ПТ",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-СОВ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-СОВ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-СОУЭ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-СОУЭ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-ССК_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-ССК_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-ШПД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-ШПД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-ЭМ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-ЭМ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-1-ЭО_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-1-ЭО_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-АК_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-АК_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-АСКУВ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-АСКУВ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-АСКУТ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-АСКУТ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-АСКУЭ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-АСКУЭ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-АХС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-АХС_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-ВК1_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-ВК1_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-ВК2_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-ВК2_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-ОВ1_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-ОВ1_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-ОВ2_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-ОВ2_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-ОВ3_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-ОВ3_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-ПС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-ПС_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-ПТ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-ПТ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-СОВ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-СОВ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-СОУЭ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-СОУЭ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-ССК_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-ССК_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-ШПД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-ШПД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-ЭМ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-ЭМ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-2-ЭО_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-2-ЭО_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-АК_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-АК_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-АСКУВ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-АСКУВ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-АСКУТ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-АСКУТ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-АСКУЭ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-АСКУЭ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-АХС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-АХС_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-ВК1_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-ВК1_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-ВК2_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-ВК2_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-ОВ1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-ОВ1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-ОВ2_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-ОВ2_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-ОВ3_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-ОВ3_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-ПС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-ПС_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-ПТ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-ПТ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-СОВ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-СОВ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-СОУЭ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-СОУЭ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-ССК_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-ССК_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-ШПД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-ШПД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-ЭМ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-ЭМ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-3-ЭО_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-3-ЭО_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-АНС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-АНС_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-АСУД.Л_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-АСУД.Л_V1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-АТМ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-АТМ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-АУГПТ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-АУГПТ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ГРЩ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ГРЩ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ИТП.ТМ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ИТП.ТМ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "ITP"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ИТП.УУТЭ1_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ИТП.УУТЭ1_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "ITP"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ИТП.УУТЭ2_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ИТП.УУТЭ2_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "ITP"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-К2-АСУД.И_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-К2-АСУД.И_V1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-К3-АСУД.И_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-К3-АСУД.И_V1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ЛВС.СБ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ЛВС.СБ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-МГН_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-МГН_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-НС.ЭОМ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-НС.ЭОМ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "EOM"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-НС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-НС_V1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ОЗДС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ОЗДС_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ОС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ОС_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ПВ_v1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ПВ_v1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ПЧ-АК_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ПЧ-АК_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "AK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ПЧ-АСУД.И_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ПЧ-АСУД.И_V1",
+      "selected_version": "v002",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001",
+        "v002"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ПЧ-ОВ1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ПЧ-ОВ1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ПЧ-ОВ2_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ПЧ-ОВ2_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ПЧ-ПС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ПЧ-ПС_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ПЧ-СОУЭ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ПЧ-СОУЭ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ПЧ-ССК_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ПЧ-ССК_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ПЧ-ЭО_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ПЧ-ЭО_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ПЧ_ОВ3_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ПЧ_ОВ3_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-СКУД1_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-СКУД1_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-СКУД2_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-СКУД2_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-СКУД3_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-СКУД3_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-СОТ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-СОТ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-УСС_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-УСС_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ШМПД_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ШМПД_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ЭГ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ЭГ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-ГК-ЭН_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-ГК-ЭН_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-РД-ПЧ-ВК1_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-РД-ПЧ-ВК1_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [
+        "VK"
+      ],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "95_24-РД-ПЧ-ПТ_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/95_24-РД-ПЧ-ПТ_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    },
+    {
+      "object_directory": "313_LOT_31_LSR",
+      "stage_directory": "stage_2",
+      "document_directory": "РД-ЗИЛ-А-2025-ТП-33-4х2000.ЭТР_V1",
+      "path": "/srv/auditmanager/data/projects_v2/objects/313_LOT_31_LSR/comparison/stage_2/documents/РД-ЗИЛ-А-2025-ТП-33-4х2000.ЭТР_V1",
+      "selected_version": "v001",
+      "selector_mode": "current_version_selector",
+      "available_versions": [
+        "v001"
+      ],
+      "profile_hints": [],
+      "prepared_md_present": true,
+      "prepared_pdf_present": true,
+      "blocks_present": true,
+      "prior_exposure": "unchecked_comparison_storage",
+      "reserve_eligible": null
+    }
+  ],
+  "prepared_counts": {
+    "256/stage_1": 17,
+    "256/stage_2": 66,
+    "272/stage_1": 26,
+    "272/stage_2": 26,
+    "313/stage_1": 12,
+    "313/stage_2": 94
+  },
+  "limits": [
+    "Two stages or multiple versions of one construction object are not independent projects.",
+    "Directory identity and filename discipline hints need verification; foreign documents may be stored under another object.",
+    "Comparison storage indicates potential prior exposure. Audit eligibility before assigning a reserve.",
+    "Object 272 has separate ProjectChange restrictions; no ProjectChange development, truth or reserve is accessed or changed by this metadata survey.",
+    "No earlier source-availability estimate should be generalized beyond its surveyed storage layout."
+  ],
+  "selected_calibration": [],
+  "selected_reserve": [],
+  "production_acceptance": false
+}
