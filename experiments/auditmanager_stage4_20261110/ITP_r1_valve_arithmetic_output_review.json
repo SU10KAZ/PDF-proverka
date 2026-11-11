@@ -1,0 +1,215 @@
+{
+  "status": "valve_arithmetic_checked_and_scope_limited",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "f47720ccc6805b648b61578c73cacaaab9442824ab2ca37222bdfca9e5d45c06",
+  "queue_after_sha256": "7b09c38548b41ce601281d70983dd74034798bae071199ace7eb5be72788f903",
+  "reviewer": "coordinator_authoritative_TEXT_and_arithmetic",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Расчёт регулирующей арматуры",
+        "sheet": "Листы 14, 15, 16, 17",
+        "page": [
+          52,
+          53,
+          54,
+          55
+        ],
+        "problem": "Расчёт пропускной способности содержит ошибки и не раскрывает авторитет клапанов.",
+        "description": "Для отопления третьей зоны записано 9,55/√0,5=14,45 вместо 13,506 м³/ч. Потери на выбранных клапанах составляют 0,188–0,490 бар, но баланс участков и авторитет клапанов не приведены. Отличие от исходных 0,5 бар само по себе не доказывает ошибочный типоразмер.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Исправить арифметику и подтвердить устойчивость регулирования при фактических располагаемых перепадах.",
+        "risk": "Ошибочные настройки и неподтверждённое качество регулирования.",
+        "source_finding_ids": [
+          "T-020"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_296b8547a33a47dbb7a9b8e546d964e0"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 54
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "9,55/√0,5=14,45.",
+          "verdict": "refuted_arithmetic",
+          "limits": "Вычисление даёт13,50674968;ошибка подтверждена вПЗлист16."
+        },
+        {
+          "claim": "ВыбранныйKvs16становится заведомо неверным из-за этой ошибки.",
+          "verdict": "not_established",
+          "limits": "16выше и13,5067и14,45;для оценки регулирования нужны характеристики и баланс участка. Выдача правильно не объявляет типоразмер ошибочным только по отличию от0,5бар."
+        },
+        {
+          "claim": "Записанные потери на выбранных клапанах лежат в пределах0,188–0,490бар.",
+          "verdict": "confirmed_document_values_and_bounded_recalculation",
+          "limits": "Подставлены именно числа опубликованных выражений;это не физическая валидация модели."
+        },
+        {
+          "claim": "Все промежуточные подстановки согласованы.",
+          "verdict": "refuted_if_assumed",
+          "limits": "ГВС3имеетG9,05,но в выражении потерь9,08;отопление1имеет74,15,но в выражении74,12. Эти дополнительные наблюдения оценщика не засчитываются как самостоятельные находки модели."
+        },
+        {
+          "claim": "Баланс и авторитет клапанов отсутствуют во всех документах проекта.",
+          "verdict": "not_established_global_absence",
+          "limits": "В просмотренных расчётах14–17приведены расчётKvи потери;полный баланс регулируемых участков не найден здесь. СмежныйАТМ явно упомянут,но не проверен."
+        },
+        {
+          "claim": "Исправить арифметику и запросить обоснование регулирования.",
+          "verdict": "supported_scoped_question",
+          "limits": "Нельзя автоматически менять диаметры,уставки или требовать ровно0,5бар."
+        },
+        {
+          "claim": "Нестабильное регулирование фактически установлено.",
+          "verdict": "not_established",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_arithmetic_discrepancy_engineer_usefulness_unestablished",
+      "duplicate_burden": "arithmetic_and_control_authority_distinct_from_F018_product_identity; do_not_count_each_recalculation_as_new_finding",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_67b9571de5e74033b6c491043f8c87d1",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_unmapped_valve_arithmetic_question_no_size_rejection"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+      "authoritative_TEXT": "### BLOCK #90 [TEXT]: blk_296b8547a33a47dbb7a9b8e546d964e0\n\n> **Created:** 2026-10-20 11:49:28 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/CjebKR1bd1NJOlBerXUK)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 14 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nВыбраны насосы отопления: 2 x **IL 40/140-2,2/2-R** (1раб, 1рез.) с характеристиками:\nG=12,42 м³/ч, H=19,29 м.вд.см, N=2,2 кВт. Фирмы «ВИЛО» (арт. 2786083).\n\n###### насосы отопления ДОО:\n\nGом/ макс² = (Qом/ макс × 1000)/(t₁ - t₂') = (0,067 × 1000)/(75 - 55) = 3,35 м³ / ч;\n\nHнас=6м(сист)+3м(ТО)+5м(зап)=14м\n\nВыбраны насосы отопления: 2 x **IL 40/220-1,5/4-R** (1раб, 1рез.) с характеристиками:\nG=4,42 м³/ч, H=16,98 м.вд.см, N=1,5 кВт. Фирмы «ВИЛО» (арт. 2786053).\n\n###### насосы вентиляции:\n\nGвен макс = (Qвен макс × 1000)/(τ₁ - τ₂) = (1,527 × 1000)/(85 - 60) = 61,12 м³ / ч;\n\nHнас=5,5м(сист)+3м(ТО)+5м(зап)=13,5м\n\nВыбраны насосы вентиляции: 2x **IL 65/120-4/2-R** (1раб, 1рез.) с характеристиками:\nG=63,56 м³/ч, H=15,27 м.вд.см, N=4,0 кВт. Фирмы «ВИЛО» (арт. 2786102).\n\n###### КЗР:\n\n###### Система ГВС 1-зона:\n\nKв кэр = GГВС¹/√ΔPклап = (м³ / ч);\n\nGГВС¹ = 36,40 м³/ч,\n\nKв кэр = 36,40/√0,5 = 51,26 (м³ / ч);\n\nВыбираем 3-х ходовой регулирующий клапан «РИДАН» **VF-3R-65-52**, Kv=52 м³/ч, Ду=65 мм с электроприводом (см. АТМ)\n\n###### Потери давления на полностью открытом клапане:\n\nΔPклап = ((Gh макс)/KvS)² = (36,40/52)² = 0,490 бар;\n\n###### Система ГВС 2-зона:\n\nKв кэр = GГВС¹/√ΔPклап = (м³ / ч);\n\nGГВС¹ = 18,85 м³/ч,\n\nKв кэр = 18,85/√0,5 = 26,55 (м³ / ч);\n\nВыбираем 3-х ходовой регулирующий клапан «РИДАН» **VF-3R-50-40**, Kv=40 м³/ч, Ду=50 мм с электроприводом (см. АТМ)\n\n## Page 53 — Sheet 15\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+      "authoritative_TEXT": "### BLOCK #91 [TEXT]: blk_1d2ac679be7149c5b52b643219c82454\n\n> **Created:** 2026-10-20 11:49:28 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/R-FD6iTom-BOqEPyfeT7)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 15 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nПотери давления на полностью открытом клапане:\n\nΔPклап = ((Gh max)/KvS)² = (18,85/40)² = 0,222 бар;\n\nСистема ГВС 3-зона:\n\nKv кэп = G¹ГВС/√ΔPклап = (м³ / ч);\n\nG¹ГВС = 9,05 м³ / ч,\n\nKv кэп = 9,05/√0,5 = 12,75 (м³ / ч);\n\nВыбираем 3-х ходовой регулирующий клапан «РИДАН» **VF-3R-32-16**, Kv=16 м³/ч, Ду=32 мм с электроприводом (см. АТМ)\n\nПотери давления на полностью открытом клапане:\n\nΔPклап = ((Gh max)/KvS)² = (9,08/16)² = 0,319 бар;\n\nСистема отопления 1-зона:\n\nKv кэп = (Gот макс)/√ΔPклап = (м³ / ч);\n\nПодбираем КЗР на фактический температурный график тепловой сети 90-70⁰ С\n\nGот макс = 74,15 м³ / ч,\n\nKv кэп = 74,15/√0,5 = 104,43 (м³ / ч);\n\nВыбираем клапан «РИДАН» **VFM-2R-100-140**, Kv=140 м³/ч, Ду=100 мм с электроприводом (см. раздел АТМ)\n\nПотери давления на полностью открытом клапане:\n\nΔPклап = ((Gh max)/KvS)² = (74,12/140)² = 0,280 бар;\n\nСистема отопления 2-зона:\n\nKv кэп = (Gот макс)/√ΔPклап = (м³ / ч);\n\nПодбираем КЗР на фактический температурный график тепловой сети 90-70⁰ С\n\nGот макс = 44,00 м³ / ч,\n\nKv кэп = 44,00/√0,5 = 61,97 (м³ / ч);\n\nВыбираем клапан «РИДАН» **VFM-2R-80-88**, Kv=88 м³/ч, Ду=80 мм с электроприводом (см. раздел АТМ)\n\n## Page 54 — Sheet 16\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+      "authoritative_TEXT": "### BLOCK #92 [TEXT]: blk_a757370e84f448d4a31f1a0c146b0d8b\n\n> **Created:** 2026-10-20 11:49:29 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/VgcL6mV3TfoqvKID2q9S)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 16 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nПотери давления на полностью открытом клапане:\n\nΔPклап = ((Gh max)/KvS)² = (44,00/88)² = 0,250 бар;\n\nСистема отопления 3-зона:\n\nKv кэр = (Gот max)/√ΔPклап = (м³ / ч);\n\nПодбираем КЗР на фактический температурный график тепловой сети 90-70⁰ С\n\nGo/v max = 9,55 м³/ч,\n\nKv кэр = 9,55/√0,5 = 14,45 (м³ / ч);\n\nВыбираем клапан «РИДАН» **VFM-2R-32-16**, Kv=16 м³/ч, Ду=32 мм с электроприводом (см. раздел АТМ)\n\nПотери давления на полностью открытом клапане:\n\nΔPклап = ((Gh max)/KvS)² = (9,55/16)² = 0,356 бар;\n\nСистема отопления ДОО:\n\nKv кэр = (Gот max)/√ΔPклап = (м³ / ч);\n\nПодбираем КЗР на фактический температурный график тепловой сети 90-70⁰ С\n\nGo/v max = 3,35 м³/ч,\n\nKv кэр = 3,35/√0,5 = 4,72 (м³ / ч);\n\nВыбираем клапан «РИДАН» **VFM-2R-20-6,3**, Kv=6,3 м³/ч, Ду=20 мм с электроприводом (см. раздел АТМ)\n\nПотери давления на полностью открытом клапане:\n\nΔPклап = ((Gh max)/KvS)² = (3,35/6,3)² = 0,283 бар;\n\nСистема вентиляции:\n\nKv кэр = (Gот max)/√ΔPклап = (м³ / ч);\n\nПодбираем два КЗР по 50% на фактический температурный график тепловой сети 90-70⁰ С\n\nGo/v max = 38,20 м³/ч,\n\n## Page 55 — Sheet 17\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_67b9571de5e74033b6c491043f8c87d1",
+      "authoritative_TEXT": "### BLOCK #93 [TEXT]: blk_67b9571de5e74033b6c491043f8c87d1\n\n> **Created:** 2026-10-20 11:49:29 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/PJZxSc2GQsAmXlsS9t1w)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 17 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nKν кзр = 38,20/√0,5 = 53,80 (м³ / ч);\n\nВыбираем клапан «РИДАН» **VFM-2R-80-88**, Kv=88 м³/ч, Ду=80 мм с электроприводом (см. раздел АТМ)\n\nПотери давления на полностью открытом клапане:\n\nΔPклап = ((Gh max)/KvS)² = (38,20/88)² = 0,188 бар;\n\n##### 5. АУПД и расширительные баки\n\nСм. расчетные листы подбора фирмы «SPL».\n\n##### 6. Учёт тепла.\n\n###### Учёт тепловых и массовых потоков.\n\nУчёт тепловых и массовых потоков осуществляется:\n\n- учёт подачи и обратной сетевой воды на вводе – теплосчётчиком ВИС.Т\n\n- учёт подпиточной воды – расходометром ВСХн\n\n- учёт подачи холодной воды для подпитки системы ГВС:\nводосчетчиком тахометрическим ВСХн\n\n(Проект узла учёта на установку теплосчётчика ВИС.Т выполнен отдельным альбомом марки УУТЭ).\n\n##### 7. Указание мер безопасности.\n\n8.1 При выполнении работ, связанных с установкой, профилактикой и ремонтом оборудования должны соблюдаться действующие правила техники безопасности при эксплуатации электроустановок.\n\n8.2 Перед началом работ при монтаже оборудования в щите необходимо изучить расположение в изделии элементов и кабелей, находящихся под высоким напряжением.\n\n8.3 Прокладку и разделение кабелей, а также присоединение их к колодкам необходимо производить только при отключенном напряжении питания.\n\n8.4 Замена предохранителей в блоках питания выполнять при включенном питании.\n\n8.5 К работам по установке, профилактике и ремонту оборудования допускаются лица, прошедшие специальный инструктаж и сдавшие экзамен по технике безопасности.\n\n8.6 Для защиты человека от поражения электрическим током выполнено защитное заземление насосов и всех щитов.\n\n## Page 56 — Sheet 18\n\n"
+    }
+  ],
+  "historical_scope_sources": [],
+  "calculations": [
+    {
+      "circuit": "ГВС1",
+      "G": 36.4,
+      "Kvs": 52,
+      "deltaP_bar_by_project_formula": 0.48999999999999994
+    },
+    {
+      "circuit": "ГВС2",
+      "G": 18.85,
+      "Kvs": 40,
+      "deltaP_bar_by_project_formula": 0.22207656250000005
+    },
+    {
+      "circuit": "ГВС3 literal",
+      "G": 9.08,
+      "Kvs": 16,
+      "deltaP_bar_by_project_formula": 0.32205625
+    },
+    {
+      "circuit": "отопление1 literal",
+      "G": 74.12,
+      "Kvs": 140,
+      "deltaP_bar_by_project_formula": 0.280294612244898
+    },
+    {
+      "circuit": "отопление2",
+      "G": 44,
+      "Kvs": 88,
+      "deltaP_bar_by_project_formula": 0.25
+    },
+    {
+      "circuit": "отопление3",
+      "G": 9.55,
+      "Kvs": 16,
+      "deltaP_bar_by_project_formula": 0.35625976562500006
+    },
+    {
+      "circuit": "ДОО",
+      "G": 3.35,
+      "Kvs": 6.3,
+      "deltaP_bar_by_project_formula": 0.2827538422776518
+    },
+    {
+      "circuit": "вентиляция один из двух50%",
+      "G": 38.2,
+      "Kvs": 88,
+      "deltaP_bar_by_project_formula": 0.18843491735537193
+    }
+  ],
+  "third_zone_Kv": 13.505739520663058,
+  "limits": [
+    "Not a regulation stability assessment.",
+    "No manufacturer curve or adjacentATM verified.",
+    "Frozen runs,evaluator and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
