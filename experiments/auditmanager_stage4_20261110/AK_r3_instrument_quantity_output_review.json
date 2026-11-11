@@ -1,0 +1,1260 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "8727c935433862d60e91a64bd9b52ae6f6987f56361832bc61c8685e7de6b714",
+  "queue_after_sha256": "d569bc57797129621ad1bb625ee5ddbce2ff29b95f4de8116fb2242b9ec083b5",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-007",
+      "finding": {
+        "id": "F-007",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Комплектность оборудования",
+        "sheet": "Листы 8, 10, 21, 1, 2",
+        "page": [
+          12,
+          14,
+          25,
+          94,
+          95,
+          101
+        ],
+        "problem": "В спецификации имеются три дополнительных датчика без установленного назначения.",
+        "description": "Для ШАУВ-2-К4ПЧ позиции 2.5 и 2.7 дают два наружных датчика при одном ТЕ1; для ШАУВ-4-К4ПЧ позиция 4.8 содержит два накладных при одном ТЕ2; для ШАУВ-3-К6ПЧ позиция 15.7 содержит два канальных при одном ТЕ3.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Соответствие количества специфицированных приборов проектным решениям.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать назначение дополнительных приборов или исправить количества в спецификации.",
+        "risk": "Закупка трёх лишних приборов либо неполное отражение измерительных цепей.",
+        "source_finding_ids": [
+          "T-007"
+        ],
+        "source_block_ids": [
+          "blk_0457419703024673bb4328b18d47501e",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_a4846024d95044a09f7a24d76da41c31",
+          "blk_192d323532434ee1aba250ffaac80b47",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
+        ],
+        "related_block_ids": [
+          "blk_0457419703024673bb4328b18d47501e",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_a4846024d95044a09f7a24d76da41c31",
+          "blk_192d323532434ee1aba250ffaac80b47",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_192d323532434ee1aba250ffaac80b47",
+            "page": 94
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+            "page": 95
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+            "page": 101
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "СО2.5/2.7: два наружных против одногоTE1;4.8: два накладных против одногоTE2;15.7: два канальных против одногоTE3.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": "Три разных предмета. Не смешивать накладные с канальными; принадлежность15.7 подтверждена продолжением раздела15."
+        },
+        {
+          "claim": "Три прибора лишние.",
+          "verdict": "not_established",
+          "limits": "Назначение резерва, комплектность и заказ не проверены. Решение корректно допускает установить назначение вместо удаления."
+        },
+        {
+          "claim": "Фактическая недопоставка, ущерб или конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Нормативные кандидаты не проверены; фактический заказ и монтаж не исследованы."
+        }
+      ],
+      "unsupported_additions": "Количество по документам не доказывает лишнюю закупку или отказ. Сохранить ограничения комплектной поставки и необходимости согласовать окончательное исполнение.",
+      "novel_useful_content": "Текущий текст сохраняет подтверждённые узкие предметы; новое инженерное принятие не установлено.",
+      "duplicate_burden": "No duplicate of the reviewed narrow atom established here; whole-report audit remains separate.",
+      "profile_and_section": "Подтверждённые конфликты сохранить; вопросы комплектности отдельно. Фактическое распределение по разделам отчёта не проверено.",
+      "engineer_reuse": "Для диапазонов имеется историческое принятие системной темы; оно не доказывает паспортный отказ и не распространяется автоматически на все добавления. Для остальных текущих строк нового решения инженера нет.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_0457419703024673bb4328b18d47501e",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a4846024d95044a09f7a24d76da41c31",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_192d323532434ee1aba250ffaac80b47",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F005_surface_sensor_quantity.json",
+          "sha256": "48b97c42cfa0b0277fb9cf701da41869de070db06fd4ec75fb99b0a388d1e722",
+          "primary_adjudication": null,
+          "limits": [
+            "Канальные TE3/TE4 — два отдельных прибора: их количество2 в перечне согласуется с поз.4.7 СО. Их нельзя включать в накладные датчики или переносить их количество в поз.4.8.",
+            "Сопоставлены назначение,шкаф и тип прибора; графические выводы относятся к просмотренной схеме, не ко всем документам объекта.",
+            "Заводская комплектация,резервные изделия,внешние подключения и фактическая поставка здесь не проверены. Не предписывать безусловное удаление второго датчика.",
+            "Решение инженера по blind-кандидату и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать количество накладных датчиков температуры шкафа ШАУВ-4-К4ПЧ: перечень листа10 задаёт один TE2, что соответствует функциональной схеме; позиция4.8 СО содержит два DT-H2/Pt. Уточнить назначение второго датчика либо исправить количество."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json",
+          "sha256": "7dfe111f83f7d778b22f32158e23e25225b08f4f4ec3226926ddce63dfb1ef6a",
+          "primary_adjudication": null,
+          "limits": [
+            "Проверен весь раздел журнала П4.1.3/П4.1.4 на листах5–6 до перехода к Пкр4.1. Датчик TE1 следующего раздела относится к другому шкафу ШАУВ-3-К4ПЧ и в этот подсчёт не включён.",
+            "Разные назначения двух позиций СО в просмотренных строках не указаны. Резервная поставка, документация изготовителя и фактический заказ не проверены; автоматически удалять вторую позицию нельзя.",
+            "Использование общего значения TE1 программой двух установок не проверено. Наличие одного графического датчика не подтверждает алгоритм контроллера.",
+            "Нарушение конкретного пункта ГОСТ21.110 не установлено. Самостоятельное решение инженера по этому blind-кандидату не найдено."
+          ],
+          "wording": "Для ШАУВ-2-К4ПЧ согласовать количество датчиков наружного воздуха: перечень листа8 и функциональная схема предусматривают один TE1, а позиции2.5 и2.7 СО — по одному датчику с одинаковым наименованием и без разных назначений. Кабельный журнал содержит одну соответствующую линию П4.1.3-1. Уточнить назначение второй позиции либо исправить количество."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json",
+          "sha256": "c9bf31b3153a37963b0821177ba1398e145ddd70d03bda5a6432545628397940",
+          "primary_adjudication": null,
+          "limits": [
+            "Раздел15 начинается на листе7 СО и продолжается на листе8 до позиции15.10; строка15.7 не относится к следующему шкафу раздела16.",
+            "В перечне модель записана ДТ-K2/Pt, в СО DT-K2/Pt; сопоставление выполнено также по шкафу, назначению, Pt1000 и длине260мм. Это не общая нормализация обозначений каталогов.",
+            "На листе27 КЖ имеется линия Пкрб.1-4 к ТЕ3 от ШАУВ-З-К6ПЧ. Написания б/6 и З/3 сохранены из авторитетного TEXT; связь с целевой системой контекстная, не основание исправлять TEXT. Основное расхождение подтверждено без этой нормализации.",
+            "Не проверены вся поставка, заводская комплектация и резервные изделия; безусловное удаление второго датчика не обосновано. Не утверждается отсутствие второго датчика во всех документах.",
+            "Решение инженера по blind-кандидату и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Лист21, Пкр6.1/Вм6.1, шкаф ШАУВ-3-К6ПЧ: согласовать количество канальных датчиков температуры. Перечень содержит один TE3, что соответствует функциональной схеме; позиция15.7 СО содержит два датчика Pt1000 с зондом260мм. Указать назначение второго прибора либо исправить количество."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-013",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-007"
+        }
+      ],
+      "disposition": "assessed_r3_instrument_quantity_or_range_preserve_document_core"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Диапазоны приборов",
+        "sheet": "Лист 10",
+        "page": [
+          14,
+          95
+        ],
+        "problem": "Диапазоны и количества реле давления ШАУВ-4-К4ПЧ расходятся между документами.",
+        "description": "Перечень содержит одно реле 20–200 Па и три 50–500 Па, спецификация — три и одно соответственно. Дополнительно PDS4 на функциональной схеме имеет диапазон 20–200 Па, а в перечне — 50–500 Па. Общее количество четырёх приборов совпадает.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Согласование характеристик и количества приборов в спецификации со схемами.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008",
+                "G-011",
+                "G-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить диапазон каждого PDS1–PDS4 и исправить схему, перечень и спецификацию.",
+        "risk": "Поставка приборов неподходящего диапазона и затраты на замену.",
+        "source_finding_ids": [
+          "T-008",
+          "G-011",
+          "G-012"
+        ],
+        "source_block_ids": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_e3e39f8820d7474caa10ab626d2a2c91"
+        ],
+        "related_block_ids": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_e3e39f8820d7474caa10ab626d2a2c91"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+            "page": 95
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-012",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают оба расхождения: диапазон PDS4 составляет 20–200 Па на схеме и 50–500 Па в перечне; количества приборов этих диапазонов в перечне — один и три, в спецификации — три и один. Различие оценок серьёзности не меняет сути замечания.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают оба расхождения: диапазон PDS4 составляет 20–200 Па на схеме и 50–500 Па в перечне; количества приборов этих диапазонов в перечне — один и три, в спецификации — три и один. Различие оценок серьёзности не меняет сути замечания.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK57:a998dcf058f81b7ac194",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К4ПЧ-4: перечень1/3 и СО3/1 по диапазонам20–200/50–500; всего4.",
+          "verdict": "confirmed_same_source_TEXT",
+          "limits": "Нет доказанной общей нехватки четырёх реле."
+        },
+        {
+          "claim": "PDS4: функциональная схема20–200, перечень50–500.",
+          "verdict": "confirmed_same_source_prior_GRAPHIC_and_TEXT",
+          "limits": "Третий повтор явно сохранил адресPDS4; агрегированный состав2/2 таблицы сигналов в выдаче отсутствует и не засчитывается."
+        },
+        {
+          "claim": "Неподходящий диапазон вызывает замену приборов.",
+          "verdict": "not_established_as_physical_failure",
+          "limits": "Уставка100Па входит в оба диапазона. Паспорт и гистерезис не проверены; СО не задаёт индивидуальную привязку каждогоPDS."
+        },
+        {
+          "claim": "Фактическая недопоставка, ущерб или конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Нормативные кандидаты не проверены; фактический заказ и монтаж не исследованы."
+        }
+      ],
+      "unsupported_additions": "Количество по документам не доказывает лишнюю закупку или отказ. Сохранить ограничения комплектной поставки и необходимости согласовать окончательное исполнение.",
+      "novel_useful_content": "Текущий текст сохраняет подтверждённые узкие предметы; новое инженерное принятие не установлено.",
+      "duplicate_burden": "No duplicate of the reviewed narrow atom established here; whole-report audit remains separate.",
+      "profile_and_section": "Подтверждённые конфликты сохранить; вопросы комплектности отдельно. Фактическое распределение по разделам отчёта не проверено.",
+      "engineer_reuse": "Для диапазонов имеется историческое принятие системной темы; оно не доказывает паспортный отказ и не распространяется автоматически на все добавления. Для остальных текущих строк нового решения инженера нет.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+            "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+          },
+          "limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+          "wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+            "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+          },
+          "limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+          "wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e3e39f8820d7474caa10ab626d2a2c91.png",
+          "sha256": "5c9cdf1f1635d706791f30152851a62ac7c2e0757c65ed25561084084bba4bc0",
+          "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "PDS1/PDS3 filter matrix50–500; PDS2/PDS4 fan matrix20–200. PDS4 setting100Pa. Distinguish setpoint from range.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e3e39f8820d7474caa10ab626d2a2c91.png",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-012",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-006"
+        }
+      ],
+      "disposition": "assessed_r3_instrument_quantity_or_range_preserve_document_core"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-009",
+      "finding": {
+        "id": "F-009",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Количество приборов",
+        "sheet": "Листы 14, 20",
+        "page": [
+          18,
+          24,
+          97,
+          100
+        ],
+        "problem": "В двух перечнях количество канальных датчиков ТЕ3 и ТЕ4 занижено.",
+        "description": "На каждом из листов 14 и 20 строка «ТЕ3, ТЕ4» содержит 1 шт. Схемы предусматривают по два самостоятельных датчика: для П5.1.1/П5.1.3 и П6.1.1/П6.1.4. Сводная спецификация также содержит по два датчика.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Соответствие количества приборов перечням и схемам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-009",
+                "G-021",
+                "G-022",
+                "G-046",
+                "G-047"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать по 2 шт. для ТЕ3, ТЕ4 в обоих локальных перечнях.",
+        "risk": "Неполная комплектация при заказе по локальным перечням.",
+        "source_finding_ids": [
+          "T-009",
+          "G-021",
+          "G-022",
+          "G-046",
+          "G-047"
+        ],
+        "source_block_ids": [
+          "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "blk_5b5187b5afb740efb6423fa40c399349",
+          "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "blk_54608a880c2545aa926c442d213988c3"
+        ],
+        "related_block_ids": [
+          "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "blk_5b5187b5afb740efb6423fa40c399349",
+          "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "blk_54608a880c2545aa926c442d213988c3"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+            "page": 18
+          },
+          {
+            "type": "text",
+            "block_id": "blk_54608a880c2545aa926c442d213988c3",
+            "page": 24
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-022",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-046",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-047",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют количество 1 для ТЕ3, ТЕ4 в перечне элементов при двух отдельных датчиках на схеме и требуют указать 2 шт.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют количество 1 для ТЕ3, ТЕ4 в перечне элементов при двух отдельных датчиках на схеме и требуют указать 2 шт.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания выявляют количество 1 для ТЕ3, ТЕ4 в перечне листа 20 при двух датчиках на схеме и количестве 2 в позиции 14.6 спецификации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На листах14/20 по два самостоятельныхTE3/TE4 при количестве1 в локальном перечне и2 вСО.",
+          "verdict": "confirmed_same_source_TEXT_and_prior_GRAPHIC",
+          "limits": "Разные приборы установлены по местам/сигналам, не только по двум обозначениям."
+        },
+        {
+          "claim": "Исправить локальные количества на2.",
+          "verdict": "supported_local_document_correction_subject_to_final_design",
+          "limits": "Не требуется повторно увеличивать СО, где уже2. Фактическая недопоставка не установлена."
+        },
+        {
+          "claim": "Фактическая недопоставка, ущерб или конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Нормативные кандидаты не проверены; фактический заказ и монтаж не исследованы."
+        }
+      ],
+      "unsupported_additions": "Количество по документам не доказывает лишнюю закупку или отказ. Сохранить ограничения комплектной поставки и необходимости согласовать окончательное исполнение.",
+      "novel_useful_content": "Текущий текст сохраняет подтверждённые узкие предметы; новое инженерное принятие не установлено.",
+      "duplicate_burden": "No duplicate of the reviewed narrow atom established here; whole-report audit remains separate.",
+      "profile_and_section": "Подтверждённые конфликты сохранить; вопросы комплектности отдельно. Фактическое распределение по разделам отчёта не проверено.",
+      "engineer_reuse": "Для диапазонов имеется историческое принятие системной темы; оно не доказывает паспортный отказ и не распространяется автоматически на все добавления. Для остальных текущих строк нового решения инженера нет.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f",
+          "primary_adjudication": null,
+          "limits": [
+            "Различение датчиков основано на отдельных воздушных трактах и сигналах, а не только двух обозначениях в одной строке. Два изображения относятся к разным шкафам; их количества не смешиваются.",
+            "В спецификации уже учтено по2 канальных датчика. Недопоставка и необходимость дополнительной закупки не установлены.",
+            "В СО14.2 сохранены буквальные Пб.1.1/Пб.1.4; связь с функциональной схемой основана на одинаковом обозначении шкафа ШАУВ-2-К6ПЧ и составе раздела, без исправления TEXT по растру.",
+            "На листе20 количество ТС2 пустое, но есть примечание о комплектности с электронагревателем. Это самостоятельный вопрос оформления/комплектности, не доказанный отсутствующий прибор.",
+            "Решение инженера, фактический монтаж и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать количество канальных датчиков TE3/TE4 в перечнях листов14 и20: каждый перечень указывает1, тогда как соответствующая схема содержит два отдельных датчика в разных воздуховодах, а позиции8.6 и14.6 СО соответствующих шкафов предусматривают по2."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f",
+          "primary_adjudication": null,
+          "limits": [
+            "Различение датчиков основано на отдельных воздушных трактах и сигналах, а не только двух обозначениях в одной строке. Два изображения относятся к разным шкафам; их количества не смешиваются.",
+            "В спецификации уже учтено по2 канальных датчика. Недопоставка и необходимость дополнительной закупки не установлены.",
+            "В СО14.2 сохранены буквальные Пб.1.1/Пб.1.4; связь с функциональной схемой основана на одинаковом обозначении шкафа ШАУВ-2-К6ПЧ и составе раздела, без исправления TEXT по растру.",
+            "На листе20 количество ТС2 пустое, но есть примечание о комплектности с электронагревателем. Это самостоятельный вопрос оформления/комплектности, не доказанный отсутствующий прибор.",
+            "Решение инженера, фактический монтаж и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать количество канальных датчиков TE3/TE4 в перечнях листов14 и20: каждый перечень указывает1, тогда как соответствующая схема содержит два отдельных датчика в разных воздуховодах, а позиции8.6 и14.6 СО соответствующих шкафов предусматривают по2."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f",
+          "primary_adjudication": null,
+          "limits": [
+            "Различение датчиков основано на отдельных воздушных трактах и сигналах, а не только двух обозначениях в одной строке. Два изображения относятся к разным шкафам; их количества не смешиваются.",
+            "В спецификации уже учтено по2 канальных датчика. Недопоставка и необходимость дополнительной закупки не установлены.",
+            "В СО14.2 сохранены буквальные Пб.1.1/Пб.1.4; связь с функциональной схемой основана на одинаковом обозначении шкафа ШАУВ-2-К6ПЧ и составе раздела, без исправления TEXT по растру.",
+            "На листе20 количество ТС2 пустое, но есть примечание о комплектности с электронагревателем. Это самостоятельный вопрос оформления/комплектности, не доказанный отсутствующий прибор.",
+            "Решение инженера, фактический монтаж и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать количество канальных датчиков TE3/TE4 в перечнях листов14 и20: каждый перечень указывает1, тогда как соответствующая схема содержит два отдельных датчика в разных воздуховодах, а позиции8.6 и14.6 СО соответствующих шкафов предусматривают по2."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+          "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+          "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "TE3 andTE4 are separate air-duct measurements on each scheme; this does not imply shortage because specification already lists2. Second image directly viewed in preceding package review.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+          "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+          "block_id": "blk_54608a880c2545aa926c442d213988c3",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "TE3 andTE4 are separate air-duct measurements on each scheme; this does not imply shortage because specification already lists2. Second image directly viewed in preceding package review.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-011",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-008"
+        }
+      ],
+      "disposition": "assessed_r3_instrument_quantity_or_range_preserve_document_core"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "sheet": "Лист 23",
+        "page": 27,
+        "problem": "На листе 23 в перечне элементов для двигателей М3–М6 указано количество 2, тогда как на схеме показаны четыре двигателя: М3, М4, М5 и М6 у завес У4.3–У4.6.",
+        "description": "На листе 23 в перечне элементов для двигателей М3–М6 указано количество 2, тогда как на схеме показаны четыре двигателя: М3, М4, М5 и М6 у завес У4.3–У4.6.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Соответствие перечня оборудования принятой схеме.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-055",
+                "G-056"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Привести количество двигателей М3–М6 в перечне элементов в соответствие с четырьмя двигателями на схеме.",
+        "risk": "Недокомплект двигателей или избыточный заказ клапанов.",
+        "source_finding_ids": [
+          "G-055",
+          "G-056"
+        ],
+        "source_block_ids": [
+          "blk_523708af1c384b0e8bc6767d93644336"
+        ],
+        "related_block_ids": [
+          "blk_523708af1c384b0e8bc6767d93644336"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+            "page": 27
+          }
+        ],
+        "highlight_regions": [],
+        "source_stage": "stage01_atomicity_guard",
+        "atomicity_guard": {
+          "split_from": "F-011",
+          "reason": "distinct_nonrecommendational_candidates_same_block"
+        },
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-055",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-056",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на количество М3–М6: в перечне 2 двигателя, на схеме 4; предлагается исправить количество на 4.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на количество М3–М6: в перечне 2 двигателя, на схеме 4; предлагается исправить количество на 4.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "M3–M6: количество2 перечня против4 двигателей завесУ4.3–У4.6 на схеме23.",
+          "verdict": "confirmed_same_source_TEXT_and_prior_GRAPHIC",
+          "limits": "Один конфликт двигателей; клапаны относятся к самостоятельной строкеF-012."
+        },
+        {
+          "claim": "Исправить перечень по схеме.",
+          "verdict": "requires_adjacent_supply_confirmation",
+          "limits": "Двигатели комплектны с завесами и относятся кОВ. Окончательная комплектация и заказ не проверены; схема не единственное основание выбора."
+        },
+        {
+          "claim": "Фактическая недопоставка, ущерб или конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Нормативные кандидаты не проверены; фактический заказ и монтаж не исследованы."
+        }
+      ],
+      "unsupported_additions": "Количество по документам не доказывает лишнюю закупку или отказ. Сохранить ограничения комплектной поставки и необходимости согласовать окончательное исполнение.",
+      "novel_useful_content": "Текущий текст сохраняет подтверждённые узкие предметы; новое инженерное принятие не установлено.",
+      "duplicate_burden": "F-011/F-012 are distinct motor/valve conflicts; shared risk wording is not a reason to delete either.",
+      "profile_and_section": "Подтверждённые конфликты сохранить; вопросы комплектности отдельно. Фактическое распределение по разделам отчёта не проверено.",
+      "engineer_reuse": "Для диапазонов имеется историческое принятие системной темы; оно не доказывает паспортный отказ и не распространяется автоматически на все добавления. Для остальных текущих строк нового решения инженера нет.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+          "sha256": "e529470f6f3da971b8308855d675cc4bf91e1a69e5f30a031c95a68db74da154",
+          "primary_adjudication": null,
+          "limits": [
+            "Доказаны два документальных расхождения, объединённые в одну тему с сохранением обоих атомов.",
+            "Двигатели комплектны с завесами, клапаны — со смесительными узлами; перечень относит их к ОВ. Недопоставка, избыточная закупка и изменение стоимости не доказаны.",
+            "Не предписывать закупку двух двигателей или исключение двух клапанов без согласования ОВ и заводской комплектации. Нельзя автоматически считать схему единственным правильным документом.",
+            "Конкретный пункт ГОСТ21.110-2013 и его применимость не проверены; нормативное нарушение не включать в подтверждённый вывод. Решения инженера по этим кандидатам нет."
+          ],
+          "wording": "Согласовать количества в перечне листа23 со схемой завес У4.3–У4.6: для M3–M6 указано2 двигателя при четырёх показанных на схеме, для Y1/Y2 указано4 регулирующих клапана при двух показанных смесительных узлах с одним таким клапаном в каждом."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+          "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+          "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Four distinct curtain motors M3–M6; two mixing nodes with Y1/Y2; TS1/TS2; protection label T=5°C. Graphic observations use schematic and signal matrix, not raster correction of TEXT table.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-009",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-010"
+        }
+      ],
+      "disposition": "assessed_r3_instrument_quantity_or_range_preserve_document_core"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "sheet": "Лист 23",
+        "page": 27,
+        "problem": "На листе 23 в перечне элементов для Y1, Y2 указано 4 регулирующих клапана с электроприводом, тогда как на функциональной схеме показаны два — по одному в каждом из двух смесительных узлов. Количество в перечне завышено на 2 шт. относительно схемы.",
+        "description": "На листе 23 в перечне элементов для Y1, Y2 указано 4 регулирующих клапана с электроприводом, тогда как на функциональной схеме показаны два — по одному в каждом из двух смесительных узлов. Количество в перечне завышено на 2 шт. относительно схемы.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Соответствие перечня оборудования принятой схеме.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-057",
+                "G-058"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Привести количество регулирующих клапанов Y1, Y2 в перечне элементов к двум согласно функциональной схеме.",
+        "risk": "Недокомплект двигателей или избыточный заказ клапанов.",
+        "source_finding_ids": [
+          "G-057",
+          "G-058"
+        ],
+        "source_block_ids": [
+          "blk_523708af1c384b0e8bc6767d93644336"
+        ],
+        "related_block_ids": [
+          "blk_523708af1c384b0e8bc6767d93644336"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+            "page": 27
+          }
+        ],
+        "highlight_regions": [],
+        "source_stage": "stage01_atomicity_guard",
+        "atomicity_guard": {
+          "split_from": "F-011",
+          "reason": "distinct_nonrecommendational_candidates_same_block"
+        },
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-057",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-058",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на 4 клапана Y1, Y2 в перечне вместо двух на схеме. Ссылка правого замечания на таблицу сигналов дополнительно подтверждает тот же факт без существенного расширения проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на 4 клапана Y1, Y2 в перечне вместо двух на схеме. Ссылка правого замечания на таблицу сигналов дополнительно подтверждает тот же факт без существенного расширения проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Y1/Y2: перечень4 против2 клапанов двух смесительных узлов.",
+          "verdict": "confirmed_same_source_TEXT_and_prior_GRAPHIC",
+          "limits": "Сохранить отдельный предмет клапанов, не считать дублем двигателейF-011."
+        },
+        {
+          "claim": "Уменьшить количество до2 по схеме.",
+          "verdict": "requires_adjacent_supply_confirmation",
+          "limits": "Комплектность поОВ, заводская поставка и заказ не проверены. Документальное расхождение подтверждено, фактическая лишняя закупка нет."
+        },
+        {
+          "claim": "Фактическая недопоставка, ущерб или конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Нормативные кандидаты не проверены; фактический заказ и монтаж не исследованы."
+        }
+      ],
+      "unsupported_additions": "Количество по документам не доказывает лишнюю закупку или отказ. Сохранить ограничения комплектной поставки и необходимости согласовать окончательное исполнение.",
+      "novel_useful_content": "Текущий текст сохраняет подтверждённые узкие предметы; новое инженерное принятие не установлено.",
+      "duplicate_burden": "F-011/F-012 are distinct motor/valve conflicts; shared risk wording is not a reason to delete either.",
+      "profile_and_section": "Подтверждённые конфликты сохранить; вопросы комплектности отдельно. Фактическое распределение по разделам отчёта не проверено.",
+      "engineer_reuse": "Для диапазонов имеется историческое принятие системной темы; оно не доказывает паспортный отказ и не распространяется автоматически на все добавления. Для остальных текущих строк нового решения инженера нет.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+          "sha256": "e529470f6f3da971b8308855d675cc4bf91e1a69e5f30a031c95a68db74da154",
+          "primary_adjudication": null,
+          "limits": [
+            "Доказаны два документальных расхождения, объединённые в одну тему с сохранением обоих атомов.",
+            "Двигатели комплектны с завесами, клапаны — со смесительными узлами; перечень относит их к ОВ. Недопоставка, избыточная закупка и изменение стоимости не доказаны.",
+            "Не предписывать закупку двух двигателей или исключение двух клапанов без согласования ОВ и заводской комплектации. Нельзя автоматически считать схему единственным правильным документом.",
+            "Конкретный пункт ГОСТ21.110-2013 и его применимость не проверены; нормативное нарушение не включать в подтверждённый вывод. Решения инженера по этим кандидатам нет."
+          ],
+          "wording": "Согласовать количества в перечне листа23 со схемой завес У4.3–У4.6: для M3–M6 указано2 двигателя при четырёх показанных на схеме, для Y1/Y2 указано4 регулирующих клапана при двух показанных смесительных узлах с одним таким клапаном в каждом."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+          "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+          "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Four distinct curtain motors M3–M6; two mixing nodes with Y1/Y2; TS1/TS2; protection label T=5°C. Graphic observations use schematic and signal matrix, not raster correction of TEXT table.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+          "reuse_scope": "Previously inspected identical source bytes; no new raster inspection claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-010",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-011"
+        }
+      ],
+      "disposition": "assessed_r3_instrument_quantity_or_range_preserve_document_core"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Five r3 current claims compared with bound prior inspections. All local evidence SHA256 checked; r3 MD/PNG identity verified. Quantity differences not promoted to procurement facts."
+}
