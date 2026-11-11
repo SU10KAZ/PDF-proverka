@@ -96,3 +96,19 @@ def test_no_explicit_request_does_not_render(tmp_path):
     followup,receipt = build_object_operation_followup(request,payload)
     assert followup is None
     assert not (tmp_path/'details').exists()
+
+
+def test_builder_opt_in_freezes_source_and_adds_model_contract(tmp_path):
+    from backend.app.pipeline.stages.prepare.object_operation_passes import build_object_operation_passes
+    _,_,pdf,_,md = setup(tmp_path)
+    pdf.rename(md.with_suffix('.pdf'))
+    (tmp_path/'02_text_analysis.json').write_text(json.dumps({'object_registry':[
+        {'id':'obj','identity':'branch','scope':'sheet 1','kind':'pipe','source_refs':['g']}]}))
+    with pytest.raises(ValueError,match='requires followups'):
+        build_object_operation_passes(tmp_path,md,enable_graphic_details=True)
+    request, = build_object_operation_passes(tmp_path,md,enable_followup=True,enable_graphic_details=True)
+    assert request.continuation_source['graphic_source']['pdf_sha256']==hashlib.sha256(md.with_suffix('.pdf').read_bytes()).hexdigest()
+    assert 'graphic_detail_requests' in request.messages[0]['content']
+    legacy, = build_object_operation_passes(tmp_path,md,enable_followup=True)
+    assert 'graphic_source' not in legacy.continuation_source
+    assert 'graphic_detail_requests' not in legacy.messages[0]['content']

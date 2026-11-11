@@ -19,7 +19,7 @@ def immutable(path, data):
     else:
         path.write_text(json.dumps(data, ensure_ascii=False, indent=2)+'\n')
 
-def prepare(object_id, packet_index=0):
+def prepare(object_id, packet_index=0, *, enable_graphic_details=False):
     assert object_id.replace('_', '').isalnum()
     root = ROOT/object_id
     root.mkdir(parents=True, exist_ok=True)
@@ -36,7 +36,7 @@ def prepare(object_id, packet_index=0):
     crops = root/'blocks_stage02_100'
     if not crops.exists():
         crops.symlink_to(BASE/'03_analysis/runs/control/blocks_stage02_100', target_is_directory=True)
-    request, = build_object_operation_passes(root, BASE/'02_work/document.md', max_requests=1, enable_followup=True)
+    request, = build_object_operation_passes(root, BASE/'02_work/document.md', max_requests=1, enable_followup=True, enable_graphic_details=enable_graphic_details)
     packet = json.loads(request.messages[-1]['content'])
     packet['operations'] = [o for o in packet['operations'] if o['operation'] in ('identity_across_views', 'document_links', 'dimension_consistency', 'quantity_balance', 'calculation_consistency')]
     assert packet['object']['id'] == object_id

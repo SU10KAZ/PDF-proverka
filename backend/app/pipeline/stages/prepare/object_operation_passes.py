@@ -7,7 +7,7 @@ from backend.app.pipeline.stages.block_context.contract import resolve_blocks_di
 from backend.app.pipeline.stages.text_analysis.object_registry import reconcile_object_registry
 
 
-def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable_followup=False, graphic_detail_source=None):
+def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable_followup=False, graphic_detail_source=None, enable_graphic_details=False):
     from .codex_targeted_findings import CodexTargetedPass
     output_dir, md_path = Path(output_dir), Path(md_path)
     text_path = output_dir/'02_text_analysis.json'
@@ -35,6 +35,14 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable
     index_path = crops/'index.json'
     index = json.loads(index_path.read_text()) if index_path.is_file() else {}
     files = {b.get('block_id'):b.get('file') for b in index.get('blocks',[]) if isinstance(b,dict)}
+    if enable_graphic_details:
+        if not enable_followup:
+            raise ValueError('Graphic detail recovery requires followups')
+        if graphic_detail_source is None:
+            from .object_graphic_followup import freeze_graphic_source
+            graphic_detail_source = freeze_graphic_source(
+                md_path.with_suffix('.pdf'), md_path.parent/'blocks.json',
+                output_dir/'object_graphic_details')
     if graphic_detail_source is not None and not enable_followup:
         raise ValueError("Graphic detail recovery requires followups")
     continuation_source = None

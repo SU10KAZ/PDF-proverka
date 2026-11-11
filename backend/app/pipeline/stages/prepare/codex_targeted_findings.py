@@ -753,7 +753,8 @@ def build_targeted_findings_passes(project_info: dict[str, Any], project_id: str
     from .object_operation_passes import build_object_operation_passes
     import os
     passes.extend(build_object_operation_passes(_version_output_dir(project_id), md_path,
-        enable_followup=os.environ.get("AUDIT_OBJECT_CONTEXT_FOLLOWUPS", "0") == "1"))
+        enable_followup=os.environ.get("AUDIT_OBJECT_CONTEXT_FOLLOWUPS", "0") == "1",
+        enable_graphic_details=os.environ.get("AUDIT_OBJECT_GRAPHIC_DETAILS", "0") == "1"))
     return passes
 
 

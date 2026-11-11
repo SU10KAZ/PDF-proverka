@@ -1,14 +1,12 @@
 {
-  "status": "implementation_and_local_tests_complete_runtime_opt_in_pending",
+  "status": "runtime_opt_in_wired_real_control_running",
   "tests": {
     "command": "python -m pytest -q tests/test_object_graphic_followup.py tests/test_object_operation_followup.py tests/test_object_operation_passes.py tests/test_graphic_detail_render.py",
-    "passed": 26
+    "passed": 27
   },
   "behavior": "Explicit needs_data requests can receive same-version GRAPHIC detail tiles without replacing existing TEXT or images. PDF and block geometry hashes checked; TEXT requests refused; image, byte and message budgets bounded.",
   "remaining": [
-    "Wire executor-owned graphic source binding into candidate full-audit setup; default classic runner still does not supply it.",
-    "Run a fresh source-only model control with structured detail requests; existing manual recovery must not be relabeled automatic.",
-    "Admit reviewed T311 candidate into combined ITP output with duplicate review.",
+    "Complete and inspect fresh source-only automatic graphic control; step 0 requested actual graphic detail without expected answers.",
     "Compose previous scoped corrections, finish original controls, then freeze full comparison."
   ],
   "stage4_complete": false,
@@ -17,6 +15,15 @@
     "status": "candidate_ready",
     "candidate_sha256": "1eebafff51284ca20429781e86a375f8cf48f30aa64c9704219a7952c50f788f",
     "claim": "T311 7.71 versus 8.71 m3/h; physical consequences unresolved",
-    "emitted_in_final_excel": false
+    "emitted_in_final_excel": true,
+    "evidence": "ITP_GVS_combined_output_replay.json"
+  },
+  "runtime_opt_in": {
+    "required_flags": [
+      "AUDIT_OBJECT_CONTEXT_FOLLOWUPS=1",
+      "AUDIT_OBJECT_GRAPHIC_DETAILS=1"
+    ],
+    "source_binding": "Sibling document.pdf and blocks.json beside authoritative MD, hashed before use; unavailable sources fail preparation.",
+    "default_changed": false
   }
 }
