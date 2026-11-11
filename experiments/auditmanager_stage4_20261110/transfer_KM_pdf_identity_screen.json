@@ -1,0 +1,893 @@
+{
+  "status": "KM_pdf_identity_screen_not_reserve_assignment",
+  "inventory_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/transfer_source_inventory.json",
+  "inventory_sha256": "14614877ecf79bdf0b2bd46f8002d1f472749e2f90ca01c053a6740ba3518b02",
+  "counts_by_object": {
+    "214": {
+      "documents": 14,
+      "prepared": 14,
+      "distinct_pdf_hashes": 14,
+      "input_identity_confirmed": 14
+    },
+    "256": {
+      "documents": 41,
+      "prepared": 41,
+      "distinct_pdf_hashes": 41,
+      "input_identity_confirmed": 41
+    },
+    "314": {
+      "documents": 6,
+      "prepared": 6,
+      "distinct_pdf_hashes": 6,
+      "input_identity_confirmed": 6
+    }
+  },
+  "rows": [
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/1232-ЧМ-КМ-1",
+      "object_id": "214",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/1232-ЧМ-КМ-1/versions/v001/02_work/document.pdf",
+      "sha256": "d01ba1579dc3b1e313c6cc065f9b9ecb80e5a21b257cc3ea7cdb02eac2273d80",
+      "bytes": 3558428,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/1232-ЧМ-КМ-1/versions/v001/01_input/1232-ЧМ-КМ-1 V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К1",
+      "object_id": "214",
+      "version": "v002",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К1/versions/v002/02_work/document.pdf",
+      "sha256": "0a1b36ae187051e72297dd27e2369666b546b691623b9f4cc715cd866b84d0a0",
+      "bytes": 507016,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К1/versions/v002/01_input/13АВ-РД-КМ-К1_V2.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К2",
+      "object_id": "214",
+      "version": "v004",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К2/versions/v004/02_work/document.pdf",
+      "sha256": "65c4fabeeb568e21231fbde213576eb0eb68c663d990f233cb21e660601a0371",
+      "bytes": 1609658,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К2/versions/v004/01_input/13АВ-РД-КМ-К2_V4.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3",
+      "object_id": "214",
+      "version": "v003",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3/versions/v003/02_work/document.pdf",
+      "sha256": "bf3cbfd770f3f9eb22f2c15acc1d020ee49fa932e4dba8b96b98f77432834908",
+      "bytes": 1690238,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3/versions/v003/01_input/13АВ-РД-КМ-К3_V3.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К4",
+      "object_id": "214",
+      "version": "v002",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К4/versions/v002/02_work/document.pdf",
+      "sha256": "52c643932adcede1fd4bd092e19d745393691349ca8d137409ccc9749c784483",
+      "bytes": 1669572,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К4/versions/v002/01_input/13АВ-РД-КМ-К4 V2.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К5",
+      "object_id": "214",
+      "version": "v002",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К5/versions/v002/02_work/document.pdf",
+      "sha256": "45796a1a3933846de97e4985060a4cc90caaac139b33e928be2fa52afb10e8fb",
+      "bytes": 1782730,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К5/versions/v002/01_input/13АВ-РД-КМ-К5_V2.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К6",
+      "object_id": "214",
+      "version": "v003",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К6/versions/v003/02_work/document.pdf",
+      "sha256": "ed17eca0c4edf3317b9b81868573f8064c488aed87f45632c6ccb51668bacd91",
+      "bytes": 3426022,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К6/versions/v003/01_input/13АВ-РД-КМ-К6_V3.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-ПА",
+      "object_id": "214",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-ПА/versions/v001/02_work/document.pdf",
+      "sha256": "db27f724fcfa0c806df7d74841b8000b323fffd4c5aed33cc2da91f6bc0ceb43",
+      "bytes": 1011580,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-ПА/versions/v001/01_input/13АВ-РД-КМ-ПА.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-НВФ-К4",
+      "object_id": "214",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-НВФ-К4/versions/v001/02_work/document.pdf",
+      "sha256": "17342f330ea2750d0a8f661025ebc134b5b7f50851e3461e3790497a38411f25",
+      "bytes": 50014421,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-НВФ-К4/versions/v001/01_input/РД 13АВ-РД-НВФ-К4_v1 .pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-НВФ-К5",
+      "object_id": "214",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-НВФ-К5/versions/v001/02_work/document.pdf",
+      "sha256": "3e4dfcd3c96facc1f7f90167e39a0374ae270f6618c673ee278646a04850a73d",
+      "bytes": 37973024,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-НВФ-К5/versions/v001/01_input/ЖК Алия РД от 08.11.2025 (1).pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 2",
+      "object_id": "214",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 2/versions/v001/02_work/document.pdf",
+      "sha256": "b06631723771f582228400e63828e871738bd3224956231c695bb3e161b43e12",
+      "bytes": 8475575,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 2/versions/v001/01_input/Mockup 2 V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 3",
+      "object_id": "214",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 3/versions/v001/02_work/document.pdf",
+      "sha256": "8091254dde7a050e29c51585cc2a94b3890dbd77bcc9f81eb92a1817b7b646d1",
+      "bytes": 5414182,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 3/versions/v001/01_input/Mockup 3 V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 4",
+      "object_id": "214",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 4/versions/v001/02_work/document.pdf",
+      "sha256": "03b065ac0b45d334648e816ff7e0339ba02d140e3dfd832dda9d6bc6a4d30e75",
+      "bytes": 12188436,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 4/versions/v001/01_input/Mockup 4 V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 5",
+      "object_id": "214",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 5/versions/v001/02_work/document.pdf",
+      "sha256": "ab7c248a0ee11af51ff76e8a8120dcae6d02c20c52b371fa580ade186d939e1f",
+      "bytes": 5615781,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 5/versions/v001/01_input/Mockup 5 V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.5.Ч1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.5.Ч1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "c288fe15b15b94c6b0387c06d9f4861d382f3b234b46b5811a75d81430eda700",
+      "bytes": 23287385,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.5.Ч1_V1/versions/v001/01_input/028-2025-НВФ.РД-14.5.Ч1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.5.Ч2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.5.Ч2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "ba4346910ddb44b6c8dffa52053b7f7611b4b3e0d46a373c482b800246879a92",
+      "bytes": 13396610,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.5.Ч2_V1/versions/v001/01_input/028-2025-НВФ.РД-14.5.Ч2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.6.Ч1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.6.Ч1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "ae26ad8a1e8c56f0e8966d8d6cf6a49725067ddb7681869811cc4d71a9151b08",
+      "bytes": 25714804,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.6.Ч1_V1/versions/v001/01_input/028-2025-НВФ.РД-14.6.Ч1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.6.Ч2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.6.Ч2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "08901264e7e746deed6a7f27cec9284093e5c3764a3f128a4ddd02502274d1fa",
+      "bytes": 13794550,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/028-2025-НВФ.РД-14.6.Ч2_V1/versions/v001/01_input/028-2025-НВФ.РД-14.6.Ч2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/13338-КМ-14.2.3_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/13338-КМ-14.2.3_V1/versions/v001/02_work/document.pdf",
+      "sha256": "57154372e10e9e49acf276a12bcce13a18181a3d551c36b2f91424f6b3bd5daf",
+      "bytes": 17336840,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/13338-КМ-14.2.3_V1/versions/v001/01_input/13338-КМ-14.2.3_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.1.2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.1.2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "ac85fa2f11b1f881b6e4c58531a00a2df26ef85c8675483067e5dd51e22614ea",
+      "bytes": 25148504,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.1.2_V1/versions/v001/01_input/КМ-14.1.2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.3.1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.3.1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "681cc851f952119651a23014ca2d2200ae3f177a30f6df39a3d0054386dc2b30",
+      "bytes": 29723467,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.3.1_V1/versions/v001/01_input/КМ-14.3.1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.6.2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.6.2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "a56011f4368adfe693296ac878c52911f44895b29cda04faaa03333e5fddeac8",
+      "bytes": 13484950,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.6.2_V1/versions/v001/01_input/КМ-14.6.2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.7.2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.7.2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "75d2e4149de22fe7e7765b24f12e3c70f67067156ca264da9848291644821425",
+      "bytes": 19200894,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-14.7.2_V1/versions/v001/01_input/КМ-14.7.2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-№127.14.4.-ОГР_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-№127.14.4.-ОГР_V1/versions/v001/02_work/document.pdf",
+      "sha256": "49cc0e1149bb9b0fd89a2ea9bf572aa99a59f90e6c3ef9381bfbf89d4d903da0",
+      "bytes": 7709369,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-№127.14.4.-ОГР_V1/versions/v001/01_input/КМ-№127.14.4.-ОГР_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-№127.14.7.-ОГР_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-№127.14.7.-ОГР_V1/versions/v001/02_work/document.pdf",
+      "sha256": "e45474a6e3c619886d8add53b2e4fce5206cee07958ad9a31de9f2113bc723e5",
+      "bytes": 9691588,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ-№127.14.7.-ОГР_V1/versions/v001/01_input/КМ-№127.14.7.-ОГР_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ_14.2.2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ_14.2.2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "c233f30865ac8a44110b02a362ce4ebd3c0e82aca4382fa5cdc8c2e7f81461d1",
+      "bytes": 30169549,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ_14.2.2_V1/versions/v001/01_input/КМ_14.2.2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ_14.3.2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ_14.3.2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "c0319b896ec74cdd993b55a8048c39679426fa3e53cfcb571e0d0466a6d129f5",
+      "bytes": 30515978,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ_14.3.2_V1/versions/v001/01_input/КМ_14.3.2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ_14.4.2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ_14.4.2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "553d83069d60c1919adfd6d6b773f2913622e5898da0d475a052266a8a918eca",
+      "bytes": 14579690,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/КМ_14.4.2_V1/versions/v001/01_input/КМ_14.4.2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-025-08-08-НФС-14.4_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-025-08-08-НФС-14.4_V1/versions/v001/02_work/document.pdf",
+      "sha256": "967cba050e8c7939e43a2a75c98612aeecaaa7b4044cb513b0df3a03776dd47c",
+      "bytes": 16061937,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-025-08-08-НФС-14.4_V1/versions/v001/01_input/М077-025-08-08-НФС-14.4_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.1.1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.1.1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "275a1f5ca784d2385b41cd1c78f8c7f67f19705f6165889a1f2fe8c660c168dd",
+      "bytes": 15090089,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.1.1_V1/versions/v001/01_input/М077-02508-08-НФС-14.1.1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "0383f776d08fe621751e6ccdaffb7dd9d4c322ba8a23cb9ab73638300ff60257",
+      "bytes": 36173298,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.1_V1/versions/v001/01_input/М077-02508-08-НФС-14.1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.2.1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.2.1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "798ee694ef9c8d1934876fd077c0370aed3f2b95aaf38be9d1ccf7d36b9eaf5f",
+      "bytes": 21899546,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.2.1_V1/versions/v001/01_input/М077-02508-08-НФС-14.2.1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "c44dcd53bbc251aa8c36d53a3131ae7e82035916a037db04bfe03b72c784441a",
+      "bytes": 43621776,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.2_V1/versions/v001/01_input/М077-02508-08-НФС-14.2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.3.1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.3.1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "950aea798e2bbb7c740494007a1bc07de87bb150e10a9bc0f69e4b72f7f40882",
+      "bytes": 21930650,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.3.1_V1/versions/v001/01_input/М077-02508-08-НФС-14.3.1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.3_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.3_V1/versions/v001/02_work/document.pdf",
+      "sha256": "184da00839613907d8c71798c8bc305d4f8d336e3a9f88c249066cfca56afe0a",
+      "bytes": 38126695,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.3_V1/versions/v001/01_input/М077-02508-08-НФС-14.3_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.4.1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.4.1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "79a00cd23c3f23dec62a483b524aba9930ae013770daa3d42be187b707b4e51e",
+      "bytes": 12594830,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.4.1_V1/versions/v001/01_input/М077-02508-08-НФС-14.4.1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.7.1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.7.1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "21685391f40fadcd955a2487ed1b43a14e299756e3122da6ebe51165d11100d1",
+      "bytes": 12527822,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.7.1_V1/versions/v001/01_input/М077-02508-08-НФС-14.7.1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.7_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.7_V1/versions/v001/02_work/document.pdf",
+      "sha256": "b668419096960d4dd62c645ca9b69c7675f50660f326b20c08a1c66407a5de0b",
+      "bytes": 20745100,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-14.7_V1/versions/v001/01_input/М077-02508-08-НФС-14.7_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-СМК-14.3_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-СМК-14.3_V1/versions/v001/02_work/document.pdf",
+      "sha256": "f7bed5cf90962e5478ebb1785561089785669d4586ce202c868f3c42c2935aff",
+      "bytes": 10020801,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-СМК-14.3_V1/versions/v001/01_input/М077-02508-08-НФС-СМК-14.3_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-СМК-14.4._V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-СМК-14.4._V1/versions/v001/02_work/document.pdf",
+      "sha256": "8fe4d3c4ad97f8443f0b7e1ec31aabe3d6f1a49414a3a3a47ec3f7be97b80973",
+      "bytes": 5425890,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-02508-08-НФС-СМК-14.4._V1/versions/v001/01_input/М077-02508-08-НФС-СМК-14.4._V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-025_08-08-НФС-СМК-14.7_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-025_08-08-НФС-СМК-14.7_V1/versions/v001/02_work/document.pdf",
+      "sha256": "46096736aee7c160c2d69e807aa8b048aecb272e1b0cdafc567e2608c5271d8b",
+      "bytes": 5859870,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/М077-025_08-08-НФС-СМК-14.7_V1/versions/v001/01_input/М077-025_08-08-НФС-СМК-14.7_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ1-1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ1-1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "0a0d68f03c8670aa8ce183acff7df102a05e5d6d35df0c4e055ea5b56a381902",
+      "bytes": 857748,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ1-1_V1/versions/v001/01_input/СТ26_01-14-КМ1-1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ1-2-РД_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ1-2-РД_V1/versions/v001/02_work/document.pdf",
+      "sha256": "824e876a70cab95508f9fea31ee71f1ea4a5e3c48a2e46e28f556c31b3351f71",
+      "bytes": 977394,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ1-2-РД_V1/versions/v001/01_input/СТ26_01-14-КМ1-2-РД_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ2-1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ2-1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "44ae368cf0165e25208d1aae92604e1a290611e9e955a9355d2a6737ad6e2135",
+      "bytes": 780232,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ2-1_V1/versions/v001/01_input/СТ26_01-14-КМ2-1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ2-2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ2-2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "e5b8aae45195a34dcb58e9d109f17175242317264f37a78b35cfb724994c2570",
+      "bytes": 1041138,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ2-2_V1/versions/v001/01_input/СТ26_01-14-КМ2-2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ3-1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ3-1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "3f4729c6ebb72331017cc56782f1515e68a0d97cb25fad33476a795c017c65de",
+      "bytes": 812170,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ3-1_V1/versions/v001/01_input/СТ26_01-14-КМ3-1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ3-2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ3-2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "be4d1fa1dc83ad98de1a574267fcc8f9107f5971c07367879a28ab19a28e20d5",
+      "bytes": 1034205,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ3-2_V1/versions/v001/01_input/СТ26_01-14-КМ3-2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ4-1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ4-1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "9b4c7d421d49c9b562f14aaf69d5ec388099327b693f980860878cbe3bdc1a3d",
+      "bytes": 975580,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ4-1_V1/versions/v001/01_input/СТ26_01-14-КМ4-1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ4-2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ4-2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "4ede9ae544638a188cbd26fe2e99e40540b23c339bdd35658597f001d8621248",
+      "bytes": 1166276,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ4-2_V1/versions/v001/01_input/СТ26_01-14-КМ4-2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ5-1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ5-1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "539991374b805db938121a3323cee46bcc75e01176a1fae5c908b5d33261816d",
+      "bytes": 1058481,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ5-1_V1/versions/v001/01_input/СТ26_01-14-КМ5-1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ5-2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ5-2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "ab6a9d46303976e4b8f358574705d2d12f45f9785c85e4634483ae07e0eb74f2",
+      "bytes": 1040247,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ5-2_V1/versions/v001/01_input/СТ26_01-14-КМ5-2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ6-1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ6-1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "1d9a99254d354636936710b32e9123723a06b6ddc4de0a48049424e79559c266",
+      "bytes": 1065429,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ6-1_V1/versions/v001/01_input/СТ26_01-14-КМ6-1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ6-2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ6-2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "8bc293d34cadb6a63b0f9e97c3a34d1fb29cc1abc1cc457705d3a5d754244414",
+      "bytes": 1075955,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ6-2_V1/versions/v001/01_input/СТ26_01-14-КМ6-2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ7-1_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ7-1_V1/versions/v001/02_work/document.pdf",
+      "sha256": "c17f9e6a21ab7bedaef5d979cf483ae095e45d6d2c29ad1af7f51f93e4ade8bd",
+      "bytes": 881631,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ7-1_V1/versions/v001/01_input/СТ26_01-14-КМ7-1_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ7-2_V1",
+      "object_id": "256",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ7-2_V1/versions/v001/02_work/document.pdf",
+      "sha256": "7bd0c67c6f240ae7deec668f6148655bafcb3c84636cb665dceef155971f9bd4",
+      "bytes": 1169953,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KM/documents/СТ26_01-14-КМ7-2_V1/versions/v001/01_input/СТ26_01-14-КМ7-2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ1.2",
+      "object_id": "314",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ1.2/versions/v001/02_work/document.pdf",
+      "sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+      "bytes": 2984862,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ1.2/versions/v001/01_input/ПД-00580716-КМ1.2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ10.2",
+      "object_id": "314",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ10.2/versions/v001/02_work/document.pdf",
+      "sha256": "3de383d42d9bc660054a2c2aae251b27f6e64f4721209604206ba5d20e1a3397",
+      "bytes": 832904,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ10.2/versions/v001/01_input/ПД-00580716-КМ10.2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ2",
+      "object_id": "314",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ2/versions/v001/02_work/document.pdf",
+      "sha256": "7c4632430a7d491eb01702b4bd2fa7a4a1b0b918657941951b5384df0e8c55fc",
+      "bytes": 3307512,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ2/versions/v001/01_input/ПД-00580716-КМ2_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ4",
+      "object_id": "314",
+      "version": "v001",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ4/versions/v001/02_work/document.pdf",
+      "sha256": "629c2bedef9fd8799f9129be1f04a71f8c946fe3dcc9594c7a8068e4bd98b76b",
+      "bytes": 4459754,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ4/versions/v001/01_input/ПД-00580716-КМ4_V1.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ5.2",
+      "object_id": "314",
+      "version": "v002",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ5.2/versions/v002/02_work/document.pdf",
+      "sha256": "4f118149af31e4007aa1e42120603988bfbd9f27eab6e801f525ebaa26fdf132",
+      "bytes": 832816,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ5.2/versions/v002/01_input/ПД-00580716-КМ5.2_V2.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    },
+    {
+      "document": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ6.2",
+      "object_id": "314",
+      "version": "v002",
+      "status": "hashed_not_engineering_reviewed",
+      "prepared_pdf": "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ6.2/versions/v002/02_work/document.pdf",
+      "sha256": "ef0a34289e36bb60cfc2eb2d4bd889a7186b334440560089c77a76d7bf8d221a",
+      "bytes": 1299257,
+      "matching_input_pdfs": [
+        "/srv/auditmanager/data/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ6.2/versions/v002/01_input/ПД-00580716-КМ6.2_V2.pdf"
+      ],
+      "prior_exposure_verified": false,
+      "reserve_eligible": null
+    }
+  ],
+  "duplicate_groups": [],
+  "source_content_handling": "PDF bytes streamed through SHA256; no rendering, OCR or text extraction.",
+  "engineer_answers_read": false,
+  "model_calls": 0,
+  "limits": [
+    "Hash equality proves exact PDF identity; inequality does not prove unseen content.",
+    "Construction identity and prior exposure require separate verification.",
+    "Known object groups 214, 297, 314 remain DEV, including unseen sibling documents.",
+    "One additional construction object cannot alone support a disjoint calibration/reserve split across six disciplines.",
+    "No reserve selected and original eighteen-package requirement unchanged."
+  ],
+  "production_acceptance": false
+}
