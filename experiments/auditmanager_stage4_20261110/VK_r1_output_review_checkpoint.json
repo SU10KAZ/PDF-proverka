@@ -1,0 +1,178 @@
+{
+  "status": "all_26_VK_output_rows_have_coordinator_atomic_review_not_engineering_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_sha256": "32d4a77678e6e2dd72a25de5b32ce6bfc31bca35e1e7f979635e78098d4d77ad",
+  "source": {
+    "discipline": "VK",
+    "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "final_sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8",
+    "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r1_completed_coverage_ledger.json",
+    "ledger_sha256": "51d93d5ab1e16b3699a93df72df3c601c426986f1e34be0061e93d766dbf9a7b"
+  },
+  "rows": [
+    {
+      "finding_id": "F-001",
+      "disposition": "assessed_rounding_compatible_question_usefulness_unresolved",
+      "profile_and_section": "question_only_report_section_missing",
+      "target_link_count": 0
+    },
+    {
+      "finding_id": "F-002",
+      "disposition": "assessed_interval_question_categorical_contradiction_not_proven",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-003",
+      "disposition": "assessed_testing_question_existing_methods_preserved",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-004",
+      "disposition": "assessed_conditional_multicomponent_inventory_question",
+      "profile_and_section": "question_only_report_section_missing",
+      "target_link_count": 2
+    },
+    {
+      "finding_id": "F-005",
+      "disposition": "assessed_preserve_sensor_mapping_question_remove_unproven_five_shortage",
+      "profile_and_section": "question_only_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-006",
+      "disposition": "assessed_preserve_project_specification_conflict_qualify_order_quantity",
+      "profile_and_section": "technical_core_preserve_conditional_quantity",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-007",
+      "disposition": "assessed_preserve_bounded_missing_insulation_technical_claim",
+      "profile_and_section": "technical_core_preserve_no_proven_field_failure",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-008",
+      "disposition": "assessed_notation_question_same_object_unproven",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-009",
+      "disposition": "assessed_preserve_quantity_question_qualify_procurement_claim",
+      "profile_and_section": "question_only_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-010",
+      "disposition": "assessed_unmapped_specification_question_not_new_confirmed_defect",
+      "profile_and_section": "question_only_report_section_missing",
+      "target_link_count": 0
+    },
+    {
+      "finding_id": "F-011",
+      "disposition": "assessed_preserve_inventory_question_remove_diameter_and_topology_assumptions",
+      "profile_and_section": "question_only_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-012",
+      "disposition": "assessed_preserve_blank_quantity_question",
+      "profile_and_section": "question_only_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-013",
+      "disposition": "assessed_preserve_funnel_specification_question_with_existing_node",
+      "profile_and_section": "question_only_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-014",
+      "disposition": "assessed_preserve_level_reference_question",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-015",
+      "disposition": "assessed_preserve_TU_reference_question",
+      "profile_and_section": "question_only_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-016",
+      "disposition": "assessed_preserve_roof_level_question",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-017",
+      "disposition": "assessed_unmapped_graphic_conflict_pending_usefulness_adjudication",
+      "profile_and_section": "technical_document_conflict_candidate_no_engineer_acceptance",
+      "target_link_count": 0
+    },
+    {
+      "finding_id": "F-018",
+      "disposition": "assessed_preserve_reference_correction_group_addresses",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 0
+    },
+    {
+      "finding_id": "F-019",
+      "disposition": "assessed_preserve_reference_correction_group_addresses",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-020",
+      "disposition": "assessed_preserve_reference_correction_group_addresses",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-021",
+      "disposition": "assessed_preserve_reference_correction_group_addresses",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-022",
+      "disposition": "assessed_preserve_reference_correction_group_addresses",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-023",
+      "disposition": "assessed_preserve_label_mapping_allow_explicit_correspondence",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 1
+    },
+    {
+      "finding_id": "F-024",
+      "disposition": "assessed_unmapped_graphic_conflict_pending_usefulness_adjudication",
+      "profile_and_section": "technical_document_conflict_candidate_no_engineer_acceptance",
+      "target_link_count": 0
+    },
+    {
+      "finding_id": "F-025",
+      "disposition": "assessed_unmapped_graphic_conflict_pending_usefulness_adjudication",
+      "profile_and_section": "technical_document_conflict_candidate_no_engineer_acceptance",
+      "target_link_count": 0
+    },
+    {
+      "finding_id": "F-026",
+      "disposition": "assessed_calculation_label_question_no_proven_computation_error",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "target_link_count": 1
+    }
+  ],
+  "open_work": [
+    "Resolve remaining object identity, applicable standards and cross-discipline context where required; do not turn insufficient data into falsehood.",
+    "Measure engineer usefulness for genuinely new or materially changed claims; reuse existing engineer decisions only where established.",
+    "Evaluate AK, ITP, AR and remaining KM output additions; finish EOM coverage after sealing.",
+    "Finish comparative repeats and frozen experimental variants before acceptance."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
