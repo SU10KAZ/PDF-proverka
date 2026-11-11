@@ -619,8 +619,14 @@
       "finding_id": "F-056",
       "problem": "Диапазоны PDS2–PDS4 в таблице сигналов и перечне элементов различаются.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "На функциональной схеме Па4.1/Ва4.1 прослежены PDS2 к сигналу 10, PDS4 к 20 и PDS3 к 26. Во всех трёх колонках непосредственно прочитан диапазон 20–200 Па. Авторитетный перечень задаёт PDS1–PDS4 диапазон 50–500 Па. Для трёх вентиляторов показана уставка 100 Па, входящая в оба диапазона. Подтверждено несогласование диапазонов документов, не непригодность приборов. Примечание об уточнении рабочих значений при ПНР не определяет, какое из двух исполнений следует принять; безусловно снимать расхождение по этому примечанию нельзя. Требование согласовать диапазон и уставку сохраняет эти границы.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_ranges_and_supply_identity_review_20261112.json",
+        "sha256": "61f35ccb981b20278cf01c13f1e34aeb76d493440d006e171280924101c35477"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-057",
@@ -679,8 +685,14 @@
       "finding_id": "F-061",
       "problem": "Диапазоны PDS2–PDS4 в таблице сигналов и перечне элементов не согласованы.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "На функциональной схеме Па5.1/Ва5.1 прослежены PDS2 к сигналу 10, PDS4 к 20 и PDS3 к 26. Во всех трёх колонках непосредственно прочитан диапазон 20–200 Па. Авторитетный перечень задаёт PDS1–PDS4 диапазон 50–500 Па. Для трёх вентиляторов показана уставка 100 Па, входящая в оба диапазона. Подтверждено несогласование диапазонов документов, не непригодность приборов. Примечание об уточнении рабочих значений при ПНР не определяет, какое из двух исполнений следует принять; безусловно снимать расхождение по этому примечанию нельзя. Требование согласовать диапазон и уставку сохраняет эти границы.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_ranges_and_supply_identity_review_20261112.json",
+        "sha256": "61f35ccb981b20278cf01c13f1e34aeb76d493440d006e171280924101c35477"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-062",
@@ -725,8 +737,14 @@
       "finding_id": "F-065",
       "problem": "Для питающего ввода ШАУВ-1-К4ПЧ указаны разные проекты кабеля.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "На изображении прослежена одна вертикальная цепь питающего ввода ШАУВ-1-К4ПЧ к Q1. Заголовок этой колонки указывает 13АВ-РД-ЭМ2-ПА, подпись кабеля той же цепи — 13АВ-РД-ЭМ-К4. Неоднозначность документации подтверждена без выбора правильного шифра. Это отличается от F-077: там принадлежность двух ссылок одной цепи не установлена. Согласование ссылки оправдано; фактическая ошибка электроснабжения не установлена.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_ranges_and_supply_identity_review_20261112.json",
+        "sha256": "61f35ccb981b20278cf01c13f1e34aeb76d493440d006e171280924101c35477"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-066",
@@ -985,14 +1003,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 61,
-  "unchecked": 24,
+  "reviewed": 64,
+  "unchecked": 21,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 61,
-  "unchecked_findings": 24
+  "reviewed_findings": 64,
+  "unchecked_findings": 21
 }

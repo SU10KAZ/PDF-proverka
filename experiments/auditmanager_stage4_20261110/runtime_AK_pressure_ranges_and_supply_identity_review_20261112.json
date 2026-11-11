@@ -1,0 +1,90 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-065",
+      "status": "confirmed_document_conflict",
+      "review_reason": "На изображении прослежена одна вертикальная цепь питающего ввода ШАУВ-1-К4ПЧ к Q1. Заголовок этой колонки указывает 13АВ-РД-ЭМ2-ПА, подпись кабеля той же цепи — 13АВ-РД-ЭМ-К4. Неоднозначность документации подтверждена без выбора правильного шифра. Это отличается от F-077: там принадлежность двух ссылок одной цепи не установлена. Согласование ссылки оправдано; фактическая ошибка электроснабжения не установлена.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_1c493988cdf14cee9ad351ef2e706470.png",
+          "block_id": "blk_1c493988cdf14cee9ad351ef2e706470",
+          "sha256": "fa028d82f0e5f818dd38743f9b5d6fb88006621d52993253769127266e375b24",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-056",
+      "status": "confirmed_document_conflict",
+      "review_reason": "На функциональной схеме Па4.1/Ва4.1 прослежены PDS2 к сигналу 10, PDS4 к 20 и PDS3 к 26. Во всех трёх колонках непосредственно прочитан диапазон 20–200 Па. Авторитетный перечень задаёт PDS1–PDS4 диапазон 50–500 Па. Для трёх вентиляторов показана уставка 100 Па, входящая в оба диапазона. Подтверждено несогласование диапазонов документов, не непригодность приборов. Примечание об уточнении рабочих значений при ПНР не определяет, какое из двух исполнений следует принять; безусловно снимать расхождение по этому примечанию нельзя. Требование согласовать диапазон и уставку сохраняет эти границы.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+          "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+          "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_51ab9fc59a1a45e98c268dec561eed08",
+          "start": 120442,
+          "end": 122014,
+          "sha256": "cbd23f9a1f5c0343ef6638def7f92e3fa7261b2aa1832e9ab6e87527b5483173"
+        },
+        {
+          "block_id": "blk_0c226b1bdd7e4c09a187610f7c580cfe",
+          "start": 122015,
+          "end": 122701,
+          "sha256": "3cb8905816bc46a06b85ff7e848556644c27f45bd8be3f15ab4bb3905d363409"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-061",
+      "status": "confirmed_document_conflict",
+      "review_reason": "На функциональной схеме Па5.1/Ва5.1 прослежены PDS2 к сигналу 10, PDS4 к 20 и PDS3 к 26. Во всех трёх колонках непосредственно прочитан диапазон 20–200 Па. Авторитетный перечень задаёт PDS1–PDS4 диапазон 50–500 Па. Для трёх вентиляторов показана уставка 100 Па, входящая в оба диапазона. Подтверждено несогласование диапазонов документов, не непригодность приборов. Примечание об уточнении рабочих значений при ПНР не определяет, какое из двух исполнений следует принять; безусловно снимать расхождение по этому примечанию нельзя. Требование согласовать диапазон и уставку сохраняет эти границы.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "start": 142937,
+          "end": 144509,
+          "sha256": "e138dd729abdf4498a2680064d062e68b35e96d3dae67e4a534d453eee2b8574"
+        },
+        {
+          "block_id": "blk_a970f948644547ba84c30f918250b8dc",
+          "start": 144510,
+          "end": 145196,
+          "sha256": "375677c6e738d1bb5a5afb266d11b0e6558f1d0debd7e29c6ee44ef454ac6176"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false,
+  "source_control_pair": {
+    "preserve": "F-065: две разные ссылки непосредственно на одной цепи питания Q1.",
+    "question": "F-077: две ссылки есть, но общая цепь не установлена, поэтому вопрос об области действия.",
+    "limit": "Сопоставление подтверждено источниками, не является новой инженерной приёмкой или измерением эффективности фильтра."
+  }
+}
