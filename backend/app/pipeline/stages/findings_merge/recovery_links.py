@@ -15,12 +15,16 @@ def prepare_duplicate_links(packet, decisions):
     for finding in packet['existing_findings']:
         if isinstance(finding, dict) and isinstance(finding.get('id'), str):
             targets[finding['id']].append(finding)
-    rows = decisions if isinstance(decisions, list) else []
+    from .candidate_binding import bind_candidate_decisions
+    binding = bind_candidate_decisions({'candidates': list(candidates.values())}, decisions)
+    rows = binding['decisions']
     index = defaultdict(list)
     for row in rows:
         if isinstance(row, dict) and isinstance(row.get('origin'), str) and isinstance(row.get('pointer'), str):
             index[(row['origin'], row['pointer'])].append(row)
-    updates, pending = [], []
+    updates = []
+    pending = [{'decision': issue['receipt'], 'reason': issue['reason']}
+               for issue in binding['unresolved']]
     for key, receipts in index.items():
         if not any(r.get('decision') == 'duplicate' for r in receipts):
             continue

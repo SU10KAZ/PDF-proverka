@@ -98,12 +98,12 @@ def write_candidate_coverage(output_dir):
         graph = json.loads(graph_raw)
         sources.append({'path': str(graph_path), 'sha256': hashlib.sha256(graph_raw).hexdigest()})
     report['decision_coverage'] = reconcile_candidate_decisions(
-        report, effective_candidate_decisions(payloads[-1]), set(build_block_page_index(graph)))
+        report, effective_candidate_decisions(payloads[-1], report), set(build_block_page_index(graph)))
     # Candidate linkage alone must not hide an unresolved part of that candidate.
     # This is a structural ledger, not certification of model decomposition/truth.
     from .subclaim_coverage import pending_subclaims
-    pending = pending_subclaims(payloads[-1], set(build_block_page_index(graph)))
-    effective = effective_candidate_decisions(payloads[-1])
+    pending = pending_subclaims(payloads[-1], set(build_block_page_index(graph)), report)
+    effective = effective_candidate_decisions(payloads[-1], report)
     with_subclaims = {(r.get('origin'), r.get('pointer')) for r in effective
                       if isinstance(r, dict) and isinstance(r.get('origin'), str)
                       and isinstance(r.get('pointer'), str)

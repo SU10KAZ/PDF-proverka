@@ -43,7 +43,7 @@ def build_recovery_passes(output_dir, md_path):
                 md_text_ids.add(bid)
     block_pages.update(md_block_pages)
     text_ids = md_text_ids
-    obligations = pending_subclaims(payloads[2], set(block_pages) | set(files))
+    obligations = pending_subclaims(payloads[2], set(block_pages) | set(files), coverage)
     candidates = []
     for candidate in coverage['candidates']:
         pending = obligations.get((candidate['origin'], candidate['pointer']), [])

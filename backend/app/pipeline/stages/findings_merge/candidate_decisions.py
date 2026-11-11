@@ -3,7 +3,9 @@ from collections import defaultdict
 
 
 def reconcile_candidate_decisions(coverage, decisions, known_blocks):
-    decisions = decisions if isinstance(decisions, list) else []
+    from .candidate_binding import bind_candidate_decisions
+    binding = bind_candidate_decisions(coverage, decisions)
+    decisions = binding['decisions']
     index = defaultdict(list)
     malformed = []
     for receipt in decisions:
@@ -48,13 +50,13 @@ def reconcile_candidate_decisions(coverage, decisions, known_blocks):
             row['reason'] = 'refutation_conflicts_with_final_link'
             continue
         row['status'] = 'reported_requires_semantic_review'
-    return {'decisions': rows, 'unmatched_decisions': [r for key, rs in index.items() if key not in known for r in rs],
+    return {'binding': binding, 'decisions': rows, 'unmatched_decisions': [r for key, rs in index.items() if key not in known for r in rs],
             'malformed_decisions': malformed,
             'not_checked': sum(r['status'] == 'not_checked' for r in rows),
             'semantic_verified': False}
 
 
-def effective_candidate_decisions(final):
+def effective_candidate_decisions(final, coverage=None):
     """Read the latest supplied receipt per candidate, preserving duplicate errors.
 
     Recovery continuations supersede earlier receipts for the addressed candidate.
@@ -64,11 +66,16 @@ def effective_candidate_decisions(final):
     """
     decisions = final.get('candidate_decisions', [])
     decisions = list(decisions) if isinstance(decisions, list) else []
+    if coverage is not None:
+        from .candidate_binding import bind_candidate_decisions
+        decisions = bind_candidate_decisions(coverage, decisions)['decisions']
     reports = final.get('candidate_recovery_reports', [])
     for report in reports if isinstance(reports, list) else []:
         batch = report.get('candidate_decisions') if isinstance(report, dict) else None
         if not isinstance(batch, list):
             continue
+        if coverage is not None:
+            batch = bind_candidate_decisions(coverage, batch)['decisions']
         def key(receipt):
             if isinstance(receipt, dict) and all(isinstance(receipt.get(k), str) for k in ('origin', 'pointer')):
                 return receipt['origin'], receipt['pointer']

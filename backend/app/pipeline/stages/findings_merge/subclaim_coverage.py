@@ -2,7 +2,7 @@
 from collections import Counter
 
 
-def pending_subclaims(final, known_blocks=()):
+def pending_subclaims(final, known_blocks=(), coverage=None):
     """Keep omitted obligations across continuations, keyed by candidate address.
 
     A receipt without subclaims cannot erase earlier obligations. Only explicit,
@@ -20,6 +20,16 @@ def pending_subclaims(final, known_blocks=()):
     for batch in batches:
         if not isinstance(batch, list):
             continue
+        binding_conflicts = set()
+        if coverage is not None:
+            from .candidate_binding import bind_candidate_decisions
+            binding = bind_candidate_decisions(coverage, batch)
+            batch = binding['decisions']
+            for issue in binding['unresolved']:
+                for candidate in issue['affected_candidates']:
+                    key = (candidate['origin'], candidate['pointer'])
+                    binding_conflicts.add(key)
+                    states.setdefault(key, {})['__candidate_binding__'] = issue
         addressed = Counter((r.get('origin'), r.get('pointer')) for r in batch
                             if isinstance(r, dict) and all(isinstance(r.get(k), str)
                             for k in ('origin', 'pointer')))
@@ -35,6 +45,8 @@ def pending_subclaims(final, known_blocks=()):
             if not isinstance(claims, list) or not claims:
                 state['__invalid_receipt__'] = {'reason': 'invalid_subclaims', 'receipt': receipt}
                 continue
+            if key not in binding_conflicts:
+                state.pop('__candidate_binding__', None)
             counts = Counter(c.get('id') for c in claims if isinstance(c, dict)
                              and isinstance(c.get('id'), str))
             for index, claim in enumerate(claims):

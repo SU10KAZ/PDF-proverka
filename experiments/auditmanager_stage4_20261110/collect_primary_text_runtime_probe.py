@@ -43,8 +43,8 @@ def collect(root, output):
     coverage = build_candidate_coverage(json.loads(text), json.loads(blocks), {'findings': final.get('findings', [])})
     decisions = final.get('candidate_decisions', [])
     checked = reconcile_candidate_decisions(coverage, decisions, known)
-    obligations = pending_subclaims(final, known)
-    addressed = {(r.get('origin'), r.get('pointer')): r for r in decisions if isinstance(r, dict)}
+    obligations = pending_subclaims(final, known, coverage)
+    addressed = {(r.get('origin'), r.get('pointer')): r for r in checked['binding']['decisions'] if isinstance(r, dict)}
     missing = [{'origin': c['origin'], 'pointer': c['pointer'], 'source_id': c['source_id']}
                for c in coverage['candidates'] if not isinstance(addressed.get((c['origin'], c['pointer']), {}).get('subclaims'), list)
                or not addressed.get((c['origin'], c['pointer']), {}).get('subclaims')]

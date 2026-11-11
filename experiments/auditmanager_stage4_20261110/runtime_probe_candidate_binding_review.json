@@ -1,0 +1,374 @@
+{
+  "status": "candidate_identity_binding_verified_on_sealed_response",
+  "source_response_sha256": "f05c9fa1cbca76982f68571f1e5f799c29f005e5a5e7eaaebdafc2078c9c8351",
+  "repairs": [
+    {
+      "original": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/54/findings/0",
+        "candidate_id": "G-098",
+        "decision": "needs_data",
+        "reason": "Примечание о трубах подтверждено; конструкция узла А не просмотрена.",
+        "source_refs": [
+          "blk_0f3dd0d612604a15b2e186aea9a6dde1"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Узел А листа 50 показывает проход без металлических труб вопреки примечанию 3.",
+            "decision": "needs_data",
+            "reason": "Нужно изображение и область применения узла.",
+            "source_refs": [
+              "blk_0f3dd0d612604a15b2e186aea9a6dde1"
+            ],
+            "required_source_refs": [
+              "blk_3a652e527d9242058c018c7b7199b5e6"
+            ],
+            "target_finding_ids": []
+          }
+        ]
+      },
+      "bound_pointer": "/block_analyses/55/findings/0",
+      "candidate_id": "G-098",
+      "semantic_verified": false
+    },
+    {
+      "original": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/54/findings/1",
+        "candidate_id": "G-099",
+        "decision": "needs_data",
+        "reason": "Совпадение с G-098 учтено; отсутствие трубы не проверено.",
+        "source_refs": [
+          "blk_0f3dd0d612604a15b2e186aea9a6dde1"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Узел А и примечание 3 листа 50 задают разные проходки.",
+            "decision": "needs_data",
+            "reason": "Графическая часть сравнения отсутствует.",
+            "source_refs": [
+              "blk_0f3dd0d612604a15b2e186aea9a6dde1"
+            ],
+            "required_source_refs": [
+              "blk_3a652e527d9242058c018c7b7199b5e6"
+            ],
+            "target_finding_ids": []
+          }
+        ]
+      },
+      "bound_pointer": "/block_analyses/55/findings/1",
+      "candidate_id": "G-099",
+      "semantic_verified": false
+    },
+    {
+      "original": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/59/findings/0",
+        "candidate_id": "G-100",
+        "decision": "needs_data",
+        "reason": "Примечание листа 52 прочитано, узел А не доступен.",
+        "source_refs": [
+          "blk_d2dbea3364034dd3bcc80d3c1c8f3fe3"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Проход кабелей в лотке без трубы противоречит примечанию 3 листа 52.",
+            "decision": "needs_data",
+            "reason": "Нужно изображение узла и его границы применения.",
+            "source_refs": [
+              "blk_d2dbea3364034dd3bcc80d3c1c8f3fe3"
+            ],
+            "required_source_refs": [
+              "blk_3ce77761b19f4562bb8fdf7579aa80ec"
+            ],
+            "target_finding_ids": []
+          }
+        ]
+      },
+      "bound_pointer": "/block_analyses/60/findings/0",
+      "candidate_id": "G-100",
+      "semantic_verified": false
+    },
+    {
+      "original": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/59/findings/1",
+        "candidate_id": "G-101",
+        "decision": "needs_data",
+        "reason": "Совпадение с G-100 учтено.",
+        "source_refs": [
+          "blk_d2dbea3364034dd3bcc80d3c1c8f3fe3"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Узел А листа 52 не содержит металлической трубы при требовании примечания 3.",
+            "decision": "needs_data",
+            "reason": "Отсутствие графического элемента не проверено.",
+            "source_refs": [
+              "blk_d2dbea3364034dd3bcc80d3c1c8f3fe3"
+            ],
+            "required_source_refs": [
+              "blk_3ce77761b19f4562bb8fdf7579aa80ec"
+            ],
+            "target_finding_ids": []
+          }
+        ]
+      },
+      "bound_pointer": "/block_analyses/60/findings/1",
+      "candidate_id": "G-101",
+      "semantic_verified": false
+    },
+    {
+      "original": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/62/findings/0",
+        "candidate_id": "G-102",
+        "decision": "needs_data",
+        "reason": "Размерные выносные линии и общий исходный уровень не доступны.",
+        "source_refs": [],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Высота шкафа 1400 плюс низ 1000 против верха 1800 мм, расхождение 600 мм.",
+            "decision": "needs_data",
+            "reason": "Арифметика 1400+1000 верна условно, но принадлежность трёх размеров одной цепи требует изображения.",
+            "source_refs": [],
+            "required_source_refs": [
+              "blk_d52bf811660e42b59acdce0038f9fbf0"
+            ],
+            "target_finding_ids": []
+          }
+        ]
+      },
+      "bound_pointer": "/block_analyses/63/findings/0",
+      "candidate_id": "G-102",
+      "semantic_verified": false
+    },
+    {
+      "original": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/62/findings/1",
+        "candidate_id": "G-103",
+        "decision": "needs_data",
+        "reason": "Совпадение с G-102 не доказывает геометрическую базу сравнения.",
+        "source_refs": [],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Размерная цепь ШАУВ-1-К6-ПЧ противоречива на 600 мм.",
+            "decision": "needs_data",
+            "reason": "Нужно проверить точки приложения размеров 1400, 1000 и 1800 мм.",
+            "source_refs": [],
+            "required_source_refs": [
+              "blk_d52bf811660e42b59acdce0038f9fbf0"
+            ],
+            "target_finding_ids": []
+          }
+        ]
+      },
+      "bound_pointer": "/block_analyses/63/findings/1",
+      "candidate_id": "G-103",
+      "semantic_verified": false
+    },
+    {
+      "original": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/63/findings/0",
+        "candidate_id": "G-104",
+        "decision": "duplicate",
+        "reason": "Заявленный конфликт марок полностью проверяется по первичным текстовым таблицам.",
+        "source_refs": [
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "BSD4120 на листе 53 против BSD2120/BSD-21 в позиции 22.6.",
+            "decision": "duplicate",
+            "reason": "Объединено с аналогичными таблицами кровель корпусов 4 и 5; графическая геометрия не использована.",
+            "source_refs": [
+              "blk_6136fac6ecc947f49aa62c1e5803f276",
+              "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+            ],
+            "required_source_refs": [],
+            "target_finding_ids": [
+              "F-025"
+            ]
+          }
+        ]
+      },
+      "bound_pointer": "/block_analyses/64/findings/0",
+      "candidate_id": "G-104",
+      "semantic_verified": false
+    },
+    {
+      "original": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/65/findings/0",
+        "candidate_id": "G-105",
+        "decision": "needs_data",
+        "reason": "Таблица групп и журнал прочитаны, две плановые выноски отсутствуют.",
+        "source_refs": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_7b41b193ccad4f559ba654a2248576d5"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "СТГ-3-И-1.13 повторён при БПС-3.13 и БПС-1.13; первый должен быть 3.13.",
+            "decision": "needs_data",
+            "reason": "Журнал БПС-3.13 адресован 3.13, но наличие ошибочной выноски на плане не проверено. БПС в журнале — марка линии, а не доказательство отдельного блока питания.",
+            "source_refs": [
+              "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+              "blk_25cd2a4f5a734187897f8aba96b1dbad",
+              "blk_7b41b193ccad4f559ba654a2248576d5"
+            ],
+            "required_source_refs": [
+              "blk_f42735b18cb140928c3d9f29d2891ae2"
+            ],
+            "target_finding_ids": []
+          }
+        ]
+      },
+      "bound_pointer": "/block_analyses/66/findings/0",
+      "candidate_id": "G-105",
+      "semantic_verified": false
+    },
+    {
+      "original": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/65/findings/1",
+        "candidate_id": "G-106",
+        "decision": "needs_data",
+        "reason": "Совпадение с G-105 учтено; повтор на плане не проверен.",
+        "source_refs": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "blk_7b41b193ccad4f559ba654a2248576d5"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Два разных датчика на плане имеют СТГ-3-И-1.13.",
+            "decision": "needs_data",
+            "reason": "Нужно изображение обеих выносок и привязок к физическим датчикам.",
+            "source_refs": [
+              "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+              "blk_25cd2a4f5a734187897f8aba96b1dbad",
+              "blk_7b41b193ccad4f559ba654a2248576d5"
+            ],
+            "required_source_refs": [
+              "blk_f42735b18cb140928c3d9f29d2891ae2"
+            ],
+            "target_finding_ids": []
+          }
+        ]
+      },
+      "bound_pointer": "/block_analyses/66/findings/1",
+      "candidate_id": "G-106",
+      "semantic_verified": false
+    },
+    {
+      "original": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/67/findings/0",
+        "candidate_id": "G-107",
+        "decision": "needs_data",
+        "reason": "Примечание 3 листа 54 подтверждено; графическое отсутствие трубы не проверено.",
+        "source_refs": [
+          "blk_77d8c6a52e15473eb0dda8aa27b37511"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Узел А листа 54 показывает проход в лотке без труб вопреки примечанию.",
+            "decision": "needs_data",
+            "reason": "Нужна конструкция узла А и область её применения.",
+            "source_refs": [
+              "blk_77d8c6a52e15473eb0dda8aa27b37511"
+            ],
+            "required_source_refs": [
+              "blk_256f5749f1274c84b54b8873170bdccc"
+            ],
+            "target_finding_ids": []
+          }
+        ]
+      },
+      "bound_pointer": "/block_analyses/68/findings/0",
+      "candidate_id": "G-107",
+      "semantic_verified": false
+    }
+  ],
+  "unresolved": [],
+  "before": {
+    "candidate_count": 147,
+    "findings": 35,
+    "reported_decisions": {
+      "retained": 27,
+      "needs_data": 117,
+      "duplicate": 2
+    },
+    "candidates_without_subclaims": 12,
+    "candidates_with_pending_subclaims": 117,
+    "pending_subclaims": 149,
+    "not_checked_decisions": 13,
+    "usage": {
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 1398609,
+      "input_tokens": 373233,
+      "output_tokens": 69292,
+      "cached_tokens": 372992
+    }
+  },
+  "after": {
+    "candidate_count": 147,
+    "findings": 35,
+    "reported_decisions": {
+      "retained": 27,
+      "needs_data": 117,
+      "duplicate": 2
+    },
+    "candidates_without_subclaims": 3,
+    "candidates_with_pending_subclaims": 117,
+    "pending_subclaims": 149,
+    "not_checked_decisions": 3,
+    "usage": {
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 1398609,
+      "input_tokens": 373233,
+      "output_tokens": 69292,
+      "cached_tokens": 372992
+    }
+  },
+  "remaining_missing_decompositions": [
+    {
+      "origin": "prescan",
+      "pointer": "/prescan_review_requests/0",
+      "source_id": "P-80198eb0a0c3dd9d6bcca394"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/64/deferred_findings/0",
+      "source_id": "D-792d00bce4b70937c9f38806"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/68/deferred_findings/0",
+      "source_id": "D-bb7d7e1bec45b1e1cc322381"
+    }
+  ],
+  "findings_unchanged": true,
+  "local_tests_passed": 26,
+  "limits": [
+    "Only explicit unique source candidate IDs repair pointers; no semantic truth is inferred.",
+    "Two deferred receipts without IDs remain unmatched; the prescan candidate has no receipt.",
+    "No new model calls; no production acceptance."
+  ],
+  "production_acceptance": false
+}
