@@ -1,0 +1,73 @@
+{
+  "status": "local_evaluator_contract_checked_not_a_quality_measurement",
+  "evaluator_sha256": "ff65dfe778f018ba720021934b7943fb97e1e52f874a0afcb9288c58c2b7b5ef",
+  "findings_sha256": "563321027f8daa0b7c9f2e6a10679e29c04b8279c46d133065d2df73739f34ab",
+  "project_target_counts_including_holds": {
+    "AK": 100,
+    "ITP": 87,
+    "AR": 33,
+    "KM": 28,
+    "VK": 39,
+    "EOM": 72
+  },
+  "sample_review_rows": 72,
+  "sample_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "EOM",
+    "evaluator_sha256": "ff65dfe778f018ba720021934b7943fb97e1e52f874a0afcb9288c58c2b7b5ef",
+    "findings_sha256": "563321027f8daa0b7c9f2e6a10679e29c04b8279c46d133065d2df73739f34ab",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 2,
+          "availability_unchecked": 2,
+          "unchecked": 2
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 52,
+          "availability_unchecked": 52,
+          "unchecked": 52
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 18,
+          "availability_unchecked": 18,
+          "unchecked": 18
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "held": 2
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "model_calls": 0,
+  "independent_engineer_review_done": false,
+  "limits": [
+    "Input report is a known EOM pilot, not a comparative run.",
+    "All review entries remain unchecked.",
+    "No full audit, filter effect, retention or production acceptance has been established."
+  ]
+}
