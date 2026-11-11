@@ -130,3 +130,27 @@ def subclaim_is_emitted(final, key, claim):
                    and a.get('claim') == claim.get('claim') and a.get('reason') == claim.get('reason') for a in addenda):
             return False
     return True
+
+
+def publish_new_finding_addenda(findings, updates, local_targets, originals):
+    """Bind a local publication to its unchanged normalized finding, then emit it."""
+    bound, pending = [], []
+    for update in updates:
+        local_id = update['target_id']
+        mapped = local_targets.get(local_id, [])
+        source = [f for f in originals if f.get('id') == local_id]
+        target = [f for f in findings if len(mapped) == 1 and f.get('id') == mapped[0]]
+        if len(source) != 1 or len(target) != 1 or target_signature(source[0]) != update['target_signature']:
+            pending.append({'update': update, 'reason': 'ambiguous_new_addendum_target'})
+            continue
+        # Normalization changes only ID and may fill problem from finding.
+        restored = {**target[0], 'id': local_id, 'problem': source[0].get('problem')}
+        if target_signature(restored) != update['target_signature']:
+            pending.append({'update': update, 'reason': 'new_addendum_target_changed'})
+            continue
+        bound.append({**update, 'reported_target_id': local_id,
+                      'reported_target_signature': update['target_signature'],
+                      'target_id': target[0]['id'], 'target_signature': target_signature(target[0])})
+    result = apply_addenda(findings, bound)
+    result['pending'].extend(pending)
+    return result

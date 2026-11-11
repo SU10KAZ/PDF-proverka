@@ -73,3 +73,41 @@ def test_multiple_addenda_from_same_snapshot_and_later_snapshot_preserve_each_ot
     third_updates, _ = prepare_addenda(packet, [third])
     assert len(apply_addenda(final['findings'], third_updates)['applied']) == 1
     assert len(final['findings'][0]['recovery_addenda']) == 3
+
+
+def test_new_finding_publication_survives_request_local_renumbering():
+    import json
+    from backend.app.pipeline.stages.prepare.candidate_recovery import validate_recovery_payload
+    from backend.app.pipeline.stages.prepare.codex_targeted_findings import CodexTargetedPass, combine_findings_with_targeted
+    final, packet, resolved, key = fixture()
+    packet['attached_image_block_ids_in_order'] = ['g']
+    new = {'id': 'F-007', 'problem': 'New range conflict', 'description': 'Range summary',
+           'source_finding_ids': ['G-011'], 'evidence': [{'block_id': 'g'}]}
+    resolved['subclaims'][0]['target_finding_ids'] = ['F-007']
+    request = CodexTargetedPass('candidate_recovery_new', 'out.json', [{'role': 'user', 'content': json.dumps(packet)}])
+    raw = {'findings': [new], 'candidate_decisions': [resolved]}
+    validated = validate_recovery_payload(request, raw)
+    assert len(validated['recovery_new_finding_addenda']) == 1
+    assert not validated['recovery_addenda_updates']
+    final['findings'].append({'id': 'F-007', 'problem': 'Other request', 'description': 'Unrelated'})
+    merged = combine_findings_with_targeted(final, [(request.stage, validated)])
+    assert merged['findings'][-1]['id'] == 'F-008'
+    assert merged['findings'][-1]['recovery_addenda'][0]['target_id'] == 'F-008'
+    assert resolved['subclaims'][0]['claim'] in merged['findings'][-1]['description']
+    assert merged['findings'][-2]['description'] == 'Unrelated'
+    assert not pending_subclaims(merged, {'g', 't'})
+    merged['findings'][-1]['description'] = 'Range summary'
+    assert pending_subclaims(merged, {'g', 't'})[key][0]['reason'] == 'subclaim_not_emitted'
+
+
+def test_new_publication_rejects_colliding_ids_and_changed_normalized_target():
+    from backend.app.pipeline.stages.findings_merge.recovery_addenda import publish_new_finding_addenda
+    final, packet, resolved, _ = fixture()
+    original = deepcopy(final['findings'][0])
+    updates, _ = prepare_addenda(packet, [resolved])
+    changed = {**original, 'id': 'F-020', 'description': 'Different conclusion'}
+    result = publish_new_finding_addenda([changed], updates, {'F-006': ['F-020']}, [original])
+    assert not result['applied'] and result['pending'][0]['reason'] == 'new_addendum_target_changed'
+    packet['existing_findings'].append(deepcopy(original))
+    updates, pending = prepare_addenda(packet, [resolved])
+    assert not updates and pending

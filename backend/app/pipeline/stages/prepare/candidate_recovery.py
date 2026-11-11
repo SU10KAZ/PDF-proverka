@@ -214,8 +214,13 @@ def validate_recovery_payload(targeted_pass, payload):
     from backend.app.pipeline.stages.findings_merge.recovery_links import prepare_duplicate_links
     links, unresolved_links = prepare_duplicate_links(packet, payload.get('candidate_decisions'))
     from backend.app.pipeline.stages.findings_merge.recovery_addenda import prepare_addenda
-    addenda, unresolved_addenda = prepare_addenda(packet, payload.get('candidate_decisions'))
+    publication_packet = {**packet, 'existing_findings': [*packet['existing_findings'], *accepted]}
+    all_addenda, unresolved_addenda = prepare_addenda(publication_packet, payload.get('candidate_decisions'))
+    existing_ids = {f.get('id') for f in packet['existing_findings'] if isinstance(f, dict)}
+    addenda = [a for a in all_addenda if a['target_id'] in existing_ids]
+    new_addenda = [a for a in all_addenda if a['target_id'] not in existing_ids]
     return {**payload, 'findings': accepted, 'recovery_pending': pending + unresolved_links + unresolved_addenda,
             'recovery_link_updates': links, 'recovery_addenda_updates': addenda,
+            'recovery_new_finding_addenda': new_addenda,
             'recovery_existing_target_ids': [f['id'] for f in packet['existing_findings']
                 if isinstance(f, dict) and isinstance(f.get('id'), str)]}

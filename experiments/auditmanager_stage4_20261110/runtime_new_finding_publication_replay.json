@@ -1,0 +1,37 @@
+{
+  "status": "same_28_sealed_packets_replayed_before_after",
+  "before": {
+    "successful_packets_replayed": 28,
+    "base_findings": 35,
+    "merged_findings": 70,
+    "pending_candidates": 101,
+    "pending_subclaims": 135,
+    "pending_reasons": {
+      "needs_data": 63,
+      "subclaim_not_emitted": 72
+    },
+    "published_addenda": 22,
+    "target_binding_repairs": 121,
+    "unresolved_target_bindings": 0
+  },
+  "after": {
+    "successful_packets_replayed": 28,
+    "base_findings": 35,
+    "merged_findings": 70,
+    "pending_candidates": 53,
+    "pending_subclaims": 63,
+    "pending_reasons": {
+      "needs_data": 63
+    },
+    "published_addenda": 94,
+    "target_binding_repairs": 121,
+    "unresolved_target_bindings": 0
+  },
+  "before_snapshot": "/tmp/auditmanager_recovery_snapshot_20261112_02.json",
+  "after_snapshot": "/tmp/auditmanager_same_prefix_new_publication_20261112.json",
+  "production_acceptance": false,
+  "limits": [
+    "Publication verified structurally; factual truth and engineering usefulness remain unadjudicated.",
+    "Known unsupported heater-symbol finding still exists as a negative control; this is not an accepted audit."
+  ]
+}

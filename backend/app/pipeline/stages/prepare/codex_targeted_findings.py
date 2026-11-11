@@ -957,6 +957,11 @@ def combine_findings_with_targeted(
         if recovery_report is not None and "recovery_existing_target_ids" in payload:
             from backend.app.pipeline.stages.findings_merge.recovery_target_binding import bind_report_targets
             bind_report_targets(recovery_report, payload["recovery_existing_target_ids"], local_targets)
+            from backend.app.pipeline.stages.findings_merge.recovery_addenda import publish_new_finding_addenda
+            publication = publish_new_finding_addenda(findings, payload.get("recovery_new_finding_addenda", []),
+                                                       local_targets, targeted_findings)
+            for kind in ("applied", "pending"):
+                recovery_report["addenda_publication"][kind].extend(publication[kind])
         if added_for_stage:
             targeted_stages.append(stage)
 
