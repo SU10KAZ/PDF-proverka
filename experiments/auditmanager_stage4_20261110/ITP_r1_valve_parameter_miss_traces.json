@@ -1,0 +1,139 @@
+{
+  "status": "bounded_three_ITP_target_misses_traced",
+  "discipline": "ITP",
+  "repeat": 1,
+  "coverage_ledger": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r1_completed_coverage_ledger.json",
+    "sha256": "7e1158eee0362f2451b9066ec9163ceb9754c422da48666a46126b21875af6e2"
+  },
+  "solenoids": {
+    "targets": [
+      "B-ITP-F-015:68e759d0e8be658b6916",
+      "B-ITP-F-015:5713c213c4eafe2032fb"
+    ],
+    "frozen_decision": {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-015.json",
+      "sha256": "3d68c70b29aa5dde6b5c09383bfd180c5304a2b38484cedb3cef205a780f25af"
+    },
+    "request": {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/requests/ITP/1794380074549445179/request.json",
+      "sha256": "c4ca001764b47d38e07d92e2f3bbe5e48983a4484da3628b9299a7ecee832b62"
+    },
+    "attempts": {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/requests/ITP/1794380074549445179/attempts.json",
+      "sha256": "1293aeb7a6af722a8ad117e276c24b20ade9fe7ab1d2a5bcfd6088943d1abce8"
+    },
+    "text_result": {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "522214fcde3da86942b5c349dcef1be4f3a5f342fed11c3905d4f7020b098ca6"
+    },
+    "source_presence": "Both explication EV220WR35/36 and specification EV220В35/36 are present in the actual request; pos35 has Kv8.0 versus Kvs6.3.",
+    "semantic_review": "All42 primary text findings read. T005 compares PN of other valves; T019 addresses valve33 Kvs4/40 and valve30 DN20/25. Neither is the solenoid35/36 comparison; no other text finding states the target conflicts.",
+    "stage_assessment": "Specific comparisons absent at primary text output despite both source tables supplied. This is not proved to be a retrieval shortage or downstream suppression. Internal model attention/operation execution is unknown.",
+    "controls": "Keep distinct brand designations without claiming physical incompatibility; keep pos35 parameter discrepancy; do not invent pos36 Kv conflict because both sources give4.0."
+  },
+  "safety_valve45": {
+    "target": "ITP_F004_safety_valve_setpoints:composite:1",
+    "frozen_decision": {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+      "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754"
+    },
+    "raw_detector": {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_063708__ensemble_codex-only_high/block_blk_0103a941fa5a4b0d9141a4149e927bff.json",
+      "sha256": "64e93c2485065741cc4c2c0599d00e9e28ab1ac66b80303ad1e301b5746f97a8"
+    },
+    "requests": [
+      {
+        "request": {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/requests/ITP/1794379029474705892/request.json",
+          "sha256": "f04f203fbc156937d748fe629097e180305d35e1312d231c0d51f81bc01e262b"
+        },
+        "attempts": {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/requests/ITP/1794379029474705892/attempts.json",
+          "sha256": "3072e12b5197c57765364dbd75c9be658d49f0c6b63d363c0a3f95d35a089e2b"
+        },
+        "images": [
+          {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png",
+            "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2"
+          }
+        ],
+        "target_specification_block_id_in_text": false
+      },
+      {
+        "request": {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/requests/ITP/1794379029479001654/request.json",
+          "sha256": "f04f203fbc156937d748fe629097e180305d35e1312d231c0d51f81bc01e262b"
+        },
+        "attempts": {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/requests/ITP/1794379029479001654/attempts.json",
+          "sha256": "16959a82cf132b92e6852e39238c71b7a8f7f75951d9d351fe9b76352cc232c6"
+        },
+        "images": [
+          {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png",
+            "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2"
+          }
+        ],
+        "target_specification_block_id_in_text": false
+      }
+    ],
+    "detector_legs": [
+      {
+        "leg": 1,
+        "findings": [
+          {
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "pumps",
+            "finding": "В экспликации насоса К12 системы отопления ДОО указаны противоречащие мощности двигателя: обозначение IL 40/220-1,5/4-R содержит мощность 1,5 кВт, а характеристика оборудования — N=0,55 кВт.",
+            "norm_quote": null,
+            "value_found": "К12: IL 40/220-1,5/4-R; N=0,55 кВт",
+            "recommendation": "Согласовать обозначение насоса К12 и указанную мощность двигателя по данным изготовителя.",
+            "claim_type": "contradiction",
+            "problem_class": "pump_motor_power_mismatch",
+            "affected_entity": "Циркуляционный насос К12 системы отопления ДОО",
+            "evidence_quote": "K12 | IL 40/220-1,5/4-R | Насос циркуляционный системы отопления ДОО, Q=4,42 м³/ч, H=16,98 м.в.см., 3x380В, N=0,55 кВт",
+            "evidence_kind": "same_page",
+            "context_status": "sufficient",
+            "confidence": 0.93,
+            "counterevidence_checked": true,
+            "required_context": []
+          }
+        ]
+      },
+      {
+        "leg": 2,
+        "findings": [
+          {
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "pumps",
+            "finding": "В экспликации для насоса К12 указана противоречивая мощность электродвигателя: обозначение IL 40/220-1,5/4-R предусматривает 1,5 кВт, а в характеристиках записано N=0,55 кВт.",
+            "norm_quote": null,
+            "value_found": "K12 | IL 40/220-1,5/4-R | Насос циркуляционный системы отопления ДОО, Q=4,42 м³/ч, H=16,98 м.в.см., 3x380В, N=0,55 кВт",
+            "recommendation": "Согласовать обозначение насоса К12 и указанную мощность электродвигателя по данным принятого оборудования.",
+            "claim_type": "contradiction",
+            "problem_class": "pump_motor_power_mismatch",
+            "affected_entity": "Насос К12 системы отопления ДОО",
+            "evidence_quote": "В одной строке экспликации К12 приведены обозначение «IL 40/220-1,5/4-R» и мощность «N=0,55 кВт».",
+            "evidence_kind": "same_page",
+            "context_status": "sufficient",
+            "confidence": 0.93,
+            "counterevidence_checked": true,
+            "required_context": []
+          }
+        ]
+      }
+    ],
+    "semantic_review": "Both graphic detector results only describe pumpK12 power1.5/0.55. Neither reports valve45 scheme16bar versus specification20bar or requests that comparison. T007 describes general20bar protection versus16bar equipment, which is a different thesis.",
+    "stage_assessment": "At these graphic detector routes, no target candidate was generated; target specification not represented by its block ID in text context. No blanket claim of absence from every possible source route."
+  },
+  "next_evaluation": "For frozen inventory arm, verify addressed extraction and actual cross-document comparison, then trace preserved narrow candidate to final output. Same-source supplied data alone must not be counted as completed comparison.",
+  "limits": [
+    "Frozen target truth reused; no new normative or physical compatibility determination.",
+    "No complete global causal diagnosis claimed.",
+    "No internal reasoning inferred from output absence.",
+    "No frozen inputs, prompts or evaluator modified; expected answers remain evaluator-only."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
