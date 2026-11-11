@@ -1,0 +1,282 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "e5a73b496344146fa6b29687517bcb5fd63893f2523e90af44610ec5b1607640",
+  "queue_after_sha256": "cab5663294b7af7a7c0d22691e0da2f79fbf199545eaa8edc004c1357d90c15f",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-043",
+      "finding": {
+        "id": "F-043",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Параметры теплового ввода",
+        "sheet": "Листы 5, 11.2",
+        "page": [
+          12,
+          18,
+          43
+        ],
+        "problem": "Нагрузка и расход теплового ввода на разрезах и аксонометрии расходятся с запиской.",
+        "description": "На разрезах 1-1 и 2-2 и аксонометрической схеме указана нагрузка 5,205 Гкал/ч, в записке — 5,229 Гкал/ч; разница 0,024 Гкал/ч. На аксонометрии расход составляет 260,25 м³/ч, в записке — 261,50 м³/ч. Между графическими источниками повторяется один набор параметров, отличный от расчётного текста. Значение 261,50 также требует отдельной арифметической и размерностной проверки.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к согласованности расчётных параметров в документах комплекта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-005",
+                "G-006",
+                "G-027",
+                "G-028"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-005",
+                  "G-006",
+                  "G-027",
+                  "G-028"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Утвердить окончательные нагрузку и расход после проверки расчёта и синхронно обновить разрезы, аксонометрию и записку.",
+        "risk": "Использование разных исходных режимов при подборе и наладке оборудования.",
+        "source_finding_ids": [
+          "G-005",
+          "G-006",
+          "G-027",
+          "G-028"
+        ],
+        "source_block_ids": [
+          "blk_871a2c95697d4a93adb86dd3e2456614",
+          "blk_94b58ecf5d404f7d90c272d267eb2e48"
+        ],
+        "related_block_ids": [
+          "blk_871a2c95697d4a93adb86dd3e2456614",
+          "blk_bd55e9b9fbff4d0886c6084a326ec05e",
+          "blk_94b58ecf5d404f7d90c272d267eb2e48"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_871a2c95697d4a93adb86dd3e2456614",
+            "page": 12
+          },
+          {
+            "type": "text",
+            "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+            "page": 18
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 43
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-005",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-006",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-027",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-028",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают одно расхождение: 5,205 Гкал/ч на разрезах 1-1 и 2-2 против 5,229 Гкал/ч в пояснительной записке, разница 0,024 Гкал/ч. Упоминание согласования расчётного расхода не добавляет существенной детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают одно расхождение: 5,205 Гкал/ч на разрезах 1-1 и 2-2 против 5,229 Гкал/ч в пояснительной записке, разница 0,024 Гкал/ч. Упоминание согласования расчётного расхода не добавляет существенной детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-044:de24b888831313c4d337",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Разрезы1–1/2–2 иаксонометрия11.2:5,205Гкал/ч,260,25м³/ч;ПЗ5,229 и261,50.",
+          "verdict": "confirmed_prior_GRAPHIC_and_authoritative_TEXT",
+          "limits": "Разности0,024Гкал/ч и1,25м³/ч; парные подписиТ1/Т2 не две независимые нагрузки."
+        },
+        {
+          "claim": "5,229×1000/(90−70)=261,45, не261,50.",
+          "verdict": "confirmed_direct_TEXT_arithmetic",
+          "limits": "Сумма опубликованных74,15+44+9,55+3,35+76,40+54,05=261,50. Промежуточное округление может объяснить0,05; не считать независимым дефектом без выяснения точности."
+        },
+        {
+          "claim": "Согласовать актуальные исходные параметры ввода.",
+          "verdict": "supported_document_question",
+          "limits": "НиПЗ, ни повторяющаяся графика не доказаны окончательной редакцией. Возможное округление0,05не объясняет конфликт нагрузки0,024."
+        },
+        {
+          "claim": "Из расхождения следуют ошибочный подбор, учёт или наладка.",
+          "verdict": "not_established_physical_consequence",
+          "limits": "Фактическая работа и история изменения не проверены. Значения не задают универсальных допусков."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены окончательная редакция, ошибка оборудования или наладки. Расхождение261,45/261,50 допускает промежуточное округление и не объясняет5,205/5,229.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить конфликт исходных нагрузок и расходы как подтверждающие параметры. Повторы в графике не отдельные дефекты. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-044.json",
+          "sha256": "2a46b122ca2c41e1aeff054be481066700a8c8499669287a08bb9f5a89b23a10",
+          "primary_adjudication": null,
+          "limits": "Графические и текстовые значения относятся к вводу ИТП с температурами90/70. Причина различий, история редакций и влияние на типоразмер оборудования не установлены. Не выдавать отдельную ошибку из-за разницы0,05м³/ч: по формуле проекта5,229×1000/20=261,45, а сумма опубликованных расходов261,50 содержит вентиляцию76,40 вместо прямого результата76,35. Округление промежуточного расхода может объяснить0,05, но не разницу исходных нагрузок0,024Гкал/ч.",
+          "wording": "Согласовать нагрузку и расход теплового ввода: на разрезах1-1/2-2 и аксонометрии указаны5,205Гкал/ч и260,25м³/ч, в ПЗ —5,229Гкал/ч и261,50м³/ч. Подтвердить действующие исходные данные и обновить связанные подписи."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_871a2c95697d4a93adb86dd3e2456614.png",
+          "sha256": "97b3068dcdaebbf363f1bc3e40c9605fd90564b7d2b33b3f029d772dd86f97f9",
+          "block_id": "blk_871a2c95697d4a93adb86dd3e2456614",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Heat input leaders show Q5.205 Gcal/h and G260.25 m3/h.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_871a2c95697d4a93adb86dd3e2456614.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+          "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af",
+          "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Heat input leaders show Q5.205 Gcal/h and G260.25 m3/h.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-044",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-043"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_input_load"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Current F043 reviewed against frozen prior evidence and identical source hashes. Authoritative TEXT block89 directly reread and arithmetic recalculated. Rounding possibility and unknown document priority preserved. No new raster inspection or engineer acceptance."
+}
