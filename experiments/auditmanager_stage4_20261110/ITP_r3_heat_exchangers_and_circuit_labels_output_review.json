@@ -1,0 +1,933 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "c2d770d9f75ef6a47b79d62cb61a944aaf3cf7a3ea66d6f15fb7893f887d1757",
+  "queue_after_sha256": "e6b40208768e70c3edd2bb8d43b02577c087dddc7755db5ff454505f3f4fcbd1",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-044",
+      "finding": {
+        "id": "F-044",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Мощности теплообменников",
+        "sheet": "Лист 7",
+        "page": [
+          8,
+          14,
+          48,
+          60,
+          64
+        ],
+        "problem": "Мощности теплообменников на разрезах не согласованы с экспликацией и подбором.",
+        "description": "Для ГВС первой зоны на разрезе 7-7 указано 0,403 Гкал/ч на аппарат при доле 50%, а в экспликации и расчёте №w203119579 — 0,419 Гкал/ч. Расширенное замечание также фиксирует на разрезе отопления второй зоны 1,005 вместо 1,012 Гкал/ч. Для ГВС расчёт с запасом 15% даёт 0,4186 Гкал/ч, что согласуется с округлённым значением 0,419.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к согласованности характеристик оборудования на чертежах и в расчётах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-007",
+                "G-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-007",
+                  "G-008"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать мощности по окончательным подборам и исправить разрезы, экспликацию и расчётные таблицы.",
+        "risk": "Неоднозначность заказа теплообменников и исходных данных наладки.",
+        "source_finding_ids": [
+          "G-007",
+          "G-008"
+        ],
+        "source_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea"
+        ],
+        "related_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 48
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 64
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-008",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют расхождение мощности ГВС I зоны: 0,403 против 0,419 Гкал/ч. Левое дополнительно охватывает расхождение мощности отопления II зоны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют расхождение мощности ГВС I зоны: 0,403 против 0,419 Гкал/ч. Левое дополнительно охватывает расхождение мощности отопления II зоны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 77,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "ITP_heat_exchanger_labels:92be8d7a03f9ca816e16",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ГВСIзоны,К6: разрез7–7 указывает0,403 при50%; экспликация0,419, подборw203119579 —0,4186Гкал/ч.",
+          "verdict": "confirmed_prior_GRAPHIC_and_TEXT",
+          "limits": "0,728×1,15/2=0,4186.0,419 — округление, не отдельный дефект. Два аппарата по50%."
+        },
+        {
+          "claim": "ОтоплениеIIзоны:1,005 на разрезе против1,012 в таблицах.",
+          "verdict": "confirmed_separate_object_duplicate_with_F045",
+          "limits": "Добавлены доказательства прежнегоF045. Этот атом повторяет текущийF045, но не отменяет самостоятельное расхождениеК6."
+        },
+        {
+          "claim": "Согласовать мощности по окончательным подборам.",
+          "verdict": "supported_document_question",
+          "limits": "Неверная поставка и необходимость замены аппаратов не доказаны.15% относится к проекту, не универсальному правилу."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ, неправильный монтаж или закупка, причина расхождений и необходимость замены теплообменников.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "F044 and F045 overlap on K2 heating zoneII only; preserve distinct K6 GVS zoneI atom. Other object claims remain separate.",
+      "profile_and_section": "Сохранить вопросы о мощности и маркировке, объединить повторК2. Не выдавать числовую совместимость за историю изменения проекта. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a5c04128f54f404e900b3ee4e3a854ba",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_df17c007b7cf4eef8eca49f51580a275",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0",
+          "primary_adjudication": null,
+          "limits": "Не выдавать различие мощности аппарата и нагрузки потребителя как ошибку подбора. Запас15% в проекте прямо указан; отсутствие надписи о запасе возле отдельной выноски не означает отсутствия запаса в документации. Причина остаточных расхождений подписей не установлена. Неправильная закупка, недостаточная мощность, экономический ущерб и необходимость замены оборудования не доказаны. Независимая инженерная приёмка этих свежих классических строк отсутствует. Число15% — условие этого проекта, не универсальный допуск.",
+          "wording": "Согласовать подписи мощности у теплообменников с ПЗ, экспликацией и подбором: К2 —1,005 на разрезах против1,012 с запасом15%; К6 —0,403 для50% мощности на разрезе против0,419 (подбор0,4186); К1 —1,711 на разрезах против1,707 в ПЗ/экспликации (подбор1,70775). Отдельно обозначать нагрузку потребителя и мощность аппарата с запасом."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+          "sha256": "b912407176437e746a465c78e72293ad851026cb26d5f2dfb5b3fdcb597f8301",
+          "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез7-7:ГВСIзона50%,поз6,Q0,403Гкал/ч.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-045",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9ed40ebbf2814eddafb0cf03546ccd0d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0",
+          "primary_adjudication": null,
+          "limits": "Не выдавать различие мощности аппарата и нагрузки потребителя как ошибку подбора. Запас15% в проекте прямо указан; отсутствие надписи о запасе возле отдельной выноски не означает отсутствия запаса в документации. Причина остаточных расхождений подписей не установлена. Неправильная закупка, недостаточная мощность, экономический ущерб и необходимость замены оборудования не доказаны. Независимая инженерная приёмка этих свежих классических строк отсутствует. Число15% — условие этого проекта, не универсальный допуск.",
+          "wording": "Согласовать подписи мощности у теплообменников с ПЗ, экспликацией и подбором: К2 —1,005 на разрезах против1,012 с запасом15%; К6 —0,403 для50% мощности на разрезе против0,419 (подбор0,4186); К1 —1,711 на разрезах против1,707 в ПЗ/экспликации (подбор1,70775). Отдельно обозначать нагрузку потребителя и мощность аппарата с запасом."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+          "sha256": "b912407176437e746a465c78e72293ad851026cb26d5f2dfb5b3fdcb597f8301",
+          "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез10-10:отоплениеIIзоны100%,поз2,Q1,005Гкал/ч.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-046",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-044"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_heat_exchangers_and_circuit_labels"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-045",
+      "finding": {
+        "id": "F-045",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Мощности теплообменников",
+        "sheet": "Лист 7",
+        "page": [
+          8,
+          14,
+          60
+        ],
+        "problem": "Мощность теплообменника отопления второй зоны на разрезе отличается от экспликации.",
+        "description": "На разрезе 10-10 указано 1,005 Гкал/ч, в экспликации — 1,012 Гкал/ч. Разница составляет 0,007 Гкал/ч. Расчёт по нагрузке 0,880 Гкал/ч с запасом 15% даёт 1,012 Гкал/ч; требуется согласование с подбором №w203119577.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к согласованности параметров одной позиции оборудования в комплекте.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-009"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить окончательную мощность по подбору и исправить подпись разреза.",
+        "risk": "Использование устаревшей характеристики при комплектации и наладке.",
+        "source_finding_ids": [
+          "G-009"
+        ],
+        "source_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea"
+        ],
+        "related_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 60
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Разрез10–10:К2,1,005Гкал/ч; экспликация и подборw203119577 —1,012.",
+          "verdict": "confirmed_prior_GRAPHIC_and_TEXT",
+          "limits": "0,880×1,15=1,012; разница0,007. Два100%аппарата при резервировании не удваивают нагрузку."
+        },
+        {
+          "claim": "Исправить подпись по согласованному окончательному подбору.",
+          "verdict": "supported_question_with_duplicate_burden",
+          "limits": "Тот же атом включён вF044; при выпуске объединить, сохранив отдельныйК6. Устаревание как причина расхождения не доказано."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ, неправильный монтаж или закупка, причина расхождений и необходимость замены теплообменников.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "F044 and F045 overlap on K2 heating zoneII only; preserve distinct K6 GVS zoneI atom. Other object claims remain separate.",
+      "profile_and_section": "Сохранить вопросы о мощности и маркировке, объединить повторК2. Не выдавать числовую совместимость за историю изменения проекта. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9ed40ebbf2814eddafb0cf03546ccd0d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0",
+          "primary_adjudication": null,
+          "limits": "Не выдавать различие мощности аппарата и нагрузки потребителя как ошибку подбора. Запас15% в проекте прямо указан; отсутствие надписи о запасе возле отдельной выноски не означает отсутствия запаса в документации. Причина остаточных расхождений подписей не установлена. Неправильная закупка, недостаточная мощность, экономический ущерб и необходимость замены оборудования не доказаны. Независимая инженерная приёмка этих свежих классических строк отсутствует. Число15% — условие этого проекта, не универсальный допуск.",
+          "wording": "Согласовать подписи мощности у теплообменников с ПЗ, экспликацией и подбором: К2 —1,005 на разрезах против1,012 с запасом15%; К6 —0,403 для50% мощности на разрезе против0,419 (подбор0,4186); К1 —1,711 на разрезах против1,707 в ПЗ/экспликации (подбор1,70775). Отдельно обозначать нагрузку потребителя и мощность аппарата с запасом."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+          "sha256": "b912407176437e746a465c78e72293ad851026cb26d5f2dfb5b3fdcb597f8301",
+          "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез10-10:отоплениеIIзоны100%,поз2,Q1,005Гкал/ч.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-046",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-045"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_heat_exchangers_and_circuit_labels"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-046",
+      "finding": {
+        "id": "F-046",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка трубопроводов",
+        "sheet": "Лист 8",
+        "page": 15,
+        "problem": "На разрезе отопления первой зоны смешаны обозначения первичного и вторичного контуров.",
+        "description": "В разрезе 15-15 подключения обозначены Т1-Ø100 на отметке +1,065 и Т2-Ø100 на отметке +0,346, а продолжения — Т11-Ø200 и Т21-Ø200. На разрезах 40-40 и 16-16 соответствующие подключения имеют марки Т11-Ø100 и Т21-Ø100. Разные диаметры участков сами по себе не признаны ошибкой; противоречие относится к обозначениям контуров.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к однозначности и согласованности обозначений на рабочих чертежах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-010"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить подключения с принципиальной схемой и исправить обозначения разреза 15-15 на согласованные марки вторичного контура.",
+        "risk": "Ошибочное подключение оборудования и неправильная идентификация трубопроводов при эксплуатации.",
+        "source_finding_ids": [
+          "G-010"
+        ],
+        "source_block_ids": [
+          "blk_6496640ac5e44e98a89acc7af56d0509"
+        ],
+        "related_block_ids": [
+          "blk_6496640ac5e44e98a89acc7af56d0509"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+            "page": 15
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 87,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "На15–15нижниеØ100 подписаныТ1/+1,065 иТ2/+0,346; продолженияТ11/Т21Ø200.",
+          "verdict": "confirmed_prior_direct_GRAPHIC",
+          "limits": "Соседние верхниеТ1/Т2Ø150 относятся к другим линиям; не использовать их для подмены связи."
+        },
+        {
+          "claim": "На40–40 и16–16 соответствующиеØ100 обозначеныТ11/Т21.",
+          "verdict": "confirmed_prior_cross_view_identity",
+          "limits": "Совпадают отметки, диаметры, назначение и геометрия. РазличиеØ100/Ø200 само по себе не дефект."
+        },
+        {
+          "claim": "Согласовать обозначения вторичного контура.",
+          "verdict": "supported_label_correction",
+          "limits": "Фактическое соединение первичного и вторичного контуров или ошибочный монтаж не установлены."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ, неправильный монтаж или закупка, причина расхождений и необходимость замены теплообменников.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "F044 and F045 overlap on K2 heating zoneII only; preserve distinct K6 GVS zoneI atom. Other object claims remain separate.",
+      "profile_and_section": "Сохранить вопросы о мощности и маркировке, объединить повторК2. Не выдавать числовую совместимость за историю изменения проекта. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png",
+          "sha256": "7354443aa6ecdf7232110223a7b30b0dd25276027e3006175c728eb1fdc35edd",
+          "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+          "route": "direct_GRAPHIC_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/itp_r2_section15_detail.png",
+          "sha256": "9e871e35164aadc7b645d66b63fd557622391e06a5d5c80ba6f5076ad4b9243b",
+          "route": "direct_GRAPHIC_crop",
+          "crop_box": [
+            1200,
+            0,
+            2310,
+            650
+          ],
+          "source_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png"
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-046"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_heat_exchangers_and_circuit_labels"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-051",
+      "finding": {
+        "id": "F-051",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Мощности теплообменников",
+        "sheet": "Лист 10",
+        "page": [
+          8,
+          17,
+          61,
+          103
+        ],
+        "problem": "Мощность теплообменников отопления третьей зоны на разрезах отличается от экспликации.",
+        "description": "На разрезах 29-29 и 30-30 указано 0,246 Гкал/ч на каждый аппарат при доле 100%. В экспликации для К3 указано 0,220 Гкал/ч уже с запасом 15%; разница составляет 0,026 Гкал/ч. Межстраничное сопоставление показывает, что 0,246 приблизительно соответствует нагрузке 0,214 Гкал/ч из подбора установки поддержания давления с запасом 15%, тогда как 0,191×1,15≈0,220. Это требует выбора единой исходной нагрузки.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить согласованность исходных нагрузок и характеристик оборудования между документами комплекта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-025",
+                "G-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-025",
+                  "G-026"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить окончательную нагрузку третьей зоны и запас, подтвердить подбор теплообменников и обновить все связанные расчёты и чертежи.",
+        "risk": "Закупка оборудования по устаревшему подбору и несогласованные настройки контура.",
+        "source_finding_ids": [
+          "G-025",
+          "G-026"
+        ],
+        "source_block_ids": [
+          "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+        ],
+        "related_block_ids": [
+          "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+          "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "blk_d0a62bc2e56f4d07bb33a73622429881"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 61
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 103
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-025",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-026",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания сопоставляют мощность теплообменников III зоны 0,246 Гкал/ч в разрезах 29-29 и 30-30 с 0,220 Гкал/ч для К3 в экспликации, включая 15 % запас. Указание разницы 0,026 Гкал/ч не меняет содержания проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания сопоставляют мощность теплообменников III зоны 0,246 Гкал/ч в разрезах 29-29 и 30-30 с 0,220 Гкал/ч для К3 в экспликации, включая 15 % запас. Указание разницы 0,026 Гкал/ч не меняет содержания проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 81,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-021:19069482aa6e7267f73b",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "ITP40:e4eaac37781fedf2ad41",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Разрезы29–29/30–30:К3 по0,246Гкал/ч; экспликация0,220, подбор219650ккал/ч.",
+          "verdict": "confirmed_prior_GRAPHIC_and_TEXT",
+          "limits": "0,191×1,15=0,21965. Разница с округлёнными0,220 равна0,026, с точным подбором0,02635."
+        },
+        {
+          "claim": "В подборе поддержания давления отопления3зоны исходная нагрузка0,214Гкал/ч.",
+          "verdict": "confirmed_direct_authoritative_TEXT_block141",
+          "limits": "blk_c25d98d5cc6e4b05a83580352fea374b.0,214×1,15=0,2461, округляется до0,246."
+        },
+        {
+          "claim": "Совпадение показывает возможную связь с другой исходной нагрузкой.",
+          "verdict": "arithmetic_compatible_cause_not_proven",
+          "limits": "Не доказывает, что автор разреза использовал именно этот расчёт; разные версии/режимы ещё не разграничены."
+        },
+        {
+          "claim": "Согласовать окончательную нагрузку и связанные расчёты.",
+          "verdict": "supported_document_question",
+          "limits": "Не доказаны устаревание подбора, ошибочная закупка или недостаточность оборудования;100%резерв не суммировать с рабочим аппаратом."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ, неправильный монтаж или закупка, причина расхождений и необходимость замены теплообменников.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "F044 and F045 overlap on K2 heating zoneII only; preserve distinct K6 GVS zoneI atom. Other object claims remain separate.",
+      "profile_and_section": "Сохранить вопросы о мощности и маркировке, объединить повторК2. Не выдавать числовую совместимость за историю изменения проекта. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9ed40ebbf2814eddafb0cf03546ccd0d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+          "sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19",
+          "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрезы29-29и30-30:отоплениеIIIзоны100%,Q0,246Гкал/ч на аппарат.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-052",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-052"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "direct_authoritative_TEXT",
+          "observation": "Отопление3зона:0,214Гкал/ч; arithmetic0.214*1.15=0.2461, not proven causal provenance."
+        }
+      ],
+      "disposition": "assessed_r3_ITP_heat_exchangers_and_circuit_labels"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Four current ITP findings assessed against frozen prior reviews and identical MD/PNG bytes; F044 also uses prior F045. New F051 arithmetic hypothesis checked against authoritative block141. No new raster inspection or engineer decision. Duplicate K2 atom distinguished from independent K6."
+}
