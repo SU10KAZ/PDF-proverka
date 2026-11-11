@@ -1,0 +1,181 @@
+{
+  "status": "partial_coverage_review_not_quality_acceptance",
+  "ledger_before_sha256": "877062aacea9973d372cc0cc7fc73e381d5de96e8e9482fed47bd2c50c0ce5e3",
+  "ledger_after_sha256": "bd53ea048a5a204646230993339ec7c375758bb8f32a71a6c4360f97c1c11ca1",
+  "reviewed_targets": [
+    {
+      "target_id": "EOM_F029_shared_product_code:9059426853483f0c34cf",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-018"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json",
+          "sha256": "77e362cc528f68c54dffd966b254eb69b718ae3b96f59718c2a8d61bd6aeb2a7"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-018"
+        }
+      ],
+      "reason": "Код178513 явно связан сдержателем токоотвода,шпилькойМ8,гайкойМ8 иСЛУ-50/65;выдача сохраняет вопрос комплекта вместо доказанной ошибки всех артикулов.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F034_specification_quantity:cc93bff16c691fce3df8",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-013"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json",
+          "sha256": "a63aa0206c93f1d384029fc98b7d1b4c335e25505edd3672d091df494b1d711a"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-013"
+        }
+      ],
+      "reason": "Две одинаковые трубыØ32по190м,380м суммарно названы;назначение каждой строки не раскрыто. Избыточность второй строки не засчитывается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F035_specification_quantity:0498a98c0a043fe1e66d",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-015"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F035_specification_quantity.json",
+          "sha256": "d2fdf2b0a62b954bc12f46539bcc5944fc1413db62c61166ff991b5d317f8177"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-015"
+        }
+      ],
+      "reason": "Заголовок задаёт разделВРУ-2; описание обе повторные парыLG1000/96 иМ6×20/768.192/1536 — арифметика, не доказанный лишний заказ.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F036_tray_code_description:da6b33367ef613f75477",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-016"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F036_tray_code_description.json",
+          "sha256": "4e9118267e89143c1c088e4a42e68b3b72d0bd1650e9b643f6bc1993fcf2eb85"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-016"
+        }
+      ],
+      "reason": "3530410:перфорация первого этажа против неперфорированного исполнения на+38,690/+41,290/+44,650 сохранена. Правильное изделие этим не выбрано.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F037_tray_cover_scope:5eaa42d72fba7e53d76e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-017"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F037_tray_cover_scope.json",
+          "sha256": "15432598db63ee87b27c7deece7cbcede488860c1944a00c2f5ef1fa513caa1f"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-017"
+        }
+      ],
+      "reason": "Все три адресные пары130/126,57/55,41/40 иразница7м названы; участки без крышек и запас оставлены вопросом.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F038_specification_quantity:2bf971bcf81224ba57b8",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json",
+          "sha256": "96f4c1648640eb1c94ca979a73869993ab04a7359a183655ca07a3807fe43e64"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-014"
+        }
+      ],
+      "reason": "Клипсы25/32вметрах2345/190 названы; совпадение сдлиной трубы не определяет число держателей. Засчитывается вопрос единиц и расчёта, не готовая замена м→шт.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F039_frame_capacity:289e229897613e2cc690",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-021"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F039_frame_capacity.json",
+          "sha256": "a1d31ff9ed8eb3319579cf81a42e523bb9007502dc39096902d226b85774ebda"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-021"
+        }
+      ],
+      "reason": "56карбоновых розеток,51одиночная+5двойных рамок=61пост явно сопоставлены; запас/другие устройства не исключены. Добавленные62розетки/72подрозетника требуют отдельной оценки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F043_hanger_fireproofing_supply:2828cd141e6335bf59ca",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-019"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F043_hanger_fireproofing_supply.json",
+          "sha256": "c635932a8d19138d1870cc16af9486c5aeab7f54456fa941f43692eb5b52e434"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-019"
+        }
+      ],
+      "reason": "ОСК-180/подвесыМБОР10 против отсутствия отдельной позицииСО иутеплителя50 названы. Узкий вопрос учёта сохранён; обобщение отсутствия на всюСО иEI180 оценивается отдельно, не доказывается этим совпадением.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "unchecked_targets": 51,
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": [
+    "Eight narrow material targets matched. Counts and length discrepancies are questions, not proven defective deliveries. Global absence and additional claims remain subject to separate output quality review."
+  ]
+}
