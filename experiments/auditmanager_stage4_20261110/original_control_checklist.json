@@ -46,7 +46,7 @@
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
-          "sha256": "461990a52660c28e36890b425475a2089bf768cae2196b46b341499913d513e6"
+          "sha256": "2f020949deeefd91560b3344f3b55e53db956760ac1861c6d8da3bec19589ece"
         }
       ],
       "full_acceptance_proven": false
@@ -524,7 +524,7 @@
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
-          "sha256": "461990a52660c28e36890b425475a2089bf768cae2196b46b341499913d513e6"
+          "sha256": "2f020949deeefd91560b3344f3b55e53db956760ac1861c6d8da3bec19589ece"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_adjacent_flights_validated.json",

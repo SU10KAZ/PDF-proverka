@@ -1,0 +1,29 @@
+{
+  "status": "evaluator_v2_dimension_only_change_verified",
+  "previous_release": {
+    "path": "experiments/auditmanager_stage4_20261110/evaluator_release_errata_v1.json",
+    "sha256": "ff65dfe778f018ba720021934b7943fb97e1e52f874a0afcb9288c58c2b7b5ef"
+  },
+  "current_release": {
+    "path": "experiments/auditmanager_stage4_20261110/evaluator_release_errata_v2.json",
+    "sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76"
+  },
+  "all_359_targets_unchanged": true,
+  "truth_denominators_unchanged": true,
+  "new_holds": [
+    {
+      "target_ids": [
+        "KM_F005_total_plate_balance:composite:1"
+      ],
+      "status": "disputed_output_section_only",
+      "held_dimensions": [
+        "report_section_accuracy"
+      ],
+      "evaluation_action": "Hold report-section accuracy only. Keep factual preservation, mandatory conditional wording and unsupported anchor/procurement claims in scope.",
+      "resolved": false
+    }
+  ],
+  "engineer_resolution_fabricated": false,
+  "model_calls": 0,
+  "comparison_started": false
+}

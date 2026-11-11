@@ -37,7 +37,7 @@ def build_view():
         'original_denominators':original,'working_truth_denominators':working,'holds':holds,
         'original_counts':{k:len(v) for k,v in original.items()},'working_counts':{k:len(v) for k,v in working.items()},
         'rules':['Always retain full-set counts and excluded target-level reasons in comparison reports.',
-            'EOM F032 report-section hold does not remove its factual target or unsupported-consequence checks.',
+            'EOM F032 and KM F005 report-section holds do not remove their factual targets or unsupported-consequence checks.',
             'KM F014 is unresolved, not a passing negative filter control.',
             'No engineer decision or resolution is fabricated by applying a hold.',
             'Freeze the chosen evaluator version before comparative results are revealed; this working view is evaluator-only.'],

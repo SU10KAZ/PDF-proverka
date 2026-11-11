@@ -7,7 +7,7 @@
   },
   "errata": {
     "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
-    "sha256": "76320005c258aac4d64eba8fb5cd8e4f8df50843ba98b205586bb8979c73fa33"
+    "sha256": "2f020949deeefd91560b3344f3b55e53db956760ac1861c6d8da3bec19589ece"
   },
   "verified_release_files": 268,
   "original_denominators": {
@@ -767,6 +767,17 @@
       ],
       "evaluation_action": "Hold only report-section accuracy for this candidate until a corrected evaluator is frozen. Continue independently scoring factual preservation and unsupported power/equipment claims. Do not change runtime wording to fit the old section label.",
       "resolved": false
+    },
+    {
+      "target_ids": [
+        "KM_F005_total_plate_balance:composite:1"
+      ],
+      "status": "disputed_output_section_only",
+      "held_dimensions": [
+        "report_section_accuracy"
+      ],
+      "evaluation_action": "Hold report-section accuracy only. Keep factual preservation, mandatory conditional wording and unsupported anchor/procurement claims in scope.",
+      "resolved": false
     }
   ],
   "original_counts": {
@@ -781,7 +792,7 @@
   },
   "rules": [
     "Always retain full-set counts and excluded target-level reasons in comparison reports.",
-    "EOM F032 report-section hold does not remove its factual target or unsupported-consequence checks.",
+    "EOM F032 and KM F005 report-section holds do not remove their factual targets or unsupported-consequence checks.",
     "KM F014 is unresolved, not a passing negative filter control.",
     "No engineer decision or resolution is fabricated by applying a hold.",
     "Freeze the chosen evaluator version before comparative results are revealed; this working view is evaluator-only."

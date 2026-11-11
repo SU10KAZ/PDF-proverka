@@ -58,6 +58,35 @@
       ],
       "engineer_decision": null,
       "full_claim_now_confirmed": false
+    },
+    {
+      "candidate_id": "B-KM-F-005",
+      "target_ids": [
+        "KM_F005_total_plate_balance:composite:1"
+      ],
+      "control_id": "H04-P03",
+      "status": "disputed_output_section_only",
+      "original_adjudication": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F005_total_plate_balance.json",
+        "sha256": "c0650dd58ee0c6cf3ec04847956f7b9534183f7169c5f65f167fba59080061cf"
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/km_f005_output_evidence/assessment.json",
+        "sha256": "e109f3e299c3423af0d8b8346bf2e50e33b824b2f4308f876656627e9ca93a71"
+      },
+      "prior_profile": "questions",
+      "current_source_review_profile": "technical_findings",
+      "reason": "Frozen required meaning preserves the plate counts and conditional mass comparison as a question. Source adjudication retains technical/economic routing. The disagreement is already recorded in the output assessment and has no independent engineer resolution; neither route is declared correct by this hold.",
+      "evaluation_action": "Hold report-section accuracy only. Keep factual preservation, mandatory conditional wording and unsupported anchor/procurement claims in scope.",
+      "excluded_metric_dimensions": [
+        "report_section_accuracy"
+      ],
+      "retained_metric_dimensions": [
+        "factual_preservation",
+        "unsupported_consequences"
+      ],
+      "engineer_decision": null,
+      "full_claim_now_confirmed": false
     }
   ],
   "required_before_comparison": "Apply these evaluator holds and freeze a corrected evaluation release before acceptance metrics; never send errata to independent audit executors."

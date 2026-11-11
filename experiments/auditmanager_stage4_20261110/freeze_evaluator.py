@@ -17,7 +17,7 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def assemble(view, release, targets, errata):
+def assemble(view, release, targets, errata, *, version="AM-SIX-EVALUATOR-ERRATA-1"):
     """Validate the complete target inventory before creating a snapshot."""
     rows = targets['targets']
     by_id = {row['target_id']: row for row in rows}
@@ -45,7 +45,7 @@ def assemble(view, release, targets, errata):
         if alias in by_id or canonical not in by_id:
             raise ValueError('Alias is ambiguous or refers to a missing target')
     return {
-        'version': 'AM-SIX-EVALUATOR-ERRATA-1',
+        'version': version,
         'status': 'frozen_evaluator_only_not_trial_ready',
         'original_release': view['original_release'],
         'errata_source': view['errata'],
@@ -75,7 +75,7 @@ def assemble(view, release, targets, errata):
     }
 
 
-def freeze(output):
+def freeze(output, *, version="AM-SIX-EVALUATOR-ERRATA-1"):
     # build_view verifies all files in the original release, then reapplies errata.
     view = build_view()
     release_path = Path(view['original_release']['path'])
@@ -83,7 +83,7 @@ def freeze(output):
     if not any(f['path'] == str(TARGETS) and f['sha256'] == sha(TARGETS) for f in release['files']):
         raise ValueError('Target inventory is not sealed by release')
     errata = json.loads(Path(view['errata']['path']).read_text())
-    snapshot = assemble(view, release, json.loads(TARGETS.read_text()), errata)
+    snapshot = assemble(view, release, json.loads(TARGETS.read_text()), errata, version=version)
     snapshot['target_source'] = {'path': str(TARGETS), 'sha256': sha(TARGETS)}
     output.parent.mkdir(parents=True, exist_ok=True)
     # Never overwrite a version after results have been observed.
@@ -95,4 +95,6 @@ def freeze(output):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
-    print(json.dumps(freeze(parser.parse_args().output), ensure_ascii=False))
+    parser.add_argument('--version', required=True)
+    args=parser.parse_args()
+    print(json.dumps(freeze(args.output, version=args.version), ensure_ascii=False))
