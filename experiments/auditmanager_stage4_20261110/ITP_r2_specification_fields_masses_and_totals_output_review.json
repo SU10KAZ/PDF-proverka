@@ -1,0 +1,592 @@
+{
+  "status": "three_ITP_specification_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "bb9d0230dba302fe6fe339ccc83c2943f4ea4ba1924fe611f9cc7c7baefbd054",
+  "queue_after_sha256": "67c5668185780f4db944e1303384cb4cd0cf54cb3436bfe5186ac67945e89c36",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-026",
+      "finding": {
+        "id": "F-026",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Комплектность спецификации",
+        "sheet": "Листы 4., 5., 6., 7., 8., 9., 10., 11.",
+        "page": [
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34
+        ],
+        "problem": "Спецификация содержит незавершённые обозначения и повторный номер позиции.",
+        "description": "В строках сохранены значения «Решение не найдено», «Нет в каталоге» и «<варианты>», включая переходы и отводы. Позиция 89 одновременно присвоена кранам DN25 количеством 118 и DN32 количеством 2. Однозначный заказ и сопоставление с чертежами невозможны.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Полнота обозначений и однозначная идентификация изделий в рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-026"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Завершить подбор изделий, удалить служебные значения, исправить номера позиций и синхронизировать выноски чертежей.",
+        "risk": "Ошибки закупки, отсутствие необходимых деталей и переделки при монтаже.",
+        "source_finding_ids": [
+          "T-026"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "rework",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-027:4828a324071dacb9ae3d",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-027:fe51c088072cbcf15ec9",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-027:0bd4729bc0b05b923141",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-031:d7fa75e76f824fe5d722",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Строка дренажнойтрубы0,4м содержитРешение не найдено;строка1шт.ГОСТ17379-2001 —Нет в каталоге внаименовании икоде.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Эти две строки однозначно определяют изделие длязаказа.",
+          "verdict": "refuted_missing_identification",
+          "limits": "Впервой нет размера иконкретного наименования; вовторой нераскрыта конкретная заглушка. Не восстанавливать их издогадки."
+        },
+        {
+          "claim": "Все строки с варианты также неидентифицируемы.",
+          "verdict": "unsupported_blanket_generalization",
+          "limits": "Утрубы57×3,5естьразмер идлина85,6м; уотводов25/32/50/65естькоды иколичества. Некоторые переходы имеютразмер,нонеполныйкод; оценивать отдельные поля каждойстроки."
+        },
+        {
+          "claim": "Пункты5.18.2.1и5.18.3.2явно перечисляют требуемые диаметры,толщины ирабочие давления.",
+          "verdict": "not_supported_by_cited_clause",
+          "limits": "Пункты говорят обобъёмах работ,нормативном расходе изапасе; не подменять их требованием ко всем характеристикам заказа."
+        },
+        {
+          "claim": "Заменить служебные значения достаточными характеристиками конкретных неопределённых изделий.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Происхождение надписей —ошибкаBIMиликаталога; поставка невозможна.",
+          "verdict": "not_established",
+          "limits": "АвторитетныйTEXT принят без повторного распознавания; причина возникновения ифактическая закупка не исследованы."
+        },
+        {
+          "claim": "Номер89 уBVR Dn25(118шт.) иDn32(2шт.).",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Dn32изпозиции89можно удалить как дубль позиции88.",
+          "verdict": "not_established",
+          "limits": "Позиция88содержит18шт.Dn32; выноски иучёт изделий не сверены. Совпадение типоразмера не доказательство лишних2шт."
+        },
+        {
+          "claim": "Однозначный заказ невозможен для всех строк с вариантами и повторным номером.",
+          "verdict": "unsupported_blanket_generalization",
+          "limits": "У части строк есть размеры, коды и количества. Повтор89затрудняет привязку, но сам по себе не стирает различиеDN25/32. Оценивать достаточность каждой строки отдельно, не удалять2кранаDN32по догадке."
+        }
+      ],
+      "unsupported_additions": "Не считать любую служебную запись неидентифицируемым изделием, одинаковые массы доказанной ошибкой каждого изделия, а малую разность итогов ошибкой без учёта округления.",
+      "novel_useful_content": "Новые сравнения фильтров и суммыИТПпроверены отдельно; потеря деталей составных замечаний учтена.",
+      "duplicate_burden": "distinct_insulation_support_or_identification_issue_group_specification_questions",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ea746747ceeb432db81d3380109e5608",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-027",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-028",
+          "route": "prior_atomic_TEXT_review_same_document_sha256",
+          "limits": "Повторныйномер89иразныеDNпроверены в прежней записи; нынешнийMDсовпадает поSHA256."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-026_specification_and_mass_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-028",
+      "finding": {
+        "id": "F-028",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Массы оборудования",
+        "sheet": "Листы 2, 2.1, 1., 2., 3., 4.",
+        "page": [
+          8,
+          9,
+          24,
+          25,
+          26,
+          27,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          76,
+          82
+        ],
+        "problem": "Массы ряда изделий различаются между экспликацией, спецификацией и техническими листами.",
+        "description": "Для теплообменника отопления первой зоны приведены 650,88 и 458,01 кг; для насоса греющего контура — 284, 181 и 203 кг; для насоса ДОО — 29, 60 и 64 кг. Фильтрам DN200, DN125, DN80, DN65 и DN50 одинаково присвоено 144 кг. Состав массы, включая воду и обвязку, не разграничен.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Согласованность характеристик оборудования и исходных данных строительных заданий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-028"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-028"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить массы выбранных исполнений и раздельно указать собственную массу, массу воды и обвязки.",
+        "risk": "Недостоверные монтажные нагрузки и исходные данные для оснований и подъёмных операций.",
+        "source_finding_ids": [
+          "T-028"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К1: в экспликации 650,88 кг, в СО 458,01 кг; расчёт w203119576 также указывает массу нетто 458,01 кг.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Совпадение СО и расчёта не делает число окончательной эксплуатационной массой."
+        },
+        {
+          "claim": "К14 IL100/160-18,5/2: экспликация 284, СО 181, технический лист артикула 2786131 — 203 кг.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "К12 IL40/220-1,5/4: экспликация 29, СО 60, технический лист артикула 2786053 — 64 кг.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Проект нигде не разделяет массу оборудования и массу с обвязкой и теплоносителем.",
+          "verdict": "refuted_broad_absence_reading",
+          "limits": "В двух текстовых примечаниях к планам уже разделены паспортная масса без теплоносителя и масса с обвязкой с учётом теплоносителя. Это не объясняет автоматически каждую разность таблиц."
+        },
+        {
+          "claim": "Нужно согласовать исполнение и состав массы каждой сравниваемой позиции.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не выбирать правильную массу по большинству документов и не назначать полную перепроверку оснований без установления переданных нагрузок."
+        },
+        {
+          "claim": "Массу из расчётного листа теплообменника можно автоматически использовать для конструкторских чертежей.",
+          "verdict": "contradicted_by_source_caveat",
+          "limits": "Лист прямо называет массу ориентировочной, уточняемой при поставке, и запрещает использовать приведённые массу и размеры в конструкторских чертежах."
+        },
+        {
+          "claim": "Ошибка фундаментов, транспортировки или монтажа доказана.",
+          "verdict": "not_established",
+          "limits": "Численные нагрузки графических планов и задания конструкторам в этой проверке не сопоставлялись; различие состава массы требует адресной проверки."
+        },
+        {
+          "claim": "ФильтрамDN200/125/80/65/50 вСОназначено по144кг.",
+          "verdict": "confirmed_authoritative_TEXT_new_scope",
+          "limits": "Строки64–68содержат разные модели и артикулы с одинаковой массой144. Это основание запросить соответствие конкретным исполнениям, но без паспортов не определяет правильные массы и не доказывает ошибку каждого значения."
+        },
+        {
+          "claim": "Строка сохраняет различие142,32/139,35кг теплообменника3зоны.",
+          "verdict": "not_covered_in_this_row",
+          "limits": "Новая строка не содержит прежний самостоятельный тезис. Не засчитывать его сохранение по общему заголовку о массах."
+        }
+      ],
+      "unsupported_additions": "Не считать любую служебную запись неидентифицируемым изделием, одинаковые массы доказанной ошибкой каждого изделия, а малую разность итогов ошибкой без учёта округления.",
+      "novel_useful_content": "Новые сравнения фильтров и суммыИТПпроверены отдельно; потеря деталей составных замечаний учтена.",
+      "duplicate_burden": "K12/K14/K1 and zone3 exchanger are separate objects within one row. K9/K10/K11 historical comparisons are not automatically credited to F-029 because they are absent from its wording.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_176aff361f9542daa86a2daecc090272",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_55ab0b4be112477eb9dec207df68000e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_03477e8997474e0c9053d3984e2d5488",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cf2c8c8d10574e858ad464481044e3de",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
+          "sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9",
+          "primary_adjudication": null,
+          "limits": "Подтверждены различия записей, а не правильность одной массы или ошибка расчёта фундаментов. В примечаниях к планам уже разделены паспортная масса без теплоносителя и масса с обвязкой с учётом теплоносителя. Численные нагрузки графических планов и задания конструкторам здесь не проверены. Масса теплообменника в расчёте названа ориентировочной, уточняемой при поставке; документ запрещает использовать её в конструкторских чертежах. Ошибка монтажных средств и нормативное нарушение не доказаны.",
+          "wording": "Согласовать массы единиц оборудования в экспликации, спецификации и листах подбора: К9 —98/94/90кг; К10 —87/67/67; К11 —48/57/57; К12 —29/60/64; К14 —284/181/203; теплообменник К1 —650,88/458,01/458,01. Уточнить исполнение и состав каждой массы, не смешивая изделие, обвязку и заполнение."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-029",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-028_specification_and_mass_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-038",
+      "finding": {
+        "id": "F-038",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Ведомости трубопроводов",
+        "sheet": "Лист 6.",
+        "page": 29,
+        "problem": "Итоги ведомостей трубопроводов содержат непояснённые значения.",
+        "description": "Наряду с длинами 977,0 и 158,8 приведены «Общий итог: 2546» и «Общий итог: 199» без объяснения смысла и единиц. Пересчёт строк даёт 976,9 м труб ИТП и 159,0 м дренажных труб.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Однозначность количественных данных и единиц измерения в рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-038"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-038"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подписать назначение и единицы всех итогов, удалить служебные результаты выгрузки и согласовать суммарные длины.",
+        "risk": "Ошибки определения объёмов поставки и монтажных работ.",
+        "source_finding_ids": [
+          "T-038"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-026:97276f557b9fbedb0bef",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Шесть опубликованных длин дренажа дают159,0м;рядомитог158,8.",
+          "verdict": "confirmed_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Расхождение0,2м невозможно объяснить округлением.",
+          "verdict": "refuted_constructive_counterexample",
+          "limits": "Уменьшение каждого изшести опубликованных чисел на0,034м сохраняет округление каждойстроки до0,1м,а сумма158,796м округляется к158,8. Это искусственный пример,не восстановленные исходные длины."
+        },
+        {
+          "claim": "Общий итог2546/199 и числа977,0/158,8 требуют пояснения назначения.",
+          "verdict": "supported_bounded_question",
+          "limits": "Единицы иоснование итогов2546/199 вданномблоке нераскрыты; не назначать ихпредположительно."
+        },
+        {
+          "claim": "Обязательно исправить итог158,8.",
+          "verdict": "not_established",
+          "limits": "Сначала выяснить методику иточность исходных длин. Текущая рекомендация категоричнее доказательств."
+        },
+        {
+          "claim": "22строки трубИТП дают976,9м против977,0.",
+          "verdict": "confirmed_decimal_sum_not_proven_total_error",
+          "limits": "Контрпример: добавить0,004м к каждой из22длин; округлённые строки сохраняются, сумма976,988округляется до977,0. Это искусственное доказательство возможности округления, не восстановление фактических длин."
+        },
+        {
+          "claim": "2546/199являются служебными результатами выгрузки и их нужно удалить.",
+          "verdict": "origin_not_established",
+          "limits": "Назначение и единицы не раскрыты. Сперва установить происхождение, затем исправить представление; не удалять неизвестный итог только по предположению об экспорте."
+        }
+      ],
+      "unsupported_additions": "Не считать любую служебную запись неидентифицируемым изделием, одинаковые массы доказанной ошибкой каждого изделия, а малую разность итогов ошибкой без учёта округления.",
+      "novel_useful_content": "Новые сравнения фильтров и суммыИТПпроверены отдельно; потеря деталей составных замечаний учтена.",
+      "duplicate_burden": "two_distinct_atoms_in_F028_position_identity_and_total_method_keep_separate",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-026.json",
+          "sha256": "6d986df9fb3f9b2e8f000a6f33b2a535301725f63d5bc258b1d913cf3169be82",
+          "primary_adjudication": null,
+          "limits": "Округление исходных неокруглённых длин не проверено; числовое отличие0,1/0,2м само по себе не доказывает ошибку объёмов. Единицы отдельных итогов не назначать предположительно.",
+          "wording": "Уточнить назначение итогов2546/977,0 и199/158,8 в ведомости труб. Суммы опубликованных длин составляют976,9м и159,0м соответственно."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-031.json",
+          "sha256": "1e77b4c1af3d96d38544e8d299129f7e02e867812d6138b2c8ecb99817db0e26",
+          "primary_adjudication": null,
+          "limits": "Это два самостоятельных уточнения идентификации, объединённых исходной строкой. Реальная ошибочная закупка не доказана. Не заявлять, что модельRM580 не существует, без каталога; подтверждено только расхождение записей. Не удалять2кранаDn32 как дубль позиции88 и не присваивать новый номер автоматически: выноски всех чертежей не проверены.",
+          "wording": "Уточнить обозначения спецификации: в поз.19.2 приV50л/PN16 записаноRM580PN16, тогда как экспликацияК19.3 и подбор указываютRM50/16бар. Также номер89 присвоен двум кранам BVR —Dn25(118шт.) иDn32(2шт.); обеспечить однозначную связь с чертежами."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-028",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-038_specification_and_mass_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
