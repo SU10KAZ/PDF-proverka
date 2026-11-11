@@ -1,0 +1,748 @@
+{
+  "status": "partial_coordinator_coverage_review",
+  "discipline": "ITP",
+  "repeat": 1,
+  "mapped_atoms": [
+    {
+      "target_id": "B-ITP-F-027:4828a324071dacb9ae3d",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-027"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Конкретная дренажная строка0,4м сРешение не найдено названа, запрошены размеры и характеристики для заказа.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-027:fe51c088072cbcf15ec9",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-027"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Нет в каталоге названо вместе сзаглушкой, но точная строка1шт/ГОСТ17379 и отличие неопределённого изделия от просто служебного поля не раскрыты.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-027:0bd4729bc0b05b923141",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-027"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Варианты отмечены, но общая невозможность определить изделия распространена на служебные записи без проверки достаточности каждой строки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-027:7853566af8288ba9432d",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Неопределённая масса идентифицированного фильтраDN300 РИДАН-ФСФ01.16.300 не сформулирована; другие массы иPNфильтров не заменяют этот вопрос.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-029:268aafac2624c208753e",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-025"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-029.json",
+          "sha256": "92f98a8b73d3db1a60c32f0d100a2dfd0e5688ea5295792e06a212154edd7ef0"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "85,1м325×7, отсутствие цилиндра325 и99м273×40 при1,7мтрубы названы. Конкретные2+97 и ограничение двумя таблицами не раскрыты, исправление размеров предложено увереннее эталонного вопроса распределения матов.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-030:a4e56855f9942b943bff",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-026"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+          "sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Строка креплений325 безединицы/количества и85,1мтрубы названы; запрошено заполнение после сверки опор.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-030:15e7e0c93d727b6902f9",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-026"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+          "sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "32комплекта273 при1,7мтрубы сохранены как требующие проверки, перенос32в325 автоматически не предписан.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-031:20e0a2fe6cdbb065f78a",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-030"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-031.json",
+          "sha256": "1e77b4c1af3d96d38544e8d299129f7e02e867812d6138b2c8ecb99817db0e26"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Тот же демпфер второйзоны50л:RM580СО противRM50подбора/экспликации. НесуществованиеRM580 не утверждается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-031:d7fa75e76f824fe5d722",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-028"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-031.json",
+          "sha256": "1e77b4c1af3d96d38544e8d299129f7e02e867812d6138b2c8ecb99817db0e26"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Повтор89 дляDN25/118шт иDN32/2шт сохранён; разные изделия не удаляются как дубли.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-035:4868f82f52227408ecc1",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-037"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-035.json",
+          "sha256": "cf7c89bf0fa2b42a1a69c07ec109e87ea4a7822255d1751f4a866ec5179c52af"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "ДоДу125/свышеДу150 и незаданныйДу150 названы. Полное отсутствие дренажа не утверждается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-035:6e663d7b02b8e032a0c2",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-037"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-035.json",
+          "sha256": "cf7c89bf0fa2b42a1a69c07ec109e87ea4a7822255d1751f4a866ec5179c52af"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "0,01мм пола/сливнойтрубы отмечено как размерностная ошибка. Выбор окончательного уклона и нормативная достаточность отдельно не зачтены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-037:8139bf7df3bbe04da245",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-033"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-037.json",
+          "sha256": "77e4dc763659487421731725cbfec2d7e8f78380090db6e5edb06498a7707ac7"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "ПерваяГВС:95,59ПЗ против91,59анкеты и86,59требуемого выхода сохранены. Разности9/5 не засчитаны как проверенный реальный перепад.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-038:705f2262875c31478443",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-032"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-038.json",
+          "sha256": "35c602bbbe1e1dd36f6aa55f734b93813654cc257bc170858a9006bc799f891f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "−4,000ведомости,−4,900шапки и−4,450анкеты сохранены с вопросом назначения иединой базы.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-039:20e8e64d70bd0535ad4d",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-031"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-039.json",
+          "sha256": "1db31635b83a1f4cbde483f5346662bb1f05664b507abc635a861ae5535b3a4a"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Заявленные12листовСО/15ПЗ и номерадо15/20 сохранены. Различие.С/.СО пропущено; максимальныйномерСО назван фактическим числомлистов без оговорки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-040:7f53850450a0df3ef46e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-039"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-040.json",
+          "sha256": "749b9a919d92ecdcb6ece7c7fcb5744d01a593cea646ae56fbe7d9d0973f2566"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Этап1титулов/этап2ТЗ при совпадающем участке сохранены; применимостьТЗ требуется подтвердить, чужим оно не объявлено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-042"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json",
+          "sha256": "0f1d4fb84c176ca0d580db069121b9d8112ce52047f0ac636243d2114f75159e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "К22:1000лграфики против1500таблиц,2×1500СО сохранены. Отличие объёма единицы явно отделено от количества физических баков.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-042:ecfe1ebab48bd184691d",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-043"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json",
+          "sha256": "0f1d4fb84c176ca0d580db069121b9d8112ce52047f0ac636243d2114f75159e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "К23:100лплана против200экспликации/СО/подбора сохранены независимо от вопроса зарядки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-044:de24b888831313c4d337",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-044"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-044.json",
+          "sha256": "2a46b122ca2c41e1aeff054be481066700a8c8499669287a08bb9f5a89b23a10"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Разрезы/аксонометрия5,205/260,25 противПЗ5,229/261,50 сохранены; 0,05не превращены в отдельную ошибку.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-050:5cd9d3d1be70ff9681c3",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-053"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-050.json",
+          "sha256": "693016921491b5dd0c2c10b23f03b22e9269d9a9ba37245e1ccb25d73e2b7d14"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Одна выноскаLVF400:91собственная/60собвязкой и теплоносителем сохранена; исправленный вес не назначен автоматически.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-ITP-F-051:6c86cc6a433d4ce0abd6",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-051.json",
+          "sha256": "48acd1c90479c0e5404f0712745a913c194d59c4f253660ae2a1eec826c66e9e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Ложное назначение насосаК13 вСО как теплоснабжение вместо вентиляции не повторено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "H-ITP-63:7ba4e763f9b6758d0f09",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-017"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/H-ITP-63.json",
+          "sha256": "ec886ea171d16f2c81f3c31963104eeae8dd14400b7a53af1c76b644ff88c610"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "К10IL50/140-4/2-R при47,08:21,29ПЗ против21,91техлиста явно сопоставлены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "H-ITP-64:0a12321728e29d5b1832",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-038",
+        "F-039"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/H-ITP-64.json",
+          "sha256": "a19c036e2038bc59c340d9147430c370a05bc48bbdcb8c2de0e60d8f2d5f245b"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "КолонкаКодработ5.18.3.1 и отличие отКодизделия сохранены. ПрименимостьТЗпоэтапам отнесена вF-039, аF-038 требует выполнения без связи с этим условием. Отдельные сметные файлы не проверены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-024"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP17_grooved_connection_identity.json",
+          "sha256": "86d4789b355603010fb36e5634f9f707854e9747a4637168699bba57a468ab33"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "FC073EмуфтыDN65 и076деталей сопоставлены с запросом каталога/канавки; несовместимость не объявлена. Нет289шт,полногонабораGT076 и раздельной привязкиВГП65×4/электросварной76×3,5.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP40:e4eaac37781fedf2ad41",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-050"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+          "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Поз29IIIзоны:10,7/0,446разрезов против9,55/0,356расчёта сохранены. НепригодностьKv16 не утверждается. Дробление общей темы нагрузки наF-050/051/052 отдельно не оценивается покрытием.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP40:24bca8b6c47714314059",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+          "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Малозначимая подстановка9,08/9,05дляГВСIIIзоны не сформулирована; инаяарифметика9,55/√0,5F-019 её не заменяет.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/ITP_review.json",
+  "review_ledger_sha256": "2db111f6f08dc1b4c80c4a7cdb76e2897613bf0a43e9575c2791e8fe73f85c7b",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "ITP",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 19,
+          "availability_available": 12,
+          "partial": 3,
+          "full": 7,
+          "absent": 2,
+          "availability_unchecked": 7,
+          "unchecked": 7
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 56,
+          "availability_available": 38,
+          "partial": 14,
+          "absent": 4,
+          "full": 20,
+          "availability_unchecked": 18,
+          "unchecked": 18
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 12,
+          "availability_available": 5,
+          "absent": 5,
+          "availability_unchecked": 7,
+          "unchecked": 7
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 27
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "limits": [
+    "Количество повторных проекций не принято за количество физических баков.",
+    "Смысловое покрытие не одобряет все риски и способы исправления.",
+    "Отсутствие ошибки не доказывает выполнение фильтра."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
