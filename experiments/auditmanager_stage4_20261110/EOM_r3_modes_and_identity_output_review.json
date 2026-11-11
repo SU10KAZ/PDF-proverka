@@ -1,0 +1,1223 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/EOM_output_review_queue.json",
+  "queue_before_sha256": "e6b4a69d2ec33296bb49708178d45e952d8f75918240adb7c76619a272a33049",
+  "queue_after_sha256": "3565d453203eda4f3a3c3f2ea5b3a249d1083af34b63b1d3e3fda2d573e8c742",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-029",
+      "finding": {
+        "id": "F-029",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Обозначения оборудования",
+        "sheet": "Лист 4",
+        "page": 7,
+        "problem": "Щит помещения 10Н имеет разные обозначения на схеме и в таблице.",
+        "description": "На схеме ВРУ-К потребитель помещения 10Н обозначен ЩМ10, а в таблице нагрузок — ЩМ20.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Найти требования к согласованности обозначений одного оборудования в рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-011"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить марку щита помещения 10Н и привести схему и таблицу к единому обозначению.",
+        "risk": "Ошибки маркировки, подключения и идентификации потребителя.",
+        "source_finding_ids": [
+          "G-011"
+        ],
+        "source_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "related_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "image_only"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F009_commercial_identity_supply:2c0ad71382f4e28b3853",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "EOM_F009_commercial_identity_supply:ceddc2904fb7fa5d39e4",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "10Н:ЩМ10 на схеме иЩМ20 в таблице.",
+          "verdict": "confirmed_same_room_graphic_TEXT_conflict",
+          "limits": "Правильная марка не назначена; разные обозначения связаны с одним помещением."
+        },
+        {
+          "claim": "Уточнить и согласовать марку.",
+          "verdict": "supported_scoped_question",
+          "limits": "Неправильное фактическое подключение и маркировка не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Существенные потери контекста: временное однофазное питание вF030,противоречие3P/A вF037,промежуточныйЯЧ вF038. Числовой пересчёт не разрешает их автоматически.",
+      "novel_useful_content": "Сохранены полезные конфликты подписей; частичная полнотаF030/F037/F038 не повышается за счёт контекста, добавленного оценщиком.",
+      "duplicate_burden": "F029марка10Н отличается отF011границ поставки. НагрузкаЩМ7 пересекается сF012 и не считается новой независимой находкой вF030.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_fb5f780dae7a475ca6c249f62b64771e",
+            "blk_af87003578d3440a9be734a66a09af90"
+          ],
+          "route": "authoritative_TEXT_reviewed_same_session",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+          "route": "directly_viewed_GRAPHIC_same_session",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_afe25191170644b09e517f34b5500150.png",
+          "sha256": "139c850e74626aeaad1a2ed2b9b380a67b06f6bf14d671f866d183edccada867",
+          "block_id": "blk_afe25191170644b09e517f34b5500150",
+          "route": "directly_viewed_GRAPHIC_same_session",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_afe25191170644b09e517f34b5500150.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-030",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_modes_and_identity"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-030",
+      "finding": {
+        "id": "F-030",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт нагрузок",
+        "sheet": "Лист 4",
+        "page": 7,
+        "problem": "Токи отходящих линий ВРУ-К на схеме не соответствуют мощности и таблице нагрузок.",
+        "description": "Для ЩМ2–ЩМ10 на схеме указан ток 107 А. При 20 кВт, 380 В и cosφ=0,85 расчёт даёт около 35,8 А, как в таблице для ЩМ2–ЩМ6 и ЩМ8–ЩМ10. Для табличной нагрузки ЩМ7 23,2 кВт указан ток 41,5 А. Значение 107 А превышает показанные номиналы автоматов C40 и C50, однако само расхождение не доказывает необходимость увеличения номиналов.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён; ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить расчёт токов отходящих линий по нагрузкам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-013",
+                "G-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-013",
+                  "G-016"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить согласование расчётных токов, проводников и защиты.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-013",
+                "G-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-013",
+                  "G-016"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить нагрузки, исправить подписи токов и проверить соответствие выбранных кабелей и автоматов уточнённым значениям.",
+        "risk": "Ошибочная оценка допустимости линий и необоснованное изменение защиты.",
+        "source_finding_ids": [
+          "G-013",
+          "G-016"
+        ],
+        "source_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "related_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-013",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "image_only"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания выявляют ошибочный ток 107,0 А вместо 35,8 А. Левое дополнительно учитывает ток ЩМ7 41,5 А и превышение номиналов автоматов C40 и C50.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания выявляют ошибочный ток 107,0 А вместо 35,8 А. Левое дополнительно учитывает ток ЩМ7 41,5 А и превышение номиналов автоматов C40 и C50.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F007_phase_and_temporary_load:9e004a2c0153a24dc3ce",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "107А на схеме; трёхфазный расчёт20кВт/380В/cos0,85 около35,8А.",
+          "verdict": "confirmed_labels_and_conditional_arithmetic",
+          "limits": "В TEXT единицаIp кВт; не исправлять её молча наА. Для23,2кВт табличное41,5."
+        },
+        {
+          "claim": "107А следует исправить по трёхфазному расчёту.",
+          "verdict": "unsupported_omitted_temporary_single_phase_mode",
+          "limits": "20кВт/(220×0,85)=106,95А; примечание предусматривает временное однофазное питание с изоляцией двух фаз. Текущая строка потеряла этот существенный контекст."
+        },
+        {
+          "claim": "107 большеC40/C50; увеличение номиналов не доказано.",
+          "verdict": "retain_scoped_question",
+          "limits": "Проверить допустимую временную нагрузку и постоянный режим отдельно. Само сравнение чисел не устанавливает ошибку аппарата или кабеля."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Существенные потери контекста: временное однофазное питание вF030,противоречие3P/A вF037,промежуточныйЯЧ вF038. Числовой пересчёт не разрешает их автоматически.",
+      "novel_useful_content": "Сохранены полезные конфликты подписей; частичная полнотаF030/F037/F038 не повышается за счёт контекста, добавленного оценщиком.",
+      "duplicate_burden": "F029марка10Н отличается отF011границ поставки. НагрузкаЩМ7 пересекается сF012 и не считается новой независимой находкой вF030.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+          "route": "same_version_bound_prior_evidence",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_919370cbd72648128e20ab1e54cc8be6",
+          "route": "same_version_bound_prior_evidence",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f2c7e53dd8e74a56bd148d84acd8589b",
+          "route": "same_version_bound_prior_evidence",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F007_phase_and_temporary_load.json",
+          "sha256": "1c27b242ec894d3038ec6afb0afb4a727801b04675928076ed2d19c28944fed1",
+          "primary_adjudication": null,
+          "limits": "107 А воспроизводится как 20 кВт/(220 В×0,85); около 35,75 А — как 20 кВт/(√3×380 В×0,85). Это показывает возможное различие режимов, но не доказывает, что автор проекта именно так получил все подписи. Для 23,2 кВт получается около 41,47 А при симметричном трёхфазном режиме. Табличный заголовок Ip буквально имеет единицу кВт; её нельзя незаметно заменить на А. Значение 35,8 близко условному расчёту, но его точное округление по неизвестным исходным данным не подтверждено. Не установлено, предполагается ли одновременная временная нагрузка 20 кВт. Номиналы автоматов сами по себе не доказывают необходимость замены, отказ или опасность. Разницу 20/23,2 для ЩМ7 рассматривать совместно с H-EOM-70/B-EOM-F-008, не теряя отдельного вопроса о фазности.",
+          "wording": "Уточнить расчётную нагрузку и ток временного однофазного питания ЩМ2–ЩМ10, отдельно от постоянного режима: схема содержит 20,0 кВт и 107,0 А при автоматах C40/C50, а таблица — значения Ip 35,8 и 41,5. Примечание предусматривает временное питание однофазного оборудования с изоляцией двух оставшихся фаз. Указать допустимую временную нагрузку и согласовать подписи с назначением защиты.",
+          "route": "same_version_bound_prior_evidence",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F007_phase_and_temporary_load.json"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "route": "same_version_bound_prior_evidence",
+          "observation": "На схемеЩМ10 связан с10Н; девять отходящих линий107А; у обоих счётчиков250/5; отдельная левая измерительная группа1ТТ4…1ТТ6 имеет200/5.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM70_F008_consumer_power.json",
+          "sha256": "4f491caf2dcbd75d1512da43f998abe388b1f23f0362d570367c25c0c8a59887",
+          "route": "frozen_same_object_power_adjudication"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-031",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_modes_and_identity"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-032",
+      "finding": {
+        "id": "F-032",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт нагрузок",
+        "sheet": "Лист 5",
+        "page": 8,
+        "problem": "Итоговая мощность 2ЩСС1 превышает сумму показанных групп на 2 кВт.",
+        "description": "Восемь групп по 0,40 кВт и одна группа 0,20 кВт дают 3,4 кВт. В сводной таблице указаны Ру=5,4 кВт и Рр=5,4 кВт при Кс=1,00. Группы 2ЩСС1-10–2ЩСС1-13 обозначены резервными без нагрузки.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить определение суммарной нагрузки щита и учёт резервных присоединений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-017",
+                "G-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-017",
+                  "G-018"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить состав нагрузок или отдельно обосновать резерв мощности, затем согласовать Ру, Рр и вводной ток.",
+        "risk": "Недостоверная нагрузка питающей сети и необоснованный выбор оборудования.",
+        "source_finding_ids": [
+          "G-017",
+          "G-018"
+        ],
+        "source_block_ids": [
+          "blk_36068a499bde44769a64017e35fba41d"
+        ],
+        "related_block_ids": [
+          "blk_36068a499bde44769a64017e35fba41d"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_36068a499bde44769a64017e35fba41d",
+            "page": 8
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают одно расхождение мощности щита 2ЩСС1: сумма групп 8 × 0,40 + 0,20 = 3,4 кВт вместо указанных 5,4 кВт, разница 2,0 кВт; группы 10–13 резервные. Упоминание слева Рр = 5,4 кВт и Кс = 1,00 существенно не меняет детализацию проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают одно расхождение мощности щита 2ЩСС1: сумма групп 8 × 0,40 + 0,20 = 3,4 кВт вместо указанных 5,4 кВт, разница 2,0 кВт; группы 10–13 резервные. Упоминание слева Рр = 5,4 кВт и Кс = 1,00 существенно не меняет детализацию проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM76_B-EOM-F-012:8e69883d4dc84cb69b01",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "8×0,40+0,20=3,4 противРу/Рр5,4 приКс1.",
+          "verdict": "confirmed_same_version_graphic_and_arithmetic",
+          "limits": "Резерв10–13 без подписанной мощности не означает нулевую перспективную нагрузку."
+        },
+        {
+          "claim": "Уточнить состав и резерв мощности.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не назначать3,4 автоматически; неверный подбор или расходы не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Существенные потери контекста: временное однофазное питание вF030,противоречие3P/A вF037,промежуточныйЯЧ вF038. Числовой пересчёт не разрешает их автоматически.",
+      "novel_useful_content": "Сохранены полезные конфликты подписей; частичная полнотаF030/F037/F038 не повышается за счёт контекста, добавленного оценщиком.",
+      "duplicate_burden": "F029марка10Н отличается отF011границ поставки. НагрузкаЩМ7 пересекается сF012 и не считается новой независимой находкой вF030.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM76_B-EOM-F-012.json",
+          "sha256": "b34a2943aefce4b68eb1a8ee496d4ef4c7645c11d945a2c2768827a8fd1c7f80",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/EOM76_primary_GRAPHIC.json",
+            "sha256": "11c73e4e0438d3409202aeeed9cf626195826a3b9f0053c0cf4ba0c9a7fb16af"
+          },
+          "limits": null,
+          "wording": "Согласовать итоговую мощность2ЩСС1 5,4кВт с суммой девяти заполненных групп3,4кВт; если разница2кВт является перспективной нагрузкой, показать её основание.",
+          "route": "same_version_evidence_from_prior_direct_review",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM76_B-EOM-F-012.json"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_36068a499bde44769a64017e35fba41d.png",
+          "sha256": "7bb9bf894564e1053930e9ce2f3dd488ec4b845d6ffe376b61cf22d82a6b29a6",
+          "block_id": "blk_36068a499bde44769a64017e35fba41d",
+          "route": "same_version_evidence_from_prior_direct_review",
+          "observation": "Группы1–4/6–9:0,40;группа5:0,20;10–13Резерв без мощностей. ИтогиРу/Рр5,4,Кс1.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_36068a499bde44769a64017e35fba41d.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-033",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_modes_and_identity"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-033",
+      "finding": {
+        "id": "F-033",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт нагрузок",
+        "sheet": "Лист 6",
+        "page": 9,
+        "problem": "Токи двух линий типового щита ЩМ(4–10) не соответствуют исходным параметрам.",
+        "description": "Для резерва пожарной сигнализации и рекламной вывески указаны мощности 0,20 и 0,10 кВт, напряжение 0,22 кВ и cosφ=0,90. Расчёт I=P/(U×cosφ) даёт около 1,01 и 0,51 А вместо табличных 2,0 и 1,0 А.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить согласованность расчётных параметров электроприёмников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-019",
+                "G-020"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-019",
+                  "G-020"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить мощности двух потребителей и пересчитать токи.",
+        "risk": "Ошибки в расчётных таблицах и последующих проверках линий.",
+        "source_finding_ids": [
+          "G-019",
+          "G-020"
+        ],
+        "source_block_ids": [
+          "blk_afe25191170644b09e517f34b5500150"
+        ],
+        "related_block_ids": [
+          "blk_afe25191170644b09e517f34b5500150"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_afe25191170644b09e517f34b5500150",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое несоответствие токов двух линий: при 0,22 кВ и cos φ = 0,90 мощности 0,20 и 0,10 кВт дают около 1,01 и 0,51 А вместо указанных 2,0 и 1,0 А. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое несоответствие токов двух линий: при 0,22 кВ и cos φ = 0,90 мощности 0,20 и 0,10 кВт дают около 1,01 и 0,51 А вместо указанных 2,0 и 1,0 А. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 83,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F013_small_load_currents:4191d1c0f009a85947f9",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "0,20/0,10кВт,220В,cos0,90:подписи2/1А; формула1,01/0,51А.",
+          "verdict": "confirmed_labels_and_conditional_arithmetic",
+          "limits": "Формула без дополнительных коэффициентов; исходная расчётная мощность и возможный запас требуют проверки."
+        },
+        {
+          "claim": "Уточнить мощности и токи.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не снижать автоматически номиналы. Неправильность оборудования не установлена."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Существенные потери контекста: временное однофазное питание вF030,противоречие3P/A вF037,промежуточныйЯЧ вF038. Числовой пересчёт не разрешает их автоматически.",
+      "novel_useful_content": "Сохранены полезные конфликты подписей; частичная полнотаF030/F037/F038 не повышается за счёт контекста, добавленного оценщиком.",
+      "duplicate_burden": "F029марка10Н отличается отF011границ поставки. НагрузкаЩМ7 пересекается сF012 и не считается новой независимой находкой вF030.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_919370cbd72648128e20ab1e54cc8be6",
+          "route": "same_version_evidence_from_prior_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F013_small_load_currents.json",
+          "sha256": "91ce3dbd9625bde7420f0793438f84470d7631517c4677e3d72c2623203a6cb6",
+          "primary_adjudication": null,
+          "limits": "Формула I=P/(U×cos φ) применена условно к указанной Ру; отдельные коэффициенты, расчётная мощность и паспорта нагрузок в этом фрагменте не приведены. Значение ~230 В над шинами не устраняет расхождение: получаются 0,97 и 0,48 А. Не установлено, ошибочны ли мощность, ток или неуказанное основание запаса. Перегрузка, отказ, неправильный подбор защиты и нарушение нормы не доказаны. Автоматически уменьшать токи или номиналы аппаратов нельзя. Округление соседних токов проверено только на точности этой таблицы; универсальный допуск не вводится.",
+          "wording": "В схеме ЩМ(4–10) для резерва подключения пожарной сигнализации указаны Ру=0,20 кВт, Uн=0,22 кВ, cos φ=0,90 и Iр=2,0 А; для рекламной вывески — 0,10 кВт и Iр=1,0 А при тех же Uн и cos φ. При однофазном расчёте без дополнительных коэффициентов получаются соответственно 1,01 и 0,51 А. Уточните согласованность исходной мощности, принятого запаса и расчётного тока.",
+          "route": "same_version_evidence_from_prior_direct_review",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F013_small_load_currents.json"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_afe25191170644b09e517f34b5500150.png",
+          "sha256": "139c850e74626aeaad1a2ed2b9b380a67b06f6bf14d671f866d183edccada867",
+          "block_id": "blk_afe25191170644b09e517f34b5500150",
+          "route": "same_version_evidence_from_prior_direct_review",
+          "observation": "РезервПС0,20/0,22/cos0,90/2,0А;реклама0,10/0,22/cos0,90/1,0А. Над шинами~230,L1;примечание о временном питании в отдельномTEXT.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_afe25191170644b09e517f34b5500150.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-034",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_modes_and_identity"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-037",
+      "finding": {
+        "id": "F-037",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Фазовый баланс",
+        "sheet": "Лист 8",
+        "page": 11,
+        "problem": "Расчётный ток 1.ЩС-УК не учитывает наиболее нагруженную фазу.",
+        "description": "Указан ток щита 3,2 А при Кс=0,90. На фазе A группы 1.ЩС-УК-1 и 1.ЩС-УК-4 имеют токи 1,0 и 8,5 А: суммарно 9,5 А, около 8,6 А при применении указанного коэффициента. Усреднение общей мощности по трём фазам не характеризует эту нагрузку.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён; ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить расчёт фазных нагрузок и применение коэффициента спроса.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-025",
+                "G-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-025",
+                  "G-026"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить выбор питающих проводников по фактической расчётной нагрузке.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-025",
+                "G-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-025",
+                  "G-026"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать токи по фазам, обосновать одновременность нагрузок и проверить ввод по наиболее нагруженной фазе.",
+        "risk": "Занижение загрузки ввода и несогласованность защитных аппаратов с нагрузкой.",
+        "source_finding_ids": [
+          "G-025",
+          "G-026"
+        ],
+        "source_block_ids": [
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "related_block_ids": [
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+            "page": 11
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-025",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-026",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания касаются занижения расчётного тока 3,2 А из-за неравномерности фазных нагрузок. Правое дополнительно указывает группы 1.ЩС-УК-1 и 1.ЩС-УК-4 на фазе A и рассчитывает суммарный ток 9,5 А, около 8,6 А при Кс=0,90.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания касаются занижения расчётного тока 3,2 А из-за неравномерности фазных нагрузок. Правое дополнительно указывает группы 1.ЩС-УК-1 и 1.ЩС-УК-4 на фазе A и рассчитывает суммарный ток 9,5 А, около 8,6 А при Кс=0,90.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F016_management_phase_current:fdef783b69877a39920c",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Группы1/4 подписаныA с1/8,5А;сводный3,2А.",
+          "verdict": "confirmed_same_version_graphic_labels",
+          "limits": "ОдновременноQF4 имеет3P; фактическая фазность группы4 не установлена. Текущая строка пропускает этот конфликт."
+        },
+        {
+          "claim": "1+8,5=9,5;×0,90=8,55≈8,6.",
+          "verdict": "confirmed_scalar_arithmetic_only",
+          "limits": "cosφ0,95/0,80 различны; сумма модулей не точный фазорный ток. Коэффициент щита не доказан для этой фазы."
+        },
+        {
+          "claim": "Пересчитать по фазам.",
+          "verdict": "supported_scoped_question",
+          "limits": "Уточнить3P/A/3×2,5/0,22кВ;8,6 не назначать правильным током. Занижение ввода и ошибка защиты не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Существенные потери контекста: временное однофазное питание вF030,противоречие3P/A вF037,промежуточныйЯЧ вF038. Числовой пересчёт не разрешает их автоматически.",
+      "novel_useful_content": "Сохранены полезные конфликты подписей; частичная полнотаF030/F037/F038 не повышается за счёт контекста, добавленного оценщиком.",
+      "duplicate_burden": "F029марка10Н отличается отF011границ поставки. НагрузкаЩМ7 пересекается сF012 и не считается новой независимой находкой вF030.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
+          "sha256": "fd397c9b88821ec58404f09b5ee75556f169bd87b1258e15617e5ee42ff06997",
+          "primary_adjudication": null,
+          "limits": "(1+8,5)×0,90=8,55А — условная арифметическая оценка. Кс щита не доказан для отдельной фазы; cos φ групп0,95 и0,80 различны, сумма модулей не является точным фазорным расчётом. Ввод обозначен230/400В, а таблица групп220В.3,2А численно воспроизводятся при380В; это не установленная проектная методика. Рубильник40А и кабель5×4 сами по себе не показывают перегрузку. QF3.22 и условия прокладки не проверены.",
+          "wording": "В 1.ЩС-УК указан сводный Iр=3,2 А, а группы1 и4 подписаны фазой A и имеют токи1,0 и8,5А. Уточните фактическое подключение группы4 (рядом также указан автомат3P), распределение нагрузки и расчёт максимального фазного тока.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
+          "route": "same_version_prior_direct_evidence"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png",
+          "sha256": "4dae62b85d910dd66905114bbc9d7a86c0919e16b1a5348c663cdbce947d7ea8",
+          "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+          "route": "same_version_prior_direct_evidence",
+          "observation": "Группы1/4A,1/8,5А;QF4 3P,кабель3×2,5,0,22кВ. ИтогIp3,2.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-039",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_modes_and_identity"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-038",
+      "finding": {
+        "id": "F-038",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Подключение оборудования",
+        "sheet": "Лист 13",
+        "page": 16,
+        "problem": "Напряжение двух потребителей 2ЩРОВ1 не соответствует показанному подключению.",
+        "description": "Для групп Гр.2ЩРОВ1-4, П2.01, и Гр.2ЩРОВ1-5, П.УК.1, указано 0,38 кВ. При этом показано однофазное подключение через QF4 1P к фазе A и QF5 1P к фазе B сети 220/380 В, обеспечивающее фазное напряжение 220 В.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.1.19",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие оборудования номинальному напряжению сети и схеме питания.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-029",
+                "G-030"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-029",
+                  "G-030"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": "1.1.19",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить паспортные напряжения и фазность П2.01 и П.УК.1, исправить таблицу либо схемы подключения, кабели и аппараты.",
+        "risk": "Неработоспособность или повреждение оборудования при неверном питании.",
+        "source_finding_ids": [
+          "G-029",
+          "G-030"
+        ],
+        "source_block_ids": [
+          "blk_af9f7cd6dba549149cd7152de8b85c41"
+        ],
+        "related_block_ids": [
+          "blk_af9f7cd6dba549149cd7152de8b85c41"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_af9f7cd6dba549149cd7152de8b85c41",
+            "page": 16
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-029",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-030",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие: для групп Гр.2ЩРОВ1-4 и Гр.2ЩРОВ1-5 указано 0,38 кВ при однофазном подключении через QF4 (1P, A) и QF5 (1P, B). Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие: для групп Гр.2ЩРОВ1-4 и Гр.2ЩРОВ1-5 указано 0,38 кВ при однофазном подключении через QF4 (1P, A) и QF5 (1P, B). Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F021_F023_controller_voltage_scope:b197a84551461f1efaca",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Группы4/5:QF1P,A/B;таблица0,38кВ.",
+          "verdict": "confirmed_same_version_graphic_labels",
+          "limits": "На линиях присутствуетЯЧ и дальше кабель по проекту автоматики."
+        },
+        {
+          "claim": "Однофазное питание определяет напряжениеП2.01/П.УК.1.",
+          "verdict": "unsupported_omitted_intermediate_device",
+          "limits": "Без схемЯЧ нельзя перенести напряжение питающей стороны на двигатель. Текущая строка потеряла промежуточное устройство."
+        },
+        {
+          "claim": "Уточнить паспорт,сторонуЯЧ,фазность и параметры.",
+          "verdict": "supported_scoped_question",
+          "limits": "Нельзя автоматически заменить0,38 на0,22 или аппараты; неработоспособность и повреждение не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Существенные потери контекста: временное однофазное питание вF030,противоречие3P/A вF037,промежуточныйЯЧ вF038. Числовой пересчёт не разрешает их автоматически.",
+      "novel_useful_content": "Сохранены полезные конфликты подписей; частичная полнотаF030/F037/F038 не повышается за счёт контекста, добавленного оценщиком.",
+      "duplicate_burden": "F029марка10Н отличается отF011границ поставки. НагрузкаЩМ7 пересекается сF012 и не считается новой независимой находкой вF030.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_af9f7cd6dba549149cd7152de8b85c41.png",
+          "sha256": "c0818141c89611cddd3349315dbdd3350a7a9af64d5bcd5a09b0d36b74f425f8",
+          "block_id": "blk_af9f7cd6dba549149cd7152de8b85c41",
+          "route": "directly_viewed_GRAPHIC_current_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_af9f7cd6dba549149cd7152de8b85c41.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-041",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_modes_and_identity"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Six current mode and identity findings independently assessed against identical authoritative source bytes and frozen prior reviews. No new norm validation, raster correction or engineer acceptance."
+}
