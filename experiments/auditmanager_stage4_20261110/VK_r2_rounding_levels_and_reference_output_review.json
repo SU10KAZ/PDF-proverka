@@ -1,0 +1,839 @@
+{
+  "status": "five_VK_rows_assessed_four_topics",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "730e02c13c060f5859aa933c253baa77585e0ad2569f281f8037d613b87d6f0d",
+  "queue_after_sha256": "97b91d38adadf7b59b31e23066999fb8efda7b8ae4ec40f52a7f41cc241d60bb",
+  "reviewed_rows": [
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-009",
+      "finding": {
+        "id": "F-009",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Расчётные показатели",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Итог суточного водоотведения отличается от суммы приведённых значений на 0,01 м³/сут.",
+        "description": "Сумма 136,09 + 59,76 + 53,64 + 10,80 составляет 260,29 м³/сут, тогда как итог таблицы равен 260,28 м³/сут. Расхождение может быть следствием округления исходных величин и не доказывает ошибку гидравлического расчёта.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проверить итог по неокруглённым исходным значениям и согласовать правило округления таблицы.",
+        "risk": "Сохраняется формальная несогласованность сводных показателей; существенное влияние на подбор оборудования не установлено.",
+        "source_finding_ids": [
+          "T-009"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 48,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "expertise_formality"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Сумма опубликованных расходов четырёх зон 136,09 + 59,76 + 53,64 + 10,80 = 260,29; общий итог 260,28.",
+          "verdict": "arithmetic_and_TEXT_confirmed"
+        },
+        {
+          "claim": "Расхождение может объясняться округлением.",
+          "verdict": "mathematically_possible_not_proven_actual_cause",
+          "limits": "Контрпример: 136,0875 + 59,7575 + 53,6375 + 10,7975 = 260,2800. Каждое слагаемое при округлении до сотых даёт опубликованную строку. Это искусственный контрпример, не восстановленные исходные расходы."
+        },
+        {
+          "claim": "Ошибка подбора оборудования либо технически значимое расхождение.",
+          "verdict": "not_established_and_not_asserted_as_proven_by_finding"
+        },
+        {
+          "claim": "Проверить исходные неокруглённые расходы или пояснить округление.",
+          "verdict": "conditional_question_only",
+          "limits": "Наличие запроса не доказывает полезности дополнительной работы инженера."
+        },
+        {
+          "claim": "Контрпример округления воспроизводится точной десятичной арифметикой.",
+          "verdict": "verified_Decimal_counterexample",
+          "limits": "Это искусственные исходные числа для доказательства возможности;не реальные восстановленные расходы."
+        }
+      ],
+      "unsupported_additions": "Не выводить фактическую ошибку монтажа или расчёта из различия реквизитов,отметок или округления. Нормативные кандидаты не проверены.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "no_second_same_numeric_claim_in_26_VK_output_rows",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "no_engineer_decision_established_for_this_claim",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_082880f1dc1c45628641110a8a4f8f44",
+          "authoritative_TEXT": "### BLOCK #5 [TEXT]: blk_082880f1dc1c45628641110a8a4f8f44\n\n> **Created:** 2026-10-16 08:24:34 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/8RL8KtOL2YbfP71i1Bhi)\n> **Stamp:** Code: ПД-00580716-ВК2-2 | Stage: П | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой Матвеевское, квартал 3, 2-я очередь, Корпус 1 (рекламное название Событие 6.1) | Наименование листа: Общие указания (начало) | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Основные показатели систем водоснабжения и канализации\n\n| Наименование системы | Требуемое давление на вводе, МПа | Расчетный расход |  |  |  | Установленная мощность электродвигателей, кВт | Примечание |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n|  |  | м³/сут | м³/ч | л/с | при пожаре, л/с |  |  |\n| Канализация |  |  |  |  |  |  |  |\n| 1 зона |  |  |  |  |  |  |  |\n| Канализация хозяйственная, где: |  |  |  |  |  |  |  |\n| -жилая часть (К1) |  | 109,44 | 11,71 | 4,59 |  |  |  |\n| -обслуживающий персонал (К1) |  | 0,08 | 0,2 | 0,2 |  |  |  |\n| Итого 1 зона жилая |  | 109,52 |  |  |  |  |  |\n| -аренда/офисы (К1.1) |  | 0,43 | 0,54 | 0,21 |  |  |  |\n| Производственная (общепит) К3 |  | 26,140 | 10,630 | 4,61 |  |  |  |\n| Мойка колес (оборотное в/с) |  | 15,95 |  |  |  |  |  |\n| Безвозвратные потери: |  |  |  |  |  |  |  |\n| -подпитка мойки колес |  | 0,24 | 0,02 | 0,01 |  |  |  |\n| Итого 1 зона аренда |  | 26,57 |  |  |  |  |  |\n| -полив |  | 9,250 |  |  |  |  |  |\n| Итого 1 зона в целом |  | 136,09 | 17,83 | 6,67 |  |  |  |\n| 2 зона |  |  |  |  |  |  |  |\n| Канализация хозяйственная, где: |  |  |  |  |  |  |  |\n| -жилая часть (К1) |  | 59,76 | 7,42 | 3,08 |  |  |  |\n| 3 зона |  |  |  |  |  |  |  |\n| Канализация хозяйственная, где: |  |  |  |  |  |  |  |\n| -жилая часть (К1) |  | 53,64 | 6,85 | 2,88 |  |  |  |\n| 4 зона |  |  |  |  |  |  |  |\n| -жилая часть (К1) |  | 10,80 | 2,44 | 1,18 |  |  |  |\n| Безвозвратные потери: |  |  |  |  |  |  |  |\n| -подпитка котельной |  | 2,1 | 0,09 | 0,02 |  |  |  |\n| Итого по комплексу в целом |  | 260,28 | 27,35 | 9,777 |  |  |  |\n| Дождевая (К2) |  |  |  | 36,97 |  |  |  |\n\n###### Акты освидетельствования скрытых работ\n\n| № | Наименование | Примечание |\n| --- | --- | --- |\n| 1 | АОСР на монтаж тр-дов систем канализации и крепление к констр. здания |  |\n| 2 | АОСР на монтаж тр-дов систем внутр. водостоков, дренажа и крепление к констр. здания |  |\n| 3 | АОСР на прокладку тр-дов систем канализации в коснтрукции пола/стен |  |\n| 4 | АОСР на прокладку тр-дов систем внутр. водостоков и дренажа в коснтрукции пола/стен |  |\n| 5 | Акт о проведении гидростатического испытания на герметчиность систем бытовой канализации | Выполнять до начала отделочных работ |\n| 6 | Акт о проведении гидростатического испытания на герметчиность систем внутр. водостока и дренажа | Выполнять до начала отделочных работ |\n| 7 | Акт о проведении гидростатич. (манометрического) испытания на герметчиность (напорная канализация) | Выполнять до начала отделочных работ |\n| 8 | Акт приемки системы и выпусков систем канализации, внутр. водостоков, дренажа | Выполнять до начала отделочных работ |\n| 9 | Акт о проведении индивидуального испытания оборудования |  |\n| 10 | Акт освидетельствования участков сетей инженерно-технического обеспечения |  |\n| *АОСР – акт освидетельствования скрытых работ |  | 0.000=162,050 |\n\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "authoritative_TEXT": "### BLOCK #6 [TEXT]: blk_733ee397f6cf418fb158aa823b35cdcc\n\n> **Created:** 2026-10-16 08:24:34 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/41qhIyUwKa1iZrdZ-GOZ)\n> **Stamp:** Code: ПД-00580716-ВК2-2 | Stage: П | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой Матвеевское, квартал 3, 2-я очередь, Корпус 1 (рекламное название Событие 6.1) | Наименование листа: Общие указания (начало) | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость основных комплектов рабочих чертежей ВК\n\n| Обозначение | Наименование | Примечание |\n| --- | --- | --- |\n| ПД-00580716-ВК0-1 | Система хозяйственно-питьевого водоснабжения. |  |\n|  | Внутренние системы. |  |\n| ПД-00580716-ВК0-2 | Система хозяйственно-бытовой канализации, водосток, дренаж |  |\n|  | внутренний, технологическая канализация. |  |\n|  | Выпуски (канализация, водосток, дренаж) подземной части здания... |  |\n| ПД-00580716-АПТ0 | Система автоматического водяного пожаротушения. |  |\n|  | Противопожарный водопровод |  |\n| ПД-00580716-ВК1-1 | Система хозяйственно-питьевого водоснабжения надземной части... |  |\n|  | Внутренние системы. Секция С1. |  |\n| ПД-00580716-ВК1-2 | Система хозяйственно-бытовой канализации, водосток, |  |\n|  | дренаж внутренний |  |\n|  | технологическая канализация надземной части здания. Внутренни... |  |\n| ПД-00580716-АПТ1 | Система автоматического водяного пожаротушения. |  |\n|  | Противопожарный водопровод. Секция С1. |  |\n| ПД-00580716-ВК2-1 | Система хозяйственно-питьевого водоснабжения надземной части... |  |\n|  | Внутренние системы. Секции С2,С3. |  |\n| ПД-00580716-ВК2-2 | Система хозяйственно-бытовой канализации, водосток, дренаж... |  |\n|  | технологическая канализация надземной части здания. Внутренни... |  |\n| ПД-00580716-АПТ2 | Система автоматического водяного пожаротушения. |  |\n|  | Противопожарный водопровод. Секции С2,С3. |  |\n| ПД-00580716-ТХ4 | Технологические решения мойки колес |  |\n\n###### Общие указания\n\nРабочая документация по водоотвдению объекта «Многофункциональная комплексная жилая застройка» по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 1 (рекламное название Событие 6.1) выполнена на основании:\n\n- договора на проектирование;\n- технического задания заказчика;\n- технических условий подключения (технологического присоединения) к централизованной системе холодного водоснабжения №22824 ДП-В от 19.10.2023г АО «Мосводоканал»;\n- технических условий подключения (технологического присоединения) к централизованной системе водоотведения №22825 ДП-В от 19.10.2023г АО «Мосводоканал»;\n- специальных технических условий на проектирование и строительство объекта «Многофункциональная комплексная жилая застройка» по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 1, на земельном участке с кадастровым номером 77:07:0013002:4706, рекламное название - Событие 6.1;\n- специальных технических условий отражающих специфику обеспечения пожарной безопасности и содержащие комплекс необходимых инженерно-технических и организационных мероприятий по обеспечению пожарной безопасности объекта капитального строительства: «Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: г. Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2» Изменение №2;\n- проектной документации получившей положительное заключение государственной экспертизы №77-1-1-3-041047-2024 от 25.07.2024.\n\nПроект выполнен с учетом требований действующих строительных норм и правил, нормативных документов.\n\nГраницей работ текущего раздела являются наружная грань внешенего контура стен и верхняя грань плиты перекрытия 1-го этажа.\n\nЗа относительную отметку 0.000 объекта принят уровень чистого пола 1- го этажа 1 секции, соответствующий абсолютной отметке 162,050\n\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "authoritative_TEXT": "### BLOCK #7 [TEXT]: blk_aa5ad48812d541538c628ba1476d1b05\n\n> **Created:** 2026-10-16 08:24:34 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/L2CNj9zlWcCtt09AL1Xe)\n> **Stamp:** Code: ПД-00580716-ВК2-2 | Stage: П | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой Матвеевское, квартал 3, 2-я очередь, Корпус 1 (рекламное название Событие 6.1) | Наименование листа: Общие указания (начало) | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость рабочих чертежей основного комплекса ВК2-2\n\n| Лист | Наименование | Примечание |\n| --- | --- | --- |\n| 1 | Общие указания (начало) |  |\n| 2 | Общие указания (окончание) |  |\n| 3 | План 1-го этажа на отм. +0,000 с системами канализации |  |\n| 4 | План тех. пространства на отм. +5,320 с системами канализации |  |\n| 5 | План 2-го этажа на отм. +7,370 с системами канализации |  |\n| 6 | План 3-го этажа на отм. +10,730 с системами канализации |  |\n| 7 | План 4 - го этажей на отм. +14,090 с системами канализации |  |\n| 8 | План 5 - го этаж на отм. +17,450 с системами канализации |  |\n| 9 | План 6-го этажа на отм. +20,810 с системами канализации |  |\n| 10 | План 7-го этажа на отм. +24,170 с системами канализации |  |\n| 11 | План 8-го этажа на отм. +27,530 с системами канализации |  |\n| 12 | План 9-го этажа на отм. +30,890 с системами канализации |  |\n| 13 | План 10-го этажа на отм. +34,250 с системами канализации |  |\n| 14 | План 11-го этажа на отм. +37,610. План тех. пространства на отм. +38,640 с системами канализации |  |\n| 15 | План 12-го этажа этажа на отм. +41,290. План кровли на отм.+40,690 с системами канализации. Узел установки воронок на кровлях типа К1 и К4 |  |\n| 16 | План кровли на отм.+44,870 с системами канализации. |  |\n| 17 | Схема систем К1, К1.1 в тех. пространстве на отм. +5,320. Секция №2 |  |\n| 18 | Схема систем К1, К1.1 в тех. пространстве на отм. +5,320. Секция №3. Узел соединения труб из чугуна и полипропилена |  |\n| 19 | Схема стояков системы К1. Секция №2. Ст.К1-2.1....2.10. Узлы прохождения через перекрытие |  |\n| 20 | Схема стояков системы К1. Секция №3. Ст.К1-3.1....3.10. Узел прохождения канализации из полимерных материалов через перекрытие |  |\n| 21 | Схема стояков системы К1. Секция №3. Ст.К1-3.11....3.20 |  |\n| 22 | Схема стояков системы К1.1. |  |\n| 23 | Схема системы К1 в тех. пространстве на отм. +38,640 |  |\n| 24 | Схема системы К2. Секция №2. Ст.К2-2.1, 2.2. Узлы крепления трубопроводов к стенам, к перекрытию.Схема К2 в осях В1-В3/Б9-Б10 |  |\n| 25 | Схема системы К2. Секция №3. Ст.К2-3.1 |  |\n| 26 | Схема системы К2.1. Секции №2,3. Ст.К2.1-2.1, 3.1 |  |\n| 27 | Схемы системы К1 на 2 и 3 этаже |  |\n\n##### Ведомость ссылочных и прилагаемых документов\n\n| Обозначение | Наименование | Примечание |\n| --- | --- | --- |\n|  | **Ссылочные документы** |  |\n| СП 30.13330.2020 | Внутренний водопровод и канализация зданий |  |\n| СП 73.13330.2016 | Внутренние санитарно-технические системы зданий |  |\n| Серия 5.900-7 | Опорные конструкции и средства крепления стальных труб-ов |  |\n|  | внутренних санитарно-технических систем |  |\n|  | **Прилагаемые документы** |  |\n| ПД-00580716-ВК2-2.СО | Спецификация оборудования, изделий и материалов | на 6 листах |\n| Приложение В | Гидравлический расчет системы внутреннего водостока Секций №2, №3. | на 2-х листах |\n| ПД-00580716-ВК2-2 | Реестр отступлений РД от ПД |  |\n\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-001",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_rounding_compatible_question_usefulness_unresolved"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Согласованность отметок",
+        "sheet": "Лист 14",
+        "page": [
+          3,
+          4,
+          16
+        ],
+        "problem": "Отметка верхнего технического пространства различается на 50 мм в ведомости, общих указаниях и заголовке плана.",
+        "description": "В ведомости рабочих чертежей приведена отметка +38,640, а в заголовке плана верхнего технического пространства на листе 14 и общих указаниях — +38,690. Различие не объяснено обозначением разных поверхностей или уровней.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить принятую отметку по согласованным архитектурным данным и привести ведомость, заголовок плана и общие указания к единому обозначению либо явно разграничить уровни.",
+        "risk": "Неоднозначность высотной привязки может вызвать ошибки при увязке трубопроводов с конструкциями.",
+        "source_finding_ids": [
+          "T-010",
+          "G-002",
+          "G-003"
+        ],
+        "source_block_ids": [
+          "blk_5c59e6512a18487d9748e1766d2233b2"
+        ],
+        "related_block_ids": [
+          "blk_5c59e6512a18487d9748e1766d2233b2",
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_5c59e6512a18487d9748e1766d2233b2",
+            "page": 16
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T122708Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-002",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:27:08.898826+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T122708Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-003",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:27:08.898826+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение на 50 мм: +38,690 в заголовке плана листа 14 и общих указаниях по К2 против +38,640 в ведомости рабочих чертежей.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение на 50 мм: +38,690 в заголовке плана листа 14 и общих указаниях по К2 против +38,640 в ведомости рабочих чертежей.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 65,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F011_technical_space_level:c654fd4efb33b8840ce7",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "План и общие указания +38,690, ведомость и расчёт +38,640.",
+          "verdict": "confirmed_document_level_difference",
+          "limits": "Разность50мм подтверждена."
+        },
+        {
+          "claim": "Это одна и та же поверхность и трубы следует сдвинуть на50мм.",
+          "verdict": "not_established_and_not_prescribed",
+          "limits": "Исходная выдача правильно сохраняет неопределённость поверхностей и запрещает автоматический сдвиг."
+        },
+        {
+          "claim": "Согласовать поверхности отсчёта по архитектурным разрезам.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Фактическая ошибка высотного монтажа.",
+          "verdict": "not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативный кандидат в исходной выдаче.",
+          "verdict": "not_verified_applicable_norm",
+          "limits": "Не засчитывать нормативное нарушение без подтверждённого применимого требования."
+        },
+        {
+          "claim": "F-010 иF-027 являются двумя независимыми дефектами.",
+          "verdict": "duplicate_topic_with_complementary_evidence",
+          "limits": "Один уровень техпространства,те же альтернативные значения,пересекающиеся источники. Схему не терять при объединении."
+        }
+      ],
+      "unsupported_additions": "Не выводить фактическую ошибку монтажа или расчёта из различия реквизитов,отметок или округления. Нормативные кандидаты не проверены.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": {
+        "group": "VK_r2_technical_space_level_38640_38690",
+        "members": [
+          "F-010",
+          "F-027"
+        ],
+        "assessment": "Одна тема согласования уровня с дополнительным адресом расчётной схемы. Сохранять все источники при объединении;не засчитывать два независимых дефекта.",
+        "first_repeat_finding": "F-014"
+      },
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_686c23c287f1430199897dff70be0878",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F011_technical_space_level.json",
+          "sha256": "9ce8af0902e7e64d2af46e6fe4a4b62030dd6ff186c03c5bfd021ee870e5aeac",
+          "primary_adjudication": null,
+          "limits": "Подтверждены разные обозначения технического пространства. Не установлено, относятся ли они к одной поверхности: состав пола, разрезы АР/АИ и монтажные отметки не проверены. Ни одно значение не выбрано правильным. Не доказаны необходимость переноса труб, ошибка гидравлического расчёта или нормативное нарушение.",
+          "wording": "Уточнить поверхность отсчёта и согласовать обозначение уровня верхнего технического пространства: в ведомости листа14 и расчётной схеме водостока указано +38,640, в заголовке плана и общих указаниях К2 — +38,690. Разность50 мм сама по себе не устанавливает ошибку положения трубы."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5c59e6512a18487d9748e1766d2233b2.png",
+          "sha256": "5b03eccc5f3b197ae3cc39cc517a61f429c8b1db084f0c388136307ccb853bc2",
+          "block_id": "blk_5c59e6512a18487d9748e1766d2233b2",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "В заголовке верхнего техпространства +38,690."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d2571e41e76d4f328298d074001845db.png",
+          "sha256": "cbe1a352b0351cb8d6e1feae822f80c3a0cc8662c2e7948530993d8930d2dc6d",
+          "block_id": "blk_d2571e41e76d4f328298d074001845db",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Расчёт секции3: линия тех.пр.2 +38,640."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-014",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_level_reference_question"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Реквизиты исходных данных",
+        "sheet": "Листы 1, 2",
+        "page": [
+          3,
+          4
+        ],
+        "problem": "Технические условия №22825 обозначены разными индексами.",
+        "description": "В основаниях проектирования технические условия на водоотведение №22825 имеют индекс ДП-В, а в описании системы — ДП-К. Принадлежность обеих ссылок одному исходному документу требует проверки.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Сверить реквизиты с оригиналом технических условий и исправить ссылки в комплекте.",
+        "risk": "Неоднозначная ссылка затрудняет проверку основания проектирования и отнесение расчётной нагрузки к нужным техническим условиям.",
+        "source_finding_ids": [
+          "T-015"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_082880f1dc1c45628641110a8a4f8f44",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "blk_aa5ad48812d541538c628ba1476d1b05",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 32,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-VK-F-014:e9e5e1b148f844eb7d6d",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ТУ №22825 ДП-В в основаниях и №22825 ДП-К при нагрузке 577,878 м³/сут, 19,08 л/с.",
+          "verdict": "confirmed_authoritative_TEXT_reference_difference",
+          "limits": ""
+        },
+        {
+          "claim": "Неоднозначная ссылка на исходный документ.",
+          "verdict": "supported_reference_question",
+          "limits": "Различие суффиксов не доказывает применение чужих ТУ или неверные нагрузки."
+        },
+        {
+          "claim": "Сверить реквизиты с оригиналом ТУ и согласовать ссылки.",
+          "verdict": "supported_scoped_question",
+          "limits": "Оригинал ТУ здесь не проверен; не выбирать правильный суффикс автоматически."
+        },
+        {
+          "claim": "Затруднения согласования.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Можно автоматически выбратьДП-К правильным обозначениемТУ.",
+          "verdict": "not_established",
+          "limits": "ОригиналТУ не проверен. Правильный суффикс не выбирается по смыслу буквы или большинству ссылок."
+        }
+      ],
+      "unsupported_additions": "Не выводить фактическую ошибку монтажа или расчёта из различия реквизитов,отметок или округления. Нормативные кандидаты не проверены.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_082880f1dc1c45628641110a8a4f8f44",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_686c23c287f1430199897dff70be0878",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-014.json",
+          "sha256": "a9974e014f896ed662677424d1ee50e93b654ebb9878fe140dfb4315b895ff3e",
+          "primary_adjudication": null,
+          "limits": "Оригинал ТУ не проверен; неверная нагрузка или применение чужих ТУ не установлены.",
+          "wording": "Уточнить обозначение ТУ№22825: в основаниях проекта ДП-В от19.10.2023, в нагрузке подключения ДП-К."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_733ee397f6cf418fb158aa823b35cdcc",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-015",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_TU_reference_question"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-017",
+      "finding": {
+        "id": "F-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Согласованность отметок",
+        "sheet": "Лист 15",
+        "page": [
+          3,
+          17
+        ],
+        "problem": "Отметка кровли в заголовке плана отличается от ведомости на 590 мм.",
+        "description": "В заголовке плана на листе 15 указана отметка кровли +41,280, а в ведомости рабочих чертежей для этого листа — +40,690. Различие составляет 0,590 м. Назначение разных уровней в предоставленных данных не объяснено.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить отметку кровли по архитектурному решению и согласовать заголовок плана, ведомость и связанные высотные привязки.",
+        "risk": "Возможны ошибки привязки водоприёмных воронок и трубопроводов к кровельным конструкциям.",
+        "source_finding_ids": [
+          "G-004",
+          "G-005"
+        ],
+        "source_block_ids": [
+          "blk_646b9b78524b469f982f5ec9f3b85138"
+        ],
+        "related_block_ids": [
+          "blk_646b9b78524b469f982f5ec9f3b85138"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_646b9b78524b469f982f5ec9f3b85138",
+            "page": 17
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T122708Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-004",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:27:08.898826+00:00",
+              "context_source": "structured_water"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T122708Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-005",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:27:08.898826+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение отметки кровли листа 15: +41,280 в заголовке плана и +40,690 в ведомости, разница 590 мм.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение отметки кровли листа 15: +41,280 в заголовке плана и +40,690 в ведомости, разница 590 мм.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 65,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F015_roof_title_level:2bb76a02a4eaf106a275",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Заголовок плана кровли +41,280; ведомость того же листа15 +40,690.",
+          "verdict": "confirmed_GRAPHIC_TEXT_difference",
+          "limits": "Разность590мм. +41,290 в том же заголовке относится к плану12-го этажа и не подменяет отметку кровли."
+        },
+        {
+          "claim": "Правильную отметку можно выбрать без архитектурной поверхности отсчёта.",
+          "verdict": "not_established_and_not_asserted",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать заголовок и ведомость по архитектуре и составу кровли.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Ошибка монтажа кровельных элементов.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативный кандидат в исходной выдаче.",
+          "verdict": "not_verified_applicable_norm",
+          "limits": "Не засчитывать нормативное нарушение без подтверждённого применимого требования."
+        }
+      ],
+      "unsupported_additions": "Не выводить фактическую ошибку монтажа или расчёта из различия реквизитов,отметок или округления. Нормативные кандидаты не проверены.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "related_level_coordination_group_keep_distinct_document_addresses_and_uncertainties",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F015_roof_title_level.json",
+          "sha256": "0c536b77f695dcdbc9642bc8b64731cbcd50a0012262a72bea4510cbb30e6eb0",
+          "primary_adjudication": null,
+          "limits": "Числовое расхождение590 мм подтверждено. Утверждение исходного замечания о +40,690 в основной надписи отдельно не проверено: просмотренный фрагмент не содержит штампа. Разницу названий нельзя автоматически переносить на геометрию воронок, локальные отметки или толщину кровли; правильное значение по соответствующей версии АР не установлено.",
+          "wording": "Согласовать отметку кровли в названии плана листа15 и ведомости: заголовок плана содержит +41,280, ведомость — +40,690. Уточнить, относятся ли подписи к разным поверхностям кровельной конструкции. Отметка12-го этажа +41,290 относится к другой части названия."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_646b9b78524b469f982f5ec9f3b85138.png",
+          "sha256": "b3fcf72e6b00882879fd8dafd847d3a6151c934f01fc1ee30f94bed3feddd0d1",
+          "block_id": "blk_646b9b78524b469f982f5ec9f3b85138",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Заголовок: план12-го этажа +41,290; план кровли +41,280."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-016",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_roof_level_question"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-027",
+      "finding": {
+        "id": "F-027",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Согласованность расчётной схемы",
+        "sheet": "Листы 2, 14",
+        "page": [
+          4,
+          16,
+          37
+        ],
+        "problem": "В гидравлической схеме секции С3 отметка технического пространства отличается от плана и общих указаний.",
+        "description": "Расчётная схема использует +38,640 для верхнего технического пространства. Общие указания по размещению сборных трубопроводов К2 и заголовок плана используют +38,690. Разница составляет 50 мм. Требуется установить, относится ли она к одному уровню или к разным поверхностям.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать обозначение уровня расчётной схемы с принятым архитектурным уровнем и планом; при изменении расчётных высот проверить затронутые исходные данные.",
+        "risk": "Неоднозначные исходные высоты затрудняют воспроизводимость и проверку расчёта.",
+        "source_finding_ids": [
+          "G-018"
+        ],
+        "source_block_ids": [
+          "blk_d2571e41e76d4f328298d074001845db"
+        ],
+        "related_block_ids": [
+          "blk_d2571e41e76d4f328298d074001845db",
+          "blk_5c59e6512a18487d9748e1766d2233b2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_d2571e41e76d4f328298d074001845db",
+            "page": 37
+          },
+          {
+            "type": "image",
+            "block_id": "blk_5c59e6512a18487d9748e1766d2233b2",
+            "page": 16
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T122708Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:27:08.898826+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F011_technical_space_level:c654fd4efb33b8840ce7",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "VK_F027_calculation_level_labels:7479fd101bd142ad9eec",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "План и общие указания +38,690, ведомость и расчёт +38,640.",
+          "verdict": "confirmed_document_level_difference",
+          "limits": "Разность50мм подтверждена."
+        },
+        {
+          "claim": "Это одна и та же поверхность и трубы следует сдвинуть на50мм.",
+          "verdict": "not_established_and_not_prescribed",
+          "limits": "Исходная выдача правильно сохраняет неопределённость поверхностей и запрещает автоматический сдвиг."
+        },
+        {
+          "claim": "Согласовать поверхности отсчёта по архитектурным разрезам.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Фактическая ошибка высотного монтажа.",
+          "verdict": "not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативный кандидат в исходной выдаче.",
+          "verdict": "not_verified_applicable_norm",
+          "limits": "Не засчитывать нормативное нарушение без подтверждённого применимого требования."
+        },
+        {
+          "claim": "F-010 иF-027 являются двумя независимыми дефектами.",
+          "verdict": "duplicate_topic_with_complementary_evidence",
+          "limits": "Один уровень техпространства,те же альтернативные значения,пересекающиеся источники. Схему не терять при объединении."
+        }
+      ],
+      "unsupported_additions": "Не выводить фактическую ошибку монтажа или расчёта из различия реквизитов,отметок или округления. Нормативные кандидаты не проверены.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": {
+        "group": "VK_r2_technical_space_level_38640_38690",
+        "members": [
+          "F-010",
+          "F-027"
+        ],
+        "assessment": "Одна тема согласования уровня с дополнительным адресом расчётной схемы. Сохранять все источники при объединении;не засчитывать два независимых дефекта.",
+        "first_repeat_finding": "F-014"
+      },
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_686c23c287f1430199897dff70be0878",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F011_technical_space_level.json",
+          "sha256": "9ce8af0902e7e64d2af46e6fe4a4b62030dd6ff186c03c5bfd021ee870e5aeac",
+          "primary_adjudication": null,
+          "limits": "Подтверждены разные обозначения технического пространства. Не установлено, относятся ли они к одной поверхности: состав пола, разрезы АР/АИ и монтажные отметки не проверены. Ни одно значение не выбрано правильным. Не доказаны необходимость переноса труб, ошибка гидравлического расчёта или нормативное нарушение.",
+          "wording": "Уточнить поверхность отсчёта и согласовать обозначение уровня верхнего технического пространства: в ведомости листа14 и расчётной схеме водостока указано +38,640, в заголовке плана и общих указаниях К2 — +38,690. Разность50 мм сама по себе не устанавливает ошибку положения трубы."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5c59e6512a18487d9748e1766d2233b2.png",
+          "sha256": "5b03eccc5f3b197ae3cc39cc517a61f429c8b1db084f0c388136307ccb853bc2",
+          "block_id": "blk_5c59e6512a18487d9748e1766d2233b2",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "В заголовке верхнего техпространства +38,690."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d2571e41e76d4f328298d074001845db.png",
+          "sha256": "cbe1a352b0351cb8d6e1feae822f80c3a0cc8662c2e7948530993d8930d2dc6d",
+          "block_id": "blk_d2571e41e76d4f328298d074001845db",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Расчёт секции3: линия тех.пр.2 +38,640."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-014",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_level_reference_question"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": "Five output rows do not equal five independent defects. Reused evidence bound to identical current source hashes."
+}
