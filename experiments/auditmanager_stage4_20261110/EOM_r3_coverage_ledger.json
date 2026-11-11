@@ -173,11 +173,23 @@
     },
     {
       "target_id": "EOM111_outdoor_unit_identifier:43d787c7eed47d02cc3b",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-040"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json",
+          "sha256": "8c56324a1cdd435e58e33992a1133a3b6069ba04fab79a7dff7986472a091e25"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-040"
+        }
+      ],
+      "reason": "Два отдельныхAJ068TXJ3KH/EA сК3.2.406 явно названы; контекст зоны403/405/406 иотсутствие выноски405не сохранены. Пропуск оборудования не доказан.",
       "section_assessment": "unchecked"
     },
     {
@@ -410,20 +422,44 @@
     },
     {
       "target_id": "EOM_F014_phase_A_current:d972a6b9f556089a8923",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-034"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F014_phase_A_current.json",
+          "sha256": "658e2faf7e777cc659e49710a787ab6dfbae0ae51a050597f960008447f3eaa9"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-034"
+        }
+      ],
+      "reason": "1.ЩС:сводный10,3 противгруппы4/фазыA26,2 явно сохранён. F035повторяетядро,но расходится по распределению группы5иитогам; конфликт28,7/29,1 оценивается отдельно, не два дефекта.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "EOM_F016_management_phase_current:fdef783b69877a39920c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-037"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
+          "sha256": "fd397c9b88821ec58404f09b5ee75556f169bd87b1258e15617e5ee42ff06997"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-037"
+        }
+      ],
+      "reason": "1.ЩС-УК:3,2 иA1,0/8,5 сохранены, но существенная оговорка о3Pгруппы4и неизвестном подключении отсутствует.8,6при0,9не становится подтверждённым проектным током.",
       "section_assessment": "unchecked"
     },
     {
@@ -512,11 +548,23 @@
     },
     {
       "target_id": "EOM_F022_ventilation_power_rounding:2dcc867069010078edd3",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-039"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F022_ventilation_power_rounding.json",
+          "sha256": "a61e8bb81c63cacd0ee0e6e3ce075dbe8455c1bba1dfa4fe172b8cfd034336f2"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-039"
+        }
+      ],
+      "reason": "Пятьмощностей0,1+0,1+0,1+0,8+0,4=1,5против1,4; решение явно требует уточнить исходную точность. Не объявлено автоматически ошибочным оборудование.",
       "section_assessment": "unchecked"
     },
     {
@@ -566,11 +614,23 @@
     },
     {
       "target_id": "EOM_F028_apartment_plan_identity:bbc814c9d763c8f736f7",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-043"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F028_apartment_plan_identity.json",
+          "sha256": "d3b57fbf21e0f9bdc4d803134c2255b9a4b4d5f6ff34b7610023e084aa0eb2bf"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-043"
+        }
+      ],
+      "reason": "Обе группы388–390/391–393 и431–437/438–444 сопоставлены план/экспликация. Дополнительный вывод о6этаже требует независимой оценки; эталон подтверждает только конфликт номеров.",
       "section_assessment": "unchecked"
     },
     {
@@ -959,11 +1019,23 @@
     },
     {
       "target_id": "EOM_F049_lightning_reference_title:106f839cb3a98ca97f29",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-046"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F049_lightning_reference_title.json",
+          "sha256": "4584797c55ba058a83a66f9c599d6383a81c40397467675ecfb4e337504858db"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-046"
+        }
+      ],
+      "reason": "РД34.21.122-87иСО153-34.21.122-2003 с одинаковым расширенным названием названы; сохранено редакционное исправление без утверждения конфликта требований.",
       "section_assessment": "unchecked"
     },
     {
