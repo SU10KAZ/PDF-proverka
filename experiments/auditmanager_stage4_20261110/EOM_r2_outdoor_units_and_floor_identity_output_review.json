@@ -1,0 +1,337 @@
+{
+  "status": "two_graphic_identity_findings_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "2b070c545600a8d4b220beeefff7d54c801fb910cc4902b5cbee80466d6f8c86",
+  "queue_after_sha256": "718f4c04dc25bbec5f3ec375868340303463eeb22e628310645c083b00512c1a",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-042",
+      "finding": {
+        "id": "F-042",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка оборудования",
+        "sheet": "Лист 18",
+        "page": 20,
+        "problem": "Два наружных блока кондиционеров имеют одинаковую марку.",
+        "description": "На плане два отдельных наружных блока обозначены К3.2.406. По переданному анализу это не позволяет однозначно различить оборудование при подключении и обслуживании.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать принадлежность блоков с разделом кондиционирования и присвоить однозначные обозначения оборудования и питающих линий.",
+        "risk": "Ошибочное подключение, отключение или обслуживание другого блока.",
+        "source_finding_ids": [
+          "G-039"
+        ],
+        "source_block_ids": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "related_block_ids": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "page": 20
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-039",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM111_outdoor_unit_identifier:43d787c7eed47d02cc3b",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Две выноски К3.2.406 относятся к разным наружным блокам.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": "На плане также есть третий блок К3.2.403. Повтор модели допустим; вопрос касается позиционной марки."
+        },
+        {
+          "claim": "Согласовать индивидуальные обозначения с кондиционированием и питающими линиями.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не назначать одному блоку К3.2.405 без привязки. Недостача для квартиры 405, лишний блок для 406 и ошибочное подключение не доказаны."
+        },
+        {
+          "claim": "Нормативные основания и фактические последствия",
+          "verdict": "not_established",
+          "limits": "Нормативная применимость и фактический монтаж не проверены."
+        }
+      ],
+      "unsupported_additions": "see_identity_and_scope_limits",
+      "novel_useful_content": "known_object_identity_question",
+      "duplicate_burden": "one_issue_per_identifier_conflict_not_per_symbol_or_apartment",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; prior sources hash verified, current graphics viewed.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json",
+          "sha256": "8c56324a1cdd435e58e33992a1133a3b6069ba04fab79a7dff7986472a091e25",
+          "primary_adjudication": null,
+          "limits": "Просмотрен исходный графический блок целиком. Подтверждены отдельные символы с одинаковым позиционным обозначением и подпись общей зоны; это не повторный вид одного блока. Одинаковая модель у разных блоков допустима и не является предметом замечания. Правильное обозначение каждой позиции не установлено. Отсутствие К3.2.405 ограничено просмотренным планом, не всем проектом. Три изображённых блока могут соответствовать трём квартирам при ошибке одной выноски; недостача блока для 405 и избыточность для 406 не доказаны. Схемы индивидуальных связей, документация кондиционирования и спецификация поставки не проверены. Текстовые таблицы на изображении не использованы для исправления авторитетного TEXT.",
+          "wording": "Уточнить маркировку наружных блоков в зоне для квартир 403, 405, 406: два отдельных блока имеют обозначение К3.2.406 и модель AJ068TXJ3KH/EA, третий — К3.2.403. На этом плане выноска К3.2.405 отсутствует. Согласовать индивидуальные обозначения с документацией кондиционирования.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4b5016856cc94ec088efe86a8ec2a925.png",
+          "sha256": "2e0bd13fc244dcc5539122bfb527216b63c083db40abc0768c3eabecde126aa5",
+          "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review",
+          "observation": "Три наружных блока у зоны403/405/406;две отдельные выноскиК3.2.406 сAJ068TXJ3KH/EA,третьяК3.2.403.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4b5016856cc94ec088efe86a8ec2a925.png"
+        }
+      ],
+      "disposition": "assessed_preserve_graphic_identity_question_with_limits"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-044",
+      "finding": {
+        "id": "F-044",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Привязка оборудования",
+        "sheet": "Листы 19, 30",
+        "page": [
+          21,
+          32
+        ],
+        "problem": "План и экспликации на листе 30 относятся к разным этажам.",
+        "description": "План содержит квартиры №388–390 и №431–437, тогда как экспликация седьмого этажа — №391–393 и №438–444. Номера МОП на плане 361–364 отличаются от номеров 371–374 в экспликации. Принадлежность квартиры №437 шестому этажу подтверждается сведениями листа 19.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать архитектурную основу плана с назначенным этажом и привести к ней экспликации квартир, МОП и привязки кабельных трасс.",
+        "risk": "Применение трасс и привязок другого этажа, ошибки монтажа и исполнительной документации.",
+        "source_finding_ids": [
+          "G-054",
+          "G-056"
+        ],
+        "source_block_ids": [
+          "blk_eecde8b541dd4b21a39a0ba7f0260bba"
+        ],
+        "related_block_ids": [
+          "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+          "blk_e592650ad6c04f319521ddf0f1d1f654"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+            "page": 32
+          },
+          {
+            "type": "text",
+            "block_id": "blk_e592650ad6c04f319521ddf0f1d1f654",
+            "page": 21
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-054",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-056",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают несоответствие этажа плана и экспликаций листа 30. Левое дополняет диапазонами квартир обеих секций: №388–390 и №431–437 против №391–393 и №438–444; правое — несовпадением номеров МОП: 361–364 против 371–374.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают несоответствие этажа плана и экспликаций листа 30. Левое дополняет диапазонами квартир обеих секций: №388–390 и №431–437 против №391–393 и №438–444; правое — несовпадением номеров МОП: 361–364 против 371–374.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F028_apartment_plan_identity:bbc814c9d763c8f736f7",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "План: квартиры 388–390 и 431–437; TEXT экспликации: 7 этаж, 391–393 и 438–444.",
+          "verdict": "confirmed_graphic_TEXT_discrepancy",
+          "limits": "На плане видны МОП 361–364; TEXT экспликации содержит 371–374. Таблица 6 этажа листа 19 содержит квартиру 437."
+        },
+        {
+          "claim": "План и экспликации относятся к разным этажам.",
+          "verdict": "supported_identifier_discrepancy_with_typical_plan_limit",
+          "limits": "Разные номера подтверждены; допустимость типовой подосновы и правильная версия не установлены. Причина копирования не доказана."
+        },
+        {
+          "claim": "Согласовать основу, этаж и экспликации.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не назначать таблицу или план автоматически правильными, не менять трассы без сверки с архитектурой. Фактические ошибки монтажа не установлены."
+        },
+        {
+          "claim": "Нормативные основания и фактические последствия",
+          "verdict": "not_established",
+          "limits": "Нормативная применимость и фактический монтаж не проверены."
+        }
+      ],
+      "unsupported_additions": "see_identity_and_scope_limits",
+      "novel_useful_content": "known_object_identity_question",
+      "duplicate_burden": "one_issue_per_identifier_conflict_not_per_symbol_or_apartment",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; prior sources hash verified, current graphics viewed.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_3b7d36dd231a433fb3d2e3c1873475b3",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_a5a42cbd9c1d43818816944aeb681a28",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F028_apartment_plan_identity.json",
+          "sha256": "d3b57fbf21e0f9bdc4d803134c2255b9a4b4d5f6ff34b7610023e084aa0eb2bf",
+          "primary_adjudication": null,
+          "limits": "Подтверждены разные наборы идентификаторов; по метаданным оба фрагмента относятся к листу30. Сам основной штамп не просмотрен на полном листе. Возможная устаревшая подоснова — гипотеза, а не доказанная причина. Не установлено, какой источник правильный, не выполнена пообъектная привязка квартирных цепей к АР. Ошибка трасс, схем подключения или фактического монтажа не доказана; автоматически перенумеровывать квартиры нельзя.",
+          "wording": "На плане листа30 указаны квартиры388–390 и431–437, а в экспликации «7 этажа» того же листа —391–393 и438–444. Ведомость называет лист30 планом кабеленесущих систем типового7–9 этажа. Согласуйте этаж и нумерацию подосновы с экспликацией и архитектурным планом, уточнив применимость типового решения.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F028_apartment_plan_identity.json",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eecde8b541dd4b21a39a0ba7f0260bba.png",
+          "sha256": "58f04159974238fb85bdd458104de7801890fe710573f4047cedd64138fcf7f7",
+          "block_id": "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review",
+          "observation": "Apartment numbers388–390,431–437 visible on the plan; comparison uses authoritativeTEXT tables separately.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eecde8b541dd4b21a39a0ba7f0260bba.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_header": "### BLOCK #160 [TEXT]: blk_9f669e3d958a48fbadb3b480d69971fa",
+          "route": "authoritative_TEXT_MOP_numbers_direct_review"
+        }
+      ],
+      "disposition": "assessed_preserve_graphic_identity_question_with_limits"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
