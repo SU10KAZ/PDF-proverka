@@ -1,0 +1,13 @@
+{
+  "status": "automatic_source_review_failed_numeric_reading",
+  "model_candidate_and_review_value": "2,78",
+  "direct_source_value": "2,73",
+  "direct_visual_inspection": "Rotated high-resolution PDF graphic clearly reads G=2,73 м³/ч. No PDF text extraction or TEXT reinterpretation.",
+  "source_image": "ITP_T411_literal_source_detail.png",
+  "source_image_sha256": "cfbaf9c7231db3ceea4e5d2325a789c2b814a55479c0a915e374b71f82bbeb5e",
+  "source_render_provenance": "ITP_T411_literal_source_detail.json",
+  "core_discrepancy_preserved": true,
+  "accepted_exact_candidate_wording": false,
+  "independent_literal_readback": "Claude source-only request prepared; no prior answers or expected value supplied.",
+  "full_acceptance": false
+}
