@@ -1,0 +1,264 @@
+{
+  "status": "AK_drive_composite_row_assessed_with_plan_limit",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "d08b82b243cc3565c670e17c409ea161c893f3ee781d2487c84e113d1a6b9dc7",
+  "queue_after_sha256": "1a5fc1352e5c4ca18f1ceda4d5cfe6a77f649d153b043fc2e97dfd1d2b31899d",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-028",
+      "finding": {
+        "id": "F-028",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Привязка оборудования",
+        "sheet": "Листы 22, 40, 54",
+        "page": [
+          26,
+          44,
+          58,
+          86,
+          87,
+          88,
+          101
+        ],
+        "problem": "Назначение и размещение преобразователей ШАУВ-1-К6АС не согласованы.",
+        "description": "Позиции 16.2 и 16.3 спецификации отнесены к Ва4.1 и Па4.1, хотя схема и план связывают шкаф с Ва5.1 и Па5.1. Для вытяжных ПЧ предусмотрен отдельный шкаф по месту, но журнал направляет линии к двигателям непосредственно из ШАУВ-1-К6АС.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие назначения и состава специфицируемого оборудования схемам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-027",
+                "G-093"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-027"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить принадлежность ПЧ системам Па5.1/Ва5.1 и согласовать фактическое размещение шкафов со всеми кабельными связями.",
+        "risk": "Поставка и подключение оборудования по неверной привязке.",
+        "source_finding_ids": [
+          "T-027",
+          "G-093"
+        ],
+        "source_block_ids": [
+          "blk_47163e69651c48528b3e054d5a5db095",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
+        ],
+        "related_block_ids": [
+          "blk_47163e69651c48528b3e054d5a5db095",
+          "blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "blk_5add216cde364840a6e302f75f71d361",
+          "blk_22e3bfda4cdb4d4fa70f1feac9aa7e20",
+          "blk_65704d0b4f9949539652392de320ebe4",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_f42735b18cb140928c3d9f29d2891ae2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+            "page": 44
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+            "page": 101
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-093",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое противоречие: позиции 16.2 и 16.3 шкафа ШАУВ-1-К6АС отнесены к Ва4.1 и Па4.1, тогда как схема и план указывают Ва5.1 и Па5.1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Раздел16СО относится кШАУВ-1-К6АС, а примечания16.2/16.3 указывают Ва4.1/Па4.1.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Таблица применимости связывает этот шкаф сПа5.1/Ва5.1, аПа4.1/Ва4.1 — сШАУВ-1-К5АС.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Внешняя схемаШАУВ-1-К6АС показывает основные и резервные двигателиПа5.1/Ва5.1.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Преобразователи3,7/2,2кВт E5-MINI-005H/003H технически неверно выбраны и требуют замены.",
+          "verdict": "not_established",
+          "limits": "Проверены обозначения систем, не мощности двигателей, токи, режимы или паспорта. Правильный шифр шкафа вСО сохраняется."
+        },
+        {
+          "claim": "Согласовать принадлежность позиций и исправить ссылки после проверки назначения.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "Фактический ошибочный заказ, монтаж или отказ не доказаны."
+        },
+        {
+          "claim": "Журнал задаёт линии Ва5.1-3/-4 от ШАУВ-1-К6АС к М2/М3.",
+          "verdict": "confirmed_authoritative_TEXT_with_literal_Ba",
+          "limits": "В TEXT буквальное Ba5.1-3/-4, по 85 м 4x2,5. Внешняя схема показывает те же двигатели и выводы общего контура шкафа. Это адресные записи, не доказательство прямого подключения к сети в обход ПЧ."
+        },
+        {
+          "claim": "Вытяжные ПЧ вынесены по месту.",
+          "verdict": "confirmed_functional_GRAPHIC_location_row",
+          "limits": "SC UZ2/UZ3 находятся в строке Приборы по месту, а не Шкаф управления. Требуется согласовать границы внешних соединений с показанными конечными адресами."
+        },
+        {
+          "claim": "Отдельный шкаф ПЧ на плане однозначно установлен и отсутствует именно его обязательный кабель.",
+          "verdict": "insufficient_plan_label_and_factory_detail",
+          "limits": "Общий растр плана лист54 просмотрен, но мелкая подпись конкретного шкафа не прочитана надёжно. Размещение приборов по месту не доказывает само по себе отдельный шкаф. Не объявлять его марку, число недостающих линий или метраж подтверждёнными."
+        }
+      ],
+      "unsupported_additions": "Сохранить доказанную принадлежность позиций16.2/16.3 и вопрос согласования внешних соединений. Не считать журнал доказательством обхода ПЧ, неверного монтажа либо доказанно пропущенного отдельного шкафа.",
+      "novel_useful_content": "Помимо прежнего конфликта систем в СО напрямую проверены строки расположения ПЧ на функциональной схеме, внешняя схема и две строки КЖ; точная подпись отдельного шкафа на плане остаётся непроверенной.",
+      "duplicate_burden": "Два предмета внутри строки: назначение систем в СО и границы подключений ПЧ. Не приписывать новому предмету полную доказанность за счёт первого.",
+      "profile_and_section": "technical_core_preserve_assignment_scope",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F018_drive_system_assignment.json",
+          "sha256": "62cb406cdf423f7781c27e355c359c2d507189af8b12a26d34f7380119ed6eeb",
+          "primary_adjudication": null,
+          "limits": [
+            "Заголовок раздела16 и обе позиции проверены вместе: строки не относятся к предыдущему шкафу раздела15.",
+            "Подтверждён конфликт назначения в документах. Соответствие мощностей3,7/2,2кВт и моделей E5-MINI-005H/003H нагрузкам двигателей не проверено. Нельзя автоматически требовать замены изделий.",
+            "Неправильный заказ, фактический монтаж и отказ не установлены; правильный идентификатор шкафа в СО сохраняется и даёт дополнительную привязку.",
+            "Решение инженера по blind-кандидату и конкретный нормативный пункт не установлены."
+          ],
+          "wording": "Согласовать назначение ПЧ в разделе16 СО шкафа ШАУВ-1-К6АС: позиции16.2 и16.3 ссылаются на Ва4.1 и Па4.1, тогда как схема подключений этого шкафа показывает Ва5.1 и Па5.1. Проверить принадлежность изделий и исправить несогласованные обозначения систем."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+          "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+          "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Cabinet SHAUV-1-K6AS with Pa5.1/Va5.1 fan branches. Motor rating suitability not verified."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-034",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+          "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+          "route": "direct_GRAPHIC_review",
+          "directly_viewed": true,
+          "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+          "observations": "Внешняя схема лист40 показывает М2/М3 систем Ва5.1/Ва5.1р и прямые нарисованные линии Ва5.1-3/-4 к клеммам общего контура ШАУВ-1-К6АС; отдельный промежуточный ПЧ на этих линиях здесь не изображён."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "route": "direct_GRAPHIC_review",
+          "directly_viewed": true,
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "observations": "На функциональной схеме лист22 SC UZ2/UZ3 размещены в строке Приборы по месту; SC UZ1/UZ4 в строке Шкаф управления ШАУВ-1-К6АС."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT_addressed_motor_lines",
+          "quotes": [
+            "| Ba5.1-3 | ШАУВ-1-К6АС | M2 | ППГнг(А)-HF | 4x2,5 | 85 | лоток 100х100, труба гофр., труба водогазопроводная | ППГнг(А)-HF 4x2,5 | 70/10/5 |  |",
+            "| Ba5.1-4 | ШАУВ-1-К6АС | M3 | ППГнг(А)-HF | 4x2,5 | 85 | лоток 100х100, труба гофр., труба водогазопроводная | ППГнг(А)-HF 4x2,5 | 70/10/5 |  |"
+          ]
+        }
+      ],
+      "disposition": "assessed_r2_AK_F028_drive_assignment_and_connection_boundary"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
