@@ -1,0 +1,66 @@
+{
+  "status": "timing_confound_recorded_no_quality_effect_inferred",
+  "baseline_trial_sha256": "e8868d688a4525c54871ff4310b39ea490c225f13129c2fe9e5d6dc0791f4c8b",
+  "AK_r1_status_sha256": "65985578df0f69ae910d2c4547dbb699a5d463db6a71705ed1914f831203e469",
+  "AK_r1_wall_seconds": 3343.933670282364,
+  "baseline_configuration": "Serial projects, parallel graphic calls; fixed Astra/high topology.",
+  "concurrent_known_candidate_pilots": [
+    {
+      "root": "/tmp/auditmanager_km_f014_cross_plan_trace_20261111",
+      "attempt_files": [
+        {
+          "path": "/tmp/auditmanager_km_f014_cross_plan_trace_20261111/attempt.json",
+          "observed_mtime": 1794378281.0708954
+        }
+      ]
+    },
+    {
+      "root": "/tmp/auditmanager_km_f014_native_cross_plan_20261111",
+      "attempt_files": [
+        {
+          "path": "/tmp/auditmanager_km_f014_native_cross_plan_20261111/workflow/00_review/attempt.json",
+          "observed_mtime": 1794379022.436312
+        },
+        {
+          "path": "/tmp/auditmanager_km_f014_native_cross_plan_20261111/workflow/05_adjudication/attempt.json",
+          "observed_mtime": 1794379091.1349535
+        }
+      ]
+    },
+    {
+      "root": "/tmp/auditmanager_km_f014_native_final_release_20261111",
+      "attempt_files": [
+        {
+          "path": "/tmp/auditmanager_km_f014_native_final_release_20261111/native/workflow/initial/attempt.json",
+          "observed_mtime": 1794379268.7670166
+        }
+      ]
+    },
+    {
+      "root": "/tmp/auditmanager_km_f014_native_final_release_v2_20261111",
+      "attempt_files": [
+        {
+          "path": "/tmp/auditmanager_km_f014_native_final_release_v2_20261111/native/workflow/initial/attempt.json",
+          "observed_mtime": 1794379485.2418602
+        }
+      ]
+    },
+    {
+      "root": "/tmp/auditmanager_km_f014_original_refs_20261111",
+      "attempt_files": [
+        {
+          "path": "/tmp/auditmanager_km_f014_original_refs_20261111/workflow/00_review/attempt.json",
+          "observed_mtime": 1794379656.7059362
+        }
+      ]
+    }
+  ],
+  "interpretation": [
+    "Known-candidate direct Astra pilot calls overlapped baseline collection. They used separate inputs and did not alter baseline prompts or source files.",
+    "Subscription-provider load and shared CPU may affect wall time. File mtimes do not prove precise remote overlap duration.",
+    "Do not use these baseline wall times alone to accept the p95 time gate against a candidate collected under different load.",
+    "Preserve measured token/request totals; do not subtract pilot usage from baseline because requests are already recorded in separate roots.",
+    "Before performance acceptance run matched candidate/control timing under equivalent declared concurrency and record all retries."
+  ],
+  "quality_or_production_accepted": false
+}
