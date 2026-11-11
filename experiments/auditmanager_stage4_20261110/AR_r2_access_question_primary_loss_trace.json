@@ -1,0 +1,86 @@
+{
+  "status": "same_project_text_different_primary_discovery_confirmed",
+  "target_id": "AR_F011_access_register:16a9d1d9252402ce3968",
+  "runs": [
+    {
+      "repeat": 1,
+      "request": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/requests/AR/1794382295251956194/request.json",
+        "sha256": "75186e88e9fb6b26cc58a08993e86d96ebdf446996787ba04138372c2b3aa5c5"
+      },
+      "attempts": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/requests/AR/1794382295251956194/attempts.json",
+        "sha256": "c61f41849ebc8785519640b2f08db413791458d6bc7bcdd2efb9cbf8e9e30ab8"
+      },
+      "messages_sha256": "ce4124b892f59844dddf1220768d354bcf4cc10c0d5077f155826301df9ca5ae",
+      "text_result": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+        "sha256": "4141dd68f99ff2a9c811c1ef54e87164a4e15bd09addc4e12d3aac432f290bca"
+      },
+      "T-012": {
+        "id": "T-012",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "source": "Стр. 5, лист 3, примечание 1; стр. 17, лист 15, реестр отступлений, строка 4.",
+        "finding": "На листе «План финишного покрытия» примечание сообщает, что финишное покрытие не показано, и отсылает за раскладкой на этот же лист. В строке 4 реестра отступлений параметр назван «Доступ на эксплуатируемую кровлю», хотя до и после изменения описывается доступ на неэксплуатируемую кровлю. Исправить текстовые несоответствия назначению листа и содержанию изменения.",
+        "norm": "ГОСТ Р 21.101-2020, п. 4.2.1.",
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_43ba3b4bee434762829a4599c645e859",
+          "blk_61f174f49da34cb0821c0b91863cd608",
+          "blk_b29aa98eb0994f5c8f5901f9aa255c41"
+        ]
+      },
+      "reviewed_primary_text_findings": 12,
+      "target_in_primary_output": true
+    },
+    {
+      "repeat": 2,
+      "request": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/requests/AR/1794397210906345857/request.json",
+        "sha256": "5499af22e3dd1b179270b58ca7819fbe524d542579dda302270f52a35465c1f1"
+      },
+      "attempts": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/requests/AR/1794397210906345857/attempts.json",
+        "sha256": "a168b325a41af1bd5cefe90e84d639c2c327d077f733baf78f96009509df6907"
+      },
+      "messages_sha256": "fe01b0c4cfdfb7a4740cd6872dd418432266853d670a4a74c28dc338826ef888",
+      "text_result": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+        "sha256": "72b7c775e774e3024fb6f5e3015e5e966eb1d26f2d5ab96163d322c05a73a375"
+      },
+      "T-012": {
+        "id": "T-012",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "source": "Стр. 5, лист 3 «План финишного покрытия кровли», примечание 1",
+        "finding": "Примечание на листе плана финишного покрытия сообщает, что финишное покрытие К-4 условно не показано, и направляет за его раскладкой на этот же лист 3. Уточнить, какой слой действительно скрыт, и исправить самоссылку или формулировку примечания.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_43ba3b4bee434762829a4599c645e859",
+          "blk_b29aa98eb0994f5c8f5901f9aa255c41"
+        ]
+      },
+      "reviewed_primary_text_findings": 12,
+      "target_in_primary_output": false
+    }
+  ],
+  "exact_messages_equal": false,
+  "messages_equal_after_only_repeat_path_normalization": true,
+  "normalization": "/ar_r1_classic/ and /ar_r2_classic/ replaced with /ar_repeat_classic/ for comparison only; request files unchanged",
+  "different_character_positions_in_canonical_messages": [
+    3224,
+    9693
+  ],
+  "source_text_present_in_both": true,
+  "stage_assessment": "Оба первичных текстовых запроса содержат тот же проектный текст, включая строку4 реестра доступа; различаются только два символа номера повтора в локальных путях. В первомT-012 два тезиса: самоссылка плана и несогласованное название доступа. Во второмT-012 только самоссылка; остальные11 первичных текстовых замечаний тоже не содержат вопрос доступа. Потеря на этом маршруте происходит до объединения.",
+  "limits": [
+    "Внутренняя причина вариативности не установлена. Полное байтовое равенство сообщений не заявляется.",
+    "Не заявляется тождество всех параметров исполнения и состояния сервиса.",
+    "Это вопрос согласования описания, не утверждение об отсутствии доступа на техническую кровлю.",
+    "Не является новым фильтром или доказательством качества экспериментального метода."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
