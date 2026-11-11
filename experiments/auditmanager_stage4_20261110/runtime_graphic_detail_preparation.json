@@ -1,0 +1,21 @@
+{
+  "status": "graphic_detail_prepared_not_dispatched",
+  "history_supplied": false,
+  "model_calls": 0,
+  "source_request_sha256": "6491fcdc460134327a15acc1ae9f8519aeb52de93e81994b4a77372299060a17",
+  "source_response_sha256": "90c051bb2931b7f943630acaf74e505bb01b036096130f783103639f834da760",
+  "graphic_manifest": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/manifest.json",
+  "graphic_manifest_sha256": "7c5e918d277e164cb72075ffbc7b4dcdb69eb042c790192a96c99328a1f268cc",
+  "purpose": "Resolve model-reported unreadable marks using full-block graphic details, not historical coordinates.",
+  "requests": [
+    {
+      "path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/candidate_recovery_d9514d8925b97f17_detail01.json",
+      "sha256": "1d10a607c4f7966bda6d84bb87c45e9625840b822bc84723b899fa9c80ba23ae",
+      "transport_size_ready": true,
+      "image_bytes": 6010834,
+      "message_characters": 79539,
+      "images": 11
+    }
+  ],
+  "production_acceptance": false
+}
