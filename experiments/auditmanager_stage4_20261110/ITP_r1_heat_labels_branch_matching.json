@@ -1,0 +1,285 @@
+{
+  "status": "partial_coordinator_coverage_review",
+  "discipline": "ITP",
+  "repeat": 1,
+  "mapped_atoms": [
+    {
+      "target_id": "ITP40:bbd2b9236034c12aec3c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-051"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+          "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Расхождение 0,200/0,191 на разрезе 23-23 сохранено вместе с требованием общей увязки режима III зоны. Дробление на F-050/051/052 требует отдельной оценки дублей; покрытие не подтверждает правильность итоговой группировки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP58_GVS_branch_flows:f563ab4150d33b1acce3",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
+          "sha256": "18f4757f2b96969381e5504499213117983b5aaf771b02e5eb0207a647b01ad4"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Сверка ветвей 13,34/12,13 и 9,02/4,31 в итоговой выдаче отсутствует. Общий вопрос баланса смешения F-041 не заменяет конкретную сверку ветвей и насоса К15.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP58_GVS_branch_flows:998f8c69c4c89da05aa9",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
+          "sha256": "18f4757f2b96969381e5504499213117983b5aaf771b02e5eb0207a647b01ad4"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Претензия о неоднозначном назначении подписей Т411/Т412 не повторена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP58_GVS_branch_flows:092234a89fe9515c377c",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
+          "sha256": "18f4757f2b96969381e5504499213117983b5aaf771b02e5eb0207a647b01ad4"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Историческая неверная единица т/ч для 4,29 в ПЗ не повторена. Это не доказывает работу отдельного фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:d9eb099d20a94bca22e2",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Утверждение об отсутствии запаса мощности во всём проекте не повторено. F-052 прямо учитывает указанные в проекте 15%; это не универсальный допуск.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-046"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "К2: подпись 1,005 на разрезе сопоставлена с 1,012 экспликации и подбора. Зафиксировано покрытие расхождения; эксплуатационная категория и риск поставки ещё не приняты как обоснованные.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:92be8d7a03f9ca816e16",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-045"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "К6: 0,403 против 0,419 сохранено с указанием двух аппаратов по 50%. Не утверждается доказанный недостаток мощности; категория и последствия оцениваются отдельно.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:cae0fec45b0437f86c1a",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Расхождение подписи К1 1,711 с принятой мощностью 1,707 в итоговых замечаниях не сформулировано; расхождения других теплообменников не засчитаны вместо него.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/ITP_review.json",
+  "review_ledger_sha256": "be9a67a2fdab1ef27b6b7cdd6355a315da0615125123462685fe864529715d08",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "ITP",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 19,
+          "availability_available": 13,
+          "partial": 3,
+          "full": 8,
+          "absent": 2,
+          "availability_unchecked": 6,
+          "unchecked": 6
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 56,
+          "availability_available": 42,
+          "partial": 14,
+          "absent": 6,
+          "full": 22,
+          "availability_unchecked": 14,
+          "unchecked": 14
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 12,
+          "availability_available": 8,
+          "absent": 8,
+          "availability_unchecked": 4,
+          "unchecked": 4
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 30
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "limits": [
+    "Проверено смысловое покрытие восьми атомарных целей; это не инженерная приёмка всех новых утверждений выдачи.",
+    "Категории, последствия и дробление общей темы на несколько замечаний требуют отдельной оценки.",
+    "Отсутствие исторической ошибки не доказывает выполнение фильтра.",
+    "ИТП: сопоставлены 63 из 87 целей; итоговая полнота пока не рассчитана."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
