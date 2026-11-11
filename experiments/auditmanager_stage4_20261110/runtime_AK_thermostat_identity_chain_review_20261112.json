@@ -1,0 +1,82 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-051",
+      "status": "confirmed_document_conflict_with_stale_caveat",
+      "review_reason": "На функциональной схеме Пу5.1 непосредственно прочитан TS2 у электрического нагревателя. В авторитетном перечне того же листа один ТС1, комплектный с электронагревателем. Авторитетная строка КЖ Пу5.1-2 связывает ШАУВ-5-К5ПЧ с ТС1; на схеме подключений эта же линия ведёт от клемм 6–7 к TS1 в колонке воздуха за калорифером Пу5.1. Конфликт позиционного номера 2/1 подтверждён связью системы, шкафа и кабеля, без предположения о неправильном физическом монтаже. Начальная оговорка о непроверенном журнале устарела после добавлений. Решение «проверить журнал» должно быть актуализировано до согласования уже проверенных обозначений. Внутренние ссылки parent:... и F-037 не являются корректными пользовательскими ссылками на это замечание; сохранить их только в истории проверки. В штампе авторитетного TEXT перечня стоит иное название систем Пл3.1/Вк3.1/Всу3.1; оно не исправлялось по растру. Поэтому принадлежность перечня установлена как перечень того же листа 16, а связь Пу5.1 с термостатом независимо подтверждена функциональной схемой, журналом и подключениями. Несогласованность заголовка нельзя скрывать.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png",
+          "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "sha256": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609",
+          "directly_viewed": true,
+          "detail": "original"
+        },
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_a2c817786b3a459fb5fa2667d9492450.png",
+          "block_id": "blk_a2c817786b3a459fb5fa2667d9492450",
+          "sha256": "292eaec8678f1e4bbf28d2348b8661424e121d4b0e7182c425db37d9682e835a",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_e8bf19ac20234427aa1d48bfcac87193",
+          "start": 109231,
+          "end": 110346,
+          "sha256": "bb6982063c8836d4cdaebeea5637a93103792b73aac80b22557ad02c9fc0ac0e"
+        },
+        {
+          "block_id": "blk_5d9307558672478196f75e1763b09764",
+          "start": 391439,
+          "end": 393918,
+          "sha256": "f5ddfd05da5fc853fce8faac0d86dea997f6615a32ee0cade4ff4977beb266bd"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-053",
+      "status": "confirmed_document_conflict_with_stale_caveat",
+      "review_reason": "На функциональной схеме По5.1 непосредственно прочитан TS2 у электрического нагревателя. В авторитетном перечне того же листа один ТС1, комплектный с электронагревателем. Авторитетная строка КЖ По5.1-2 связывает ШАУВ-6-К5ПЧ с ТС1; на схеме подключений эта же линия ведёт от клемм 4–5 к TS1 в колонке воздуха за калорифером По5.1. Конфликт позиционного номера 2/1 подтверждён связью системы, шкафа и кабеля, без предположения о неправильном физическом монтаже. Начальная оговорка о непроверенном журнале устарела после добавлений. Решение «проверить журнал» должно быть актуализировано до согласования уже проверенных обозначений. Внутренние ссылки parent:... и F-037 не являются корректными пользовательскими ссылками на это замечание; сохранить их только в истории проверки.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_66980560083f4bb483d5ce1f9c8156e2.png",
+          "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "sha256": "dabee90e19aaa31be7c58c1521a95a878bacbb4d195f4173824eddcca53e435c",
+          "directly_viewed": true,
+          "detail": "original"
+        },
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "block_id": "blk_065a335469904b2db1640b480b321503",
+          "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "start": 114382,
+          "end": 115618,
+          "sha256": "e17fc5e12d062ec79e5576c79ddcc8dc302d6b6b9efa46550daf5abbbde22d8e"
+        },
+        {
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "start": 393942,
+          "end": 396400,
+          "sha256": "d666fb6370feca7997b7ec7f53c2b554ed6c2eed0a8cb09526a290bf54dc9e32"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false
+}
