@@ -24,9 +24,9 @@
       "final_sha256": "aa76592c061f7c75196ee2c35c606de32dd98c383243ddb22357d35dde54c89b",
       "findings": 54,
       "ledger_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_coverage_ledger.json",
-      "ledger_sha256": "0c3e6652ae1915d0510ad4fcd2902710f8e394d4fe0e0fd88ea22bcfb50fef11",
+      "ledger_sha256": "03a062e8b031a4787afa3936335cce1df58628c08ccfc54b2654020d146af293",
       "targets": 87,
-      "unchecked_targets": 64
+      "unchecked_targets": 0
     },
     {
       "discipline": "AR",
