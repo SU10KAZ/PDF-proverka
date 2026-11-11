@@ -1,0 +1,653 @@
+{
+  "status": "three_pump_outputs_assessed_with_source_binding_corrections",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "bbb318bab2c9e43bab9c30e1b35d55ef83a601f9ea8086cb759ec163f5093d5c",
+  "queue_after_sha256": "5c70c071c74f97b5b01f5c2039ebc5fe334193c19ef02f680ae2b9272ffe804f",
+  "reviewer": "coordinator_authoritative_TEXT_and_reference_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Насосы",
+        "sheet": "Лист 2",
+        "page": [
+          8,
+          24,
+          52,
+          76
+        ],
+        "problem": "Для насоса К12 указаны разные мощности двигателя: 0,55 и 1,5 кВт.",
+        "description": "В экспликации на листе 2 насос отопления ДОО обозначен IL 40/220-1,5/4-R, но в характеристике записано N=0,55 кВт. Спецификация, ПЗ и технический лист задают 1,5 кВт. В экспликации также приведены расход 4,42 м³/ч, напор 16,98 м и питание 3×380 В.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить паспортное исполнение К12, исправить мощность и согласовать электрическую нагрузку, защиту и преобразователь частоты.",
+        "risk": "Ошибочный подбор питания и защиты двигателя.",
+        "source_finding_ids": [
+          "T-017",
+          "G-001",
+          "G-002"
+        ],
+        "source_block_ids": [
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "related_block_ids": [
+          "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "blk_1601889b50624245a5c590ad23d87175",
+          "blk_296b8547a33a47dbb7a9b8e546d964e0",
+          "blk_ae35014464b5493f84ca38481c3ffa60",
+          "blk_b5a8bd535c584d08a9854e4257e4833d"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 24
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 52
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 76
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-002",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "image_only"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие для К12: мощность 1,5 кВт в обозначении IL 40/220-1,5/4-R и N=0,55 кВт в характеристиках. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие для К12: мощность 1,5 кВт в обозначении IL 40/220-1,5/4-R и N=0,55 кВт в характеристиках. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-016:6f0370becae84fed440d",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К12:IL40/220-1,5/4-R;экспликация0,55кВт;ПЗ,спецификация иноминальная мощность технического листа1,5кВт.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Сопоставлено одинаковое оборудование поДОО,модели,артикулу2786053 иточке4,42м³/ч,16,98м.",
+          "verdict": "confirmed_identity_binding",
+          "limits": ""
+        },
+        {
+          "claim": "P2=0,74кВт в рабочей точке устраняет расхождение номиналов.",
+          "verdict": "refuted_parameter_semantics",
+          "limits": "Технический лист отдельно содержит рабочуюP2и номинальную мощность1,5. Не выбирать одно из трёх чисел без названия параметра."
+        },
+        {
+          "claim": "Неверно подобраны защита ичастотный преобразователь.",
+          "verdict": "not_established",
+          "limits": "Задание электрикам,расчёт защиты ифактическая поставка не проверены."
+        },
+        {
+          "claim": "Согласовать экспликацию ипереданную электрическую нагрузку.",
+          "verdict": "supported_document_conflict",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "K12_power_distinct_from_K12_mass_F029",
+      "profile_and_section": "technical_document_conflict_core_preserved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-016.json",
+          "sha256": "08e2ee802e6a8be9e9f5a16dc884d01f4b962cc6bc6dbbf87a6d41f850988661",
+          "primary_adjudication": null,
+          "limits": "Насос сопоставлен по назначению, модели, артикулу и рабочей точке 4,42 м³/ч / 16,98 м. Мощность P2 в рабочей точке 0,74 кВт не смешивать с номинальной. Неверный выбор аппаратов защиты, фактическая комплектация и отказ насоса не установлены.",
+          "wording": "Согласовать мощность насоса К12 отопления ДОО IL 40/220-1,5/4-R: в экспликации N=0,55 кВт, в ПЗ и спецификации N=1,5 кВт, а технический лист артикула 2786053 подтверждает номинальную мощность двигателя 1,5 кВт. Исправить экспликацию и сверить переданное задание электрикам."
+        }
+      ],
+      "disposition": "assessed_K12_nominal_power_conflict_preserved",
+      "evidence_link_quality": "Published source block points to principle scheme; exact explication and technical TEXT blocks supplied in assessment. Original output remains unchanged."
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-054",
+      "finding": {
+        "id": "F-054",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Массы оборудования",
+        "sheet": "Лист 2",
+        "page": [
+          8,
+          67,
+          69
+        ],
+        "problem": "Масса насоса К9 различается в экспликации и технических данных.",
+        "description": "Для IL 65/140-7,5/2-R экспликация указывает 98,0 кг, технические данные — 90 кг. Разница составляет 8 кг; различие комплектации не объяснено.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить массу принятой комплектации К9 по данным изготовителя и согласовать документацию.",
+        "risk": "Ошибочные исходные данные для монтажа и нагрузок на основание.",
+        "source_finding_ids": [
+          "G-036"
+        ],
+        "source_block_ids": [
+          "blk_606823ca386e49ffbe2f96d95e08793b"
+        ],
+        "related_block_ids": [
+          "blk_606823ca386e49ffbe2f96d95e08793b",
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_606823ca386e49ffbe2f96d95e08793b",
+            "page": 69
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 67
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-036",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К9,IL65/140-7,5/2-R:экспликация98кг,спецификация94кг,техническийлист90кг,артикул2786108.",
+          "verdict": "confirmed_TEXT_same_model_article_binding",
+          "limits": ""
+        },
+        {
+          "claim": "Разница экспликации итехнического листа8кг.",
+          "verdict": "confirmed_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Правильна масса технического листа,следовательноэкспликацияошибочна.",
+          "verdict": "not_established",
+          "limits": "Нужно подтвердить исполнение и состав массы; согласованность части документов не устанавливает поставленное изделие."
+        },
+        {
+          "claim": "Неверны нагрузки фундаментов или монтажных средств.",
+          "verdict": "not_established",
+          "limits": "Не проверены расчёт конструктора,обвязка ифактическая поставка."
+        },
+        {
+          "claim": "Уточнить массу выбранного исполнения и согласовать документы.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Указанный ввыдаче блок типаtext содержит доказательство массы.",
+          "verdict": "refuted_evidence_route",
+          "limits": "Он являетсяIMAGE сгабаритами исхемой подключения; значения массы подтверждены другимTEXT блоком того же подбора."
+        },
+        {
+          "claim": "Выдача полностью охватывает массыК9.",
+          "verdict": "partial_scope",
+          "limits": "Выпущены98/90,но третье значение94кг спецификации опущено. Сохранить трёхстороннюю сверку."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "same_historical_mass_theme_but_distinct_equipment_from_F029_not_duplicate_solely_by_theme",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_432d08b6de194751ae756f627e3e5bb8",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
+          "sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9",
+          "primary_adjudication": null,
+          "limits": "Подтверждены различия записей, а не правильность одной массы или ошибка расчёта фундаментов. В примечаниях к планам уже разделены паспортная масса без теплоносителя и масса с обвязкой с учётом теплоносителя. Численные нагрузки графических планов и задания конструкторам здесь не проверены. Масса теплообменника в расчёте названа ориентировочной, уточняемой при поставке; документ запрещает использовать её в конструкторских чертежах. Ошибка монтажных средств и нормативное нарушение не доказаны.",
+          "wording": "Согласовать массы единиц оборудования в экспликации, спецификации и листах подбора: К9 —98/94/90кг; К10 —87/67/67; К11 —48/57/57; К12 —29/60/64; К14 —284/181/203; теплообменник К1 —650,88/458,01/458,01. Уточнить исполнение и состав каждой массы, не смешивая изделие, обвязку и заполнение."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_606823ca386e49ffbe2f96d95e08793b.png",
+          "sha256": "2590ec1fa6878028f58f107b148d7b86b67dd3f6c36285a9b46ae3f1dec76de0",
+          "block_id": "blk_606823ca386e49ffbe2f96d95e08793b",
+          "route": "direct_GRAPHIC_review_of_published_reference",
+          "observation": "Габаритные размеры и схема подключения;значение массы отсутствует на этом листе."
+        }
+      ],
+      "disposition": "assessed_pump_mass_question_correct_evidence_binding",
+      "evidence_link_quality": {
+        "published_block": "blk_606823ca386e49ffbe2f96d95e08793b",
+        "actual_type": "IMAGE",
+        "mass_source_TEXT_block": "blk_432d08b6de194751ae756f627e3e5bb8",
+        "original_output_unchanged": true
+      }
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-055",
+      "finding": {
+        "id": "F-055",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Массы оборудования",
+        "sheet": "Лист 2",
+        "page": [
+          8,
+          73,
+          75
+        ],
+        "problem": "Масса насоса К11 различается в экспликации и техническом листе.",
+        "description": "Для IL 40/140-2,2/2-R в экспликации указаны 48,0 кг, в технических данных на странице 73 — 57 кг. Разница составляет 9 кг; в технических данных приведён артикул 2786083.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Подтвердить массу выбранного исполнения по артикулу и исправить экспликацию либо приложенный технический лист.",
+        "risk": "Ошибочные сведения для монтажа и расчёта нагрузок.",
+        "source_finding_ids": [
+          "G-038"
+        ],
+        "source_block_ids": [
+          "blk_396954f77098430281d203e5380eb32e"
+        ],
+        "related_block_ids": [
+          "blk_396954f77098430281d203e5380eb32e",
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_396954f77098430281d203e5380eb32e",
+            "page": 75
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 73
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-038",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают одинаковое расхождение массы насоса К11 IL 40/140-2,2/2-R: 48,0 кг на листе 2 и 57 кг на странице PDF 73, разница 9 кг.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К11,IL40/140-2,2/2-R:экспликация48кг,спецификация57кг,техническийлист57кг,артикул2786083.",
+          "verdict": "confirmed_TEXT_same_model_article_binding",
+          "limits": ""
+        },
+        {
+          "claim": "Разница экспликации итехнического листа9кг.",
+          "verdict": "confirmed_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Правильна масса технического листа,следовательноэкспликацияошибочна.",
+          "verdict": "not_established",
+          "limits": "Нужно подтвердить исполнение и состав массы; согласованность части документов не устанавливает поставленное изделие."
+        },
+        {
+          "claim": "Неверны нагрузки фундаментов или монтажных средств.",
+          "verdict": "not_established",
+          "limits": "Не проверены расчёт конструктора,обвязка ифактическая поставка."
+        },
+        {
+          "claim": "Уточнить массу выбранного исполнения и согласовать документы.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Указанный ввыдаче блок типаtext содержит доказательство массы.",
+          "verdict": "refuted_evidence_route",
+          "limits": "Он являетсяIMAGE сгабаритами исхемой подключения; значения массы подтверждены другимTEXT блоком того же подбора."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "same_historical_mass_theme_but_distinct_equipment_from_F029_not_duplicate_solely_by_theme",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
+          "sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9",
+          "primary_adjudication": null,
+          "limits": "Подтверждены различия записей, а не правильность одной массы или ошибка расчёта фундаментов. В примечаниях к планам уже разделены паспортная масса без теплоносителя и масса с обвязкой с учётом теплоносителя. Численные нагрузки графических планов и задания конструкторам здесь не проверены. Масса теплообменника в расчёте названа ориентировочной, уточняемой при поставке; документ запрещает использовать её в конструкторских чертежах. Ошибка монтажных средств и нормативное нарушение не доказаны.",
+          "wording": "Согласовать массы единиц оборудования в экспликации, спецификации и листах подбора: К9 —98/94/90кг; К10 —87/67/67; К11 —48/57/57; К12 —29/60/64; К14 —284/181/203; теплообменник К1 —650,88/458,01/458,01. Уточнить исполнение и состав каждой массы, не смешивая изделие, обвязку и заполнение."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_396954f77098430281d203e5380eb32e.png",
+          "sha256": "31ba80944012830d7222bb6907053322400d471911e18146498bec0fae13241a",
+          "block_id": "blk_396954f77098430281d203e5380eb32e",
+          "route": "direct_GRAPHIC_review_of_published_reference",
+          "observation": "Габаритные размеры и схема подключения;значение массы отсутствует на этом листе."
+        }
+      ],
+      "disposition": "assessed_pump_mass_question_correct_evidence_binding",
+      "evidence_link_quality": {
+        "published_block": "blk_396954f77098430281d203e5380eb32e",
+        "actual_type": "IMAGE",
+        "mass_source_TEXT_block": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+        "original_output_unchanged": true
+      }
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "authoritative_TEXT": "### BLOCK #13 [TEXT]: blk_1601889b50624245a5c590ad23d87175\n\n> **Created:** 2026-10-20 11:48:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/7IbDVoQ3xVscfL1_2fOb)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ | Stage: Р | Sheet: 2 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой \"Матвеевское\", Квартал 3, 2-я очередь, корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Индивидуальный тепловой пункт | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nЭкспликация оборудования (начало)\n\n18\n\n| Марка поз. | Обозначение | Наименование | Кол. | Масса ед.кг. | Приме- чение |\n|---|---|---|---|---|---|\n| K1 | \"РИДАН\" | Теплообменник пластинчатый системы отопления 1-ая зона, Q=1,707 Гкал/ч | 2 | 650,88 | с 15 % запасом по нагрузке |\n| K2 | \"РИДАН\" | Теплообменник пластинчатый системы отопления 2-ая зона, Q=1,012 Гкал/ч | 2 | 511,29 | с 15 % запасом по нагрузке |\n| K3 | \"РИДАН\" | Теплообменник пластинчатый системы отопления 3-ая зона, Q=0,220 Гкал/ч | 2 | 180,35 | с 15 % запасом по нагрузке |\n| K4 | \"РИДАН\" | Теплообменник пластинчатый системы отопления ДОО, Q=0,077 Гкал/ч | 2 | 123,09 | с 15 % запасом по нагрузке |\n| K5 | \"РИДАН\" | Теплообменник пластинчатый системы теплоснабжения, Q=1,757 Гкал/ч | 1 | 575,05 | с 15 % запасом по нагрузке |\n| K6 | \"РИДАН\" | Теплообменник пластинчатый системы ГВС I-ая зона, Q=0,419 Гкал/ч | 2 | 139,82 | с 15 % запасом по нагрузке |\n| K7 | \"РИДАН\" | Теплообменник пластинчатый системы ГВС II-ая зона, Q=0,217 Гкал/ч | 2 | 98,48 | с 15 % запасом по нагрузке |\n| K8 | \"РИДАН\" | Теплообменник пластинчатый системы ГВС III-ая зона, Q=0,104 Гкал/ч | 2 | 88,93 | с 15 % запасом по нагрузке |\n| K9 | IL 65/140-7,5/2-R | Насос циркуляционный системы отопления 1-ая зона, Q=82,83 м³/ч, H=22,53 м.в.см., 3x380В, N=7,5 кВт | 2 | 98,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K10 | IL 50/140-4/2-R | Насос циркуляционный системы отопления 2-ая зона, Q=47,08 м³/ч, H=21,29 м.в.см., 3x380В, N=4,0 кВт | 2 | 87,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K11 | IL 40/140-2,2/2-R | Насос циркуляционный системы отопления 3-ая зона, Q=12,42 м³/ч, H=19,29 м.в.см., 3x380В, N=2,2 кВт | 2 | 48,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K12 | IL 40/220-1,5/4-R | Насос циркуляционный системы отопления ДОО, Q=4,42 м³/ч, H=16,98 м.в.см., 3x380В, N=0,55 кВт | 2 | 29,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K13 | IL 65/120-4/2-R | Насос циркуляционный системы теплоснабжения, Q=63,56 м³/ч, H=15,27 м.в.см., 3x380В, N=4,0 кВт | 2 | 70,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K14 | IL 100/160-18,5/2-R | Насос циркуляционный греющего контура, Q=147,83 м³/ч, H=27,92 м.в.см., 3x380В, N=18,5 кВт | 3 | 284,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K15 | HELIX V 603-1/16/E/KS/400-50-N | Насос циркуляционный системы ГВС 1-ая зона, Q=4,31 м³/ч, H=18,57 м.в.см., 3x380В, N=0,55 кВт | 2 | 49,5 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K16 | HELIX V 603-1/16/E/KS/400-50-N | Насос циркуляционный системы ГВС 2-ая зона, Q=2,55 м³/ч, H=21,01 м.в.см., 3x380В, N=0,55 кВт | 2 | 29,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K17 | HELIX V 603-1/16/E/KS/400-50-N | Насос циркуляционный системы ГВС 3-ая зона, Q=1,29 м³/ч, H=21,92 м.в.см., 3x380В, N=0,55 кВт | 2 | 30,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K18 |  | Автоматическая установка поддержания давления отопления 1-ая зона в составе: | 1 |  |  |\n| K18.1 | SPL BASIC 2-C-60 | Блок управления с 2-мя насосами N=2x2,2 кВт; 3x380В; 50 Гц; | 1 |  |  |\n| K18.2 | LVF 600 | Основная емкость V=0,6 м³ (Ø780 мм) | 1 | 145,0 |  |\n| K18.3 | SPL RM 80 10бар | Демпферная емкость, V=80л, 10 бар | 1 | 12,0 |  |\n| K19 |  | Автоматическая установка поддержания давления отопления 2-ая зона в составе: | 1 |  |  |\n| K19.1 | SPL BASIC 2-B-125 | Блок управления с 2-мя насосами N=2x2,2 кВт; 3x380В; 50 Гц; | 1 |  |  |\n| K19.2 | LVF 400 | Основная емкость V=0,4 м³ (Ø750 мм) | 1 | 60,0 |  |\n| K19.3 | SPL RM 50 16 бар | Демпферная емкость, V=50л, 16 бар | 1 | 17,0 |  |\n| K20 |  | Автоматическая установка поддержания давления отопления 3-ая зона в составе: | 1 |  |  |\n| K20.1 | SPL BASIC 2-E-1-27 | Блок управления с 2-мя насосами N=2x1,5 кВт; 3x380В; 50 Гц; | 1 |  |  |\n| K20.2 | LVF 200 | Основная емкость V=0,2 м³ (Ø585 мм) | 1 | 48,0 |  |\n| K20.3 | SPL RM 50 25 бар | Демпферная емкость, V=50л, 25 бар | 1 | 30,0 |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "authoritative_TEXT": "### BLOCK #49 [TEXT]: blk_ae35014464b5493f84ca38481c3ffa60\n\n> **Created:** 2026-10-20 11:49:13 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/kSIG7VzCtVq_w9Jh4kfl)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.СО | Stage: Р | Sheet: 1. | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Спецификация оборудования, изделий и материалов копия 1 | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. изме-ре-ния | Кол-во | Масса 1 ед., кг. | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| Оборудование |  |  |  |  |  |  |  |  |\n| 1 | Теплообменник разборный пластинчатый Ридан НН№21 | НН-21-116-TMTL43 | Расчёт №w203119576 | Ридан | шт. | 2 | 458,01 | 2шт по 100%, отопление 1 зона |\n| 2 | Теплообменник разборный пластинчатый Ридан НН№21 | НН-21-67-TMTL50 | Расчёт №w203119577 | Ридан | шт. | 2 | 384,38 | 2шт по 100%, отопление 2 зона |\n| 3 | Теплообменник разборный пластинчатый Ридан НН№14 | НН-14-27-TMTL46 | Расчёт №w203119578 | Ридан | шт. | 2 | 142,32 | Точная масса теплообменника указана в расчётном листе |\n| 4 | Теплообменник разборный пластинчатый Ридан НН№14 | НН-14-9-TKTM62 | Расчёт №w203119860 | Ридан | шт. | 2 | 124,91 | 2шт по 100% |\n| 5 | Теплообменник разборный пластинчатый Ридан НН№21 | НН-21-180-TL | Расчёт №w203115749 | Ридан | шт. | 1 | 554,17 | тепл вентиляция |\n| 6 | Теплообменник разборный пластинчатый Ридан НН№07 | НН-07-41-TMTL18 | Расчёт № w203119579 | Ридан | шт. | 2 | 103,04 | 2шт по 50% |\n| 7 | Теплообменник разборный пластинчатый Ридан НН№07 | НН-07-21-TKTL75 | Расчёт № w203119580 | Ридан | шт. | 2 | 93,38 | 2шт по 50% |\n| 8 | Теплообменник разборный пластинчатый Ридан НН№07 | НН-07-12-TMTL45 | Расчёт № w203119581 | Ридан | шт. | 2 | 86,58 | 2шт по 50% |\n| 9 | Насос циркуляции системы отопления 1-зоны G=82,83 м³/ч, H=22,53 м.бд.см, N=7,5 кВт | IL 65/140-7.5/2 | 2786108 | ООО «ВИЛО РУС» | шт | 2 | 94 | 1 рабочий, 1 резервный |\n| 10 | Насос циркуляции системы отопления 2-зоны G=47,08 м³/ч, H=21,29 м.бд.см, N=4,0 кВт | IL 50/140-4/2 | 2786092 | ООО «ВИЛО РУС» | шт | 2 | 67 | 1 рабочий, 1 резервный |\n| 11 | Насос циркуляции системы отопления 3-зоны G=12,42 м³/ч, H=19,29 м.бд.см, N=2,2 кВт | IL 40/140-2.2/2 | 2786083 | ООО «ВИЛО РУС» | шт | 2 | 57 | 1 рабочий, 1 резервный |\n| 12 | Насос циркуляции системы отопления ДОО G=4,42 м³/ч, H=16,98 м.бд.см, N=1,5 кВт | IL 40/220-1.5/4 | 2786053 | ООО «ВИЛО РУС» | шт | 2 | 60 | 1 рабочий, 1 резервный |\n| 13 | Насос циркуляции системы вентиляции G=63,56 м³/ч, H=15,27 м.бд.см, N=4,0 кВт | IL 65/120-4/2 | 2786102 | ООО «ВИЛО РУС» | шт | 2 | 70 | 1 рабочий, 1 резервный |\n| 14 | Циркуляционный насос греющего контура, 3~, 18,5кВт ,32.6А ,G=147,83 м³/ч, H=27,92 м | IL 100/160-18.5/2 | 2786131 | ООО «ВИЛО РУС» | шт | 3 | 181 | 2-раб, 1-рез., в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| 15 | Циркуляционный насос системы в ГВС 1-зоны, 3~, 0,55кВт, 1.3А, G=4,31 м³/ч, H=18,57 м | HELIX V 603-1/16/E/KS/400-50 N | 2468072 | ООО «ВИЛО РУС» | шт. | 2 | 29 | 1 рабочий, 1 резервный |\n| 16 | Циркуляционный насос системы в ГВС 2-зоны, 3~, 0,55кВт, 1.3А, G=2,55 м³/ч, H=21,01 м | HELIX V 603-1/16/E/KS/400-50 N | 2468072 | ООО «ВИЛО РУС» | шт. | 2 | 29 | 1 рабочий, 1 резервный |\n| 17 | Циркуляционный насос системы в ГВС 3-зоны, 3~, 0,55кВт, 1.3А, G=1,29 м³/ч, H=21,92 м | HELIX V 603-1/16/E/KS/400-50 N | 2468072 | ООО «ВИЛО РУС» | шт. | 2 | 29 | 1 рабочий, 1 резервный |\n| 17а | Насос дренажный G=6 м³/ч, H=12 м.бд.см.N=0,55кВт макс.темпер. 95 С | Drain TMT 32M113/7,5Ci | 2458807 | Wilo Rus | шт. | 2 |  | учтено в разделе ВК |\n| 18 | Установка поддержания давления (отопление 1-зона): SPL; Блок управления насосом SPL BASIC 2-C-60; Комплект гибких подключений основного бака LVF 600 | SPL BASIC 2-C-60 |  | SPL | шт | 1 | 149 | подпитка, отопление 1-зона |\n| 18.1 | Атмосферный бак V=600л, PN=2бар | LVF 600 |  | SPL | шт. | 1 | 151 | подпитка отопление 1-зона |\n| 18.2 | Расширительный мембранный бак V=80л, PN=10бар | RM 80 PN10 |  | SPL | шт. | 1 | 12.00 | подпитка, отопление 1-зона |\n\n## Page 25 — Sheet 2.\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+      "authoritative_TEXT": "### BLOCK #90 [TEXT]: blk_296b8547a33a47dbb7a9b8e546d964e0\n\n> **Created:** 2026-10-20 11:49:28 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/CjebKR1bd1NJOlBerXUK)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 14 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nВыбраны насосы отопления: 2 x **IL 40/140-2,2/2-R** (1раб, 1рез.) с характеристиками:\nG=12,42 м³/ч, H=19,29 м.вд.см, N=2,2 кВт. Фирмы «ВИЛО» (арт. 2786083).\n\n###### насосы отопления ДОО:\n\nGом/ макс² = (Qом/ макс × 1000)/(t₁ - t₂') = (0,067 × 1000)/(75 - 55) = 3,35 м³ / ч;\n\nHнас=6м(сист)+3м(ТО)+5м(зап)=14м\n\nВыбраны насосы отопления: 2 x **IL 40/220-1,5/4-R** (1раб, 1рез.) с характеристиками:\nG=4,42 м³/ч, H=16,98 м.вд.см, N=1,5 кВт. Фирмы «ВИЛО» (арт. 2786053).\n\n###### насосы вентиляции:\n\nGвен макс = (Qвен макс × 1000)/(τ₁ - τ₂) = (1,527 × 1000)/(85 - 60) = 61,12 м³ / ч;\n\nHнас=5,5м(сист)+3м(ТО)+5м(зап)=13,5м\n\nВыбраны насосы вентиляции: 2x **IL 65/120-4/2-R** (1раб, 1рез.) с характеристиками:\nG=63,56 м³/ч, H=15,27 м.вд.см, N=4,0 кВт. Фирмы «ВИЛО» (арт. 2786102).\n\n###### КЗР:\n\n###### Система ГВС 1-зона:\n\nKв кэр = GГВС¹/√ΔPклап = (м³ / ч);\n\nGГВС¹ = 36,40 м³/ч,\n\nKв кэр = 36,40/√0,5 = 51,26 (м³ / ч);\n\nВыбираем 3-х ходовой регулирующий клапан «РИДАН» **VF-3R-65-52**, Kv=52 м³/ч, Ду=65 мм с электроприводом (см. АТМ)\n\n###### Потери давления на полностью открытом клапане:\n\nΔPклап = ((Gh макс)/KvS)² = (36,40/52)² = 0,490 бар;\n\n###### Система ГВС 2-зона:\n\nKв кэр = GГВС¹/√ΔPклап = (м³ / ч);\n\nGГВС¹ = 18,85 м³/ч,\n\nKв кэр = 18,85/√0,5 = 26,55 (м³ / ч);\n\nВыбираем 3-х ходовой регулирующий клапан «РИДАН» **VF-3R-50-40**, Kv=40 м³/ч, Ду=50 мм с электроприводом (см. АТМ)\n\n## Page 53 — Sheet 15\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+      "authoritative_TEXT": "### BLOCK #114 [TEXT]: blk_b5a8bd535c584d08a9854e4257e4833d\n\n> **Created:** 2026-10-20 11:49:41 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/cpp0sUOvDYWmNVKDcykN)\n\n#### Технические данные\n\nIL 40/220-1,5/4-R\n\nТип: Ин-лайн насос\n\nРазработал:\n\nПроект:\n\nНазначение:\n\nДата: 29.06.2026\n\n##### ОТОПЛЕНИЕ ДОО\n\n###### Исходные параметры\n\n| | |\n|---|---|\n| Подача | 4 м³/ч |\n| Напор | 14 м |\n| Перekaчиваемая жидкость | Вода |\n| T перекач. жидкости | 20 °C |\n| Концентрация | 100 % |\n| Плотность | 998.31 кг/м³ |\n| Кинематическая вязкость | 1 мм²/с |\n\n###### Фактическая рабочая точка\n\n| | |\n|---|---|\n| Подача | 4.42 м³/ч |\n| Напор | 16.98 м |\n| Мощность Р2 | 0.74 кВт |\n| КПД | 27.46 % |\n\n###### Данные продукта\n\n| | |\n|---|---|\n| Макс. рабочее давление | 16 бар |\n| Макс. напор | 16.64 м |\n| T мин.перекачиваемой жидкости | -20 °C |\n| T макс.перекачиваемой жидкости | 140 °C |\n| Диаметр рабочего колеса | 217 мм |\n| Кол-во рабочих насосов | 1 |\n\n###### Данные мотора\n\n| | |\n|---|---|\n| Монтажное исполнение | IM V1 |\n| Типоразмер (габарит) | 90 |\n| Класс эффективности | IE2 |\n| Подключение к сети | 3~400 В / 50 Гц |\n| Допустимый перепад напряжения | +/- 10% |\n| Номинальная частота вращения | 1434 об/мин |\n| Номинальная мощность | 1.5 кВт |\n| Номинальный ток | 3.48 А |\n| Коэффициент мощности | 0.75 |\n| КПД | 82.8 % |\n| Степень защиты | IP 55 |\n| Класс нагревостойкости изоляции | F |\n| Уровень звукового давления | 53 dB(A) |\n| Защита электродвигателя от перегрева | РТС |\n| Сервис фактор (SF) | 1.15 |\n| Кабельный ввод | 1×M20+1×M16 |\n\n###### Материалы\n\n| | |\n|---|---|\n| Уплотнение со стороны рабочего колеса | MG12-AQ1EGG |\n| Гидравлический корпус | Чугун EN-GJL-250 с катафорезным покрытием |\n| Рабочее колесо | Чугун EN-GJL-200 с катафорезным покрытием |\n| Фонарь | Чугун EN-GJL-250 с катафорезным покрытием |\n| Вал гидравлической части | Нерж.сталь 1.4122 |\n\n###### Подсоединение к трубопроводу\n\n| | |\n|---|---|\n| DNs | DN40 PN16 |\n| DNd | DN40 PN16 |\n\n###### Дополнительная информация\n\n| | |\n|---|---|\n| Вес | 64 кг |\n| Артикул | 2786053 |\n\n## Page 77\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_432d08b6de194751ae756f627e3e5bb8",
+      "authoritative_TEXT": "### BLOCK #105 [TEXT]: blk_432d08b6de194751ae756f627e3e5bb8\n\n> **Created:** 2026-10-20 11:49:35 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/5-EhwY0Fgqnvn5NLVDqz)\n\n#### Технические данные\n\nIL 65/140-7,5/2-R\n\nТип: Ин-лайн насос\n\nРазработал:\n\nДата: 29.06.2026\n\nПроект:\n\n##### ОТОПЛЕНИЕ 1-зона\n\nНазначение:\n\n###### Исходные параметры\n\n| | |\n|---|---|\n| Поддача | 78 м³/ч |\n| Напор | 20 м |\n| Перekaчиваемая жидкость | Вода |\n| T перекач. жидкости | 20 °C |\n| Концентрация | 100 % |\n| Плотность | 998.31 кг/м³ |\n| Кинематическая вязкость | 1 мм²/с |\n\n###### Фактическая рабочая точка\n\n| | |\n|---|---|\n| Поддача | 82.83 м³/ч |\n| Напор | 22.53 м |\n| Мощность P2 | 6.39 кВт |\n| КПД | 79.42 % |\n| NPSH | 9.47 м |\n\n###### Данные продукта\n\n| | |\n|---|---|\n| Макс. рабочее давление | 16 бар |\n| Макс. напор | 25.9 м |\n| T мин.перекачиваемой жидкости | -20 °C |\n| T макс.перекачиваемой жидкости | 140 °C |\n| Диаметр рабочего колеса | 139 мм |\n| Кол-во рабочих насосов | 1 |\n\n###### Данные мотора\n\n| | |\n|---|---|\n| Монтажное исполнение | IM V1 |\n| Типоразмер (габарит) | 132 |\n| Класс эффективности | IE2 |\n| Подключение к сети | 3~400 В / 50 Гц |\n| Допустимый перепад напряжения | +/- 10% |\n| Номинальная частота вращения | 2915 об/мин |\n| Номинальная мощность | 7.5 кВт |\n| Номинальный ток | 15.1 А |\n| Коэффициент мощности | 0.81 |\n| КПД | 88.1 % |\n| Степень защиты | IP 55 |\n| Класс нагревостойкости изоляции | F |\n| Уровень звукового давления | 69 dB(A) |\n| Защита электродвигателя от перегрева | PTC |\n| Сервис фактор (SF) | 1.15 |\n| Кабельный ввод | 2×M32+1×M16 |\n\n###### Материалы\n\n| | |\n|---|---|\n| Уплотнение со стороны рабочего колеса | MG12-AQ1EGG |\n| Гидравлический корпус | Чугун EN-GJL-250 с катафорезным покрытием |\n| Рабочее колесо | Чугун EN-GJL-200 с катафорезным покрытием |\n| Фонарь | Чугун EN-GJL-250 с катафорезным покрытием |\n| Вал гидравлической части | Нерж.сталь 1.4122 |\n\n###### Подсоединение к трубопроводу\n\n| | |\n|---|---|\n| DNs | DN65 PN16 |\n| DNd | DN65 PN16 |\n\n###### Дополнительная информация\n\n| | |\n|---|---|\n| Вес | 90 кг |\n| Артикул | 2786108 |\n\n## Page 68\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+      "authoritative_TEXT": "### BLOCK #111 [TEXT]: blk_0b2352f4797f4c28a80ed1702b4009a9\n\n> **Created:** 2026-10-20 11:49:38 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Y5INp4ES1zyQJ2ZSHpUa)\n\n#### Технические данные\n\nIL 40/140-2,2/2-R\n\nТип: Ин-лайн насос\n\nРазработал:\n\nДата: 29.06.2026\n\nПроект:\n\n##### ОТОПЛЕНИЕ 3-зона\n\nНазначение:\n\n###### Исходные параметры\n\n| | |\n|---|---|\n| Подача | 12 м³/ч |\n| Напор | 18 м |\n| Перekaчиваемая жидкость | Вода |\n| T перekaч. жидкости | 20 °C |\n| Концентрация | 100 % |\n| Плотность | 998.31 кг/м³ |\n| Кинематическая вязкость | 1 мм²/с |\n\n###### Фактическая рабочая точка\n\n| | |\n|---|---|\n| Подача | 12.42 м³/ч |\n| Напор | 19.29 м |\n| Мощность P2 | 1.36 кВт |\n| КПД | 47.87 % |\n| NPSH | 2.19 м |\n\n###### Данные продукта\n\n| | |\n|---|---|\n| Макс. рабочее давление | 16 бар |\n| Макс. напор | 19.58 м |\n| T мин.перekaчиваемой жидкости | -20 °C |\n| T макс.перekaчиваемой жидкости | 140 °C |\n| Диаметр рабочего колеса | 121 мм |\n| Кол-во рабочих насосов | 1 |\n\n###### Данные мотора\n\n| | |\n|---|---|\n| Монтажное исполнение | IM V1 |\n| Типоразмер (габарит) | 90 |\n| Класс эффективности | IE2 |\n| Подключение к сети | 3~400 В / 50 Гц |\n| Допустимый перепад напряжения | +/- 10% |\n| Номинальная частота вращения | 2885 об/мин |\n| Номинальная мощность | 2.2 кВт |\n| Номинальный ток | 4.5 А |\n| Коэффициент мощности | 0.84 |\n| КПД | 82.3 % |\n| Степень защиты | IP 55 |\n| Класс нагревостойкости изоляции | F |\n| Уровень звукового давления | 64 dB(A) |\n| Защита электродвигателя от перегрева | РТС |\n| Сервис фактор (SF) | 1.15 |\n| Кабельный ввод | 1×M20+1×M16 |\n\n###### Материалы\n\n| | |\n|---|---|\n| Уплотнение со стороны рабочего колеса | MG12-AQ1EGG |\n| Гидравлический корпус | Чугун EN-GJL-250 с катафорезным покрытием |\n\n| | |\n|---|---|\n| Рабочее колесо | Чугун EN-GJL-200 с катафорезным покрытием |\n| Фонарь | Чугун EN-GJL-250 с катафорезным покрытием |\n| Вал гидравлической части | Нерж.сталь 1.4122 |\n\n###### Подсоединение к трубопроводу\n\n| | |\n|---|---|\n| DNs | DN40 PN16 |\n| DNd | DN40 PN16 |\n\n###### Дополнительная информация\n\n| | |\n|---|---|\n| Вес | 57 кг |\n| Артикул | 2786083 |\n\n## Page 74\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-016.json",
+      "sha256": "08e2ee802e6a8be9e9f5a16dc884d01f4b962cc6bc6dbbf87a6d41f850988661",
+      "primary_adjudication": null,
+      "limits": "Насос сопоставлен по назначению, модели, артикулу и рабочей точке 4,42 м³/ч / 16,98 м. Мощность P2 в рабочей точке 0,74 кВт не смешивать с номинальной. Неверный выбор аппаратов защиты, фактическая комплектация и отказ насоса не установлены.",
+      "wording": "Согласовать мощность насоса К12 отопления ДОО IL 40/220-1,5/4-R: в экспликации N=0,55 кВт, в ПЗ и спецификации N=1,5 кВт, а технический лист артикула 2786053 подтверждает номинальную мощность двигателя 1,5 кВт. Исправить экспликацию и сверить переданное задание электрикам."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
+      "sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9",
+      "primary_adjudication": null,
+      "limits": "Подтверждены различия записей, а не правильность одной массы или ошибка расчёта фундаментов. В примечаниях к планам уже разделены паспортная масса без теплоносителя и масса с обвязкой с учётом теплоносителя. Численные нагрузки графических планов и задания конструкторам здесь не проверены. Масса теплообменника в расчёте названа ориентировочной, уточняемой при поставке; документ запрещает использовать её в конструкторских чертежах. Ошибка монтажных средств и нормативное нарушение не доказаны.",
+      "wording": "Согласовать массы единиц оборудования в экспликации, спецификации и листах подбора: К9 —98/94/90кг; К10 —87/67/67; К11 —48/57/57; К12 —29/60/64; К14 —284/181/203; теплообменник К1 —650,88/458,01/458,01. Уточнить исполнение и состав каждой массы, не смешивая изделие, обвязку и заполнение."
+    }
+  ],
+  "limits": [
+    "No actual electrical protection or structural design failure established.",
+    "No new engineer decisions.",
+    "Frozen evaluator and independent model inputs unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
