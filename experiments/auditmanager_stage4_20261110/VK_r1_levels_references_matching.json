@@ -1,0 +1,265 @@
+{
+  "status": "partial_coordinator_coverage_review",
+  "discipline": "VK",
+  "repeat": 1,
+  "mapped_atoms": [
+    {
+      "target_id": "VK_F011_technical_space_level:c654fd4efb33b8840ce7",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F011_technical_space_level.json",
+          "sha256": "9ce8af0902e7e64d2af46e6fe4a4b62030dd6ff186c03c5bfd021ee870e5aeac"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Все четыре источника38,640/38,690 сохранены; поверхности отсчёта прямо оставлены неустановленными, автоматический перенос труб исключён.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F015_roof_title_level:2bb76a02a4eaf106a275",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-016"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F015_roof_title_level.json",
+          "sha256": "0c536b77f695dcdbc9642bc8b64731cbcd50a0012262a72bea4510cbb30e6eb0"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Заголовок41,280 и ведомость40,690 сопоставлены; правильная отметка и поверхность оставлены открытыми. Не приписана ошибка геометрии воронок.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F017_F028_cross_references:e41c019d214dddc2adbd",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-019",
+        "F-020",
+        "F-021",
+        "F-022"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json",
+          "sha256": "3b9bdd5ae305bfa08f477c45706ea5b839ced2270c0aa0fa4477f7e919f84dbf"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Все шесть мест ссылок трёх схем сохранены с правильными диапазонами стояков и адресами по ведомости. Выдача раздроблена на четыре строки; группировка и нагрузка оцениваются отдельно от полноты адресов.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F024_riser_labels:f44954b8bdd41b2ea649",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-023"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F024_riser_labels.json",
+          "sha256": "c521ebd56bdcd601648f2bba29be378bdf57734b9251f3f7e1bbbd5dcc43c1f5"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Первый и седьмой стояки сопоставлены верно, добавлены остальные пять. Требование единой маркировки не учитывает возможную допустимость двух обозначений при явной таблице соответствия; её отсутствие во всех материалах не проверено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F027_calculation_level_labels:7479fd101bd142ad9eec",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-026"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F027_calculation_level_labels.json",
+          "sha256": "49dda7205363350c951c84c3700e8d9ee08324e23f0236f50dfa885bece5e924"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Повтор38,640 у трёх уровней сохранён; различие40,690/41,280 учтено, автоматический выбор отметок по ведомости исключён. Влияние на расчёт прямо не установлено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F001_revision_interval:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-002"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F001_revision_interval.json",
+          "sha256": "79bc3fdfe1e64b0c5c7a6f7cb2b6343303ffa8549cb671f94ae6c06e33872e03"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "Формулировки через три этажа и2/6/10 сохранены. Но внутреннее противоречие объявлено установленным без рассмотрения трёх промежуточных этажей; точный смысл интервала и крайние этажи не разрешены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "VK_F006_test_criterion:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F006_test_criterion.json",
+          "sha256": "8de36f9d965c639b3b294ae1a2230ff52558f1750c107d647263ae1d8bb996f5"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8"
+        }
+      ],
+      "reason": "75%расхода/75%приборов сопоставлены, нормативная проверка оставлена обязательной. Не раскрыты приборы МОП, отдельный монтажный проект и уже предусмотренные режимы испытаний; отсутствие порядка для квартир сформулировано шире просмотренных данных.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/VK_review.json",
+  "review_ledger_sha256": "bd6bd941aa52a9c987b555baaf58fa586916ace720bb07068dbea20d02c32b72",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "VK",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 2,
+          "availability_available": 2,
+          "partial": 1,
+          "full": 1
+        },
+        "review_complete": true,
+        "full_match_rate": 0.5,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 26,
+          "availability_available": 15,
+          "full": 8,
+          "partial": 7,
+          "availability_unchecked": 11,
+          "unchecked": 11
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 11,
+          "availability_unchecked": 11,
+          "unchecked": 11
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 9
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "limits": [
+    "Сопоставлены17из39целей; итоговые показатели ещё не рассчитываются.",
+    "Шесть адресов ссылок не считаются шестью независимыми техническими дефектами.",
+    "Полнота адресов не доказывает правильную группировку итоговой выдачи.",
+    "Нормативные и монтажные последствия не приняты по одному совпадению текста."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
