@@ -46,6 +46,11 @@ def attach_graphic_receipts(queue, md, graphic_dir):
         packet['graphic_context_status'] = ('incomplete' if unavailable else
                                              'ready_for_attachment' if receipts else 'not_required')
     _attach_detail_receipts(queue, md, root, allowed)
+    # Executor-set directory only; never populated from a model response. Queue
+    # copies preserve it across bounded source-review context expansion.
+    operation_details = queue.get('_operation_graphic_detail_dir')
+    if isinstance(operation_details, str):
+        _attach_detail_receipts(queue, md, Path(operation_details).resolve(), allowed)
     return queue
 
 

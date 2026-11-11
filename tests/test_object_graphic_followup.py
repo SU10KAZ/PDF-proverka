@@ -174,3 +174,27 @@ def test_detail_budget_reclaims_only_supplements_and_preserves_originals(tmp_pat
     assert new['prior_operation_response_untrusted']==response
     assert verify_operation_source_binding(following) is None
     assert len(full.image_paths)==16  # Original frozen request is never rewritten.
+
+
+def test_generated_details_reach_independent_source_review_with_hash_checks(tmp_path):
+    from backend.app.pipeline.stages.findings_verify.source_review_graphics import attach_graphic_receipts
+    request,payload,_,_,md=setup(tmp_path)
+    followup,receipt=build_object_operation_followup(request,payload)
+    assert Path(receipt['review_detail_catalogue']).is_file()
+    originals=tmp_path/'originals';originals.mkdir()
+    (originals/'block_g.png').write_bytes((tmp_path/'g.png').read_bytes())
+    queue={'packets':[{'required_graphic_block_ids':['g']}],
+           '_operation_graphic_detail_dir':request.continuation_source['graphic_source']['output_dir']}
+    attach_graphic_receipts(queue,md.read_text(),originals)
+    packet=queue['packets'][0]
+    expected_hashes={hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in followup.image_paths}
+    assert {r['sha256'] for r in packet['graphic_attachments']}==expected_hashes
+    assert len(packet['graphic_attachments'])==len(expected_hashes)
+    assert not packet['unavailable_graphics']
+    details=[r for r in packet['graphic_attachments'] if r.get('view_kind')=='detail_of_original_graphic']
+    assert {r['path'] for r in details} <= set(followup.image_paths[1:])
+    assert details
+    Path(details[0]['path']).write_bytes(b'changed')
+    attach_graphic_receipts(queue,md.read_text(),originals)
+    assert queue['packets'][0]['graphic_context_status']=='incomplete'
+    assert any(r['reason']=='detail_unavailable' for r in queue['packets'][0]['unavailable_graphics'])

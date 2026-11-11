@@ -187,8 +187,10 @@ def prepare_graphic_followup(request, payload, sources):
     error = verify_operation_source_binding(followup)
     if error:
         raise ValueError(error)
+    from .graphic_detail_catalogue import publish_graphic_details
+    catalogue = publish_graphic_details(new_binding, manifest)
     return followup, {'status': 'prepared', 'route': 'graphic_detail', 'next_stage': stage,
                       'block_id': bid, 'tiles_added': len(tiles), 'supplemental_images_retired': retired,
                       'deferred_block_ids': pending[1:], 'manifest_path': str(run / 'tiles/manifest.json'),
                       'semantic_verified': False, 'absence_proven': False,
-                      'simultaneous_context_retrieval': text_receipt}
+                      'simultaneous_context_retrieval': text_receipt, 'review_detail_catalogue': catalogue}

@@ -128,6 +128,9 @@ async def run_source_review_workflow_phase(output_dir, md, *, invoke, executor_i
     if not isinstance(document,dict) or not isinstance(document.get('findings'),list):
         raise ValueError('unsupported_findings_container')
     findings=document['findings'];queue=build_source_review_queue(findings,md)
+    detail_dir = root/'object_graphic_details'
+    if (detail_dir/'graphic_detail_manifest.json').is_file():
+        queue['_operation_graphic_detail_dir'] = str(detail_dir.resolve())
     attach_graphic_receipts(queue,md,root/'blocks_stage02_100')
     _write(root/'03_source_review_queue.json',queue)
     packets=[p for p in queue['packets'] if p['status']=='pending']
@@ -144,7 +147,8 @@ async def run_source_review_workflow_phase(output_dir, md, *, invoke, executor_i
         key=evidence_digest({'packet':packet,'source':queue['source_md_sha256'],'executor':executor_id})
         try:
             report=await run_source_review_workflow(one,packet['finding_snapshot'],md,root/'blocks_stage02_100',
-                root/'source_review_workflows'/key,invoke=invoke,executor_id=executor_id,is_cancelled=is_cancelled)
+                root/'source_review_workflows'/key,invoke=invoke,executor_id=executor_id,is_cancelled=is_cancelled,
+                max_images=16 if queue.get('_operation_graphic_detail_dir') else 8)
             reports.append({'finding_id':fid,**report})
         except Exception as exc:
             reports.append({'finding_id':fid,'status':'not_completed','error_type':type(exc).__name__,'reason':str(exc)})
