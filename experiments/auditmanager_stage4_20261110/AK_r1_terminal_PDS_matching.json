@@ -1,0 +1,174 @@
+{
+  "status": "partial_coordinator_semantic_matching",
+  "discipline": "AK",
+  "repeat": 1,
+  "historical_engineer_decisions": {
+    "AK14": "Принято",
+    "AK57": "Принято"
+  },
+  "same_version_MD_and_linked_graphic_hashes_verified": true,
+  "mapped_atoms": [
+    {
+      "target_id": "AK14:65ea2c2649999f640c83",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-054"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK14.json",
+          "sha256": "bb941339701a63e2ae2989a1dda9e5e8cd9aae4f8eb3639899fd049ebf73280a"
+        },
+        {
+          "source": "primary_adjudication",
+          "path": "experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json",
+          "sha256": "487d04234ff08cce0f4a72e3675111dea1bc7b8fbb8d6941d61f47bb64a4ec5a"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "F-054 сохраняет точные адреса ШАУВ-4-К4ПЧ и ШАУВ-3-К5ПЧ, но не весь реестр пяти шкафов. F-055 относится к ШАУВ-1-К6ПЧ, а эталон включает ШАУВ-1-К6АС: подмена этих шкафов недопустима. Прочие три адреса в сопоставленных строках не представлены; глобальное отсутствие отдельно не засчитывается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK57:9851f2c4946bad03af44",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-012",
+        "F-042"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94"
+        },
+        {
+          "source": "primary_adjudication",
+          "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+          "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "F-012 содержит PDS4 Пм4.1; F-042 содержит PDS3 Пкр4.1 и Пкр5.1. Это три из шести адресных приборов. F-043 относится к Па5.1/Ва5.1, а три оставшихся эталонных адреса — Па3.1/Ва3.1/Ва3.1р. Похожие номера PDS не делают системы тождественными. Глобальное отсутствие остальных адресов не засчитывается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK57:a998dcf058f81b7ac194",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-012"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94"
+        },
+        {
+          "source": "primary_adjudication",
+          "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+          "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3"
+        }
+      ],
+      "reason": "Тот же ШАУВ-4-К4ПЧ: явно указаны таблица2/2, перечень1/3, спецификация3/1 по диапазонам20–200/50–500Па и позицииСО4.4–4.5. Предложено определить диапазон каждого PDS перед согласованием. Фактическая непригодность поставленных приборов не зачтена.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/AK_review.json",
+  "review_ledger_sha256": "cf843b7f4e59429c77177601b7bff82d9799b1f32474f54e06c19f256038782e",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "AK",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 55,
+          "availability_available": 7,
+          "partial": 4,
+          "availability_unchecked": 48,
+          "unchecked": 48,
+          "full": 3
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 23,
+          "availability_unchecked": 23,
+          "unchecked": 23
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 22,
+          "availability_unchecked": 22,
+          "unchecked": 22
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 3
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "limits": [
+    "Частичное совпадение не выдаётся за сохранение всей системной темы.",
+    "Новые адреса требуют отдельной проверки; они не заменяют эталонные адреса.",
+    "Причина потери остальных адресов ещё не установлена; не приписывать её фильтру без промежуточных данных.",
+    "Историческое принятие конфликта диапазонов не доказывает отказ прибора при граничной уставке."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
