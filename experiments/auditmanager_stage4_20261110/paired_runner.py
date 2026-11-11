@@ -40,6 +40,7 @@ def load_harness(source_root, variant="classic"):
     classic_control.METHOD_CONFIG=({
         'inventory_max_packets':128,'inventory_max_source_chars':60000,'inventory_max_images':4,
         'source_review_max_findings':256,'source_review_auto_graphic_regions':True,
+        'source_final_check_max_findings':256,'source_final_check_complete_citations':True,
     } if variant=='candidate' else {})
     enabled='1' if variant=='candidate' else '0'
     classic_control.ENV.update(AUDIT_OBJECT_CONTEXT_FOLLOWUPS=enabled,

@@ -34,12 +34,23 @@
       "entry": "backend/app/pipeline/stages/findings_verify/source_review_workflow.py:run_source_review_workflow_phase",
       "activation": "PipelineStageContext.source_review_invoke and explicit finding budget",
       "boundary": "Produces 03_source_review_candidates.json, not admission inbox."
+    },
+    {
+      "method": "Independent final edit check and one bounded citation completion",
+      "entry": "backend/app/pipeline/stages/findings_verify/source_review_release_workflow.py:run_final_release_phase",
+      "activation": [
+        "PipelineStageContext.source_final_check_invoke",
+        "Explicit source_final_check_max_findings",
+        "source_final_check_complete_citations=True for citation-only completion"
+      ],
+      "verified": "KM_automatic_citation_release_replay.json: three exact real request payloads replayed through common phase; 26 rows and 25 untouched classic findings; rerun makes no calls.",
+      "boundary": "Known development control, disputed evaluator routing remains; no full-project acceptance."
     }
   ],
   "remaining_integration": [
-    "Freeze method activation and budgets in shared runner; identical shared settings in baseline and candidate.",
-    "Resolve candidate decision acceptance and report grouping without per-project adapters; do not copy raw candidates into the reviewed inbox.",
-    "Verify original control cases and outstanding profile disagreements before declaring stage4 complete.",
+    "Freeze individual method variants and budgets before contribution comparisons; combined candidate alone does not isolate seven hypotheses.",
+    "Automatic grouping proposal and source-bound semantic review remain separate from the explicit grouping inbox.",
+    "Resolve remaining original control cases and profile disagreements without suppressing useful cores.",
     "Freeze evaluator and actual execution plan; run matched comparisons and preserve full source/usage provenance."
   ],
   "full_six_comparison_started": false,

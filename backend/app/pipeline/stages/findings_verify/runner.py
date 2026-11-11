@@ -351,6 +351,7 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
                 Path(output_dir), final_md_path, invoke=ctx.source_final_check_invoke,
                 executor_id=getattr(ctx, 'source_final_check_executor_id', None),
                 max_findings=getattr(ctx, 'source_final_check_max_findings', 0),
+                complete_citations=getattr(ctx, 'source_final_check_complete_citations', False),
                 is_cancelled=ctx.is_cancelled,
             )
             result.final_release_applied = release['applied']

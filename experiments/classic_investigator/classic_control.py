@@ -38,20 +38,23 @@ def method_context_options(project_id):
     if not METHOD_CONFIG:
         return {}
     required={'inventory_max_packets','inventory_max_source_chars','inventory_max_images',
-              'source_review_max_findings','source_review_auto_graphic_regions'}
+              'source_review_max_findings','source_review_auto_graphic_regions',
+              'source_final_check_max_findings','source_final_check_complete_citations'}
     if set(METHOD_CONFIG)!=required:
         raise ValueError('Unknown or missing method configuration fields')
-    for key in required-{'source_review_auto_graphic_regions'}:
+    for key in required-{'source_review_auto_graphic_regions','source_final_check_complete_citations'}:
         value=METHOD_CONFIG[key]
         if type(value) is not int or value<1:
             raise ValueError('Positive explicit method budget required: '+key)
-    if type(METHOD_CONFIG['source_review_auto_graphic_regions']) is not bool:
-        raise ValueError('Explicit graphic mode required')
+    for key in ('source_review_auto_graphic_regions','source_final_check_complete_citations'):
+        if type(METHOD_CONFIG[key]) is not bool:
+            raise ValueError('Explicit method mode required: '+key)
     from backend.app.pipeline.stages.findings_verify.source_review_workflow import direct_cli_executor
     invoke=direct_cli_executor('codex/gpt-6-astra',project_id=project_id,reasoning_effort=REASONING_EFFORT)
     identity='codex/gpt-6-astra:'+REASONING_EFFORT+':paired-methods-v1'
     return {**METHOD_CONFIG,'inventory_invoke':invoke,'inventory_executor_id':identity,
-            'source_review_invoke':invoke,'source_review_executor_id':identity}
+            'source_review_invoke':invoke,'source_review_executor_id':identity,
+            'source_final_check_invoke':invoke,'source_final_check_executor_id':identity}
 
 
 def process_guard(event, args):

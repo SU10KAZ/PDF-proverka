@@ -25,13 +25,16 @@
     "inventory_max_source_chars": 60000,
     "inventory_max_images": 4,
     "source_review_max_findings": 256,
-    "source_review_auto_graphic_regions": true
+    "source_review_auto_graphic_regions": true,
+    "source_final_check_max_findings": 256,
+    "source_final_check_complete_citations": true
   },
   "limitations": [
     "Budgets are draft upper bounds, not evidence of completed source coverage or acceptable cost.",
-    "Source-review candidates still require a separate acceptance path; no automatic copy to the reviewed inbox.",
-    "Grouping, unresolved original controls, evaluator freeze and full comparative runs remain pending."
+    "Separate final source/wording check is connected; only citation-only failures permit one completion and a fresh independent check. Other holds preserve the original and remain explicit.",
+    "Grouping, unresolved original controls, single-module isolation, evaluator freeze and full comparative runs remain pending."
   ],
   "new_model_calls": 0,
-  "full_six_comparison_started": false
+  "full_six_comparison_started": false,
+  "final_check_control": "KM_automatic_citation_release_replay.json"
 }

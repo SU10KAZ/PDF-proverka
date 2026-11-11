@@ -16,7 +16,8 @@ def harness(monkeypatch):
 
 def config():
     return {'inventory_max_packets':128,'inventory_max_source_chars':60000,'inventory_max_images':4,
-            'source_review_max_findings':256,'source_review_auto_graphic_regions':True}
+            'source_review_max_findings':256,'source_review_auto_graphic_regions':True,
+            'source_final_check_max_findings':256,'source_final_check_complete_citations':True}
 
 
 def test_classic_never_builds_extra_callbacks(harness,monkeypatch):
@@ -35,9 +36,10 @@ def test_candidate_budgets_and_executor_are_forwarded(harness,monkeypatch):
     options=harness.method_context_options('trial')
     assert all(options[k]==v for k,v in config().items())
     assert options['inventory_invoke'] is sentinel and options['source_review_invoke'] is sentinel
+    assert options['source_final_check_invoke'] is sentinel
     assert calls==[(('codex/gpt-6-astra',),{'project_id':'trial','reasoning_effort':'high'})]
 
-@pytest.mark.parametrize('change',[{'inventory_max_packets':0},{'inventory_max_packets':True},{'source_review_auto_graphic_regions':'true'},{'extra':'unexpected'}])
+@pytest.mark.parametrize('change',[{'inventory_max_packets':0},{'inventory_max_packets':True},{'source_review_auto_graphic_regions':'true'},{'extra':'unexpected'},{'source_final_check_max_findings':False},{'source_final_check_complete_citations':'true'}])
 def test_invalid_method_config_rejected(harness,change):
     harness.METHOD_CONFIG={**config(),**change}
     with pytest.raises(ValueError):harness.method_context_options('trial')

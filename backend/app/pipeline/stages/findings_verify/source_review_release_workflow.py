@@ -57,10 +57,11 @@ async def run_final_release_check(entry,document,md,work_dir,*,invoke,executor_i
     return after,receipt
 
 
-async def run_final_release_phase(output_dir,md_path,*,invoke,executor_id,max_findings,is_cancelled=None):
+async def run_final_release_phase(output_dir,md_path,*,invoke,executor_id,max_findings,is_cancelled=None,complete_citations=False):
     """No callback is installed by default. Holds preserve current report text."""
     import fcntl
     if type(max_findings) is not int or max_findings<1:raise ValueError('positive_final_check_budget_required')
+    if type(complete_citations) is not bool:raise ValueError('explicit_citation_completion_mode_required')
     root=Path(output_dir);candidate_path=root/'03_source_review_candidates.json'
     if not candidate_path.exists():return {'skipped':True,'applied':0,'held':0,'not_completed':0,'not_attempted':0}
     lock=(root/'03_final_release.lock').open('a')
@@ -78,7 +79,8 @@ async def run_final_release_phase(output_dir,md_path,*,invoke,executor_id,max_fi
             document_bytes=path.read_bytes();document=json.loads(document_bytes)
             digest=evidence_digest(entry)
             prior=[h['final_release_check'] for h in document.get('source_review_history',[])
-                   if h.get('final_release_check',{}).get('binding',{}).get('entry_sha256')==digest]
+                   if (h.get('final_release_check',{}).get('requested_entry_sha256') or
+                       h.get('final_release_check',{}).get('binding',{}).get('entry_sha256'))==digest]
             if prior:
                 current=next((f for f in document['findings'] if f.get('id')==entry['response']['finding_id']),None)
                 intact=(len(prior)==1 and prior[0].get('applied_finding_sha256')==evidence_digest(current)
@@ -89,9 +91,16 @@ async def run_final_release_phase(output_dir,md_path,*,invoke,executor_id,max_fi
             if processed>=max_findings:break
             processed+=1
             md_bytes=Path(md_path).read_bytes();md=md_bytes.decode('utf-8')
-            key=evidence_digest({'entry':entry,'document':document,'md':md,'executor_id':executor_id})
+            key_data={'entry':entry,'document':document,'md':md,'executor_id':executor_id}
+            if complete_citations:key_data['citation_completion']=1
+            key=evidence_digest(key_data)
             try:
-                after,receipt=await run_final_release_check(entry,document,md,root/'final_release_checks'/key,invoke=invoke,executor_id=executor_id)
+                if complete_citations:
+                    from .source_review_completion_workflow import run_with_citation_completion
+                    after,receipt=await run_with_citation_completion(entry,document,md,root/'final_release_checks'/key,
+                        invoke=invoke,executor_id=executor_id,is_cancelled=is_cancelled)
+                else:
+                    after,receipt=await run_final_release_check(entry,document,md,root/'final_release_checks'/key,invoke=invoke,executor_id=executor_id)
                 if path.read_bytes()!=document_bytes or Path(md_path).read_bytes()!=md_bytes:
                     raise ValueError('report_or_source_changed_during_final_check')
                 if after!=document:_write(path,after)
