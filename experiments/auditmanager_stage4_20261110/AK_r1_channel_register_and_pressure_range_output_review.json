@@ -1,0 +1,669 @@
+{
+  "status": "two_composite_sensor_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "60e38203528d1499a0153ca8c800178d8d88c2f7db8bf059e64fd0f21edfcdd8",
+  "queue_after_sha256": "112f2301eb4b5c2e147f3ac37418cf49ac0de8f2839e94ec9f9544071ff02e3c",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_historical_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Количество оборудования",
+        "sheet": "Листы 14, 20",
+        "page": [
+          18,
+          24,
+          97,
+          100
+        ],
+        "problem": "В перечнях занижено количество канальных датчиков и не заполнено количество ТС2.",
+        "description": "На каждом из листов 14 и 20 показаны два отдельных датчика ТЕ3 и ТЕ4, но для объединённой позиции указано количество 1. Позиции 8.6 и 14.6 спецификации предусматривают по 2 датчика. На листе 20 количество термостатов ТС2 не заполнено.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие количеств приборов схемам и спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010",
+                "G-019",
+                "G-041",
+                "G-042"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать по два канальных датчика в перечнях и заполнить количество и комплектность ТС2.",
+        "risk": "Неоднозначная комплектация шкафов и поставка приборов.",
+        "source_finding_ids": [
+          "T-010",
+          "G-019",
+          "G-041",
+          "G-042"
+        ],
+        "source_block_ids": [
+          "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "blk_54608a880c2545aa926c442d213988c3"
+        ],
+        "related_block_ids": [
+          "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "blk_54608a880c2545aa926c442d213988c3",
+          "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "blk_5b5187b5afb740efb6423fa40c399349"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+            "page": 18
+          },
+          {
+            "type": "text",
+            "block_id": "blk_54608a880c2545aa926c442d213988c3",
+            "page": 24
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-041",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-042",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:006"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют количество 1 для позиции «ТЕ3,ТЕ4» при двух отдельных датчиках на схеме и требуют исправить его на 2. Разная оценка тяжести не меняет существа проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания выявляют количество 1 вместо 2 для ТЕ3, ТЕ4 в перечне листа 20, ссылаются на позицию 14.6 спецификации и предлагают одинаковое исправление. Различие severity не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания выявляют количество 1 вместо 2 для ТЕ3, ТЕ4 в перечне листа 20, ссылаются на позицию 14.6 спецификации и предлагают одинаковое исправление. Различие severity не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На листах14/20 схемы показывают отдельныеТЕ3 иТЕ4 в разных воздушных трактах; перечни указывают1 в объединённой строке.",
+          "verdict": "confirmed_TEXT_GRAPHIC_object_count_conflict",
+          "limits": "Разные приборы определены по отдельным местам и сигналам, не только по перечислению двух марок."
+        },
+        {
+          "claim": "СО8.6 и14.6 содержат по2 канальных датчикаPt1000 с зондом260мм.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Нужно дополнительно закупить по одному канальному датчику.",
+          "verdict": "not_established",
+          "limits": "В СО уже учтено по2. Доказано расхождение локальных перечней, не недопоставка."
+        },
+        {
+          "claim": "КоличествоТС2 на лист20 пусто, но есть указание комплектно с электронагревателем.",
+          "verdict": "confirmed_authoritative_TEXT_question",
+          "limits": "Сохранить вопрос количества отдельно от технической сверкиТЕ3/ТЕ4. Он дублирует оставшуюся частьF-060."
+        },
+        {
+          "claim": "Согласовать два адресных расхождения без автоматической замены всех единиц на двойки.",
+          "verdict": "supported_technical_core",
+          "limits": "Нормативный пункт и фактический монтаж не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "Two cabinet-specific sensor atoms; TS2 blank quantity overlaps F-060 and should appear once.",
+      "profile_and_section": "technical_core_plus_question_clarification",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f",
+          "primary_adjudication": null,
+          "limits": [
+            "Различение датчиков основано на отдельных воздушных трактах и сигналах, а не только двух обозначениях в одной строке. Два изображения относятся к разным шкафам; их количества не смешиваются.",
+            "В спецификации уже учтено по2 канальных датчика. Недопоставка и необходимость дополнительной закупки не установлены.",
+            "В СО14.2 сохранены буквальные Пб.1.1/Пб.1.4; связь с функциональной схемой основана на одинаковом обозначении шкафа ШАУВ-2-К6ПЧ и составе раздела, без исправления TEXT по растру.",
+            "На листе20 количество ТС2 пустое, но есть примечание о комплектности с электронагревателем. Это самостоятельный вопрос оформления/комплектности, не доказанный отсутствующий прибор.",
+            "Решение инженера, фактический монтаж и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать количество канальных датчиков TE3/TE4 в перечнях листов14 и20: каждый перечень указывает1, тогда как соответствующая схема содержит два отдельных датчика в разных воздуховодах, а позиции8.6 и14.6 СО соответствующих шкафов предусматривают по2."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f",
+          "primary_adjudication": null,
+          "limits": [
+            "Различение датчиков основано на отдельных воздушных трактах и сигналах, а не только двух обозначениях в одной строке. Два изображения относятся к разным шкафам; их количества не смешиваются.",
+            "В спецификации уже учтено по2 канальных датчика. Недопоставка и необходимость дополнительной закупки не установлены.",
+            "В СО14.2 сохранены буквальные Пб.1.1/Пб.1.4; связь с функциональной схемой основана на одинаковом обозначении шкафа ШАУВ-2-К6ПЧ и составе раздела, без исправления TEXT по растру.",
+            "На листе20 количество ТС2 пустое, но есть примечание о комплектности с электронагревателем. Это самостоятельный вопрос оформления/комплектности, не доказанный отсутствующий прибор.",
+            "Решение инженера, фактический монтаж и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать количество канальных датчиков TE3/TE4 в перечнях листов14 и20: каждый перечень указывает1, тогда как соответствующая схема содержит два отдельных датчика в разных воздуховодах, а позиции8.6 и14.6 СО соответствующих шкафов предусматривают по2."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f",
+          "primary_adjudication": null,
+          "limits": [
+            "Различение датчиков основано на отдельных воздушных трактах и сигналах, а не только двух обозначениях в одной строке. Два изображения относятся к разным шкафам; их количества не смешиваются.",
+            "В спецификации уже учтено по2 канальных датчика. Недопоставка и необходимость дополнительной закупки не установлены.",
+            "В СО14.2 сохранены буквальные Пб.1.1/Пб.1.4; связь с функциональной схемой основана на одинаковом обозначении шкафа ШАУВ-2-К6ПЧ и составе раздела, без исправления TEXT по растру.",
+            "На листе20 количество ТС2 пустое, но есть примечание о комплектности с электронагревателем. Это самостоятельный вопрос оформления/комплектности, не доказанный отсутствующий прибор.",
+            "Решение инженера, фактический монтаж и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать количество канальных датчиков TE3/TE4 в перечнях листов14 и20: каждый перечень указывает1, тогда как соответствующая схема содержит два отдельных датчика в разных воздуховодах, а позиции8.6 и14.6 СО соответствующих шкафов предусматривают по2."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+          "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+          "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "TE3 andTE4 are separate air-duct measurements on each scheme; this does not imply shortage because specification already lists2. Second image directly viewed in preceding package review."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+          "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+          "block_id": "blk_54608a880c2545aa926c442d213988c3",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "TE3 andTE4 are separate air-duct measurements on each scheme; this does not imply shortage because specification already lists2. Second image directly viewed in preceding package review."
+        }
+      ],
+      "disposition": "assessed_preserve_two_sensor_register_conflicts_separate_TS2_question"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Диапазоны приборов",
+        "sheet": "Лист 10",
+        "page": [
+          14,
+          95
+        ],
+        "problem": "Для ШАУВ-4-К4ПЧ заданы три разных распределения диапазонов реле давления.",
+        "description": "Матрица сигналов предусматривает два прибора 20–200 Па и два 50–500 Па; перечень элементов — один и три; спецификация, позиции 4.4–4.5, — три и один. Для PDS4 таблица сигналов указывает 20–200 Па, перечень — 50–500 Па.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность технических характеристик и количеств закупаемых приборов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-011",
+                "G-010",
+                "G-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить диапазон каждого PDS1–PDS4 и синхронизировать матрицу, перечень и спецификацию.",
+        "risk": "Закупка приборов с неподходящими диапазонами и некорректный контроль вентиляции.",
+        "source_finding_ids": [
+          "T-011",
+          "G-010",
+          "G-011"
+        ],
+        "source_block_ids": [
+          "blk_e3e39f8820d7474caa10ab626d2a2c91"
+        ],
+        "related_block_ids": [
+          "blk_e3e39f8820d7474caa10ab626d2a2c91",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_3dfcda405820460b84179ebf65d182d1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+            "page": 95
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.97,
+              "reason": "Оба замечания описывают одинаковое рассогласование диапазонов PDS1–PDS4: перечень содержит один прибор 20–200 Па и три 50–500 Па, спецификация — три и один. Указанное слева расхождение PDS4 эквивалентно приведённому справа итогу матрицы: два и два.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.97,
+              "reason": "Оба замечания описывают одинаковое рассогласование диапазонов PDS1–PDS4: перечень содержит один прибор 20–200 Па и три 50–500 Па, спецификация — три и один. Указанное слева расхождение PDS4 эквивалентно приведённому справа итогу матрицы: два и два.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK57:a998dcf058f81b7ac194",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ШАУВ-4-К4ПЧ: таблица сигналов задаёт20–200/50–500Па в составе2/2; перечень1/3; СО4.4–4.5 задаёт3/1.",
+          "verdict": "confirmed_TEXT_GRAPHIC_composition_conflict",
+          "limits": "Общее количество во всех трёх представлениях4; количественной нехватки всех реле нет."
+        },
+        {
+          "claim": "PDS4 на вентилятореПм4.1: таблица20–200Па, перечень50–500Па; схема указывает уставку100Па.",
+          "verdict": "confirmed_TEXT_GRAPHIC_same_sensor_range_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Из агрегированных количествСО можно однозначно назначить диапазон каждому PDS.",
+          "verdict": "not_established",
+          "limits": "СО не даёт поимённой привязки4.4/4.5 кPDS; не назначать произвольно поставляемый вариант."
+        },
+        {
+          "claim": "50–500Па пригоден исключительно для фильтров и не работает при100Па.",
+          "verdict": "not_established",
+          "limits": "100Па находится в обоих диапазонах; паспорт, гистерезис и режим не проверены. Это не отменяет расхождения документов."
+        },
+        {
+          "claim": "Исторически инженер принял системную тему диапазонов.",
+          "verdict": "historical_acceptance_preserved",
+          "limits": "Не переносить поздний вывод о неработоспособности на технический факт без независимого доказательства. F-012 покрывает конкретный шкаф, не все шесть адресов исторической темы."
+        },
+        {
+          "claim": "Сохранить согласование диапазонов и состава заказа по объектам.",
+          "verdict": "supported_technical_core",
+          "limits": "Нормативный пункт и фактическая поставка не подтверждены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One cabinet composition issue plus its PDS4 manifestation; no four individual procurement defects and no automatic credit for all historical addresses.",
+      "profile_and_section": "technical_core_preserve_historical_systemic_theme",
+      "engineer_reuse": {
+        "source": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+        "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78",
+        "original_record": {
+          "control_id": "AK:57",
+          "case_key": "13АВ-РД-АК2-ПА_V1::UNI-057",
+          "project": "13АВ-РД-АК2-ПА_V1",
+          "finding_id": "UNI-057",
+          "source": "Claude",
+          "original_claim": "В перечнях элементов датчики перепада давления на ВЕНТИЛЯТОРЕ включены в позицию «Датчик давления дифференциальный 50-500 Па» (предназначенную для фильтров), тогда как в таблицах сигналов тех же листов диапазон перепада на вентиляторе указан 20…200 Па, а рабочая уставка на схеме ΔP=50 Па (Пкр4.1, Пкр5.1) или 100 Па (Пм4.1, Па3.1, Ва3.1, Ва3.1р). На листах 8 и 14 те же датчики вентилятора (PDS2, PDS4) верно заданы как 20-200 Па.",
+          "original_title": "Диапазоны PDS на вентиляторных цепях",
+          "engineer_decision": "Принято",
+          "engineer_reason": null,
+          "engineer_comment": "Принято (решение эксперта 22.10.2026 по тому же факту, разбор 13АВ-РД-АК2-ПА V1, F-036). Факт: в перечнях листов 9, 10, 11, 13 и в СО датчики перепада давления на вентиляторах включены в позицию «50–500 Па» (она предназначена для фильтров), тогда как в таблицах сигналов тех же листов для вентилятора задан диапазон 20…200 Па, уставка ΔP = 50 Па (Пкр4.1, Пкр5.1) или 100 Па; на л. 8 и 14 те же датчики заданы верно.  Почему принято: в СО заложен не тот диапазон, а уставка 50 Па лежит на нижнем пределе шкалы 50–500 Па — датчики не будут работать в заданном режиме; ошибка системная, поэтому принята одним объединённым замечанием.  Урок для аудита: диапазон датчика сверять с уставкой в таблице сигналов; системную ошибку объединять, а не дробить по листам.",
+          "later_learning": "Проверять у каждого PDS назначение, уставку, диапазон таблицы сигналов, перечня и СО; найденный тип расхождения автоматически проверять на всех аналогичных шкафах.",
+          "later_label": "accepted",
+          "control_type": "положительный исторический",
+          "verification_status": "недостаточно данных для физического отказа",
+          "evidence_assessment": "Диапазоны 50–500/20–200 и уставки надо сохранить как документный конфликт; для доказанного отказа на границе диапазона требуется точный паспорт. Позднее DP-003 после первоначальной редакционной классификации.",
+          "evidence_ids": [],
+          "failure_stage": "Полезный конфликт подавлен фильтром значимости",
+          "workbook": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1 аудит/Unified_Engineering_Audit.xlsx",
+          "workbook_row": 58,
+          "location": "13АВ-РД-АК2-ПА (основной комплект, листы 1–54); лист 9; 10; 11; 13; стр. PDF 13; 14; 15; 17; 22; 26; 95; 96; 97; 99; 101.\nДатчики перепада давления на вентиляторе: Пкр4.1 (PDS3, ШАУВ-3-К4ПЧ), Пм4.1 (PDS4, ШАУВ-4-К4ПЧ), Па3.1 (PDS2), Ва3.1 (PDS3), Ва3.1р (PDS4) (ШАУВ-1-К4АС), Пкр5.1 (PDS3, ШАУВ-2-К5ПЧ)",
+          "rule_ids": [
+            "AK-005"
+          ]
+        },
+        "scope": "Historical accepted systemic range theme retained; actual failure unsupported; no new engineer review."
+      },
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+            "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+          },
+          "limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+          "wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+            "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+          },
+          "limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+          "wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e3e39f8820d7474caa10ab626d2a2c91.png",
+          "sha256": "5c9cdf1f1635d706791f30152851a62ac7c2e0757c65ed25561084084bba4bc0",
+          "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "PDS1/PDS3 filter matrix50–500; PDS2/PDS4 fan matrix20–200. PDS4 setting100Pa. Distinguish setpoint from range."
+        }
+      ],
+      "disposition": "assessed_preserve_range_composition_conflict_no_inoperability_claim"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+      "authoritative_TEXT": "### BLOCK #51 [TEXT]: blk_b8b4eb72d9e84ebe9aa166bbb7ed401d\n\n> **Created:** 2026-09-28 07:28:48 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/0SJxrdWbNMDc_vk3ehS9)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 14 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П5.1.1, П5.1.3 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-Н2/Pt | 1 |  |\n| ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1 |  |\n| ТС2 | Термостат | 1 | (комплектно с электронагревателем) |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS2, PDS4 | Датчик давления дифференциальный 20-200 Па | 2 |  |\n| PDS1, PDS3, PDS5 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| Y1-Y2 | Электропривод воздушной заслонки | 2 | Учтено в разделе 1ЗАВ-РД-ОВ2.2-ПА |\n| Y3 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 1ЗАВ-РД-ОВ1.2-ПА |\n| M1-M2 | Электродвигатель вентилятора | 2 | Учтено в разделе 1ЗАВ-РД-ОВ2.2-ПА |\n| M3 | Электродвигатель насоса | 1 | Учтено в разделе 1ЗАВ-РД-ОВ1.2-ПА |\n| SC UZ1 - SC UZ2 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001H | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+      "authoritative_TEXT": "### BLOCK #74 [TEXT]: blk_917406a6b2804ee2abedff901eb85582\n\n> **Created:** 2026-09-28 07:28:56 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/s258V2OxTtRaakC5NXxx)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 20 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П6.1.1, П6.1.4 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обоззн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-Н2/Pt | 1 |  |\n| ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| ТС2 | Термостат |  | (комплектно с электронагревателем) |\n| PDS1, PDS3, PDS5 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| PDS2,PDS4 | Датчик давления дифференциальный 20-200 Па | 2 |  |\n| У1-У2 | Электропривод воздушной заслонки | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| УЗ | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M2 | Электродвигатель вентилятора | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| MЗ | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ1, SC UZ2 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001H | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+      "authoritative_TEXT": "### BLOCK #246 [TEXT]: blk_576ad6ac1cff48f79ac223f56ba405ae\n\n> **Created:** 2026-09-28 07:29:55 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/dxyDJ1cOBjDSS0ZWIwEm)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 4 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 7 | Шкаф ШАУВ-2-К5ПЧ |  |  |  |  |  |  |  |\n| 7.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 7.2 | Преобразователь частоты 3,7 кВт 380В | Веспер | E5-MINI-005H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для Пкр 5.1) |\n| 7.3 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 7.4 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 7.5 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 7.6 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 7.7 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 7.8 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В |  | DA5FU230-DS | Ноосоп | шт. | 1 |  |  |\n| 8 | Шкаф ШАУВ-3-К5ПЧ |  |  |  |  |  |  |  |\n| 8.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 8.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 8.3 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 8.4 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 8.5 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 8.6 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 8.7 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 8.8 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 98 — Sheet 5\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+      "authoritative_TEXT": "### BLOCK #249 [TEXT]: blk_5b5187b5afb740efb6423fa40c399349\n\n> **Created:** 2026-09-28 07:29:56 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Ai4m95GeXlUED68CKooh)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 7 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 13 | Шкаф ШАУВ-1-К6ПЧ |  |  |  |  |  |  |  |\n| 13.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 13.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 3 |  | Установлен внутри щита (для В6.1.1,В6.1.2,В6.1.4) |\n| 13.3 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 13.4 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В |  | DA5FU230-DS | Ноосоп | шт. | 3 |  |  |\n| 14 | Шкаф ШАУВ-2-К6ПЧ |  |  |  |  |  |  |  |\n| 14.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 14.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для Пб.1.1, Пб.1.4) |\n| 14.3 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 14.4 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 14.5 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 14.6 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 14.7 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 14.8 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 15 | Шкаф ШАУВ-3-К6ПЧ |  |  |  |  |  |  |  |\n| 15.1 | Шкаф управления с контроллером Феникс шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 15.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 1 |  | Установлен внутри щита (для Вм6.1) |\n| 15.3 | Преобразователь частоты 5,5 кВт 380В | Веспер | E5-MINI-007H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для Пкрб.1) |\n\n## Page 101 — Sheet 8\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+      "authoritative_TEXT": "### BLOCK #34 [TEXT]: blk_47212e9079d1485c9c43fc3d1e9cd108\n\n> **Created:** 2026-09-28 07:28:43 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/NlKfDyVRoRzqHvD2zgXd)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 10 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П4.1.1, Пм4.1 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n##### Перечень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 2 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| ТС2 | Термостат | 2 | (комплектно с электронагревателем) |\n| PDS2 | Датчик давления дифференциальный 20-200 Па | 1 |  |\n| PDS1,PDS3, PDS4 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| Y1-Y2 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| Y3 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M2 | Электродвигатель вентилятора | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M3 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ1 | Регулятор скорости, СИ-РСY10 | 1 |  |\n| SC UZ2 | Преобразователь частоты 2,2кВт 380В, E5-MINI-003H | 1 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+      "authoritative_TEXT": "### BLOCK #244 [TEXT]: blk_3dfcda405820460b84179ebf65d182d1\n\n> **Created:** 2026-09-28 07:29:54 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/HNRF3na7P7Ulq8KMslWd)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 2 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 3 | Шкаф ШАУВ-3-К4ПЧ |  |  |  |  |  |  |  |\n| 3.1 | Шкаф управления с контроллером Феникс шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 3.2 | Преобразователь частоты 3,7 кВт 380В | Веспер | E5-MINI-005H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для Пкр 4.1) |\n| 3.3 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 3.4 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 3.5 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 3.6 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 3.7 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 3.8 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В |  | DA5FU230-DS | Ноосоп | шт. | 1 |  |  |\n| 4 | Шкаф ШАУВ-4-К4ПЧ |  |  |  |  |  |  |  |\n| 4.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 4.2 | Регулятор скорости |  | СИ-PCY10 | Савэл-Инжиниринг | шт. | 1 |  | Установлен внутри щита (для П4.1.1) |\n| 4.3 | Преобразователь частоты 2,2кВт 380В | Веспер | E5-MINI-003H | Савэл-Инжиниринг | шт. | 1 |  | Установлен внутри щита (для Пм4.1) |\n| 4.4 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 4.5 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 4.6 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 4.7 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 4.8 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 4.9 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 96 — Sheet 3\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+      "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+      "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "TE3 andTE4 are separate air-duct measurements on each scheme; this does not imply shortage because specification already lists2. Second image directly viewed in preceding package review."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+      "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+      "block_id": "blk_54608a880c2545aa926c442d213988c3",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "TE3 andTE4 are separate air-duct measurements on each scheme; this does not imply shortage because specification already lists2. Second image directly viewed in preceding package review."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e3e39f8820d7474caa10ab626d2a2c91.png",
+      "sha256": "5c9cdf1f1635d706791f30152851a62ac7c2e0757c65ed25561084084bba4bc0",
+      "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "PDS1/PDS3 filter matrix50–500; PDS2/PDS4 fan matrix20–200. PDS4 setting100Pa. Distinguish setpoint from range."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+      "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f",
+      "primary_adjudication": null,
+      "limits": [
+        "Различение датчиков основано на отдельных воздушных трактах и сигналах, а не только двух обозначениях в одной строке. Два изображения относятся к разным шкафам; их количества не смешиваются.",
+        "В спецификации уже учтено по2 канальных датчика. Недопоставка и необходимость дополнительной закупки не установлены.",
+        "В СО14.2 сохранены буквальные Пб.1.1/Пб.1.4; связь с функциональной схемой основана на одинаковом обозначении шкафа ШАУВ-2-К6ПЧ и составе раздела, без исправления TEXT по растру.",
+        "На листе20 количество ТС2 пустое, но есть примечание о комплектности с электронагревателем. Это самостоятельный вопрос оформления/комплектности, не доказанный отсутствующий прибор.",
+        "Решение инженера, фактический монтаж и конкретное нормативное нарушение не установлены."
+      ],
+      "wording": "Согласовать количество канальных датчиков TE3/TE4 в перечнях листов14 и20: каждый перечень указывает1, тогда как соответствующая схема содержит два отдельных датчика в разных воздуховодах, а позиции8.6 и14.6 СО соответствующих шкафов предусматривают по2."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+      "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+      "primary_adjudication": {
+        "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+        "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+      },
+      "limits": "Подтверждены только адресные случаи первичной проверки и дополнительный балансF004. Совпадение темы не подтверждает другие ссылки автоматически. Для ШАУВ-4-К4ПЧ строкиСО4.4/4.5 задают агрегированные количества без привязки каждого изделия кPDS; нельзя произвольно назначать,какой именно прибор поставляется в ином диапазоне. Общее количество4 согласовано. Уставки не подменяют диапазоны; пригодность по паспорту,гистерезис и фактическая поставка не проверены.",
+      "wording": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать."
+    }
+  ],
+  "limits": [
+    "Historical acceptance does not validate unsupported failure explanation.",
+    "Same total quantity does not resolve range composition.",
+    "No new engineering acceptance; frozen evaluator and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
