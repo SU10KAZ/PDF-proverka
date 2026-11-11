@@ -1,0 +1,395 @@
+{
+  "status": "two_curtain_connection_scope_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "8336846533155c728baaa9ced788ca98b4dbf57e91e468840ae16032b54e7524",
+  "queue_after_sha256": "61fb374ffffd28d9031f8a311c826ba2d62ef1522ab8402b222a549d1ea0e060",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-035",
+      "finding": {
+        "id": "F-035",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Полнота внешних подключений",
+        "sheet": "Листы 23, 31",
+        "page": [
+          27,
+          89
+        ],
+        "problem": "Не идентифицированы подключения второй группы тепловых завес.",
+        "description": "Перечень предусматривает группы Y1/М1/TS1 и Y2/М2/TS2. Журнал содержит подключения первой группы, ведущей завесы У4.3, пульта и концевого выключателя. Соединения второй группы и ведомых завес отдельно не идентифицированы.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту внешних проводок и границы заводской комплектной проводки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-034"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-034"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Показать недостающие линии либо указать состав и границы комплектных соединений изготовителя.",
+        "risk": "Неполное подключение завес, насосов и устройств защиты.",
+        "source_finding_ids": [
+          "T-034"
+        ],
+        "source_block_ids": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_abed08ccd9a347bb9fa290fd8696b197"
+        ],
+        "related_block_ids": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "blk_523708af1c384b0e8bc6767d93644336",
+          "blk_e7bf605cde374aec808e8a5deb78ce97"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+            "page": 27
+          },
+          {
+            "type": "text",
+            "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+            "page": 89
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F011_curtain_connection_scope:d373990f04c6f3880335",
+          "route": "negative",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F011_curtain_connection_scope:e86ce5509b0bfea4981d",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "КЖВТЗ содержит шесть линийУ4-1…У4-6 кУ1,М1,пульту,У4.3,ТС1,SQ1.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "ИсходныеУ1/ТС1/БД-Т31 не исправлены по графике."
+        },
+        {
+          "claim": "Связи второй группы и ведомых завес не определены в документации.",
+          "verdict": "refuted_direct_GRAPHIC",
+          "limits": "Внешняя схема показываетY1–Y2,М1–М2,TS1–TS2 и цепочку платУ4.3–У4.6."
+        },
+        {
+          "claim": "Отдельных строк межприборных участков нет в шести строках разделаВТЗ.",
+          "verdict": "confirmed_bounded_table_scope",
+          "limits": ""
+        },
+        {
+          "claim": "Уточнить, входят ли межприборные участки в указанные длины, комплектную проводку или другой раздел.",
+          "verdict": "supported_quantity_boundary_question",
+          "limits": "Наличие схемы не доказывает полноту количественного учёта; отсутствие отдельных строк не доказывает нехватку кабеля."
+        },
+        {
+          "claim": "Второй узел или ведомые завесы не управляются; требуется добавление линий.",
+          "verdict": "not_established",
+          "limits": "Фактическая работа, заводская комплектность и полный кабельный баланс не проверены."
+        },
+        {
+          "claim": "Предложение показать недостающие связи полностью обосновано.",
+          "verdict": "overstated_existing_graphic_connections",
+          "limits": "Сохранить только вопрос учёта участков; не требовать повторно нарисовать уже показанные связи."
+        },
+        {
+          "claim": "Подтверждено конкретное нормативное нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Пункт и цитата не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One cable accounting question; no independent missing connections for each slave device. Curtain naming already F-029.",
+      "profile_and_section": "questions_clarifications_interdevice_cable_accounting",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+          "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc",
+          "primary_adjudication": null,
+          "limits": [
+            "Отсутствие подключений второго узла опровергнуто просмотренной схемой. Из отсутствия отдельных строк КЖ нельзя заключать отсутствие управления.",
+            "В КЖ сохранены исходные обозначения У1,БД-Т31,ТС1; они не исправлены по растру. Нужна увязка с обозначениями схемы, а не молчаливая нормализация.",
+            "Не установлено, включают ли длины У4-1/2/5 межприборные участки, относятся ли они к заводской комплектности или другому разделу. Недостача кабеля не доказана.",
+            "У1–У4 могут быть прежними или условными именами; однозначное сопоставление в прочитанном описании не задано. Это вопрос обозначений, не доказательство дополнительных четырёх завес.",
+            "Нормативное нарушение, фактическая неисправность и решение инженера не установлены."
+          ],
+          "wording": "Уточнить соответствие обозначений завес У1–У4 и У4.3–У4.6 в общих данных, а также учёт межприборных участков Y1–Y2, M1–M2 и TS1–TS2: схема внешних подключений эти соединения показывает, но отдельные строки раздела ВТЗ КЖ лист31 перечисляют линии к первым устройствам."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+          "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc",
+          "primary_adjudication": null,
+          "limits": [
+            "Отсутствие подключений второго узла опровергнуто просмотренной схемой. Из отсутствия отдельных строк КЖ нельзя заключать отсутствие управления.",
+            "В КЖ сохранены исходные обозначения У1,БД-Т31,ТС1; они не исправлены по растру. Нужна увязка с обозначениями схемы, а не молчаливая нормализация.",
+            "Не установлено, включают ли длины У4-1/2/5 межприборные участки, относятся ли они к заводской комплектности или другому разделу. Недостача кабеля не доказана.",
+            "У1–У4 могут быть прежними или условными именами; однозначное сопоставление в прочитанном описании не задано. Это вопрос обозначений, не доказательство дополнительных четырёх завес.",
+            "Нормативное нарушение, фактическая неисправность и решение инженера не установлены."
+          ],
+          "wording": "Уточнить соответствие обозначений завес У1–У4 и У4.3–У4.6 в общих данных, а также учёт межприборных участков Y1–Y2, M1–M2 и TS1–TS2: схема внешних подключений эти соединения показывает, но отдельные строки раздела ВТЗ КЖ лист31 перечисляют линии к первым устройствам."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+          "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+          "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Original resolution: bridgesY1–Y2/M1–M2/TS1–TS2 and chainU4.3–U4.6 shown; RS485 and SQ1 captions bothKB/Upd at block side; separate remote-control group includesA/B."
+        }
+      ],
+      "disposition": "assessed_refute_missing_connections_retain_cable_scope_question"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-061",
+      "finding": {
+        "id": "F-061",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Интерфейсные подключения",
+        "sheet": "Лист 41",
+        "page": 45,
+        "problem": "Назначение клемм линии RS-485 блока БД-ТЗ1 требует проверки по заводской схеме.",
+        "description": "Линия RS-485 в шкаф ЩД-АСУД.И.5.1ПЧ показана на клеммах «КВ», «Uпд». Такие же обозначения применены для концевого выключателя ворот SQ1. Представленных данных недостаточно, чтобы подтвердить интерфейсное назначение этих клемм.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить правильность указания присоединительных зажимов и интерфейсных связей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-091"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-091"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сопоставить подключение с документацией КЭВ-БЛОК-МК и схемой шкафа диспетчеризации; указать фактические клеммы RS-485.",
+        "risk": "Отсутствие интерфейсной связи или повреждение входов при неверном подключении.",
+        "source_finding_ids": [
+          "G-091"
+        ],
+        "source_block_ids": [
+          "blk_e7bf605cde374aec808e8a5deb78ce97"
+        ],
+        "related_block_ids": [
+          "blk_e7bf605cde374aec808e8a5deb78ce97"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+            "page": 45
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-091",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.97,
+              "reason": "Оба замечания относятся к подключению линии RS-485 в шкаф ЩД-АСУД.И.5.1ПЧ к клеммам «КВ Uпд», обозначенным также для SQ1. Детализация эквивалентна; различается степень уверенности: слева требуется проверка по документации изготовителя, справа несоответствие утверждается как факт.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Внешняя схемаБД-ТЗ1 показываетRS-485 кЩД-АСУД.И.5.1ПЧ наКВ/Uпд; такие подписи также уSQ1.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Нужна проверка назначения выводов по заводской схемеКЭВ-БЛОК-МК и схеме диспетчеризации.",
+          "verdict": "supported_interface_terminal_question",
+          "limits": "Исходная выдача обоснованно сохраняет неопределённость."
+        },
+        {
+          "claim": "КВ/Uпд доказанно не могут быть интерфейсными выводами и линия подключена неверно.",
+          "verdict": "not_established",
+          "limits": "Паспорт конкретного исполнения и заводская схема не проверены; одинаковая подпись не доказывает физически общую пару."
+        },
+        {
+          "claim": "ИспользоватьA/B пульта вместоКВ/Uпд.",
+          "verdict": "not_established",
+          "limits": "A/B видны в другой группе пульта; её пригодность для требуемой линии диспетчеризации не доказана. Автоматическую перекоммутацию не предлагать."
+        },
+        {
+          "claim": "Связь отсутствует или входы повреждены.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Измерения, монтаж и испытания не проверены."
+        },
+        {
+          "claim": "Подтверждено конкретное нормативное нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Пункт и цитата не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "source_supported_interface_question_engineer_acceptance_not_established",
+      "duplicate_burden": "One interface terminal assignment question; no per-terminal damage claims.",
+      "profile_and_section": "questions_clarifications_factory_interface",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+          "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+          "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Original resolution: bridgesY1–Y2/M1–M2/TS1–TS2 and chainU4.3–U4.6 shown; RS485 and SQ1 captions bothKB/Upd at block side; separate remote-control group includesA/B."
+        }
+      ],
+      "disposition": "assessed_preserve_RS485_factory_terminal_question"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+      "authoritative_TEXT": "### BLOCK #85 [TEXT]: blk_6e54eb477b59421dbea94ef657f05a46\n\n> **Created:** 2026-09-28 07:28:59 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/aEXir6fsqCnZegZabYnz)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: П | Sheet: 23 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Тепловые завесы У4.3, У4.4, У4.5, У4.6. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n##### Перечень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| TS1, TS2 | Термостат защиты от замораживания RAK-TW. 5000S-H | 2 |  |\n| Y1, Y2 | Регулирующий клапан с электроприводом в комплекте смесительного узла с насосом | 4 | Учтено в разделе ЗАВ-РД-ОВ1.2-ПА |\n| M1, M2 | Электродвигатель циркуляционного насоса в комплекте смесительного узла с насосом | 2 | Учтено в разделе ЗАВ-РД-ОВ1.2-ПА |\n| M3-M6 | Электродвигатель вентилятора в комплекте с завесой | 2 | Учтено в разделе ЗАВ-РД-ОВ1.2-ПА |\n| SQ1 | Концевой выключатель ВП-15К21 | 1 |  |\n|  |  |  |  |\n|  |  |  |  |\n|  |  |  |  |\n\n###### Примечание:\n\n1. Предельные рабочие значения измеряемых величин уточняются при ПНР.\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+      "authoritative_TEXT": "### BLOCK #238 [TEXT]: blk_abed08ccd9a347bb9fa290fd8696b197\n\n> **Created:** 2026-09-28 07:29:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/E6kYjapBaUrlVWchuUW8)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 31 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| ВТЗ |  |  |  |  |  |  |  |  |  |\n| У4-1 | У1 | БД-Т31 | КСПВПГнг(А)-HF | 1х2х0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10 |  |\n| У4-2 | M1 | БД-Т31 | ППГнг(А)-HF | 3х1,5 | 10 | труба гофр. | ППГнг(А)-HF 3х1,5 | 10 |  |\n| У4-3 | Пульт КАТ1-П | БД-Т31 | КИС-Пнг(А)-HF | 3х2х0,78 | 30 | труба гофр. | КИС-Пнг(А)-HF 3х2х0,78 | 30 |  |\n| У4-4 | У4.3 | БД-Т31 | КСПВПГнг(А)-HF | 4х2х0,75 | 20 | труба гофр. | КСПВПГнг(А)-HF 4х2х0,75 | 20 |  |\n| У4-5 | ТС1 | БД-Т31 | КСПВПГнг(А)-HF | 1х2х0,75 | 10 | труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 10 |  |\n| У4-6 | SQ1 | БД-Т31 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15 |  |\n| СКЗ |  |  |  |  |  |  |  |  |  |\n| БПС-1.1 | СУ-К32 | СТГ-З-И-1.1 | КИС-Пнг(А)-HF | 2х2х0.78 | 15 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 15 |  |\n| БПС-1.2 | СТГ-З-И-1.1 | СТГ-З-И-1.2 | КИС-Пнг(А)-HF | 2х2х0.78 | 15 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 15 |  |\n| БПС-1.3 | СТГ-З-И-1.2 | СТГ-З-И-1.3 | КИС-Пнг(А)-HF | 2х2х0.78 | 35 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 35 |  |\n| БПС-1.4 | СТГ-З-И-1.3 | СТГ-З-И-1.4 | КИС-Пнг(А)-HF | 2х2х0.78 | 15 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 15 |  |\n| БПС-1.5 | СТГ-З-И-1.4 | СТГ-З-И-1.5 | КИС-Пнг(А)-HF | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 20 |  |\n| БПС-1.6 | СТГ-З-И-1.5 | СТГ-З-И-1.6 | КИС-Пнг(А)-HF | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 20 |  |\n| БПС-1.7 | СТГ-З-И-1.6 | СТГ-З-И-1.7 | КИС-Пнг(А)-HF | 2х2х0.78 | 25 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 25 |  |\n| БПС-1.8 | СТГ-З-И-1.7 | СТГ-З-И-1.8 | КИС-Пнг(А)-HF | 2х2х0.78 | 20 | труба гофр. | КИС-Пнг(А)-HF 2х2х0.78 | 20 |  |\n\n## Page 90 — Sheet 32\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+      "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+      "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Original resolution: bridgesY1–Y2/M1–M2/TS1–TS2 and chainU4.3–U4.6 shown; RS485 and SQ1 captions bothKB/Upd at block side; separate remote-control group includesA/B."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+      "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc",
+      "primary_adjudication": null,
+      "limits": [
+        "Отсутствие подключений второго узла опровергнуто просмотренной схемой. Из отсутствия отдельных строк КЖ нельзя заключать отсутствие управления.",
+        "В КЖ сохранены исходные обозначения У1,БД-Т31,ТС1; они не исправлены по растру. Нужна увязка с обозначениями схемы, а не молчаливая нормализация.",
+        "Не установлено, включают ли длины У4-1/2/5 межприборные участки, относятся ли они к заводской комплектности или другому разделу. Недостача кабеля не доказана.",
+        "У1–У4 могут быть прежними или условными именами; однозначное сопоставление в прочитанном описании не задано. Это вопрос обозначений, не доказательство дополнительных четырёх завес.",
+        "Нормативное нарушение, фактическая неисправность и решение инженера не установлены."
+      ],
+      "wording": "Уточнить соответствие обозначений завес У1–У4 и У4.3–У4.6 в общих данных, а также учёт межприборных участков Y1–Y2, M1–M2 и TS1–TS2: схема внешних подключений эти соединения показывает, но отдельные строки раздела ВТЗ КЖ лист31 перечисляют линии к первым устройствам."
+    }
+  ],
+  "limits": [
+    "Existing connections do not prove complete cable quantities or actual operation.",
+    "Factory interface pinout remains unchecked.",
+    "Frozen evaluator, independent inputs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
