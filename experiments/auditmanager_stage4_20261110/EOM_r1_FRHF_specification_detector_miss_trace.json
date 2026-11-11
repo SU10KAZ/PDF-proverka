@@ -1,0 +1,280 @@
+{
+  "status": "bounded_two_schematic_detector_miss_traced",
+  "target_id": "EOM11:7985c84eea058c206240",
+  "discipline": "EOM",
+  "repeat": 1,
+  "frozen_decision": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM11.json",
+    "sha256": "1d38db92b11e8fcde7159b7685795f19804600fc29102e6fed2bb5a1f76630a1"
+  },
+  "primary_same_version_check": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM11_both_lines_source_check.json",
+    "sha256": "e3ec650ec4a4018cbb7a98b37de89d710f45f3bf069a81682a7631f96b49dcd5"
+  },
+  "coverage_ledger": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r1_completed_coverage_ledger.json",
+    "sha256": "37b9b611cc988bcf51c2c23d1adb2b11b93832af5c748642c73c7700798fa8f3"
+  },
+  "traces": [
+    {
+      "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+      "raw_result": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_085302__ensemble_codex-only_high/block_blk_8fac348a820c41aeb2d941339987da14.json",
+        "sha256": "aa16f60e5572540f22d5580de7adb72ece848b19f510be8f4d29748c77aa8656"
+      },
+      "detectors": [
+        {
+          "leg": 1,
+          "findings": [],
+          "semantic_review": "No cable specification omission candidate. Empty list."
+        },
+        {
+          "leg": 2,
+          "findings": [],
+          "semantic_review": "No cable specification omission candidate. Empty list."
+        }
+      ],
+      "requests": [
+        {
+          "request": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387214611091427/request.json",
+            "sha256": "b11c56da494c7c74415ab2dc2ee6f23c169fcd59534f6432f7841d921b2aad70"
+          },
+          "attempts": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387214611091427/attempts.json",
+            "sha256": "6fef7a910280c49168b084586385fd7dab52ab73da570a542d46f7a3bc62ef2f"
+          },
+          "image": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8fac348a820c41aeb2d941339987da14.png",
+            "sha256": "0eb4286aeca07a3e7755216036b8253b936d2fc12034dddca7f78fb0bd6879c7"
+          },
+          "successful": true,
+          "text_length": 18030,
+          "text_has_target_line_ids": false,
+          "text_has_FRHF": false,
+          "text_has_target_specification_block_id": false
+        },
+        {
+          "request": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387214612817288/request.json",
+            "sha256": "b11c56da494c7c74415ab2dc2ee6f23c169fcd59534f6432f7841d921b2aad70"
+          },
+          "attempts": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387214612817288/attempts.json",
+            "sha256": "a9dc76abf0b21796ee421980347eca9c222d2404b90bfcf22992150789b37a9f"
+          },
+          "image": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8fac348a820c41aeb2d941339987da14.png",
+            "sha256": "0eb4286aeca07a3e7755216036b8253b936d2fc12034dddca7f78fb0bd6879c7"
+          },
+          "successful": true,
+          "text_length": 18030,
+          "text_has_target_line_ids": false,
+          "text_has_FRHF": false,
+          "text_has_target_specification_block_id": false
+        }
+      ],
+      "gap_search": {
+        "enabled": false,
+        "performed": false,
+        "status": "disabled",
+        "searched_categories": [],
+        "summary": "Оба списка замечаний пусты. Дополнительный поиск отключён параметром gap_search_enabled=false.",
+        "findings_added": 0,
+        "duplicates_rejected": 0
+      }
+    },
+    {
+      "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+      "raw_result": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261111_085302__ensemble_codex-only_high/block_blk_513e35c4f8a7432986e9a498d4573996.json",
+        "sha256": "ccf359a5f140ed2c15b7059671fd97d6426fbda14301f7e60bd9aa359bbbd3db"
+      },
+      "detectors": [
+        {
+          "leg": 1,
+          "findings": [
+            {
+              "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+              "category": "current_transformer",
+              "finding": "В таблице проверки трансформаторов тока ВРУ-3 при расчёте минимального вторичного тока использованы 77 и 74 А вместо рассчитанных в строке 2 значений 39,4 и 28,6 А. Правильные вторичные токи составляют 0,394 и 0,358 А вместо 0,8 и 0,9 А; указанный порог 0,1 А при этом соблюдается.",
+              "norm_quote": null,
+              "value_found": "262.4 × 0,15= 39.4А; 190.5 × 0,15= 28.6А; 77/100 = 0.8А > 0,1А; 74/80 = 0.9А > 0,1А",
+              "recommendation": "Пересчитать строку 4 таблицы проверки трансформаторов тока по минимальным токам из строки 2.",
+              "claim_type": "contradiction",
+              "problem_class": "inconsistent_minimum_metering_current",
+              "affected_entity": "ВРУ-3, таблица проверки трансформаторов тока Wh1 и Wh2, строки 2 и 4, лист 3",
+              "evidence_quote": "Строка 2: «262.4 × 0,15= 39.4А», «190.5 × 0,15= 28.6А»; строка 4: «77/100 = 0.8А > 0,1А», «74/80 = 0.9А > 0,1А».",
+              "evidence_kind": "same_page",
+              "context_status": "sufficient",
+              "confidence": 0.99,
+              "counterevidence_checked": true,
+              "required_context": []
+            },
+            {
+              "severity": "ЭКСПЛУАТАЦИОННОЕ",
+              "category": "calculation",
+              "finding": "Исходные данные проверки трансформаторов тока ВРУ-3 расходятся с таблицей нагрузок на этом же листе: аварийный ток принят 465,1 А, тогда как для режима «Авар. Пожар» с компенсацией указан ток 471,4 А. Для рабочего режима ввода 2 в проверке принято S=125,4 кВА, а в таблице нагрузок с компенсацией — 123,2 кВА.",
+              "norm_quote": null,
+              "value_found": "Iаб=465,1; Авар. Пожар: 471,4; Sp=125.4; Ввод 2: S=123,2",
+              "recommendation": "Согласовать исходные данные проверки трансформаторов тока с расчётом нагрузок и пересчитать проверку по максимальному расчётному режиму.",
+              "claim_type": "contradiction",
+              "problem_class": "inconsistent_calculation_inputs",
+              "affected_entity": "ВРУ-3, исходные данные проверки трансформаторов тока и таблица нагрузок с компенсацией, лист 3",
+              "evidence_quote": "Проверка ТТ: «Iаб=465,1» для обеих секций, «Sp=125.4» для Wh2; таблица нагрузок с компенсацией: «Авар. Пожар ... 471,4 ... 309,9», «Ввод 2 ... 190,7 ... 123,2». Определение на листе: «Ip.аб – расчетный ток в аварийном режиме или наибольший ток на вводе».",
+              "evidence_kind": "same_page",
+              "context_status": "sufficient",
+              "confidence": 0.98,
+              "counterevidence_checked": true,
+              "required_context": []
+            },
+            {
+              "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+              "category": "documentation",
+              "finding": "В примечании 10 схемы ВРУ-3 указано выполнение вывода распределительных линий от панелей ВРУ-1. Обозначение оборудования в монтажном указании расходится с обозначением изображённой сборки ВРУ-3.",
+              "norm_quote": null,
+              "value_found": "Вывод распределительных линий от панелей ВРУ-1 осуществить сверху",
+              "recommendation": "Исправить обозначение сборки в примечании 10 на ВРУ-3.",
+              "claim_type": "contradiction",
+              "problem_class": "incorrect_equipment_reference",
+              "affected_entity": "Примечание 10 схемы однолинейной принципиальной ВРУ-3, лист 3",
+              "evidence_quote": "Примечание 10: «Вывод распределительных линий от панелей ВРУ-1 осуществить сверху»; обозначение сборки: «ВРУ -3»; наименование листа: «Схема однолинейная принципиальная ВРУ-3».",
+              "evidence_kind": "same_page",
+              "context_status": "sufficient",
+              "confidence": 0.98,
+              "counterevidence_checked": true,
+              "required_context": []
+            }
+          ],
+          "semantic_review": "Three findings: CT minimum-current inputs, load/apparent-power inconsistency, and VRU1 reference on VRU3 drawing. No FRHF5x35 specification comparison."
+        },
+        {
+          "leg": 2,
+          "findings": [
+            {
+              "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+              "category": "current_transformer",
+              "finding": "В таблице проверки трансформаторов тока ВРУ-3 минимальные первичные токи составляют 39,4 А и 28,6 А, но при проверке цепей Wh1 и Wh2 подставлены 77 А и 74 А. Вторичные токи должны составлять около 0,39 А и 0,36 А вместо указанных 0,8 А и 0,9 А; приведённый критерий >0,1 А сохраняется.",
+              "norm_quote": null,
+              "value_found": "262.4 × 0,15= 39.4А; 190.5 × 0,15= 28.6А; 77/100 = 0.8А > 0,1А; 74/80 = 0.9А > 0,1А",
+              "recommendation": "В строке проверки минимального тока цепей счётчиков подставить значения из строки 2 и исправить результаты вычислений.",
+              "claim_type": "contradiction",
+              "problem_class": "inconsistent_minimum_current_inputs",
+              "affected_entity": "ВРУ-3, таблица проверки трансформаторов тока Wh1 и Wh2, строки 2 и 4, лист 3",
+              "evidence_quote": "Строка 2: «262.4 × 0,15= 39.4А», «190.5 × 0,15= 28.6А»; строка 4: «77/100 = 0.8А > 0,1А», «74/80 = 0.9А > 0,1А».",
+              "evidence_kind": "same_page",
+              "context_status": "sufficient",
+              "confidence": 0.99,
+              "counterevidence_checked": true,
+              "required_context": []
+            },
+            {
+              "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+              "category": "calculation",
+              "finding": "Для ввода 2 ВРУ-3 после компенсации указана полная мощность 123,2 кВА при активной мощности 121,6 кВт и cos φ=0,97. Расчёт 121,6/0,97 даёт 125,4 кВА; это же значение приведено в таблице проверки трансформатора тока Wh2.",
+              "norm_quote": null,
+              "value_found": "Ввод 2 | с компенсацией реактивной мощности | 340,8 | 121,6 | 190,7 | 0,97 | 123,2",
+              "recommendation": "Согласовать полную мощность ввода 2 в таблице нагрузок с расчётом и таблицей проверки Wh2.",
+              "claim_type": "contradiction",
+              "problem_class": "inconsistent_apparent_power",
+              "affected_entity": "ВРУ-3, ввод 2, полная мощность после компенсации, лист 3",
+              "evidence_quote": "Таблица нагрузок: «121,6 | 190,7 | 0,97 | 123,2»; таблица проверки Wh2: «Pp=121.60», «Cosφ=0,97», «Sp=125.4».",
+              "evidence_kind": "same_page",
+              "context_status": "sufficient",
+              "confidence": 0.99,
+              "counterevidence_checked": true,
+              "required_context": []
+            },
+            {
+              "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+              "category": "documentation",
+              "finding": "В примечании 10 на схеме ВРУ-3 указано осуществлять вывод распределительных линий от панелей ВРУ-1. Обозначение оборудования в монтажном указании противоречит обозначению изображённого ВРУ-3.",
+              "norm_quote": null,
+              "value_found": "Вывод распределительных линий от панелей ВРУ-1 осуществить сверху",
+              "recommendation": "Исправить обозначение оборудования в примечании 10 на ВРУ-3.",
+              "claim_type": "contradiction",
+              "problem_class": "incorrect_equipment_reference",
+              "affected_entity": "ВРУ-3, примечание 10 на листе 3",
+              "evidence_quote": "Наименование листа: «Схема однолинейная принципиальная ВРУ-3»; подпись компоновки: «ВРУ -3»; примечание 10: «Вывод распределительных линий от панелей ВРУ-1 осуществить сверху».",
+              "evidence_kind": "same_page",
+              "context_status": "sufficient",
+              "confidence": 0.98,
+              "counterevidence_checked": true,
+              "required_context": []
+            }
+          ],
+          "semantic_review": "Three findings: CT minimum-current inputs, load/apparent-power inconsistency, and VRU1 reference on VRU3 drawing. No FRHF5x35 specification comparison."
+        }
+      ],
+      "requests": [
+        {
+          "request": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387286903884299/request.json",
+            "sha256": "ed40506c3e4e06f0377aa76bcb105e3834c0d3aabbcd56b019f2d5d33da893e0"
+          },
+          "attempts": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387286903884299/attempts.json",
+            "sha256": "024ddb795fe6cedcd7012203cc4382381af44b5d4b9006742ce4e719152d00c4"
+          },
+          "image": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_513e35c4f8a7432986e9a498d4573996.png",
+            "sha256": "a01102c8349160a0b2f4a2f050c1821c1a185575010318cdbc589a1a80b09798"
+          },
+          "successful": true,
+          "text_length": 29688,
+          "text_has_target_line_ids": false,
+          "text_has_FRHF": false,
+          "text_has_target_specification_block_id": false
+        },
+        {
+          "request": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387286908963494/request.json",
+            "sha256": "ed40506c3e4e06f0377aa76bcb105e3834c0d3aabbcd56b019f2d5d33da893e0"
+          },
+          "attempts": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/requests/EOM/1794387286908963494/attempts.json",
+            "sha256": "4ba24cd3a126a2d987b3ed8776ca763001b61b7a88ca2c91ff974908ba3e7966"
+          },
+          "image": {
+            "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_513e35c4f8a7432986e9a498d4573996.png",
+            "sha256": "a01102c8349160a0b2f4a2f050c1821c1a185575010318cdbc589a1a80b09798"
+          },
+          "successful": true,
+          "text_length": 29688,
+          "text_has_target_line_ids": false,
+          "text_has_FRHF": false,
+          "text_has_target_specification_block_id": false
+        }
+      ],
+      "gap_search": {
+        "enabled": false,
+        "performed": false,
+        "status": "disabled",
+        "searched_categories": [],
+        "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+        "findings_added": 0,
+        "duplicates_rejected": 0
+      }
+    }
+  ],
+  "stage_assessment": {
+    "object_extraction": "Target cable and line identities are absent from both submitted text contexts; drawings were supplied as images. Internal visual recognition cannot be inferred.",
+    "context_retrieval": "Neither detector text package contains FRHF or the target specification block ID; the required cable-subsection comparison is not evidenced in these packages.",
+    "profile_check": "No returned candidate or required_context request addresses the missing FRHF5x35 row.",
+    "dual_review": "Gap search explicitly disabled in both blocks; no new-candidate search executed there.",
+    "merge_filter": "These detector paths supplied no FRHF5x35 candidate to suppress. No global claim that every other pipeline route was exhaustively traced."
+  },
+  "candidate_hypothesis": "Extract cable records with line ID, execution and section; retrieve specification subsection and its continuation; compare exact execution+section, keeping HF5x35 distinct from FRHF5x35. Evaluate the frozen candidate without transmitting expected answers.",
+  "controls": {
+    "positive": "Both C2513 65m and C3510 95m preserved in one bounded specification conflict.",
+    "negative": "HF5x35 exists172m; do not assert all5x35 absent, offset against FRHF or claim physical160m shortage."
+  },
+  "limits": [
+    "Frozen primary evidence reused; no new source-image engineering adjudication.",
+    "Submitted image presence proves transport binding, not successful model reading.",
+    "No proof of complete pipeline causal diagnosis or improved candidate performance.",
+    "No frozen inputs, prompts, evaluator or production modified."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
