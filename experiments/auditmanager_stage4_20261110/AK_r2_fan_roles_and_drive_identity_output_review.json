@@ -1,0 +1,338 @@
+{
+  "status": "scoped_document_conflicts_preserved",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "af28c04330580590700a5df31d7945a91d1b2f557c0fc5556ddd5f9c41a66567",
+  "queue_after_sha256": "766a96bfa32eb7bef312aef371067721b7a493587e72c36ff0ad755b8ecaf551",
+  "reviewer": "Codex directly viewed graphic and same-version authoritative TEXT",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-050",
+      "finding": {
+        "id": "F-050",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Назначение сигналов",
+        "sheet": "Лист 15",
+        "page": 19,
+        "problem": "Переставлены подписи состояния основных и резервных вентиляторов Пн5.1/Вн5.1.",
+        "description": "М1 и М3 основных установок названы резервными, М2 и М4 резервных — основными. Ошибка относится к линиям 11, 14, 26 и 29.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Привести подписи четырёх сигналов к фактическому назначению вентиляторов.",
+        "risk": "Ложная индикация состояния и неправильное переключение на резерв.",
+        "source_finding_ids": [
+          "G-028",
+          "G-030"
+        ],
+        "source_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "related_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "page": 19
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-028",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-030",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на перестановку подписей состояния основных М1, М3 и резервных М2, М4 вентиляторов на линиях 11, 14, 26 и 29.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на перестановку подписей состояния основных М1, М3 и резервных М2, М4 вентиляторов на линиях 11, 14, 26 и 29.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "М1/М3 на схемах основных установок связаны с11/26, подписанными резервными;М2/М4 резервных с14/29, подписанными основными.",
+          "verdict": "confirmed_direct_GRAPHIC_static_role_label_conflict",
+          "limits": "Проверены четыре адресные связи на одном изображении."
+        },
+        {
+          "claim": "Нужно привести подписи кфактическому назначению.",
+          "verdict": "retain_with_scope_clarification",
+          "limits": "Сначала уточнить, описывают ли подписи физический агрегат или текущую роль при ротации. Динамический алгоритм и программа не проверены."
+        },
+        {
+          "claim": "Ложная индикация и неправильное переключение на резерв.",
+          "verdict": "not_established_operational_consequence",
+          "limits": "Расхождение документации не доказывает фактического неправильного переключения."
+        }
+      ],
+      "unsupported_additions": "operational_consequences_not_established",
+      "novel_useful_content": "confirmed_document_conflict_retained",
+      "duplicate_burden": "one_reconciled_document_issue_per_row_not_count_per_device",
+      "profile_and_section": "preserve_document_conflict_limit_consequences",
+      "engineer_reuse": "No new engineer decision asserted; narrow graph conflict retained, runtime effects unverified.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "route": "directly_viewed_GRAPHIC",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT",
+          "block_ids": [
+            "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+            "blk_88d8dd46122c41148a81ba6b14c890eb"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+          "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925",
+          "route": "frozen_scoped_decision"
+        }
+      ],
+      "disposition": "assessed_preserve_role_label_conflict_clarify_rotation_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-051",
+      "finding": {
+        "id": "F-051",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Обозначения оборудования",
+        "sheet": "Лист 15",
+        "page": 19,
+        "problem": "Четыре ПЧ Пн5.1/Вн5.1 имеют повторяющиеся марки.",
+        "description": "На схеме дважды повторена пара SC UZ2 и SC UZ3, тогда как перечень задаёт SCUZ1–SCUZ4.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Установить однозначное соответствие четырёх ПЧ позициям SCUZ1–SCUZ4.",
+        "risk": "Ошибочная идентификация приводов при монтаже и наладке.",
+        "source_finding_ids": [
+          "G-029",
+          "G-032"
+        ],
+        "source_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "related_block_ids": [
+          "blk_1421872a752e4019a31247d056c0e9bc"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "page": 19
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-029",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-032",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют повторение обозначений SC UZ2 и SC UZ3 для четырёх преобразователей вместо SCUZ1–SCUZ4, указанных в перечне элементов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют повторение обозначений SC UZ2 и SC UZ3 для четырёх преобразователей вместо SCUZ1–SCUZ4, указанных в перечне элементов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Для четырёхПЧ на схеме повтореныSCUZ2/SCUZ3, перечень задаётSCUZ1–SCUZ4.",
+          "verdict": "confirmed_graphic_and_authoritative_TEXT",
+          "limits": "Четыре экземпляра согласуются с количеством4 вСО9.2; недостатокПЧ не установлен."
+        },
+        {
+          "claim": "Нужно установить однозначное соответствие четырёхПЧ общему перечню.",
+          "verdict": "supported_identity_reconciliation",
+          "limits": "СО9.2 допускает отдельные щиты Пн5.1/Вн5.1. Локальные повторные номера возможны; необходимо их соответствие общему перечню, а не обязательная произвольная перенумерация."
+        },
+        {
+          "claim": "Ошибочная идентификация при монтаже и наладке.",
+          "verdict": "potential_risk_not_observed_failure",
+          "limits": "Фактический монтаж и заводская маркировка не проверены."
+        }
+      ],
+      "unsupported_additions": "operational_consequences_not_established",
+      "novel_useful_content": "confirmed_document_conflict_retained",
+      "duplicate_burden": "one_reconciled_document_issue_per_row_not_count_per_device",
+      "profile_and_section": "preserve_document_conflict_limit_consequences",
+      "engineer_reuse": {
+        "source": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+        "source_sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925",
+        "historical_finding_id": "UNI-065",
+        "historical_decision": "Принято",
+        "scope": "Same four physical drives and scheme/list identity conflict; not a new acceptance of severity or operational consequences.",
+        "original_and_later_text_preserved_in_source": true
+      },
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "route": "directly_viewed_GRAPHIC",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT",
+          "block_ids": [
+            "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+            "blk_88d8dd46122c41148a81ba6b14c890eb"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+          "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925",
+          "route": "frozen_scoped_decision"
+        }
+      ],
+      "disposition": "assessed_preserve_drive_identity_conflict_with_local_numbering_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
