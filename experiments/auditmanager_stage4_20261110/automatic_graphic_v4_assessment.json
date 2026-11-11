@@ -1,0 +1,26 @@
+{
+  "status": "candidate_discovered_by_automatic_context_recovery",
+  "model": "codex/gpt-6-astra",
+  "initial_context_chars": 16820,
+  "initial_images": 1,
+  "history_or_expected_answers_supplied": false,
+  "known_object_DEV_control": true,
+  "findings_by_step": [
+    0,
+    0,
+    1
+  ],
+  "candidate_source_id": "O-2f9cda3a49ad313d4a9b45f1",
+  "candidate_claim": "T411 branch flow differs between section and principle scheme.",
+  "source_reading_disagreement": {
+    "new_model_value": "2,78",
+    "earlier_reviewed_value": "2,73",
+    "same_section_value": "5,89",
+    "handling": "Independent source review running; do not accept exact numeric wording until adjudicated."
+  },
+  "earlier_findings_not_supplied_to_discovery": true,
+  "no_independent_full_project_claim": true,
+  "semantic_acceptance": false,
+  "full_acceptance": false,
+  "required_next": "Check numeric reading, then track candidate through source admission and output without duplicating the broader previously reviewed GVS claim."
+}

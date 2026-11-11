@@ -1,0 +1,306 @@
+{
+  "object_operation_results": [
+    {
+      "object_id": "pipe66_t411",
+      "operation": "identity_across_views",
+      "status": "needs_data",
+      "reason": "Осмотрен приложенный фрагмент листа 6: подпись Т411 находится слева в разрезе 6-6 и относится к циркуляции ГВС жилья 1-й зоны. Соседняя Т412 обозначает другую ветвь — циркуляцию аренды/ДОО; считать её повторным обозначением Т411 оснований нет. Другой подтверждённый вид Т411 не supplied; мелкие обозначения и линии привязки требуют увеличения для прослеживания ветви. Тождество экземпляра между видами не установлено.",
+      "source_refs": [
+        "blk_7527066e645e47bb917a9fc17fb82ccc"
+      ],
+      "context_queries": [
+        "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+        "Т411",
+        "циркуляционный жилья"
+      ],
+      "graphic_detail_requests": [
+        {
+          "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+          "reason": "Нужен увеличенный вид подписи Т411, её выноски и обозначений вдоль соответствующей ветви разреза 6-6 для проверки привязки и отличия от соседней Т412."
+        }
+      ]
+    },
+    {
+      "object_id": "pipe66_t411",
+      "operation": "quantity_balance",
+      "status": "needs_data",
+      "reason": "На осмотренном разрезе показана ветвь Т411, но её изображение не устанавливает общую длину трубопровода или количество элементов в пределах спецификации. Не supplied ведомость с количествами, единицами и границами учёта, а также полный маршрут ветви. Числовые предпосылки для баланса не установлены.",
+      "source_refs": [
+        "blk_7527066e645e47bb917a9fc17fb82ccc"
+      ],
+      "context_queries": [
+        "Т411",
+        "спецификация трубопроводов",
+        "ведомость объемов",
+        "45х2,5"
+      ],
+      "quantity_derivation": []
+    },
+    {
+      "object_id": "pipe66_t411",
+      "operation": "dimension_consistency",
+      "status": "needs_data",
+      "reason": "В верхней левой подписи Т411 различимо обозначение размера Ø45×2,5 и оцинкованного исполнения. Независимое обозначение размера той же ветви на другом виде, схеме или в спецификации не supplied. Мелкие местные обозначения на трассе нельзя уверенно связать с Т411 при текущем разрешении; размерное противоречие не установлено.",
+      "source_refs": [
+        "blk_7527066e645e47bb917a9fc17fb82ccc"
+      ],
+      "context_queries": [
+        "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+        "Т411",
+        "45х2,5",
+        "спецификация трубопроводов"
+      ],
+      "graphic_detail_requests": [
+        {
+          "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+          "reason": "Требуется уточнить размер и исполнение в подписи Т411 и прочитать местные диаметры и отметки на связанной с ней трассе."
+        }
+      ]
+    },
+    {
+      "object_id": "pipe66_t411",
+      "operation": "document_links",
+      "status": "needs_data",
+      "reason": "Для Т411 supplied только графический фрагмент разреза. Связь этой ветви с принципиальной схемой, спецификацией и расчётом циркуляции жилья 1-й зоны не подтверждена оригиналами соответствующих источников. Названия объектов в навигационном каталоге такой связи не доказывают. Отсутствие документов во всём проекте не установлено.",
+      "source_refs": [
+        "blk_7527066e645e47bb917a9fc17fb82ccc"
+      ],
+      "context_queries": [
+        "Т411",
+        "принципиальная схема",
+        "спецификация трубопроводов",
+        "blk_fed30df45d124919a8b7cc13253733b1",
+        "blk_fa4cca816905454ab134c787b1d1862a"
+      ]
+    },
+    {
+      "object_id": "pipe66_t411",
+      "operation": "calculation_consistency",
+      "status": "needs_data",
+      "reason": "В подписи Т411 присутствуют эксплуатационные параметры, однако расход и давление требуют уточнения по увеличенному изображению. В supplied источнике нет расчётных подстановок или подтверждённого баланса именно циркуляционной ветви жилья 1-й зоны. Необходимы исходный расчёт, границы системы и режим работы; сопоставлять расход ветви с общим расходом насосов или складывать его с соседними расходами без этих данных нельзя. Арифметическая проверка пока не выполнена.",
+      "source_refs": [
+        "blk_7527066e645e47bb917a9fc17fb82ccc"
+      ],
+      "context_queries": [
+        "blk_fed30df45d124919a8b7cc13253733b1",
+        "blk_fa4cca816905454ab134c787b1d1862a",
+        "Т411",
+        "ГВС 1-й зоны",
+        "циркуляционный трубопровод"
+      ],
+      "graphic_detail_requests": [
+        {
+          "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+          "reason": "Нужно достоверно прочитать значения G, T и P в верхней левой подписи Т411, включая десятичные знаки и единицы: мелкий текст пересекается с линиями чертежа."
+        }
+      ]
+    }
+  ],
+  "findings": [],
+  "operation_pending": [],
+  "operation_coverage": {
+    "objects": [
+      {
+        "id": "pipe66_t411",
+        "identity": "Т411, циркуляция ГВС жилья, 1-я зона, разрез 6-6",
+        "scope": "Обозначенная ветвь",
+        "kind": "трубопровод",
+        "source_refs": [
+          "blk_7527066e645e47bb917a9fc17fb82ccc"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Размер и исполнение",
+            "value": "Ø45×2,5оц",
+            "unit": "мм",
+            "source_ref": "blk_7527066e645e47bb917a9fc17fb82ccc",
+            "graphic_observation": "В верхней левой подписи читается «Т411 Ø45x2,5оц ГВС, циркуляционный жилья 1-ая зона»."
+          },
+          {
+            "name": "Режим",
+            "value": "T=55 °C; G=5,89 м³/ч; P=8,06 бар",
+            "unit": null,
+            "source_ref": "blk_7527066e645e47bb917a9fc17fb82ccc",
+            "graphic_observation": "Значения читаются в продолжении подписи Т411; текст мелкий."
+          }
+        ]
+      }
+    ],
+    "invalid_objects": [],
+    "operations": [
+      {
+        "object_id": "pipe66_t411",
+        "operation": "identity_across_views",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_7527066e645e47bb917a9fc17fb82ccc"
+        ],
+        "receipt": {
+          "object_id": "pipe66_t411",
+          "operation": "identity_across_views",
+          "status": "needs_data",
+          "reason": "Осмотрен приложенный фрагмент листа 6: подпись Т411 находится слева в разрезе 6-6 и относится к циркуляции ГВС жилья 1-й зоны. Соседняя Т412 обозначает другую ветвь — циркуляцию аренды/ДОО; считать её повторным обозначением Т411 оснований нет. Другой подтверждённый вид Т411 не supplied; мелкие обозначения и линии привязки требуют увеличения для прослеживания ветви. Тождество экземпляра между видами не установлено.",
+          "source_refs": [
+            "blk_7527066e645e47bb917a9fc17fb82ccc"
+          ],
+          "context_queries": [
+            "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+            "Т411",
+            "циркуляционный жилья"
+          ],
+          "graphic_detail_requests": [
+            {
+              "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+              "reason": "Нужен увеличенный вид подписи Т411, её выноски и обозначений вдоль соответствующей ветви разреза 6-6 для проверки привязки и отличия от соседней Т412."
+            }
+          ]
+        }
+      },
+      {
+        "object_id": "pipe66_t411",
+        "operation": "quantity_balance",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_7527066e645e47bb917a9fc17fb82ccc"
+        ],
+        "receipt": {
+          "object_id": "pipe66_t411",
+          "operation": "quantity_balance",
+          "status": "needs_data",
+          "reason": "На осмотренном разрезе показана ветвь Т411, но её изображение не устанавливает общую длину трубопровода или количество элементов в пределах спецификации. Не supplied ведомость с количествами, единицами и границами учёта, а также полный маршрут ветви. Числовые предпосылки для баланса не установлены.",
+          "source_refs": [
+            "blk_7527066e645e47bb917a9fc17fb82ccc"
+          ],
+          "context_queries": [
+            "Т411",
+            "спецификация трубопроводов",
+            "ведомость объемов",
+            "45х2,5"
+          ],
+          "quantity_derivation": []
+        }
+      },
+      {
+        "object_id": "pipe66_t411",
+        "operation": "dimension_consistency",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_7527066e645e47bb917a9fc17fb82ccc"
+        ],
+        "receipt": {
+          "object_id": "pipe66_t411",
+          "operation": "dimension_consistency",
+          "status": "needs_data",
+          "reason": "В верхней левой подписи Т411 различимо обозначение размера Ø45×2,5 и оцинкованного исполнения. Независимое обозначение размера той же ветви на другом виде, схеме или в спецификации не supplied. Мелкие местные обозначения на трассе нельзя уверенно связать с Т411 при текущем разрешении; размерное противоречие не установлено.",
+          "source_refs": [
+            "blk_7527066e645e47bb917a9fc17fb82ccc"
+          ],
+          "context_queries": [
+            "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+            "Т411",
+            "45х2,5",
+            "спецификация трубопроводов"
+          ],
+          "graphic_detail_requests": [
+            {
+              "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+              "reason": "Требуется уточнить размер и исполнение в подписи Т411 и прочитать местные диаметры и отметки на связанной с ней трассе."
+            }
+          ]
+        }
+      },
+      {
+        "object_id": "pipe66_t411",
+        "operation": "requirement_applicability",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_7527066e645e47bb917a9fc17fb82ccc"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "pipe66_t411",
+        "operation": "document_links",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_7527066e645e47bb917a9fc17fb82ccc"
+        ],
+        "receipt": {
+          "object_id": "pipe66_t411",
+          "operation": "document_links",
+          "status": "needs_data",
+          "reason": "Для Т411 supplied только графический фрагмент разреза. Связь этой ветви с принципиальной схемой, спецификацией и расчётом циркуляции жилья 1-й зоны не подтверждена оригиналами соответствующих источников. Названия объектов в навигационном каталоге такой связи не доказывают. Отсутствие документов во всём проекте не установлено.",
+          "source_refs": [
+            "blk_7527066e645e47bb917a9fc17fb82ccc"
+          ],
+          "context_queries": [
+            "Т411",
+            "принципиальная схема",
+            "спецификация трубопроводов",
+            "blk_fed30df45d124919a8b7cc13253733b1",
+            "blk_fa4cca816905454ab134c787b1d1862a"
+          ]
+        }
+      },
+      {
+        "object_id": "pipe66_t411",
+        "operation": "calculation_consistency",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_7527066e645e47bb917a9fc17fb82ccc"
+        ],
+        "receipt": {
+          "object_id": "pipe66_t411",
+          "operation": "calculation_consistency",
+          "status": "needs_data",
+          "reason": "В подписи Т411 присутствуют эксплуатационные параметры, однако расход и давление требуют уточнения по увеличенному изображению. В supplied источнике нет расчётных подстановок или подтверждённого баланса именно циркуляционной ветви жилья 1-й зоны. Необходимы исходный расчёт, границы системы и режим работы; сопоставлять расход ветви с общим расходом насосов или складывать его с соседними расходами без этих данных нельзя. Арифметическая проверка пока не выполнена.",
+          "source_refs": [
+            "blk_7527066e645e47bb917a9fc17fb82ccc"
+          ],
+          "context_queries": [
+            "blk_fed30df45d124919a8b7cc13253733b1",
+            "blk_fa4cca816905454ab134c787b1d1862a",
+            "Т411",
+            "ГВС 1-й зоны",
+            "циркуляционный трубопровод"
+          ],
+          "graphic_detail_requests": [
+            {
+              "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+              "reason": "Нужно достоверно прочитать значения G, T и P в верхней левой подписи Т411, включая десятичные знаки и единицы: мелкий текст пересекается с линиями чертежа."
+            }
+          ]
+        }
+      }
+    ],
+    "unmatched_operations": [],
+    "source_inventory": [
+      {
+        "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      }
+    ],
+    "unknown_inventory_blocks": [],
+    "unresolved_operations": 6,
+    "unresolved_source_blocks": 1,
+    "coverage_complete": false,
+    "semantic_verified": false
+  },
+  "requested_operations": [
+    "calculation_consistency",
+    "dimension_consistency",
+    "document_links",
+    "identity_across_views",
+    "quantity_balance"
+  ],
+  "unverified_operation_receipts": [],
+  "operation_candidate_ledger": []
+}

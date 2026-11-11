@@ -1,0 +1,31 @@
+{
+  "status": "prepared",
+  "route": "graphic_detail",
+  "next_stage": "object_operations_1d5ddc8a6489d3c9_context_2",
+  "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+  "tiles_added": 4,
+  "supplemental_images_retired": [],
+  "deferred_block_ids": [
+    "blk_94b58ecf5d404f7d90c272d267eb2e48"
+  ],
+  "manifest_path": "/tmp/auditmanager_itp_automatic_graphic_control_v4_20261111/initial/pipe66_t411/object_graphic_details/graphic_detail_qynp1gbq/tiles/manifest.json",
+  "semantic_verified": false,
+  "absence_proven": false,
+  "simultaneous_context_retrieval": {
+    "status": "prepared",
+    "new_source_ids": [
+      "blk_296b8547a33a47dbb7a9b8e546d964e0",
+      "blk_3050f16afc994b889498a2535ea14a52",
+      "blk_8e4e78d833774d1094ea7fc72932c0ff",
+      "blk_a203939b21504fa6935b621a29929d7d",
+      "blk_a5c04128f54f404e900b3ee4e3a854ba",
+      "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+      "blk_cc70e063642d457fa0a38b30b1a1a51f",
+      "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0"
+    ],
+    "omitted": [],
+    "automatic_dispatch": false,
+    "absence_proven": false,
+    "semantic_verified": false
+  }
+}
