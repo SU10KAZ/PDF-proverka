@@ -1,0 +1,51 @@
+{
+  "files": [
+    {
+      "path": "manifest.json",
+      "sha256": "b9bccb5fc412a67e828489b46b4d065306f11b0b37755f7d32f1b7cae886afff"
+    },
+    {
+      "path": "read_00/attempt.json",
+      "sha256": "b37dd94ab5192f67133da0327cfcd7db5613677b7650435571518a14c7da8d34"
+    },
+    {
+      "path": "read_00/request.json",
+      "sha256": "ab6a6b748935bfd02b8700f42906ba18166655aae4e84bb69e282e941c3f0e96"
+    },
+    {
+      "path": "read_00/result.json",
+      "sha256": "e82c7911895b1aeaa5fd74c003e1ed824c44c818b8da77c9c26c98074e7ef7ef"
+    },
+    {
+      "path": "read_01/attempt.json",
+      "sha256": "b37dd94ab5192f67133da0327cfcd7db5613677b7650435571518a14c7da8d34"
+    },
+    {
+      "path": "read_01/request.json",
+      "sha256": "3db76c119f77047676394ffb1d1a9df09ef49f7256530b0686ac6d36431b8c76"
+    },
+    {
+      "path": "read_01/result.json",
+      "sha256": "bdb46b784febf040fe58e4527d20baa04baab1857ad0a858e777d87583feb507"
+    },
+    {
+      "path": "readings.json",
+      "sha256": "d6e56304450aceaeb9a7284b2fba704ebd07f87dad727e4f1e1ad1b371685b8c"
+    },
+    {
+      "path": "regions/009a9bfcb50e2a93bd6f0f80687b3e2e7cbca3db9320c14eeec926044fb430c0.png",
+      "sha256": "2945701f0c4ca85a52349dd2cbd0ae6bc0e504f1b6df8f6d97a1f271745176f8"
+    },
+    {
+      "path": "regions/7ea4e7efbc7a05e030212f0677c94b4b2c5488109e9fd579985a7661b8881a86.png",
+      "sha256": "b63ab34b7c112f0d0e8751038f17d44c58e9a8e76ada9c058904a0fed325bb18"
+    }
+  ],
+  "result": "first_region_contains_5_89_second_region_does_not_contain_flow_annotation",
+  "selection": "first usable evidence region per image from original uncorrected model review",
+  "manual_crop_or_expected_digits_supplied": false,
+  "reading_uncertainties_preserved": true,
+  "finding": "A model-cited image hash and geometrically valid box do not establish that the cited annotation is within that box.",
+  "next": "Automatic source-only observations now pass into a re-review; check whether unsupported digits become needs_data rather than reasserted.",
+  "full_acceptance": false
+}

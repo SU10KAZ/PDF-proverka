@@ -119,8 +119,8 @@ async def main(args):
         load_frozen_operation(Path(args.source_root),Path(args.md_path))
         assert Path(args.md_path).read_text()==md
         return result
-    result=await run_source_review_workflow(queue,finding,md,crops,Path(args.output_root)/'workflow',
-        invoke=invoke,executor_id='direct-codex-gpt-6-astra-high',max_images=16,repair_quote_spacing=True,literal_image_hashes=args.literal_image_hash)
+    result=await run_source_review_workflow(queue,finding,md,crops,Path(args.output_root)/args.workflow_name,
+        invoke=invoke,executor_id='direct-codex-gpt-6-astra-high',max_images=16,repair_quote_spacing=True,literal_image_hashes=args.literal_image_hash,auto_graphic_regions=args.auto_graphic_regions)
     print('COMPLETE',result['status'],flush=True)
 
 
@@ -130,6 +130,8 @@ if __name__=='__main__':
         p.add_argument('--'+name,required=True)
     p.add_argument('--extra-detail-manifest')
     p.add_argument('--populate-context-graphics',action='store_true')
+    p.add_argument('--auto-graphic-regions',action='store_true')
     p.add_argument('--literal-image-hash',action='append',default=[])
+    p.add_argument('--workflow-name',choices=['workflow','workflow_auto_regions'],default='workflow')
     p.add_argument('--execute',action='store_true')
     asyncio.run(main(p.parse_args()))

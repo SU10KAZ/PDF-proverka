@@ -1,0 +1,117 @@
+{
+  "text": "{\"annotations\":[{\"literal\":\"1-я\",\"bbox_norm_xyxy\":[0.021,0.292,0.071,0.508]},{\"literal\":\"T411\",\"bbox_norm_xyxy\":[0.023,0.608,0.072,0.825]},{\"literal\":\"⌀4\",\"bbox_norm_xyxy\":[0.346,0.0,0.375,0.275]},{\"literal\":\"⌀48\",\"bbox_norm_xyxy\":[0.553,0.0,0.581,0.333]},{\"literal\":\"⌀48\",\"bbox_norm_xyxy\":[0.729,0.0,0.757,0.392]},{\"literal\":\"T411\",\"bbox_norm_xyxy\":[0.875,0.442,0.905,0.825]},{\"literal\":\"DN3\",\"bbox_norm_xyxy\":[0.917,0.0,0.946,0.367]},{\"literal\":\"P\",\"bbox_norm_xyxy\":[0.219,0.842,0.232,0.983]},{\"literal\":\"T\",\"bbox_norm_xyxy\":[0.421,0.85,0.434,0.992]},{\"literal\":\"P\",\"bbox_norm_xyxy\":[0.915,0.85,0.927,0.992]}],\"reading_uncertainties\":[\"Several annotations extend beyond the image edges; transcribed fragments may be incomplete.\",\"The diameter annotations are clipped at the top; additional digits or marks cannot be determined.\",\"The cyan DN3 annotation is clipped at the top and may continue.\",\"Other black and cyan annotations along the bottom and right edges are too incomplete to transcribe reliably.\",\"Latin T/P and Cyrillic Т/Р cannot be distinguished from their printed shapes.\"]}",
+  "json_data": {
+    "annotations": [
+      {
+        "literal": "1-я",
+        "bbox_norm_xyxy": [
+          0.021,
+          0.292,
+          0.071,
+          0.508
+        ]
+      },
+      {
+        "literal": "T411",
+        "bbox_norm_xyxy": [
+          0.023,
+          0.608,
+          0.072,
+          0.825
+        ]
+      },
+      {
+        "literal": "⌀4",
+        "bbox_norm_xyxy": [
+          0.346,
+          0.0,
+          0.375,
+          0.275
+        ]
+      },
+      {
+        "literal": "⌀48",
+        "bbox_norm_xyxy": [
+          0.553,
+          0.0,
+          0.581,
+          0.333
+        ]
+      },
+      {
+        "literal": "⌀48",
+        "bbox_norm_xyxy": [
+          0.729,
+          0.0,
+          0.757,
+          0.392
+        ]
+      },
+      {
+        "literal": "T411",
+        "bbox_norm_xyxy": [
+          0.875,
+          0.442,
+          0.905,
+          0.825
+        ]
+      },
+      {
+        "literal": "DN3",
+        "bbox_norm_xyxy": [
+          0.917,
+          0.0,
+          0.946,
+          0.367
+        ]
+      },
+      {
+        "literal": "P",
+        "bbox_norm_xyxy": [
+          0.219,
+          0.842,
+          0.232,
+          0.983
+        ]
+      },
+      {
+        "literal": "T",
+        "bbox_norm_xyxy": [
+          0.421,
+          0.85,
+          0.434,
+          0.992
+        ]
+      },
+      {
+        "literal": "P",
+        "bbox_norm_xyxy": [
+          0.915,
+          0.85,
+          0.927,
+          0.992
+        ]
+      }
+    ],
+    "reading_uncertainties": [
+      "Several annotations extend beyond the image edges; transcribed fragments may be incomplete.",
+      "The diameter annotations are clipped at the top; additional digits or marks cannot be determined.",
+      "The cyan DN3 annotation is clipped at the top and may continue.",
+      "Other black and cyan annotations along the bottom and right edges are too incomplete to transcribe reliably.",
+      "Latin T/P and Cyrillic Т/Р cannot be distinguished from their printed shapes."
+    ]
+  },
+  "input_tokens": 10936,
+  "output_tokens": 856,
+  "cost_usd": 0.0,
+  "duration_ms": 34312,
+  "model": "codex/gpt-6-astra",
+  "is_error": false,
+  "error_message": "",
+  "cached_tokens": 10240,
+  "cache_write_tokens": 0,
+  "reasoning_tokens": 487,
+  "cost_source": "subscription",
+  "response_id": "01a1c838-43d4-74d0-a90d-c6b75e5653ed",
+  "finish_reason": "stop"
+}

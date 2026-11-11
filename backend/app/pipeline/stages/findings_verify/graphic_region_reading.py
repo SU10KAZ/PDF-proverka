@@ -64,3 +64,27 @@ def prepare_review_region_readings(source_request, response, output_dir, *, max_
                 seen.add(key)
     return {'regions':selected,'skipped':skipped,'source_request_sha256':evidence_digest(source_request),
         'response_sha256':evidence_digest(response),'semantic_verified':False}
+
+
+def reading_on_parent(region, reading):
+    """Map literal regions back to the attached parent, preserving raw observations."""
+    from copy import deepcopy
+    source=region['source'];image,=region['request']['image_bindings']
+    if (reading['image_sha256']!=image['sha256'] or reading['block_id']!=image['block_id']
+        or hashlib.sha256(Path(source['parent_path']).read_bytes()).hexdigest()!=source['parent_image_sha256']):
+        raise ValueError('region_reading_binding_changed')
+    if hashlib.sha256(Path(image['path']).read_bytes()).hexdigest()!=image['sha256']:
+        raise ValueError('region_reading_image_changed')
+    result=deepcopy(reading)
+    result['image_sha256']=source['parent_image_sha256']
+    result['derived_view']={'image_sha256':image['sha256'],'geometry':deepcopy(source),
+                            'original_reading':deepcopy(reading['reading'])}
+    width,height=source['parent_size'];x0,y0,x1,y1=source['pixel_box']
+    for annotation in result['reading']['annotations']:
+        left,top,right,bottom=annotation['bbox_norm_xyxy']
+        if source['rotation_ccw']==90:left,top,right,bottom=1-bottom,left,1-top,right
+        elif source['rotation_ccw']!=0:raise ValueError('unsupported_region_rotation')
+        annotation['bbox_norm_xyxy']=[(x0+left*(x1-x0))/width,(y0+top*(y1-y0))/height,
+                                     (x0+right*(x1-x0))/width,(y0+bottom*(y1-y0))/height]
+    result['boundary']='Untrusted source-only reading of a derived view; regions mapped to the attached parent image. Inspect parent pixels; no authoritative TEXT or defect verdict.'
+    return result

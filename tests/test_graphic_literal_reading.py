@@ -77,3 +77,38 @@ async def test_workflow_reads_before_claim_and_resume_reuses_exact_result(tmp_pa
             result=await run_source_review_workflow(queue,finding,md,tmp_path,tmp_path/'workflow',invoke=invoke,executor_id='test',literal_image_hashes=[digest])
             assert result['status']=='candidate_ready'
     assert calls==['literal_reading','review','adjudication']
+
+
+@pytest.mark.asyncio
+async def test_auto_region_workflow_does_not_repeat_initial_review(tmp_path):
+    from unittest.mock import patch
+    from backend.app.pipeline.stages.findings_verify.source_review_workflow import run_source_review_workflow
+    from backend.app.pipeline.stages.findings_verify.source_review_queue import build_source_review_queue
+    source,digest,literal=case(tmp_path)
+    image=source['image_bindings'][0]
+    region={'source':{'block_id':'graphic','parent_image_sha256':digest,'parent_path':image['path'],
+                     'parent_size':[100,100],'pixel_box':[0,0,100,100],'rotation_ccw':0},
+            'request':prepare_literal_reading(source,digest)}
+    md='### BLOCK #1 [TEXT]: t\nSource fact\n'
+    finding={'id':'F1','problem':'Check','description':'Check','solution':'Check','source_evidence_review_status':'pending','source_review_requests':[{'block_ids':['t']}]}
+    queue=build_source_review_queue([finding],md);calls=[]
+    from backend.app.pipeline.stages.findings_verify.source_review_request import prepare_source_review_request
+    actual=prepare_source_review_request(queue,finding,md)
+    actual.update(image_bindings=source['image_bindings'],image_paths=source['image_paths'])
+    async def invoke(request,phase):
+        calls.append(phase)
+        if phase=='region_literal_0':return {'json_data':literal}
+        payload=json.loads(request['messages'][1]['content'])
+        if phase in ('review','region_review'):
+            assert ('independent_graphic_readings_untrusted' in payload)==(phase=='region_review')
+            data={k:payload[k] for k in ('finding_id','finding_sha256','source_md_sha256','context_sha256')}
+            data['claims']=[{'claim_id':'C1','claim':'Source fact','status':'supported','reason':'source','evidence':[{'block_id':'t','quote':'Source fact'}]}]
+        else:
+            assert payload['source_packet']['independent_graphic_readings_untrusted']
+            data={'response_sha256':payload['required_response_sha256'],'origin':'explicit_source_review','reviewer':'test','reason':'same','action':'retain','claim_reviews':[{'claim_id':'C1','role':'defect_basis','verdict':'supported','same_scope_verified':True,'evidence_sufficiency_verified':True,'reason':'same'}]}
+        return {'json_data':data}
+    with patch('backend.app.pipeline.stages.findings_verify.source_review_workflow.prepare_source_review_request',return_value=actual), patch('backend.app.pipeline.stages.findings_verify.graphic_region_reading.prepare_review_region_readings',return_value={'regions':[region]}):
+        for _ in range(2):
+            result=await run_source_review_workflow(queue,finding,md,tmp_path,tmp_path/'workflow',invoke=invoke,executor_id='test',auto_graphic_regions=True)
+            assert result['status']=='candidate_ready'
+    assert calls==['review','region_literal_0','region_review','adjudication']

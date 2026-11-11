@@ -39,14 +39,17 @@ For retain/revise/question provide display_field_reviews as an OBJECT keyed by e
         'image_paths':source_request['image_paths'],'image_bindings':source_request['image_bindings']}
 
 
-async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, *, invoke, executor_id, is_cancelled=None, max_images=8, repair_quote_spacing=False, literal_image_hashes=()):
+async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, *, invoke, executor_id, is_cancelled=None, max_images=8, repair_quote_spacing=False, literal_image_hashes=(), auto_graphic_regions=False):
     """invoke(request, phase) -> provider result dict; caller owns authorization.
 
     Maximum five source reviews (initial plus four context revisions) and one
     adjudication, plus up to four explicitly selected source-only image readings.
+    Automatic region mode instead adds up to four region readings and one re-review.
     No retries/fallback. A saved result is reused only for the exact
     same request and executor identity. No original finding is changed here.
     """
+    if type(auto_graphic_regions) is not bool or (auto_graphic_regions and literal_image_hashes):
+        raise ValueError('invalid_graphic_reading_mode')
     if type(max_images) is not int or not 0 <= max_images <= 16:
         raise ValueError('invalid_image_budget')
     if (not isinstance(literal_image_hashes, (tuple, list)) or len(literal_image_hashes) > 4
@@ -57,6 +60,8 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
     if not isinstance(executor_id,str) or not executor_id:raise ValueError('executor_identity_required')
     binding={'queue':evidence_digest(queue),'finding':evidence_digest(finding),
              'md':evidence_digest(md),'executor_id':executor_id,'workflow_version':3,'max_images':max_images}
+    if auto_graphic_regions:
+        binding['auto_graphic_regions'] = True
     if literal_image_hashes:
         binding['literal_image_hashes'] = list(literal_image_hashes)
     manifest=root/'binding.json'
@@ -125,6 +130,22 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
                 if not repaired_validation['errors']:
                     response, validation = repaired, repaired_validation
         if validation['errors']:raise ValueError('invalid_source_review')
+        if auto_graphic_regions and step == 0:
+            from .graphic_region_reading import prepare_review_region_readings, reading_on_parent
+            from .graphic_literal_reading import bind_literal_reading, attach_literal_readings
+            manifest = prepare_review_region_readings(request, response, root/'graphic_regions')
+            _write(root/'graphic_region_manifest.json', manifest)
+            _write(root/'00_initial_validation.json', validation)
+            for index, region in enumerate(manifest['regions']):
+                literal = await call(region['request'], f'region_literal_{index}', 0)
+                readings.append(reading_on_parent(region, bind_literal_reading(region['request'], literal)))
+            _write(root/'independent_graphic_readings.json', readings)
+            if readings:
+                request = attach_literal_readings(request, readings)
+                response = await call(request, 'region_review', 0)
+                validation = validate_source_review(response,current,[finding],md)
+                _write(root/'00_region_validation.json', validation)
+                if validation['errors']:raise ValueError('invalid_region_source_review')
         followup=prepare_review_followup(response,current,[finding],md,graphic_dir,max_images=max_images)
         _write(root/f'{step:02d}_followup.json',followup)
         if followup['status']=='prepared_awaiting_dispatch_authorization':

@@ -1,0 +1,224 @@
+[
+  {
+    "source": {
+      "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+      "parent_image_sha256": "847037c08616aa20e44353c005fda5c0a0f36e7f9b4f878eb2326f550c8a5375",
+      "parent_path": "/tmp/auditmanager_itp_automatic_t411_source_review_20261111/graphics/detail_1.png",
+      "parent_size": [
+        3707,
+        1840
+      ],
+      "proposed_bbox_norm_xyxy": [
+        0.255,
+        0.161,
+        0.383,
+        0.255
+      ],
+      "pixel_box": [
+        897,
+        278,
+        1468,
+        487
+      ],
+      "rotation_ccw": 0,
+      "selection": "first usable evidence region per attached image",
+      "semantic_verified": false
+    },
+    "reading": {
+      "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+      "image_sha256": "b63ab34b7c112f0d0e8751038f17d44c58e9a8e76ada9c058904a0fed325bb18",
+      "request_sha256": "7f9ce574b4eb2774dfee324c3389b6d10447fa97c9b49a25dcf8a6c602fb2512",
+      "response_sha256": "51392430406797e53bf773b6dbac15ddc2e3313cd3fad6ee95eb1c1c21b5b400",
+      "reading": {
+        "annotations": [
+          {
+            "literal": "Т411 Ø45х2,5оц.ГВС,",
+            "bbox_norm_xyxy": [
+              0.14,
+              0.139,
+              0.788,
+              0.306
+            ]
+          },
+          {
+            "literal": "циркуляционный жилья",
+            "bbox_norm_xyxy": [
+              0.156,
+              0.344,
+              0.856,
+              0.512
+            ]
+          },
+          {
+            "literal": "1-ая зона Т=55 °С,",
+            "bbox_norm_xyxy": [
+              0.14,
+              0.536,
+              0.69,
+              0.699
+            ]
+          },
+          {
+            "literal": "G=5,89 м³/ч, P=8,06 бар",
+            "bbox_norm_xyxy": [
+              0.14,
+              0.727,
+              0.886,
+              0.9
+            ]
+          },
+          {
+            "literal": "Т412 Ø38х3,2оц.ГВС",
+            "bbox_norm_xyxy": [
+              0.098,
+              0.919,
+              0.731,
+              1.0
+            ]
+          }
+        ],
+        "reading_uncertainties": [
+          "В строке расхода символы единицы измерения наложены друг на друга; чтение «м³/ч» не полностью уверенное.",
+          "Нижняя строка обрезана нижним краем изображения; нижние части символов не видны."
+        ]
+      },
+      "semantic_verified": false,
+      "boundary": "Source-only model observation. Recheck the attached image; never authoritative TEXT."
+    }
+  },
+  {
+    "source": {
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "parent_image_sha256": "b537ed2bb367e41d0edcaa2ddba327885ad76b370accf82aaf137fd8659061ec",
+      "parent_path": "/tmp/auditmanager_itp_automatic_t411_source_review_20261111/graphics/detail_10.png",
+      "parent_size": [
+        5532,
+        2632
+      ],
+      "proposed_bbox_norm_xyxy": [
+        0.408,
+        0.357,
+        0.426,
+        0.656
+      ],
+      "pixel_box": [
+        2247,
+        860,
+        2367,
+        1806
+      ],
+      "rotation_ccw": 90,
+      "selection": "first usable evidence region per attached image",
+      "semantic_verified": false
+    },
+    "reading": {
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "image_sha256": "2945701f0c4ca85a52349dd2cbd0ae6bc0e504f1b6df8f6d97a1f271745176f8",
+      "request_sha256": "4d0c8fa4aea67170dc026e5be1b546eb62603ab0d7d431296de70fc4d46aa685",
+      "response_sha256": "8f4cfdc941f9545b04bd10a0c928e95c1a74a974259fd62d53c2543da24cd0ce",
+      "reading": {
+        "annotations": [
+          {
+            "literal": "1-я",
+            "bbox_norm_xyxy": [
+              0.021,
+              0.292,
+              0.071,
+              0.508
+            ]
+          },
+          {
+            "literal": "T411",
+            "bbox_norm_xyxy": [
+              0.023,
+              0.608,
+              0.072,
+              0.825
+            ]
+          },
+          {
+            "literal": "⌀4",
+            "bbox_norm_xyxy": [
+              0.346,
+              0.0,
+              0.375,
+              0.275
+            ]
+          },
+          {
+            "literal": "⌀48",
+            "bbox_norm_xyxy": [
+              0.553,
+              0.0,
+              0.581,
+              0.333
+            ]
+          },
+          {
+            "literal": "⌀48",
+            "bbox_norm_xyxy": [
+              0.729,
+              0.0,
+              0.757,
+              0.392
+            ]
+          },
+          {
+            "literal": "T411",
+            "bbox_norm_xyxy": [
+              0.875,
+              0.442,
+              0.905,
+              0.825
+            ]
+          },
+          {
+            "literal": "DN3",
+            "bbox_norm_xyxy": [
+              0.917,
+              0.0,
+              0.946,
+              0.367
+            ]
+          },
+          {
+            "literal": "P",
+            "bbox_norm_xyxy": [
+              0.219,
+              0.842,
+              0.232,
+              0.983
+            ]
+          },
+          {
+            "literal": "T",
+            "bbox_norm_xyxy": [
+              0.421,
+              0.85,
+              0.434,
+              0.992
+            ]
+          },
+          {
+            "literal": "P",
+            "bbox_norm_xyxy": [
+              0.915,
+              0.85,
+              0.927,
+              0.992
+            ]
+          }
+        ],
+        "reading_uncertainties": [
+          "Several annotations extend beyond the image edges; transcribed fragments may be incomplete.",
+          "The diameter annotations are clipped at the top; additional digits or marks cannot be determined.",
+          "The cyan DN3 annotation is clipped at the top and may continue.",
+          "Other black and cyan annotations along the bottom and right edges are too incomplete to transcribe reliably.",
+          "Latin T/P and Cyrillic Т/Р cannot be distinguished from their printed shapes."
+        ]
+      },
+      "semantic_verified": false,
+      "boundary": "Source-only model observation. Recheck the attached image; never authoritative TEXT."
+    }
+  }
+]

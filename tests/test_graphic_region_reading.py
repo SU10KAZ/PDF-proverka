@@ -36,3 +36,18 @@ def test_tiny_region_does_not_hide_later_usable_reference(tmp_path):
     response['claims'].insert(0,tiny)
     result=prepare_review_region_readings(request,response,tmp_path/'regions')
     assert len(result['regions'])==1 and result['skipped'][0]['reason']=='region_under_16_pixels'
+
+
+def test_reading_region_is_mapped_to_original_attached_pixels(tmp_path):
+    from backend.app.pipeline.stages.findings_verify.graphic_region_reading import reading_on_parent
+    from backend.app.pipeline.stages.findings_verify.graphic_literal_reading import bind_literal_reading
+    request,response=setup(tmp_path)
+    region,=prepare_review_region_readings(request,response,tmp_path/'regions')['regions']
+    raw={'annotations':[{'literal':'untrusted reading','bbox_norm_xyxy':[0,0,1,1]}],'reading_uncertainties':['edge cropped']}
+    bound=bind_literal_reading(region['request'],raw)
+    mapped=reading_on_parent(region,bound)
+    x0,y0,x1,y1=region['source']['pixel_box']
+    assert mapped['reading']['annotations'][0]['bbox_norm_xyxy']==pytest.approx([x0/300,y0/900,x1/300,y1/900])
+    assert mapped['image_sha256']==request['image_bindings'][0]['sha256']
+    assert mapped['reading']['reading_uncertainties']==['edge cropped']
+    assert mapped['derived_view']['original_reading']==raw
