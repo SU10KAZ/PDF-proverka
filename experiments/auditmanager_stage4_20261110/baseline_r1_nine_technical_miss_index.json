@@ -1,0 +1,193 @@
+{
+  "status": "all_nine_baseline_r1_absent_technical_targets_have_bounded_traces",
+  "evaluator": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/evaluator_release_errata_v2.json",
+    "sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76"
+  },
+  "targets": [
+    {
+      "discipline": "AK",
+      "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
+      "source_atom": {
+        "claim": "Две линии ПЧ→M2/M3 по15м не имеют индивидуальных марок на схеме",
+        "verdict": "confirmed_graphic"
+      },
+      "baseline_coverage": "absent",
+      "coverage_reason": "Ни одна из66 строк не формулирует отсутствие индивидуальных марок двух участков ПЧ→M2/M3 по15м. F-023 говорит о неясных концах в КЖ, F-059 использует длины15м в сумме, но не утверждает отсутствие маркировки на схеме. Смежные тезисы не заменяют этот атом.",
+      "ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_completed_coverage_ledger.json",
+        "sha256": "4445f88e02bfe4ffe796258af8bd512a1192ab73351cfe1029ea33384cde1477"
+      },
+      "trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_drive_cable_marking_miss_trace.json",
+        "sha256": "13eb7c26dd827a811b3b2ddfc5a6f1411f9606b2020758c9853f3840396c3a3d"
+      },
+      "candidate_recovery": "not_evaluated"
+    },
+    {
+      "discipline": "AK",
+      "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+      "source_atom": {
+        "claim": "П4.1.1 имеет разные назначения в общих указаниях и на схеме",
+        "verdict": "confirmed"
+      },
+      "baseline_coverage": "absent",
+      "coverage_reason": "Различие обслуживаемых помещенийП4.1.1 в общих указаниях и схеме не сформулировано; другие конфликты назначения систем не заменяют этот адрес.",
+      "ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_completed_coverage_ledger.json",
+        "sha256": "4445f88e02bfe4ffe796258af8bd512a1192ab73351cfe1029ea33384cde1477"
+      },
+      "trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_KM_r1_three_graphic_miss_traces.json",
+        "sha256": "3561470ab25e9fd61996fc26480c967f0c52f7c26f64e0a0e00fcfd0a9432f50"
+      },
+      "candidate_recovery": "not_evaluated"
+    },
+    {
+      "discipline": "AK",
+      "target_id": "AK_F053_local_cable_balance:3ea87f3768012a815077",
+      "source_atom": {
+        "claim": "Ведомость155м, разница10м",
+        "verdict": "confirmed_TEXT_and_arithmetic"
+      },
+      "baseline_coverage": "absent",
+      "coverage_reason": "Лист25:165м поM1–M5 против155м локальной ведомости не сформулированы. Иные суммы и шкафы не заменяют этот баланс.",
+      "ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_completed_coverage_ledger.json",
+        "sha256": "4445f88e02bfe4ffe796258af8bd512a1192ab73351cfe1029ea33384cde1477"
+      },
+      "trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_KM_r1_three_graphic_miss_traces.json",
+        "sha256": "3561470ab25e9fd61996fc26480c967f0c52f7c26f64e0a0e00fcfd0a9432f50"
+      },
+      "candidate_recovery": "not_evaluated"
+    },
+    {
+      "discipline": "ITP",
+      "target_id": "B-ITP-F-015:68e759d0e8be658b6916",
+      "source_atom": {
+        "claim": "Соленоидные35/36 EV220WR противEV220В",
+        "verdict": "different_designations_confirmed_equivalence_unresolved"
+      },
+      "baseline_coverage": "absent",
+      "coverage_reason": "РасхождениеEV220WR/EV220В поз35/36 не сформулировано.",
+      "ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r1_completed_coverage_ledger.json",
+        "sha256": "7e1158eee0362f2451b9066ec9163ceb9754c422da48666a46126b21875af6e2"
+      },
+      "trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r1_valve_parameter_miss_traces.json",
+        "sha256": "54f22644549ce3d3a8b52ab80653e6eef04c9808081f5cd091349ae091cea49b"
+      },
+      "candidate_recovery": "not_evaluated"
+    },
+    {
+      "discipline": "ITP",
+      "target_id": "B-ITP-F-015:5713c213c4eafe2032fb",
+      "source_atom": {
+        "claim": "Соленоид35 DN20 Kv8,0 противKvs6,3",
+        "verdict": "confirmed_parameter_discrepancy",
+        "limits": "СмыслKv/Kvs и паспорт исполнения требуется согласовать."
+      },
+      "baseline_coverage": "absent",
+      "coverage_reason": "Соленоид35:Kv8,0/Kvs6,3 не сопоставлен. Клапан30 с6,3 вF-018 является другим изделием.",
+      "ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r1_completed_coverage_ledger.json",
+        "sha256": "7e1158eee0362f2451b9066ec9163ceb9754c422da48666a46126b21875af6e2"
+      },
+      "trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r1_valve_parameter_miss_traces.json",
+        "sha256": "54f22644549ce3d3a8b52ab80653e6eef04c9808081f5cd091349ae091cea49b"
+      },
+      "candidate_recovery": "not_evaluated"
+    },
+    {
+      "discipline": "ITP",
+      "target_id": "ITP_F004_safety_valve_setpoints:composite:1",
+      "source_atom": null,
+      "baseline_coverage": "absent",
+      "coverage_reason": "Различие 20 бар спецификации и 16 бар схемы для одной позиции 45 отсутствует. Общее замечание F-007 о 20 бар не является обнаружением этого конфликта.",
+      "ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r1_completed_coverage_ledger.json",
+        "sha256": "7e1158eee0362f2451b9066ec9163ceb9754c422da48666a46126b21875af6e2"
+      },
+      "trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r1_valve_parameter_miss_traces.json",
+        "sha256": "54f22644549ce3d3a8b52ab80653e6eef04c9808081f5cd091349ae091cea49b"
+      },
+      "candidate_recovery": "not_evaluated"
+    },
+    {
+      "discipline": "KM",
+      "target_id": "KM9_LK5_landing_elevation:95ba2445f5ada28f5184",
+      "source_atom": {
+        "claim": "Численное расхождение",
+        "verdict": "confirmed",
+        "calculation": "−1.800−(−2.350)=0.550м;−1.800−(−2.500)=0.700м;разница0.150м."
+      },
+      "baseline_coverage": "absent",
+      "coverage_reason": "Различие −2,350/−2,500 нижней площадки ЛК5 с ОГМ20 не найдено. Отметки ЛК6 из F-020/021 относятся к другим объектам.",
+      "ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_completed_coverage_ledger.json",
+        "sha256": "f87b1c95f76a84973bd52d831ed4b0df40f56acbdac9a432eca613008fc3b2a3"
+      },
+      "trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_KM_r1_three_graphic_miss_traces.json",
+        "sha256": "3561470ab25e9fd61996fc26480c967f0c52f7c26f64e0a0e00fcfd0a9432f50"
+      },
+      "candidate_recovery": "not_evaluated"
+    },
+    {
+      "discipline": "EOM",
+      "target_id": "EOM11:7985c84eea058c206240",
+      "source_atom": {
+        "claim": "В проверенном кабельном подразделе отсутствует позицияFRHF5×35",
+        "verdict": "confirmed_bounded_absence"
+      },
+      "baseline_coverage": "absent",
+      "coverage_reason": "Тема отсутствия FRHF5×35 для С2513/С3510 в итоговых48замечаниях не найдена. F-008 описывает материал HF, F-021 идентификацию ОКЛ: это иные объекты проверки. Стадия потери пока не установлена.",
+      "ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r1_completed_coverage_ledger.json",
+        "sha256": "37b9b611cc988bcf51c2c23d1adb2b11b93832af5c748642c73c7700798fa8f3"
+      },
+      "trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r1_FRHF_specification_detector_miss_trace.json",
+        "sha256": "ec3117cd7dbe217af28c26805b10e2aad42fd3f914a42608c0f97b00cdd8070d"
+      },
+      "candidate_recovery": "not_evaluated"
+    },
+    {
+      "discipline": "EOM",
+      "target_id": "EOM27_active_socket_circuits:46bf196510e24cc289cf",
+      "source_atom": {
+        "claim": "Их отдельных строк нет вРП3.",
+        "verdict": "Подтверждено полным TEXT таблицы;24 строкиC231–C2324."
+      },
+      "baseline_coverage": "absent",
+      "coverage_reason": "Отдельных строк рабочих С2326/С2327 в РП3 выдача не обсуждает. F-034 относится к другому щиту2ЩСС1 и не покрывает этот пропуск.",
+      "ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r1_completed_coverage_ledger.json",
+        "sha256": "37b9b611cc988bcf51c2c23d1adb2b11b93832af5c748642c73c7700798fa8f3"
+      },
+      "trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r1_active_circuit_detector_miss_trace.json",
+        "sha256": "849f432598b5b57ed714d26ecadf8ca3e7487955df4fdabe0fdaca8331cea9d4"
+      },
+      "candidate_recovery": "not_evaluated"
+    }
+  ],
+  "interpretation": [
+    "Все девять отсутствующих технических атомов первой серии привязаны к журналам выбранных первичных маршрутов. Это не полный причинный аудит всех маршрутов.",
+    "АК с немаркированными кабелями: две длины обнаружены и баланс дошёл до выдачи, но отдельное свойство маркировки не проверено в найденном ответе. Не классифицировать как полную невидимость объекта.",
+    "ИТП электромагнитные клапаны: обе текстовые таблицы переданы, но конкретные сравнения в первичной текстовой выдаче отсутствуют.",
+    "Другие маршруты требуют проверки извлечения, связей и выполнения операции в замороженном экспериментальном варианте. Передача изображения сама по себе не доказывает извлечение."
+  ],
+  "evaluation_steps": [
+    "Оценить независимый итог по неизменному эталону после фиксации результатов.",
+    "Для восстановленного или повторно пропущенного атома проследить реестр объектов, выполненную операцию, кандидата и выпуск.",
+    "Сохранить соседние полезные находки и проверить отрицательные контроли без добавления эталонных ответов в промпты.",
+    "Не принимать вариант по этим девяти атомам отдельно: оценить все технические цели, вопросы, ошибки и затраты."
+  ],
+  "production_acceptance": false,
+  "scope": "Evaluator-only; no independent input or runtime changes."
+}
