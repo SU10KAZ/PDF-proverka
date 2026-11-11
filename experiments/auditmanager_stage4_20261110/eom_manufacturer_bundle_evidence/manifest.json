@@ -1,0 +1,13 @@
+{
+  "request_sha256": "9fc43904108a61b5e9a5c9acc634e1381d8658b70026aa038b3bc959be91ebc1",
+  "candidate_result_sha256": "ae561c29a22b125e579cf9692f85daf7d1681ef8513b2f81cd5f92adbb3ab692",
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0,
+  "history_or_engineer_answers_supplied": false,
+  "message_chars": 23651,
+  "images": 12,
+  "image_bytes": 5878314,
+  "scope": "Known-source candidate review; original prose report_section normalized to question for review, not yet admitted.",
+  "manufacturer_pdf_sha256": "ec735722d5005e1fa65c88757fd5aba59cd0a162679aeea9149f511540586eb7",
+  "semantic_acceptance": false
+}
