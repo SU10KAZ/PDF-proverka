@@ -1,0 +1,397 @@
+{
+  "status": "six_candidate_records_four_issue_groups_graphically_reviewed",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "G-072",
+      "pointer": "/block_analyses/27/findings/0",
+      "original_candidate": {
+        "id": "G-072",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "terminal_numbering",
+        "finding": "На схеме внешних подключений ШАУВ-3-К5ПЧ, лист 32, одинаковые номера клемм присвоены разным цепям: 23–24 для PDS4 и PDS5, 29–31 для двигателей М1 и М2. Раздельные клеммные группы не обозначены, поэтому подключения этих цепей определены неоднозначно.\n\nРекомендация: Согласовать с изготовителем и указать однозначные обозначения клемм для каждой цепи, обозначив отдельные клеммные группы при повторении номеров.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_f784be4786274e8c84f32d874ed99969",
+        "value_found": "PDS4: 23, 24; PDS5: 23, 24; М1: 29, 30, 31; М2: 29, 30, 31",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-072",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое дублирование клемм 23–24 для PDS4/PDS5 и 29–31 для М1/М2 при отсутствии обозначений раздельных клеммных групп; детализация эквивалентна.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_terminal_address_ambiguity",
+      "reason": "Лист 32: нижние клеммы PDS4 и PDS5 повторяют 23–24; нижние клеммы M1 и M2 повторяют 29–31. Различающих обозначений клеммников у этих четырёх групп нет. XT1–XT3 показаны у комплектных приводов клапанов и не различают группы PDS/M. Подтверждена неоднозначность адресации на чертеже; фактическое соединение разных цепей или короткое замыкание не доказано. Заводская схема не проверена.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f784be4786274e8c84f32d874ed99969.png",
+        "sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2",
+        "bytes": 453545,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-073",
+      "pointer": "/block_analyses/27/findings/1",
+      "original_candidate": {
+        "id": "G-073",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "terminal_numbering",
+        "finding": "На схеме внешних подключений ШАУВ-3-К5ПЧ, лист 32, номера клемм 23–24 повторены для разных цепей PDS4 и PDS5, а 29–31 — для двигателей М1 и М2. Раздельные клеммные группы не обозначены, поэтому подключение этих кабелей задано неоднозначно.\n\nРекомендация: Согласовать с изготовителем и указать однозначные обозначения клемм и клеммных групп для каждой из четырёх цепей.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_f784be4786274e8c84f32d874ed99969",
+        "value_found": "PDS4: 23, 24; PDS5: 23, 24; М1: 29, 30, 31; М2: 29, 30, 31",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-073",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое дублирование клемм 23–24 для PDS4/PDS5 и 29–31 для М1/М2 при отсутствии обозначений раздельных клеммных групп; детализация эквивалентна.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_terminal_address_ambiguity",
+      "reason": "Лист 32: нижние клеммы PDS4 и PDS5 повторяют 23–24; нижние клеммы M1 и M2 повторяют 29–31. Различающих обозначений клеммников у этих четырёх групп нет. XT1–XT3 показаны у комплектных приводов клапанов и не различают группы PDS/M. Подтверждена неоднозначность адресации на чертеже; фактическое соединение разных цепей или короткое замыкание не доказано. Заводская схема не проверена.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f784be4786274e8c84f32d874ed99969.png",
+        "sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2",
+        "bytes": 453545,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-074",
+      "pointer": "/block_analyses/28/findings/0",
+      "original_candidate": {
+        "id": "G-074",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable_marking",
+        "finding": "На схеме внешних подключений ШАУВ-4-К5ПЧ, лист 33, кабель контактов привода Y4 системы Пн5.1 обозначен «Ва3.1-18». Маркировка относит кабель к другой системе и нарушает последовательность кабелей Пн5.1 в этой группе подключений.\n\nРекомендация: Исправить обозначение кабеля контактов Y4 в соответствии с системой Пн5.1 и согласовать его с кабельным журналом.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_127bea47b93f4214ac6430c54b21517a",
+        "value_found": "Ва3.1-18",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-074",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_cable_identity_conflict",
+      "reason": "Лист 33: цепь контактов привода Y4 воздушного клапана Пн5.1 проходит через XT5 и подписана Ва3.1-18. В авторитетном TEXT кабельного журнала строка Пн5.1.-18 связывает тот же шкаф ШАУВ-4-К5ПЧ с ХТ5, КСПВПГнг(А)-HF 1х2х0,75, 35 м. Связь подтверждена по шкафу, клеммной коробке, назначению цепи и длине, не только последовательностью номеров. Несогласованность марки кабеля подтверждена; написание журнала с дополнительной точкой сохранено.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+        "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+        "bytes": 724440,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+          "heading": "### BLOCK #223 [TEXT]: blk_af7d76cf48cd48db813eee8d44227292",
+          "start": 386225,
+          "end": 388847,
+          "sha256": "ba54a9c95fe6f88a1a046c83c2619d223b1226f3bd8bafaf35b5a35b47008d79",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-075",
+      "pointer": "/block_analyses/28/findings/1",
+      "original_candidate": {
+        "id": "G-075",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_identification",
+        "finding": "На схеме внешних подключений ШАУВ-4-К5ПЧ, лист 33, одинаковые позиционные обозначения присвоены разным устройствам: М2 — двигателю вентилятора Пн5.1р и циркуляционному насосу Пн5.1; Y7 — приводу регулирующего клапана теплоносителя Пн5.1 и приводу воздушного клапана Вн5.1. Обозначения не обеспечивают однозначную идентификацию оборудования.\n\nРекомендация: Присвоить устройствам уникальные позиционные обозначения и согласовать их со связанными схемами.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_127bea47b93f4214ac6430c54b21517a",
+        "value_found": "М2; Y7",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-075",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:003",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое дублирование М2 у вентилятора Пн5.1р и насоса Пн5.1, а также Y7 у регулирующего клапана теплоносителя Пн5.1 и воздушного клапана Вн5.1.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_duplicate_equipment_identifiers",
+      "reason": "Лист 33: M2 подписан у резервного вентилятора Пн5.1р и отдельно у циркуляционного насоса Пн5.1; Y7 — у регулирующего клапана теплоносителя Пн5.1 и у воздушного клапана Вн5.1. Разные назначения и разные цепи подтверждают самостоятельные объекты. Дополнительно насос связан с линией Пн5.1-21, 3х1,5, 35 м: перечень TEXT листа 15 назначает насосу M5, схема листа 33 — M2, строка Пн5.1.-21 журнала — M1. Подтверждено расхождение идентификации, а не ошибочное фактическое подключение. Это дополнительное графическое доказательство части F-003 по Пн5.1, не основание считать проверенными все части F-003.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+        "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+        "bytes": 724440,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "heading": "### BLOCK #56 [TEXT]: blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "start": 104170,
+          "end": 105888,
+          "sha256": "8d4511f31a23119486849d20df103f04eb5925adfa135a47a9a1722b4f7a3d86",
+          "authority": "prepared Markdown TEXT"
+        },
+        {
+          "block_id": "blk_0074662f330048ff843342b285e6a016",
+          "heading": "### BLOCK #224 [TEXT]: blk_0074662f330048ff843342b285e6a016",
+          "start": 388847,
+          "end": 391439,
+          "sha256": "2abea6dfb638f692b84af0a2016f3c1127a8ce39265d9805f1a4cfe729f88191",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "D-e2f45dc625cc56af7134aba9",
+      "pointer": "/block_analyses/28/deferred_findings/0",
+      "original_candidate": {
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "position_designation",
+        "finding": "На схеме внешних подключений ШАУВ-4-К5ПЧ, лист 33, обозначение М2 присвоено двум разным электродвигателям: резервного вентилятора Пн5.1р и циркуляционного насоса Пн5.1. Обозначение Y7 также повторено у привода регулирующего клапана теплоносителя Пн5.1 и привода воздушного клапана Вн5.1, что делает позиционные обозначения неоднозначными.",
+        "norm_quote": null,
+        "value_found": "М2; М2; Y7; Y7",
+        "recommendation": "Назначить различающиеся позиционные обозначения указанным механизмам и согласовать их со связанными схемами.",
+        "claim_type": "contradiction",
+        "problem_class": "duplicate_equipment_designation",
+        "affected_entity": "М2 вентилятора Пн5.1р и насоса Пн5.1; Y7 регулирующего клапана Пн5.1 и воздушного клапана Вн5.1",
+        "evidence_quote": "В строке «Позиция» М2 указан под электродвигателем вентилятора Пн5.1р и под электродвигателем циркуляционного насоса Пн5.1; Y7 указан под приводом регулирующего клапана теплоносителя Пн5.1 и под приводом воздушного клапана Вн5.1.",
+        "evidence_kind": "block_image",
+        "context_status": "sufficient",
+        "confidence": 0.93,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:1",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:001",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое дублирование М2 у вентилятора Пн5.1р и насоса Пн5.1, а также Y7 у регулирующего клапана теплоносителя Пн5.1 и воздушного клапана Вн5.1.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      },
+      "assessment": "confirmed_graphic_duplicate_equipment_identifiers",
+      "reason": "Лист 33: M2 подписан у резервного вентилятора Пн5.1р и отдельно у циркуляционного насоса Пн5.1; Y7 — у регулирующего клапана теплоносителя Пн5.1 и у воздушного клапана Вн5.1. Разные назначения и разные цепи подтверждают самостоятельные объекты. Дополнительно насос связан с линией Пн5.1-21, 3х1,5, 35 м: перечень TEXT листа 15 назначает насосу M5, схема листа 33 — M2, строка Пн5.1.-21 журнала — M1. Подтверждено расхождение идентификации, а не ошибочное фактическое подключение. Это дополнительное графическое доказательство части F-003 по Пн5.1, не основание считать проверенными все части F-003.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+        "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+        "bytes": 724440,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "heading": "### BLOCK #56 [TEXT]: blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "start": 104170,
+          "end": 105888,
+          "sha256": "8d4511f31a23119486849d20df103f04eb5925adfa135a47a9a1722b4f7a3d86",
+          "authority": "prepared Markdown TEXT"
+        },
+        {
+          "block_id": "blk_0074662f330048ff843342b285e6a016",
+          "heading": "### BLOCK #224 [TEXT]: blk_0074662f330048ff843342b285e6a016",
+          "start": 388847,
+          "end": 391439,
+          "sha256": "2abea6dfb638f692b84af0a2016f3c1127a8ce39265d9805f1a4cfe729f88191",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-076",
+      "pointer": "/block_analyses/29/findings/0",
+      "original_candidate": {
+        "id": "G-076",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "electrical_symbols",
+        "finding": "На схеме внешних подключений ШАУВ-5-К5ПЧ, лист 34, электронагреватель системы Пу5.1 изображён условным обозначением электродвигателя — кругом с буквой «М». Обозначение противоречит указанному назначению оборудования.\n\nРекомендация: Заменить обозначение электродвигателя условным графическим обозначением электронагревателя.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_a2c817786b3a459fb5fa2667d9492450",
+        "value_found": "Электронагреватель системы Пу5.1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-076",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_symbol_label_inconsistency",
+      "reason": "Лист 34: в колонке Электронагреватель системы Пу5.1 изображён круг M с выводами U,V,W,PE; то же изображение круга M используется для электродвигателей на этом листе. Подтверждено несоответствие подписи и изображения устройства. Это не капиллярная линия термостата, ошибочно прочитанная как знак нагрева в G-052. Точный нормативный символ для замены и заводская схема нагревателя не проверены; электрическая неисправность из условного обозначения не следует.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_a2c817786b3a459fb5fa2667d9492450.png",
+        "sha256": "292eaec8678f1e4bbf28d2348b8661424e121d4b0e7182c425db37d9682e835a",
+        "bytes": 320543,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false,
+  "control_pair": {
+    "negative_candidate": "G-052",
+    "negative_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets21_24_graphic_followup.json",
+    "positive_candidate": "G-076",
+    "proposed_behavior": "Перед выводом об ошибочном символе проследить соединения и сравнить символ с подписью устройства. Линию TS1 не считать самостоятельной молнией; круг M в явно подписанной колонке электронагревателя сохранить как документное несоответствие.",
+    "limits": "Оба исходных изображения проверены; решения инженеров ещё не сопоставлены. Нормативная форма замены символа отдельно не установлена. Это DEV-контроль, не слепое испытание."
+  }
+}
