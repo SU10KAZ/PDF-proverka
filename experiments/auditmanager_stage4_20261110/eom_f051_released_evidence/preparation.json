@@ -1,0 +1,26 @@
+{
+  "source_document_sha256": "0e73629283f35f973954ec4f4144d9aa741f20dcb4d188af21bbe74633fef4e0",
+  "model": "codex/gpt-6-astra",
+  "effort": "high",
+  "initial_checks": [
+    {
+      "finding_id": "F-051",
+      "binding": {
+        "entry_sha256": "7723c246c1ba04eab9981885ba731b388186231152b5f64d515766e46764343b",
+        "document_sha256": "f207ff3825d53d82e49a35d97d309bf72f2374cb61032ca2051321252a50dd9c",
+        "source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+      },
+      "message_chars": 98492,
+      "image_count": 16,
+      "image_bytes": 6683387
+    }
+  ],
+  "maximum_model_calls": 3,
+  "selected_finding_ids": [
+    "F-051"
+  ],
+  "automatic_retries": 0,
+  "history_and_engineer_answers_supplied": false,
+  "grouping_enabled": false,
+  "boundary": "Known two-candidate control. Later checks see any already-admitted peer edit as untrusted report context."
+}

@@ -1,0 +1,16 @@
+{
+  "status": "F051_runtime_release_and_excel_passed",
+  "target": "F-051",
+  "total_rows": 51,
+  "untouched_rows": 50,
+  "classic_49_unchanged": true,
+  "F050_not_modified": true,
+  "all_visible_claim_fields_checked": true,
+  "idempotent_no_model_calls": true,
+  "report_section": "technical_findings",
+  "severity": "СУЩЕСТВЕННОЕ",
+  "full_acceptance": false,
+  "H04_P01_complete": false,
+  "output_sha256": "563321027f8daa0b7c9f2e6a10679e29c04b8279c46d133065d2df73739f34ab",
+  "xlsx_sha256": "a472db36c0ddaf89d7d6b979a9e28ec42d3553b938ef14cfd452dec958245460"
+}

@@ -1,0 +1,16 @@
+{
+  "skipped": false,
+  "status": "finished",
+  "records": [
+    {
+      "finding_id": "F-051",
+      "status": "already_applied"
+    }
+  ],
+  "applied": 0,
+  "held": 0,
+  "not_completed": 0,
+  "already_applied": 1,
+  "not_attempted": 0,
+  "semantic_certified": false
+}

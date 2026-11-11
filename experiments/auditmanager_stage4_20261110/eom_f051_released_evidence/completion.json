@@ -1,0 +1,16 @@
+{
+  "status": "finished",
+  "records": [
+    {
+      "finding_id": "F-051",
+      "status": "applied"
+    }
+  ],
+  "applied": 1,
+  "held": 0,
+  "not_completed": 0,
+  "not_attempted": 0,
+  "untargeted_rows_unchanged": 50,
+  "full_acceptance": false,
+  "grouping_enabled": false
+}
