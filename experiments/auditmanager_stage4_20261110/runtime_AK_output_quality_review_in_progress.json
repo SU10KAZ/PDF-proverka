@@ -427,8 +427,14 @@
       "finding_id": "F-043",
       "problem": "У PDS3 и PDS4 обратная полярность отбора давления относительно направления вытяжного потока.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_polarity_conflict_consequence_conditional",
+      "engineer_decision": null,
+      "review_reason": "Прослежены обе ветви:от помещения справа к обозначению Выброс слева. У PDS3/Ва3.1, PDS4/Ва3.1р отрицательный отбор слева на нагнетательной стороне,положительный справа на всасывающей;на схеме ΔP=100Па. При работе вентилятора по показанному направлению p(+)−p(−)<0. Подтверждено противоречие показанной полярности положительному перепаду. Рекомендация согласовать подключения относится к схеме;реальный монтаж,контакты и программа не проверены.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_polarity_and_symbol_review_20261112.json",
+        "sha256": "98bc26641d8a59e57a1d42f9cf392cfc3452ae061559407d9131073831196fb2"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-044",
@@ -488,8 +494,14 @@
       "finding_id": "F-049",
       "problem": "У PDS4 и PDS5 вытяжной системы Вн5.1 показана обратная полярность отбора давления.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_polarity_conflict_consequence_conditional",
+      "engineer_decision": null,
+      "review_reason": "Прослежены обе ветви:от помещения справа к обозначению Выброс слева. У PDS4/Вн5.1, PDS5/Вн5.1р отрицательный отбор слева на нагнетательной стороне,положительный справа на всасывающей;на схеме ΔP=100Па. При работе вентилятора по показанному направлению p(+)−p(−)<0. Подтверждено противоречие показанной полярности положительному перепаду. Рекомендация согласовать подключения относится к схеме;реальный монтаж,контакты и программа не проверены.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_polarity_and_symbol_review_20261112.json",
+        "sha256": "98bc26641d8a59e57a1d42f9cf392cfc3452ae061559407d9131073831196fb2"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-050",
@@ -551,8 +563,14 @@
       "finding_id": "F-055",
       "problem": "Полярность подключений PDS3 и PDS4 противоположна направлению перепада на вытяжных вентиляторах.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_polarity_conflict_consequence_conditional",
+      "engineer_decision": null,
+      "review_reason": "Прослежены обе ветви:от помещения справа к обозначению Выброс слева. У PDS3/Ва4.1, PDS4/Ва4.1р отрицательный отбор слева на нагнетательной стороне,положительный справа на всасывающей;на схеме ΔP=100Па. При работе вентилятора по показанному направлению p(+)−p(−)<0. Подтверждено противоречие показанной полярности положительному перепаду. Рекомендация согласовать подключения относится к схеме;реальный монтаж,контакты и программа не проверены. Дополнение «не подтвердит работу» следует оставить только условным следствием монтажа и обработки именно по этой схеме;как установленный факт эксплуатации оно не доказано.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_polarity_and_symbol_review_20261112.json",
+        "sha256": "98bc26641d8a59e57a1d42f9cf392cfc3452ae061559407d9131073831196fb2"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-056",
@@ -605,8 +623,14 @@
       "finding_id": "F-060",
       "problem": "Требуется согласовать обозначение водяного нагревателя Пкр6.1 с легендой электрического нагревателя.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "unsupported_symbol_equivalence_preserve_legend_question",
+      "engineer_decision": null,
+      "review_reason": "Водяные связи85/60°C,M4,Y3 подтверждены. В легенде действительно написано «Нагревательная секция электрического нагревателя». Однако на рабочем символе тонкая волнистая линия продолжается к TS1;в легенде справа внутри ромба изображена отдельная угловатая молния. Тождество символов,на котором основано «водяной нагреватель обозначен электрическим»,не подтверждено. Сохранить только ограниченный вопрос полноты/применимости легенды;не требовать замены рабочего символа как доказанно электрического. Общая подпись легенды не доказывает,что она расшифровывает именно изображённый водяной узел.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_polarity_and_symbol_review_20261112.json",
+        "sha256": "98bc26641d8a59e57a1d42f9cf392cfc3452ae061559407d9131073831196fb2"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-061",
@@ -619,8 +643,14 @@
       "finding_id": "F-062",
       "problem": "На схеме вытяжных вентиляторов обратная полярность подключения PDS3 и PDS4.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_polarity_conflict_consequence_conditional",
+      "engineer_decision": null,
+      "review_reason": "Прослежены обе ветви:от помещения справа к обозначению Выброс слева. У PDS3/Ва5.1, PDS4/Ва5.1р отрицательный отбор слева на нагнетательной стороне,положительный справа на всасывающей;на схеме ΔP=100Па. При работе вентилятора по показанному направлению p(+)−p(−)<0. Подтверждено противоречие показанной полярности положительному перепаду. Рекомендация согласовать подключения относится к схеме;реальный монтаж,контакты и программа не проверены.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_polarity_and_symbol_review_20261112.json",
+        "sha256": "98bc26641d8a59e57a1d42f9cf392cfc3452ae061559407d9131073831196fb2"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-063",
@@ -860,6 +890,6 @@
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 39,
-  "unchecked_findings": 46
+  "reviewed_findings": 44,
+  "unchecked_findings": 41
 }

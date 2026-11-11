@@ -1,0 +1,101 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-043",
+      "status": "confirmed_polarity_conflict_consequence_conditional",
+      "review_reason": "Прослежены обе ветви:от помещения справа к обозначению Выброс слева. У PDS3/Ва3.1, PDS4/Ва3.1р отрицательный отбор слева на нагнетательной стороне,положительный справа на всасывающей;на схеме ΔP=100Па. При работе вентилятора по показанному направлению p(+)−p(−)<0. Подтверждено противоречие показанной полярности положительному перепаду. Рекомендация согласовать подключения относится к схеме;реальный монтаж,контакты и программа не проверены.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+        "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+        "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "object_bindings": [
+        "PDS3/Ва3.1",
+        "PDS4/Ва3.1р"
+      ],
+      "physical_installation_verified": false,
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-049",
+      "status": "confirmed_polarity_conflict_consequence_conditional",
+      "review_reason": "Прослежены обе ветви:от помещения справа к обозначению Выброс слева. У PDS4/Вн5.1, PDS5/Вн5.1р отрицательный отбор слева на нагнетательной стороне,положительный справа на всасывающей;на схеме ΔP=100Па. При работе вентилятора по показанному направлению p(+)−p(−)<0. Подтверждено противоречие показанной полярности положительному перепаду. Рекомендация согласовать подключения относится к схеме;реальный монтаж,контакты и программа не проверены.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+        "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+        "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "object_bindings": [
+        "PDS4/Вн5.1",
+        "PDS5/Вн5.1р"
+      ],
+      "physical_installation_verified": false,
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-055",
+      "status": "confirmed_polarity_conflict_consequence_conditional",
+      "review_reason": "Прослежены обе ветви:от помещения справа к обозначению Выброс слева. У PDS3/Ва4.1, PDS4/Ва4.1р отрицательный отбор слева на нагнетательной стороне,положительный справа на всасывающей;на схеме ΔP=100Па. При работе вентилятора по показанному направлению p(+)−p(−)<0. Подтверждено противоречие показанной полярности положительному перепаду. Рекомендация согласовать подключения относится к схеме;реальный монтаж,контакты и программа не проверены. Дополнение «не подтвердит работу» следует оставить только условным следствием монтажа и обработки именно по этой схеме;как установленный факт эксплуатации оно не доказано.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+        "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+        "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "object_bindings": [
+        "PDS3/Ва4.1",
+        "PDS4/Ва4.1р"
+      ],
+      "physical_installation_verified": false,
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-062",
+      "status": "confirmed_polarity_conflict_consequence_conditional",
+      "review_reason": "Прослежены обе ветви:от помещения справа к обозначению Выброс слева. У PDS3/Ва5.1, PDS4/Ва5.1р отрицательный отбор слева на нагнетательной стороне,положительный справа на всасывающей;на схеме ΔP=100Па. При работе вентилятора по показанному направлению p(+)−p(−)<0. Подтверждено противоречие показанной полярности положительному перепаду. Рекомендация согласовать подключения относится к схеме;реальный монтаж,контакты и программа не проверены.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+        "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+        "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "object_bindings": [
+        "PDS3/Ва5.1",
+        "PDS4/Ва5.1р"
+      ],
+      "physical_installation_verified": false,
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-060",
+      "status": "unsupported_symbol_equivalence_preserve_legend_question",
+      "review_reason": "Водяные связи85/60°C,M4,Y3 подтверждены. В легенде действительно написано «Нагревательная секция электрического нагревателя». Однако на рабочем символе тонкая волнистая линия продолжается к TS1;в легенде справа внутри ромба изображена отдельная угловатая молния. Тождество символов,на котором основано «водяной нагреватель обозначен электрическим»,не подтверждено. Сохранить только ограниченный вопрос полноты/применимости легенды;не требовать замены рабочего символа как доказанно электрического. Общая подпись легенды не доказывает,что она расшифровывает именно изображённый водяной узел.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+        "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+        "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_e001628ce63040d6889ddffaa66c6c97",
+          "start": 138133,
+          "end": 139303,
+          "sha256": "ebb953fe66f9773057c4182eecc88b65f205e006f5b81a4520c3e711d328aa74"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}
