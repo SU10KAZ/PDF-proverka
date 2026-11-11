@@ -1,0 +1,1136 @@
+{
+  "status": "four_ITP_pressure_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "67c5668185780f4db944e1303384cb4cd0cf54cb3436bfe5186ac67945e89c36",
+  "queue_after_sha256": "ed1885b95888d70307c61a372f41fdc53e042e0133fa8c866db562c193760799",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Теплообменники и насосы",
+        "sheet": "Листы 1, 3",
+        "page": [
+          7,
+          41,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          82,
+          83,
+          94
+        ],
+        "problem": "Допустимое давление оборудования греющего контура ниже заданного рабочего.",
+        "description": "При трактовке 17,5/17,9 атм как кгс/см² рабочие давления составляют 17,16/17,55 бар. Во всех восьми расчётах теплообменников указано расчётное давление 16 кгс/см², около 15,69 бар; насос IL 100/160 допускает 16 бар. В подборе установки поддержания давления задано 17,4 бар. Пробное давление теплообменников 22 кгс/см² не подтверждает допустимость эксплуатации выше расчётного давления.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.95,
+            "reason": "Обоснование безопасности оборудования при принятых расчётных давлениях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить максимальные давления во всех режимах и выбрать согласованные по ним исполнения теплообменников, насосов и арматуры.",
+        "risk": "Разгерметизация оборудования, выброс горячего теплоносителя и прекращение теплоснабжения.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 77,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F002_pump_pressure_selection:63286b8abd3e157f4c25",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "ITP_F001_heat_exchanger_pressure:composite:3",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Восемь расчётных листов w203119576/577/578/860, w203115749, w203119579/580/581 указывают расчётное/пробное давление 16/22 кгс/см².",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Номера расчётов связаны со строками 1–8 СО. Восемь типов не равно восьми единицам оборудования."
+        },
+        {
+          "claim": "ПЗ задаёт источник 17,5/17,9 атм.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Единица атм не подменена единицей кгс/см². 16 кгс/см² соответствует 15,69064 бар; при трактовке атм как технической или стандартной атмосферы численное превышение сохраняется."
+        },
+        {
+          "claim": "Маркировка фланцев Ру25 и пробное давление 22 отменяют ограничение расчётного давления 16.",
+          "verdict": "not_supported_by_source",
+          "limits": "В тех же листах параметры названы отдельно; некоторые листы содержат фланцы Ру16, другие Ру25. Нельзя выбирать большую цифру как разрешённое рабочее давление аппарата."
+        },
+        {
+          "claim": "Подборы аппаратов не согласованы с опубликованными исходными давлениями источника.",
+          "verdict": "supported_documented_pressure_selection_conflict",
+          "limits": "Сохранить техническое противоречие; требуются максимальные давления по обеим сторонам каждого аппарата и режимы подключения."
+        },
+        {
+          "claim": "Все порты всех аппаратов фактически находятся под давлением источника без потерь и регулирования.",
+          "verdict": "not_established",
+          "limits": "Местные максимумы, положение арматуры, режимы АИТ и мобильной котельной не рассчитаны этой проверкой. Первичную и вторичную стороны не отождествлять."
+        },
+        {
+          "claim": "Необходима безусловная замена всех аппаратов, разгерметизация или остановка уже доказаны.",
+          "verdict": "not_established",
+          "limits": "Способ устранения зависит от согласования исходных данных и исполнений. Наблюдений аварии нет."
+        },
+        {
+          "claim": "Нарушение конкретного пункта СП510 проверено.",
+          "verdict": "not_established_candidate_only",
+          "limits": "Пункт и цитата отсутствуют; подтверждение относится к документальным параметрам."
+        },
+        {
+          "claim": "Технический лист IL100/160-18,5/2-R греющего контура, артикул 2786131, указывает максимальное рабочее давление 16 бар.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Подбор АУПД греющего контура задаёт максимум 17,4 бар и предварительное статическое давление 16,4 бар.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Прямое документальное превышение 17,4 над 16 составляет 1,4 бар; оно не требует приравнивать атм к бар."
+        },
+        {
+          "claim": "ПЗ указывает давления АИТ 17,5/17,9 атм при графике 90/70 °C.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Единица атм сохранена как напечатано. Окончательные режимы сети и местные давления не восстановлены из одной строки."
+        },
+        {
+          "claim": "Исходные данные подбора насоса и системы поддержания давления не согласованы.",
+          "verdict": "supported_documented_pressure_selection_conflict",
+          "limits": "Сохранить технический тезис; совпадение расхода и напора с подбором не разрешает противоречие допустимых давлений."
+        },
+        {
+          "claim": "Максимальное давление на насосе равно сумме указанных системных давлений и его напора.",
+          "verdict": "not_established",
+          "limits": "Точки отсчёта, всасывание/нагнетание, автоматика и режимы АИТ/мобильной котельной требуют отдельной проверки. Нельзя складывать давления разных состояний."
+        },
+        {
+          "claim": "17,5/17,9атм равны17,16/17,55бар.",
+          "verdict": "conditional_unit_interpretation_preserved",
+          "limits": "Верно при трактовке как технических атмосфер: множитель0,980665. В исходникеатм, поэтому не считать единицу окончательно установленной. Прямое сравнение17,4барАУПДс16барнасоса независимо от этой трактовки."
+        }
+      ],
+      "unsupported_additions": "Сохранить документальные противоречия давлений; не смешиватьатм,бар,кгс/см², не приравнивать пробное к рабочему, не объявлять уставку фактической при конфликте схемы иСО.",
+      "novel_useful_content": "Второй повтор объединяет связанные приборы и явно добавляет давление теплообменников третьих зон; охват проверен отдельно от предположений о местных режимах.",
+      "duplicate_burden": "One grouped selection-pressure issue covering eight calculation types. Do not multiply by quantities or credit missing secondary-side pressure comparisons.",
+      "profile_and_section": "technical_core_preserve_local_pressure_unresolved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_176aff361f9542daa86a2daecc090272",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e1be6cad926466483206d5c758dd238",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_20a7f89489d543c5b30e8822dd2999c2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_df17c007b7cf4eef8eca49f51580a275",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7963858ada7a4aa2bd63ef6009ec7b6f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность документальных параметров, не разрушение или затопление. Точные максимальные давления непосредственно на каждом порту требуют расчёта. Системные17,4бар греющего контура не приписываются всем аппаратам автоматически; режимы теплосети и мобильной котельной различать. Не заявляется нарушение конкретного пунктаСП510 без отдельной проверки. Окончательный способ устранения (исправление исходных данных, изменение исполнения или подбор) не установлен. Расчётное давление16кгс/см² не равно16бар, пробное22кгс/см² и фланцыРу25 не являются его заменой.",
+          "wording": "Согласовать расчётное давление теплообменников с исходными давлениями контуров. Расчётыw203119576/578/581 задают16кгс/см² (около15,69бар). ПЗ прямо относит их к отоплениюI/IIIзон и ГВСIIIзоны. В расчётеАУПД отопленияIIIзоны указано16,3бар, а исходные напорыГВСIIIзоны на входе/выходеИТП179,55/174,55м вод.ст. соответствуют примерно17,61/17,12бар. На первичной магистрали схема задаёт17,5/17,9кгс/см². Подтвердить допустимость выбранных аппаратов по каждой стороне с учётом режимов и согласовать противоречащие параметры."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность документальных параметров, не разрушение или затопление. Точные максимальные давления непосредственно на каждом порту требуют расчёта. Системные17,4бар греющего контура не приписываются всем аппаратам автоматически; режимы теплосети и мобильной котельной различать. Не заявляется нарушение конкретного пунктаСП510 без отдельной проверки. Окончательный способ устранения (исправление исходных данных, изменение исполнения или подбор) не установлен. Расчётное давление16кгс/см² не равно16бар, пробное22кгс/см² и фланцыРу25 не являются его заменой.",
+          "wording": "Согласовать расчётное давление теплообменников с исходными давлениями контуров. Расчётыw203119576/578/581 задают16кгс/см² (около15,69бар). ПЗ прямо относит их к отоплениюI/IIIзон и ГВСIIIзоны. В расчётеАУПД отопленияIIIзоны указано16,3бар, а исходные напорыГВСIIIзоны на входе/выходеИТП179,55/174,55м вод.ст. соответствуют примерно17,61/17,12бар. На первичной магистрали схема задаёт17,5/17,9кгс/см². Подтвердить допустимость выбранных аппаратов по каждой стороне с учётом режимов и согласовать противоречащие параметры."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность документальных параметров, не разрушение или затопление. Точные максимальные давления непосредственно на каждом порту требуют расчёта. Системные17,4бар греющего контура не приписываются всем аппаратам автоматически; режимы теплосети и мобильной котельной различать. Не заявляется нарушение конкретного пунктаСП510 без отдельной проверки. Окончательный способ устранения (исправление исходных данных, изменение исполнения или подбор) не установлен. Расчётное давление16кгс/см² не равно16бар, пробное22кгс/см² и фланцыРу25 не являются его заменой.",
+          "wording": "Согласовать расчётное давление теплообменников с исходными давлениями контуров. Расчётыw203119576/578/581 задают16кгс/см² (около15,69бар). ПЗ прямо относит их к отоплениюI/IIIзон и ГВСIIIзоны. В расчётеАУПД отопленияIIIзоны указано16,3бар, а исходные напорыГВСIIIзоны на входе/выходеИТП179,55/174,55м вод.ст. соответствуют примерно17,61/17,12бар. На первичной магистрали схема задаёт17,5/17,9кгс/см². Подтвердить допустимость выбранных аппаратов по каждой стороне с учётом режимов и согласовать противоречащие параметры."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-001",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_55ab0b4be112477eb9dec207df68000e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_26b23c5bfabe4917a156a91077b5458d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F002_pump_pressure_selection.json",
+          "sha256": "285f145dedcc2e37880b8f9aff5f28843c48abf036fe352239e5ef2e1d3f9eab",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность проектных исходных данных и подбора, не фактическое повреждение. К17 расположен в циркуляционной ветви, поэтому входной напорВ1 не равен автоматически давлению на насосе. Режимы теплосети и мобильной котельной различать. На схеме отопленияIIIзоны клапан45 имеет16,0бар, что дополнительно требует согласования с расчётом16,3бар; нельзя выбрать удобное значение как доказанный фактический режим. Давление на всасывании и нагнетании, влияние автоматики, температуры и статических режимов требуют расчёта. Не выдавать безусловное предписание заменить все насосы.",
+          "wording": "Подбор насосов не согласован с приведёнными давлениями систем. В листах подбора К14 (IL100/160-18,5/2-R, арт.2786131) и К11 (IL40/140-2,2/2-R, арт.2786083) максимальное рабочее давление16бар; в расчётах АУПД соответствующих систем указаны17,4 и16,3бар. Для К17 (HELIX V603-1/16/E/KS/400-50-N, арт.2468072) также указано16бар, тогда как исходные напоры ГВСIIIзоны на входе/выходе ИТП179,55/174,55м вод.ст. соответствуют приблизительно17,61/17,12бар. Согласовать исходные режимы и подтвердить достаточность выбранных исполнений по давлениям в точках установки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-002",
+          "route": "prior_atomic_review_same_source_context"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-001_pressure_selection_and_setpoint_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Горячее водоснабжение",
+        "sheet": "Лист 4",
+        "page": [
+          42,
+          66,
+          91,
+          109
+        ],
+        "problem": "Оборудование ГВС третьей зоны не соответствует указанному давлению.",
+        "description": "Насос HELIX V допускает 16 бар, теплообменник — 16 кгс/см², около 15,69 бар. Анкета задаёт напор ХВС на вводе 179,55 м вод.ст., около 17,61 бар, и требуемый напор ГВС на выходе 174,55 м вод.ст., около 17,12 бар. Оба значения превышают допустимые давления выбранных изделий.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.95,
+            "reason": "Обоснование безопасности оборудования высоконапорной зоны ГВС.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить максимальные давления третьей зоны и подобрать насосы, теплообменники и обвязку с соответствующими допустимыми параметрами.",
+        "risk": "Повреждение оборудования и затопление помещения горячей водой.",
+        "source_finding_ids": [
+          "T-002"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F002_pump_pressure_selection:63286b8abd3e157f4c25",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "ITP_F001_heat_exchanger_pressure:composite:2",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Лист HELIX V603-1/16/E/KS/400-50-N для ГВС 3 зоны указывает максимальное рабочее давление 16 бар.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Артикул 2468072; не путать 16 бар с напором рабочей точки 21,92 м."
+        },
+        {
+          "claim": "Анкета задаёт 179,55 м на вводе В1 и 174,55 м на выходе ГВС третьей зоны.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "При переводе единицы м вод.ст. коэффициентом 0,0980665 получаются 17,60784 и 17,11751 бар.",
+          "verdict": "confirmed_unit_conversion",
+          "limits": "Перевод единицы не устанавливает давление непосредственно в месте установки циркуляционного насоса."
+        },
+        {
+          "claim": "Подбор по давлению требует согласования с исходными давлениями системы.",
+          "verdict": "supported_documented_pressure_selection_conflict",
+          "limits": "Не снимать противоречие только потому, что насос подобран по расходу и напору."
+        },
+        {
+          "claim": "На насосе фактически действуют оба указанных анкетных давления; обязательна его замена.",
+          "verdict": "not_established",
+          "limits": "Давления ввода ХВС и выхода ГВС нельзя автоматически перенести на циркуляционную ветвь. Нужны местные максимумы, режимы и влияние автоматики."
+        },
+        {
+          "claim": "Разгерметизация и прекращение циркуляции доказаны; критичность подтверждена испытанием.",
+          "verdict": "not_established",
+          "limits": "Наблюдений отказа нет; приоритет проверки сохраняется без выдачи предположения за происшедший отказ."
+        },
+        {
+          "claim": "СП510 является проверенным основанием нарушения.",
+          "verdict": "not_established_candidate_only",
+          "limits": "Пункт и цитата отсутствуют, resolver_pending. Вывод опирается на документальные параметры, не на подтверждённый нормативный пункт."
+        },
+        {
+          "claim": "ТеплообменникГВС3рассчитан на16кгс/см²≈15,69бар.",
+          "verdict": "confirmed_same_equipment_selection_context",
+          "limits": "К8 связан сw203119581 в ранее проверенных ведомостях и схеме. Второй повтор явно добавил теплообменник к насосуК17; этот самостоятельный тезис не приписывать прежнемуF003, где обсуждался только насос."
+        },
+        {
+          "claim": "Анкетные давления прямо равны местным максимумам всех портовК8иК17.",
+          "verdict": "not_established_local_pressure_mapping",
+          "limits": "Системные точки ввода/выхода и циркуляционная ветвь различны. Нужны режимы, местные максимумы и арматура; численный конфликт исходных данных сохранить."
+        }
+      ],
+      "unsupported_additions": "Сохранить документальные противоречия давлений; не смешиватьатм,бар,кгс/см², не приравнивать пробное к рабочему, не объявлять уставку фактической при конфликте схемы иСО.",
+      "novel_useful_content": "Второй повтор объединяет связанные приборы и явно добавляет давление теплообменников третьих зон; охват проверен отдельно от предположений о местных режимах.",
+      "duplicate_burden": "F003 and F004 are different pumps/systems; context links to exchanger and safety-valve targets do not prove those independent equipment findings.",
+      "profile_and_section": "technical_core_preserve_local_pressure_unresolved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f118444d756a43319e1e4a1069dd6cbb",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F002_pump_pressure_selection.json",
+          "sha256": "285f145dedcc2e37880b8f9aff5f28843c48abf036fe352239e5ef2e1d3f9eab",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность проектных исходных данных и подбора, не фактическое повреждение. К17 расположен в циркуляционной ветви, поэтому входной напорВ1 не равен автоматически давлению на насосе. Режимы теплосети и мобильной котельной различать. На схеме отопленияIIIзоны клапан45 имеет16,0бар, что дополнительно требует согласования с расчётом16,3бар; нельзя выбрать удобное значение как доказанный фактический режим. Давление на всасывании и нагнетании, влияние автоматики, температуры и статических режимов требуют расчёта. Не выдавать безусловное предписание заменить все насосы.",
+          "wording": "Подбор насосов не согласован с приведёнными давлениями систем. В листах подбора К14 (IL100/160-18,5/2-R, арт.2786131) и К11 (IL40/140-2,2/2-R, арт.2786083) максимальное рабочее давление16бар; в расчётах АУПД соответствующих систем указаны17,4 и16,3бар. Для К17 (HELIX V603-1/16/E/KS/400-50-N, арт.2468072) также указано16бар, тогда как исходные напоры ГВСIIIзоны на входе/выходе ИТП179,55/174,55м вод.ст. соответствуют приблизительно17,61/17,12бар. Согласовать исходные режимы и подтвердить достаточность выбранных исполнений по давлениям в точках установки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность документальных параметров, не разрушение или затопление. Точные максимальные давления непосредственно на каждом порту требуют расчёта. Системные17,4бар греющего контура не приписываются всем аппаратам автоматически; режимы теплосети и мобильной котельной различать. Не заявляется нарушение конкретного пунктаСП510 без отдельной проверки. Окончательный способ устранения (исправление исходных данных, изменение исполнения или подбор) не установлен. Расчётное давление16кгс/см² не равно16бар, пробное22кгс/см² и фланцыРу25 не являются его заменой.",
+          "wording": "Согласовать расчётное давление теплообменников с исходными давлениями контуров. Расчётыw203119576/578/581 задают16кгс/см² (около15,69бар). ПЗ прямо относит их к отоплениюI/IIIзон и ГВСIIIзоны. В расчётеАУПД отопленияIIIзоны указано16,3бар, а исходные напорыГВСIIIзоны на входе/выходеИТП179,55/174,55м вод.ст. соответствуют примерно17,61/17,12бар. На первичной магистрали схема задаёт17,5/17,9кгс/см². Подтвердить допустимость выбранных аппаратов по каждой стороне с учётом режимов и согласовать противоречащие параметры."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+          "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754",
+          "primary_adjudication": null,
+          "limits": "Подтверждены разные уставки позиции45 и документальные параметры позиции40/К17. Не доказан отказ всей защиты. Позиция37 вСО имеет20бар и назначение «контура котла»; её положение и защитаК14/всех теплообменников отдельно не подтверждены. Расчёты теплообменниковw203119578/w203119581 содержат16кгс/см² расчётного и22кгс/см² пробного давления, их проектная связь сК3/К8 подтверждена отдельной проверкойF-001. Окончательные поставляемые исполнения и связь со всеми защищаемыми участками остаются открытыми. Не подменять расчётное давление пробным или классом фланцевРу25. Общие указания прямо требуют настраивать предохранительные клапаны по принципиальной схеме. Следовательно, для45 имеется указание на схематические16бар; расхождение с заказным обозначением20бар остаётся, но обязательная настройка20бар не доказана.",
+          "wording": "Согласовать уставки защиты с подбором оборудования. Для клапана45 отопленияIIIзоны вСО указано20бар, на схеме16,0бар. Для клапана40 ГВСIIIзоны иСО, и схема задают20бар, при этом в подборе насосаК17 указано максимальное рабочее давление16бар. Требуется согласовать уставки и подтвердить защиту конкретных аппаратов; исходную формулировку о единой уставке20бар для всех рассматриваемых контуров не использовать."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-003",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_176aff361f9542daa86a2daecc090272",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e1be6cad926466483206d5c758dd238",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_20a7f89489d543c5b30e8822dd2999c2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_df17c007b7cf4eef8eca49f51580a275",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7963858ada7a4aa2bd63ef6009ec7b6f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность документальных параметров, не разрушение или затопление. Точные максимальные давления непосредственно на каждом порту требуют расчёта. Системные17,4бар греющего контура не приписываются всем аппаратам автоматически; режимы теплосети и мобильной котельной различать. Не заявляется нарушение конкретного пунктаСП510 без отдельной проверки. Окончательный способ устранения (исправление исходных данных, изменение исполнения или подбор) не установлен. Расчётное давление16кгс/см² не равно16бар, пробное22кгс/см² и фланцыРу25 не являются его заменой.",
+          "wording": "Согласовать расчётное давление теплообменников с исходными давлениями контуров. Расчётыw203119576/578/581 задают16кгс/см² (около15,69бар). ПЗ прямо относит их к отоплениюI/IIIзон и ГВСIIIзоны. В расчётеАУПД отопленияIIIзоны указано16,3бар, а исходные напорыГВСIIIзоны на входе/выходеИТП179,55/174,55м вод.ст. соответствуют примерно17,61/17,12бар. На первичной магистрали схема задаёт17,5/17,9кгс/см². Подтвердить допустимость выбранных аппаратов по каждой стороне с учётом режимов и согласовать противоречащие параметры."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность документальных параметров, не разрушение или затопление. Точные максимальные давления непосредственно на каждом порту требуют расчёта. Системные17,4бар греющего контура не приписываются всем аппаратам автоматически; режимы теплосети и мобильной котельной различать. Не заявляется нарушение конкретного пунктаСП510 без отдельной проверки. Окончательный способ устранения (исправление исходных данных, изменение исполнения или подбор) не установлен. Расчётное давление16кгс/см² не равно16бар, пробное22кгс/см² и фланцыРу25 не являются его заменой.",
+          "wording": "Согласовать расчётное давление теплообменников с исходными давлениями контуров. Расчётыw203119576/578/581 задают16кгс/см² (около15,69бар). ПЗ прямо относит их к отоплениюI/IIIзон и ГВСIIIзоны. В расчётеАУПД отопленияIIIзоны указано16,3бар, а исходные напорыГВСIIIзоны на входе/выходеИТП179,55/174,55м вод.ст. соответствуют примерно17,61/17,12бар. На первичной магистрали схема задаёт17,5/17,9кгс/см². Подтвердить допустимость выбранных аппаратов по каждой стороне с учётом режимов и согласовать противоречащие параметры."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность документальных параметров, не разрушение или затопление. Точные максимальные давления непосредственно на каждом порту требуют расчёта. Системные17,4бар греющего контура не приписываются всем аппаратам автоматически; режимы теплосети и мобильной котельной различать. Не заявляется нарушение конкретного пунктаСП510 без отдельной проверки. Окончательный способ устранения (исправление исходных данных, изменение исполнения или подбор) не установлен. Расчётное давление16кгс/см² не равно16бар, пробное22кгс/см² и фланцыРу25 не являются его заменой.",
+          "wording": "Согласовать расчётное давление теплообменников с исходными давлениями контуров. Расчётыw203119576/578/581 задают16кгс/см² (около15,69бар). ПЗ прямо относит их к отоплениюI/IIIзон и ГВСIIIзоны. В расчётеАУПД отопленияIIIзоны указано16,3бар, а исходные напорыГВСIIIзоны на входе/выходеИТП179,55/174,55м вод.ст. соответствуют примерно17,61/17,12бар. На первичной магистрали схема задаёт17,5/17,9кгс/см². Подтвердить допустимость выбранных аппаратов по каждой стороне с учётом режимов и согласовать противоречащие параметры."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-001",
+          "route": "prior_atomic_review_same_source_context"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f118444d756a43319e1e4a1069dd6cbb",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+          "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754",
+          "primary_adjudication": null,
+          "limits": "Подтверждены разные уставки позиции45 и документальные параметры позиции40/К17. Не доказан отказ всей защиты. Позиция37 вСО имеет20бар и назначение «контура котла»; её положение и защитаК14/всех теплообменников отдельно не подтверждены. Расчёты теплообменниковw203119578/w203119581 содержат16кгс/см² расчётного и22кгс/см² пробного давления, их проектная связь сК3/К8 подтверждена отдельной проверкойF-001. Окончательные поставляемые исполнения и связь со всеми защищаемыми участками остаются открытыми. Не подменять расчётное давление пробным или классом фланцевРу25. Общие указания прямо требуют настраивать предохранительные клапаны по принципиальной схеме. Следовательно, для45 имеется указание на схематические16бар; расхождение с заказным обозначением20бар остаётся, но обязательная настройка20бар не доказана.",
+          "wording": "Согласовать уставки защиты с подбором оборудования. Для клапана45 отопленияIIIзоны вСО указано20бар, на схеме16,0бар. Для клапана40 ГВСIIIзоны иСО, и схема задают20бар, при этом в подборе насосаК17 указано максимальное рабочее давление16бар. Требуется согласовать уставки и подтвердить защиту конкретных аппаратов; исходную формулировку о единой уставке20бар для всех рассматриваемых контуров не использовать."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+          "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754",
+          "primary_adjudication": null,
+          "limits": "Подтверждены разные уставки позиции45 и документальные параметры позиции40/К17. Не доказан отказ всей защиты. Позиция37 вСО имеет20бар и назначение «контура котла»; её положение и защитаК14/всех теплообменников отдельно не подтверждены. Расчёты теплообменниковw203119578/w203119581 содержат16кгс/см² расчётного и22кгс/см² пробного давления, их проектная связь сК3/К8 подтверждена отдельной проверкойF-001. Окончательные поставляемые исполнения и связь со всеми защищаемыми участками остаются открытыми. Не подменять расчётное давление пробным или классом фланцевРу25. Общие указания прямо требуют настраивать предохранительные клапаны по принципиальной схеме. Следовательно, для45 имеется указание на схематические16бар; расхождение с заказным обозначением20бар остаётся, но обязательная настройка20бар не доказана.",
+          "wording": "Согласовать уставки защиты с подбором оборудования. Для клапана45 отопленияIIIзоны вСО указано20бар, на схеме16,0бар. Для клапана40 ГВСIIIзоны иСО, и схема задают20бар, при этом в подборе насосаК17 указано максимальное рабочее давление16бар. Требуется согласовать уставки и подтвердить защиту конкретных аппаратов; исходную формулировку о единой уставке20бар для всех рассматриваемых контуров не использовать."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png",
+          "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2",
+          "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Viewed full scheme and crops (4350,650,4878,1600), (1450,850,1900,1600), (0,1450,850,1950): valve45 Pcp16.0bar; valve40 Pcp20bar; K17/K8 zone association. Valve37 full protection path not resolved."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-007",
+          "route": "prior_atomic_review_same_source_context"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-002_pressure_selection_and_setpoint_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-003",
+      "finding": {
+        "id": "F-003",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Защита от превышения давления",
+        "sheet": "Лист 3.",
+        "page": [
+          26,
+          61,
+          73,
+          103,
+          110
+        ],
+        "problem": "Настройки защиты не согласованы с допустимым давлением оборудования.",
+        "description": "Для отопления третьей зоны расчёт поддержания давления задаёт максимум 16,3 бар, анкета — 164,7 м вод.ст., около 16,15 бар. Насос IL 40/140 допускает 16 бар, теплообменник — около 15,69 бар, а предохранительный клапан настроен на 20 бар. Для первичного контура также указан клапан на 20 бар при наличии оборудования на 16 бар.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.95,
+            "reason": "Обоснование защиты оборудования от превышения допустимого давления.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Совместно пересмотреть исполнение оборудования, рабочий диапазон поддержания давления и настройки предохранительных клапанов с учётом наиболее слабого элемента.",
+        "risk": "Превышение допустимого давления до срабатывания защиты и аварийная разгерметизация.",
+        "source_finding_ids": [
+          "T-003"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 91,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F002_pump_pressure_selection:63286b8abd3e157f4c25",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "ITP_F004_safety_valve_setpoints:d5f708be41c1a1f2266c",
+          "route": "negative",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "ITP_F001_heat_exchanger_pressure:composite:1",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Технический лист IL40/140-2,2/2-R отопления третьей зоны задаёт максимум 16 бар.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Артикул 2786083; напор 19,29 м и допустимое давление корпуса — разные параметры."
+        },
+        {
+          "claim": "Подбор АУПД отопления третьей зоны задаёт максимальное давление 16,3 бар.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Документальная разность с пределом насоса 0,3 бар; её нельзя объявлять универсально допустимой."
+        },
+        {
+          "claim": "Анкета публикует подачу 164,7 м вод.ст., около 16,15155 бар.",
+          "verdict": "confirmed_authoritative_TEXT_and_unit_conversion",
+          "limits": "Это системная исходная точка, не замер на корпусе насоса."
+        },
+        {
+          "claim": "Нужно согласовать допустимое давление насоса с максимальными режимами и АУПД.",
+          "verdict": "supported_documented_pressure_selection_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Повреждение насоса и необходимость конкретной замены уже доказаны.",
+          "verdict": "not_established",
+          "limits": "Местные давления, уставки, температура и регулирование должны быть согласованы. Подбор по расходу и напору сам по себе не подтверждает прочность корпуса."
+        },
+        {
+          "claim": "СП510 является проверенным основанием нарушения.",
+          "verdict": "not_established_candidate_only",
+          "limits": "Пункт и цитата отсутствуют, resolver_pending. Вывод опирается на документальные параметры, не на подтверждённый нормативный пункт."
+        },
+        {
+          "claim": "Теплообменникотопления3имеет расчётное16кгс/см²≈15,69бар.",
+          "verdict": "confirmed_same_equipment_selection_context",
+          "limits": "К3 связан сw203119578. Пробное22кгс/см² не допустимое рабочее давление;16,3барАУПД не переносится без проверки режима на каждый порт."
+        },
+        {
+          "claim": "Предохранительныйклапанотопления3настроен на20бар.",
+          "verdict": "not_established_conflicting_setpoint_sources",
+          "limits": "СОпозиция45задаёт20бар, схема16,0бар, общие указания направляют настройку по схеме. Проверено ранее непосредственно поIMAGE с совпавшимSHA256. Ни фактическая20, ни правильность16не доказаны. В новой выдаче этот конфликт не обнаружен."
+        },
+        {
+          "claim": "Клапанпервичногоконтура20барзащищает всёоборудование16бар.",
+          "verdict": "bounded_document_assignment_not_full_protection_map",
+          "limits": "Позиция37СОназвана контуром котла. Границы защиты, режим мобильной котельной и положения арматуры не прослежены полностью; нельзя считать все аппараты одним защищаемым объёмом."
+        }
+      ],
+      "unsupported_additions": "Сохранить документальные противоречия давлений; не смешиватьатм,бар,кгс/см², не приравнивать пробное к рабочему, не объявлять уставку фактической при конфликте схемы иСО.",
+      "novel_useful_content": "Второй повтор объединяет связанные приборы и явно добавляет давление теплообменников третьих зон; охват проверен отдельно от предположений о местных режимах.",
+      "duplicate_burden": "F003 and F004 are different pumps/systems; context links to exchanger and safety-valve targets do not prove those independent equipment findings.",
+      "profile_and_section": "technical_core_preserve_local_pressure_unresolved",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F002_pump_pressure_selection.json",
+          "sha256": "285f145dedcc2e37880b8f9aff5f28843c48abf036fe352239e5ef2e1d3f9eab",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность проектных исходных данных и подбора, не фактическое повреждение. К17 расположен в циркуляционной ветви, поэтому входной напорВ1 не равен автоматически давлению на насосе. Режимы теплосети и мобильной котельной различать. На схеме отопленияIIIзоны клапан45 имеет16,0бар, что дополнительно требует согласования с расчётом16,3бар; нельзя выбрать удобное значение как доказанный фактический режим. Давление на всасывании и нагнетании, влияние автоматики, температуры и статических режимов требуют расчёта. Не выдавать безусловное предписание заменить все насосы.",
+          "wording": "Подбор насосов не согласован с приведёнными давлениями систем. В листах подбора К14 (IL100/160-18,5/2-R, арт.2786131) и К11 (IL40/140-2,2/2-R, арт.2786083) максимальное рабочее давление16бар; в расчётах АУПД соответствующих систем указаны17,4 и16,3бар. Для К17 (HELIX V603-1/16/E/KS/400-50-N, арт.2468072) также указано16бар, тогда как исходные напоры ГВСIIIзоны на входе/выходе ИТП179,55/174,55м вод.ст. соответствуют приблизительно17,61/17,12бар. Согласовать исходные режимы и подтвердить достаточность выбранных исполнений по давлениям в точках установки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность документальных параметров, не разрушение или затопление. Точные максимальные давления непосредственно на каждом порту требуют расчёта. Системные17,4бар греющего контура не приписываются всем аппаратам автоматически; режимы теплосети и мобильной котельной различать. Не заявляется нарушение конкретного пунктаСП510 без отдельной проверки. Окончательный способ устранения (исправление исходных данных, изменение исполнения или подбор) не установлен. Расчётное давление16кгс/см² не равно16бар, пробное22кгс/см² и фланцыРу25 не являются его заменой.",
+          "wording": "Согласовать расчётное давление теплообменников с исходными давлениями контуров. Расчётыw203119576/578/581 задают16кгс/см² (около15,69бар). ПЗ прямо относит их к отоплениюI/IIIзон и ГВСIIIзоны. В расчётеАУПД отопленияIIIзоны указано16,3бар, а исходные напорыГВСIIIзоны на входе/выходеИТП179,55/174,55м вод.ст. соответствуют примерно17,61/17,12бар. На первичной магистрали схема задаёт17,5/17,9кгс/см². Подтвердить допустимость выбранных аппаратов по каждой стороне с учётом режимов и согласовать противоречащие параметры."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-004",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_176aff361f9542daa86a2daecc090272",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e1be6cad926466483206d5c758dd238",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_20a7f89489d543c5b30e8822dd2999c2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_df17c007b7cf4eef8eca49f51580a275",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7963858ada7a4aa2bd63ef6009ec7b6f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность документальных параметров, не разрушение или затопление. Точные максимальные давления непосредственно на каждом порту требуют расчёта. Системные17,4бар греющего контура не приписываются всем аппаратам автоматически; режимы теплосети и мобильной котельной различать. Не заявляется нарушение конкретного пунктаСП510 без отдельной проверки. Окончательный способ устранения (исправление исходных данных, изменение исполнения или подбор) не установлен. Расчётное давление16кгс/см² не равно16бар, пробное22кгс/см² и фланцыРу25 не являются его заменой.",
+          "wording": "Согласовать расчётное давление теплообменников с исходными давлениями контуров. Расчётыw203119576/578/581 задают16кгс/см² (около15,69бар). ПЗ прямо относит их к отоплениюI/IIIзон и ГВСIIIзоны. В расчётеАУПД отопленияIIIзоны указано16,3бар, а исходные напорыГВСIIIзоны на входе/выходеИТП179,55/174,55м вод.ст. соответствуют примерно17,61/17,12бар. На первичной магистрали схема задаёт17,5/17,9кгс/см². Подтвердить допустимость выбранных аппаратов по каждой стороне с учётом режимов и согласовать противоречащие параметры."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность документальных параметров, не разрушение или затопление. Точные максимальные давления непосредственно на каждом порту требуют расчёта. Системные17,4бар греющего контура не приписываются всем аппаратам автоматически; режимы теплосети и мобильной котельной различать. Не заявляется нарушение конкретного пунктаСП510 без отдельной проверки. Окончательный способ устранения (исправление исходных данных, изменение исполнения или подбор) не установлен. Расчётное давление16кгс/см² не равно16бар, пробное22кгс/см² и фланцыРу25 не являются его заменой.",
+          "wording": "Согласовать расчётное давление теплообменников с исходными давлениями контуров. Расчётыw203119576/578/581 задают16кгс/см² (около15,69бар). ПЗ прямо относит их к отоплениюI/IIIзон и ГВСIIIзоны. В расчётеАУПД отопленияIIIзоны указано16,3бар, а исходные напорыГВСIIIзоны на входе/выходеИТП179,55/174,55м вод.ст. соответствуют примерно17,61/17,12бар. На первичной магистрали схема задаёт17,5/17,9кгс/см². Подтвердить допустимость выбранных аппаратов по каждой стороне с учётом режимов и согласовать противоречащие параметры."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+          "primary_adjudication": null,
+          "limits": "Доказана несогласованность документальных параметров, не разрушение или затопление. Точные максимальные давления непосредственно на каждом порту требуют расчёта. Системные17,4бар греющего контура не приписываются всем аппаратам автоматически; режимы теплосети и мобильной котельной различать. Не заявляется нарушение конкретного пунктаСП510 без отдельной проверки. Окончательный способ устранения (исправление исходных данных, изменение исполнения или подбор) не установлен. Расчётное давление16кгс/см² не равно16бар, пробное22кгс/см² и фланцыРу25 не являются его заменой.",
+          "wording": "Согласовать расчётное давление теплообменников с исходными давлениями контуров. Расчётыw203119576/578/581 задают16кгс/см² (около15,69бар). ПЗ прямо относит их к отоплениюI/IIIзон и ГВСIIIзоны. В расчётеАУПД отопленияIIIзоны указано16,3бар, а исходные напорыГВСIIIзоны на входе/выходеИТП179,55/174,55м вод.ст. соответствуют примерно17,61/17,12бар. На первичной магистрали схема задаёт17,5/17,9кгс/см². Подтвердить допустимость выбранных аппаратов по каждой стороне с учётом режимов и согласовать противоречащие параметры."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-001",
+          "route": "prior_atomic_review_same_source_context"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f118444d756a43319e1e4a1069dd6cbb",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+          "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754",
+          "primary_adjudication": null,
+          "limits": "Подтверждены разные уставки позиции45 и документальные параметры позиции40/К17. Не доказан отказ всей защиты. Позиция37 вСО имеет20бар и назначение «контура котла»; её положение и защитаК14/всех теплообменников отдельно не подтверждены. Расчёты теплообменниковw203119578/w203119581 содержат16кгс/см² расчётного и22кгс/см² пробного давления, их проектная связь сК3/К8 подтверждена отдельной проверкойF-001. Окончательные поставляемые исполнения и связь со всеми защищаемыми участками остаются открытыми. Не подменять расчётное давление пробным или классом фланцевРу25. Общие указания прямо требуют настраивать предохранительные клапаны по принципиальной схеме. Следовательно, для45 имеется указание на схематические16бар; расхождение с заказным обозначением20бар остаётся, но обязательная настройка20бар не доказана.",
+          "wording": "Согласовать уставки защиты с подбором оборудования. Для клапана45 отопленияIIIзоны вСО указано20бар, на схеме16,0бар. Для клапана40 ГВСIIIзоны иСО, и схема задают20бар, при этом в подборе насосаК17 указано максимальное рабочее давление16бар. Требуется согласовать уставки и подтвердить защиту конкретных аппаратов; исходную формулировку о единой уставке20бар для всех рассматриваемых контуров не использовать."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+          "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754",
+          "primary_adjudication": null,
+          "limits": "Подтверждены разные уставки позиции45 и документальные параметры позиции40/К17. Не доказан отказ всей защиты. Позиция37 вСО имеет20бар и назначение «контура котла»; её положение и защитаК14/всех теплообменников отдельно не подтверждены. Расчёты теплообменниковw203119578/w203119581 содержат16кгс/см² расчётного и22кгс/см² пробного давления, их проектная связь сК3/К8 подтверждена отдельной проверкойF-001. Окончательные поставляемые исполнения и связь со всеми защищаемыми участками остаются открытыми. Не подменять расчётное давление пробным или классом фланцевРу25. Общие указания прямо требуют настраивать предохранительные клапаны по принципиальной схеме. Следовательно, для45 имеется указание на схематические16бар; расхождение с заказным обозначением20бар остаётся, но обязательная настройка20бар не доказана.",
+          "wording": "Согласовать уставки защиты с подбором оборудования. Для клапана45 отопленияIIIзоны вСО указано20бар, на схеме16,0бар. Для клапана40 ГВСIIIзоны иСО, и схема задают20бар, при этом в подборе насосаК17 указано максимальное рабочее давление16бар. Требуется согласовать уставки и подтвердить защиту конкретных аппаратов; исходную формулировку о единой уставке20бар для всех рассматриваемых контуров не использовать."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png",
+          "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2",
+          "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Viewed full scheme and crops (4350,650,4878,1600), (1450,850,1900,1600), (0,1450,850,1950): valve45 Pcp16.0bar; valve40 Pcp20bar; K17/K8 zone association. Valve37 full protection path not resolved."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "finding_id": "F-007",
+          "route": "prior_atomic_review_same_source_context"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-003_pressure_selection_and_setpoint_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Испытания трубопроводов",
+        "sheet": "Листы 1, 3",
+        "page": [
+          7,
+          41
+        ],
+        "problem": "Единое пробное давление ниже рабочего давления первичного контура.",
+        "description": "Монтажные указания задают «12,5 кг/см» без корректной размерности и разделения контуров. Если подразумевается 12,5 кгс/см², значение ниже рабочих давлений первичного контура 17,5–17,9 кгс/см² и не обеспечивает предусмотренную проверку прочности при этих параметрах.",
+        "norm": "СП 74.13330.2023 (норматив-кандидат), пункт не подтверждён; ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 74.13330.2023",
+            "cited_designation": "СП 74.13330.2023",
+            "candidate_relevance": 0.85,
+            "reason": "Определение испытательных давлений и порядка испытаний в пределах области применения документа.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.9,
+            "reason": "Обоснование прочности и безопасности инженерных систем.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Разработать указания по испытаниям каждого контура с корректными единицами, границами отключения оборудования и допустимыми для него испытательными давлениями.",
+        "risk": "Приёмка трубопроводов без достаточной проверки прочности либо повреждение оборудования при неверно назначенных испытаниях.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F005_test_pressure_scope:88ef772ecba424138f46",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Общие монтажные указания задают пробное давление трубопроводов «12,5 кг/см».",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Единица сохранена буквально. Её нельзя молча исправить на кгс/см² по предположению или растру."
+        },
+        {
+          "claim": "В приведённом указании не перечислены отдельные контуры и границы испытаний.",
+          "verdict": "confirmed_bounded_instruction_scope",
+          "limits": "Отсутствие разделения в этом абзаце не доказывает отсутствие отдельной программы испытаний во всех комплектах."
+        },
+        {
+          "claim": "ПЗ и общие указания задают давления источника 17,5/17,9 атм.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Сохраняется различие единиц и точек задания параметров."
+        },
+        {
+          "claim": "Если подразумевалось 12,5 кгс/см², это меньше приведённых рабочих давлений источника.",
+          "verdict": "conditional_comparison_only",
+          "limits": "Не установлено, что пробное и рабочее давления относятся к одному испытательному участку и режиму. Заголовок выдачи категоричнее условного описания."
+        },
+        {
+          "claim": "Требуется уточнить единицу, границы применения и связь с программой испытаний.",
+          "verdict": "supported_scoped_question",
+          "limits": "Конкретное новое давление, методику и порядок изоляции оборудования по одному сравнению чисел назначать нельзя."
+        },
+        {
+          "claim": "Нарушение СП510 или СП74 подтверждено.",
+          "verdict": "not_established_candidate_only",
+          "limits": "Применимый пункт и цитата отсутствуют; ссылки остаются кандидатами."
+        },
+        {
+          "claim": "Испытания уже проведены при 12,5 и доказан скрытый дефект, повреждение либо недостаточная прочность.",
+          "verdict": "not_established",
+          "limits": "Акты, фактический режим испытания и результаты не проверены. Критическая тяжесть не подтверждается одним этим абзацем."
+        },
+        {
+          "claim": "Рабочие давления первичного контура прямо указаны17,5–17,9кгс/см².",
+          "verdict": "unit_relabel_not_supported_by_literal_source",
+          "limits": "Исходник содержитатм; перевод в технические атмосферы допустим лишь как явная условная трактовка. Новый текст заменил обозначение без этой оговорки."
+        },
+        {
+          "claim": "Доказано,что12,5не обеспечивает предусмотренную проверку прочности.",
+          "verdict": "not_established_test_scope_and_method",
+          "limits": "Условное сравнение чисел не устанавливает единый испытательный участок, методику и программу отключения. Сохранить вопрос о некорректной единице и границах испытания."
+        }
+      ],
+      "unsupported_additions": "Сохранить документальные противоречия давлений; не смешиватьатм,бар,кгс/см², не приравнивать пробное к рабочему, не объявлять уставку фактической при конфликте схемы иСО.",
+      "novel_useful_content": "Второй повтор объединяет связанные приборы и явно добавляет давление теплообменников третьих зон; охват проверен отдельно от предположений о местных режимах.",
+      "duplicate_burden": "One test-instruction scope question; distinct from component allowable-pressure conflicts. Do not count every unspecified circuit as a proven failed test.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F005_test_pressure_scope.json",
+          "sha256": "a7d32222f7f10b1f04ca6b13c42a7ababe200a411e6d0b42cce5ff47abb8648d",
+          "primary_adjudication": null,
+          "limits": "Не установлены расчётные давления для назначения испытания, границы испытательных участков, применимый нормативный пункт и отдельная программа испытаний. В авторитетном TEXT давления источника записаны в атм; эти единицы сохранены. Кг/см нельзя молча заменить на кгс/см². Не доказаны фактическое испытание при12,5, недостаточная прочность, наличие скрытого дефекта или опасное состояние. Не назначать новое давление и порядок отключения оборудования по одному сравнению чисел.",
+          "wording": "В общих указаниях ПД-00542664-ИТП.ТМ, лист1, пробное давление трубопроводов записано «12,5 кг/см» без обозначения контура. Уточнить единицу и область действия указания, согласовав испытательные параметры ввода и внутренних контуров: на аксонометрии Т1/Т2 обозначены17,5/17,9 кгс/см². Ссылку на отдельную программу испытаний, если она предусмотрена, указать в документации."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-006",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-004_pressure_selection_and_setpoint_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
