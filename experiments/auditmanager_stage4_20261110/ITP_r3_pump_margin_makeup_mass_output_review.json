@@ -1,0 +1,877 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "1a1ff469ff0ec98866802c785461905698f461a546819fdbabaf7d8e8fefca55",
+  "queue_after_sha256": "cb1d086ac774126eecdc067783359b701c26f785829436983d90c057a6c1441c",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Подпитка",
+        "sheet": "Листы 9, 12, 13, 14",
+        "page": [
+          47,
+          50,
+          51,
+          52,
+          97,
+          100,
+          103,
+          106,
+          107,
+          110,
+          111,
+          112,
+          113
+        ],
+        "problem": "Расходы подпитки не привязаны к согласованным объёмам и режимам работы.",
+        "description": "Расходы заявлены как 20% объёма системы в час, но исходные объёмы не раскрыты. Значения 6,23; 0,90; 3,63 м³/ч подразумевают соответственно 31,15 м³ для первой зоны, 4,50 м³ для третьей и 18,15 м³ для вентиляции, что не согласовано с анкетами и подборами баков. Не разделены заполнение и постоянная подпитка.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить обоснование расчётных режимов и производительности оборудования подпитки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Разделить режимы заполнения и подпитки, указать расчётные объёмы и согласовать расходы с ХВП и установками поддержания давления.",
+        "risk": "Недостаточная либо необоснованно завышенная производительность водоподготовки и подпитки.",
+        "source_finding_ids": [
+          "T-011"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_a203939b21504fa6935b621a29929d7d"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 47
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 110
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-020:e9f7120697b89e6da747",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-020:2052d4e286115c641e7f",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-020:ddebb96399a114f724d6",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-020:c729cc29afbee39e2ed0",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Подпитка заявлена как20% объёма в час.",
+          "verdict": "hourly_basis_not_explicit_in_source",
+          "limits": "ПЗ содержит20% и расходы м³/ч, но временной коэффициент не раскрыт. Текущая строка выдала трактовку за явно записанное условие."
+        },
+        {
+          "claim": "6,23/0,90/3,63 соответствуют31,15/4,50/18,15м³.",
+          "verdict": "conditional_reverse_arithmetic",
+          "limits": "Только при часовой доле0,2. Это не опубликованные или измеренные объёмы."
+        },
+        {
+          "claim": "Числа расходятся с анкетами и подборами.",
+          "verdict": "confirmed_different_inputs_scope_unresolved",
+          "limits": "Состав контуров, включениеИТП, время и одновременность не установлены. Одинаковый объект расчёта не доказан."
+        },
+        {
+          "claim": "Разделить заполнение и подпитку, согласовать объёмы иХВП.",
+          "verdict": "supported_traceability_question",
+          "limits": "Неверная производительность, нехватка воды или необходимость замены не доказаны;20%не универсальное требование."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены явно заданная часовая доля20%, ошибкаХВП, перерасход энергии, шум и ошибка конструкции оснований.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы исходных объёмов, запаса насосов и состава массы. Не подменять документальное расхождение фактическим отказом. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_950ad44af3d645539b95e38ddad3a8e0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ee2f019eb36f4a43afab4649bd118c31",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b4fb33513ca44182af058d09c8ab2dbb",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-040",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-033"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_pump_margin_makeup_mass"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-021",
+      "finding": {
+        "id": "F-021",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Насосы",
+        "sheet": "Листы 12, 13, 14",
+        "page": [
+          50,
+          51,
+          52,
+          67,
+          68,
+          70,
+          71
+        ],
+        "problem": "Запас напора и расхода насосов не обоснован расчётными режимами.",
+        "description": "Для отопления первой зоны расчёт даёт 74,15 м³/ч и 15,2 м, программа подбора задана на 78 м³/ч и 20 м, выбранная точка — 82,83 м³/ч и 22,53 м. Для второй зоны расчётный напор 15,4 м заменён исходными 20 м. Частотное регулирование заявлено, но частоты и рабочие точки при требуемом расходе не приведены.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.75,
+            "reason": "Проверить расчётное обоснование принятых характеристик оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Обосновать дополнительный запас либо скорректировать подбор; определить частоты, рабочие точки и настройки для расчётных режимов.",
+        "risk": "Избыточное энергопотребление, шум и повышенное дросселирование.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_fed30df45d124919a8b7cc13253733b1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 51
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 67
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 70
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Зона1:ПЗ74,15/15,2; ввод подбора78/20; точка82,83/22,53. Зона2:15,4→20м.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Расходы вм³/ч,напоры вм. ВПЗ уже есть5мзапаса; это не объясняет автоматически следующий переход к20м."
+        },
+        {
+          "claim": "Частотное регулирование предусмотрено, но частоты и требуемые точки не приведены.",
+          "verdict": "confirmed_VFD_bounded_missing_detail",
+          "limits": "К9/К10 содержатSK-712/w. Отсутствие настроек во всём проекте не установлено;АТМ не проверен."
+        },
+        {
+          "claim": "Обосновать дополнительный запас и режим регулирования.",
+          "verdict": "supported_scoped_question",
+          "limits": "Превышение номинальной точки не доказывает перерасход энергии, шум, неверный насос или необходимость замены."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены явно заданная часовая доля20%, ошибкаХВП, перерасход энергии, шум и ошибка конструкции оснований.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы исходных объёмов, запаса насосов и состава массы. Не подменять документальное расхождение фактическим отказом. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_432d08b6de194751ae756f627e3e5bb8",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-015",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-015"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_pump_margin_makeup_mass"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-023",
+      "finding": {
+        "id": "F-023",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Массы оборудования",
+        "sheet": "Листы 2, 2.1, 1., 2.",
+        "page": [
+          8,
+          9,
+          24,
+          25,
+          59,
+          60,
+          73,
+          75,
+          76,
+          82
+        ],
+        "problem": "Массы оборудования не согласованы между экспликацией, спецификацией и паспортными данными.",
+        "description": "Для теплообменников первой и второй зон приведены соответственно 650,88/458,01 и 511,29/384,38 кг. Для насоса греющего контура указаны 284, 181 и 203 кг, для насоса ДОО — 29, 60 и 64 кг. Для К11 IL 40/140-2,2/2-R, артикул 2786083, экспликация даёт 48 кг, технические данные — 57 кг. Заполнение теплоносителем не объясняет все расхождения.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1; ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к указанию характеристик и массы оборудования в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023",
+                "G-037",
+                "G-038"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить обоснование исходных нагрузок на основания оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023",
+                "G-037",
+                "G-038"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подтвердить исполнение и сухую массу изделий, отдельно определить эксплуатационную массу с обвязкой и теплоносителем; обновить нагрузки на основания.",
+        "risk": "Ошибки расчёта оснований, выбора грузоподъёмных средств и организации монтажа.",
+        "source_finding_ids": [
+          "T-023",
+          "G-037",
+          "G-038"
+        ],
+        "source_block_ids": [
+          "blk_396954f77098430281d203e5380eb32e"
+        ],
+        "related_block_ids": [
+          "blk_1601889b50624245a5c590ad23d87175",
+          "blk_396954f77098430281d203e5380eb32e",
+          "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "blk_693e53fec5744b27b721eb667e933ef5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 24
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 73
+          },
+          {
+            "type": "text",
+            "block_id": "blk_396954f77098430281d203e5380eb32e",
+            "page": 75
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-037",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-038",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно расхождение массы насоса К11 IL 40/140-2,2/2-R: 48,0 кг в экспликации и 57 кг на странице PDF 73, разница 9 кг. Указание артикула 2786083 справа не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно расхождение массы насоса К11 IL 40/140-2,2/2-R: 48,0 кг в экспликации и 57 кг на странице PDF 73, разница 9 кг. Указание артикула 2786083 справа не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 99,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "operations"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К1:650,88/458,01;К2:511,29/384,38кг.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "К2 дополнительно проверен вблоках13/49/98. Массы расчётных листов ориентировочные; запрещено автоматически использовать их для конструкторских чертежей."
+        },
+        {
+          "claim": "К14:284/181/203;К12:29/60/64;К11:48/57кг.",
+          "verdict": "confirmed_authoritative_TEXT_same_models",
+          "limits": "К11 артикул2786083. СовпадениеСО и технического листа не доказывает окончательную эксплуатационную массу."
+        },
+        {
+          "claim": "Заполнение теплоносителем не объясняет все расхождения.",
+          "verdict": "explanation_not_established_for_each_item",
+          "limits": "Общие примечания уже разделяют массу без теплоносителя и с обвязкой/теплоносителем. Состав каждой сравниваемой массы и выбранное исполнение требуют адресной сверки."
+        },
+        {
+          "claim": "Согласовать массы и обновить нагрузки на основания.",
+          "verdict": "supported_conditional_followup",
+          "limits": "Фактически принятая конструктором нагрузка, поставка и ошибки основания не проверены. Обновление нужно по подтверждённым исходным данным, не по большинству таблиц."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены явно заданная часовая доля20%, ошибкаХВП, перерасход энергии, шум и ошибка конструкции оснований.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы исходных объёмов, запаса насосов и состава массы. Не подменять документальное расхождение фактическим отказом. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_176aff361f9542daa86a2daecc090272",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_55ab0b4be112477eb9dec207df68000e",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_03477e8997474e0c9053d3984e2d5488",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cf2c8c8d10574e858ad464481044e3de",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
+          "sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9",
+          "primary_adjudication": null,
+          "limits": "Подтверждены различия записей, а не правильность одной массы или ошибка расчёта фундаментов. В примечаниях к планам уже разделены паспортная масса без теплоносителя и масса с обвязкой с учётом теплоносителя. Численные нагрузки графических планов и задания конструкторам здесь не проверены. Масса теплообменника в расчёте названа ориентировочной, уточняемой при поставке; документ запрещает использовать её в конструкторских чертежах. Ошибка монтажных средств и нормативное нарушение не доказаны.",
+          "wording": "Согласовать массы единиц оборудования в экспликации, спецификации и листах подбора: К9 —98/94/90кг; К10 —87/67/67; К11 —48/57/57; К12 —29/60/64; К14 —284/181/203; теплообменник К1 —650,88/458,01/458,01. Уточнить исполнение и состав каждой массы, не смешивая изделие, обвязку и заполнение."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-029",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
+          "sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9",
+          "primary_adjudication": null,
+          "limits": "Подтверждены различия записей, а не правильность одной массы или ошибка расчёта фундаментов. В примечаниях к планам уже разделены паспортная масса без теплоносителя и масса с обвязкой с учётом теплоносителя. Численные нагрузки графических планов и задания конструкторам здесь не проверены. Масса теплообменника в расчёте названа ориентировочной, уточняемой при поставке; документ запрещает использовать её в конструкторских чертежах. Ошибка монтажных средств и нормативное нарушение не доказаны.",
+          "wording": "Согласовать массы единиц оборудования в экспликации, спецификации и листах подбора: К9 —98/94/90кг; К10 —87/67/67; К11 —48/57/57; К12 —29/60/64; К14 —284/181/203; теплообменник К1 —650,88/458,01/458,01. Уточнить исполнение и состав каждой массы, не смешивая изделие, обвязку и заполнение."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_396954f77098430281d203e5380eb32e.png",
+          "sha256": "31ba80944012830d7222bb6907053322400d471911e18146498bec0fae13241a",
+          "block_id": "blk_396954f77098430281d203e5380eb32e",
+          "route": "direct_GRAPHIC_review_of_published_reference",
+          "observation": "Габаритные размеры и схема подключения;значение массы отсутствует на этом листе.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_396954f77098430281d203e5380eb32e.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-055",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-028"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "direct_authoritative_TEXT",
+          "observation": "K2 explication511.29, specification and selection384.38kg; no final structural load inferred."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "direct_authoritative_TEXT",
+          "observation": "K2 explication511.29, specification and selection384.38kg; no final structural load inferred."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+          "route": "direct_authoritative_TEXT",
+          "observation": "K2 explication511.29, specification and selection384.38kg; no final structural load inferred."
+        }
+      ],
+      "disposition": "assessed_r3_ITP_pump_margin_makeup_mass"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Three current ITP findings assessed against frozen prior reviews and identical source hashes. F023 adds prior F055 and direct K2 mass TEXT checks. Hourly assumption in F011 explicitly constrained. No new raster, equipment passport or engineer acceptance."
+}
