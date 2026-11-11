@@ -32,7 +32,7 @@ async def main(execute):
     immutable(ROOT/'binding.json', {'source_candidate_sha256':evidence_digest(old),
         'request_sha256':evidence_digest(request), 'model':'codex/gpt-6-astra',
         'history_or_engineer_answers_supplied':False,'previous_adjudication_supplied':False,
-        'automatic_retries':0,'reason':'Previous decision used free prose as report severity.'})
+        'automatic_retries':0,'reason':('Evaluate the explicit user output profile without expected routing.' if FID == 'F-032' else 'Previous decision used free prose as report severity.')})
     print('PREPARED', sum(len(m['content']) for m in request['messages']), flush=True)
     if not execute:return
     os.environ['CODEX_TRANSIENT_RETRIES']='0'
