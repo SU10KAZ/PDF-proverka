@@ -1,0 +1,12 @@
+{
+  "status": "54_experimental_runs_frozen_not_started",
+  "trial": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/experimental_collection_trial.json",
+    "sha256": "498365eedd24db107dce07f9079a95f72e7a1205b4bc0a54a5fdbf7693f3cac8"
+  },
+  "runs": 54,
+  "model_calls": 0,
+  "combined_candidate_admitted": false,
+  "stage4_complete": false,
+  "production_acceptance": false
+}
