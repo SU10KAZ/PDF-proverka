@@ -1,0 +1,111 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-068",
+      "status": "confirmed_labels_scope_question_route_unresolved",
+      "review_reason": "Прямо прослежены M1:L/N→29/30 и M2:U/V/W→29/30/31. Группы нарисованы раздельно в ШАУВ-4-К4ПЧ без собственных марок клеммников. Примечание2 прямо требует уточнения у изготовителя. Полные адреса требуют согласования;электрическое объединение не доказано. Сохранить вопрос. Эталонная техническая тема AK14 пересекается с вопросом F054,маршрут ещё не разрешён.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_96ed7d88fb23414bb14d93191a89365a.png",
+        "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+        "sha256": "8e69fe04c4bd1743063db50a61e17c1813f8a1214949ff6c8855abc3ed3bf1bb",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_5dea9af6d2bd4d0ea0674db8bd79f38c",
+          "start": 173360,
+          "end": 174092,
+          "sha256": "75553a7fbe8ab42af1c514dcee2c36fb2e3c57bfe84ed1a8f35671c98b412fe0"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-069",
+      "status": "confirmed_labels_scope_question_route_unresolved",
+      "review_reason": "У PDS4/PDS5 прямо видны отдельные группы23/24,у M1/M2 —29/30/31 в ШАУВ-3-К5ПЧ. Примечание2 предусматривает уточнение у изготовителя. Подтверждены повторные подписи,не общие электрические цепи. Вопрос полных адресов сохраняется;конфликт маршрутов AK14/F055 не разрешён. Внутренняя ссылка F-036 в дополнении не является финальным ID и требует исправления публикации.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_f784be4786274e8c84f32d874ed99969.png",
+        "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+        "sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_053f940839a3432681679d67d2fdadda",
+          "start": 191294,
+          "end": 192091,
+          "sha256": "7cca33f650763e01078c89ef317a5794bd1c4647be54cb083df7ebdf3b6c3d7c"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-070",
+      "status": "confirmed_document_conflict",
+      "review_reason": "Под заголовком привода воздухозаборного клапана Пн5.1 позицияY4 подключена черезХТ5:левая линия питания Пн5.1-17,правая линия контактов Ва3.1-18. Прослежены связи коробки и принадлежность той же колонки. Расхождение префикса подтверждено;требование согласовать с КЖ обосновано без автоматического назначения новой марки.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+        "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+        "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-071",
+      "status": "confirmed_document_conflict",
+      "review_reason": "ПозицияM2 видна у резервного вентилятора Пн5.1р сU/V/W/PE и у циркуляционного насоса Пн5.1 сL/N/PE. Два разных объекта одного ШАУВ-4-К5ПЧ имеют отдельные линии Пн5.1-9 иПн5.1-21. Сохранить неоднозначность идентификации;правильную заменяющую марку определить при согласовании,не выводить из повторения.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+        "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+        "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-072",
+      "status": "confirmed_document_conflict",
+      "review_reason": "Y7 прямо повторена в колонке регулирующего клапана теплоносителя Пн5.1 сХТ1 и колонке воздушного клапана Вн5.1 сХТ8. Различаются назначения,питание/управление и физические изображения. Документальное несогласование подтверждено;ошибка фактического монтажа не утверждается.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+        "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+        "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-076",
+      "status": "confirmed_drawing_omission",
+      "review_reason": "У M1/M2 насоса видныL/N/PE и жилы1/2/3. У4-2 подписан ППГнг(А)-HF3×1,5;со стороны блока диспетчеризации у этой линии показаны лишь1/2 наH2/P,N. Отдельный PE ввода питания блока не является изображённым подключением третьей жилы У4-2. Подтверждено отсутствие этой связи на схеме;реальное заземление за пределами листа неизвестно.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+        "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+        "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}

@@ -625,36 +625,70 @@
       "finding_id": "F-068",
       "problem": "Клеммы 29 и 30 повторно обозначают подключения разных двигателей шкафа ШАУВ-4-К4ПЧ.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_labels_scope_question_route_unresolved",
+      "engineer_decision": null,
+      "review_reason": "Прямо прослежены M1:L/N→29/30 и M2:U/V/W→29/30/31. Группы нарисованы раздельно в ШАУВ-4-К4ПЧ без собственных марок клеммников. Примечание2 прямо требует уточнения у изготовителя. Полные адреса требуют согласования;электрическое объединение не доказано. Сохранить вопрос. Эталонная техническая тема AK14 пересекается с вопросом F054,маршрут ещё не разрешён.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_connections_review_20261112.json",
+        "sha256": "e87abd3dfd7817f35d33ef96c4a62fb2abf192217e0e14bdfb8228fd17fc688e"
+      },
+      "source_review_complete_for_published_claims": true,
+      "proposed_section": "questions",
+      "route_acceptance": "unresolved_evaluator_overlap"
     },
     {
       "finding_id": "F-069",
       "problem": "Повторены обозначения клемм разных цепей ШАУВ-3-К5ПЧ без обозначения отдельных клеммных групп.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_labels_scope_question_route_unresolved",
+      "engineer_decision": null,
+      "review_reason": "У PDS4/PDS5 прямо видны отдельные группы23/24,у M1/M2 —29/30/31 в ШАУВ-3-К5ПЧ. Примечание2 предусматривает уточнение у изготовителя. Подтверждены повторные подписи,не общие электрические цепи. Вопрос полных адресов сохраняется;конфликт маршрутов AK14/F055 не разрешён. Внутренняя ссылка F-036 в дополнении не является финальным ID и требует исправления публикации.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_connections_review_20261112.json",
+        "sha256": "e87abd3dfd7817f35d33ef96c4a62fb2abf192217e0e14bdfb8228fd17fc688e"
+      },
+      "source_review_complete_for_published_claims": true,
+      "proposed_section": "questions",
+      "route_acceptance": "unresolved_evaluator_overlap"
     },
     {
       "finding_id": "F-070",
       "problem": "Кабель контактов Y4 системы Пн5.1 имеет обозначение Ва3.1-18.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Под заголовком привода воздухозаборного клапана Пн5.1 позицияY4 подключена черезХТ5:левая линия питания Пн5.1-17,правая линия контактов Ва3.1-18. Прослежены связи коробки и принадлежность той же колонки. Расхождение префикса подтверждено;требование согласовать с КЖ обосновано без автоматического назначения новой марки.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_connections_review_20261112.json",
+        "sha256": "e87abd3dfd7817f35d33ef96c4a62fb2abf192217e0e14bdfb8228fd17fc688e"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-071",
       "problem": "Позиция M2 присвоена двум разным двигателям одного шкафа.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "ПозицияM2 видна у резервного вентилятора Пн5.1р сU/V/W/PE и у циркуляционного насоса Пн5.1 сL/N/PE. Два разных объекта одного ШАУВ-4-К5ПЧ имеют отдельные линии Пн5.1-9 иПн5.1-21. Сохранить неоднозначность идентификации;правильную заменяющую марку определить при согласовании,не выводить из повторения.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_connections_review_20261112.json",
+        "sha256": "e87abd3dfd7817f35d33ef96c4a62fb2abf192217e0e14bdfb8228fd17fc688e"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-072",
       "problem": "Позиция Y7 присвоена регулирующему и воздушному клапанам.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Y7 прямо повторена в колонке регулирующего клапана теплоносителя Пн5.1 сХТ1 и колонке воздушного клапана Вн5.1 сХТ8. Различаются назначения,питание/управление и физические изображения. Документальное несогласование подтверждено;ошибка фактического монтажа не утверждается.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_connections_review_20261112.json",
+        "sha256": "e87abd3dfd7817f35d33ef96c4a62fb2abf192217e0e14bdfb8228fd17fc688e"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-073",
@@ -693,8 +727,14 @@
       "finding_id": "F-076",
       "problem": "На схеме не показано подключение защитной жилы У4-2 со стороны БД-ТЗ1.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_drawing_omission",
+      "engineer_decision": null,
+      "review_reason": "У M1/M2 насоса видныL/N/PE и жилы1/2/3. У4-2 подписан ППГнг(А)-HF3×1,5;со стороны блока диспетчеризации у этой линии показаны лишь1/2 наH2/P,N. Отдельный PE ввода питания блока не является изображённым подключением третьей жилы У4-2. Подтверждено отсутствие этой связи на схеме;реальное заземление за пределами листа неизвестно.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_connections_review_20261112.json",
+        "sha256": "e87abd3dfd7817f35d33ef96c4a62fb2abf192217e0e14bdfb8228fd17fc688e"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-077",
@@ -784,6 +824,6 @@
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 27,
-  "unchecked_findings": 58
+  "reviewed_findings": 33,
+  "unchecked_findings": 52
 }
