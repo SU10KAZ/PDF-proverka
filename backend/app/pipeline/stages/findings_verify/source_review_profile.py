@@ -1,0 +1,3 @@
+"""Shared user output profile; severity and report section are separate decisions."""
+
+OUTPUT_PROFILE = 'User output profile: confirmed minor editorial issues and out-of-profile requests belong in the separate questions section. Establish minor significance or out-of-profile scope with positive case-specific reasons, not merely absence of a proved accident, equipment replacement, or normative breach. A recommendation severity does not itself determine report_section. Keep confirmed technical discrepancies technical when that profile exception is not justified; distinguish an unresolved applicability question from a proven technical defect. Explain the chosen profile in reason.'
