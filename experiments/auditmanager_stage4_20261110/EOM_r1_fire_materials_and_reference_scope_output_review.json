@@ -1,0 +1,838 @@
+{
+  "status": "four_scoped_TEXT_reviews_no_supply_or_fire_performance_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "2b03578333c1444b5bfbf085888257bfae750546fb3c39225e628f96e97f03c6",
+  "queue_after_sha256": "27925dad26e11c2922aea66a6d50f69b3835cfd00668e74e77d0ec05d5025fa0",
+  "reviewer": "coordinator_authoritative_TEXT_review",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Пожарная безопасность",
+        "sheet": "Листы 25, 20",
+        "page": [
+          27,
+          56
+        ],
+        "problem": "Материал огнезащиты подвесов ОСК-180 не учтён в итоговой спецификации.",
+        "description": "Локальная спецификация предусматривает МБОР толщиной 10 мм и плотностью 80–100 кг/м³ для защиты подвесов. Итоговая спецификация содержит ФК-10, решётки, утеплитель и герметик, но отдельная позиция МБОР, количество или указание на включение в комплект отсутствуют.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1; ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Полнота спецификации материалов предусмотренного узла.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.85,
+            "reason": "Сохранение работоспособности электропроводок СПЗ при пожаре с учётом креплений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Добавить МБОР с рассчитанным количеством либо указать его включение в комплект огнезащиты подвесов.",
+        "risk": "Некомплектная поставка и выполнение огнезащиты с отступлением от предусмотренного узла.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+            "page": 27
+          },
+          {
+            "type": "text",
+            "block_id": "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+            "page": 56
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F043_hanger_fireproofing_supply:2828cd141e6335bf59ca",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Локальная спецификация содержит МБОР 10 мм, 80–100 кг/м³ для защиты подвесов.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "В итоговой таблице есть ФК-10 250 шт., решётки 24 шт., ТЕХНОВЕНТ 50 мм 500 шт. и ОГ-20 15 шт.; отдельная строка МБОР не найдена.",
+          "verdict": "confirmed_scoped_TEXT_search",
+          "limits": "Поиск по TEXT спецификации не является проверкой поставки или всех смежных комплектов."
+        },
+        {
+          "claim": "ТЕХНОВЕНТ 50 мм автоматически заменяет МБОР 10 мм.",
+          "verdict": "not_supported",
+          "limits": "Разные характеристики и назначение; допустимость замены не установлена."
+        },
+        {
+          "claim": "Уточнить количество МБОР или включение в комплект.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не определены площадь покрытия подвесов и комплектность поставщика."
+        },
+        {
+          "claim": "Огнезащита фактически отсутствует или поставка некомплектна.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Указанные нормативные кандидаты и пункты.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Оценены внутренние требования проекта; нормативное нарушение не подтверждено."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F020_hanger_protection_distinct_from_F029_penetration_sealing; grouping_opportunity_not_same_defect",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F043_hanger_fireproofing_supply.json",
+          "sha256": "c635932a8d19138d1870cc16af9486c5aeab7f54456fa941f43692eb5b52e434",
+          "primary_adjudication": null,
+          "limits": "Проверены локальная таблица, разрез и полные листы19–20 СО. Не выполнен полный семантический поиск альтернативных наименований и комплектов по всем поставочным документам. Нельзя утверждать отсутствие во всей поставке. ТЕХНОВЕНТ50мм в СО не отождествляется автоматически с МБОР10мм для подвесов. Ни эквивалентность материалов, ни фактическое отсутствие защиты, ни недостаточная огнестойкость не установлены. Название ОСК-180 не доказывает паспортную огнестойкость конкретного исполнения.",
+          "wording": "Локальная спецификация ОСК-180 предусматривает МБОР10мм для защиты подвесов (позиция5). В прочитанном разделе общей СО, листы19–20, отдельная позиция МБОР не указана; на листе20 есть утеплитель50мм для другого слоя. Уточните позицию учёта, количество и комплектность материала защиты подвесов."
+        }
+      ],
+      "disposition": "assessed_preserve_hanger_material_accounting_question"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-022",
+      "finding": {
+        "id": "F-022",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Пожарная безопасность",
+        "sheet": "Листы 1, 15, 16, 18, 19, 20, 21",
+        "page": [
+          3,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "problem": "Формулировки о лотках СПЗ и потребителей I категории допускают неоднозначное толкование.",
+        "description": "Общие указания запрещают совместную прокладку линий СПЗ с другими кабелями на одном лотке. Примечания требуют проложить «линии нагрузки I-категории и нагрузки СПЗ в отдельном лотке», а легенда содержит общее обозначение. Не исключено прочтение как разрешения совместной прокладки с потребителями I категории, не относящимися к СПЗ. Фактическая совместная прокладка не установлена.",
+        "norm": "ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён; СП 6.13130.2025 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Обеспечение работоспособности электропроводок СПЗ при пожаре.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 6.13130.2025",
+            "cited_designation": "СП 6.13130.2025",
+            "candidate_relevance": 0.95,
+            "reason": "Условия раздельной и совместной прокладки линий СПЗ; применимость указанной в проекте редакции подлежит проверке.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "Замечание и перечень нормативных ссылок проекта"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Разделить обозначения и уточнить примечания так, чтобы принадлежность каждого лотка и условия прокладки были однозначными.",
+        "risk": "Ошибочное объединение сетей при монтаже вследствие неоднозначного указания.",
+        "source_finding_ids": [
+          "T-023"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+            "page": 18
+          },
+          {
+            "type": "text",
+            "block_id": "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+            "page": 19
+          },
+          {
+            "type": "text",
+            "block_id": "blk_628818db493e46e7bdccc75b01afbd16",
+            "page": 23
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 94,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F042_SPZ_legend_scope:1b019c967f9372026bd1",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Общие указания запрещают совместную прокладку СПЗ с другими кабелями на одном лотке.",
+          "verdict": "confirmed_project_requirement",
+          "limits": ""
+        },
+        {
+          "claim": "Примечание 8 объединяет нагрузки I категории и СПЗ словами в отдельном лотке; легенда содержит общее обозначение.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Нужна однозначная формулировка о разделении соответствующих трасс.",
+          "verdict": "supported_scoped_question",
+          "limits": "Общее условное обозначение само по себе не предписывает совместную прокладку; общий запрет следует учитывать при чтении примечания."
+        },
+        {
+          "claim": "Проектом доказана совместная прокладка либо нарушение огнестойкости.",
+          "verdict": "not_established",
+          "limits": "Замечание само сохраняет эту оговорку; топология отдельных лотков здесь не проверена."
+        },
+        {
+          "claim": "Указанные нормативные кандидаты и пункты.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Оценены внутренние требования проекта; нормативное нарушение не подтверждено."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F020_hanger_protection_distinct_from_F029_penetration_sealing; grouping_opportunity_not_same_defect",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_628818db493e46e7bdccc75b01afbd16",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F042_SPZ_legend_scope.json",
+          "sha256": "8c770016e591be6e1ee95b9176a5d5aba5cbfd37c147f904cd2563a9209e4b3d",
+          "primary_adjudication": null,
+          "limits": "Прочитаны полные TEXT общих указаний и четырёх легенд. Графические знаки легенд в этой проверке не просмотрены, поэтому идентичность самих условных знаков не установлена. Конкретные трассы, принадлежность кабелей к СПЗ, состав лотков и фактический монтаж не проверены. Требование разделения — требование данного проекта, его наличие не доказывает ни соблюдение, ни нарушение. Текст также содержит отдельный «Лоток нагрузок I категории» и «Подъем/опуск СПЗ или I категории кабельных линий». Вывод не распространяется автоматически на все листы.",
+          "wording": "В текстах легенд листов18–21 указано «Кабель проложенный в лотке СПЗ и нагрузок I категории», тогда как общие указания запрещают совместную прокладку СПЗ с другими кабелями на одном лотке. Уточните, как на планах различаются эти трассы и их состав; объединённая формулировка сама по себе не устанавливает физическое объединение."
+        }
+      ],
+      "disposition": "assessed_preserve_SPZ_wording_question_no_topology_violation"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-024",
+      "finding": {
+        "id": "F-024",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Ссылки на правила безопасности и эксплуатации не имеют достаточных реквизитов.",
+        "description": "В разделе «Техника безопасности» приведено сокращение «МПБЭЭ» без реквизитов, вероятно обозначающее прежние межотраслевые правила. Для правил технической эксплуатации электроустановок потребителей не указаны приказ и редакция.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Указать точные реквизиты применимых на дату работ правил охраны труда и эксплуатации.",
+        "risk": "Неоднозначное определение обязательных требований при организации работ и эксплуатации.",
+        "source_finding_ids": [
+          "T-025"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_76d1760dd5b34882a0df18538f78e39b",
+            "page": 3
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 80,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "operations"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F044_F045_incomplete_reference_identity:922b40879439f8fa0153",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "EOM_F044_F045_incomplete_reference_identity:43be2c9d093d757ce864",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В разделе 7 приведены МПБЭЭ и правила технической эксплуатации без приказа и редакции.",
+          "verdict": "confirmed_local_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "МПБЭЭ обозначает конкретные отменённые межотраслевые правила.",
+          "verdict": "unresolved_abbreviation_identity",
+          "limits": "В выдаче вероятно; нельзя превращать предположение в установленный статус нормативного документа."
+        },
+        {
+          "claim": "Уточнить реквизиты применимых правил.",
+          "verdict": "supported_editorial_question",
+          "limits": "Обязательность указания приказа и редакции непосредственно в этом месте не проверена; технического дефекта не установлено."
+        },
+        {
+          "claim": "Фактическое применение устаревших требований при работах.",
+          "verdict": "not_established",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F020_hanger_protection_distinct_from_F029_penetration_sealing; grouping_opportunity_not_same_defect",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_76d1760dd5b34882a0df18538f78e39b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F044_F045_incomplete_reference_identity.json",
+          "sha256": "ea77298204f5f47fec14183ada91f47f7de67218bd30c44c9a3164e9ef567fc9",
+          "primary_adjudication": null,
+          "limits": "Проверены полные TEXT общих указаний и ведомости ссылочных документов. Неполнота установлена в конкретном предложении раздела7, а не в строках ведомости; исходная локализация «в перечне» уточнена. Не доказано отсутствие реквизитов во всех смежных документах или неопределённость всей нормативной основы. Раздел8 содержит конкретные меры защиты, а раздел7 также ссылается на ПУЭ. Актуальность и применимость подразумеваемых правил не проверялись; конкретную замену документа не назначать. Нормативное нарушение и влияние на оборудование не установлены.",
+          "wording": "В разделе7 «Техника безопасности» общих данных ссылка «МПБЭЭ» дана без расшифровки и реквизитов, а правила технической эксплуатации электроустановок потребителей — без номера и даты утверждения. Уточните подразумеваемые документы и редакции в этом предложении."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F044_F045_incomplete_reference_identity.json",
+          "sha256": "ea77298204f5f47fec14183ada91f47f7de67218bd30c44c9a3164e9ef567fc9",
+          "primary_adjudication": null,
+          "limits": "Проверены полные TEXT общих указаний и ведомости ссылочных документов. Неполнота установлена в конкретном предложении раздела7, а не в строках ведомости; исходная локализация «в перечне» уточнена. Не доказано отсутствие реквизитов во всех смежных документах или неопределённость всей нормативной основы. Раздел8 содержит конкретные меры защиты, а раздел7 также ссылается на ПУЭ. Актуальность и применимость подразумеваемых правил не проверялись; конкретную замену документа не назначать. Нормативное нарушение и влияние на оборудование не установлены.",
+          "wording": "В разделе7 «Техника безопасности» общих данных ссылка «МПБЭЭ» дана без расшифровки и реквизитов, а правила технической эксплуатации электроустановок потребителей — без номера и даты утверждения. Уточните подразумеваемые документы и редакции в этом предложении."
+        }
+      ],
+      "disposition": "assessed_preserve_reference_identity_question_no_obsolete_rule_assertion"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-029",
+      "finding": {
+        "id": "F-029",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Пожарная безопасность",
+        "sheet": "Листы 1, 15, 16, 18, 19, 20, 21",
+        "page": [
+          3,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          55,
+          56
+        ],
+        "problem": "Не раскрыт учёт материалов для всех предусмотренных противопожарных проходок.",
+        "description": "Примечания предусматривают заделку гильз противопожарной пеной или огнезащитным составом и проходки лотков через преграды. Итоговая спецификация раскрывает две модульные проходки НТМ и материалы ОСК, но не показывает отдельные объёмы для остальных проходов в гильзах и через перекрытия. Две модульные проходки сами по себе не подтверждают комплектность всех пересечений.",
+        "norm": "ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён; ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.95,
+            "reason": "Требования к кабельным проходкам через строительные конструкции.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-030"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-030"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Полнота количественного учёта материалов проходок.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-030"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-030"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Составить перечень проходок с типами и объёмами материалов; дополнить спецификацию либо дать точную ссылку на комплект их учёта.",
+        "risk": "Отсутствие материалов для части пересечений и выполнение заделок с отступлением от проектных решений.",
+        "source_finding_ids": [
+          "T-030"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+            "page": 18
+          },
+          {
+            "type": "text",
+            "block_id": "blk_628818db493e46e7bdccc75b01afbd16",
+            "page": 23
+          },
+          {
+            "type": "text",
+            "block_id": "blk_82bd0b6201d04037beca3195d87933ce",
+            "page": 55
+          },
+          {
+            "type": "text",
+            "block_id": "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+            "page": 56
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 68,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Примечания предусматривают пену или огнезащитный состав для гильз и противопожарные проходки для лотков.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "СО раскрывает проходки через стену №1 и №2, а также ФК-10, утеплитель и ОГ-20.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Эти позиции не дают поимённой ведомости всех пересечений и расхода материалов для каждого из них.",
+          "verdict": "supported_scoped_accounting_question",
+          "limits": "Общее указание не устанавливает конкретное количество дополнительных проходов."
+        },
+        {
+          "claim": "Доказана недостача материалов для остальных проходов.",
+          "verdict": "not_established",
+          "limits": "Не выполнено сопоставление фактических пересечений с двумя модульными проходками, расходом ОГ-20, комплектами и смежными томами."
+        },
+        {
+          "claim": "Нужна сверка перечня пересечений и мест учёта материалов.",
+          "verdict": "supported_scoped_followup",
+          "limits": "Не требовать автоматического добавления материалов без этой сверки."
+        },
+        {
+          "claim": "Указанные нормативные кандидаты и пункты.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Оценены внутренние требования проекта; нормативное нарушение не подтверждено."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_source_supported_question_usefulness_unestablished",
+      "duplicate_burden": "F020_hanger_protection_distinct_from_F029_penetration_sealing; grouping_opportunity_not_same_defect",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_628818db493e46e7bdccc75b01afbd16",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_82bd0b6201d04037beca3195d87933ce",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_unmapped_penetration_accounting_question_not_proven_shortage"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+      "authoritative_TEXT": "### BLOCK #121 [TEXT]: blk_c995ba0cdd7f4f6fa9cffb30c05b8c27\n\n> **Created:** 2026-10-20 12:14:31 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/VWo6mj_S4cpeJTyd0dDX)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: Р | Sheet: 25 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nСПЕЦИФИКАЦИЯ МАТЕРИАЛОВ\n\n| № поз. | Наименование | Артикул |\n|---|---|---|\n| 1 | Плита огнезащитная \"ФК-10\" |  |\n| 2 | Вентиляционная решётка \"ВР\" |  |\n| 3 | Вата минеральная; толщина 50 мм, плотность 80 кг/м³, негорючая, без покрытия |  |\n| 4 | Шпилька стальная оцинкованная (М8(10)*) |  |\n| 5 | Огнезащитный материал для защиты подвесов - МБОР (толщина 10 мм, плотность 80-100 кг/м³, негорючий, без покрытия) |  |\n| 6 | Уголок стальной оцинкованный 40x40x1 (не менее 1 мм) |  |\n\n## Page 28 — Sheet 26 — Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+      "authoritative_TEXT": "### BLOCK #208 [TEXT]: blk_8a5db6616dac4b8bbe73c13b7c54a140\n\n> **Created:** 2026-10-20 12:14:59 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/uYYAM07jA_OloXKR6VsH)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 20 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | Кабельные проходка через стену №2 |  |  |  |  |  |  |  |\n|  | Рама монтажная НТМ-РМ28.3х1/Н |  | НТМ-РМ28.3х1/Н | НТМ | шт. | 1 |  |  |\n|  | Рама ответная НТМ-Р028.3х1/Н (глубина 100 мм) |  | НТМ-Р028.3х1/Н | НТМ | шт. | 1 |  |  |\n|  | Пресс-блок НТМ-ПБМ120/Н |  | НТМ-ПБМ120/Н | НТМ | шт. | 3 |  |  |\n|  | Пластина опорная НТМ-ОП120/Н |  | НТМ-ОП120/Н | НТМ | шт. | 20 |  |  |\n|  | Пластина опорная фиксаторная НТМ-ОПФ120/Н |  | НТМ-ОПФ120/Н | НТМ | шт. | 3 |  |  |\n|  | Лента уплотнительная НТМ-ЛУ |  | НТМ-ЛУ | НТМ | шт. | 4 |  |  |\n|  | Смазка монтажная НТМ-СМ |  | НТМ-СМ | НТМ | шт. | 3 |  |  |\n|  | Прижимное устройство НТМ-ПУ |  | НТМ-ПУ | НТМ | шт. | 1 |  |  |\n|  | Транзитный модуль НТМ40/23-34 |  | НТМ40/23-34 | НТМ | шт. | 20 |  |  |\n|  | Домкрат монтажный универсальный НТМ-ДМУ |  | НТМ-ДМУ | НТМ | шт. | 1 |  |  |\n|  | Транзитный модуль НТМ30/10-26 |  | НТМ30/10-26 | НТМ | шт. | 10 |  |  |\n|  | Транзитный модуль НТМ30/13-23 |  | НТМ30/13-23 | НТМ | шт. | 28 |  |  |\n|  | Транзитный модуль НТМ20/3-16 |  | НТМ20/3-16 | НТМ | шт. | 20 |  |  |\n|  | Модуль-заглушка НТМ40/0 |  | НТМ40/0 | НТМ | шт. | 3 |  |  |\n|  | Модуль-заглушка НТМ30/0 |  | НТМ30/0 | НТМ | шт. | 2 |  |  |\n|  | Модуль-заглушка НТМ20/0 |  | НТМ20/0 | НТМ | шт. | 14 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Плита огнестойкая 1200х1200мм |  | ФК-10 | 2Ф | шт. | 250 |  |  |\n|  | Вентиляционная решетка \"ВР\" |  |  | 2Ф | шт. | 24 |  |  |\n|  | Утеплитель ТЕХНОВЕНТ СТАНДАРТ, 1200х600х50 мм 80кг/м3 |  |  | Технониколь | шт. | 500 |  |  |\n|  | Герметик ОГ-20 |  |  | 2Ф | шт. | 15 |  |  |\n|  |  |  |  |  |  |  |  |  |\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+      "authoritative_TEXT": "### BLOCK #7 [TEXT]: blk_d90c772851514a0a9c65cdd019e56957\n\n> **Created:** 2026-10-20 12:13:57 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Kr35r5m33WciOWc7BEKx)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1 | Stage: П | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Общие данные. | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nпредусматриваются две ВРУ; ВРУ-С2 и ВРУ-З, расположенные на первом подземном этаже паркинга. Кабельные линии от ГРЩ до ВРУ прокладываются в лотках до точек подъема вертикальной трассы и изолируются строительными конструкциями из плит «2Ф» (либо аналог с соблюдением технических характеристик) с пределом огнестойкости EI 180. Проекты трансформаторных подстанций, ГРЩ, а так же питающие кабельные сети до ВРУ других пожарных отсеков разрабатываются отдельно, в других томах.\n\nВертикальные трассы прокладываются в лотках и коробах в шахтах-нишах с дверями с необходимым пределом огнестойкости. Перекидка трасс по горизонту предусмотрена на первом техническом этаже и на десятом техническом этаже.\n\nСекция С2 и С3 в своем составе имеют потребителей, обособленных в административно-хозяйственном отношении: жилая часть и нежилые помещения (коммерческие помещения). Для каждого потребителя предусматриваются собственные вводно-распределительные устройства (ВРУ) или распределительные щиты, расположенные на 1-ом этаже жилого комплекса в электрощитовых помещениях.\n\nЭлектроснабжение каждого ВРУ предусматривается по двум взаиморезервируемым кабельным линиям от разных секций ГРЩ (РУ-0,4кВ).\n\nНа период механизации в коммерческих помещениях устанавливаются щиты механизации для проведения строительных работ.\n\nДля электроснабжения квартир предусматриваются щитовые устройства этажные распределительные навесные на каждом жилом этаже питающиеся от ВРУ своей секции. Внутриквартирный щит устанавливается силами собственника. Все распределительные щиты применены настенного исполнения. Степень защиты IP соответствует месту установки.\n\n###### 3. Описание электроприемников\n\nОсновные электрические потребители секций С2 и С3 являются:\n\n- электроосвещение рабочее и аварийное,\n\n- розеточные сети и силовые сети,\n\n- автоматическая пожарная система,\n\n- система оповещения и управления эвакуацией,\n\n- слаботоковые системы,\n\n- системы автоматизации и диспетчеризации здания,\n\n- лифтовое хозяйство, в том числе лифты передвижения пожарных бригад,\n\n- кондиционирование МОП,\n\n- вентиляция общеобменная,\n\n- вентиляция противодымная, в том числе огнезадерживающие клапана и противодымные\n\n- фасадное освещение.\n\nЭлектроприемники, относящиеся к I категории надежности электроснабжения, запитываются непосредственно от распределительных панелей АВР I категории, по двум независимым вводам. Питание потребителей ПЭСПЗ запитывается через распределительные панели с АВР ПЭСПЗ, по двум независимым вводам.\n\n###### 4. Кабели электрооборудования\n\nПроектируемые распределительные и групповые сети З80/220В выполнены по системе TN-C-S, т.е. по трех- или пятипроводной схеме (1 или 3 фазы + нейтраль + защитный заземляющий проводник (РЕ)).\n\nВсе сети выполнены кабелями с медными жилами с ПВХ изоляцией и не поддерживающие горение ПВХ оболочкой, с низким дымовыделением типа ППГнг(A)-HF.\n\nЭлектрические потребители систем противопожарной защиты (ПЭСПЗ) осуществляется огнестойким кабелем ППГнг(A)-FRHF.\n\nНе допускается совместная прокладка кабельных линий СПЗ с другими кабелями и проводами в одном коробе, трубе, жгуте, замкнутом канале строительной конструкции или на одном лотке.\n\nЭлектрические сети II категории zaproектированы кабелем марки ППГнг(A)-HF.\n\nДля цветового и цифрового обозначения отдельных изолированных или неизолированных проводников должны быть использованы цвета и цифры в соответствии с ГОСТ Р 50462-2009 \"Базовые принципы и принципы безопасности для интерфейса «человек-машина», выполнение и идентификация. Идентификация проводников посредством цветов и буквенно-цифровых обозначений\" (ПУЭ п.1.1.29).\n\nСети потребителей ПЭСПЗ выполнить огнестойкой кабельной линией (ОКЛ), имеющей сертификат на системное решение, включающее набор маркоразмеров кабеля и соответствующий тип кабеленесущей системы, металлического крепежа, включенных в состав сертификата.\n\nМеста прохода проводов и кабелей через стены, междуэтажные перекрытия необходимо выполнять в металлических трубах. С целью предотвращения проникновения и скопления воды и распространения пожара в местах прохода кабелей через стены, перекрытия следует выполнять заделку проходок легкоудаляемой массой из негорящего материала. Заделка должна допускать замену, дополнительную прокладку новых проводов и кабелей и обеспечивать\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+      "authoritative_TEXT": "### BLOCK #63 [TEXT]: blk_b3482bfd0cc04cb8b9f47c726e9147f3\n\n> **Created:** 2026-10-20 12:14:15 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/KceX0FbPCw6DjUbSVfAK)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1 | Stage: П | Sheet: 15 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лодачевского, земельный участок 120/2 | Наименование листа: Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Примечания:\n\n1. Разводку кабельной групповой сети выполнить в лотке, за подшивным/повесным потолком скрыто.\n\n2. Опуски с лотков в административных помещениях выполнить в ПВХ гофрированной трубе скрыто по бетонному потолку и стенам здания при помощи специального крепления (клипс), а также в штробах стен. Борозды штроб заделать строительной смесью.\n\n3. Прокладку кабельных линий на лестничных клетках выполнить скрыто в штробе стены, распачные коробки выполнить скрыто.\n\n2. Опуски с лотков в технических помещениях выполнить в ПВХ гофрированной трубе или гладкой ПВХ трубе открыто по бетонному потолку и стене при помощи специального крепления (клипс).\n\n3. Установочные размеры и высоты светильников, розеток, выключателей, и другого оборудования принимать строго по разделу АИ и ТХ, в данном разделе размеры могут быть указаны справочно дополнительно.\n\n4. Ответвления и отпайки выполнить в распачных (ответвительных) коробках или непосредственно в установочных коробках (подрозетниках). Ответвительные коробки устанавливать (как правило) на торце лотка, на специальную установочную пластину.\n\n5. Запас кабеля на разделку оставлять 0,3м.\n\n6. Высоту установки выключателей в бытовых, административных и технических помещениях принять 0,8м\n\n7. Отступать расстояние 0,6м от смежных инженерных коммуникаций и оборудования (пожарные датчики и прочее).\n\n8. Кабельные линии нагрузки I-категории и нагрузки СПЗ (систем противопожарной защиты) проложить в отдельном лотке. Кабельные линии СПЗ должны быть выполнены сертифицированной огнестойкой кабельной линией (ОКЛ).\n\n9. Сквозные проходы кабелей через стену выполнить с использованием гильз из труб ВГП. Гильзу герметизировать в месте сквозного прохода через стену, кабели в гильзе заполнить с двух сторон терморасширяющейся противопожарной пеной или огнезащитным составом.\n\n10. Проход кабельных линий в лотке через стены выполнить при помощи противопожарных кабельных проходок.\n\n11. Данный план рассматривать совместно со схемой электрической однолинейной принципиальной.\n\n12. Эвакуационные знаки безопасности проектируются в разделе СОУЭ. * от ВРУ-П смотри проект № ПД-00580716-ЭОМ 0-1; * от ВРУ-2 смотри проект № ПД-00580716-ЭОМ 0-1; * от ВРУ-3 смотри проект № ПД-00580716-ЭОМ 0-1\n\n13. Розетки в помещениях ВРУ наружной установки размещаются на стене на высоте 1 м от уровня чистого пола.\n\n14. «Данный лист см. совместно с разделом: - АИ0.1 «Чистовая отделка МОП по Дизайн-проекту. Подземные этажи, включая паркинг.»Соблюдите решения по отделке (в том числе в части высоты потолков, светильников, фокус-поинтов) и расстановке оконечных устройств.»\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_628818db493e46e7bdccc75b01afbd16",
+      "authoritative_TEXT": "### BLOCK #77 [TEXT]: blk_628818db493e46e7bdccc75b01afbd16\n\n> **Created:** 2026-10-20 12:14:18 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Abyz5AoiDpDKlLTM6TUJ)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: П | Sheet: 18 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nПримечания:\n\n1. Разводку кабельной групповой сети выполнить в лотке, за подшивным/повесным потолком скрыто.\n\n2. Опуски с лотков в административных помещениях выполнить в ПВХ гофрированной трубе скрыто по бетонному потолку и стенам здания при помощи специального крепления (клипс), а также в штробах стен. Бороозды штроб заделать строительной смесью.\n\n3. Прокладку кабельных линий на лестничных клетках выполнить скрыто в штробе стены, распаечные коробки выполнить скрыто.\n\n2. Опуски с лотков в технических помещениях выполнить в ПВХ гофрированной трубе или гладкой ПВХ трубе открыто по бетонному потолку и стене при помощи специального крепления (клипс).\n\n3. Установочные размеры и высоты светильников, розеток, выключателей, и другого оборудования принимать строго по разделу АИ и ТХ, в данном разделе размеры могут быть указаны справочно дополнительно.\n\n4. Ответвления и отпайки выполнить в распаечных (ответвительных) коробках или непосредственно в установочных коробках (подрозетниках). Ответвительные коробки устанавливать (как правило) на торце лотка, на специальную установочную пластину.\n\n5. Запас кабеля на разделку оставлять 0,3м.\n\n6. Высоту установки выключателей в бытовых, административных и технических помещениях принять 0,8м\n\n7. Отступать расстояние 0,6м от смежных инженерных коммуникаций и оборудования (пожарные датчики и прочее).\n\n8. Кабельные линии нагрузки I-категории и нагрузки СПЗ (систем противопожарной защиты) проложить в отдельном лотке. Кабельные линии СПЗ должны быть выполнены сертифицированной огнестойкой кабельной линией (ОКЛ).\n\n9. Сквозные проходы кабелей через стену выполнить с использованием гильз из труб ВГП. Гильзу герметизировать в месте сквозного прохода через стену, кабели в гильзе заполнить с двух сторон терморасширяющейся противопожарной пеной или огнезащитным составом.\n\n10. Прокладку кабельных линий в лотке через стены выполнить при помощи противопожарных кабельных проходков.\n\n11. Данный план рассматривать совместно со схемой электрической однолинейной принципиальной.\n\n12. Эвакуационные знаки безопасности проектируются в разделе СОУЭ.\n\n* от ВРУ-П смотри проект № ПД-00580716-ЭОМ 0-1\n\n* от ВРУ-2 смотри проект № ПД-00580716-ЭОМ 0-1\n\n* от ВРУ-3 смотри проект № ПД-00580716-ЭОМ 0-1\n\n«Данный лист см. совместно с разделами:\n\n- АИ2.1 «Чистовая отделка МОП типовых этажей по Дизайн-проекту включая выходы на эксплуатируемую кровлю».\n\nТочное расположение/привязки розеток выполнить в соответствии с вышеуказанными разделами АИ.\n\nСоблюдите решения по отделке (в том числе в части высоты потолков, светильников) и расстановке оконечных устройств.»\n\n## Page 21 — Sheet 19 — План распределительных и силовых сетей 6-го этажа. M1:100\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+      "authoritative_TEXT": "### BLOCK #66 [TEXT]: blk_397b5080da9f400ea3bd03c1c1bfea5e\n\n> **Created:** 2026-10-20 12:19:46 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/ayLpsBQQDZxs0Iubzv4p)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: Р | Sheet: 16 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nУсловные обозначения:\n\n| | | |\n|---|---|---|\n|  | Электрический групповой щит силового оборудования. |  |\n|  | Электрический групповой рабочего освещения. |  |\n|  | Электрический групповой аварийного освещения. |  |\n|  | Щит с оборудованием. |  |\n|  | Щит автоматики. |  |\n|  | Ящик управления двигательной установки. |  |\n|  | Ящик управления двигательной установки СПЗ. |  |\n|  | Двигательная установка. |  |\n|  | Двигательная установка СПЗ. |  |\n|  | Электрическая воздушно-тепловая завеса. |  |\n|  | Установки кондиционирования воздуха. |  |\n|  | Кабель проложенный в основном лотке распределительных, силовых и групповых кабельных сетей |  |\n|  | Кабель проложенный в лотке СПЗ и нагрузок I категории |  |\n|  | Подъем/опуск силовых кабельных линий |  |\n|  | Подъем/опуск СПЗ или I категории кабельных линий |  |\n|  | Наружный блок кондиционера (Кровля) |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_76d1760dd5b34882a0df18538f78e39b",
+      "authoritative_TEXT": "### BLOCK #6 [TEXT]: blk_76d1760dd5b34882a0df18538f78e39b\n\n> **Created:** 2026-10-20 12:13:57 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/gEZcWUjgGwwCzQV92sq6)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1 | Stage: П | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Общие данные. | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nпредел огнестойкости проема не менее предела огнестойкости стены. В качестве рекомендации принято использование типовых огнестоек проходок ДКС\n\n##### 5. Расчеты\n\nВводно-распределительные устройства (ВРУ) рассчитаны и запроектированы в соответствии с током трёхфазного короткого замыкания (КЗ). Время срабатывания аппаратов защиты выбрана в соответствии с ПУЭ-7.\n\nКаждая кабельная линия выбрана на полную нагрузку длительную нагрузку, проверена по потере напряжения и на действие аппарата защиты при однофазном коротком замыкании в конце линии.\n\n##### 6. Рекомендации при монтаже\n\nКабели проложить открыто в лотках, в поливинилхлоридных трубах за подшивными потолками, под слоем штукатурки стен, в пустотах стен.\n\nВвод кабеля в квартиры осуществить в ПВХ трубах через гильзы.\n\nПеред монтажом кабельные трассы промерить по месту.\n\nВсе электромонтажные работы выполнять в соответствии со СП 76.13330.2016 \"Электротехнические устройства\".\n\nНа скрытые электромонтажные работы составить акты освидетельствования скрытых работ.\n\n##### 7. Техника безопасности\n\nПредусмотренное в данном проекте оборудование не служит источником шума и вибрации, опасных для здоровья и жизни человека. При эксплуатации оборудования необходимо соблюдать правила техники безопасности, изложенные в «МПБЭЭ», правила устройства электроустановок и правила технической эксплуатации электроустановок потребителей.\n\n##### 8. Обеспечение безопасности\n\nДля обеспечения безопасности людей от поражения электрическим током в нормальном режиме применяется основная изоляция токоведущих частей – защита от прямого прикосновения. Для обеспечения безопасности людей от поражения электрическим током в случае повреждения изоляции – применяется защитное автоматическое отключение путем зануления всех металлических нетоковедущих частей электрооборудования, нормально не находящиеся под напряжением, специально проложенным защитным проводником (РЕ)-проводником. Для обеспечения требуемого времени защитного автоматического отключения устанавливаются УЗО и автоматические выключатели с малым временем отключения при коротких замыканиях.\n\nБезопасность при производстве монтажных работ должна быть обеспечена в соответствии с ГОСТ 12.0.004-2015, ГОСТ 12.3.003-86, ГОСТ 12.3.033-84, \"Правила устройства электроустановок\" (ПУЭ), СП 76.13330.2016, СНиП 12-03-2001 и руководящими материалами Главгосэнергонадзора России.\n\n«Данный раздел необходимо рассматривать совместно с разделами АИ:\n\n- АИ0.1 «Чистовая отделка МОП по Дизайн-проекту. Подземные этажи, включая паркинг.»\n\n- АИ1.1-Э «Чистовая отделка Эталонного МОП (Секция 2-3) по Дизайн-проекту....»\n\n- АИ2-ТЗ «Чистовая отделка МОП по Дизайн-проекту. Узлы и сечения отделки. ТЗ на изделия индивидуального изготовления»\n\n- АИ2.1 «Чистовая отделка МОП типовых этажей по Дизайн-проекту включая выходы на эксплуатируемую кровлю».\n\nВ МОП кабели проложить скрыто в гофре в штробе, в пространстве за подвесным потолком.\n\nЭлектромонтажные изделия, оборудование (кроме оконечных устройств, учтенных в АИ), к которым требуется доступ, расположить скрыто за подвесным потолком; в случае, если в зонах МОП с дизайнерской отделкой предусматривается подвесной потолок из ГКЛ, изделия/оборудование, к которым требуется доступ, разместить в помещениях, в которых не предусматривается отделка по Дизайн-проекту или коммуникационных нишах. Устройство ревизионных лючков в ГКЛ-потолках не допускается. Соблюдите решения по отделке (в том числе в части высоты потолков, светильников, зон фокус-поинтов) и расстановке оконечных устройств.\n\nТочное расположение/привязки розеток выполнить в соответствии с вышеуказанными разделами АИ.»\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_82bd0b6201d04037beca3195d87933ce",
+      "authoritative_TEXT": "### BLOCK #207 [TEXT]: blk_82bd0b6201d04037beca3195d87933ce\n\n> **Created:** 2026-10-20 12:14:59 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/2vj7R_pWENQzF5xoD1l6)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 19 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | Кабельные проходка через стену №1 |  |  |  |  |  |  |  |\n|  | Рама монтажная НТМ-РМ28.1х1/Н |  | НТМ-РМ28.1х1/Н | НТМ | шт. | 1 |  |  |\n|  | Рама ответная НТМ-РО28.1х1/Н (глубина 100 мм) |  | НТМ-РО28.1х1/Н | НТМ | шт. | 1 |  |  |\n|  | Пресс-блок НТМ-ПБМ120/Н |  | НТМ-ПБМ120/Н | НТМ | шт. | 1 |  |  |\n|  | Пластина опорная НТМ-ОП120/Н |  | НТМ-ОП120/Н | НТМ | шт. | 5 |  |  |\n|  | Пластина опорная фиксаторная НТМ-ОПФ120/Н |  | НТМ-ОПФ120/Н | НТМ | шт. | 1 |  |  |\n|  | Лента уплотнительная НТМ-ЛУ |  | НТМ-ЛУ | НТМ | шт. | 3 |  |  |\n|  | Смазка монтажная НТМ-СМ |  | НТМ-СМ | НТМ | шт. | 1 |  |  |\n|  | Прижимное устройство НТМ-ПУ |  | НТМ-ПУ | НТМ | шт. | 1 |  |  |\n|  | Транзитный модуль НТМ60/31-56 |  | НТМ60/31-56 | НТМ | шт. | 1 |  |  |\n|  | Домкрат монтажный универсальный НТМ-ДМУ |  | НТМ-ДМУ | НТМ | шт. | 1 |  |  |\n|  | Транзитный модуль НТМ30/13-23 |  | НТМ30/13-23 | НТМ | шт. | 6 |  |  |\n|  | Транзитный модуль НТМ20/3-12 |  | НТМ20/3-12 | НТМ | шт. | 18 |  |  |\n|  | Транзитный модуль НТМ15/3-11 |  | НТМ15/3-11 | НТМ | шт. | 11 |  |  |\n|  | Модуль-заглушка НТМ60/0 |  | НТМ60/0 | НТМ | шт. | 2 |  |  |\n|  | Модуль-заглушка НТМ40/0 |  | НТМ40/0 | НТМ | шт. | 1 |  |  |\n|  | Модуль-заглушка НТМ20/0 |  | НТМ20/0 | НТМ | шт. | 2 |  |  |\n|  | Модуль-заглушка НТМ15/0 |  | НТМ15/0 | НТМ | шт. | 1 |  |  |\n|  | Глухой модуль НТМ5/0х60 |  | НТМ5/0х60 | НТМ | шт. | 1 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 56 — Sheet 20\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F043_hanger_fireproofing_supply.json",
+      "sha256": "c635932a8d19138d1870cc16af9486c5aeab7f54456fa941f43692eb5b52e434",
+      "primary_adjudication": null,
+      "limits": "Проверены локальная таблица, разрез и полные листы19–20 СО. Не выполнен полный семантический поиск альтернативных наименований и комплектов по всем поставочным документам. Нельзя утверждать отсутствие во всей поставке. ТЕХНОВЕНТ50мм в СО не отождествляется автоматически с МБОР10мм для подвесов. Ни эквивалентность материалов, ни фактическое отсутствие защиты, ни недостаточная огнестойкость не установлены. Название ОСК-180 не доказывает паспортную огнестойкость конкретного исполнения.",
+      "wording": "Локальная спецификация ОСК-180 предусматривает МБОР10мм для защиты подвесов (позиция5). В прочитанном разделе общей СО, листы19–20, отдельная позиция МБОР не указана; на листе20 есть утеплитель50мм для другого слоя. Уточните позицию учёта, количество и комплектность материала защиты подвесов."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F042_SPZ_legend_scope.json",
+      "sha256": "8c770016e591be6e1ee95b9176a5d5aba5cbfd37c147f904cd2563a9209e4b3d",
+      "primary_adjudication": null,
+      "limits": "Прочитаны полные TEXT общих указаний и четырёх легенд. Графические знаки легенд в этой проверке не просмотрены, поэтому идентичность самих условных знаков не установлена. Конкретные трассы, принадлежность кабелей к СПЗ, состав лотков и фактический монтаж не проверены. Требование разделения — требование данного проекта, его наличие не доказывает ни соблюдение, ни нарушение. Текст также содержит отдельный «Лоток нагрузок I категории» и «Подъем/опуск СПЗ или I категории кабельных линий». Вывод не распространяется автоматически на все листы.",
+      "wording": "В текстах легенд листов18–21 указано «Кабель проложенный в лотке СПЗ и нагрузок I категории», тогда как общие указания запрещают совместную прокладку СПЗ с другими кабелями на одном лотке. Уточните, как на планах различаются эти трассы и их состав; объединённая формулировка сама по себе не устанавливает физическое объединение."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F044_F045_incomplete_reference_identity.json",
+      "sha256": "ea77298204f5f47fec14183ada91f47f7de67218bd30c44c9a3164e9ef567fc9",
+      "primary_adjudication": null,
+      "limits": "Проверены полные TEXT общих указаний и ведомости ссылочных документов. Неполнота установлена в конкретном предложении раздела7, а не в строках ведомости; исходная локализация «в перечне» уточнена. Не доказано отсутствие реквизитов во всех смежных документах или неопределённость всей нормативной основы. Раздел8 содержит конкретные меры защиты, а раздел7 также ссылается на ПУЭ. Актуальность и применимость подразумеваемых правил не проверялись; конкретную замену документа не назначать. Нормативное нарушение и влияние на оборудование не установлены.",
+      "wording": "В разделе7 «Техника безопасности» общих данных ссылка «МПБЭЭ» дана без расшифровки и реквизитов, а правила технической эксплуатации электроустановок потребителей — без номера и даты утверждения. Уточните подразумеваемые документы и редакции в этом предложении."
+    }
+  ],
+  "bounded_specification_search": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+    "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+    "blocks": [
+      {
+        "block_id": "blk_4638622aac5646e5b61bc689463e15c2",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_884a1fa5042e4736a9fa26170e8814bc",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_af87003578d3440a9be734a66a09af90",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_67c8cc82d7e24f738797d9b75ce14e97",
+        "matching_lines": [
+          "|  | Кабель силовой с медными жилами, с изоляцией и оболочкой из полимерных композиций не распространяющие горение при групповой прокладке и не выделяющие коррозионно-активных газообразных продуктов при горении и тлении, сечением: | ППГнг(A)-HF | ГОСТ 31996-2012 |  |  |  |  |  |",
+          "|  | Кабель огнестойкий силовой с медными жилами, с изоляцией и оболочкой из полимерных композиций не распространяющие горение при групповой прокладке и не выделяющие коррозионно-активных газообразных продуктов при горении и тлении, сечением: | ППГнг(A)-FRHF | ГОСТ 31996-2012 |  |  |  |  |  |"
+        ]
+      },
+      {
+        "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_e88244dd00b348158ab8aabf0d7863e1",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_0779457166304b91a87d7b7902f8359f",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_f858c7f6568f4f8796b84cbb572cc2b2",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_065c4b54f6854bd0b782df86b5afcea6",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_cff00507a4f14603a972241517aa660c",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_fa3060b62f634a2b8228b10863e0eb99",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_1ad5830c4e824ca5b9a6f3757f2c67f6",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_7d46590ad5b64af08f435cadad0053cd",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_e106d0b41bf9480aaf187ef2259994db",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_82bd0b6201d04037beca3195d87933ce",
+        "matching_lines": []
+      },
+      {
+        "block_id": "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+        "matching_lines": [
+          "|  | Герметик ОГ-20 |  |  | 2Ф | шт. | 15 |  |  |"
+        ]
+      }
+    ]
+  },
+  "limits": [
+    "No supplier kit, actual supply or fire performance verified.",
+    "No new engineer acceptance or regulatory status inferred.",
+    "Frozen evaluator, model inputs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
