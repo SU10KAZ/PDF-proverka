@@ -1,0 +1,775 @@
+{
+  "status": "three_graphic_identity_and_polarity_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "82f0c06aa3e76e043529b236c5bb28a5880af745c8c1c369ff0312ccda18267a",
+  "queue_after_sha256": "8257f596226624d811ae68676088be0f548d2e69c81d4a4c032fcd08811e5439",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-044",
+      "finding": {
+        "id": "F-044",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Назначение сигналов состояния",
+        "sheet": "Листы 11, 15, 22",
+        "page": [
+          15,
+          19,
+          26
+        ],
+        "problem": "Перепутаны подписи состояния основных и резервных вентиляторов.",
+        "description": "На листе 11 линия 16 от М3/Ва3.1 названа состоянием резервного, линия 19 от М4/Ва3.1р — основного. На листе 15 сигналы 11 и 26 основных М1 и М3 названы резервными, сигналы 14 и 29 резервных М2 и М4 — основными. На листе 22 аналогично переставлены сигналы 16 от М2/Ва5.1 и 19 от М3/Ва5.1р.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие сигналов состояния обозначениям контролируемого оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-016",
+                "G-017",
+                "G-024",
+                "G-027",
+                "G-048",
+                "G-049"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-016",
+                  "G-017",
+                  "G-024",
+                  "G-027",
+                  "G-048",
+                  "G-049"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить подписи сигналов и согласовать с ними алгоритмы резервирования и диспетчерские сообщения.",
+        "risk": "Ложное отображение аварий и неправильное включение резерва.",
+        "source_finding_ids": [
+          "G-016",
+          "G-017",
+          "G-024",
+          "G-027",
+          "G-048",
+          "G-049"
+        ],
+        "source_block_ids": [
+          "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "blk_1421872a752e4019a31247d056c0e9bc",
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "related_block_ids": [
+          "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "blk_1421872a752e4019a31247d056c0e9bc",
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+            "page": 15
+          },
+          {
+            "type": "text",
+            "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+            "page": 19
+          },
+          {
+            "type": "text",
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "page": 26
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-024",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-027",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-048",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-049",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на перестановку подписей: линия 16 от М3/Ва3.1 названа состоянием резервного вентилятора, линия 19 от М4/Ва3.1р — основного.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на перестановку подписей: линия 16 от М3/Ва3.1 названа состоянием резервного вентилятора, линия 19 от М4/Ва3.1р — основного.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают одинаковую перестановку подписей состояния: М1 и М3 ошибочно названы резервными, М2 и М4 — основными. Номера сигналов 11, 26, 14 и 29 справа уточняют локализацию той же проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на переставленные подписи сигналов 16 от М2 (Ва5.1) и 19 от М3 (Ва5.1р), с эквивалентной детализацией.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Лист11: Ва3.1/M3 связан с колонкой16 «рез.», Ва3.1р/M4 с19 «осн.».",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Лист15: Пн5.1/M1→11 «рез.», Пн5.1рез/M2→14 «осн.»; Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.».",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Лист22: Ва5.1/M2→16 «рез.», Ва5.1р/M3→19 «осн.».",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Общие указания предусматривают периодическую замену рабочего и резервного вентилятора для уравнивания наработки.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Перепутаны физические агрегаты в программе управления или диспетчеризации.",
+          "verdict": "not_established",
+          "limits": "Подтверждена неоднозначность статических обозначений и подписей состояний. Программные теги, алгоритм привязки ролей и АРМ не проверены. Номера колонок не считать аппаратными адресами."
+        },
+        {
+          "claim": "Согласовать подписи и пояснить, относятся ли они к физическому агрегату или текущей роли при ротации.",
+          "verdict": "supported_scoped_technical_coordination",
+          "limits": "Не выполнять автоматическую перестановку сигналов."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One role-mapping theme with eight addressed state labels across three sheets; no eight independent control failures.",
+      "profile_and_section": "technical_identity_core_dynamic_roles_require_clarification",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+          "primary_adjudication": null,
+          "limits": [
+            "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Это допускает динамические роли, но в проверенных подписях связь динамической роли с конкретным агрегатом не пояснена. Подтверждена неоднозначность документации, не неправильная реализация ротации.",
+            "Номера — колонки/линии функциональных схем, не установленные аппаратные адреса или программные теги.",
+            "Программа контроллера, таблица тегов и экраны АРМ не проверены. Нельзя автоматически менять сигналы или утверждать показ состояния другого вентилятора.",
+            "Исходные номера15 и30 на листе15 неверны. Ошибка этой части не опровергает отдельные подтверждённые расхождения.",
+            "Нормативное нарушение и историческое решение инженера не установлены."
+          ],
+          "wording": "Согласовать подписи состояний основного и резервного вентиляторов со статическими обозначениями агрегатов: лист11, Ва3.1/M3→16 «рез.» и Ва3.1р/M4→19 «осн.»; лист15, Пн5.1/M1→11 «рез.», Пн5.1 рез/M2→14 «осн.», Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.». Уточнить, обозначают ли подписи физические агрегаты или текущие роли при ротации."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+          "primary_adjudication": null,
+          "limits": [
+            "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Это допускает динамические роли, но в проверенных подписях связь динамической роли с конкретным агрегатом не пояснена. Подтверждена неоднозначность документации, не неправильная реализация ротации.",
+            "Номера — колонки/линии функциональных схем, не установленные аппаратные адреса или программные теги.",
+            "Программа контроллера, таблица тегов и экраны АРМ не проверены. Нельзя автоматически менять сигналы или утверждать показ состояния другого вентилятора.",
+            "Исходные номера15 и30 на листе15 неверны. Ошибка этой части не опровергает отдельные подтверждённые расхождения.",
+            "Нормативное нарушение и историческое решение инженера не установлены."
+          ],
+          "wording": "Согласовать подписи состояний основного и резервного вентиляторов со статическими обозначениями агрегатов: лист11, Ва3.1/M3→16 «рез.» и Ва3.1р/M4→19 «осн.»; лист15, Пн5.1/M1→11 «рез.», Пн5.1 рез/M2→14 «осн.», Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.». Уточнить, обозначают ли подписи физические агрегаты или текущие роли при ротации."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+          "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Sheet11 M3/Va3.1 to16 reserve; M4/Va3.1r to19 main."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+          "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+          "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Sheet15 four fan states11/14/26/29 conflict with static main/reserve labels;15/30 are pressure columns, not states."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Sheet22 M2/Va5.1 to16 reserve; M3/Va5.1r to19 main."
+        }
+      ],
+      "disposition": "assessed_preserve_fan_role_mapping_ambiguity"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-049",
+      "finding": {
+        "id": "F-049",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Подключение реле давления",
+        "sheet": "Лист 18",
+        "page": 22,
+        "problem": "Полярность отбора давления Ва4.1/Ва4.1р не соответствует положительной уставке.",
+        "description": "По результату анализа схемы поток направлен справа налево; входы «+» PDS3 и PDS4 подключены к всасывающей стороне, «−» — к нагнетательной. Такое соединение противоречит контролю положительного перепада 100 Па.",
+        "norm": "СП 77.13330.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 77.13330.2016",
+            "cited_designation": "СП 77.13330.2016",
+            "candidate_relevance": 0.8,
+            "reason": "Найти требования к монтажу приборов и импульсных линий по рабочим чертежам и документации изготовителя.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-038"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-038"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать направление потока и отборы; подключить «+» к нагнетанию, «−» к всасыванию согласно документации реле.",
+        "risk": "Отсутствие подтверждения работы вентиляторов и ложные аварийные сигналы.",
+        "source_finding_ids": [
+          "G-038"
+        ],
+        "source_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9"
+        ],
+        "related_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9",
+          "blk_376a5509078c414695cf158c16c9ac10"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+            "page": 22
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-038",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Ва4.1/Ва4.1р: вытяжной поток идёт от помещения справа к выбросу слева; у обоих PDS3/PDS4 «−» слева и «+» справа, уставки100Па.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Знаки отбора не согласованы с контролем положительного прироста давления на вытяжном вентиляторе.",
+          "verdict": "supported_schematic_polarity_conflict",
+          "limits": "Вывод основан на направлении потока и трассировке отборов, а не на универсальном правиле «плюс всегда справа». Фактические давления не измерены."
+        },
+        {
+          "claim": "Типовой узел лист46 показываетP2(−) слева иP1(+) справа на вентиляторе.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Типовой рисунок не задаёт безусловную ориентацию для всех направлений потока; на фильтре знаки наоборот. Не переносить левую/правую сторону без привязки к объекту."
+        },
+        {
+          "claim": "Датчики фактически смонтированы неправильно и защита не работает.",
+          "verdict": "not_established",
+          "limits": "Фактические импульсные линии, паспорт прибора и испытание защиты не исследованы."
+        },
+        {
+          "claim": "Согласовать отборы и знаки с направлением потока, монтажным узлом и характеристиками прибора.",
+          "verdict": "supported_technical_drawing_correction",
+          "limits": ""
+        },
+        {
+          "claim": "Подтверждено нарушение конкретного нормативного пункта.",
+          "verdict": "not_established",
+          "limits": "Нормативный кандидат без подтверждённой цитаты не служит доказательством."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "source_confirmed_graphic_conflict_engineer_acceptance_not_established",
+      "duplicate_burden": "Same polarity theme as other exhaust cabinet, distinct PDS3/PDS4 addresses; combine theme without dropping instances. Separate from range and role-label conflicts.",
+      "profile_and_section": "technical_schematic_core_no_observed_installed_failure",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+          "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+          "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Ва4.1/Ва4.1р: room at right, discharge at left; PDS3/PDS4 minus taps left, plus taps right, set100Pa."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_376a5509078c414695cf158c16c9ac10.png",
+          "sha256": "8cd460535047039ee20c3b6f2d7fcdd8e77c31c29674ce4b7a30858aa3545d7a",
+          "block_id": "blk_376a5509078c414695cf158c16c9ac10",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Typical fan mounting P2(-) left/P1(+) right; filter mounting P1(+) left/P2(-) right. No universal left/right sign rule inferred."
+        }
+      ],
+      "disposition": "assessed_preserve_exhaust_pressure_polarity_conflict"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-052",
+      "finding": {
+        "id": "F-052",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Подключение реле давления",
+        "sheet": "Лист 22",
+        "page": 26,
+        "problem": "У PDS3 и PDS4 вентиляторов Ва5.1/Ва5.1р перепутана полярность отбора давления.",
+        "description": "Вход «−» показан со стороны нагнетания к выбросу, «+» — со стороны всасывания. Это не соответствует положительной уставке ΔP=100 Па. Расширенное замечание охватывает оба реле, включая PDS4 резервного вентилятора.",
+        "norm": "СП 77.13330.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 77.13330.2016",
+            "cited_designation": "СП 77.13330.2016",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к подключению приборов и импульсных линий согласно документации изготовителя.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-050",
+                "G-051"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-050",
+                  "G-051"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать отборы с направлением потока: «+» на нагнетании, «−» на всасывании.",
+        "risk": "Неверный контроль работы основного и резервного вентиляторов.",
+        "source_finding_ids": [
+          "G-050",
+          "G-051"
+        ],
+        "source_block_ids": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "related_block_ids": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "blk_376a5509078c414695cf158c16c9ac10"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "page": 26
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-050",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-051",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают обратную полярность подключения PDS3 при ΔP=100 Па; правое дополнительно указывает ту же проблему у PDS4 вентилятора Ва5.1р.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают обратную полярность подключения PDS3 при ΔP=100 Па; правое дополнительно указывает ту же проблему у PDS4 вентилятора Ва5.1р.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Ва5.1/Ва5.1р: вытяжной поток идёт от помещения справа к выбросу слева; у обоих PDS3/PDS4 «−» слева и «+» справа, уставки100Па.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Знаки отбора не согласованы с контролем положительного прироста давления на вытяжном вентиляторе.",
+          "verdict": "supported_schematic_polarity_conflict",
+          "limits": "Вывод основан на направлении потока и трассировке отборов, а не на универсальном правиле «плюс всегда справа». Фактические давления не измерены."
+        },
+        {
+          "claim": "Типовой узел лист46 показываетP2(−) слева иP1(+) справа на вентиляторе.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Типовой рисунок не задаёт безусловную ориентацию для всех направлений потока; на фильтре знаки наоборот. Не переносить левую/правую сторону без привязки к объекту."
+        },
+        {
+          "claim": "Датчики фактически смонтированы неправильно и защита не работает.",
+          "verdict": "not_established",
+          "limits": "Фактические импульсные линии, паспорт прибора и испытание защиты не исследованы."
+        },
+        {
+          "claim": "Согласовать отборы и знаки с направлением потока, монтажным узлом и характеристиками прибора.",
+          "verdict": "supported_technical_drawing_correction",
+          "limits": ""
+        },
+        {
+          "claim": "Подтверждено нарушение конкретного нормативного пункта.",
+          "verdict": "not_established",
+          "limits": "Нормативный кандидат без подтверждённой цитаты не служит доказательством."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "source_confirmed_graphic_conflict_engineer_acceptance_not_established",
+      "duplicate_burden": "Same polarity theme as other exhaust cabinet, distinct PDS3/PDS4 addresses; combine theme without dropping instances. Separate from range and role-label conflicts.",
+      "profile_and_section": "technical_schematic_core_no_observed_installed_failure",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Ва5.1/Ва5.1р: room at right, discharge at left; PDS3/PDS4 minus taps left, plus taps right, set100Pa."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_376a5509078c414695cf158c16c9ac10.png",
+          "sha256": "8cd460535047039ee20c3b6f2d7fcdd8e77c31c29674ce4b7a30858aa3545d7a",
+          "block_id": "blk_376a5509078c414695cf158c16c9ac10",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Typical fan mounting P2(-) left/P1(+) right; filter mounting P1(+) left/P2(-) right. No universal left/right sign rule inferred."
+        }
+      ],
+      "disposition": "assessed_preserve_exhaust_pressure_polarity_conflict"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+      "authoritative_TEXT": "### BLOCK #14 [TEXT]: blk_f30f5e10b54f415392e7e149a87dae24\n\n> **Created:** 2026-09-28 07:28:36 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/gvUUZJgqUox1yI4n-Pex)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 3 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Общие данные (продолжение) | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n##### Алгоритм работы с резервным вентилятором\n\nПри наличии второго резервного вентилятора система работает в режиме «основной–резервный». Включение резервного вентилятора осуществляется при аварии рабочего (авария двигателя либо обрыв вентилятора). Для уравравнивания времени наработки происходит замена рабочего и резервного вентилятора с заданной периодичностью.\n\n###### 2.2 Вытяжные системы\n\nАвтоматизация вытяжной системы выполняется на базе шкафа автоматики компании «Савэл-Инжиниринг».\n\nШкаф автоматики на основе программируемого контроллера управляет вытяжной системой вентиляции.\n\nПитание шкафов управления вентиляционными установок разрабатывается в разделе 1З АВ-РД-ЭМ2-ПА.\n\nШкаф автоматики, приборы и средства автоматизации предусматриваются по данному проекту.\n\nВентиляционные установки заказываются по разделу 1З АВ-РД-ОВ2.2-ПА.\n\nАвтоматизация и диспетчеризация вытяжных систем обеспечивает:\n\n- контроль перепада давления на вентиляторе;\n\n- управление двигателем вентилятора;\n\n- изменение производительности посредством частотного преобразователя (при наличии);\n\n- контроль работы двигателя вентилятора;\n\n- включение резервного двигателя вентилятора при аварии основного (для систем с резервным двигателем);\n\n- управление воздушной заслонкой;\n\n- контроль положения воздушной заслонки;\n\n- блокировку работы вытяжной установки при аварии;\n\n- блокировку работы вытяжной установки при поступлении сигнала \"Пожар\";\n\n- включение по датчику газоанализа при достижении ПДК \"Порога 1\" (для систем обслуживающих автостоянку)\n\n- сигнализацию об авариях.\n\nНа АРМ оператора системы диспетчеризации инженерных систем передается следующая информация:\n\n- положение воздушной заслонки;\n\n- статус работы вентилятора;\n\n- авария вентилятора;\n\n- положение переключателя выбора режима работы вентилятора;\n\n- перепад давления на вентиляторе;\n\n- пожар.\n\nУправление системой предусматривается:\n\n- дистанционное;\n\n- местное.\n\nВытяжная вентиляция помещения предназначена для:\n\nобеспечения воздухообмена за счет круглосуточного режима работы вентиляторов. В комплект оборудования вытяжной вентиляции входит:\n\nвытяжная вентиляционная установка, включающая вентилятор и датчик перепада давления, воздухопремного клапана;\n\nПроектируемый комплект оборудования выполняет следующие функции:\n\n- контроль перегрева электродвигателя вытяжного вентилятора;\n\n- управление приводом клапана (открыто–закрыто);\n\n- отключение вытяжной системы, закрытие воздухоприёмного клапана по сигналу \"Пожар\" от системы пожарной сигнализации (см. раздел 1З АВ-РД-АП3.АПС-ПА).\n\nПроектируемая система работает в следующих режимах:\n\n- рабочий режим;\n\n## Page 8 — Sheet 4 — Общие данные (окончание)\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+      "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+      "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Sheet11 M3/Va3.1 to16 reserve; M4/Va3.1r to19 main."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+      "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+      "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Sheet15 four fan states11/14/26/29 conflict with static main/reserve labels;15/30 are pressure columns, not states."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+      "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+      "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Sheet22 M2/Va5.1 to16 reserve; M3/Va5.1r to19 main."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+      "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+      "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Ва4.1/Ва4.1р: room at right, discharge at left; PDS3/PDS4 minus taps left, plus taps right, set100Pa."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_376a5509078c414695cf158c16c9ac10.png",
+      "sha256": "8cd460535047039ee20c3b6f2d7fcdd8e77c31c29674ce4b7a30858aa3545d7a",
+      "block_id": "blk_376a5509078c414695cf158c16c9ac10",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Typical fan mounting P2(-) left/P1(+) right; filter mounting P1(+) left/P2(-) right. No universal left/right sign rule inferred."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+      "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+      "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Ва5.1/Ва5.1р: room at right, discharge at left; PDS3/PDS4 minus taps left, plus taps right, set100Pa."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_376a5509078c414695cf158c16c9ac10.png",
+      "sha256": "8cd460535047039ee20c3b6f2d7fcdd8e77c31c29674ce4b7a30858aa3545d7a",
+      "block_id": "blk_376a5509078c414695cf158c16c9ac10",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Typical fan mounting P2(-) left/P1(+) right; filter mounting P1(+) left/P2(-) right. No universal left/right sign rule inferred."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+      "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+      "primary_adjudication": null,
+      "limits": [
+        "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Это допускает динамические роли, но в проверенных подписях связь динамической роли с конкретным агрегатом не пояснена. Подтверждена неоднозначность документации, не неправильная реализация ротации.",
+        "Номера — колонки/линии функциональных схем, не установленные аппаратные адреса или программные теги.",
+        "Программа контроллера, таблица тегов и экраны АРМ не проверены. Нельзя автоматически менять сигналы или утверждать показ состояния другого вентилятора.",
+        "Исходные номера15 и30 на листе15 неверны. Ошибка этой части не опровергает отдельные подтверждённые расхождения.",
+        "Нормативное нарушение и историческое решение инженера не установлены."
+      ],
+      "wording": "Согласовать подписи состояний основного и резервного вентиляторов со статическими обозначениями агрегатов: лист11, Ва3.1/M3→16 «рез.» и Ва3.1р/M4→19 «осн.»; лист15, Пн5.1/M1→11 «рез.», Пн5.1 рез/M2→14 «осн.», Вн5.1/M3→26 «рез.», Вн5.1р/M4→29 «осн.». Уточнить, обозначают ли подписи физические агрегаты или текущие роли при ротации."
+    }
+  ],
+  "limits": [
+    "Static roles versus rotation do not prove a PLC bug.",
+    "Schematic pressure tap conflict does not prove installed malfunction.",
+    "Frozen evaluator, independent run inputs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
