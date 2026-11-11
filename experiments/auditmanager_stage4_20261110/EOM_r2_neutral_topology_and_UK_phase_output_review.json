@@ -1,0 +1,564 @@
+{
+  "status": "three_scoped_or_unresolved_outputs_reviewed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "4729638bfcd133c650a1642341e5772341ef17e764d399de67ca9c151736614c",
+  "queue_after_sha256": "89a98ebb36da1a4f036fa236477a827a33edcee973880479edae93af270cf097",
+  "reviewer": "Codex source-bound semantic review",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-037",
+      "finding": {
+        "id": "F-037",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Заземление",
+        "sheet": "Лист 7",
+        "page": 10,
+        "problem": "В щите 1.ЩС показано повторное соединение N и PE.",
+        "description": "По переданному структурному разбору схемы в щите присутствует связь N–PE при пятипроводном питающем кабеле 5×16 мм² с отдельными рабочим и защитным проводниками. Это объединяет их после ранее выполненного разделения.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.7.135",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить запрет повторного объединения разделенных N и PE.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-028"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-028"
+                ],
+                "designation_source": "Нормативная подсказка исходного графического замечания"
+              }
+            },
+            "clause_candidate": "1.7.135",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исключить соединение N–PE в схеме и изготовлении щита; обеспечить изоляцию рабочей нейтрали от защитной шины и корпуса.",
+        "risk": "Протекание рабочего тока по защитным проводникам и появление опасных потенциалов на связанных металлических частях.",
+        "source_finding_ids": [
+          "G-028"
+        ],
+        "source_block_ids": [
+          "blk_fbd847573ddd408aae3067c0c1bb9dde"
+        ],
+        "related_block_ids": [
+          "blk_fbd847573ddd408aae3067c0c1bb9dde"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_fbd847573ddd408aae3067c0c1bb9dde",
+            "page": 10
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-028",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F015_neutral_PE_unresolved_topology:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Питающий кабель5×16,отдельныеN/PE и требование разделения послеГРЩ.",
+          "verdict": "confirmed_same_version_graphic_and_TEXT",
+          "limits": "Эти сведения сами по себе не доказывают перемычку внутри щита."
+        },
+        {
+          "claim": "На схеме однозначно показана перемычкаN–PE.",
+          "verdict": "unresolved_graphic_topology",
+          "limits": "По тем же просмотренным источникам концы близких линий ввода/QFD1 не установлены однозначно. Не считать подтверждённым или опровергнутым."
+        },
+        {
+          "claim": "Удалить конкретную перемычку в схеме и изготовлении.",
+          "verdict": "unsupported_until_connection_identified",
+          "limits": "Требуется читаемый узел или монтажная схема сназначением концов,а не исправление по предположению."
+        },
+        {
+          "claim": "Протекание рабочего тока по защитным проводникам и появление опасных потенциалов на связанных металлических частях.",
+          "verdict": "not_established_physical_consequence",
+          "limits": "Фактический монтаж и электрические измерения не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts",
+      "novel_useful_content": "unresolved_source_question_no_confirmed_new_defect",
+      "duplicate_burden": "different_board_or_different_claim_not_merged_by_shared_N_PE_or_current_keyword",
+      "profile_and_section": "questions_and_clarifications_preserve_uncertainty",
+      "engineer_reuse": "No engineer decision invented; same-version source review reused, not a new physical verification.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f248e51f2f7f40e0bd78f45f651d9d74",
+          "route": "same_version_prior_direct_evidence",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F015_neutral_PE_unresolved_topology.json",
+          "sha256": "b4c38d74f02f8e2978cabce4ea20aa5f68dec66f0c1afeebb72e0fec1a03b824",
+          "primary_adjudication": null,
+          "limits": "Требование раздельных проводников подтверждено TEXT. Наличие перемычки не подтверждено и не опровергнуто. Примечания1–5 не предписывают соединение N/PE, но отсутствие такого указания не опровергает графический дефект. Векторная и монтажная схемы, смежный том ГРЩ и фактический монтаж не проверены. Не установлены ток PE, напряжение на корпусах и нормативное нарушение. Нельзя требовать удаления конкретной линии до установления её назначения.",
+          "wording": "Общие указания предусматривают раздельные N и PE после ГРЩ. На схеме1.ЩС узлы ввода и QFD1 расположены близко и не позволяют однозначно прочитать взаимное соединение проводников по доступному растру. Уточните топологию этого узла на монтажной или векторной схеме и при необходимости разнесите обозначения.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F015_neutral_PE_unresolved_topology.json",
+          "route": "same_version_prior_direct_evidence"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fbd847573ddd408aae3067c0c1bb9dde.png",
+          "sha256": "6c610cf7b193518b3cf25efbc313a316d21adfdc4eba7fab5b7bdf664946c475",
+          "block_id": "blk_fbd847573ddd408aae3067c0c1bb9dde",
+          "route": "same_version_prior_direct_evidence",
+          "observation": "Separate N/PE labels and five-core feeder visible; close overlapping inlet/QFD1 nodes do not establish unambiguous electrical endpoints.",
+          "inspection_crop": {
+            "path": "/tmp/eom_shs_npe.png",
+            "sha256": "d07551caae42671cdf13b3f6cfe5d601230d7618b740ce84d1334935f0072034",
+            "source_pixel_box": [
+              285,
+              170,
+              430,
+              245
+            ],
+            "resized_to": [
+              1160,
+              600
+            ],
+            "purpose": "graphic topology inspection; no TEXT recognition correction"
+          },
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fbd847573ddd408aae3067c0c1bb9dde.png"
+        }
+      ],
+      "disposition": "assessed_unresolved_N_PE_topology_question_not_confirmed_defect"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-038",
+      "finding": {
+        "id": "F-038",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Заземление",
+        "sheet": "Лист 8",
+        "page": 11,
+        "problem": "В щите 1.ЩС-УК соединены рабочая и защитная шины после их разделения.",
+        "description": "В структурном разборе схемы указано соединение N–PE при вводе 5×4 мм² с отдельными L1, L2, L3, N и PE. Отложенный дубликат исходного анализа дополнительно сообщает о подтверждении связи линией чертежа.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.7.135",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить запрет объединения N и PE после точки разделения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-029"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-029"
+                ],
+                "designation_source": "Нормативная подсказка исходного графического замечания"
+              }
+            },
+            "clause_candidate": "1.7.135",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Удалить перемычку между N и PE и обеспечить изолированную установку рабочей нейтрали относительно защитной шины и корпуса.",
+        "risk": "Рабочие токи в защитных проводниках и ухудшение условий электробезопасности.",
+        "source_finding_ids": [
+          "G-029"
+        ],
+        "source_block_ids": [
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "related_block_ids": [
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+            "page": 11
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-029",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на повторное соединение N и PE в щите 1.ЩС-УК при пятипроводном вводе 5 х 4 и требуют устранить это соединение.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Питающий кабель5×4,отдельныеN/PE и требование разделения послеГРЩ.",
+          "verdict": "confirmed_same_version_graphic_and_TEXT",
+          "limits": "Эти сведения сами по себе не доказывают перемычку внутри щита."
+        },
+        {
+          "claim": "На схеме однозначно показана перемычкаN–PE.",
+          "verdict": "unresolved_graphic_topology",
+          "limits": "По тем же просмотренным источникам концы близких линий ввода/QFD1 не установлены однозначно. Не считать подтверждённым или опровергнутым."
+        },
+        {
+          "claim": "Удалить конкретную перемычку в схеме и изготовлении.",
+          "verdict": "unsupported_until_connection_identified",
+          "limits": "Требуется читаемый узел или монтажная схема сназначением концов,а не исправление по предположению."
+        },
+        {
+          "claim": "Рабочие токи в защитных проводниках и ухудшение условий электробезопасности.",
+          "verdict": "not_established_physical_consequence",
+          "limits": "Фактический монтаж и электрические измерения не проверены."
+        },
+        {
+          "claim": "Отложенный дубликат подтверждает связь линией чертежа.",
+          "verdict": "model_repetition_not_independent_source_confirmation",
+          "limits": "Повторный модельный тезис не устраняет неопределённость концов в исходном изображении."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts",
+      "novel_useful_content": "unresolved_source_question_no_confirmed_new_defect",
+      "duplicate_burden": "different_board_or_different_claim_not_merged_by_shared_N_PE_or_current_keyword",
+      "profile_and_section": "questions_and_clarifications_preserve_uncertainty",
+      "engineer_reuse": "No engineer decision invented; same-version source review reused, not a new physical verification.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f248e51f2f7f40e0bd78f45f651d9d74",
+          "route": "same_version_prior_direct_evidence",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png",
+          "sha256": "4dae62b85d910dd66905114bbc9d7a86c0919e16b1a5348c663cdbce947d7ea8",
+          "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+          "route": "same_version_prior_direct_evidence",
+          "observation": "Separate N/PE labels and five-core feeder visible; close overlapping inlet/QFD1 nodes do not establish unambiguous electrical endpoints.",
+          "inspection_crop": {
+            "path": "/tmp/eom_uk_npe.png",
+            "sha256": "b4ca57dbc0f6d68d47a87cfcabdfa00cc4935bb73a06890e34bf06b29fae4e7d",
+            "source_pixel_box": [
+              285,
+              170,
+              430,
+              245
+            ],
+            "resized_to": [
+              1160,
+              600
+            ],
+            "purpose": "graphic topology inspection; no TEXT recognition correction"
+          },
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png"
+        }
+      ],
+      "disposition": "assessed_unresolved_N_PE_topology_question_not_confirmed_defect"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-039",
+      "finding": {
+        "id": "F-039",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Фазное распределение нагрузок",
+        "sheet": "Лист 8",
+        "page": 11,
+        "problem": "Расчетный ток ввода 1.ЩС-УК занижен относительно показанной нагрузки фазы A.",
+        "description": "Вводной ток равен 3,2 А при Кс=0,90. На фазу A подключены группы 1.ЩС-УК-1 и 1.ЩС-УК-4 с токами 1,0 и 8,5 А: суммарно 9,5 А, после применения Кс — около 8,6 А.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить расчет питающей линии по наиболее нагруженной фазе.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-030",
+                "G-031"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-030",
+                  "G-031"
+                ],
+                "designation_source": "Подбор при объединении замечаний"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать токи фаз по фактическому распределению групп и согласовать расчетный ток ввода с параметрами кабеля и защиты.",
+        "risk": "Некорректная проверка питающей линии и защитных аппаратов.",
+        "source_finding_ids": [
+          "G-030",
+          "G-031"
+        ],
+        "source_block_ids": [
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "related_block_ids": [
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+            "page": 11
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-030",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-031",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания о заниженном вводном токе 3,2 А относительно нагрузки группы 1.ЩС-УК-4 с током 8,5 А. Правое дополнительно указывает подключение групп 1 и 4 к фазе A и рассчитывает суммарный ток 9,5 А, с Кс=0,90 — около 8,6 А.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания о заниженном вводном токе 3,2 А относительно нагрузки группы 1.ЩС-УК-4 с током 8,5 А. Правое дополнительно указывает подключение групп 1 и 4 к фазе A и рассчитывает суммарный ток 9,5 А, с Кс=0,90 — около 8,6 А.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F016_management_phase_current:fdef783b69877a39920c",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "1.ЩС-УК:группы1/4 подписаныA,токи1/8,5А;сводный3,2А.",
+          "verdict": "confirmed_same_version_graphic_labels",
+          "limits": "Фактическая фазность группы4 требует согласования с одновременно указаннымQF4 3P."
+        },
+        {
+          "claim": "1+8,5=9,5;приКс0,9 около8,6А.",
+          "verdict": "confirmed_scalar_arithmetic_not_exact_phase_current",
+          "limits": "8,55 округляется до8,6;cosφ групп0,95/0,80 различны,сумма модулей не точный фазорный расчёт. Ксщита не доказан дляфазы."
+        },
+        {
+          "claim": "Пересчитать фазы и согласовать ввод.",
+          "verdict": "supported_scoped_question",
+          "limits": "Дополнить уточнением противоречащих признаков3P/A/3×2,5/0,22кВ;не назначать8,6 правильным током автоматически."
+        },
+        {
+          "claim": "Некорректная проверка питающей линии и защитных аппаратов.",
+          "verdict": "not_established_selection_error",
+          "limits": "ПараметрыQF3.22,условия прокладки ирежимы нагрузки не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts",
+      "novel_useful_content": "known_scoped_question_retained",
+      "duplicate_burden": "different_board_or_different_claim_not_merged_by_shared_N_PE_or_current_keyword",
+      "profile_and_section": "questions_and_clarifications_preserve_uncertainty",
+      "engineer_reuse": "No engineer decision invented; same-version source review reused, not a new physical verification.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
+          "sha256": "fd397c9b88821ec58404f09b5ee75556f169bd87b1258e15617e5ee42ff06997",
+          "primary_adjudication": null,
+          "limits": "(1+8,5)×0,90=8,55А — условная арифметическая оценка. Кс щита не доказан для отдельной фазы; cos φ групп0,95 и0,80 различны, сумма модулей не является точным фазорным расчётом. Ввод обозначен230/400В, а таблица групп220В.3,2А численно воспроизводятся при380В; это не установленная проектная методика. Рубильник40А и кабель5×4 сами по себе не показывают перегрузку. QF3.22 и условия прокладки не проверены.",
+          "wording": "В 1.ЩС-УК указан сводный Iр=3,2 А, а группы1 и4 подписаны фазой A и имеют токи1,0 и8,5А. Уточните фактическое подключение группы4 (рядом также указан автомат3P), распределение нагрузки и расчёт максимального фазного тока.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
+          "route": "same_version_prior_direct_evidence"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png",
+          "sha256": "4dae62b85d910dd66905114bbc9d7a86c0919e16b1a5348c663cdbce947d7ea8",
+          "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+          "route": "same_version_prior_direct_evidence",
+          "observation": "Группы1/4A,1/8,5А;QF4 3P,кабель3×2,5,0,22кВ. ИтогIp3,2.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png"
+        }
+      ],
+      "disposition": "assessed_preserve_phase_question_with_pole_and_phasor_limits"
+    }
+  ],
+  "limits": [
+    "Unresolved topology is not a technical false-positive verdict.",
+    "Repeated model statements do not replace source endpoint evidence.",
+    "No production code, normative requirements or frozen discovery inputs changed."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
