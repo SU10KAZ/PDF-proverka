@@ -103,8 +103,14 @@
       "finding_id": "F-011",
       "problem": "Алгоритм и спецификация задают разные типы температурного прибора.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Пункт7 задаёт датчик-реле Спрут Т-06,порог18°C и управляющий сигнал на пускатель;СО20.1 задаёт шесть NTC10К МВТ3280 с зондом200мм. Выдача сохраняет конфликт исполнения и условную необходимость согласовать интерфейс. Прямое соединение терморезистора с катушкой без обработки не заявлено. Смежный шкаф и паспорт не проверены; фактическая несовместимость остаётся недоказанной.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_control_logic_source_review_20261112.json",
+        "sha256": "c4f6dd51c155a4fced854d4de0f7b0db0f28f482d0e009cbb0e1105dfa965362"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-012",
@@ -143,8 +149,14 @@
       "finding_id": "F-015",
       "problem": "Длина линии Пн5.1.-10 превышает количество того же кабеля в локальном перечне.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Одна строка Пн5.1.-10 задаёт35м экранированного двухпарного кабеля отШАУВ-4-К5ПЧ кХТ1,а полный локальный перечень этого шкафа содержит15м того же исполнения.35−15=20м. Выдача требует согласования,не предписывает автоматически увеличить заказ и не утверждает фактическую недопоставку.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_control_logic_source_review_20261112.json",
+        "sha256": "c4f6dd51c155a4fced854d4de0f7b0db0f28f482d0e009cbb0e1105dfa965362"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-016",
@@ -199,15 +211,27 @@
       "finding_id": "F-023",
       "problem": "Требуется уточнить комплект электропитания шкафов.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "correct_question_scope",
+      "engineer_decision": null,
+      "review_reason": "Подтверждены ссылки ЭМ2-ПА в описании вентиляционных шкафов и ЭМ-КЗ в пункте8; там же указаныIкатегория защиты иIIкатегория двигателя. Выдача просит адресное разграничение,не объявляет ссылки конфликтом одной доказанной цепи. Смысл буквыЗ в источнике не исправляется. Категории здесь пересказаны как проектные указания,их нормативная достаточность не оценивалась.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_control_logic_source_review_20261112.json",
+        "sha256": "c4f6dd51c155a4fced854d4de0f7b0db0f28f482d0e009cbb0e1105dfa965362"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-024",
       "problem": "В алгоритме защиты названы разные точки измерения температуры воздуха.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_textual_logic_requires_scope_caveat",
+      "engineer_decision": null,
+      "review_reason": "Общие функции называют воздух после калорифера;рабочий алгоритм использует наружный≤3°C ИЛИ обратный теплоноситель≤20°C для прогрева при отключённом регулировании. Следствие ИЛИ верно. Выдача не утверждает немедленного останова по одному наружному порогу. Фраза о неопределённом возврате относится только к рабочему режиму:в дежурном прямо написано закрытие клапана при повышении температуры. Сохранить этот контекст при редактуре; фактическая программа не проверена.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_control_logic_source_review_20261112.json",
+        "sha256": "c4f6dd51c155a4fced854d4de0f7b0db0f28f482d0e009cbb0e1105dfa965362"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-025",
@@ -730,6 +754,6 @@
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 18,
-  "unchecked_findings": 67
+  "reviewed_findings": 22,
+  "unchecked_findings": 63
 }
