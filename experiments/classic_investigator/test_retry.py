@@ -24,4 +24,24 @@ class RetryTest(unittest.TestCase):
         async def call():raise AssertionError('request sent')
         with self.assertRaises(m.TrialStopped):asyncio.run(m.retry_subscription_call(call,stop_requested=lambda:True,on_attempt=lambda _:None))
 
+
+class BoundedRetryTest(unittest.TestCase):
+    def test_terminal_retry_budget_preserves_error_and_total_usage(self):
+        calls=[];waits=[];receipts=[]
+        async def call():
+            calls.append(1)
+            return SimpleNamespace(is_error=True,error_message='503 service unavailable',text='',input_tokens=10,output_tokens=2)
+        async def sleep(delay):waits.append(delay)
+        result=asyncio.run(m.retry_subscription_call(call,stop_requested=lambda:False,on_attempt=receipts.append,sleep=sleep,max_attempts=3))
+        self.assertTrue(result.is_error)
+        self.assertEqual(len(calls),3);self.assertEqual(waits,[10,10])
+        self.assertEqual(result.input_tokens,30)
+        self.assertTrue(receipts[-1]['retry_budget_exhausted'])
+        self.assertIsNone(receipts[-1]['next_delay_seconds'])
+    def test_bad_limit_fails_before_dispatch(self):
+        async def call():raise AssertionError('request sent')
+        for limit in (True,0,-1,1.5):
+            with self.assertRaises(ValueError):
+                asyncio.run(m.retry_subscription_call(call,stop_requested=lambda:False,on_attempt=lambda _:None,max_attempts=limit))
+
 if __name__=='__main__':unittest.main()

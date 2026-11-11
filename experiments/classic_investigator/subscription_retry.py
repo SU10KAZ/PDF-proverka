@@ -29,14 +29,16 @@ def transient_reason(result) -> str:
     return match.group(0).lower() if match else ''
 
 
-async def retry_subscription_call(call, *args, stop_requested, on_attempt, sleep=None, **kwargs):
-    """Repeat the identical failed request after ten seconds until success or stop.
+async def retry_subscription_call(call, *args, stop_requested, on_attempt, sleep=None, max_attempts=None, **kwargs):
+    """Repeat the identical failed request after ten seconds, with an optional attempt cap.
 
     A terminal authentication/configuration failure is returned to the existing
     pipeline, rather than turning a broken local setup into an endless loop.
     Receipts account for every attempt, including failures. Nothing from the
     engineering input is copied into a retry receipt.
     """
+    if max_attempts is not None and (type(max_attempts) is not int or max_attempts < 1):
+        raise ValueError('max_attempts must be a positive integer or None')
     sleep = sleep or asyncio.sleep
     attempt = 0
     totals = {field: 0 for field in _USAGE_FIELDS}
@@ -49,14 +51,16 @@ async def retry_subscription_call(call, *args, stop_requested, on_attempt, sleep
         usage = {field: getattr(result, field, 0) or 0 for field in _USAGE_FIELDS}
         for field, value in usage.items():
             totals[field] += value
+        exhausted = bool(reason and max_attempts is not None and attempt >= max_attempts)
         on_attempt({
             'timestamp': time.time(), 'stage': kwargs.get('stage'),
             'model': kwargs.get('model') or getattr(result, 'model', None),
             'attempt': attempt, 'is_error': bool(getattr(result, 'is_error', False)),
-            'retry_reason': reason or None, 'next_delay_seconds': RETRY_DELAY_SECONDS if reason else None,
+            'retry_reason': reason or None, 'next_delay_seconds': RETRY_DELAY_SECONDS if reason and not exhausted else None,
+            'retry_budget_exhausted': exhausted,
             'usage': usage,
         })
-        if not reason:
+        if not reason or exhausted:
             # Existing stage counters receive total usage of this request,
             # including unsuccessful attempts, rather than only the last answer.
             if attempt > 1:

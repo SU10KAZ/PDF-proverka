@@ -16,6 +16,8 @@ MODELS = {'text_analysis':'codex/gpt-6.1-sol','block_batch':'ensemble/codex-only
           'optimization':'ensemble/codex-codex-opt','optimization_critic':'codex/gpt-6-sol',
           'optimization_corrector':'codex/gpt-6-sol'}
 ALLOWED = {'gpt-6-astra','gpt-6-sol','gpt-6.1-sol'}
+REASONING_EFFORT = 'medium'
+MAX_REQUEST_ATTEMPTS = None
 ENV = {'STAGE01_CLAUDE_LEG_ENABLED':'false','STAGE01_THIRD_LEG_ENABLED':'false',
        'STAGE01_CODEX_ONLY_LEG_MODELS':'codex/gpt-6-astra,codex/gpt-6-sol',
        'STAGE01_CODEX_ONLY_LEG_EFFORT':'medium','STAGE01_CODEX_ONLY_JUDGE_MODEL':'codex/gpt-6.1-sol',
@@ -47,7 +49,7 @@ def freeze(work):
         'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
         'source_files':{str(p.relative_to(ROOT)):sha(p) for p in files},
         'input_manifest_sha256':sha(root/'input_manifest.json'),'stage_models':MODELS,'environment':ENV,
-        'reasoning_effort':'medium','graphic_parallelism':2,
+        'reasoning_effort':REASONING_EFFORT,'max_request_attempts':MAX_REQUEST_ATTEMPTS,'graphic_parallelism':2,
         'scope':'graphic detector ensemble + full authoritative MD + merge + structural/absence verification',
         'excluded':'optimization and external normative vault verification; experimental operation injection',
         'blindness':'Source-only inputs. Known development projects, not unseen validation.',
@@ -71,7 +73,7 @@ def configure(work,disc):
     claude_json_runner.run_claude_json_messages=deny
     async def guarded(messages,**kwargs):
         validate_model(kwargs.get('model'))
-        kwargs['reasoning_effort']='medium'
+        kwargs['reasoning_effort']=REASONING_EFFORT
         request=root/'requests'/disc/str(time.time_ns());request.mkdir(parents=True)
         write(request/'request.json',{'messages':messages,'options':{k:([str(p) for p in v] if k=='image_paths' and v else v) for k,v in kwargs.items() if k!='on_output'},
               'image_hashes':{str(p):sha(p) for p in kwargs.get('image_paths') or []}})
@@ -84,7 +86,7 @@ def configure(work,disc):
             return result
         def record(item):attempts.append(item);write(request/'attempts.json',attempts)
         return await retry_subscription_call(attempt,messages,**kwargs,
-            stop_requested=lambda:(work/'STOP_REQUESTED.json').exists() or (root/'STOP_REQUESTED.json').exists(),on_attempt=record)
+            stop_requested=lambda:(work/'STOP_REQUESTED.json').exists() or (root/'STOP_REQUESTED.json').exists(),on_attempt=record,max_attempts=MAX_REQUEST_ATTEMPTS)
     codex_runner.run_codex_json_messages=guarded
     from backend.app.pipeline.stages.text_analysis import absence_guard
     def verify(md,candidates,*,timeout_sec=180):
@@ -99,6 +101,10 @@ def configure(work,disc):
 
 async def run(work,disc):
     root=work/'classic_control';protocol=read(root/'protocol.json')
+    if (protocol['stage_models']!=MODELS or protocol['environment']!=ENV
+            or protocol['reasoning_effort']!=REASONING_EFFORT
+            or protocol.get('max_request_attempts')!=MAX_REQUEST_ATTEMPTS):
+        raise ValueError('Execution settings differ from frozen protocol')
     for name,digest in protocol['source_files'].items():
         if sha(ROOT/name)!=digest:raise ValueError(f'Frozen implementation changed: {name}')
     if sha(root/'input_manifest.json')!=protocol['input_manifest_sha256']:raise ValueError('Input manifest changed')
@@ -139,7 +145,7 @@ async def run(work,disc):
     try:
         with audit_scope.bind_audit_scope(output_dir=out,version_dir=version,project_id=pid,version_id=version.name):
             result=await run_findings_only_for_project(version,output_dir_override=out,model=MODELS['block_batch'],
-                reasoning_effort='medium',parallelism=2,timeout_s=600,on_progress=progress,project_id=pid,version_id=version.name,job_id=pid)
+                reasoning_effort=REASONING_EFFORT,parallelism=2,timeout_s=600,on_progress=progress,project_id=pid,version_id=version.name,job_id=pid)
             blocks=result['output_doc']['block_analyses']
             expected={b['block_id'] for b in read(out/'blocks_stage02_100/index.json')['blocks']}
             if {b['block_id'] for b in blocks}!=expected or len(blocks)!=len(expected):raise RuntimeError('Incomplete graphic coverage')
