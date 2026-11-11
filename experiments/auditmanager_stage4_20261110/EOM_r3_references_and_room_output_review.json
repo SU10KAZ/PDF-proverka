@@ -1,0 +1,719 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/EOM_output_review_queue.json",
+  "queue_before_sha256": "37c3bed8e094e7d52ab74db31c28dbded522bb5de2dbb33f35aae6ed45fd60d3",
+  "queue_after_sha256": "18c661d3f8f5595973013470a5b20462a3e235f712d0f8db7ac3ad65d81ceca2",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-023",
+      "finding": {
+        "id": "F-023",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Требует актуализации ссылка на стандарт идентификации проводников.",
+        "description": "Для цветовой и буквенно-цифровой идентификации указан ГОСТ Р 50462-2009. В переданном текстовом анализе он отмечен как заменённый ГОСТ 33542-2015. Статус и применимость редакций на этапе объединения независимо не проверены.",
+        "norm": "ГОСТ Р 50462-2009 (норматив-кандидат), пункт не подтверждён; ГОСТ 33542-2015 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 50462-2009",
+            "cited_designation": "ГОСТ Р 50462-2009",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить указанную в проекте ссылку и сведения о её замене.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-024"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-024"
+                ],
+                "designation_source": "Описание текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 33542-2015",
+            "cited_designation": "ГОСТ 33542-2015",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить сведения о замене прежнего стандарта и требования идентификации проводников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-024"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-024"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подтвердить применимую редакцию и актуализировать нормативную ссылку и монтажные указания.",
+        "risk": "Применение несогласованных требований к маркировке проводников.",
+        "source_finding_ids": [
+          "T-024"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 3
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 76,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F041_F048_contradictory_norm_status:35536aa9bdef77ffbaf1",
+          "route": "negative",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В проекте указанГОСТР50462-2009.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Само наличие ссылки не доказывает ошибку."
+        },
+        {
+          "claim": "Входной анализ считает его заменённымГОСТ33542-2015.",
+          "verdict": "unsupported_by_frozen_primary_evidence",
+          "limits": "Ранее сохранённая официальная карточка: действует, заменяющий документ не указан. Текущий статус заново не запрашивался. Оговорка модели о непроверенном статусе не создаёт основания замечания."
+        },
+        {
+          "claim": "Актуализировать ссылку из-за замены.",
+          "verdict": "unsupported_recommendation",
+          "limits": "Не засчитывать полезный вопрос только из неподтверждённой замены; иные основания применимости и фактическая маркировка не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Нет нового запроса текущего правового статуса. Используются сохранённые первичные источники для оценки основания вывода модели, а не юридическое заключение. Новый год2015 вF024 отдельно не верифицирован.",
+      "novel_useful_content": "F025идентификаторы иF045/F046названия сохраняются с ограничениями. F023/F024 не получают полезность только за вопрос об актуальности неподтверждённой замены.",
+      "duplicate_burden": "Разные нормативные обозначения не дубли. Исправление наименования не считается техническим нарушением. Два тезисаF025 оцениваются раздельно.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957"
+          ],
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/974cc100-ffdd-460a-9865-f35d4f55ea80",
+          "accessed": "2026-11-11",
+          "route": "official_Rosstandart_catalog_opened",
+          "observations": {
+            "status": "Действует",
+            "replacement_designation": "-"
+          },
+          "limits": "Catalogue status check; not a full reconstruction of all legal acts or project applicability."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-002",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_references_and_room"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-024",
+      "finding": {
+        "id": "F-024",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Требует актуализации ссылка на стандарт безопасности электросварочных работ.",
+        "description": "В требованиях безопасности сохранена ссылка на ГОСТ 12.3.003-86. В переданном текстовом анализе он отмечен как заменённый ГОСТ 12.3.003-2015. Применимость к предусмотренной технологии и статус редакций отдельно не проверены.",
+        "norm": "ГОСТ 12.3.003-86 (норматив-кандидат), пункт не подтверждён; ГОСТ 12.3.003-2015 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 12.3.003-86",
+            "cited_designation": "ГОСТ 12.3.003-86",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить реквизиты ссылки проекта и сведения о замене документа.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-025"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-025"
+                ],
+                "designation_source": "Описание текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 12.3.003-2015",
+            "cited_designation": "ГОСТ 12.3.003-2015",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить сведения о замене и применимость требований безопасности сварочных работ.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-025"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-025"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить применимую редакцию и технологию монтажа, затем исправить ссылку.",
+        "risk": "Использование устаревших указаний по безопасности работ.",
+        "source_finding_ids": [
+          "T-025"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 3
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 66,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "В проектеГОСТ12.3.003-86.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Само наличие ссылки не является дефектом."
+        },
+        {
+          "claim": "Он заменёнГОСТ12.3.003-2015.",
+          "verdict": "unverified_changed_replacement_claim",
+          "limits": "Предыдущий повтор называл2018, текущий2015. Нельзя переносить проверку конкретного обозначения2018 на2015. В сохранённой карточке86 действует и поле замены пустое; новый текущий статус не проверялся."
+        },
+        {
+          "claim": "Исправить как устаревший.",
+          "verdict": "unsupported_recommendation",
+          "limits": "Основание замены не доказано; оговорка о непроверенности не делает строку полезным инженерным замечанием. Применимость технологии отдельно не установлена."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Нет нового запроса текущего правового статуса. Используются сохранённые первичные источники для оценки основания вывода модели, а не юридическое заключение. Новый год2015 вF024 отдельно не верифицирован.",
+      "novel_useful_content": "F025идентификаторы иF045/F046названия сохраняются с ограничениями. F023/F024 не получают полезность только за вопрос об актуальности неподтверждённой замены.",
+      "duplicate_burden": "Разные нормативные обозначения не дубли. Исправление наименования не считается техническим нарушением. Два тезисаF025 оцениваются раздельно.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_76d1760dd5b34882a0df18538f78e39b"
+          ],
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/c3c26996-7106-4f0b-a26e-f87ae173290b",
+          "accessed": "2026-11-11",
+          "route": "official_Rosstandart_catalog_opened",
+          "observations": {
+            "status": "Действует",
+            "replacement_designation": "-"
+          },
+          "limits": "Catalogue status check; not a full reconstruction of all legal acts or project applicability."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-003",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_references_and_room"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-025",
+      "finding": {
+        "id": "F-025",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Координация документации",
+        "sheet": "Листы 15, 16, 25",
+        "page": [
+          3,
+          18,
+          19,
+          27
+        ],
+        "problem": "Экспликации подземных помещений содержат неоднозначную принадлежность этажу и повторный номер помещения.",
+        "description": "По текстовому анализу на листе 16, относящемся по ведомости к первому этажу, размещена экспликация помещений −2 этажа. Номер 0.0.2.2 присвоен венткамере и помещению РУ с различными площадями и категориями.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), кандидат п. 4.2.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить согласованность рабочих чертежей, ведомости и идентификации помещений; учесть указанную в проекте другую редакцию.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-026"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.2.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить экспликации с архитектурным комплектом, исправить принадлежность таблиц и обеспечить однозначные номера помещений.",
+        "risk": "Ошибочная привязка оборудования и требований к условиям его установки.",
+        "source_finding_ids": [
+          "T-026"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "page": 18
+          },
+          {
+            "type": "text",
+            "page": 19
+          },
+          {
+            "type": "text",
+            "page": 27
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 56,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "rework",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F024_room_number_collision:a27bd6546c4ff55c4e59",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "0.0.2.2 повторён для венткамеры иРУ с разными площадями/категориями.",
+          "verdict": "confirmed_authoritative_TEXT_identity_collision",
+          "limits": "Исходная привязка−1этаж,43,9м²В2 и11,1м²В3 в текущей строке не раскрыта. Оценщик не восполняет этим полноту обнаружения."
+        },
+        {
+          "claim": "Экспликация−2этажа в блокеSheet16; ведомость называет лист16 первым этажом.",
+          "verdict": "confirmed_TEXT_metadata_discrepancy",
+          "limits": "Полный лист со штампом не просмотрен; дополнительная таблица может быть допустима."
+        },
+        {
+          "claim": "Согласовать номера и принадлежность.",
+          "verdict": "supported_scoped_question",
+          "limits": "Новый номер, ошибочность категории и неправильная установка не установлены; автоматическое перенумерование недопустимо."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Нет нового запроса текущего правового статуса. Используются сохранённые первичные источники для оценки основания вывода модели, а не юридическое заключение. Новый год2015 вF024 отдельно не верифицирован.",
+      "novel_useful_content": "F025идентификаторы иF045/F046названия сохраняются с ограничениями. F023/F024 не получают полезность только за вопрос об актуальности неподтверждённой замены.",
+      "duplicate_burden": "Разные нормативные обозначения не дубли. Исправление наименования не считается техническим нарушением. Два тезисаF025 оцениваются раздельно.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_84e0cee1c8a145c482898b1c10b3a24b",
+            "blk_89d65fba46eb42b3ba462e8ff3151306",
+            "blk_467fcd3780ee4a5daa26449e8caac1b7",
+            "blk_2b1c9a1c635b45eebc5bf5dc7e3f616a"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-029",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_references_and_room"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-045",
+      "finding": {
+        "id": "F-045",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "Наименование ГОСТ Р 50571.5.54-2024 приведено в структуре прежнего стандарта.",
+        "description": "Строка MD 333: «| ГОСТ Р 50571.5.54-2024 | Электроустановки зданий. Часть 5 «Выбор и монтаж электрооборудования. Глава 54. Заземляющие устройства и защитные проводники»; |  |». Обозначению ГОСТ Р 50571.5.54-2024 соответствует стандарт серии «Электроустановки низковольтные», часть 5-54. Формулировки «Электроустановки зданий», «Часть 5» и «Глава 54» не соответствуют наименованию указанной редакции.",
+        "page": 2,
+        "norm": "ГОСТ Р 50571.5.54-2024 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Привести наименование ГОСТ Р 50571.5.54-2024 по его официальному титульному листу.",
+        "risk": "Неоднозначная идентификация нормативного документа и смешение редакций при использовании ведомости.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+            "page": 2,
+            "md_lines": "строка 333"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet_unavailable": true,
+        "sheet_unavailable_reason": "page_not_in_map",
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 50571.5.54-2024",
+            "cited_designation": "ГОСТ Р 50571.5.54-2024",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 36,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "formal_reference_category",
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F046_new_reference_identity:composite:2",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "MD333:название серииЭлектроустановки зданий,Часть5/Глава54 при обозначении2024.",
+          "verdict": "confirmed_authoritative_TEXT_and_frozen_title_evidence",
+          "limits": "Сохранённая официальная карточка:низковольтные,часть5-54. Это сверка наименования, не актуальности обязательных норм."
+        },
+        {
+          "claim": "Исправить по официальному титулу.",
+          "verdict": "supported_editorial_question",
+          "limits": "Текущая строка не повторяет ошибку прежнего полного названия: электрического оборудования нельзя подменять электрооборудования. Неверное техническое применение или заземление не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Нет нового запроса текущего правового статуса. Используются сохранённые первичные источники для оценки основания вывода модели, а не юридическое заключение. Новый год2015 вF024 отдельно не верифицирован.",
+      "novel_useful_content": "F025идентификаторы иF045/F046названия сохраняются с ограничениями. F023/F024 не получают полезность только за вопрос об актуальности неподтверждённой замены.",
+      "duplicate_burden": "Разные нормативные обозначения не дубли. Исправление наименования не считается техническим нарушением. Два тезисаF025 оцениваются раздельно.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+          "line": 333,
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/45fc74f0-6fce-4163-8982-f2a89c8d1792",
+          "accessed": "2026-11-11",
+          "route": "official_Rosstandart_catalog",
+          "title": "ГОСТ Р 50571.5.54-2024",
+          "support": "Series is low-voltage installations, part 5-54; equipment wording is two words электрического оборудования.",
+          "limits": "Catalog title comparison only; applicability to project not adjudicated."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-047",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_references_and_room"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-046",
+      "finding": {
+        "id": "F-046",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "Для РД 34.21.122-87 указано наименование другого документа.",
+        "description": "Строка MD 339: «| РД 34.21.122-87 | Инструкция по устройству молниезащиты зданий, сооружений и промышленных коммуникаций |  |». Правильное наименование РД 34.21.122-87 — «Инструкция по устройству молниезащиты зданий и сооружений». В ведомости ему присвоено наименование СО 153-34.21.122-2003 из соседней строки MD 338: «| СО 153-34.21.122-2003. | Инструкция по устройству молниезащиты зданий, сооружений и промышленных коммуникаций |  |». Это ошибка наименования; наличие двух разных инструкций само по себе не доказывает дублирование или конфликт требований.",
+        "page": 2,
+        "norm": "РД 34.21.122-87 (норматив-кандидат), пункт не подтверждён; СО 153-34.21.122-2003 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Исправить наименование РД 34.21.122-87 на «Инструкция по устройству молниезащиты зданий и сооружений».",
+        "risk": "Смешение двух документов при выборе и проверке требований молниезащиты.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+            "page": 2,
+            "md_lines": "строки 338-339"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet_unavailable": true,
+        "sheet_unavailable_reason": "page_not_in_map",
+        "candidate_norm_references": [
+          {
+            "designation": "РД 34.21.122-87",
+            "cited_designation": "РД 34.21.122-87",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СО 153-34.21.122-2003",
+            "cited_designation": "СО 153-34.21.122-2003",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 2,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "formal_reference_category",
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F049_lightning_reference_title:106f839cb3a98ca97f29",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "MD339названиеРД повторяет соседнееСО; заголовокРД без промышленных коммуникаций.",
+          "verdict": "confirmed_TEXT_and_frozen_primary_title",
+          "limits": "Сверяется заголовок самого документа, не обложка сборника."
+        },
+        {
+          "claim": "Исправить названиеРД.",
+          "verdict": "supported_editorial_question",
+          "limits": "Совместное перечисление разныхРД/СО не доказывает дубль или конфликт требований. Техническая ошибка молниезащиты не установлена."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Нет нового запроса текущего правового статуса. Используются сохранённые первичные источники для оценки основания вывода модели, а не юридическое заключение. Новый год2015 вF024 отдельно не верифицирован.",
+      "novel_useful_content": "F025идентификаторы иF045/F046названия сохраняются с ограничениями. F023/F024 не получают полезность только за вопрос об актуальности неподтверждённой замены.",
+      "duplicate_burden": "Разные нормативные обозначения не дубли. Исправление наименования не считается техническим нарушением. Два тезисаF025 оцениваются раздельно.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F049_lightning_reference_title.json",
+          "sha256": "4584797c55ba058a83a66f9c599d6383a81c40397467675ecfb4e337504858db",
+          "primary_adjudication": null,
+          "limits": "Оба обозначения сохранены в проекте и позволяют идентифицировать документы. Причина совпадения названий — например, копирование — не установлена. Неверный выбор метода расчёта, неправильное устройство молниезащиты и фактическая невозможность идентификации не доказаны. Проверены титульные данные копий документов, а не актуальный юридический статус, обязательность или возможность совместного применения РД/СО; вывод об отменеРД из предисловияСО не делается.",
+          "wording": "В ведомости ссылочных документов ЭОМ2-1, лист1, исправить наименование строкиРД34.21.122-87 на «Инструкция по устройству молниезащиты зданий и сооружений». Слова о промышленных коммуникациях относятся к названию соседней строкиСО153-34.21.122-2003. Замечание к оформлению ссылки.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F049_lightning_reference_title.json",
+          "route": "byte_identical_source_reuse_of_documented_prior_review"
+        },
+        {
+          "url": "https://files.stroyinf.ru/Data2/1/4294853/4294853905.pdf",
+          "accessed": "2026-11-11",
+          "source_type": "primary_document_reproduction_third_party_host",
+          "pdf_page_1_based": 7,
+          "printed_page": 68,
+          "observation": "ЗаголовокРД34.21.122-87 содержитзданияисооружения,безпромышленныхкоммуникаций.",
+          "inspection": "PDF text reopened current review: page7 printed68 confirms RD title; no fresh raster claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-048",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_references_and_room"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Five current reference and room findings independently assessed using frozen primary evidence; no fresh legal status claim against identical authoritative source bytes and frozen prior reviews. No new norm validation, raster correction or engineer acceptance."
+}
