@@ -1,0 +1,43 @@
+{
+  "finding_id": "F-079",
+  "status": "node_A_conflict_preserved_node_B_not_generalized_metadata_gap_resolved_locally",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_079/publication_projection.json",
+  "projection_sha256": "ecdf82cd316abe70c3d5eab7f1b0cdf5be1acd78fbc0d34085705542be5d0300",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_3ce77761b19f4562bb8fdf7579aa80ec.png",
+      "block_id": "blk_3ce77761b19f4562bb8fdf7579aa80ec",
+      "sha256": "5715b293f381de3b0236db974c89465d002f5d00307768861965a5664f4d05bc",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "authoritative_md_spans": [
+    {
+      "block_id": "blk_d2dbea3364034dd3bcc80d3c1c8f3fe3",
+      "start": 314795,
+      "end": 317164,
+      "sha256": "73846f9560f0f9e8f6e93071b0887f8c50877ed4ebe6010b0091b145e0fa1f8c"
+    }
+  ],
+  "source_metadata_check": {
+    "md_path": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+    "start": 310294,
+    "end": 310883,
+    "sha256": "f049b3ca32d0cb35d15759a372bd6d159f64c99b76de0b6629e07e5d6bfbc261",
+    "role": "navigation_and_source_binding_only_not_graphic_semantics",
+    "observed_sheet": "52"
+  },
+  "checks": [
+    "Непосредственно просмотрены оба узла: А показывает лоток без трубы; Б прямо подписывает металлическую гильзу. Отсутствие трубы не распространяется на весь лист.",
+    "Примечание 3 требует металлические трубы, исключение для узла А не сформулировано. Модель сохраняет документальное расхождение и не объявляет недостаточную огнестойкость.",
+    "Рекомендация и условный монтажный риск остаются при техническом тезисе, новых вопросов не создано.",
+    "Модель оставила принадлежность узла листу 52 в pending. Метаданные исходного MD блока 189 и TEXT блока 191 указывают один шифр и лист 52; привязка проверена координатором. Это не доказывает автоматический поиск метаданных моделью.",
+    "Группировать повторяющиеся места с F078 и другими узлами только с сохранением всех листов и ограничений; готовность итогового объединения не проверена."
+  ],
+  "duplicate_group": "AK_passage_node_A_note_3",
+  "location_sheet": 52,
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
