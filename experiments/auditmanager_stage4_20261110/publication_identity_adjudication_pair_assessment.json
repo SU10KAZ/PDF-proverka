@@ -1,0 +1,52 @@
+{
+  "status": "same_input_adjudication_pair_passes_bounded_scope_controls",
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "policy": {
+    "path": "backend/app/pipeline/stages/findings_verify/source_review_profile.py",
+    "sha256": "c3306a2291fa49bfac8d56c4f724d4e735e863277880bb091987d901dbb3054b"
+  },
+  "cases": [
+    {
+      "finding_id": "F-083",
+      "candidate": {
+        "path": "/tmp/auditmanager_identity_adjudication_pair_20261112/F-083/candidate.json",
+        "sha256": "d3cb6faf37eab5e309dcf0028d704e5caf1b8deec1df54534518549151bd3cb2"
+      },
+      "request": {
+        "path": "/tmp/auditmanager_identity_adjudication_pair_20261112/F-083/request.json",
+        "sha256": "8f2cd3b862e4066a5755bb2e903438f3fffc194e2972e1076eefd22ec23728c1"
+      },
+      "binding": {
+        "path": "/tmp/auditmanager_identity_adjudication_pair_20261112/F-083/binding.json",
+        "sha256": "04cfd2cc9805fbf3c6a498ca47a203bdc3357dfc8832728d41727dab91a7fe5a"
+      },
+      "action": "defer",
+      "reason": "Просмотрены все 11 изображений. Подтверждены три отдельные графические группы с обозначениями К5.3 и К5.4 в помещениях 5.Т.1, 6.Т.5 и 6.Т.9, каждая со своим БУРР. Это подтверждённый контекст, но не установленный конфликт полных идентификаторов: помещения явно различены, а область уникальности коротких марок и состав полного идентификатора не представлены. Неоднозначность при исключении помещения из идентификатора является условным риском и сама по себе не устанавливает дефект принятой схемы. Подтверждённого основания технического замечания пока нет; опровержение также отсутствует. Необходимо выполнить внутреннюю сверку схем и спецификаций ОВ и АК для этих трёх помещений, включая обозначения конечных устройств и правило их идентификации. Она должна установить, используется ли марка самостоятельно либо вместе с помещением, и есть ли конкретное несовпадение обозначений одного прослеженного устройства между документами. Записи о выполнении такой сверки не предоставлены. Оснований переводить замечание в раздел вопросов как подтверждённую малозначительную редакционную ошибку или запрос вне профиля нет; неполнота контекста требует получения источников, а не обязательного переименования оборудования."
+    },
+    {
+      "finding_id": "F-071",
+      "candidate": {
+        "path": "/tmp/auditmanager_identity_adjudication_pair_20261112/F-071/candidate.json",
+        "sha256": "ecd1f758aaae471f3a93417d5b6c0fb3edc31ed7e3f19d7f29d0367435a3cd27"
+      },
+      "request": {
+        "path": "/tmp/auditmanager_identity_adjudication_pair_20261112/F-071/request.json",
+        "sha256": "4b8cca18a199e97bf82b1ae5156d718bd344bb408aa1565ddb73764f17f7239f"
+      },
+      "binding": {
+        "path": "/tmp/auditmanager_identity_adjudication_pair_20261112/F-071/binding.json",
+        "sha256": "d77b8bd1872c24dae1907f2e0845946187167fa0e108e3e9476900d186fa3b46"
+      },
+      "action": "revise",
+      "reason": "Подтверждён локальный конфликт в строке «Позиция» одной схемы внешних подключений: M2 присвоено двум разным двигателям с отдельными цепями. Вывод ограничен этой схемой и не требует глобальной уникальности коротких обозначений. Функциональные заголовки и клеммы позволяют различать устройства, поэтому риск относится к обращениям по позиции M2 без уточнения. Резервное назначение вентилятора не подтверждено. Сохранено техническое замечание: повтор затрагивает позиционную адресацию двух электрических цепей, а не только оформление текста. Оснований считать его подтверждённой малозначительной редакционной ошибкой нет."
+    }
+  ],
+  "limits": [
+    "Two known DEV cases, one sample each; not blind or statistically established improvement.",
+    "F083 is deferred for internal retrieval, not refuted and not yet accepted as an engineer question.",
+    "Final release under the changed policy remains separate."
+  ],
+  "production_acceptance": false,
+  "stage4_complete": false
+}
