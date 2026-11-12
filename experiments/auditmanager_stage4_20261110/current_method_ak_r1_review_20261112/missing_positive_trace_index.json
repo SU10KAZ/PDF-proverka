@@ -1,0 +1,277 @@
+{
+  "status": "first_run_missing_positive_atom_trace_index",
+  "run": "ak_r1_classic_current",
+  "ledger": {
+    "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/ak_r1_classic_current_coverage_ledger.json",
+    "sha256": "350fedcc95e6506f0e701554f972444add0c02926b86d364da22084b1ff12699"
+  },
+  "summary": {
+    "missing_or_partial_positive_atoms": 22,
+    "bounded_stage_evidence_available": 10,
+    "cause_not_established": 12
+  },
+  "rows": [
+    {
+      "target_id": "AK100_F015_drive_cable_graph:efafe11e28c59a6064d1",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "В итоговых88 замечаниях отсутствует конфликт трёх межшкафных марок Ва4.1 лист36 с Ba3.1 КЖ22 для ШАУВ-1-К5АС.ПЧ. F-034/076 касаются привязки VFD к системам в СО, а не этих кабельных марок. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_additional.json",
+          "sha256": "885a0cee0d298bc9ea1da758aadef5c8a1ea1d0a1c4cdc8061994ed53c0e55e2",
+          "pointer": "/traces/0",
+          "observed_stage": "candidate_scope_and_context_navigation",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Не сохранена находка двух немаркированных участков ПЧ→M2/M3 по15м на листе36. Другие конфликты обозначений двигателей не покрывают этот объект и операцию. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Проследить каждую отдельную операцию: немаркированные участки после ПЧ, их наличие в КЖ, баланс 730/700. Ранее найденная близкая гипотеза T-025 не покрывает эти три проверки."
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25d3c70866a6e840202d",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Не сохранено отсутствие самостоятельных строк ПЧ→M2/M3 в полном разделе КЖ Па4.1/Ва4.1. Замечания о повторных строках иных систем не покрывают эту связь. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Проследить каждую отдельную операцию: немаркированные участки после ПЧ, их наличие в КЖ, баланс 730/700. Ранее найденная близкая гипотеза T-025 не покрывает эти три проверки."
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Не сохранён баланс шести участков4×2,5 листа36:730м против700м локальной ведомости. F-088 касается другого баланса4×4:70/60 и не является совпадением. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Проследить каждую отдельную операцию: немаркированные участки после ПЧ, их наличие в КЖ, баланс 730/700. Ранее найденная близкая гипотеза T-025 не покрывает эти три проверки."
+    },
+    {
+      "target_id": "AK14:65ea2c2649999f640c83",
+      "coverage": "partial",
+      "coverage_reason_snapshot": "Из пяти подтверждённых шкафов сохранён ШАУВ-3-К5ПЧ:23/24 у PDS4/PDS5 и29–31 у M1/M2. Не сохранены ШАУВ-4-К4ПЧ, ШАУВ-1-К4АС, ШАУВ-4-К5ПЧ и ШАУВ-1-К6АС. Неоднозначность контактов БД-ТЗ1 — другой объект.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Разобрать четыре несохранённых шкафа по отдельности; не переносить результат ШАУВ-3-К5ПЧ на одинаковые номера других шкафов."
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Не сохранён вопрос межкомплектного учёта группы5:61 датчик таблицы против43 датчиков/КСИ СО с явной ссылкой наАК1-ПА. F-001/002 про интерфейсы и книгу2 не покрывают эту границу комплектности. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_additional.json",
+          "sha256": "885a0cee0d298bc9ea1da758aadef5c8a1ea1d0a1c4cdc8061994ed53c0e55e2",
+          "pointer": "/traces/1",
+          "observed_stage": "question_routing_after_context_review",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "F-027 сохраняет конфликт изготовителей, F-084 единицу комплекта, F-083 шифры питания, но тезис общих данных «без внешнего источника питания» против220В/QF1 БУРР-1М не обнаружен. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_conditioner_power.json",
+          "sha256": "ad6a12245fefc13ca50a5b87412e74d0cac8e53edb7fc134a1cc407ecc089f90",
+          "pointer": "",
+          "observed_stage": "requirement_atom_extraction_and_cross_document_comparison",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:e86ce5509b0bfea4981d",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Не сохранён вопрос учёта межприборных участков Y1–Y2, M1–M2 и TS1–TS2 в КЖ31. F-078 о повторных обозначениях на плане и F-079 о колодках БД-ТЗ1 не покрывают кабельную комплектность. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_curtain_cables.json",
+          "sha256": "83682d66414831c2963190024e56433910030237230466a68083dbcb64b729e3",
+          "pointer": "",
+          "observed_stage": "post_context_question_routing",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
+      "coverage": "partial",
+      "coverage_reason_snapshot": "Полностью сохранены семь марок листов 7/8, длины 20,20,5×25 м и различающиеся распределения прокладки, без объявления дословного дублирования. Сумма повторного набора 165 м явно не приведена: исходные данные позволяют её восстановить, но расчётная часть атома в выдаче не выполнена.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Сравнить первичный кандидат, уточнение и итог: вычислялись ли 165/210 м либо расчёт вообще не выполнялся. Наличие исходных длин не считать выполненной арифметикой."
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
+      "coverage": "partial",
+      "coverage_reason_snapshot": "Сохранены все 14 марок листов 25/26 и длины по 15 м; повтор не объявлен дополнительными физическими кабелями. Явный итог 210 м не приведён. Также итог отнесён к questions вместо technical эталона; формальная оценка раздела оставлена unchecked при частичном покрытии.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Сравнить первичный кандидат, уточнение и итог: вычислялись ли 165/210 м либо расчёт вообще не выполнялся. Наличие исходных длин не считать выполненной арифметикой."
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Отсутствует адресный конфликт Пкр4.1-13:КЖ M2 против насоса M3 на схемах. F-061 касается Пкр5.1, F-065 Пн5.1; совпадение коротких номеров не означает покрытие Пкр4.1. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_initial.json",
+          "sha256": "0a774ed6d1315d263f0b11b31134b3a8c854cca777f0e9c122d76056c991d2f6",
+          "pointer": "/traces/0",
+          "observed_stage": "context_retrieval_and_recovery",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
+    },
+    {
+      "target_id": "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Отсутствует условный вопрос о соотношении4 консоли на1 плиту листа53 и15/15 в СО. Конфликты размеров, артикулов подвесов и заделки проходок являются другими атомами. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_initial.json",
+          "sha256": "0a774ed6d1315d263f0b11b31134b3a8c854cca777f0e9c122d76056c991d2f6",
+          "pointer": "/traces/1",
+          "observed_stage": "subclaim_adjudication_and_output_routing",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
+    },
+    {
+      "target_id": "AK_F026_protection_boolean_condition:04fa5c0cbbedc7704f59",
+      "coverage": "partial",
+      "coverage_reason_snapshot": "Цитата evidence содержит полное условие обратная вода≤20 ИЛИ наружный воздух≤3; вывод и рекомендация сохранены только о различии наружного и послекалориферного воздуха. Логическая достаточность наружного порога независимо от обратной воды и возврат к регулированию в видимой формулировке не разобраны. Это частичное покрытие, не полное отсутствие исходного условия.",
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_boolean_condition.json",
+          "sha256": "eca07e6bd288c04f4a5fd17e42f87c66cb8ca8274d02cdbe755502aa89f7917a",
+          "pointer": "",
+          "observed_stage": "candidate_subclaim_adjudication_and_visible_scope",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7267cc07801d121c1339",
+      "coverage": "partial",
+      "coverage_reason_snapshot": "Сохранены неполные реквизитыТУ-газ-86 и вопрос обоснования высоты1,5м, но отдельное основание покрытия200м² не запрошено. Упоминание200м² внутри исходной цитаты F-005/006 не является обнаружением этой части вопроса.",
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_additional.json",
+          "sha256": "885a0cee0d298bc9ea1da758aadef5c8a1ea1d0a1c4cdc8061994ed53c0e55e2",
+          "pointer": "/traces/2",
+          "observed_stage": "subclaim_question_routing",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "F-068 сохраняет четыре адресные линии схема/КЖ, но не конфликт локальных ведомостей КСПВПГнг с СО21.4 КСПВППГнг. Общая рекомендация согласовать связанные ведомости не заменяет обнаружения третьей марки. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Проследить третью марку СО21.4 КСПВППГнг: обнаружена ли она наряду с уже сохранёнными четырьмя линиями схема/КЖ и куда направлена."
+    },
+    {
+      "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+      "coverage": "partial",
+      "coverage_reason_snapshot": "Локальные ссылки21/24-ГК-К5-ЭМ у БУРР и13АВ-РД-ЭМ-К5 примечания2 сохранены, границы разных цепей оставлены для уточнения. Общие ссылки13АВ-РД-ЭМ-КЗ и13АВ-РД-ЭМ2-ПА из обязательного контекста не перечислены. Раздел technical также расходится с question эталона, но оценка раздела пока unchecked при partial.",
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_partial.json",
+          "sha256": "ba3552c84cdb5a513bee2c2fc83c9f5be9bd6adf16bb5774bbb77c4613395284",
+          "pointer": "/traces/0",
+          "observed_stage": "question_scope_after_context_review",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
+    },
+    {
+      "target_id": "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Не сохранён вопрос названия листа16 в Stamp MD:Пл3.1/Вк3.1/Всу3.1 против ведомости и схемы Пу5.1/Ву5.1/Всу5.1. Иные конфликты обозначений систем не покрывают этот лист. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Проверить, передавалось ли название Stamp листа16 на анализ и сопоставлялось ли оно с ведомостью/объектами схемы."
+    },
+    {
+      "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Не сохранён конфликт обслуживаемых помещений П4.1.1 между общими указаниями и листом10. Замечание к сигналам электронагревателя той же системы не покрывает назначение помещений. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Проследить связь назначения П4.1.1 в общих данных и на листе10 отдельно от уже найденных сигналов нагревателя."
+    },
+    {
+      "target_id": "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Нет вопроса о легенде PDS листа11, ограниченной вентилятором при наличии PDS1 фильтра. F-042/043/046/047 о диапазонах и F-057 о символе калорифера не покрывают этот редакционный атом. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Проследить первичный разбор легенды PDS и её область применения к фильтру PDS1; не подменять проверкой диапазонов."
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+      "coverage": "partial",
+      "coverage_reason_snapshot": "По5.1: TS2 функциональной схемы, TC1 перечня и По5.1-2 КЖ сохранены. Обязательная четвёртая привязка TS1 внешней схемы в прочитанном F-053 отсутствует; оставлено частичное покрытие до полного просмотра вывода.",
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_partial.json",
+          "sha256": "ba3552c84cdb5a513bee2c2fc83c9f5be9bd6adf16bb5774bbb77c4613395284",
+          "pointer": "/traces/1",
+          "observed_stage": "initial_candidate_scope_and_verification_scope",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
+    },
+    {
+      "target_id": "AK_F053_local_cable_balance:3ea87f3768012a815077",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Нет локального баланса пяти силовых линий листа25:165м против155м. Повторные строки КЖ в F-017/018 и другие локальные балансы имеют иные объект, состав и ведомость. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Проверить охват пяти силовых участков листа25 и выполнение локальной суммы 165/155, отдельно от повторов КЖ."
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
+      "coverage": "absent",
+      "coverage_reason_snapshot": "Нет вопроса о повторах29/30 у M1/M2 в ШАУВ-4-К4ПЧ. F-063 о29–31 в ШАУВ-3-К5ПЧ относится к другому шкафу; общий номер клеммы не является совпадением объекта. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "trace_status": "cause_not_established",
+      "trace_references": [],
+      "next_action": "Проследить адресные M1/M2 и29/30 ШАУВ-4-К4ПЧ; различить пропуск объекта и подавление вопроса из-за неустановленной физической общности."
+    }
+  ],
+  "limits": [
+    "22 atomic controls are not22 independent defects.",
+    "A bounded trace does not prove sole causation or that a proposed change improves results.",
+    "Earlier ledger reason snapshots may say cause not established; linked later traces add bounded evidence without changing frozen coverage scores.",
+    "No new stage gates passed; runtime, evaluator, live audit inputs and production unchanged."
+  ]
+}
