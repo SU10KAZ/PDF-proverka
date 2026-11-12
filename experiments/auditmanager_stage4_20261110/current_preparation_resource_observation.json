@@ -1,0 +1,19 @@
+{
+  "status": "preparation_completed_with_precompletion_resource_lower_bound",
+  "pid": 1247150,
+  "observed_at_epoch": 1794460481.1052556,
+  "cpu_seconds_lower_bound": 1664.32,
+  "peak_rss_observed": "1923864 kB",
+  "current_rss": "1078784 kB",
+  "model_calls": 0,
+  "scope": "Local graph and vector context preparation for six projects; excludes model audits and later copying",
+  "limits": [
+    "Observed before completion; CPU is a lower bound, not total trial cost.",
+    "Source process identity verified from proc cmdline; no source contents or findings read."
+  ],
+  "preparation_completion": {
+    "path": "experiments/auditmanager_stage4_20261110/current_trial_context_receipt.json",
+    "sha256": "83cfc8631dc050d0513f96fd589e4f2519ef416a2072a76fe4129fb78ba1a40c",
+    "status": "completed_source_context_only"
+  }
+}
