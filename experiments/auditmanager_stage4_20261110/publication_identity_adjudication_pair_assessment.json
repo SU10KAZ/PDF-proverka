@@ -1,5 +1,5 @@
 {
-  "status": "same_input_adjudication_pair_passes_bounded_scope_controls",
+  "status": "same_input_pair_and_final_checks_pass_bounded_scope",
   "model": "codex/gpt-6-astra",
   "reasoning_effort": "high",
   "policy": {
@@ -45,8 +45,18 @@
   "limits": [
     "Two known DEV cases, one sample each; not blind or statistically established improvement.",
     "F083 is deferred for internal retrieval, not refuted and not yet accepted as an engineer question.",
-    "Final release under the changed policy remains separate."
+    "F083 still requires linked-document retrieval; correct deferral does not close its substantive identity question."
   ],
   "production_acceptance": false,
-  "stage4_complete": false
+  "stage4_complete": false,
+  "final_control_evidence": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/publication_f083_scope_deferral_assessment.json",
+      "sha256": "1852962cfade29c338d6f3aaffd87a2ce0826607317513dc232249720b0e7461"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/publication_f071_scope_released_evidence/assessment.json",
+      "sha256": "33f8376a4ee1284632ec3b73984284e5bff85f611ec4b36806c115deaa8005fb"
+    }
+  ]
 }

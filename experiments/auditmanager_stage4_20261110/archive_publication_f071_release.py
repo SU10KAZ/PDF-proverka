@@ -1,5 +1,6 @@
 """Verify an actual F071 release and bind publication parts to its Excel output."""
 from copy import deepcopy
+import argparse
 import json
 from pathlib import Path
 from openpyxl import Workbook, load_workbook
@@ -17,7 +18,8 @@ PROJECTION = Path('/tmp/auditmanager_publication_identity_scope_20261112_run/eva
 DEST = Path(__file__).parent / 'publication_f071_released_evidence'
 
 
-def main():
+def main(root=ROOT, destination=DEST):
+    ROOT, DEST = root, destination
     manifest = json.loads((ROOT / 'preparation.json').read_text())
     for kind in ('source_report', 'source_md'):
         assert sha(Path(manifest[kind + '_path'])) == manifest[kind + '_sha256']
@@ -72,7 +74,7 @@ def main():
         (DEST / name).write_bytes((ROOT / name).read_bytes())
     for label, source in [('final_result', ROOT / 'workflow/result.json'),
                           ('final_request', ROOT / 'workflow/request.json'),
-                          ('source_candidate', SOURCE / 'workflow/candidate.json'),
+                          ('source_candidate', Path(manifest['source_candidate_path'])),
                           ('source_manifest', SOURCE / 'manifest.json')]:
         (DEST / (label + '.json')).write_bytes(source.read_bytes())
     assessment = {'status': 'source_review_final_check_and_delivery_export_passed_bounded_case',
@@ -88,4 +90,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--root', type=Path, default=ROOT)
+    parser.add_argument('--destination', type=Path, default=DEST)
+    args = parser.parse_args()
+    main(args.root, args.destination)

@@ -1,0 +1,21 @@
+{
+  "finding_id": "F-071",
+  "source_report_path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+  "source_report_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "source_md_path": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "entry_sha256": "1813e44cd21b20c7443bc9e2b9effbff53710c63292d4330a735634903741204",
+  "request_sha256": "bf889f93e62ff7faa6dc014cceb543f2ece3a53bb56f8746d06425a281f13d13",
+  "source_candidate_path": "/tmp/auditmanager_identity_adjudication_pair_20261112/F-071/candidate.json",
+  "source_candidate_sha256": "ecd1f758aaae471f3a93417d5b6c0fb3edc31ed7e3f19d7f29d0367435a3cd27",
+  "other_findings_unchanged": 84,
+  "local_admission": {
+    "finding_id": "F-071",
+    "status": "applied",
+    "action": "revise"
+  },
+  "message_chars": 168862,
+  "image_count": 1,
+  "final_check_completed": false,
+  "production_acceptance": false
+}
