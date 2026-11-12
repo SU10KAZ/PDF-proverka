@@ -143,21 +143,49 @@
     },
     {
       "target_id": "B-ITP-F-015:68e759d0e8be658b6916",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-042"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+          "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896"
+        }
+      ],
+      "reason": "Designation conflict retained for35only; visible output EV220references occur only inF042 and do not retain36. Do not infer a36capacity defect: its4.0values agree.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-042": "technical_findings"
+        },
+        "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+      }
     },
     {
       "target_id": "B-ITP-F-015:5713c213c4eafe2032fb",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-042"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+          "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896"
+        }
+      ],
+      "reason": "Same position35DN20Kv8.0versusKvs6.3 retained; manufacturer equivalence and parameter interpretation remain unresolved.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-042": "technical_findings"
+        },
+        "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+      }
     },
     {
       "target_id": "B-ITP-F-016:6f0370becae84fed440d",
@@ -477,39 +505,97 @@
     },
     {
       "target_id": "B-ITP-F-026:97276f557b9fbedb0bef",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-030"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ],
+      "reason": "Both2546/977.0 and199/158.8 retained with sums976.9/159.0 and unknown total semantics; no compulsory procurement correction.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-030": "questions"
+        },
+        "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+      }
     },
     {
       "target_id": "B-ITP-F-027:4828a324071dacb9ae3d",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-026"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ],
+      "reason": "Drainage0.4m unidentified item retained; dimensions not guessed from adjacent rows.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-026": "technical_findings"
+        },
+        "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+      }
     },
     {
       "target_id": "B-ITP-F-027:fe51c088072cbcf15ec9",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-026"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ],
+      "reason": "One unspecified item Not in catalogue retained independently of0.4m drainage in same finding.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-026": "technical_findings"
+        },
+        "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+      }
     },
     {
       "target_id": "B-ITP-F-027:0bd4729bc0b05b923141",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-028",
+        "F-029"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ],
+      "reason": "Placeholder identifiers retained with distinction between missing code and identified flange/elbow with placeholder in other field. Technical categorization ofF028 is disagreement with question route; no blanket all-items-unidentified credit.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-028": "technical_findings",
+          "F-029": "questions"
+        },
+        "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+      }
     },
     {
       "target_id": "B-ITP-F-027:7853566af8288ba9432d",
@@ -531,12 +617,26 @@
     },
     {
       "target_id": "B-ITP-F-030:a4e56855f9942b943bff",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-025"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ],
+      "reason": "DN325support order unit/quantity blank retained;85.1m pipe does not establish support count or physical shortage.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-025": "technical_findings"
+        },
+        "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+      }
     },
     {
       "target_id": "B-ITP-F-030:15e7e0c93d727b6902f9",
@@ -549,21 +649,49 @@
     },
     {
       "target_id": "B-ITP-F-031:20e0a2fe6cdbb065f78a",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-043"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/document_identity_bounded_review.json",
+          "sha256": "acabcb3118e4be651e25eb6575709848db4f38a2966a41c70fddbe115daa3fba"
+        }
+      ],
+      "reason": "Same second-zone50L16bar vessel RM580versusRM50 retained as identifier question, not nonexistent-product claim.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-043": "questions"
+        },
+        "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+      }
     },
     {
       "target_id": "B-ITP-F-031:d7fa75e76f824fe5d722",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-027"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ],
+      "reason": "Repeated89forDN25andDN32 retained; correct replacement position not invented.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-027": "technical_findings"
+        },
+        "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+      }
     },
     {
       "target_id": "B-ITP-F-035:4868f82f52227408ecc1",
