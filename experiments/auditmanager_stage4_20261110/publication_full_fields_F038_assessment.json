@@ -1,0 +1,28 @@
+{
+  "finding_id": "F-038",
+  "status": "document_label_direction_conflict_demoted_without_profile_basis",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_038/publication_projection.json",
+  "projection_sha256": "a0cfb89394884f3f9e9392efaa461e7d7e6c98b2aa12678bec8b646ffae8c131",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+  "source_review_sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+      "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+      "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "При непосредственном просмотре прослежены Y2/GSH к 11 и Y3/GSH к 13.",
+    "Подписи обеих колонок — состояние заслонки (0–100%); точки стоят в AO. Факт расхождения названия состояния и обозначения выходного канала сохранён в тексте модели.",
+    "Модель считает технический конфликт недоказанным, поскольку физическая функция неизвестна. Это не опровергает зафиксированную несогласованность документации.",
+    "Не выбирать правильное исправление автоматически: возможны уточнение подписи команды или согласование входа обратной связи.",
+    "Не считать это доказательством отсутствия обратной связи, неправильного монтажа или необходимости новых входных модулей.",
+    "Перенос в вопросы допустим только с явным обоснованием профиля/значимости; в ответе такого обоснования нет."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

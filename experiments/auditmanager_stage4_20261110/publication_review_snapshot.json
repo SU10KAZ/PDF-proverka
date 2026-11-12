@@ -1,9 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 37,
+  "reviewed_distinct_findings": 38,
   "unreviewed_finding_ids": [
-    "F-038",
     "F-039",
     "F-040",
     "F-041",
@@ -680,6 +679,23 @@
       "status": "unsupported_command_direction_replaced_with_actionable_question",
       "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_037/publication_projection.json",
       "projection_sha256": "31b39d24bfc777734dfd980fcecdd2853109f4d8aa50c446bba08a76538efa1a",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 0,
+        "questions": 1,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 0
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-038",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F038_assessment.json",
+      "assessment_sha256": "f582ef78c0f96a32278e690bc0a82200f2b0b8cfad843525d0bed5b63d37fa54",
+      "status": "document_label_direction_conflict_demoted_without_profile_basis",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_038/publication_projection.json",
+      "projection_sha256": "a0cfb89394884f3f9e9392efaa461e7d7e6c98b2aa12678bec8b646ffae8c131",
       "part_counts_not_finding_counts": {
         "technical_findings": 0,
         "questions": 1,

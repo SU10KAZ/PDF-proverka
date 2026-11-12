@@ -1,0 +1,35 @@
+{
+  "status": "source_verified_DEV_pair_not_engineer_accepted_or_final_prompt_tested",
+  "scope": "АК, одна функциональная схема, различить неподтверждённое направление команды и подтверждённое расхождение подписи с матрицей",
+  "controls": [
+    {
+      "finding_id": "F-037",
+      "assessment_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F037_assessment.json",
+      "assessment_sha256": "5d8f4af4005c9d99da80e4dafd598ee13b9778ea14996c425e3c76ea708568c9",
+      "projection_sha256": "31b39d24bfc777734dfd980fcecdd2853109f4d8aa50c446bba08a76538efa1a"
+    },
+    {
+      "finding_id": "F-038",
+      "assessment_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F038_assessment.json",
+      "assessment_sha256": "f582ef78c0f96a32278e690bc0a82200f2b0b8cfad843525d0bed5b63d37fa54",
+      "projection_sha256": "a0cfb89394884f3f9e9392efaa461e7d7e6c98b2aa12678bec8b646ffae8c131"
+    }
+  ],
+  "negative_control": {
+    "finding_id": "F-037",
+    "remove": "Категорическое требование заменить DI на DO только из подписи пуск/стоп.",
+    "retain": "Уточнение назначения сигнала и условные альтернативы после поиска электрической схемы."
+  },
+  "positive_control": {
+    "finding_id": "F-038",
+    "retain": "Несогласованность подписи состояния 0–100% и AO в колонках 11/13.",
+    "do_not_infer": "Физическую ошибку подключения, наличие обратной связи или обязательное добавление входов."
+  },
+  "proposed_generic_behavior": "Разделять наблюдаемую несогласованность документов и неизвестное правильное проектное решение. Не снимать первое только из-за второго. Если смысл подписи совместим с несколькими направлениями, сохранять ограниченный вопрос вместо установленной ошибки.",
+  "limits": [
+    "Существующая пара проверяет исходную полнополевую инструкцию v2; результаты новой purpose-aware инструкции на ней ещё не получены.",
+    "Решения инженера по этим текущим формулировкам не установлены.",
+    "Это не разрешение автоматически менять эталон или итоговый отчёт."
+  ],
+  "production_acceptance": false
+}
