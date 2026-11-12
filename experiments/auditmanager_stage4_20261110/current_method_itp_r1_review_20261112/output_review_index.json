@@ -2,8 +2,8 @@
   "version": 1,
   "final_sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
   "finding_count": 74,
-  "findings_with_bounded_review": 35,
-  "findings_without_bounded_review": 39,
+  "findings_with_bounded_review": 40,
+  "findings_without_bounded_review": 34,
   "entire_output_reviewed": false,
   "whole_output_precision_finalized": false,
   "quality_score": null,
@@ -81,13 +81,23 @@
     },
     {
       "id": "F-013",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+          "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896"
+        }
+      ]
     },
     {
       "id": "F-014",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+          "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896"
+        }
+      ]
     },
     {
       "id": "F-015",
@@ -321,13 +331,23 @@
     },
     {
       "id": "F-041",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+          "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896"
+        }
+      ]
     },
     {
       "id": "F-042",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+          "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896"
+        }
+      ]
     },
     {
       "id": "F-043",
@@ -536,8 +556,13 @@
     },
     {
       "id": "F-072",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+          "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896"
+        }
+      ]
     },
     {
       "id": "F-073",
