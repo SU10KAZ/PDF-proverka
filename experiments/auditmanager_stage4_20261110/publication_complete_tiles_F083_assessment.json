@@ -1,0 +1,19 @@
+{
+  "finding_id": "F-083",
+  "status": "literal_reading_recovered_but_technical_route_not_supported",
+  "projection_path": "/tmp/auditmanager_publication_complete_graphic_details_20261112_run/evaluations/publication_reconciliation_083_tiles/publication_projection.json",
+  "projection_sha256": "a4a57ff042a251634cccde9cee0762ba587ac7f6148f489393e95a638130ab57",
+  "baseline_assessment": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F083_assessment.json",
+    "sha256": "0ceff7ee1788722df2374b607d85cf971865bbd5c80dd1104f66944ad9d013c9"
+  },
+  "checks": [
+    "Детали позволили модели подтвердить три самостоятельные пары К5.3/К5.4 в помещениях 5.Т.1,6.Т.5,6.Т.9 с собственными БУРР. Это совпадает с непосредственной проверкой.",
+    "Модель поместила этот факт в technical_findings, одновременно оставив состав рабочих идентификаторов и фактическую неоднозначность адресации неизвестными. По представленным доказательствам технический конфликт не установлен.",
+    "Исходный архив сам имеет technical_findings; повтор исходной классификации не означает её правильность. Будущий кандидат не должен принимать прошлый раздел как эталон.",
+    "Контроль читаемости успешен, контроль предметной классификации не пройден. Нужен вопрос об области идентификации после проверки связанного контекста; положительный адресный конфликт F085 сохранить.",
+    "Исправлена только уникально связываемая граница цитаты 78→77. Исходный ответ и смысл не изменены."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
