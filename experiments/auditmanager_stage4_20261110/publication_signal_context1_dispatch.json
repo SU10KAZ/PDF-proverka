@@ -1,0 +1,22 @@
+{
+  "preparation_path": "/tmp/auditmanager_publication_signal_context1_20261112/preparation.json",
+  "preparation_sha256": "5a22de60ba2515a17afdb0dc681e676f154dada03f38b06bcb75b8a40dbc3680",
+  "output_dir": "/tmp/auditmanager_publication_signal_context1_20261112_run",
+  "pid": 1094503,
+  "exec_session_id": 15295,
+  "model": "codex/gpt-6-astra",
+  "cases": [
+    "F-037",
+    "F-038"
+  ],
+  "purpose": "Compare unchanged instructions with additional same-document equipment list and connection image.",
+  "original_claims_unchanged": true,
+  "system_instructions_unchanged": true,
+  "source_context_added": [
+    "blk_0457419703024673bb4328b18d47501e",
+    "blk_b2b11f12b2c24e10bebb7fb32c3680f5"
+  ],
+  "coordinator_or_engineer_answers_supplied": false,
+  "autonomous_retrieval_proven": false,
+  "production_acceptance": false
+}

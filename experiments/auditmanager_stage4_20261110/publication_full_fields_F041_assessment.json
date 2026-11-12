@@ -1,0 +1,16 @@
+{
+  "finding_id": "F-041",
+  "status": "signal_direction_question_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_041/publication_projection.json",
+  "projection_sha256": "afe423e6153c72913c1c093b67ceb987612adf3c043383d5f0994869da85ba65",
+  "source_review_path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+  "source_review_sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e",
+  "checks": [
+    "Пуск/стоп и точка DI не превращены в установленную выходную команду.",
+    "Сохранён вопрос о назначении сигнала с обеими альтернативами, без принудительной замены DI на DO.",
+    "Отсутствие управления в целом не утверждается."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

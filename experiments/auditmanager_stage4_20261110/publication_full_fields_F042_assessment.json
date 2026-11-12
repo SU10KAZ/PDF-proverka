@@ -1,0 +1,16 @@
+{
+  "finding_id": "F-042",
+  "status": "fan_status_label_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_042/publication_projection.json",
+  "projection_sha256": "3a9b027c7db80d044c9f0fefefc1d6b009e789de2b6cae188bdc1bb4c5722e71",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_signal_matrix_source_review_20261112.json",
+  "source_review_sha256": "696cef2225675edda4d5c44c03ad19bcfd6af7f4de207482ca565906121c55af",
+  "checks": [
+    "Связи Ва3.1/M3→16 и Ва3.1р/M4→19 сохранены вместе с противоположными подписями резервного/основного.",
+    "Подтверждена несогласованность документации, не ошибка фактической программы или алгоритма ротации.",
+    "Рекомендация присоединена к конфликту, условный риск остался pending и требует проверки конечной видимости."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

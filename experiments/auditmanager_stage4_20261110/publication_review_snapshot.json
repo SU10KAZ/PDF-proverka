@@ -1,10 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 40,
+  "reviewed_distinct_findings": 42,
   "unreviewed_finding_ids": [
-    "F-041",
-    "F-042",
     "F-043",
     "F-044",
     "F-045",
@@ -49,7 +47,7 @@
     "F-084",
     "F-085"
   ],
-  "batch_successful_responses": 39,
+  "batch_successful_responses": 41,
   "batch_status_snapshot": "running",
   "process_liveness_not_inferred_from_status_file": true,
   "selected_followups": [
@@ -732,6 +730,40 @@
         "technical_findings": 1,
         "questions": 1,
         "pending": 0,
+        "withdrawn": 0,
+        "history_only": 0
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-041",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F041_assessment.json",
+      "assessment_sha256": "f630e45da47573d89a70ee77f419578401eca3e0cea638f91e8f9bc20d501e1b",
+      "status": "signal_direction_question_preserved",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_041/publication_projection.json",
+      "projection_sha256": "afe423e6153c72913c1c093b67ceb987612adf3c043383d5f0994869da85ba65",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 0,
+        "questions": 1,
+        "pending": 2,
+        "withdrawn": 0,
+        "history_only": 1
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-042",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F042_assessment.json",
+      "assessment_sha256": "bfae04569e36938b97de43bc918f8d357ac5ac98856ba254956221d3e00bc0f1",
+      "status": "fan_status_label_conflict_preserved",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_042/publication_projection.json",
+      "projection_sha256": "3a9b027c7db80d044c9f0fefefc1d6b009e789de2b6cae188bdc1bb4c5722e71",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 0,
+        "pending": 1,
         "withdrawn": 0,
         "history_only": 0
       },
