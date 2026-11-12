@@ -1,0 +1,277 @@
+{
+  "version": 1,
+  "scope": "Four missing questions with exact source lines proven present in actual text-analysis request",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "actual_request": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488929635467502/request.json",
+    "sha256": "65ebc042b48479144dc1011fdd41f6c48b543021c00a94d58c037dac431f16a7",
+    "options": {
+      "timeout": 1800,
+      "stage": "text_analysis",
+      "project_id": "classic-control-ITP",
+      "allowed_tools": "",
+      "model": "codex/gpt-6-astra",
+      "output_schema": null,
+      "reasoning_effort": "high"
+    },
+    "message_characters": 521390,
+    "attempt_receipt": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488929635467502/attempts.json",
+      "sha256": "f17453ac33235e9e2f8351d72af13956834cad733e06042b5e4a2aa1d999abdf",
+      "last_is_error": false
+    }
+  },
+  "cases": [
+    {
+      "target_id": "B-ITP-F-027:7853566af8288ba9432d",
+      "assessment": "T020andfinalF026/F028/F029addressunidentifiedproductsandplaceholdercodes. The identifiedDN300filtermissingmass is a separatefield-completenessquestion; not found as a candidate. Preserveidentifiedarticleanddo notcallproductunidentified.",
+      "stage_assessment": "Sourceavailableattextanalysis; no target-specific candidateidentified in inspected chain. Subsequentgenericrecoverydoesnotdemonstrate missingoperationexecution.",
+      "source_lines": [
+        {
+          "line": 1190,
+          "quote": "| 63 | Фильтр сетчатый Ридан-ФСФ фланцевый PN16, Tтах=200С, DN 300 | РИДАН-ФСФ 01.16.300 | 082X4073R | Ридан | шт. | 2 | \\<варианты> |  |",
+          "present_in_actual_request": true
+        }
+      ],
+      "navigation_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pattern": "082X4073|масса.*фильтр|фильтр.*масс",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pattern": "082X4073|масса.*фильтр|фильтр.*масс",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pattern": "082X4073|масса.*фильтр|фильтр.*масс",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+          "sha256": "ae2e069317858431e1721209d3d2f183e16ceed61e869fbf42bb14653d041de5",
+          "pattern": "082X4073|масса.*фильтр|фильтр.*масс",
+          "hits": []
+        }
+      ],
+      "neighbor_candidate": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+        "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+        "pointer": "/text_findings/19",
+        "candidate": {
+          "id": "T-020",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "documentation",
+          "report_section": "technical_findings",
+          "source": "Спецификация, листы 5–11",
+          "finding": "В спецификации остались неопределенные изделия «Решение не найдено» длиной 0,4 м и «Нет в каталоге» количеством 1 шт., а также незаполненные варианты обозначений деталей. Позиция 89 одновременно присвоена кранам DN25 количеством 118 шт. и DN32 количеством 2 шт. Требуется определить изделия и обеспечить однозначную связь позиционных обозначений с заказными характеристиками.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_a84dc3455457476dadbc35029e2e7ae8",
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "blk_17628e5e5b414088b5c392e63f6f4456",
+            "blk_a7ba21ea8083491389a223015720c9cb",
+            "blk_fd984f8c5d03427497ffd926feaf8ed5"
+          ]
+        }
+      }
+    },
+    {
+      "target_id": "B-ITP-F-030:15e7e0c93d727b6902f9",
+      "assessment": "T019andF025retainblankDN325supportquantity; DN27332setsversus1.7mpipeallocationquestionisabsent. Do nottransfer32sets to325orassertexcesswithoutlayout.",
+      "stage_assessment": "Sourceavailableattextanalysis; no target-specific candidateidentified in inspected chain. Subsequentgenericrecoverydoesnotdemonstrate missingoperationexecution.",
+      "source_lines": [
+        {
+          "line": 1317,
+          "quote": "|  | Трубы стальные электросварные, Д=273х7,0 мм | ГОСТ 10704-91 |  |  | м | 1.7 |  |  |",
+          "present_in_actual_request": true
+        },
+        {
+          "line": 1743,
+          "quote": "|  | крепление трубопровода Дн273 (хомут, анкер, шпилька) |  |  |  | компл. | 32 |  |  |",
+          "present_in_actual_request": true
+        }
+      ],
+      "navigation_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pattern": "Дн273|32\\s*компл",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pattern": "Дн273|32\\s*компл",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pattern": "Дн273|32\\s*компл",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+          "sha256": "ae2e069317858431e1721209d3d2f183e16ceed61e869fbf42bb14653d041de5",
+          "pattern": "Дн273|32\\s*компл",
+          "hits": []
+        }
+      ],
+      "neighbor_candidate": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+        "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+        "pointer": "/text_findings/18",
+        "candidate": {
+          "id": "T-019",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "documentation",
+          "report_section": "technical_findings",
+          "source": "Спецификация, лист 13, крепления трубопроводов",
+          "finding": "Строка креплений трубопровода Дн325 не содержит единицы измерения и количества, хотя в спецификации имеется 85,1 м трубы 325×7 мм. Требуется определить, входят ли ее опоры в отдельные металлоконструкции, и завершить соответствующую ведомость. Число недостающих опор по длине трубы без схемы опирания не определяется.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_20c9372392c34ef08a1e81d99316f0cb",
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "blk_9e9fdca2261a4324959220546412f377"
+          ]
+        }
+      }
+    },
+    {
+      "target_id": "B-ITP-F-035:4868f82f52227408ecc1",
+      "assessment": "BothinstructioncopiesleaveDN150outsideup-to125/above150wording. No specific candidateorcompletedrange-boundarycheck identified. General drainage mention doesnotcover logicalgap. Do notassertinstallationfailure or inventcorrectdiameter.",
+      "stage_assessment": "Sourceavailableattextanalysis; no target-specific candidateidentified in inspected chain. Subsequentgenericrecoverydoesnotdemonstrate missingoperationexecution.",
+      "source_lines": [
+        {
+          "line": 913,
+          "quote": "- -в низших точках всех трубопроводов для слива воды (спускники)-dy= 25мм на трубопроводы до Ду125,",
+          "present_in_actual_request": true
+        },
+        {
+          "line": 914,
+          "quote": "dy= 25мм на трубопроводы свыше Ду150",
+          "present_in_actual_request": true
+        },
+        {
+          "line": 950,
+          "quote": "- -в низших точках всех трубопроводов для слива воды (спускники)-dy= 25мм на трубопроводы до Ду125,",
+          "present_in_actual_request": true
+        },
+        {
+          "line": 951,
+          "quote": "dy= 25мм на трубопроводы свыше Ду150",
+          "present_in_actual_request": true
+        }
+      ],
+      "navigation_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pattern": "свыше.?150|до.?125|Д[уУНнN]+150",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pattern": "свыше.?150|до.?125|Д[уУНнN]+150",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pattern": "свыше.?150|до.?125|Д[уУНнN]+150",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+          "sha256": "ae2e069317858431e1721209d3d2f183e16ceed61e869fbf42bb14653d041de5",
+          "pattern": "свыше.?150|до.?125|Д[уУНнN]+150",
+          "hits": []
+        }
+      ]
+    },
+    {
+      "target_id": "B-ITP-F-035:6e663d7b02b8e032a0c2",
+      "assessment": "Inventorymentionsslopes/drains butno dimensionalcheckof0.01mmrecordedorquestionemitted. Genericinventoryreceiptisnotoperationproof. Askto clarifyunit; do notsetcorrectconstructionslope.",
+      "stage_assessment": "Sourceavailableattextanalysis; no target-specific candidateidentified in inspected chain. Subsequentgenericrecoverydoesnotdemonstrate missingoperationexecution.",
+      "source_lines": [
+        {
+          "line": 2777,
+          "quote": "1. Уклон пола 0,01 мм.",
+          "present_in_actual_request": true
+        },
+        {
+          "line": 2781,
+          "quote": "3. Общий сливной трубопровод установить у нулевой отметки пола с уклоном 0,01 мм.",
+          "present_in_actual_request": true
+        }
+      ],
+      "navigation_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pattern": "уклон|0[,.]01\\s*мм",
+          "hits": [
+            {
+              "pointer": "/object_inventory_coverage/39/reason",
+              "value": "Уклоны, спуски, воздушники и площадка обслуживания."
+            },
+            {
+              "pointer": "/object_registry_coverage/source_inventory/161/receipt/reason",
+              "value": "Уклоны, спуски, воздушники и площадка обслуживания."
+            }
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pattern": "уклон|0[,.]01\\s*мм",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pattern": "уклон|0[,.]01\\s*мм",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+          "sha256": "ae2e069317858431e1721209d3d2f183e16ceed61e869fbf42bb14653d041de5",
+          "pattern": "уклон|0[,.]01\\s*мм",
+          "hits": []
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Literal navigation results are not standalone semantic absenceproof; assessment also uses bounded74findingreview and neighboringcandidateinspection.",
+    "Exactlinesinrequestproveavailability,not thatmodelreadorunderstoodthem.",
+    "No exclusive cognitivecause established; do not blamePDFextractionorcontexttruncationfor these suppliedlines."
+  ],
+  "recommendation": "Use explicit checks of required specificationfields, logicalrangeboundaries and physicalunits with per-source receipts. Do not markanentiretableorparagraphcheckedfrom unrelatedexamplefindings. Retain existing validneighborfindings; no bulk publicationofunverifiedcandidates.",
+  "runtime_changed": false,
+  "model_calls": 0
+}

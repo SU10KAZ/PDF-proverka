@@ -104,8 +104,14 @@
       "target_id": "B-ITP-F-027:7853566af8288ba9432d",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/supplied_text_detection_gap_traces.json",
+          "sha256": "a59c30b884dbe7ecac4d46d555c5011bd13e85c46070647fc247a1b72000cfa0",
+          "pointer": "/cases/0"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -126,24 +132,42 @@
       "target_id": "B-ITP-F-030:15e7e0c93d727b6902f9",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/supplied_text_detection_gap_traces.json",
+          "sha256": "a59c30b884dbe7ecac4d46d555c5011bd13e85c46070647fc247a1b72000cfa0",
+          "pointer": "/cases/1"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
       "target_id": "B-ITP-F-035:4868f82f52227408ecc1",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/supplied_text_detection_gap_traces.json",
+          "sha256": "a59c30b884dbe7ecac4d46d555c5011bd13e85c46070647fc247a1b72000cfa0",
+          "pointer": "/cases/2"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
       "target_id": "B-ITP-F-035:6e663d7b02b8e032a0c2",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/supplied_text_detection_gap_traces.json",
+          "sha256": "a59c30b884dbe7ecac4d46d555c5011bd13e85c46070647fc247a1b72000cfa0",
+          "pointer": "/cases/3"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -423,8 +447,8 @@
   ],
   "counts": {
     "total": 34,
-    "bounded_trace_recorded": 22,
-    "not_traced": 12
+    "bounded_trace_recorded": 26,
+    "not_traced": 8
   },
   "remaining_requirements": [
     "Finish stage attribution for remaining targets, including missing parts of partly traced compound targets.",
