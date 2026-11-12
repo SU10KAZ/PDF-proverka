@@ -1,5 +1,5 @@
 import unittest
-from .prepare_current_method_evaluation import execution_classification as classify
+from experiments.auditmanager_stage4_20261110.prepare_current_method_evaluation import execution_classification as classify
 
 
 class ExecutionClassificationTests(unittest.TestCase):

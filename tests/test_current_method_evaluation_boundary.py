@@ -40,3 +40,36 @@ def test_evaluator_cannot_be_written_into_audit_workspace(tmp_path):
     root = trial_fixture(tmp_path)
     with pytest.raises(ValueError, match='separate'):
         build(root, root/'evaluation')
+
+
+def failed_trial_fixture(tmp_path):
+    root = trial_fixture(tmp_path)
+    collection_path = root/'experimental_collection_status.json'
+    collection = json.loads(collection_path.read_text())
+    record = collection['runs'][0]
+    seal = Path(record['work'])/'classic_control/status/AK.json'
+    seal.write_text(json.dumps({'status': 'failed'}))
+    record.update(status='terminal', exit_code=1, status_sha256=sha(seal))
+    collection_path.write_text(json.dumps(collection))
+    return root, seal
+
+
+def test_sealed_failure_has_no_quality_score_and_does_not_open_findings(tmp_path):
+    root, seal = failed_trial_fixture(tmp_path)
+    # No protocol, manifest or findings exist for this unsuccessful execution.
+    result = build(root, tmp_path/'evaluation')
+    assert result['entries'] == []
+    assert result['pending'][0]['reason'] == 'terminal_failed'
+    failure, = result['execution_failures']
+    assert failure['quality_score'] is None
+    assert failure['count_as_empty_output'] is False
+    assert failure['seal_sha256'] == sha(seal)
+    assert not (tmp_path/'evaluation').exists()
+
+
+def test_modified_failure_receipt_is_rejected(tmp_path):
+    root, seal = failed_trial_fixture(tmp_path)
+    seal.write_text(json.dumps({'status': 'failed', 'modified': True}))
+    with pytest.raises(AssertionError):
+        build(root, tmp_path/'evaluation')
+    assert not (tmp_path/'evaluation').exists()
