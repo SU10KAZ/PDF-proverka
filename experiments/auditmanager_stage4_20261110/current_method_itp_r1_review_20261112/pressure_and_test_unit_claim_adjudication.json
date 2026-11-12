@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "scope": "Three final technical rows; project parameter truth separated from operating consequences",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "pointer": ""
+    },
+    "prior_pressure_review": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/zone3_pressure_bounded_review.json",
+      "sha256": "a7676224f9566fe295c244b9ddad7fab3d887dcaeb7326c61188d28e06e5059d",
+      "pointer": ""
+    },
+    "prior_unit_review": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pressure_unit_and_fuse_bounded_review.json",
+      "sha256": "902b0fca5d89e39aa82ad3dd53bb1ed35c902302cd63dfd4289b611d8dfd0272",
+      "pointer": ""
+    }
+  },
+  "graphic_evidence": {
+    "source": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png",
+      "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2",
+      "pointer": ""
+    },
+    "crop": {
+      "path": "/tmp/itp_valve45_detail.png",
+      "sha256": "18d55b66533129f82542740bbd491e54147824291a6be6184f24a38e600bf99f",
+      "pointer": ""
+    },
+    "crop_box": [
+      4292,
+      649,
+      4878,
+      974
+    ],
+    "inspection": "Parent directly viewed original-detail crop; position45 pressure label 16.0 bar."
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-008",
+      "factual_assessment": "published_parameter_comparison_supported",
+      "supported_claims": [
+        "Selected K11 pump execution has maximum working pressure 16 bar.",
+        "Same-zone AUPD selection states maximum and nominal system pressure 16.3 bar.",
+        "Numerical difference is 0.3 bar."
+      ],
+      "physical_consequence": "Exact pressure at either pump connection and actual overload in every operating mode are not established. The final body explicitly preserves this limitation.",
+      "recommended_disposition": "retain_parameter_coordination_finding",
+      "severity_assessment": "Criticality of actual consequences not independently established by the published-value difference alone.",
+      "duplicate_control": "Do not suppress F-009 solely because both refer to K11 and zone 3; they compare different pressure functions.",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/7"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "severity",
+        "evidence"
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-009",
+      "factual_assessment": "specification_comparison_supported_but_graphic_counterpart_omitted",
+      "supported_claims": [
+        "Specification position 45 assigns opening pressure 20 bar and heating zone 3.",
+        "K11 data sheet assigns maximum working pressure 16 bar; published difference is 4 bar."
+      ],
+      "counterevidence": "Direct inspection of the saved original-detail crop reads position45 Rср=16.0 bar on the schematic. This contradicts treating 20 bar as the sole unambiguous project setting, but does not erase the specification entry.",
+      "physical_consequence": "Actual installed setting, exact protected boundaries and sufficiency of protection are not established.",
+      "recommended_disposition": "retain_and_rewrite_as_project_parameter_coordination; include scheme/specification discrepancy",
+      "recommended_wording": "В спецификации позиции 45 для отопления третьей зоны указано Рср.=20 бар, на схеме — 16 бар; допустимое рабочее давление выбранного К11 — 16 бар. Согласовать проектную уставку и проверить защиту с учётом схемы подключения и распределения давлений. Фактическая настройка клапана не установлена.",
+      "presentation_correction": "Replace repeated headings клапан контура настроен на 20 бар with спецификация задаёт Рср.=20 бар.",
+      "severity_assessment": "Do not infer a critical installed protection failure solely from conflicting design entries.",
+      "duplicate_control": "Keep scheme-versus-specification identity and setting-versus-equipment comparison distinct even if displayed in one review item.",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/8"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "severity",
+        "evidence"
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-010",
+      "factual_assessment": "literal_unit_and_dimensional_inconsistency_supported",
+      "supported_claims": [
+        "Authoritative MD prints test pressure as 12.5 кг/см.",
+        "Mass per length is not a pressure dimension; intended corrected unit and corresponding number are not specified by this line."
+      ],
+      "physical_consequence": "No actual test pressure or test failure inferred; no automatic rewrite to kgf/cm².",
+      "recommended_disposition": "retain_request_for_unambiguous_test_parameter",
+      "section_assessment": "Final technical section follows its stated test-parameter ambiguity; factual correctness is separate from final profile and severity policy.",
+      "duplicate_control": "F-003 concerns normative references in the same paragraph, not the test-unit assertion.",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/9"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "severity",
+        "evidence"
+      ],
+      "engineer_utility": "not_newly_measured"
+    }
+  ],
+  "limits": [
+    "No hydraulic protection calculation or measurement of installed equipment.",
+    "Same-version graphic counterpart strengthens the bounded source comparison; no whole-project operating safety verdict.",
+    "No new engineer acceptance or final precision score."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}
