@@ -1,0 +1,10 @@
+{
+  "status": "all_recorded_source_hashes_match",
+  "audit": {
+    "path": "experiments/auditmanager_stage4_20261110/stage4_hypothesis_current_audit.json",
+    "sha256": "f18022f30fd24728d8f189f507c559167b64af5c819bd1148df9d7dcd92f304c"
+  },
+  "references_verified": 75,
+  "scope": "File identity only; does not establish semantic acceptance or stage completion.",
+  "stage4_complete": false
+}

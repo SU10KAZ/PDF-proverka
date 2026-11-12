@@ -52,9 +52,24 @@
         {
           "path": "experiments/auditmanager_stage4_20261110/publication_review_snapshot.json",
           "sha256": "b5ce934a857174e6c75976d36c6086af33756b1bfe93d66f1b0f3478dca64bf3"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/EOM_F001_question_output_replay.json",
+          "sha256": "e1fbac27655c5eea5e250061071926bdcc22195b83bbc26522a52f8d4332920c"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/EOM_F030_question_output_replay.json",
+          "sha256": "1e4c39094568c4570c1d18c5257256d70034021fea865738a6ea1e8282f12630"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/EOM_F032_output_replay.json",
+          "sha256": "d5063f39edd4db71c21ff006e5f20d3c74bf317be2a06c4a18122e834a52b1a7"
         }
       ],
-      "control_interpretation": "АК размерная цепь сохранена в F080; серия 85 показывает полезные восстановленные тезисы и реальные ошибки. Это проверка сохранения в проекции, не финальный сравнительный аудит.",
+      "control_interpretation": [
+        "АК размерная цепь сохранена в F080; серия 85 показывает полезные восстановленные тезисы и реальные ошибки. Это проверка сохранения в проекции, не финальный сравнительный аудит.",
+        "ЭОМ F001/F030 имеют отдельные replay с сохранённой формулировкой модели и 50 другими строками; профиль принят локально, не автономно. F032 сохраняет расхождения площадей и источники, но выбор раздела удержан evaluator_errata. Эти три исходно требуемых контроля присутствуют."
+      ],
       "limits": [
         "Связь ID или присутствие текста не доказывают техническую верность.",
         "Неполнота разложения исходного тезиса моделью не решается одной структурой subclaims.",
@@ -225,13 +240,18 @@
           "path": "backend/app/pipeline/stages/prepare/object_operation_passes.py",
           "sha256": "a6b866da065e7db1a63bc460eff0abe83c1fe412d8a3f0edadafec3bb52bac8c",
           "symbol": "build_object_operation_passes"
+        },
+        {
+          "path": "backend/app/pipeline/stages/text_analysis/quantity_checks.py",
+          "sha256": "a6d0fafc430866e0ea53f9877bb1b43fd576584aedcf4be2fdfaf92ffe3fa21f"
         }
       ],
       "observed_mechanisms": [
         "Двусторонняя разность вычисляется по составным ключам только для active; reserve сохраняется отдельно. Неизвестные ссылки и повтор ключа оставляют not_checked.",
         "Полнота извлечения и смысловая идентичность не сертифицируются вычислителем; publication требует проверки области и источников.",
         "Инструкция quantity_balance требует буквальную ячейку, заголовок, область количества, множитель и раздельные известные/неизвестные слагаемые. Это инструкция модели, не общий детерминированный контроль числовых предпосылок.",
-        "Проверка calculation_checks требует выражение, результат, единицу, основание и допустимые источники; она проверяет структуру трассы, а не правильность арифметики."
+        "Проверка calculation_checks требует выражение, результат, единицу, основание и допустимые источники; она проверяет структуру трассы, а не правильность арифметики.",
+        "evaluate_quantity_checks вычисляет Decimal-сумму/разность, проверяет равенство заявленных object/parameter/unit/basis/regime, источники и ожидаемый перечень слагаемых. Сохраняет значения и ссылки. Детерминированная арифметика не заверяет смысловые предпосылки; это отдельный механизм от проверки наличия calculation_checks."
       ],
       "tests_located": [
         {
@@ -241,6 +261,10 @@
         {
           "path": "tests/test_calculation_consistency.py",
           "sha256": "a6f2c9893a64a1b949ea9e24dcaffce93ed4877d11ac6e9e560ebef9694ecbd6"
+        },
+        {
+          "path": "tests/test_quantity_checks.py",
+          "sha256": "7e792ede47d475fe04e9b4e1cad2157bdbc39a2b7424bf639528626f7ba3c3d1"
         }
       ],
       "test_scope": "Inspected object_balance assertions distinguish FRHF/HF, reserve exclusion, unknown sources and duplicate keys. No new test execution claimed.",
@@ -306,12 +330,17 @@
           "path": "backend/app/pipeline/stages/prepare/calculation_consistency.py",
           "sha256": "bfcafd19b161d812ae2e88b7ac934eb930b8441f86ad974ec9c3d3253fe651d9",
           "symbol": "CALCULATION_INSTRUCTIONS / has_calculation_trace"
+        },
+        {
+          "path": "backend/app/pipeline/stages/text_analysis/quantity_checks.py",
+          "sha256": "a6d0fafc430866e0ea53f9877bb1b43fd576584aedcf4be2fdfaf92ffe3fa21f"
         }
       ],
       "observed_mechanisms": [
         "Промпт требует совпадения экземпляра, исполнения, области, единиц и физической базы до сравнения. Недостающий контекст порождает needs_data и запрос источников.",
         "Подтверждённый локальный конфликт должен сохраняться при неопределённых последствиях или варианте исправления; запрет универсальных допусков указан в инструкции.",
-        "Расчётная трасса отдельно проверяется на наличие выражения, результата, единицы, базы и существующих ссылок; семантическая сопоставимость не доказана структурной проверкой."
+        "Расчётная трасса отдельно проверяется на наличие выражения, результата, единицы, базы и существующих ссылок; семантическая сопоставимость не доказана структурной проверкой.",
+        "evaluate_quantity_checks вычисляет Decimal-сумму/разность, проверяет равенство заявленных object/parameter/unit/basis/regime, источники и ожидаемый перечень слагаемых. Сохраняет значения и ссылки. Детерминированная арифметика не заверяет смысловые предпосылки; это отдельный механизм от проверки наличия calculation_checks."
       ],
       "tests_located": [
         {
@@ -321,6 +350,10 @@
         {
           "path": "tests/test_object_operation_passes.py",
           "sha256": "0182f91f4767eddc7efd7e933a7e52c60db3e503b357b0e732b5f5b5d6d7802c"
+        },
+        {
+          "path": "tests/test_quantity_checks.py",
+          "sha256": "7e792ede47d475fe04e9b4e1cad2157bdbc39a2b7424bf639528626f7ba3c3d1"
         }
       ],
       "test_scope": "Inspected test definitions cover calculation trace requirements and needs_data without new context; no new execution or semantic physics certification claimed.",
@@ -414,12 +447,17 @@
         {
           "path": "experiments/auditmanager_stage4_20261110/AR_rope_strength_inference_pair.json",
           "sha256": "10cc61643020de795274e88c208d0ba720cce53c3f34d3baa2488de79fc4ec6e"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/VK_requirement_astra_assessment.json",
+          "sha256": "5cfd98ece8aee65c0ec00a6e4edb12ee667f99e0658adabec335e31434d735fd"
         }
       ],
       "control_interpretation": [
         "ИТП: 819 — сумма четырёх строк, не число нарушений. Отрицательный контроль области пройден, но условные технические строки Claude не допущены; полезный положительный applicability-контроль ещё не закрыт этим пилотом.",
         "ЭОМ: ВА301 не устанавливает 1P; конкретный изготовитель/артикул QF3.20 не установлен. QF3.17 другого ВРУ не подменяет предмет проверки. Сохранён адресный вопрос.",
-        "АР: после добора связанных комплектов сохранён вопрос о соответствии канатного узла ОГН-4. Декоративная пластина не доказывает ни недостаточность, ни достаточность. В ограниченном replay сохранены 24 исходные строки, но итоговая редактура и общая интеграция не закрыты."
+        "АР: после добора связанных комплектов сохранён вопрос о соответствии канатного узла ОГН-4. Декоративная пластина не доказывает ни недостаточность, ни достаточность. В ограниченном replay сохранены 24 исходные строки, но итоговая редактура и общая интеграция не закрыты.",
+        "ВК: сохранены К2 Rapid/Kralle 7/4 и 33/18; равные 26/26 не стали дефицитом, К2.1 не использована для покрытия К2. Полная применимость не закрыта из-за редакций/исполнения; это условное сравнение, не подтверждённая недопоставка. Весь модельный вывод не допущен автоматически."
       ],
       "limits": [
         "Проверка цитат не сертифицирует применимость или физическую совместимость.",
@@ -499,5 +537,11 @@
     "result": "33 passed in 0.83s",
     "scope": "Contract and regression tests, not whole-project semantic acceptance",
     "source_commit": "01502de1"
+  },
+  "additional_local_verification": {
+    "command": "python -m pytest -q tests/test_quantity_checks.py",
+    "result": "6 passed in 0.33s",
+    "scope": "Exact arithmetic, declared term inventory and incompatible comparison basis rejection",
+    "source_commit": "f04d63a5"
   }
 }
