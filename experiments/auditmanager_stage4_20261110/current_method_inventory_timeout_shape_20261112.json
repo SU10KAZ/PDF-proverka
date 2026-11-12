@@ -1,0 +1,119 @@
+{
+  "status": "failed_inventory_packet_shape_inspected_no_causal_claim",
+  "failed_request": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/requests/AK/1794473561216786342/request.json",
+    "sha256": "4200d413fdcb0a48ddf829951148132efc950edaa03a80f72322fc30b70d63dd",
+    "characters": 66449,
+    "timeout_seconds": 900,
+    "model": "codex/gpt-6-astra",
+    "reasoning_effort": "high",
+    "packet_index": 0,
+    "packet_count": 21,
+    "source_block_count": 26,
+    "source_block_types": {
+      "TEXT": 22,
+      "IMAGE": 4
+    },
+    "images": [
+      {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0792816c162c469289b461843d2c307b.png",
+        "sha256": "7cc18f2b25f7f7ba5728daf368eee0eefb4e43aa9549e2c6ab2497ca080e7769",
+        "width": 8247,
+        "height": 3265,
+        "pixels": 26926455,
+        "bytes": 3925103
+      },
+      {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_111d72792143470fa098e0dace155f1f.png",
+        "sha256": "18b8e5d9d6ef5910d51531c481e3ca2a6c40f70447e175244eb17b85e6401780",
+        "width": 1341,
+        "height": 817,
+        "pixels": 1095597,
+        "bytes": 171197
+      },
+      {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f3ee135e5d94d5192b9f037435acd09.png",
+        "sha256": "0c295947aad30ce7d42699b8fbae85de0aef364fbf7778b9d4d5dc1e53dc0c88",
+        "width": 2999,
+        "height": 1154,
+        "pixels": 3460846,
+        "bytes": 589970
+      },
+      {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+        "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+        "width": 1649,
+        "height": 1144,
+        "pixels": 1886456,
+        "bytes": 287187
+      }
+    ]
+  },
+  "same_run_transport_attempts": 214,
+  "same_run_successful_attempts": 211,
+  "largest_successful_requests": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/requests/AK/1794472543376289598/request.json",
+      "sha256": "1c0ea15bdb8a545234e29dd8061ada2b739fb55b6a363a8e4dd8c8ac4374500a",
+      "stage": "text_analysis",
+      "timeout_seconds": 1800,
+      "characters": 492098,
+      "image_count": 0,
+      "successful_durations_ms": [
+        1017671
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/requests/AK/1794472518178953742/request.json",
+      "sha256": "bc373d79da129f8d86dbba07619637703987ce20e77a3e0db15ecc3ae25193d3",
+      "stage": "block_analysis",
+      "timeout_seconds": 600,
+      "characters": 37753,
+      "image_count": 1,
+      "successful_durations_ms": [
+        8549
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/requests/AK/1794472518181930574/request.json",
+      "sha256": "bc373d79da129f8d86dbba07619637703987ce20e77a3e0db15ecc3ae25193d3",
+      "stage": "block_analysis",
+      "timeout_seconds": 600,
+      "characters": 37753,
+      "image_count": 1,
+      "successful_durations_ms": [
+        9349
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/requests/AK/1794472467174726164/request.json",
+      "sha256": "ca19b2c64b31bc03cf4e9be6411ef3e3ae0637817398e97d45ee33117c1a9b58",
+      "stage": "block_analysis",
+      "timeout_seconds": 600,
+      "characters": 37712,
+      "image_count": 1,
+      "successful_durations_ms": [
+        8897
+      ]
+    }
+  ],
+  "observations": [
+    "Первый из21 пакетов инвентаризации получил три таймаута по900 секунд без содержательного ответа.",
+    "В пакете22 текстовых и4 графических блока; одно изображение существенно крупнее остальных.",
+    "Более длинный text_analysis завершён, но без изображений и с иным лимитом времени: это не сопоставимый эксперимент причинности."
+  ],
+  "next_control_after_collection": [
+    "Сохранить точный пакет как исходную контрольную точку.",
+    "Проверять по одному фактору: разбиение по самостоятельным объектам/листам, ограничение объёма ожидаемого реестра, допустимый таймаут.",
+    "Не уменьшать изображение до потери читаемости и не объявлять отсутствие извлечённых объектов доказательством их отсутствия.",
+    "Новый запуск записывать отдельно; не стирать три таймаута и их расход из оценки надёжности/затрат."
+  ],
+  "limits": [
+    "Число символов не равно числу токенов.",
+    "Размер изображения не доказывает причину таймаута.",
+    "Промежуточные содержательные выводы неуспешного аудита для настройки не использовались.",
+    "Пакет не отправлялся повторно в этом разборе."
+  ],
+  "runtime_changed": false,
+  "production_changed": false
+}
