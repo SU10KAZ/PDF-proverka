@@ -1,0 +1,22 @@
+{
+  "finding_id": "F-065",
+  "status": "same_input_project_reference_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_065/publication_projection.json",
+  "projection_sha256": "53ae0f49c141221b34c7d83456b94a5594940bf13af411aa8a37dd7655007f61",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_1c493988cdf14cee9ad351ef2e706470.png",
+      "sha256": "fa028d82f0e5f818dd38743f9b5d6fb88006621d52993253769127266e375b24",
+      "directly_viewed": true
+    }
+  ],
+  "checks": [
+    "Непосредственно прочитаны заголовок ввода 13АВ-РД-ЭМ2-ПА и подпись того же кабеля 13АВ-РД-ЭМ-К4 перед Q1 шкафа ШАУВ-1-К4ПЧ. Привязка к одному вводу прослежена, не основана лишь на похожих шифрах.",
+    "Правильный шифр не выбран без дополнительного источника. Рекомендация согласовать ссылки объединена с основным замечанием.",
+    "Неоднозначность границ монтажа оставлена возможным следствием, не установленным нарушением.",
+    "Лист 25 не подтверждён самим фрагментом и оставлен ограничением адресации, не новым дефектом."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
