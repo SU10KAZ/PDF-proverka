@@ -7,8 +7,8 @@
   },
   "summary": {
     "output_rows": 88,
-    "rows_with_some_reviewed_claim": 72,
-    "rows_without_target_or_additional_review": 16,
+    "rows_with_some_reviewed_claim": 75,
+    "rows_without_target_or_additional_review": 13,
     "whole_output_precision_established": false
   },
   "priority_unreviewed_rows": [
@@ -24,9 +24,6 @@
     "F-058",
     "F-059",
     "F-069",
-    "F-073",
-    "F-075",
-    "F-082",
     "F-088"
   ],
   "rows": [
@@ -1645,7 +1642,15 @@
       "problem": "Вертикальная размерная цепь установки шкафа на листе 53 противоречива.",
       "report_section": "technical_findings",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch5.json",
+          "sha256": "c8ab72d7c8f9f7c237b20a6e3f2190bf4afd9ffa2e5e42fdd93d6ef250cd72d4",
+          "pointer": "/claims/0",
+          "disposition": "confirmed_dimension_chain_conflict",
+          "scope": "Only expressly reviewed claims and limits."
+        }
+      ],
       "known_review_observations": [
         {
           "finding_ids": [
@@ -1662,9 +1667,9 @@
           "F-075"
         ]
       ],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Check remaining added assertions and recommendations before whole-finding acceptance"
     },
     {
       "finding_id": "F-074",
@@ -1693,7 +1698,15 @@
       "problem": "Не замыкается вертикальная размерная цепь установки ШАУВ-1-К6ПЧ.",
       "report_section": "technical_findings",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch5.json",
+          "sha256": "c8ab72d7c8f9f7c237b20a6e3f2190bf4afd9ffa2e5e42fdd93d6ef250cd72d4",
+          "pointer": "/claims/1",
+          "disposition": "confirmed_dimension_chain_conflict",
+          "scope": "Only expressly reviewed claims and limits."
+        }
+      ],
       "known_review_observations": [
         {
           "finding_ids": [
@@ -1710,9 +1723,9 @@
           "F-075"
         ]
       ],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Check remaining added assertions and recommendations before whole-finding acceptance"
     },
     {
       "finding_id": "F-076",
@@ -1877,12 +1890,20 @@
       "problem": "Для оборудования завес приведены разные ссылки на комплект ОВ",
       "report_section": "questions",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch5.json",
+          "sha256": "c8ab72d7c8f9f7c237b20a6e3f2190bf4afd9ffa2e5e42fdd93d6ef250cd72d4",
+          "pointer": "/claims/2",
+          "disposition": "confirmed_narrow_document_reference_difference",
+          "scope": "Only expressly reviewed claims and limits."
+        }
+      ],
       "known_review_observations": [],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Check remaining added assertions and recommendations before whole-finding acceptance"
     },
     {
       "finding_id": "F-083",
