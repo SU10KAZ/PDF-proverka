@@ -2,8 +2,8 @@
   "version": 1,
   "final_sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
   "finding_count": 74,
-  "findings_with_bounded_review": 67,
-  "findings_without_bounded_review": 7,
+  "findings_with_bounded_review": 69,
+  "findings_without_bounded_review": 5,
   "entire_output_reviewed": false,
   "whole_output_precision_finalized": false,
   "quality_score": null,
@@ -31,8 +31,13 @@
     },
     {
       "id": "F-005",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/gvs_zone3_pressure_bounded_review.json",
+          "sha256": "a7767b4666b322e80bc5b00b5bf15089cb2b3213d50e04c09beceb529b14deb1"
+        }
+      ]
     },
     {
       "id": "F-006",
@@ -41,8 +46,13 @@
     },
     {
       "id": "F-007",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/gvs_zone3_pressure_bounded_review.json",
+          "sha256": "a7767b4666b322e80bc5b00b5bf15089cb2b3213d50e04c09beceb529b14deb1"
+        }
+      ]
     },
     {
       "id": "F-008",
