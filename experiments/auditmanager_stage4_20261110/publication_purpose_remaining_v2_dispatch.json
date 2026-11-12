@@ -1,0 +1,16 @@
+{
+  "preparation_path": "/tmp/auditmanager_publication_purpose_remaining_v2_20261112/preparation.json",
+  "preparation_sha256": "7add6f4de0ed01dc9eb51114708cecdf0aae24f7505e463c1d1dd3fc25256c08",
+  "output_dir": "/tmp/auditmanager_publication_purpose_remaining_v2_20261112_run",
+  "pid": 1081705,
+  "model": "codex/gpt-6-astra",
+  "cases": [
+    "F-004",
+    "F-012",
+    "F-020"
+  ],
+  "purpose": "Recheck remaining controls after routing boundary prompt fix; do not reuse old-prompt success as final-prompt evidence.",
+  "source_inputs_unchanged": true,
+  "coordinator_or_engineer_answers_supplied": false,
+  "production_acceptance": false
+}
