@@ -1,0 +1,26 @@
+{
+  "finding_id": "F-047",
+  "status": "four_fan_status_connections_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_047/publication_projection.json",
+  "projection_sha256": "b417b12b9b97ff75eeb4daa3736685ef2b6523e3de9d0dc91d1450412ce549e7",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_signal_matrix_source_review_20261112.json",
+  "source_review_sha256": "696cef2225675edda4d5c44c03ad19bcfd6af7f4de207482ca565906121c55af",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+      "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+      "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Сохранены четыре пары: M1/Пн5.1→11 резервный; M2/Пн5.1 рез→14 основной; M3/Вн5.1→26 резервный; M4/Вн5.1р→29 основной.",
+    "Колонки 15 и 30 перепада давления не подменяют каналы состояния.",
+    "Рекомендация согласования присоединена к конфликту; физические подключения и алгоритм ротации не объявлены ошибочными.",
+    "Риск неверного отображения условный и пока находится в pending; нужна проверка конечного отчёта."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
