@@ -1,0 +1,13 @@
+{
+  "preparation_path": "/tmp/auditmanager_publication_heater_positive_20261112/preparation.json",
+  "preparation_sha256": "0ce0341e04949fe6d73274bafcd746f9d24ecd18dae68d21a5f9255595e532df",
+  "output_dir": "/tmp/auditmanager_publication_heater_positive_20261112_run",
+  "pid": 1101457,
+  "exec_session_id": 81401,
+  "model": "codex/gpt-6-astra",
+  "case": "F-006",
+  "purpose": "Positive same-image preservation control paired with F040 source-only reading followup.",
+  "same_untrusted_reading_and_instructions_as_F040": true,
+  "original_claims_and_sources_unchanged": true,
+  "production_acceptance": false
+}
