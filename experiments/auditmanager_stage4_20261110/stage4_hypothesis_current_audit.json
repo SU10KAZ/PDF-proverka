@@ -201,10 +201,95 @@
         "Финальное сохранение всех адресов/оснований и автономная группировка относятся к дальнейшей проверке выдачи."
       ],
       "complete": false
+    },
+    {
+      "hypothesis": "H04",
+      "status": "bidirectional_set_mechanism_and_quantity_controls_evidenced_applicability_and_release_open",
+      "code": [
+        {
+          "path": "backend/app/pipeline/stages/text_analysis/object_balance.py",
+          "sha256": "16cd08043fb7bc4254af36cfea08d8ceb08d5025253793be10b2e2def3624807",
+          "symbol": "evaluate_object_balances"
+        },
+        {
+          "path": "backend/app/pipeline/stages/prepare/quantity_provenance.py",
+          "sha256": "9850e27d3d0df110d413d67bc713ff761abffbea28077e69728b718cb8b8ea21",
+          "symbol": "QUANTITY_PROVENANCE_INSTRUCTIONS"
+        },
+        {
+          "path": "backend/app/pipeline/stages/prepare/calculation_consistency.py",
+          "sha256": "bfcafd19b161d812ae2e88b7ac934eb930b8441f86ad974ec9c3d3253fe651d9",
+          "symbol": "has_calculation_trace"
+        },
+        {
+          "path": "backend/app/pipeline/stages/prepare/object_operation_passes.py",
+          "sha256": "a6b866da065e7db1a63bc460eff0abe83c1fe412d8a3f0edadafec3bb52bac8c",
+          "symbol": "build_object_operation_passes"
+        }
+      ],
+      "observed_mechanisms": [
+        "Двусторонняя разность вычисляется по составным ключам только для active; reserve сохраняется отдельно. Неизвестные ссылки и повтор ключа оставляют not_checked.",
+        "Полнота извлечения и смысловая идентичность не сертифицируются вычислителем; publication требует проверки области и источников.",
+        "Инструкция quantity_balance требует буквальную ячейку, заголовок, область количества, множитель и раздельные известные/неизвестные слагаемые. Это инструкция модели, не общий детерминированный контроль числовых предпосылок.",
+        "Проверка calculation_checks требует выражение, результат, единицу, основание и допустимые источники; она проверяет структуру трассы, а не правильность арифметики."
+      ],
+      "tests_located": [
+        {
+          "path": "tests/test_object_balance.py",
+          "sha256": "db2b177fdab8a2af1bfa8160ef23a53827ef41db04b7cb82f03609b6ed885302"
+        },
+        {
+          "path": "tests/test_calculation_consistency.py",
+          "sha256": "a6f2c9893a64a1b949ea9e24dcaffce93ed4877d11ac6e9e560ebef9694ecbd6"
+        }
+      ],
+      "test_scope": "Inspected object_balance assertions distinguish FRHF/HF, reserve exclusion, unknown sources and duplicate keys. No new test execution claimed.",
+      "live_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/EOM_model_extracted_balance_control.json",
+          "sha256": "399336dd4802c01dd227bc7ab2762a7d7ee33411054c9f8cf0280284d27bbcf8"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/eom_f051_released_evidence/assessment.json",
+          "sha256": "7fcb7a8738a41881633bce70b3bab162b8105310beedfbd0765c154bedee1daf"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/eom_f050_stamp_evidence/assessment.json",
+          "sha256": "bf12b5f43773742b7c9b3907280a54f365d66c18bbe0467dcae1242523be380a"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/KM_quantity_provenance_assessment.json",
+          "sha256": "de36bf5a6cc10c3e648383203c3f5bc06c01b8f6bbf844670dc4aeb4e03fe3a6"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/KM_LK6_quantity_disposition_assessment.json",
+          "sha256": "fbd449568b982875dfa15645fe12975327359d3dd8a23d7488d0fb29e659aa40"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/KM_complete_literal_quantity_trace.json",
+          "sha256": "aafdc71602181f6735d6f9d724f3c421eac55bb202a706449236c67fb3286ea7"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/km_lk6_quantity_full_context_evidence/workflow/05_adjudication/result.json",
+          "sha256": "e5715b866fca9d6b81610ca4f11bc40e71a65b9cd826e66926b6698839ab5e2e"
+        }
+      ],
+      "control_interpretation": [
+        "ЭОМ: 24 строки РП3, активные С2326/С2327 и резервы различены; добавление 4 кВт не следует из отсутствия отдельных строк до исключения агрегирования.",
+        "F051 имеет ограниченный финальный replay с неизменными 49 классическими строками. Это не закрывает F050 и H04-P01.",
+        "F050 сохраняет FRHF/HF различие и факты источников, но применимость спецификации к схеме остаётся неопределённой. Снятие исторической принятой темы не является улучшением.",
+        "КМ: ЛК6 имеет повторные ОГМ22/25 по два экземпляра. Буквальный известный subtotal 172; количество анкеров ОГМ21/24 неизвестно, 228 и разница 40 условны.",
+        "Поздний full-context adjudicator предлагает revise с сохранением отдельного конфликта ОГМ26/25. Это модельное решение, не доказательство выпуска; прежний defer не является окончательным итогом всей серии."
+      ],
+      "limits": [
+        "Не доказаны все смысловые связи, полнота реестра и финальное сохранение полезного результата КМ.",
+        "В full-context каталоге отсутствует completion.json: не засчитывать предложение revise как состоявшийся выпуск.",
+        "H04 нельзя объявить завершённым по успешной арифметике или одному F051."
+      ],
+      "complete": false
     }
   ],
   "not_yet_audited": [
-    "H04",
     "H05",
     "H06",
     "H07"
