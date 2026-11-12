@@ -1,0 +1,61 @@
+{
+  "status": "108_local_tests_passed",
+  "source_commit": "1014cae9",
+  "checks": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_calculation_consistency.py",
+        "tests/test_object_balance.py",
+        "tests/test_object_identity_candidates.py",
+        "tests/test_object_operation_passes.py",
+        "tests/test_object_registry.py",
+        "tests/test_publication_delivery.py",
+        "tests/test_publication_reconciliation.py",
+        "tests/test_quantity_checks.py",
+        "tests/test_requirement_checks.py",
+        "tests/test_stage01_evidence_context.py",
+        "tests/test_text_analysis_md_prescan.py"
+      ],
+      "returncode": 0,
+      "stdout": "........................................................................ [ 86%]\n...........                                                              [100%]\n83 passed in 1.34s\n",
+      "stderr": "/opt/py312/lib/python3.12/site-packages/pytest_asyncio/plugin.py:208: PytestDeprecationWarning: The configuration option \"asyncio_default_fixture_loop_scope\" is unset.\nThe event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: \"function\", \"class\", \"module\", \"package\", \"session\"\n\n  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))\n"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_recovery_context.py",
+        "tests/test_source_review_context.py",
+        "tests/test_subclaim_coverage.py"
+      ],
+      "returncode": 0,
+      "stdout": ".........................                                                [100%]\n25 passed in 0.83s\n",
+      "stderr": "/opt/py312/lib/python3.12/site-packages/pytest_asyncio/plugin.py:208: PytestDeprecationWarning: The configuration option \"asyncio_default_fixture_loop_scope\" is unset.\nThe event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: \"function\", \"class\", \"module\", \"package\", \"session\"\n\n  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))\n"
+    }
+  ],
+  "test_file_hashes": {
+    "tests/test_calculation_consistency.py": "a6f2c9893a64a1b949ea9e24dcaffce93ed4877d11ac6e9e560ebef9694ecbd6",
+    "tests/test_object_balance.py": "db2b177fdab8a2af1bfa8160ef23a53827ef41db04b7cb82f03609b6ed885302",
+    "tests/test_object_identity_candidates.py": "647f7e43e469d1ebaa6f7880e59decad967d2fdcc1285810715a0ede059bfa81",
+    "tests/test_object_operation_passes.py": "0182f91f4767eddc7efd7e933a7e52c60db3e503b357b0e732b5f5b5d6d7802c",
+    "tests/test_object_registry.py": "591d2aefd25528a538802fdc7f595c3390b4daa5234e26db651889b4ebe8ecf6",
+    "tests/test_publication_delivery.py": "9b213d01813baa0c44b0ad20807114d88530ab8dc992e6d3f9c056f80972339c",
+    "tests/test_publication_reconciliation.py": "73fd5e5ccfaf5b6ba582f1e164b340b64cbe396b636e5ccee2a83fe41225f5ae",
+    "tests/test_quantity_checks.py": "7e792ede47d475fe04e9b4e1cad2157bdbc39a2b7424bf639528626f7ba3c3d1",
+    "tests/test_requirement_checks.py": "176bd1e9a75176c340a3a68f9cabf5bd9f714d7d3d133fb58a6199513e07cc0e",
+    "tests/test_stage01_evidence_context.py": "c019397170aa72fd191e613af0c65e467fdaf99f6cb386f1fef6dbe3a2f15c9a",
+    "tests/test_text_analysis_md_prescan.py": "f3203851888db2dbe1bde0adc75356f311e976fffd9e81114afec4388255f1ad",
+    "tests/test_recovery_context.py": "4d8bcfb3dc839e72839aa4dcdd59978eb1433428b50ff28af823d04733a5cc63",
+    "tests/test_source_review_context.py": "baf5ef1ff0a3c145495a349db99bdf5bbb3cc007c20d181368cfc9a6a8db1d7d",
+    "tests/test_subclaim_coverage.py": "1a7bd8d3fe63c2493787513ed5456861bdb8f492b0888c1307f6506c92e80cce"
+  },
+  "scope": "Fourteen local test modules covering selected method contracts and regression controls; not semantic or full-project acceptance.",
+  "stage4_complete": false,
+  "production_acceptance": false
+}
