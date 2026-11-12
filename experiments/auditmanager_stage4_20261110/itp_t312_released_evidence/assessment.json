@@ -1,0 +1,76 @@
+{
+  "status": "bounded_new_finding_release_and_excel_verified",
+  "final_id": "F-056",
+  "original_id": "ITP-T312-flow-conflict",
+  "prior_findings_unchanged": 55,
+  "final_unique_rows": 56,
+  "semantic_grouping_completed": false,
+  "engineer_acceptance": false,
+  "production_acceptance": false,
+  "files": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/03_findings.json",
+      "sha256": "4d0bbfd76de648644fab18595e2083b90273f19a35f25a89f886c4287924d71a"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/entry.json",
+      "sha256": "e9b18fb5f09268f097826304f25748c1d1b033bdcdcc80e4afaa9287bb28658a"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/input_document.json",
+      "sha256": "4e5098400033536fb3b46879a8c5541e2b62041ab797a63adfceddbd985b1bee"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/local_preview.json",
+      "sha256": "b54aff9918b25c9aa729126ecbd65fe7d8f7910e0d29f067af3fd6675820dbb6"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/output_preview.json",
+      "sha256": "2b91c7e64ddc52014c135356113449a9d82c38d566009c3b01a313e7607f066f"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/preparation.json",
+      "sha256": "f26e959983511f645b76cb6f1164f8db78705c79c5ccd7b514952a10e1c87eb4"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/process.json",
+      "sha256": "f1b35896c65b16776c5fcd42d77be5e38428792137998a627f966aca5a0caa2f"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/receipt.json",
+      "sha256": "91ec20a87a5fcb54eb6d823921a75fd66241f38586ecb84a1187882d5a2ec1bb"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/report.xlsx",
+      "sha256": "9f8a863b503354a52017f8bef903063aa930a55b9832e35772fc4ac28e017893"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/request.json",
+      "sha256": "494bf0f6ac070a89689c87f3ba9c33db728907262d151cd2ec0509576148d88f"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/workflow/attempt.json",
+      "sha256": "7b1743141a42bf3b21d1ee5bfc86cf1786d34322a0bcc3b5f2c442ba2a71ad1c"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/workflow/binding.json",
+      "sha256": "d33504c102db0acdea89a660fd4cd03876a2597a5ec8b9b637c3b7ea798feddc"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/workflow/receipt.json",
+      "sha256": "91ec20a87a5fcb54eb6d823921a75fd66241f38586ecb84a1187882d5a2ec1bb"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/workflow/request.json",
+      "sha256": "494bf0f6ac070a89689c87f3ba9c33db728907262d151cd2ec0509576148d88f"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/workflow/result.json",
+      "sha256": "d6c6a0980ec168bb7111f29794582b3c083e901b04ec8140ef92bc9f0d994c60"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/workflow/result_binding.json",
+      "sha256": "b8c0990faa954c9620e31e05798d105e4d14ca88cc390119d036d38ab77c058b"
+    }
+  ]
+}

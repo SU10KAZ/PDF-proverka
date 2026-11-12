@@ -1,0 +1,60 @@
+{
+  "status": "bounded_source_review_final_check_and_excel_complete",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 54192,
+  "operations": [
+    {
+      "operation": "identity_across_views",
+      "status": "checked"
+    },
+    {
+      "operation": "document_links",
+      "status": "needs_data"
+    },
+    {
+      "operation": "calculation_consistency",
+      "status": "needs_data"
+    }
+  ],
+  "findings": 1,
+  "independent_graphic_observation": "ITP_T312_direct_graphic_check.json",
+  "history_or_engineer_answers_supplied": false,
+  "previous_operation_answers_supplied": false,
+  "known_source_control": true,
+  "source_review_root": "/tmp/auditmanager_itp_t312_source_review_20261112",
+  "limits": [
+    "Known-source control, not blind whole-project discovery.",
+    "Correct design flow and physical consequences remain unverified.",
+    "F056 retains T312 separately; automatic grouping not accepted.",
+    "Same-pipe 3/3.5 wall mapping remains unresolved."
+  ],
+  "files": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/itp_t312_operation_evidence/attempt.json",
+      "sha256": "b37dd94ab5192f67133da0327cfcd7db5613677b7650435571518a14c7da8d34"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/itp_t312_operation_evidence/binding.json",
+      "sha256": "15bc93a91172de1d9fcda7e1651845a9dab4d49a9b953d4b8153221a8d19d53b"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/itp_t312_operation_evidence/request.json",
+      "sha256": "0382673276dfbd021adc82407a96da79158f7b12117704b3187fac88dd529588"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/itp_t312_operation_evidence/result.json",
+      "sha256": "3281ad53e917c9aaea70347c1767b690242f8125f5083f0e5b4a01d1943e7fc5"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/itp_t312_operation_evidence/validated.json",
+      "sha256": "20199de8fc257a5100ddfeddce3d65cc811a82ac0432e44f984c99170849ea4d"
+    }
+  ],
+  "production_acceptance": false,
+  "source_review_status": "candidate_ready",
+  "final_check_root": "/tmp/auditmanager_itp_t312_final_release_20261112",
+  "final_release": {
+    "path": "experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/assessment.json",
+    "sha256": "e985614fafdc21cd6af039733fdaee1316cd3fbe8ee0c880cc1ac4f525f44eb7"
+  }
+}

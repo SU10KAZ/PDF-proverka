@@ -1,0 +1,51 @@
+{
+  "status": "same_label_flow_conflict_observed_in_two_graphic_views",
+  "observations": [
+    {
+      "path": "/tmp/auditmanager_itp_gvs_graphic_window_20261111/tiles_0/detail_tile_0.png",
+      "sha256": "310827197e4a90d39c50e4bf375874c4a40c239ec0ef65a1453325650c31d3e9",
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "source_pdf_sha256": "6d77bc0942e795ff2a6018b1ce65d45d5080e7aa220041da6dbbdd37a74c8b40",
+      "clip_rotated_page_points": [
+        49.55870568752289,
+        4.260885715484619,
+        1307.8753971010447,
+        602.6938831329346
+      ],
+      "directly_viewed": true,
+      "object": "Т312; ГВС подающая 1-я зона, аренда/ДОО",
+      "diameter": "57x3.5 оц",
+      "temperature_C": "65",
+      "pressure_bar": "9.06",
+      "flow_m3_h": "4.42"
+    },
+    {
+      "path": "/tmp/auditmanager_itp_gvs_graphic_window_20261111/tiles_1/detail_tile_0.png",
+      "sha256": "847037c08616aa20e44353c005fda5c0a0f36e7f9b4f878eb2326f550c8a5375",
+      "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+      "source_pdf_sha256": "6d77bc0942e795ff2a6018b1ce65d45d5080e7aa220041da6dbbdd37a74c8b40",
+      "clip_rotated_page_points": [
+        102.55087846517563,
+        517.348561523241,
+        1337.7470658868551,
+        1130.4031185507774
+      ],
+      "directly_viewed": true,
+      "object": "Т312; ГВС подающая 1-я зона, аренда/ДОО",
+      "diameter": "57x3.5 оц",
+      "temperature_C": "65",
+      "pressure_bar": "9.06",
+      "flow_m3_h": "4.63"
+    }
+  ],
+  "difference_m3_h": "0.21",
+  "scope": "Graphic annotations of same named branch and stated regime; not physical measured flow or pump duty.",
+  "model_request_does_not_include_this_assessment": true,
+  "source_review_pending": true,
+  "limits": [
+    "Correct design flow remains unknown.",
+    "No shortage or pump inadequacy inferred.",
+    "Needs semantic merge with T311 conflict without dropping either branch."
+  ],
+  "production_acceptance": false
+}

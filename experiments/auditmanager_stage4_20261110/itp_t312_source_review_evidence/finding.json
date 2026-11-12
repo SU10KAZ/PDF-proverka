@@ -1,0 +1,163 @@
+{
+  "object_id": "pipe66_t312",
+  "operation": "identity_across_views",
+  "severity": "medium",
+  "problem": "Разные значения расхода Т312 на принципиальной схеме и разрезе 6-6",
+  "description": "Для одной обозначенной ветви подачи ГВС аренды/ДОО 1-й зоны принципиальная схема задаёт G=4,42 м³/ч, а разрез 6-6 — G=4,63 м³/ч. Марка Т312, размер Ø57×3,5оц, температура 65 °C и давление 9,06 бар совпадают. В подписях не указано, что значения относятся к разным режимам. Подтверждена несогласованность параметра между представлениями; правильный расход, гидравлические последствия и необходимость изменения диаметра без расчёта ветви не установлены.",
+  "solution": "По расчёту и исходным данным аренды/ДОО установить расход Т312 и согласовать подписи на схеме и разрезе. Если значения относятся к разным режимам, явно обозначить эти режимы в обоих представлениях.",
+  "sheet": "Принципиальная схема — лист 2; разрез 6-6 — лист 6 по метаданным источника.",
+  "evidence": [
+    {
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "location": "Изображение 1, верхняя вертикальная подпись Т312; изображение 4, продолжение ветви к Т31.",
+      "description": "Подача ГВС 1-й зоны аренды/ДОО: Ø57×3,5оц, G=4,42 м³/ч, T=65 °C, P=9,06 бар."
+    },
+    {
+      "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+      "location": "Изображение 10, разрез 6-6, многострочная подпись Т312 над подающими ветвями.",
+      "description": "Подача ГВС 1-й зоны аренды/ДОО: Ø57×3,5оц, G=4,63 м³/ч, T=65 °C, P=9,06 бар."
+    }
+  ],
+  "report_section": "technical_findings",
+  "operation_semantic_verified": false,
+  "source_finding_ids": [
+    "O-401e5c593325919a68c3c2bb"
+  ],
+  "operation_candidate_lineage": [
+    {
+      "source_finding_id": "O-401e5c593325919a68c3c2bb",
+      "status": "requires_semantic_review",
+      "source_claim": "problem: Разные значения расхода Т312 на принципиальной схеме и разрезе 6-6\ndescription: Для одной обозначенной ветви подачи ГВС аренды/ДОО 1-й зоны принципиальная схема задаёт G=4,42 м³/ч, а разрез 6-6 — G=4,63 м³/ч. Марка Т312, размер Ø57×3,5оц, температура 65 °C и давление 9,06 бар совпадают. В подписях не указано, что значения относятся к разным режимам. Подтверждена несогласованность параметра между представлениями; правильный расход, гидравлические последствия и необходимость изменения диаметра без расчёта ветви не установлены.\nsolution: По расчёту и исходным данным аренды/ДОО установить расход Т312 и согласовать подписи на схеме и разрезе. Если значения относятся к разным режимам, явно обозначить эти режимы в обоих представлениях.",
+      "existing_block_ids": [
+        "blk_0103a941fa5a4b0d9141a4149e927bff",
+        "blk_7527066e645e47bb917a9fc17fb82ccc"
+      ],
+      "unresolved_block_ids": [],
+      "upstream_operation_context": {
+        "source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+        "request_sha256": "c43870cf7a548ffd4269540e88ae443f94d526e30ea40c36bf43963314f46514",
+        "supplied_source_ids": [
+          "blk_fa4cca816905454ab134c787b1d1862a",
+          "blk_fed30df45d124919a8b7cc13253733b1",
+          "blk_9167c15ea57c423ea6ad708738bb420f",
+          "blk_ae35014464b5493f84ca38481c3ffa60",
+          "blk_90da5d0d361c48008030c2bf87767ced",
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_630319779cfb408bb7b091a309e86a78",
+          "blk_7bb26b619d60430a8b597fee4d18d80e",
+          "blk_095853a82158483ab52761fde61dd652",
+          "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "blk_1601889b50624245a5c590ad23d87175",
+          "blk_30789714316b48908c5addc9bfb135d2",
+          "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "blk_3050f16afc994b889498a2535ea14a52",
+          "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "blk_7527066e645e47bb917a9fc17fb82ccc",
+          "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc"
+        ],
+        "attached_graphic_ids": [
+          "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "blk_7527066e645e47bb917a9fc17fb82ccc",
+          "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc"
+        ],
+        "reported_inspections_untrusted": [
+          {
+            "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+            "description": "Т312 имеет расход 4,42 м³/ч; соседние Т311 и Т412 различаются марками и назначением."
+          },
+          {
+            "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+            "description": "Для Т312 указан расход 4,63 м³/ч при совпадающих размере, исполнении, температуре и давлении."
+          },
+          {
+            "block_id": "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+            "description": "Осмотрены узлы К15, К16, К14 и магистрали; отдельная подпись Т312 с расходом здесь не установлена. Общая маркировка Т31 не принята за самостоятельный экземпляр Т312."
+          }
+        ],
+        "reported_context_queries": [
+          "Т312",
+          "УУТЭ",
+          "аренда/ДОО",
+          "Анкеты абонента систем ОВ, ВК",
+          "Труба стальная водогазопроводная оцинкованная",
+          "Т412",
+          "4,42",
+          "4,63"
+        ],
+        "local_search_stop": {},
+        "boundary": "Supplied sources and local search stop are provenance, not completeness. Inspection descriptions are prior model observations, not established facts. Recheck applicability and evidence independently.",
+        "semantic_verified": false
+      }
+    }
+  ],
+  "id": "ITP-T312-flow-conflict",
+  "requires_human_review": true,
+  "source_evidence_review_status": "pending",
+  "source_review_requests": [
+    {
+      "source_finding_id": "O-401e5c593325919a68c3c2bb",
+      "source_claim": "problem: Разные значения расхода Т312 на принципиальной схеме и разрезе 6-6\ndescription: Для одной обозначенной ветви подачи ГВС аренды/ДОО 1-й зоны принципиальная схема задаёт G=4,42 м³/ч, а разрез 6-6 — G=4,63 м³/ч. Марка Т312, размер Ø57×3,5оц, температура 65 °C и давление 9,06 бар совпадают. В подписях не указано, что значения относятся к разным режимам. Подтверждена несогласованность параметра между представлениями; правильный расход, гидравлические последствия и необходимость изменения диаметра без расчёта ветви не установлены.\nsolution: По расчёту и исходным данным аренды/ДОО установить расход Т312 и согласовать подписи на схеме и разрезе. Если значения относятся к разным режимам, явно обозначить эти режимы в обоих представлениях.",
+      "block_ids": [
+        "blk_0103a941fa5a4b0d9141a4149e927bff",
+        "blk_7527066e645e47bb917a9fc17fb82ccc"
+      ],
+      "upstream_operation_context": {
+        "source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+        "request_sha256": "c43870cf7a548ffd4269540e88ae443f94d526e30ea40c36bf43963314f46514",
+        "supplied_source_ids": [
+          "blk_fa4cca816905454ab134c787b1d1862a",
+          "blk_fed30df45d124919a8b7cc13253733b1",
+          "blk_9167c15ea57c423ea6ad708738bb420f",
+          "blk_ae35014464b5493f84ca38481c3ffa60",
+          "blk_90da5d0d361c48008030c2bf87767ced",
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_630319779cfb408bb7b091a309e86a78",
+          "blk_7bb26b619d60430a8b597fee4d18d80e",
+          "blk_095853a82158483ab52761fde61dd652",
+          "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "blk_1601889b50624245a5c590ad23d87175",
+          "blk_30789714316b48908c5addc9bfb135d2",
+          "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "blk_3050f16afc994b889498a2535ea14a52",
+          "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "blk_7527066e645e47bb917a9fc17fb82ccc",
+          "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc"
+        ],
+        "attached_graphic_ids": [
+          "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "blk_7527066e645e47bb917a9fc17fb82ccc",
+          "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc"
+        ],
+        "reported_inspections_untrusted": [
+          {
+            "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+            "description": "Т312 имеет расход 4,42 м³/ч; соседние Т311 и Т412 различаются марками и назначением."
+          },
+          {
+            "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+            "description": "Для Т312 указан расход 4,63 м³/ч при совпадающих размере, исполнении, температуре и давлении."
+          },
+          {
+            "block_id": "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+            "description": "Осмотрены узлы К15, К16, К14 и магистрали; отдельная подпись Т312 с расходом здесь не установлена. Общая маркировка Т31 не принята за самостоятельный экземпляр Т312."
+          }
+        ],
+        "reported_context_queries": [
+          "Т312",
+          "УУТЭ",
+          "аренда/ДОО",
+          "Анкеты абонента систем ОВ, ВК",
+          "Труба стальная водогазопроводная оцинкованная",
+          "Т412",
+          "4,42",
+          "4,63"
+        ],
+        "local_search_stop": {},
+        "boundary": "Supplied sources and local search stop are provenance, not completeness. Inspection descriptions are prior model observations, not established facts. Recheck applicability and evidence independently.",
+        "semantic_verified": false
+      }
+    }
+  ]
+}

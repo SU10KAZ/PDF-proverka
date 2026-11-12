@@ -29,7 +29,7 @@ async def run(root):
           'model': 'codex/gpt-6-astra', 'production_acceptance': False})
     try:
         after, receipt = await run_final_release_check(entry, document, md, root / 'workflow',
-            invoke=direct_cli_executor('codex/gpt-6-astra', project_id=f'AK-{finding_id}-publication-final-check'),
+            invoke=direct_cli_executor('codex/gpt-6-astra', project_id=f"{manifest.get('project_id', 'AK')}-{finding_id}-publication-final-check"),
             executor_id='codex/gpt-6-astra:high:publication-final-check-v1')
     except Exception as exc:
         write(root / 'process.json', {'pid': os.getpid(), 'status': 'failed',

@@ -1,0 +1,17 @@
+{
+  "project_id": "ITP",
+  "finding_id": "ITP-T312-flow-conflict",
+  "source_report_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_gvs_supply_source_evidence/03_findings_combined.json",
+  "source_report_sha256": "58de7e9ab27f85dbfe1d51d9ffa8a220c74662607fb1779a63d3793162063cc0",
+  "source_md_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/02_work/document.md",
+  "source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+  "source_candidate_path": "/tmp/auditmanager_itp_t312_source_review_20261112/workflow/candidate.json",
+  "source_candidate_sha256": "df2bdfcc25491863c7f6431ae05f8993cc4cefa2a4d551c572924cd7b8d74b87",
+  "entry_sha256": "e9b18fb5f09268f097826304f25748c1d1b033bdcdcc80e4afaa9287bb28658a",
+  "request_sha256": "494bf0f6ac070a89689c87f3ba9c33db728907262d151cd2ec0509576148d88f",
+  "other_findings_unchanged": 55,
+  "message_chars": 104324,
+  "image_count": 15,
+  "semantic_grouping_completed": false,
+  "production_acceptance": false
+}

@@ -1,0 +1,14 @@
+{
+  "source_operation_sha256": "62c76d78f8e30acf2750485997691df607ed92d8fcf7a73c502870a57a030d3a",
+  "request_sha256": "4b975820e4b6c582ea59dcf3fc56deab3d818166dda010d295947525577629cc",
+  "source_candidate_sha256": "20199de8fc257a5100ddfeddce3d65cc811a82ac0432e44f984c99170849ea4d",
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0,
+  "history_or_engineer_answers_supplied": false,
+  "message_chars": 56601,
+  "images": 15,
+  "image_bytes": 14688678,
+  "semantic_acceptance": false,
+  "unavailable_images": [],
+  "graphic_window_limit": "Twelve detail tiles for both direct proofs; pump detail tiles omitted, original pump graphic retained when required."
+}

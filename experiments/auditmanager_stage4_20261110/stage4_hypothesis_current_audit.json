@@ -412,6 +412,22 @@
         {
           "path": "experiments/auditmanager_stage4_20261110/ITP_GVS_current_preservation_verification.json",
           "sha256": "46b2538a9a656dd3976d91de586fdab9e73d29419d028544084e019b9c388301"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/ITP_T312_direct_graphic_check.json",
+          "sha256": "9d20e7324d4854f8adf690ef32dc44e352d7f56ac01e245af1e3c86cf9f7d233"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/ITP_T312_operation_assessment.json",
+          "sha256": "e99375784f5c5d2c141a0de9116833a26fc3f0309542cd324b77376a05129c81"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/assessment.json",
+          "sha256": "e985614fafdc21cd6af039733fdaee1316cd3fbe8ee0c880cc1ac4f525f44eb7"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/text_stamp_metadata_contract_fix.json",
+          "sha256": "f42feb1e79b04dac6890aea196bc7441fc5d6db2aa0b686d8482c010070ada03"
         }
       ],
       "control_interpretation": [
@@ -421,7 +437,8 @@
         "АР: более поздний AR_roof_reviewed_question_assessment фиксирует сохранение условного вопроса после проверки источников, adjudication и экспорта с 23 другими строками. Ранний провал передачи контекста не следует выдавать за конечный результат. 75/110/80/40 мм не объявляются установленными высотами опор.",
         "Гнутый поручень: арифметика 2730+400+110=3240 не доказывает полную пространственную развёртку или лишние 400 мм. needs_data не является окончательным опровержением.",
         "КМ F014: прежнее основание снятия противоречит выноске ОГМ5. Случай исключён из истинно/ложно и приёмки фильтра до разрешения идентичности; ошибочное снятие не подтверждает исходный дефект.",
-        "Актуальная повторная проверка двух сохранённых кандидатов ГВС текущим admission: оба applied/revise; в Excel 55 уникальных строк, все 53 исходные строки сохранены. F054 содержит циркуляцию Т411/Т412 и сопоставление с К15, F055 — отдельный конфликт подачи Т311 7,71/8,71. Раннее описание source_review_pending устарело. Объединение известно координатору, автоматическая дедупликация и отдельный final release check этим не доказаны; Т312 и связь толщин остаются открыты."
+        "Актуальная повторная проверка двух сохранённых кандидатов ГВС текущим admission: оба applied/revise; в Excel 55 уникальных строк, все 53 исходные строки сохранены. F054 содержит циркуляцию Т411/Т412 и сопоставление с К15, F055 — отдельный конфликт подачи Т311 7,71/8,71. Раннее описание source_review_pending устарело. Объединение известно координатору, автоматическая дедупликация и отдельный final release check этим не доказаны; Т312 и связь толщин остаются открыты.",
+        "Т312: actual inventoried object independently compared on the bounded graphic context; 4.42 vs 4.63 m3/h confirmed by direct graphic inspection and source review. Separate final check and Excel produce F056, preserving all55 prior rows exactly. Same branch/scope checked; no correct design flow or pump inadequacy inferred. Initial rejection of an exact TEXT stamp was a validator contract defect, fixed with negative tests; original model response reused unchanged. Automatic grouping remains disabled; wall-thickness mapping remains unresolved."
       ],
       "limits": [
         "Контроли DEV с известным предметом; не независимое обнаружение и не переносимость.",
