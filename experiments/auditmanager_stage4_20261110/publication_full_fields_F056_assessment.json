@@ -1,0 +1,25 @@
+{
+  "finding_id": "F-056",
+  "status": "range_conflict_preserved_recommendation_split",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_056/publication_projection.json",
+  "projection_sha256": "96f2fac5f45b545a2d6488e18bbd5d8708bfa93791bd632bc172b9801dbe137f",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_ranges_and_supply_identity_review_20261112.json",
+  "source_review_sha256": "61f35ccb981b20278cf01c13f1e34aeb76d493440d006e171280924101c35477",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+      "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+      "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Повторно прослежены PDS2→10, PDS4→20, PDS3→26; все три колонки имеют 20–200 Па.",
+    "Авторитетный перечень PDS1–PDS4 задаёт 50–500 Па. Уставка 100 Па входит в оба диапазона; примечание ПНР не снимает расхождение исполнения.",
+    "Сохранено расхождение документов без утверждения непригодности приборов. Рекомендация-вопрос должна быть присоединена к основному замечанию, риск комплектации остаётся условным."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

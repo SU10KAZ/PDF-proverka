@@ -1,0 +1,25 @@
+{
+  "finding_id": "F-054",
+  "status": "count_conflict_preserved_with_conditional_risk",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_054/publication_projection.json",
+  "projection_sha256": "355bbac1f01c9913b4dcb7a12a3b3cb2a7125b6b682568c2a14bb44eadc7aa96",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_signal_matrix_source_review_20261112.json",
+  "source_review_sha256": "696cef2225675edda4d5c44c03ad19bcfd6af7f4de207482ca565906121c55af",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+      "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+      "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Независимо пересчитаны DO: 2,7,9,12,15,16,17,19,21,23,27 — 11 точек при печатном итоге 10.",
+    "Модель объединила исходное замечание, рекомендацию и условный риск в одну запись без дополнительного вопроса.",
+    "Согласование допускает проверку как итога, так и точек; нехватка установленных модулей не утверждается."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

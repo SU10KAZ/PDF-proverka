@@ -1,0 +1,25 @@
+{
+  "finding_id": "F-055",
+  "status": "polarity_conflict_preserved_recommendation_split",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_055/publication_projection.json",
+  "projection_sha256": "4fc329b56b8221a6f722f776be214539449dc5c9a4c4bda687b066dadab68bcf",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_polarity_and_symbol_review_20261112.json",
+  "source_review_sha256": "98bc26641d8a59e57a1d42f9cf392cfc3452ae061559407d9131073831196fb2",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+      "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+      "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Повторно прослежены ветви от автостоянки справа к выбросу слева: PDS3/Ва4.1 и PDS4/Ва4.1р имеют минус слева на нагнетании и плюс справа на всасывании.",
+    "Документальное противоречие положительному ΔP=100 Па сохранено; срабатывание конкретных реле и реальная программа не объявлены проверенными.",
+    "Рекомендация выделена дополнительным вопросом, хотя относится к тому же конфликту: объединить при выдаче. Условный риск не является новым дефектом."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
