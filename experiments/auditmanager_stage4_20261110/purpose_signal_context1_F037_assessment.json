@@ -1,0 +1,23 @@
+{
+  "finding_id": "F-037",
+  "status": "additional_power_connection_context_does_not_resolve_control_signal",
+  "candidate_projection_path": "/tmp/auditmanager_publication_signal_context1_20261112_run/evaluations/publication_signal_context_037/publication_projection.json",
+  "candidate_projection_sha256": "2b7628f9a00026bc3ef2db3d63dff17877f10ed44aecab15c521bc4d994ce85a",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/publication_signal_pair_context_search.json",
+  "source_review_sha256": "7eaa35e923b3d844a226d5119c87e70c2cf0196e0939ca7ff03d1044ac318b67",
+  "matched_original_claims_and_instructions": true,
+  "original_source_context_preserved": true,
+  "checks": [
+    "Новая схема использована по существу: силовое подключение электронагревателя не объявлено доказательством назначения сигнала 6.",
+    "Отметка DI и подпись пуск/стоп остаются вопросом, а не установленной командой на неверном канале.",
+    "Прямо указано, что внутреннюю цепь включения и её связь с сигналом 6 дополнительный лист не раскрывает.",
+    "Рекомендация и условный риск сохранены вместе; новый самостоятельный вопрос из внутренней нехватки контекста не создан."
+  ],
+  "limits": [
+    "Получение дополнительного листа не равно закрытию вопроса.",
+    "Контекст выбран координатором: автономный поиск системой не доказан.",
+    "Полный поиск электрической схемы шкафа и итоговая выдача ещё не проверены."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
