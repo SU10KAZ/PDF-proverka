@@ -1,0 +1,23 @@
+{
+  "finding_id": "F-082",
+  "status": "scope_candidate_preserves_literal_question_and_qualifies_identity_domain",
+  "projection_path": "/tmp/auditmanager_publication_identity_scope_20261112_run/evaluations/publication_identity_082/publication_projection.json",
+  "projection_sha256": "75a0e862bc2536013a5a00917342d3749c4001ed68dae22e34283af4759522f5",
+  "previous_candidate_assessment": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_identity_controls_F082_assessment.json",
+    "sha256": "22e2800738a738a4ce6ab0c514e35b1f9f527ef590e81f7ab030b9025baf4708"
+  },
+  "instruction_sha256": "a65ce5e68f8cd7130b29ccac2e324bdbc7feb0d6601aac69288c3acebd1e917b",
+  "checks": [
+    "Все 11 подписей и адреса завес сохранены и соответствуют просмотренной графике.",
+    "Вопрос явно различает привязку к собственной завесе и самостоятельную идентификацию пульта. Ни обязательная глобальная уникальность, ни обязательное переименование не утверждаются.",
+    "Условный риск относится к ссылкам без обозначения завесы/уточнений; не превращён в отдельный вопрос или факт монтажа.",
+    "Ответственный комплект остаётся неизвестным, служебные сведения исключены из пользовательского вопроса."
+  ],
+  "limits": [
+    "Один контроль сохранения, не достаточное доказательство всего нового правила.",
+    "Контекстная достаточность и финальная инженерная полезность вопроса ещё требуют проверки."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
