@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "scope": "Two source-supported regime/allocation questions absent from final output",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_id": "ITP_F009_GVS_inlet_temperature:06cdf2a18fcf30aafead",
+      "reason": "System5-65C versus three exchanger cold-side inlet16.54C supports clarification of regime. Different physical roles must be reconciled, not treated as automatic equipment undersizing. No corresponding final question found.",
+      "quotes": [
+        {
+          "line": 1955,
+          "quote": "| ГВС 1-я зона | +51,97 | 5-65 | 7,24 | 0,728 |"
+        },
+        {
+          "line": 1956,
+          "quote": "| ГВС 2-я зона | +103,17 | 5-65 | 8,87 | 0,377 |"
+        },
+        {
+          "line": 1957,
+          "quote": "| ГВС 3-я зона | +141,48 | 5-65 | 10,61 | 0,181 |"
+        },
+        {
+          "line": 3179,
+          "quote": "| Контур; Среда | Горячая сторона | Холодная сторона |"
+        },
+        {
+          "line": 3183,
+          "quote": "| Температура на входе, °С | 90 | 16,54 |"
+        },
+        {
+          "line": 3184,
+          "quote": "| Температура на выходе, °С | 70 | 65 |"
+        },
+        {
+          "line": 3245,
+          "quote": "|  | Контур; Среда | Горячая сторона | Холодная сторона |"
+        },
+        {
+          "line": 3249,
+          "quote": "| Температура на входе, °C |  | 90 | 16,54 |"
+        },
+        {
+          "line": 3250,
+          "quote": "| Температура на выходе, °C |  | 70 | 65 |"
+        },
+        {
+          "line": 3312,
+          "quote": "| Контур; Среда | Горячая сторона |  | Холодная сторона |  |"
+        },
+        {
+          "line": 3316,
+          "quote": "| Температура на входе, °С | 90 |  | 16,54 |  |"
+        },
+        {
+          "line": 3317,
+          "quote": "| Температура на выходе, °С | 70 |  | 65 |  |"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP_F036_gauge_range_allocation:450cb0a7d585250b421e",
+      "reason": "Specification has4gauges0-2.5MPa and175gauges0-1.6MPa. Their distribution across actual pressure points remains a question. No final allocation question found; count alone cannot prove all175gauges unsuitable.",
+      "quotes": [
+        {
+          "line": 1261,
+          "quote": "| 111 | Манометр радиальный, 0..2,5 МПа (Ø160мм), с демпферной трубкой (Перкинса) | TM-510P.00 | TM-510P.00 | РОСМА | шт | 4 |  |  |"
+        },
+        {
+          "line": 1262,
+          "quote": "| 112 | Манометр радиальный, 0..1,6 МПа (Ø100мм) | (0-1,6 МПа) G½.1,5 | TM-510P.00 | РОСМА | шт | 175 |  |  |"
+        }
+      ]
+    }
+  ],
+  "output_check": "No mentions of manometers or16.54cold-side temperature in visible problem/description/solution/risk/reason of74sealed findings; full bounded-output reviews provide semantic context.",
+  "limits": [
+    "No claim of missing mixing balance across entire project.",
+    "No claim of wrong installed gauge ranges or insufficient number of high-range instruments.",
+    "Exact detection/filter/merge failure stage not yet traced."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0
+}

@@ -1364,12 +1364,17 @@
     },
     {
       "target_id": "ITP_F009_GVS_inlet_temperature:06cdf2a18fcf30aafead",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/regime_and_gauge_questions_missing.json",
+          "sha256": "708d08c1160d721971997efb0908894a711988543af36f76dcc2036846c48709"
+        }
+      ],
+      "reason": "System5-65C versus three exchanger cold-side inlet16.54C supports clarification of regime. Different physical roles must be reconciled, not treated as automatic equipment undersizing. No corresponding final question found.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F010_GVS_formula:e2d706356b5cbdcedb39",
@@ -1459,12 +1464,17 @@
     },
     {
       "target_id": "ITP_F036_gauge_range_allocation:450cb0a7d585250b421e",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/regime_and_gauge_questions_missing.json",
+          "sha256": "708d08c1160d721971997efb0908894a711988543af36f76dcc2036846c48709"
+        }
+      ],
+      "reason": "Specification has4gauges0-2.5MPa and175gauges0-1.6MPa. Their distribution across actual pressure points remains a question. No final allocation question found; count alone cannot prove all175gauges unsuitable.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
