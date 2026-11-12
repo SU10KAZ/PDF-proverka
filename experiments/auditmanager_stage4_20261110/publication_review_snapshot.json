@@ -1,11 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 32,
+  "reviewed_distinct_findings": 35,
   "unreviewed_finding_ids": [
-    "F-033",
-    "F-034",
-    "F-035",
     "F-036",
     "F-037",
     "F-038",
@@ -57,7 +54,7 @@
     "F-084",
     "F-085"
   ],
-  "batch_successful_responses": 31,
+  "batch_successful_responses": 36,
   "batch_status_snapshot": "running",
   "process_liveness_not_inferred_from_status_file": true,
   "selected_followups": [
@@ -606,6 +603,57 @@
         "pending": 0,
         "withdrawn": 0,
         "history_only": 2
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-033",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F033_assessment.json",
+      "assessment_sha256": "13a40ac20e6be55a51d8df138c6aeb0360b9e1184c7c58fbdc7d76316e280943",
+      "status": "sensor_endpoint_conflict_preserved",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_033/publication_projection.json",
+      "projection_sha256": "18cdc43fdfd05095e26e34226919b0f6bdbf949c08fe250d5e97f9bcde905fdb",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 0,
+        "pending": 0,
+        "withdrawn": 0,
+        "history_only": 1
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-034",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F034_assessment.json",
+      "assessment_sha256": "5de12971e64ec4ecd7716697e5a9c080fd714b3bb2d3bb13abfd8616ab9c3e19",
+      "status": "thermostat_conflict_preserved_location_error_withdrawn",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_034/publication_projection.json",
+      "projection_sha256": "fe1b3ef68395f6e1f6c87f7dd93e862ca6d6d48875c0917c9a3b9e6e029769f2",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 0,
+        "pending": 2,
+        "withdrawn": 1,
+        "history_only": 1
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-035",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F035_assessment.json",
+      "assessment_sha256": "06a7ec4b8846e9cd2f0451ace3d9b6f4e770303ad5e0299635f3046c1373409d",
+      "status": "shielding_conflict_preserved_recommendation_question_requires_consolidation",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_035/publication_projection.json",
+      "projection_sha256": "c34f766a80fc2692b57966657fa9dfaeae01de8cc0b98eb7345983df6275fb54",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 1,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 0
       },
       "engineer_accepted": false,
       "production_accepted": false

@@ -1,0 +1,27 @@
+{
+  "finding_id": "F-034",
+  "status": "thermostat_conflict_preserved_location_error_withdrawn",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_034/publication_projection.json",
+  "projection_sha256": "fe1b3ef68395f6e1f6c87f7dd93e862ca6d6d48875c0917c9a3b9e6e029769f2",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_two_thermostats_repeated_journal_review_20261112.json",
+  "source_review_sha256": "67ba21ad18f8d96fc0533fe04fe1dd4c989255a04e2ce518b408bc5544c516f9",
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "checks": [
+    "Конфликт TS2/ТС1 сохранён без исправления букв Пб в авторитетном тексте.",
+    "Снята только ошибочная привязка обеих строк к листам 25–26; первая находится на листе 24.",
+    "Повтор записи не превращён в дополнительный прибор.",
+    "Условный риск остаётся pending: его видимость в итоговом отчёте ещё требует интеграционной проверки."
+  ],
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+      "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+      "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

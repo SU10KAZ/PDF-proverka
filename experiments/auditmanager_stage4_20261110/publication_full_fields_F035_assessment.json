@@ -1,0 +1,26 @@
+{
+  "finding_id": "F-035",
+  "status": "shielding_conflict_preserved_recommendation_question_requires_consolidation",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_035/publication_projection.json",
+  "projection_sha256": "c34f766a80fc2692b57966657fa9dfaeae01de8cc0b98eb7345983df6275fb54",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+  "source_review_sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea",
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "checks": [
+    "Различие КСПВПГ/КСПЭВПГ для двухпарной линии сохранено, равенство длины не используется для выбора правильного исполнения.",
+    "Непосредственно просмотренная схема Па3.1-8 показывает экран с отводом PE у клемм 26–28.",
+    "Вопрос представляет рекомендацию разрешения того же конфликта: объединить при итоговой выдаче.",
+    "Фактическая закупка или монтаж неправильного кабеля не утверждаются."
+  ],
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_cd9d763d198246859c3df42c18b5c3d8.png",
+      "sha256": "05e8996615a803ac8aeeb4c80430160eb8954f89bc42940d73a0c5613da7b8d0",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
