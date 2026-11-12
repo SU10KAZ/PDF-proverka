@@ -66,3 +66,35 @@ def test_legacy_decisions_do_not_invent_obligations(case):
     doc,entry,md=case;entry['decision'].pop('context_reference_obligations')
     _,receipts=apply_review_admissions(doc,[entry],md)
     assert receipts[0]['status']=='applied'
+
+
+def test_final_release_stops_before_provider_when_reference_is_missing(case,tmp_path):
+    import asyncio
+    from backend.app.pipeline.stages.findings_verify.source_review_release_workflow import run_final_release_check
+    doc,entry,md=case;before=deepcopy(doc)
+    async def forbidden(request,phase):
+        pytest.fail('Missing required reference must be caught before model dispatch')
+    with pytest.raises(ValueError,match='invalid_proposed_edit: context_reference_missing_from_final_wording'):
+        asyncio.run(run_final_release_check(entry,doc,md,tmp_path/'release',invoke=forbidden,executor_id='test-no-dispatch'))
+    assert doc==before
+    assert not (tmp_path/'release'/'attempt.json').exists()
+
+
+def test_admitted_context_reference_remains_visible_in_excel(case,tmp_path):
+    from openpyxl import Workbook,load_workbook
+    from backend.app.pipeline.stages.report.generate_excel_report import build_project_sheet
+    doc,entry,md=case
+    entry['decision']['approved_fields']['solution']+=' Проверить применимый расчёт по существующей ссылке КМ8.'
+    out,receipts=apply_review_admissions(doc,[entry],md)
+    assert receipts[0]['status']=='applied'
+    wb=Workbook();build_project_sheet(wb,{'project_id':'AR','sheet_name':'AR','findings_json':out})
+    path=tmp_path/'report.xlsx';wb.save(path);wb.close()
+    wb=load_workbook(path,read_only=True)
+    rows=list(wb['AR'].values)
+    positions=[i for i,row in enumerate(rows) if entry['response']['finding_id'] in row]
+    assert len(positions)==1
+    heading=next(i for i,row in enumerate(rows) if 'Вопросы и уточнения' in row)
+    assert positions[0]>heading
+    assert entry['decision']['approved_fields']['solution'] in rows[positions[0]]
+    assert any('untouched' in row for row in rows)
+    wb.close()
