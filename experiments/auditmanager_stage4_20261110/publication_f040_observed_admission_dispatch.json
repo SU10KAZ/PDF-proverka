@@ -1,0 +1,17 @@
+{
+  "preparation_path": "/tmp/auditmanager_publication_f040_admission_observed_20261112/preparation.json",
+  "preparation_sha256": "415fb5e19cd7b2304e809d716a20cc97921e5606df73b91aba77b9f01f07e7c3",
+  "output_dir": "/tmp/auditmanager_publication_f040_admission_observed_20261112",
+  "pid": 1109503,
+  "exec_session_id": 31694,
+  "model": "codex/gpt-6-astra",
+  "purpose": "Repeat same proposed deferral with image-bound source-only observations supplied as untrusted context.",
+  "request_chars": 171929,
+  "image_count": 1,
+  "coordinator_decision_or_engineer_answers_in_request": false,
+  "tests": {
+    "command": "python -m pytest tests/test_graphic_observation_handoff.py tests/test_source_review_final_check.py tests/test_source_review_admission.py -q",
+    "passed": 63
+  },
+  "production_acceptance": false
+}
