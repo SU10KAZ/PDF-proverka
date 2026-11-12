@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "scope": "Last five ITPtarget observations: two missing questions and three negative theses not repeated",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_id": "ITP58_GVS_branch_flows:f563ab4150d33b1acce3",
+      "route": "question",
+      "coverage": "absent",
+      "reason": "Section6-6supply8.71+4.63=13.34versusPZ12.13; return5.89+3.13=9.02versusK15duty4.31insection4-4/PZ. No final relationship question. F031unrounded circulation arithmetic is a different check. Reconcile operating modes; pump inadequacy is not established.",
+      "quotes": [
+        {
+          "line": 365,
+          "quote": "| K15 | HELIX V 603-1/16/E/KS/400-50-N | Насос циркуляционный системы ГВС 1-ая зона, Q=4,31 м³/ч, H=18,57 м.в.см., 3x380В, N=0,55 кВт | 2 | 49,5 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |"
+        },
+        {
+          "line": 1076,
+          "quote": "| 15 | Циркуляционный насос системы в ГВС 1-зоны, 3~, 0,55кВт, 1.3А, G=4,31 м³/ч, H=18,57 м | HELIX V 603-1/16/E/KS/400-50 N | 2468072 | ООО «ВИЛО РУС» | шт. | 2 | 29 | 1 рабочий, 1 резервный |"
+        },
+        {
+          "line": 2093,
+          "quote": "GГВС² = (QГВС1 × 1000)/(65 - t') = (0,728 × 1000)/(65 - 5) = 12,13 м³ / ч;"
+        },
+        {
+          "line": 2419,
+          "quote": "(1раб, 1рез.) с характеристиками: G=4,31 м³/ч, H=18,57 м.вд.см, N=0,55 кВт. Фирмы «ВИЛО»"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP58_GVS_branch_flows:998f8c69c4c89da05aa9",
+      "route": "negative",
+      "coverage": "absent",
+      "reason": "Section6-6explicitly labelsT411/T412circulation, so historical ambiguity thesis is refuted in that view. Not repeated in output; no filter-execution credit.",
+      "quotes": []
+    },
+    {
+      "target_id": "ITP58_GVS_branch_flows:092234a89fe9515c377c",
+      "route": "negative",
+      "coverage": "absent",
+      "reason": "AuthoritativeTEXTprints4.29(м/ч), notт/ч. F031usesm3/hinits calculation and does not repeat the false claim about source tonnes/hour. Preserve source notation literally; not an OCR correction.",
+      "quotes": [
+        {
+          "line": 2099,
+          "quote": "Gцирк макс = 4,29 (м / ч);"
+        },
+        {
+          "line": 2414,
+          "quote": "Gгвс мин = Gцирк = (1,3 × 0,033 × 1000)/10 = 4,29 (м/ч);"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP72_wall_and_velocity:5acf5de70b5d5444dfb8",
+      "route": "negative",
+      "coverage": "absent",
+      "reason": "Schematic GVSbranchT311/T32labels76x3.0, whileT312is57x3.5. Direct counterexample refutes all57/76/89walls3.5blanket claim. Not repeated in final. Does not establish heating-pipe identity or all wall dimensions.",
+      "quotes": []
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:cae0fec45b0437f86c1a",
+      "route": "question",
+      "coverage": "absent",
+      "reason": "Sections40-40/15-15/16-16labelK1heatingI100%Q1.711. Explication/PZ1.707with15%reserve and selection1.70775. No final question retains this label discrepancy. Other exchanger-label findings do not coverK1. Clarify meaning/precision; no automatic new flow or sizing conclusion.",
+      "quotes": [
+        {
+          "line": 351,
+          "quote": "| K1 | \"РИДАН\" | Теплообменник пластинчатый системы отопления 1-ая зона, Q=1,707 Гкал/ч | 2 | 650,88 | с 15 % запасом по нагрузке |"
+        },
+        {
+          "line": 2328,
+          "quote": "мощность 1,707 (с учетом запаса 15%) ГКалл/ч,"
+        },
+        {
+          "line": 2849,
+          "quote": "| Тепловая нагрузка, ккал/ч |  | 1707750 |  |"
+        }
+      ]
+    }
+  ],
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7527066e645e47bb917a9fc17fb82ccc.png",
+      "sha256": "f33722b2cc7117e431c01cf6c19c274f7b07a0a4042a6ce7cea7349ab1db9e49",
+      "method": "Direct raster inspection by parent; detail crop where recorded",
+      "crop_box_pixels": [
+        350,
+        70,
+        1400,
+        340
+      ],
+      "observation": "Section6-6T311/T312supply8.71/4.63andT411/T412circulation5.89/3.13; labels explicit."
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d4b7a506870a4c3dbe5a3d19eb26dfdc.png",
+      "sha256": "53d497514b8c168918c9e9fd00680a2497bf1297f7672b747996c56e8aedba33",
+      "method": "Direct raster inspection by parent; detail crop where recorded",
+      "crop_box_pixels": null,
+      "observation": "Section4-4K15G4.31,H18.57."
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png",
+      "sha256": "7354443aa6ecdf7232110223a7b30b0dd25276027e3006175c728eb1fdc35edd",
+      "method": "Direct raster inspection by parent; detail crop where recorded",
+      "crop_box_pixels": null,
+      "observation": "Sections40-40/15-15/16-16position1heatingI100%Q1.711."
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png",
+      "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2",
+      "method": "Direct raster inspection by parent; detail crop where recorded",
+      "crop_box_pixels": [
+        650,
+        130,
+        1250,
+        680
+      ],
+      "observation": "T311/T32diameter76wall3.0;T312diameter57wall3.5."
+    }
+  ],
+  "output_review": "All74rows bounded-reviewed; focused visible-field search and rereadF031. NoT311/T312/T411/T412relationship or1.711labelquestion. No ambiguous-return-label or blanket-wall claim.",
+  "filter_effectiveness_proven": false,
+  "cause_attribution": "Final observations only, not stage-level suppression or discovery trace.",
+  "entire_output_precision_reviewed": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0
+}

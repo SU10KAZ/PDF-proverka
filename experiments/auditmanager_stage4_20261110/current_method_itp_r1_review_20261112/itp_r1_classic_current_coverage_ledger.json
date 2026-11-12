@@ -1217,30 +1217,45 @@
     },
     {
       "target_id": "ITP58_GVS_branch_flows:f563ab4150d33b1acce3",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_graphic_controls_review.json",
+          "sha256": "e429fc985a01d7ebd32f95372e4c2ef82087d479461a3d1c8f7000311166f99d"
+        }
+      ],
+      "reason": "Section6-6supply8.71+4.63=13.34versusPZ12.13; return5.89+3.13=9.02versusK15duty4.31insection4-4/PZ. No final relationship question. F031unrounded circulation arithmetic is a different check. Reconcile operating modes; pump inadequacy is not established.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP58_GVS_branch_flows:998f8c69c4c89da05aa9",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_graphic_controls_review.json",
+          "sha256": "e429fc985a01d7ebd32f95372e4c2ef82087d479461a3d1c8f7000311166f99d"
+        }
+      ],
+      "reason": "Section6-6explicitly labelsT411/T412circulation, so historical ambiguity thesis is refuted in that view. Not repeated in output; no filter-execution credit.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP58_GVS_branch_flows:092234a89fe9515c377c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_graphic_controls_review.json",
+          "sha256": "e429fc985a01d7ebd32f95372e4c2ef82087d479461a3d1c8f7000311166f99d"
+        }
+      ],
+      "reason": "AuthoritativeTEXTprints4.29(м/ч), notт/ч. F031usesm3/hinits calculation and does not repeat the false claim about source tonnes/hour. Preserve source notation literally; not an OCR correction.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP68_grooved_scope:98fe6084bffb8305b8ed",
@@ -1272,12 +1287,17 @@
     },
     {
       "target_id": "ITP72_wall_and_velocity:5acf5de70b5d5444dfb8",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_graphic_controls_review.json",
+          "sha256": "e429fc985a01d7ebd32f95372e4c2ef82087d479461a3d1c8f7000311166f99d"
+        }
+      ],
+      "reason": "Schematic GVSbranchT311/T32labels76x3.0, whileT312is57x3.5. Direct counterexample refutes all57/76/89walls3.5blanket claim. Not repeated in final. Does not establish heating-pipe identity or all wall dimensions.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F002_pump_pressure_selection:63286b8abd3e157f4c25",
@@ -1652,12 +1672,17 @@
     },
     {
       "target_id": "ITP_heat_exchanger_labels:cae0fec45b0437f86c1a",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_graphic_controls_review.json",
+          "sha256": "e429fc985a01d7ebd32f95372e4c2ef82087d479461a3d1c8f7000311166f99d"
+        }
+      ],
+      "reason": "Sections40-40/15-15/16-16labelK1heatingI100%Q1.711. Explication/PZ1.707with15%reserve and selection1.70775. No final question retains this label discrepancy. Other exchanger-label findings do not coverK1. Clarify meaning/precision; no automatic new flow or sizing conclusion.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F001_heat_exchanger_pressure:composite:1",
