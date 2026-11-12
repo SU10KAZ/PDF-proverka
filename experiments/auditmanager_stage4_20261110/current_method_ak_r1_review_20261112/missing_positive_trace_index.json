@@ -7,8 +7,8 @@
   },
   "summary": {
     "missing_or_partial_positive_atoms": 22,
-    "bounded_stage_evidence_available": 14,
-    "cause_not_established": 8
+    "bounded_stage_evidence_available": 15,
+    "cause_not_established": 7
   },
   "rows": [
     {
@@ -255,9 +255,17 @@
       "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
       "coverage": "absent",
       "coverage_reason_snapshot": "Не сохранён конфликт обслуживаемых помещений П4.1.1 между общими указаниями и листом10. Замечание к сигналам электронагревателя той же системы не покрывает назначение помещений. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Проследить связь назначения П4.1.1 в общих данных и на листе10 отдельно от уже найденных сигналов нагревателя."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_served_rooms.json",
+          "sha256": "a27d1a6f2905a74abd8fa0e3fcde95fb2c23bf8c1607ea810bb48d9827ce67a2",
+          "pointer": "",
+          "observed_stage": "initial_graphic_context_truncated_before_target_object",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     },
     {
       "target_id": "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",

@@ -1,0 +1,342 @@
+{
+  "status": "bounded_served_rooms_context_truncation_trace",
+  "run": "ak_r1_classic_current",
+  "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+  "stage": "initial_graphic_context_truncated_before_target_object",
+  "established": [
+    "Полный авторитетный MD содержит назначение П4.1.1 для блока кладовых, тележек, велосипедной, ПУИ и ЛХ.",
+    "В обоих графических запросах листа10 фрагмент общих данных заканчивается на «- при» после строки П4.1.4, непосредственно перед требуемой строкой П4.1.1.",
+    "В контексте есть назначение Пкр4.1 и соседних систем, но это не заменяет отсутствующее назначение П4.1.1.",
+    "Результат листа10 содержит кандидаты о диапазонах PDS и сигнале нагревателя, а не сопоставление обслуживаемых помещений."
+  ],
+  "recommendation": "При поиске по системе извлекать целую строку её назначения с источником и соседним заголовком. Контекстный лимит не должен оставлять только начало длинного блока; при обрезании целевой записи фиксировать неполноту и добирать именно её.",
+  "limits": [
+    "Это подтверждённая потеря нужной строки в двух первичных пакетах, а не доказанная единственная причина пропуска во всём аудите.",
+    "Текстовый этап имел более широкий исходник; дальнейшие возможности восстановления требуют отдельной оценки.",
+    "Не доказаны неверное воздухораспределение, подмена схемы или ошибка монтажа.",
+    "Общий контекст с соседними системами не позволяет автоматически выбирать правильную подпись."
+  ],
+  "control_pair": {
+    "preserve": "Несогласованность назначения одного адресного объекта П4.1.1 между общими указаниями и схемой.",
+    "do_not_assert": "Совпавшие помещения превращают П4.1.1 и Пкр4.1 в одну систему либо доказывают физическую ошибку вентиляции.",
+    "independent_engineer_validated_pair": false
+  },
+  "evidence": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "quote": "- приточная система П4.1.1, Блок кладовых, хран.тележек, велосипедная, ПУИ, ЛХ.;"
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/requests/AK/1794461022025665895/request.json",
+      "sha256": "ce24f0e290bc886656c88c01861c25a3b01cfb0f83d1b01998becd76d518b109",
+      "message_index": 1,
+      "excerpt": "Для корпуса 4 подземная часть автоматизации подлежат: - вытяжная система В4.1.1, обслуживающая блок кладовых, хран. тележек, велосипедная, ПУИ; - вытяжная система В4.1.2, помещение ЭОМ, помещение ревизий; - вытяжная система В4.1.4, Электрощитовая ГРЩ блока 13В; - вытяжная система Вм4.1, Мусоросборная камера, хранение мусора; - вытяжная система Вм4.1.1 Мусоросборная камера. Пристройка 4.1; - приточная система Пкр4.1, Пом.ревизий, коридор, ЛХ. 2-18эт. Надземная часть; - приточная система П4.1.3, Венткамеры. ; - приточная система П4.1.4, Электрощитовая ГРЩ блока 13В; - при\n\n",
+      "image_hashes": {
+        "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e3e39f8820d7474caa10ab626d2a2c91.png": "5c9cdf1f1635d706791f30152851a62ac7c2e0757c65ed25561084084bba4bc0"
+      },
+      "check": "Targeted П4.1.1 room sentence absent; common-data excerpt ends mid-word before it."
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/requests/AK/1794461022028619714/request.json",
+      "sha256": "ce24f0e290bc886656c88c01861c25a3b01cfb0f83d1b01998becd76d518b109",
+      "message_index": 1,
+      "excerpt": "Для корпуса 4 подземная часть автоматизации подлежат: - вытяжная система В4.1.1, обслуживающая блок кладовых, хран. тележек, велосипедная, ПУИ; - вытяжная система В4.1.2, помещение ЭОМ, помещение ревизий; - вытяжная система В4.1.4, Электрощитовая ГРЩ блока 13В; - вытяжная система Вм4.1, Мусоросборная камера, хранение мусора; - вытяжная система Вм4.1.1 Мусоросборная камера. Пристройка 4.1; - приточная система Пкр4.1, Пом.ревизий, коридор, ЛХ. 2-18эт. Надземная часть; - приточная система П4.1.3, Венткамеры. ; - приточная система П4.1.4, Электрощитовая ГРЩ блока 13В; - при\n\n",
+      "image_hashes": {
+        "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e3e39f8820d7474caa10ab626d2a2c91.png": "5c9cdf1f1635d706791f30152851a62ac7c2e0757c65ed25561084084bba4bc0"
+      },
+      "check": "Targeted П4.1.1 room sentence absent; common-data excerpt ends mid-word before it."
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c",
+      "pointer": "/block_analyses/5",
+      "value": {
+        "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+        "page": 14,
+        "sheet": "Лист 10",
+        "label": "",
+        "sheet_type": null,
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "not_enriched": false,
+        "coverage_status": "ready",
+        "analysis_status": "analyzed",
+        "context_source": "raw_vector",
+        "detectors_ok": [
+          "codex/gpt-6-astra",
+          "codex/gpt-6-astra"
+        ],
+        "detectors_failed": [],
+        "summary": "",
+        "key_values_read": [],
+        "evidence_text_refs": [],
+        "findings": [
+          {
+            "id": "G-008",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "Диапазоны и количества реле перепада давления для шкафа ШАУВ-4-К4ПЧ противоречат друг другу. На функциональной схеме предусмотрены два прибора 20–200 Па и два 50–500 Па, в перечне элементов — соответственно один и три, в спецификации — три и один.\n\nРекомендация: Согласовать диапазоны каждого из приборов PDS1–PDS4 и их количества на функциональной схеме, в перечне элементов листа 10 и в спецификации шкафа.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+            "value_found": "PDS2: 20–200 Па; PDS1,PDS3,PDS4: 50–500 Па; позиции 4.4 и 4.5 спецификации: 20–200 Па — 3 шт., 50–500 Па — 1 шт.",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-008",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "raw_vector"
+                }
+              ],
+              "context_source": "raw_vector"
+            },
+            "comparison_ref": "codex:003",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение диапазонов PDS1–PDS4: для 20–200/50–500 Па схема задаёт 2/2 прибора, перечень элементов — 1/3, спецификация — 3/1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-009",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "Для шкафа ШАУВ-4-К4ПЧ противоречат друг другу диапазоны и количества датчиков перепада давления. Таблица сигналов на листе 10 предусматривает два датчика 50–500 Па и два 20–200 Па; перечень элементов этого листа — три 50–500 Па и один 20–200 Па; спецификация, лист 2, позиции 4.4–4.5 — один 50–500 Па и три 20–200 Па.\n\nРекомендация: Согласовать диапазоны PDS1–PDS4 в таблице сигналов, перечне элементов и спецификации, указав одинаковые количества по каждому диапазону.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+            "value_found": "PDS2 — 20-200 Па — 1; PDS1,PDS3, PDS4 — 50-500 Па — 3; поз. 4.4 — 20-200 Па — 3; поз. 4.5 — 50-500 Па — 1",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-009",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "raw_vector"
+                }
+              ],
+              "context_source": "raw_vector"
+            },
+            "comparison_ref": "codex:002",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение диапазонов PDS1–PDS4: для 20–200/50–500 Па схема задаёт 2/2 прибора, перечень элементов — 1/3, спецификация — 3/1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-010",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "На функциональной схеме, лист 10, команда «Электр. воздухонагреватель пуск/стоп» системы П4.1.1 отнесена к дискретным входам DI. Для этой команды в столбце 6 отсутствует обозначение дискретного выхода DO, что противоречит назначению сигнала управления.\n\nРекомендация: Обозначить команду управления электронагревателем как выход DO и скорректировать количество входов и выходов шкафа.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+            "value_found": "Электр. воздухонагреватель пуск/стоп",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-010",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "raw_vector"
+                }
+              ],
+              "context_source": "raw_vector"
+            },
+            "comparison_ref": "codex:001",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на назначение команды 6 «Электр. воздухонагреватель пуск/стоп» системы П4.1.1 на DI при отсутствии подключения DO.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-011",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "Сигнал 6 «Электр. воздухонагреватель пуск/стоп» системы П4.1.1 назначен на дискретный вход DI. Указанная команда управления требует выхода, но в строке DO для этого сигнала подключение отсутствует.\n\nРекомендация: Согласовать назначение сигнала 6 с типом канала управления электронагревателем и скорректировать таблицу и количество входов/выходов.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+            "value_found": "6 — «Электр. воздухонагреватель пуск/стоп»; DI",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-011",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "raw_vector"
+                }
+              ],
+              "context_source": "raw_vector"
+            },
+            "comparison_ref": "codex:004",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на назначение команды 6 «Электр. воздухонагреватель пуск/стоп» системы П4.1.1 на DI при отсутствии подключения DO.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          }
+        ],
+        "evidence_gate": {
+          "schema_version": 1,
+          "candidates": 4,
+          "published": 4,
+          "deferred": 0,
+          "min_confidence": 0.8,
+          "max_published_per_block": null,
+          "reason_counts": {}
+        },
+        "deferred_findings": [],
+        "document_retrieval": {
+          "scope": "all_document_vector_text_other_pages",
+          "query_terms": [
+            "П4.1.1",
+            "Пм4.1.1",
+            "автоматизации",
+            "систем",
+            "вентиляции",
+            "для",
+            "помещений",
+            "Пом.ревизий",
+            "коридор",
+            "Мусоросборной",
+            "камеры",
+            "Приведены",
+            "принципиальные",
+            "схемы",
+            "управления",
+            "перечнем",
+            "приборов",
+            "сигналов"
+          ],
+          "candidate_hits": 114,
+          "selected_hits": 5,
+          "selected_pages": [
+            5,
+            6,
+            7,
+            8,
+            95
+          ],
+          "status": "hits"
+        },
+        "dual_review": {
+          "schema_version": 1,
+          "status": "ok",
+          "reviewer_model": "codex/gpt-6-astra",
+          "relationships": [
+            {
+              "left_ref": "codex:001",
+              "right_ref": "codex:004",
+              "relation": "match",
+              "extends": "none",
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на назначение команды 6 «Электр. воздухонагреватель пуск/стоп» системы П4.1.1 на DI при отсутствии подключения DO."
+            },
+            {
+              "left_ref": "codex:002",
+              "right_ref": "codex:003",
+              "relation": "match",
+              "extends": "none",
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение диапазонов PDS1–PDS4: для 20–200/50–500 Па схема задаёт 2/2 прибора, перечень элементов — 1/3, спецификация — 3/1."
+            }
+          ],
+          "unmatched_refs": [],
+          "counts": {
+            "matches": 2,
+            "extensions": 0,
+            "new": 0,
+            "disputed": 0,
+            "gap_findings": 0
+          },
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "comparison_models": [
+            "codex/gpt-6-astra::leg:1",
+            "codex/gpt-6-astra::leg:2"
+          ]
+        }
+      }
+    }
+  ],
+  "runtime_changed": false,
+  "production_changed": false,
+  "frozen_evaluator_changed": false,
+  "engineer_decision": null
+}
