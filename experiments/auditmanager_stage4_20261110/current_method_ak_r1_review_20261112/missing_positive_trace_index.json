@@ -7,8 +7,8 @@
   },
   "summary": {
     "missing_or_partial_positive_atoms": 22,
-    "bounded_stage_evidence_available": 16,
-    "cause_not_established": 6
+    "bounded_stage_evidence_available": 17,
+    "cause_not_established": 5
   },
   "rows": [
     {
@@ -303,9 +303,17 @@
       "target_id": "AK_F053_local_cable_balance:3ea87f3768012a815077",
       "coverage": "absent",
       "coverage_reason_snapshot": "Нет локального баланса пяти силовых линий листа25:165м против155м. Повторные строки КЖ в F-017/018 и другие локальные балансы имеют иные объект, состав и ведомость. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Проверить охват пяти силовых участков листа25 и выполнение локальной суммы 165/155, отдельно от повторов КЖ."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_local_cable_balance.json",
+          "sha256": "8917b03e18dbd5e36cd3e054959baf72f1cadf3066cdf35e0689eaa99c696546",
+          "pointer": "",
+          "observed_stage": "local_edge_sum_not_established_by_global_table_sum",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     },
     {
       "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
