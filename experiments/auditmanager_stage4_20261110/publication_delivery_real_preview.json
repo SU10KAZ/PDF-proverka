@@ -1,0 +1,30 @@
+{
+  "status": "two_real_projection_structural_export_previews_passed",
+  "cases": [
+    {
+      "finding_id": "F-071",
+      "projection_sha256": "a4a9b751ea0dfd88579467f38c8b8b7268533d5168b9e0be1b5450129b89b2d0",
+      "section": "technical_findings",
+      "pending_parts_preserved": 1,
+      "other_findings_unchanged": 84,
+      "exported_once": true,
+      "missing_part_rejected": "missing_delivery_decisions",
+      "preview_path": "/tmp/auditmanager_publication_delivery_preview_20261112/F-071.xlsx",
+      "preview_sha256": "dfa3be7b2c59ef877f19473545f6e363c077dfa86b5a6f2bc658d74955fa8b86"
+    },
+    {
+      "finding_id": "F-083",
+      "projection_sha256": "b23593893d4d1c3e348db71b8cebef4e75ef61feed38253a04e2b0a17b139bd1",
+      "section": "questions",
+      "pending_parts_preserved": 0,
+      "other_findings_unchanged": 84,
+      "exported_once": true,
+      "missing_part_rejected": "missing_delivery_decisions",
+      "preview_path": "/tmp/auditmanager_publication_delivery_preview_20261112/F-083.xlsx",
+      "preview_sha256": "93e5859499269266d5343a0a1e496095dffd0f2b681e3428b28d7b31679dc291"
+    }
+  ],
+  "boundary": "Projection wording copied into isolated previews, not approved final wording. Does not replace source review, final release check or semantic grouping. No model calls.",
+  "stage4_complete": false,
+  "production_acceptance": false
+}

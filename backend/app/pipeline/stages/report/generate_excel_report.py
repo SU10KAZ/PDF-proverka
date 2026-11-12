@@ -672,6 +672,9 @@ def build_project_sheet(wb, pd_entry: dict):
     project_id = pd_entry["project_id"]
     pinfo      = pd_entry.get("project_info", {})
     data       = pd_entry.get("findings_json", {})
+    if "publication_delivery_checks" in data:
+        from backend.app.pipeline.stages.findings_merge.publication_delivery import check_document_publication_delivery
+        check_document_publication_delivery(data)
     findings   = data.get("findings", [])
     meta       = data.get("meta", {})
     sheet_name = pd_entry["sheet_name"]

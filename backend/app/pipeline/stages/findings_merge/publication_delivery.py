@@ -52,6 +52,10 @@ def check_publication_delivery(projection, findings, decisions):
                 used.add(fid)
                 if target.get('finding_sha256') != fingerprint(rows[fid]):
                     raise InvalidPublication('final_finding_changed')
+                actual_route = ('questions' if rows[fid].get('report_section') == 'questions'
+                                else 'technical_findings')
+                if actual_route != route:
+                    raise InvalidPublication('delivery_section_changed_requires_review')
                 quotes = target.get('field_quotes')
                 if not isinstance(quotes, dict) or not quotes:
                     raise InvalidPublication('missing_delivery_wording')
@@ -75,3 +79,23 @@ def check_publication_delivery(projection, findings, decisions):
             'pending_parts': pending, 'archive': deepcopy(projection['archive']),
             'accounting_complete': True, 'semantic_verified': False,
             'production_acceptance': False}
+
+
+def check_document_publication_delivery(document):
+    """Validate opt-in records against the exact rows about to be exported."""
+    records = document.get('publication_delivery_checks', [])
+    if not isinstance(records, list):
+        raise InvalidPublication('invalid_delivery_records')
+    seen, receipts = set(), []
+    for record in records:
+        if not isinstance(record, dict) or set(record) != {'projection', 'projection_sha256', 'decisions'}:
+            raise InvalidPublication('invalid_delivery_record')
+        projection = record['projection']
+        if fingerprint(projection) != record['projection_sha256']:
+            raise InvalidPublication('delivery_projection_changed')
+        parent = projection['archive']['id']
+        if parent in seen:
+            raise InvalidPublication('duplicate_parent_delivery_record')
+        seen.add(parent)
+        receipts.append(check_publication_delivery(projection, document['findings'], record['decisions']))
+    return receipts

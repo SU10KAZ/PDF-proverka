@@ -42,3 +42,27 @@ def test_loss_stale_report_and_invented_delivery_are_rejected(mutation, error):
     mutation(*args)
     with pytest.raises(InvalidPublication, match=error):
         check_publication_delivery(*args)
+
+
+def test_question_cannot_silently_become_technical():
+    projection, findings, decisions = example()
+    projection['questions'] = projection.pop('technical_findings')
+    projection['technical_findings'] = []
+    with pytest.raises(InvalidPublication, match='delivery_section_changed'):
+        check_publication_delivery(projection, findings, decisions)
+
+
+def test_excel_export_checks_bound_delivery_before_creating_sheet():
+    from openpyxl import Workbook
+    from backend.app.pipeline.stages.report.generate_excel_report import build_project_sheet
+    projection, findings, decisions = example()
+    data = {'findings': findings, 'publication_delivery_checks': [
+        {'projection': projection, 'projection_sha256': fingerprint(projection), 'decisions': decisions}]}
+    wb = Workbook()
+    build_project_sheet(wb, {'project_id': 'control', 'sheet_name': 'valid', 'findings_json': data})
+    assert 'valid' in wb.sheetnames
+    data['publication_delivery_checks'][0]['decisions'].pop()
+    with pytest.raises(InvalidPublication, match='missing_delivery_decisions'):
+        build_project_sheet(wb, {'project_id': 'control', 'sheet_name': 'invalid', 'findings_json': data})
+    assert 'invalid' not in wb.sheetnames
+    wb.close()
