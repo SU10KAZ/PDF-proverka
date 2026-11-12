@@ -1,0 +1,11 @@
+{
+  "preparation_path": "/tmp/auditmanager_heater_other_sheet_20261112/preparation.json",
+  "preparation_sha256": "3eaf2ac943b3e930701b18491e24ebf8e6f36c64866d48970f6d37cfe07da5b9",
+  "output_dir": "/tmp/auditmanager_heater_other_sheet_20261112_run",
+  "exec_session_id": 23931,
+  "model": "codex/gpt-6-astra",
+  "purpose": "Unchanged source-only symbol and connectivity instructions on another sheet after F060 equivalence failure.",
+  "candidate_or_expected_answer_supplied": false,
+  "selection_is_DEV_not_blind": true,
+  "production_acceptance": false
+}

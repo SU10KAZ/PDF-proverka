@@ -1,0 +1,26 @@
+{
+  "finding_id": "F-060",
+  "status": "unsupported_symbol_equivalence_repeated",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_060/publication_projection.json",
+  "projection_sha256": "81be55affea37981d048299a22628c90caf20630d6354ccc8942c596d7ec3d84",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_polarity_and_symbol_review_20261112.json",
+  "source_review_sha256": "98bc26641d8a59e57a1d42f9cf392cfc3452ae061559407d9131073831196fb2",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+      "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Водяное подключение Пкр6.1 к M4/Y3 и 85/60 °C подтверждено.",
+    "Авторитетный TEXT легенды действительно содержит название электрической секции, но это не доказывает тождество рабочего символа образцу.",
+    "В рабочем символе тонкая линия связана с TS1; электрический образец имеет отдельную молнию. Модель снова утверждает соответствие внутренних элементов без разрешения этого различия.",
+    "Ограничения по выбору оборудования и нормативам сохранены. Однако техническое противоречие легенде основано на неподтверждённом сопоставлении; автоматический выпуск не допускается.",
+    "Вопрос о полноте легенды может быть полезен отдельно; не подменять им исходное основание и не наследовать инженерное решение."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
