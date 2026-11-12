@@ -7,8 +7,8 @@
   },
   "summary": {
     "missing_or_partial_positive_atoms": 22,
-    "bounded_stage_evidence_available": 20,
-    "cause_not_established": 2
+    "bounded_stage_evidence_available": 22,
+    "cause_not_established": 0
   },
   "rows": [
     {
@@ -79,9 +79,17 @@
       "target_id": "AK14:65ea2c2649999f640c83",
       "coverage": "partial",
       "coverage_reason_snapshot": "Из пяти подтверждённых шкафов сохранён ШАУВ-3-К5ПЧ:23/24 у PDS4/PDS5 и29–31 у M1/M2. Не сохранены ШАУВ-4-К4ПЧ, ШАУВ-1-К4АС, ШАУВ-4-К5ПЧ и ШАУВ-1-К6АС. Неоднозначность контактов БД-ТЗ1 — другой объект.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Разобрать четыре несохранённых шкафа по отдельности; не переносить результат ШАУВ-3-К5ПЧ на одинаковые номера других шкафов."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_terminal_scope.json",
+          "sha256": "4f72e7ea5edd4ffe5703f2952d81a2c5e62a4bcafb078dc4b4a7cdb1e9642a51",
+          "pointer": "/traces/0",
+          "observed_stage": "uneven_primary_detection_across_five_addressed_cabinets",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     },
     {
       "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
@@ -343,9 +351,17 @@
       "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
       "coverage": "absent",
       "coverage_reason_snapshot": "Нет вопроса о повторах29/30 у M1/M2 в ШАУВ-4-К4ПЧ. F-063 о29–31 в ШАУВ-3-К5ПЧ относится к другому шкафу; общий номер клеммы не является совпадением объекта. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Проследить адресные M1/M2 и29/30 ШАУВ-4-К4ПЧ; различить пропуск объекта и подавление вопроса из-за неустановленной физической общности."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_terminal_scope.json",
+          "sha256": "4f72e7ea5edd4ffe5703f2952d81a2c5e62a4bcafb078dc4b4a7cdb1e9642a51",
+          "pointer": "/traces/1",
+          "observed_stage": "empty_primary_result_for_specific_terminal_question",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     }
   ],
   "limits": [

@@ -1,0 +1,1168 @@
+{
+  "status": "bounded_two_terminal_coverage_traces",
+  "run": "ak_r1_classic_current",
+  "traces": [
+    {
+      "target_id": "AK14:65ea2c2649999f640c83",
+      "stage": "uneven_primary_detection_across_five_addressed_cabinets",
+      "established": "Из пяти шкафов первичный результат содержит клеммную тему только для ШАУВ-3-К5ПЧ. Она сохранена в F-062/F-063. Для остальных четырёх не обнаружена среди первичных кандидатов; найденные в двух из них другие конфликты не покрывают клеммные адреса.",
+      "address_rows": [
+        {
+          "cabinet": "ШАУВ-4-К4ПЧ",
+          "sheet": "Лист 28",
+          "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+          "candidate_ids": [],
+          "terminal_scope": "not_in_primary_candidates",
+          "other_scope": "No findings"
+        },
+        {
+          "cabinet": "ШАУВ-1-К4АС",
+          "sheet": "Лист 29",
+          "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+          "candidate_ids": [],
+          "terminal_scope": "not_in_primary_candidates",
+          "other_scope": "No findings"
+        },
+        {
+          "cabinet": "ШАУВ-3-К5ПЧ",
+          "sheet": "Лист 32",
+          "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+          "candidate_ids": [
+            "G-069",
+            "G-070"
+          ],
+          "terminal_scope": "found_primary_and_retained",
+          "other_scope": "Terminal numbering"
+        },
+        {
+          "cabinet": "ШАУВ-4-К5ПЧ",
+          "sheet": "Лист 33",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "candidate_ids": [
+            "G-071",
+            "G-072"
+          ],
+          "terminal_scope": "not_in_primary_candidates",
+          "other_scope": "Equipment identity or system assignment; not terminal addresses"
+        },
+        {
+          "cabinet": "ШАУВ-1-К6АС",
+          "sheet": "Лист 40",
+          "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+          "candidate_ids": [
+            "G-084",
+            "G-085"
+          ],
+          "terminal_scope": "not_in_primary_candidates",
+          "other_scope": "Equipment identity or system assignment; not terminal addresses"
+        }
+      ],
+      "recommendation": "Проверять полный адрес клеммы: шкаф, группа/клеммник, номер и отдельная цепь. Учёт выполнения вести по каждому шкафу; не считать системную тему полностью сохранённой по одному примеру. Сохранить заводскую оговорку и отдельно оценивать потребность в вопросе, не заявляя физическое объединение цепей.",
+      "limits": [
+        "Причина ограничена наблюдаемым первичным охватом и финальной выдачей. Это не доказательство, что позднее восстановление невозможно или что все потери происходят на одном этапе.",
+        "Не установлены короткое замыкание, ошибочный монтаж или необходимость соединить/разъединить цепи.",
+        "Повторы PE/N и одинаковые номера в явно разных XT не объявляются дефектами автоматически.",
+        "Внешние заводские схемы и новые инженерные решения не получены.",
+        "Результат уже сохранённого шкафа не переносится на остальные по сходству номеров."
+      ]
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
+      "stage": "empty_primary_result_for_specific_terminal_question",
+      "established": "Лист28 ШАУВ-4-К4ПЧ имеет пустой первичный список findings. Итоговые F-062/F-063 относятся к другому шкафу, ШАУВ-3-К5ПЧ. Повтор номеров29/30 сам по себе не даёт совпадения объектов.",
+      "address_rows": [
+        {
+          "cabinet": "ШАУВ-4-К4ПЧ",
+          "sheet": "Лист 28",
+          "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+          "candidate_ids": [],
+          "terminal_scope": "not_in_primary_candidates",
+          "other_scope": "No findings"
+        }
+      ],
+      "recommendation": "Проверять полный адрес клеммы: шкаф, группа/клеммник, номер и отдельная цепь. Учёт выполнения вести по каждому шкафу; не считать системную тему полностью сохранённой по одному примеру. Сохранить заводскую оговорку и отдельно оценивать потребность в вопросе, не заявляя физическое объединение цепей.",
+      "limits": [
+        "Причина ограничена наблюдаемым первичным охватом и финальной выдачей. Это не доказательство, что позднее восстановление невозможно или что все потери происходят на одном этапе.",
+        "Не установлены короткое замыкание, ошибочный монтаж или необходимость соединить/разъединить цепи.",
+        "Повторы PE/N и одинаковые номера в явно разных XT не объявляются дефектами автоматически.",
+        "Внешние заводские схемы и новые инженерные решения не получены.",
+        "Результат уже сохранённого шкафа не переносится на остальные по сходству номеров."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c",
+      "pointer": "/block_analyses/23",
+      "value": {
+        "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+        "page": 32,
+        "sheet": "Лист 28",
+        "label": "",
+        "sheet_type": null,
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "not_enriched": false,
+        "coverage_status": "ready",
+        "analysis_status": "analyzed",
+        "context_source": "structured_alia_scheme",
+        "detectors_ok": [
+          "codex/gpt-6-astra",
+          "codex/gpt-6-astra"
+        ],
+        "detectors_failed": [],
+        "summary": "",
+        "key_values_read": [],
+        "evidence_text_refs": [],
+        "findings": [],
+        "evidence_gate": {
+          "schema_version": 1,
+          "candidates": 0,
+          "published": 0,
+          "deferred": 0,
+          "min_confidence": 0.8,
+          "max_published_per_block": null,
+          "reason_counts": {}
+        },
+        "deferred_findings": [],
+        "document_retrieval": {
+          "scope": "all_document_vector_text_other_pages",
+          "query_terms": [
+            "ШАУВ-4-К4.ПЧ",
+            "Фрагмент",
+            "однолинейной",
+            "схемы",
+            "электрических",
+            "соединений",
+            "перечнем",
+            "датчиков",
+            "температуры",
+            "перепада",
+            "давления",
+            "исполнительных",
+            "механизмов",
+            "Включены",
+            "присоединительные",
+            "клеммы",
+            "шкафа",
+            "обозначения",
+            "кабельных",
+            "линий"
+          ],
+          "candidate_hits": 59,
+          "selected_hits": 6,
+          "selected_pages": [
+            5,
+            6,
+            7,
+            18,
+            25
+          ],
+          "status": "hits"
+        },
+        "dual_review": {
+          "schema_version": 1,
+          "status": "ok",
+          "reviewer_model": "codex/gpt-6-astra",
+          "relationships": [],
+          "unmatched_refs": [],
+          "counts": {
+            "matches": 0,
+            "extensions": 0,
+            "new": 0,
+            "disputed": 0,
+            "gap_findings": 0
+          },
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Оба списка замечаний пусты. Дополнительный поиск отключён.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "comparison_models": [
+            "codex/gpt-6-astra::leg:1",
+            "codex/gpt-6-astra::leg:2"
+          ]
+        }
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c",
+      "pointer": "/block_analyses/24",
+      "value": {
+        "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+        "page": 33,
+        "sheet": "Лист 29",
+        "label": "",
+        "sheet_type": null,
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "not_enriched": false,
+        "coverage_status": "ready",
+        "analysis_status": "analyzed",
+        "context_source": "structured_alia_scheme",
+        "detectors_ok": [
+          "codex/gpt-6-astra",
+          "codex/gpt-6-astra"
+        ],
+        "detectors_failed": [],
+        "summary": "",
+        "key_values_read": [],
+        "evidence_text_refs": [],
+        "findings": [],
+        "evidence_gate": {
+          "schema_version": 1,
+          "candidates": 0,
+          "published": 0,
+          "deferred": 0,
+          "min_confidence": 0.8,
+          "max_published_per_block": null,
+          "reason_counts": {}
+        },
+        "deferred_findings": [],
+        "document_retrieval": {
+          "scope": "all_document_vector_text_other_pages",
+          "query_terms": [
+            "ШАУВ-1-К4.АС.ПЧ",
+            "Фрагмент",
+            "электрической",
+            "схемы",
+            "подключения",
+            "датчиков",
+            "исполнительных",
+            "механизмов",
+            "контроллеров",
+            "Показаны",
+            "типы",
+            "кабелей",
+            "сечения",
+            "длины",
+            "линий",
+            "также",
+            "номера",
+            "клемм"
+          ],
+          "candidate_hits": 11,
+          "selected_hits": 5,
+          "selected_pages": [
+            8,
+            52,
+            53,
+            54,
+            55
+          ],
+          "status": "hits"
+        },
+        "dual_review": {
+          "schema_version": 1,
+          "status": "ok",
+          "reviewer_model": "codex/gpt-6-astra",
+          "relationships": [],
+          "unmatched_refs": [],
+          "counts": {
+            "matches": 0,
+            "extensions": 0,
+            "new": 0,
+            "disputed": 0,
+            "gap_findings": 0
+          },
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Оба списка замечаний пусты. Поиск новых проблем отключён: gap_search_enabled=false.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "comparison_models": [
+            "codex/gpt-6-astra::leg:1",
+            "codex/gpt-6-astra::leg:2"
+          ]
+        }
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c",
+      "pointer": "/block_analyses/27",
+      "value": {
+        "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+        "page": 36,
+        "sheet": "Лист 32",
+        "label": "",
+        "sheet_type": null,
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "not_enriched": false,
+        "coverage_status": "ready",
+        "analysis_status": "analyzed",
+        "context_source": "structured_alia_scheme",
+        "detectors_ok": [
+          "codex/gpt-6-astra",
+          "codex/gpt-6-astra"
+        ],
+        "detectors_failed": [],
+        "summary": "",
+        "key_values_read": [],
+        "evidence_text_refs": [],
+        "findings": [
+          {
+            "id": "G-069",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "На схеме внешних подключений ШАУВ-3-К5ПЧ, лист 32, для двух разных датчиков PDS4 и PDS5 указана одна пара клемм шкафа 23–24. Подключения отдельных сигналов перепада давления обозначены неоднозначно.\n\nРекомендация: Согласовать с заводом-изготовителем отдельные клеммы для PDS4 и PDS5 и исправить их обозначения на схеме.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_f784be4786274e8c84f32d874ed99969",
+            "value_found": "PDS4 — 23, 24; PDS5 — 23, 24",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-069",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:001",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на повторное назначение клемм 23–24 датчикам PDS4 и PDS5. Правое замечание дополнительно указывает повторение клемм 29–31 для электродвигателей М1 и М2.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-070",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "На схеме внешних подключений ШАУВ-3-К5ПЧ, лист 32, клеммы 23–24 повторно назначены для PDS4 и PDS5, а клеммы 29–31 — для электродвигателей М1 и М2. Раздельные подключения разных устройств обозначены одинаковыми номерами клемм без указания разных колодок, что делает монтажную схему неоднозначной.\n\nРекомендация: Согласовать с изготовителем и указать однозначные обозначения колодок и номера клемм для каждого подключения.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_f784be4786274e8c84f32d874ed99969",
+            "value_found": "PDS4: 23, 24; PDS5: 23, 24; М1: 29, 30, 31; М2: 29, 30, 31",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-070",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:002",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на повторное назначение клемм 23–24 датчикам PDS4 и PDS5. Правое замечание дополнительно указывает повторение клемм 29–31 для электродвигателей М1 и М2.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          }
+        ],
+        "evidence_gate": {
+          "schema_version": 1,
+          "candidates": 2,
+          "published": 2,
+          "deferred": 0,
+          "min_confidence": 0.8,
+          "max_published_per_block": null,
+          "reason_counts": {}
+        },
+        "deferred_findings": [],
+        "document_retrieval": {
+          "scope": "all_document_vector_text_other_pages",
+          "query_terms": [
+            "ШАУВ-3-К5ПЧ",
+            "Фрагмент",
+            "электрической",
+            "схемы",
+            "подключения",
+            "датчиков",
+            "температуры",
+            "перепада",
+            "давления",
+            "исполнительных",
+            "механизмов",
+            "клеммной",
+            "колодке",
+            "Показаны",
+            "типы",
+            "кабелей",
+            "сечения",
+            "длина",
+            "также",
+            "номера",
+            "клемм"
+          ],
+          "candidate_hits": 85,
+          "selected_hits": 5,
+          "selected_pages": [
+            5,
+            6,
+            12,
+            72,
+            97
+          ],
+          "status": "hits"
+        },
+        "dual_review": {
+          "schema_version": 1,
+          "status": "ok",
+          "reviewer_model": "codex/gpt-6-astra",
+          "relationships": [
+            {
+              "left_ref": "codex:001",
+              "right_ref": "codex:002",
+              "relation": "extension",
+              "extends": "right",
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на повторное назначение клемм 23–24 датчикам PDS4 и PDS5. Правое замечание дополнительно указывает повторение клемм 29–31 для электродвигателей М1 и М2."
+            }
+          ],
+          "unmatched_refs": [],
+          "counts": {
+            "matches": 0,
+            "extensions": 1,
+            "new": 0,
+            "disputed": 0,
+            "gap_findings": 0
+          },
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "comparison_models": [
+            "codex/gpt-6-astra::leg:1",
+            "codex/gpt-6-astra::leg:2"
+          ]
+        }
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c",
+      "pointer": "/block_analyses/28",
+      "value": {
+        "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+        "page": 37,
+        "sheet": "Лист 33",
+        "label": "",
+        "sheet_type": null,
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "not_enriched": false,
+        "coverage_status": "ready",
+        "analysis_status": "analyzed",
+        "context_source": "structured_alia_scheme",
+        "detectors_ok": [
+          "codex/gpt-6-astra",
+          "codex/gpt-6-astra"
+        ],
+        "detectors_failed": [],
+        "summary": "",
+        "key_values_read": [],
+        "evidence_text_refs": [],
+        "findings": [
+          {
+            "id": "G-071",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "На схеме внешних подключений шкафа ШАУВ-4-К5ПЧ, лист 33, обозначение Y7 присвоено приводу регулирующего клапана теплоносителя и приводу воздухозаборного клапана, а M2 — электродвигателю вентилятора и циркуляционного насоса. Повторение позиций делает идентификацию оборудования по этим обозначениям неоднозначной.\n\nРекомендация: Присвоить различным устройствам уникальные позиционные обозначения и согласовать их со связанными схемами.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_127bea47b93f4214ac6430c54b21517a",
+            "value_found": "Y7; Y7; M2; M2",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-071",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:002",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на повторное обозначение М2 у двигателя вентилятора и циркуляционного насоса. Правое дополнительно отмечает повторное обозначение Y7 у приводов регулирующего клапана теплоносителя и воздухозаборного клапана.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-072",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "На схеме внешних подключений шкафа ШАУВ-4-К5ПЧ, лист 33, обозначение М2 присвоено двум разным устройствам: электродвигателю вентилятора и электродвигателю циркуляционного насоса. Обозначение не позволяет однозначно идентифицировать подключаемый механизм.\n\nРекомендация: Присвоить устройствам различные позиционные обозначения и согласовать их во взаимосвязанных схемах.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_127bea47b93f4214ac6430c54b21517a",
+            "value_found": "М2 — электродвигатель вентилятора; М2 — электродвигатель циркуляционного насоса",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-072",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:001",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на повторное обозначение М2 у двигателя вентилятора и циркуляционного насоса. Правое дополнительно отмечает повторное обозначение Y7 у приводов регулирующего клапана теплоносителя и воздухозаборного клапана.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          }
+        ],
+        "evidence_gate": {
+          "schema_version": 1,
+          "candidates": 2,
+          "published": 2,
+          "deferred": 0,
+          "min_confidence": 0.8,
+          "max_published_per_block": null,
+          "reason_counts": {}
+        },
+        "deferred_findings": [],
+        "document_retrieval": {
+          "scope": "all_document_vector_text_other_pages",
+          "query_terms": [
+            "ШАУВ-4-К5ЧК",
+            "Фрагмент",
+            "схемы",
+            "автоматизации",
+            "отображающий",
+            "подключение",
+            "датчиков",
+            "температуры",
+            "давления",
+            "PDS",
+            "двигателей",
+            "приводов",
+            "клапанов",
+            "контроллеру",
+            "Показаны",
+            "марки",
+            "проводов",
+            "сечения",
+            "длины",
+            "кабелей",
+            "также",
+            "номера",
+            "клемм",
+            "распределительных"
+          ],
+          "candidate_hits": 94,
+          "selected_hits": 5,
+          "selected_pages": [
+            6,
+            7,
+            8
+          ],
+          "status": "hits"
+        },
+        "dual_review": {
+          "schema_version": 1,
+          "status": "ok",
+          "reviewer_model": "codex/gpt-6-astra",
+          "relationships": [
+            {
+              "left_ref": "codex:001",
+              "right_ref": "codex:002",
+              "relation": "extension",
+              "extends": "right",
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на повторное обозначение М2 у двигателя вентилятора и циркуляционного насоса. Правое дополнительно отмечает повторное обозначение Y7 у приводов регулирующего клапана теплоносителя и воздухозаборного клапана."
+            }
+          ],
+          "unmatched_refs": [],
+          "counts": {
+            "matches": 0,
+            "extensions": 1,
+            "new": 0,
+            "disputed": 0,
+            "gap_findings": 0
+          },
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "comparison_models": [
+            "codex/gpt-6-astra::leg:1",
+            "codex/gpt-6-astra::leg:2"
+          ]
+        }
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c",
+      "pointer": "/block_analyses/35",
+      "value": {
+        "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+        "page": 44,
+        "sheet": "Лист 40",
+        "label": "",
+        "sheet_type": null,
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "not_enriched": false,
+        "coverage_status": "ready",
+        "analysis_status": "analyzed",
+        "context_source": "structured_alia_scheme",
+        "detectors_ok": [
+          "codex/gpt-6-astra",
+          "codex/gpt-6-astra"
+        ],
+        "detectors_failed": [],
+        "summary": "",
+        "key_values_read": [],
+        "evidence_text_refs": [],
+        "findings": [
+          {
+            "id": "G-084",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "В спецификации на листе 8 преобразователи частоты поз. 16.2 и 16.3 шкафа ШАУВ-1-К6АС отнесены к системам Ва4.1 и Па4.1. На схеме внешних подключений этого шкафа, лист 40, указаны системы Ва5.1 и Па5.1; эта привязка также подтверждена таблицей применимости на листе 54.\n\nРекомендация: Исправить обозначения обслуживаемых систем в примечаниях к позициям 16.2 и 16.3 спецификации в соответствии со схемой подключений шкафа ШАУВ-1-К6АС.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_47163e69651c48528b3e054d5a5db095",
+            "value_found": "16.2: «для Ва 4.1»; 16.3: «для Па 4.1»",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-084",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:002",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочную привязку поз. 16.2 и 16.3 шкафа ШАУВ-1-К6АС к Ва4.1/Па4.1 вместо Ва5.1/Па5.1. Уточнение слева о ШАУВ-1-К5АС существенно не расширяет проблему.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-085",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "В спецификации шкафа ШАУВ-1-К6АС, лист 8, преобразователи частоты поз. 16.2 и 16.3 отнесены к системам Ва4.1 и Па4.1. Схема внешних подключений на листе 40 и таблица применимости на листе 54 относят этот шкаф к системам Ва5.1 и Па5.1; системы Па4.1/Ва4.1 закреплены за ШАУВ-1-К5АС.\n\nРекомендация: Исправить обозначения обслуживаемых систем в примечаниях поз. 16.2 и 16.3 спецификации согласно схеме подключений и таблице применимости.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_47163e69651c48528b3e054d5a5db095",
+            "value_found": "16.2: «для Ва 4.1»; 16.3: «для Па 4.1»",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-085",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:001",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочную привязку поз. 16.2 и 16.3 шкафа ШАУВ-1-К6АС к Ва4.1/Па4.1 вместо Ва5.1/Па5.1. Уточнение слева о ШАУВ-1-К5АС существенно не расширяет проблему.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          }
+        ],
+        "evidence_gate": {
+          "schema_version": 1,
+          "candidates": 2,
+          "published": 2,
+          "deferred": 0,
+          "min_confidence": 0.8,
+          "max_published_per_block": null,
+          "reason_counts": {}
+        },
+        "deferred_findings": [],
+        "document_retrieval": {
+          "scope": "all_document_vector_text_other_pages",
+          "query_terms": [
+            "ШАУВ-1-К6АС",
+            "электрических",
+            "соединений",
+            "подключения",
+            "исполнительных",
+            "механизмов",
+            "датчиков",
+            "контроллеру",
+            "Связи",
+            "отображены",
+            "указанием",
+            "типов",
+            "кабелей",
+            "сечений",
+            "длин"
+          ],
+          "candidate_hits": 48,
+          "selected_hits": 6,
+          "selected_pages": [
+            5,
+            58,
+            86,
+            87,
+            93,
+            101
+          ],
+          "status": "hits"
+        },
+        "dual_review": {
+          "schema_version": 1,
+          "status": "ok",
+          "reviewer_model": "codex/gpt-6-astra",
+          "relationships": [
+            {
+              "left_ref": "codex:001",
+              "right_ref": "codex:002",
+              "relation": "match",
+              "extends": "none",
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочную привязку поз. 16.2 и 16.3 шкафа ШАУВ-1-К6АС к Ва4.1/Па4.1 вместо Ва5.1/Па5.1. Уточнение слева о ШАУВ-1-К5АС существенно не расширяет проблему."
+            }
+          ],
+          "unmatched_refs": [],
+          "counts": {
+            "matches": 1,
+            "extensions": 0,
+            "new": 0,
+            "disputed": 0,
+            "gap_findings": 0
+          },
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "comparison_models": [
+            "codex/gpt-6-astra::leg:1",
+            "codex/gpt-6-astra::leg:2"
+          ]
+        }
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+      "pointer": "/findings/61",
+      "value": {
+        "id": "F-062",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "problem": "На схеме ШАУВ-3-К5ПЧ подключения PDS4 и PDS5 обозначены одинаковыми номерами клемм 23–24 без разграничения колодок.",
+        "description": "Первоначальное описание:\nОт PDS4 системы П5.1.3 и PDS5 системы П5.1.1 показаны отдельные линии П5.1.3-4 и П5.1.1-7. Обе заканчиваются на отдельно изображённых парах клемм 23–24 внутри одного шкафа. Обозначений разных колодок у этих пар нет. Подтверждена локальная неоднозначность адресов подключения на представленном листе; фактическое электрическое объединение сигналов не установлено. Примечание об уточнении нумерации у изготовителя не задаёт различающиеся адреса.\n\nДополнительная проверка:\nPDS4 и PDS5 ШАУВ-3-К5ПЧ назначена одинаковая пара клемм 23–24.\nОтдельные линии П5.1.3-4 от PDS4 и П5.1.1-7 от PDS5 заканчиваются на двух изображённых парах 23–24 без обозначений разных колодок. В F-067 сохранена неоднозначность адресов на схеме, без утверждения о фактическом электрическом объединении сигналов.\n\nPDS4 и PDS5 имеют одинаковые клеммы 23–24 без обозначения разных колодок.\nВ соседних колонках PDS4 и PDS5 показаны отдельные кабели к одинаково пронумерованным парам 23–24 внутри ШАУВ-3-К5ПЧ. Различающих обозначений колодок нет. Этот общий с G-069 конфликт сохранён один раз в F-067 с обоими source_finding_ids.",
+        "source": "Лист 32, схема внешних подключений ШАУВ-3-К5ПЧ, колонки PDS4 и PDS5, нижний ряд клемм",
+        "page": 36,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Согласовать с изготовителем полные адреса подключений PDS4 и PDS5 и указать на схеме соответствующие обозначения колодок и номера клемм.",
+        "risk": "Одинаковые неполные адреса допускают ошибочное подключение или проверку сигналов разных датчиков.",
+        "reason": "Это техническая неоднозначность монтажных адресов внутри одной схемы шкафа, а не требование глобальной уникальности коротких обозначений приборов. Разные марки кабелей позволяют различить линии, но не определяют разные клеммные адреса.",
+        "source_finding_ids": [
+          "G-069",
+          "G-070"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+            "type": "graphic",
+            "observation": "В колонке PDS4 «на вентиляторе П5.1.3» линия П5.1.3-4 приходит к паре клемм 23, 24. В соседней колонке PDS5 «на фильтре П5.1.1» линия П5.1.1-7 также приходит к отдельно нарисованной паре 23, 24. Обе пары находятся в нижнем ряду шкафа ШАУВ-3-К5ПЧ; различающие обозначения колодок возле них отсутствуют.",
+            "location": "Лист 32, колонки PDS4 и PDS5, линии к нижним клеммам шкафа"
+          },
+          {
+            "block_id": "blk_053f940839a3432681679d67d2fdadda",
+            "type": "text",
+            "quote": "2. Нумерацию клемм уточнить у завода-изготовителя.",
+            "location": "Страница 36, лист 32, примечание 2"
+          }
+        ],
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_8306f1551dea9f94",
+        "source_block_ids": [
+          "blk_f784be4786274e8c84f32d874ed99969"
+        ],
+        "recovery_addendum_base_signature": "869b6dc9811766c0b5acab0e2d57685f1b8744eaa5a9920f6c0bafd345ffd672",
+        "recovery_addendum_snapshot_signatures": [
+          "869b6dc9811766c0b5acab0e2d57685f1b8744eaa5a9920f6c0bafd345ffd672",
+          "37cd51f37552e79469864b1645c722b26c689271936ce08f4e36a5ee499b3dde"
+        ],
+        "recovery_original_description": "От PDS4 системы П5.1.3 и PDS5 системы П5.1.1 показаны отдельные линии П5.1.3-4 и П5.1.1-7. Обе заканчиваются на отдельно изображённых парах клемм 23–24 внутри одного шкафа. Обозначений разных колодок у этих пар нет. Подтверждена локальная неоднозначность адресов подключения на представленном листе; фактическое электрическое объединение сигналов не установлено. Примечание об уточнении нумерации у изготовителя не задаёт различающиеся адреса.",
+        "recovery_addenda": [
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/27/findings/0",
+            "source_id": "G-069",
+            "claim_id": "1",
+            "claim": "PDS4 и PDS5 ШАУВ-3-К5ПЧ назначена одинаковая пара клемм 23–24.",
+            "reason": "Отдельные линии П5.1.3-4 от PDS4 и П5.1.1-7 от PDS5 заканчиваются на двух изображённых парах 23–24 без обозначений разных колодок. В F-067 сохранена неоднозначность адресов на схеме, без утверждения о фактическом электрическом объединении сигналов.",
+            "source_refs": [
+              "blk_f784be4786274e8c84f32d874ed99969"
+            ],
+            "source_types": {
+              "blk_f784be4786274e8c84f32d874ed99969": "graphic"
+            },
+            "target_id": "F-067",
+            "target_signature": "869b6dc9811766c0b5acab0e2d57685f1b8744eaa5a9920f6c0bafd345ffd672",
+            "semantic_verified": false,
+            "id": "1677b4d4b0a03e4ff7e4ff153b6cc49da225131091a80bfc9c072ce574989930",
+            "reported_target_id": "F-067",
+            "reported_target_signature": "869b6dc9811766c0b5acab0e2d57685f1b8744eaa5a9920f6c0bafd345ffd672"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/27/findings/1",
+            "source_id": "G-070",
+            "claim_id": "1",
+            "claim": "PDS4 и PDS5 имеют одинаковые клеммы 23–24 без обозначения разных колодок.",
+            "reason": "В соседних колонках PDS4 и PDS5 показаны отдельные кабели к одинаково пронумерованным парам 23–24 внутри ШАУВ-3-К5ПЧ. Различающих обозначений колодок нет. Этот общий с G-069 конфликт сохранён один раз в F-067 с обоими source_finding_ids.",
+            "source_refs": [
+              "blk_f784be4786274e8c84f32d874ed99969"
+            ],
+            "source_types": {
+              "blk_f784be4786274e8c84f32d874ed99969": "graphic"
+            },
+            "target_id": "F-067",
+            "target_signature": "869b6dc9811766c0b5acab0e2d57685f1b8744eaa5a9920f6c0bafd345ffd672",
+            "semantic_verified": false,
+            "id": "fa32665ff2de0310eec04b7b4554356c1b6227d0469ae52809cb4d3de2cb5860",
+            "reported_target_id": "F-067",
+            "reported_target_signature": "869b6dc9811766c0b5acab0e2d57685f1b8744eaa5a9920f6c0bafd345ffd672"
+          }
+        ],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-069",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "structured_alia_scheme"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-070",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "structured_alia_scheme"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на повторное назначение клемм 23–24 датчикам PDS4 и PDS5. Правое замечание дополнительно указывает повторение клемм 29–31 для электродвигателей М1 и М2.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на повторное назначение клемм 23–24 датчикам PDS4 и PDS5. Правое замечание дополнительно указывает повторение клемм 29–31 для электродвигателей М1 и М2.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 32",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 54,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+      "pointer": "/findings/62",
+      "value": {
+        "id": "F-063",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "problem": "На схеме ШАУВ-3-К5ПЧ подключения двигателей М1 и М2 обозначены одинаковыми номерами клемм 29–31 без разграничения колодок.",
+        "description": "Первоначальное описание:\nДвигатели вентиляторов М1 системы П5.1.1 и М2 системы П5.1.3 подключены отдельными линиями П5.1.1-8 и П5.1.3-5. Для обеих линий в шкафу показаны отдельные группы клемм с номерами 29, 30, 31 и PE, без обозначений разных колодок. Подтверждена неоднозначность документированных адресов силовых подключений; фактическое объединение выходов или неправильность внутренней силовой схемы не установлены.\n\nДополнительная проверка:\nМ1 и М2 имеют одинаковые клеммы 29–31 без обозначения разных колодок.\nЛинии П5.1.1-8 и П5.1.3-5 от разных двигателей приходят к отдельным группам 29, 30, 31, PE в одном шкафу; различающие обозначения колодок отсутствуют. Самостоятельная неоднозначность силовых адресов сохранена в F-068 без вывода о фактическом объединении цепей.",
+        "source": "Лист 32, схема внешних подключений ШАУВ-3-К5ПЧ, колонки М1 и М2, нижние группы клемм",
+        "page": 36,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Согласовать с изготовителем адреса силовых подключений М1 и М2 и указать однозначные обозначения колодок и клемм каждой линии.",
+        "risk": "Повторённые адреса допускают ошибочную идентификацию силовых подключений двух вентиляторов при монтаже и обслуживании.",
+        "reason": "Выбран technical_findings: неоднозначны адреса подключения разных двигателей в пределах одного шкафа. Это самостоятельный дефект силовых подключений, отличный от адресации сигналов PDS4 и PDS5. Примечание об уточнении нумерации у изготовителя не устраняет неоднозначность текущей схемы.",
+        "source_finding_ids": [
+          "G-070"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+            "type": "graphic",
+            "observation": "В колонке М1 «Электродвигатель вентилятора П5.1.1» линия П5.1.1-8 соединяет выводы U, V, W, PE с нижней группой 29, 30, 31, PE. В колонке М2 «Электродвигатель вентилятора П5.1.3» линия П5.1.3-5 приходит к другой изображённой группе с теми же обозначениями 29, 30, 31, PE. Обе группы находятся внутри ШАУВ-3-К5ПЧ, обозначений разных колодок у них нет.",
+            "location": "Лист 32, колонки М1 и М2, линии П5.1.1-8 и П5.1.3-5, нижние группы клемм"
+          },
+          {
+            "block_id": "blk_053f940839a3432681679d67d2fdadda",
+            "type": "text",
+            "quote": "2. Нумерацию клемм уточнить у завода-изготовителя.",
+            "location": "Страница 36, лист 32, примечание 2"
+          }
+        ],
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_8306f1551dea9f94",
+        "source_block_ids": [
+          "blk_f784be4786274e8c84f32d874ed99969"
+        ],
+        "recovery_addendum_base_signature": "df13b319164f0e2cc42cdb6e10954c2b0876dd8479430587c5f5505fedca3259",
+        "recovery_addendum_snapshot_signatures": [
+          "df13b319164f0e2cc42cdb6e10954c2b0876dd8479430587c5f5505fedca3259"
+        ],
+        "recovery_original_description": "Двигатели вентиляторов М1 системы П5.1.1 и М2 системы П5.1.3 подключены отдельными линиями П5.1.1-8 и П5.1.3-5. Для обеих линий в шкафу показаны отдельные группы клемм с номерами 29, 30, 31 и PE, без обозначений разных колодок. Подтверждена неоднозначность документированных адресов силовых подключений; фактическое объединение выходов или неправильность внутренней силовой схемы не установлены.",
+        "recovery_addenda": [
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/27/findings/1",
+            "source_id": "G-070",
+            "claim_id": "2",
+            "claim": "М1 и М2 имеют одинаковые клеммы 29–31 без обозначения разных колодок.",
+            "reason": "Линии П5.1.1-8 и П5.1.3-5 от разных двигателей приходят к отдельным группам 29, 30, 31, PE в одном шкафу; различающие обозначения колодок отсутствуют. Самостоятельная неоднозначность силовых адресов сохранена в F-068 без вывода о фактическом объединении цепей.",
+            "source_refs": [
+              "blk_f784be4786274e8c84f32d874ed99969"
+            ],
+            "source_types": {
+              "blk_f784be4786274e8c84f32d874ed99969": "graphic"
+            },
+            "target_id": "F-068",
+            "target_signature": "df13b319164f0e2cc42cdb6e10954c2b0876dd8479430587c5f5505fedca3259",
+            "semantic_verified": false,
+            "id": "0f38f5de50683b3d9c58bf612caebb5209a321e11e3f4b59eda2ef5fa565ed15",
+            "reported_target_id": "F-068",
+            "reported_target_signature": "df13b319164f0e2cc42cdb6e10954c2b0876dd8479430587c5f5505fedca3259"
+          }
+        ],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-070",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "structured_alia_scheme"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на повторное назначение клемм 23–24 датчикам PDS4 и PDS5. Правое замечание дополнительно указывает повторение клемм 29–31 для электродвигателей М1 и М2.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 32",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 66,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "operations"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      }
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json",
+      "sha256": "487d04234ff08cce0f4a72e3675111dea1bc7b8fbb8d6941d61f47bb64a4ec5a",
+      "scope": "Frozen five-cabinet source adjudication; not a new visual inspection."
+    }
+  ],
+  "control_pair_limit": "Отдельная доказанная независимая отрицательная инженерная пара для общего фильтра повторов клемм отсутствует. Ограничения PE/N и XT остаются обязательными, но не дают зачёт испытанному фильтру.",
+  "runtime_changed": false,
+  "production_changed": false,
+  "frozen_evaluator_changed": false
+}
