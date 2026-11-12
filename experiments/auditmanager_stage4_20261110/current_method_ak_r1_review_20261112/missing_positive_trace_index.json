@@ -7,8 +7,8 @@
   },
   "summary": {
     "missing_or_partial_positive_atoms": 22,
-    "bounded_stage_evidence_available": 17,
-    "cause_not_established": 5
+    "bounded_stage_evidence_available": 20,
+    "cause_not_established": 2
   },
   "rows": [
     {
@@ -31,25 +31,49 @@
       "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
       "coverage": "absent",
       "coverage_reason_snapshot": "Не сохранена находка двух немаркированных участков ПЧ→M2/M3 по15м на листе36. Другие конфликты обозначений двигателей не покрывают этот объект и операцию. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Проследить каждую отдельную операцию: немаркированные участки после ПЧ, их наличие в КЖ, баланс 730/700. Ранее найденная близкая гипотеза T-025 не покрывает эти три проверки."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_drive_operation_scope.json",
+          "sha256": "93a4c8c4f398de07d8d52caed427545057589e8d6ca528d427bc4ced1e71938e",
+          "pointer": "/traces/0",
+          "observed_stage": "coarse_object_coverage_and_uncompleted_local_graph_operations",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     },
     {
       "target_id": "AK100_F015_drive_cable_graph:25d3c70866a6e840202d",
       "coverage": "absent",
       "coverage_reason_snapshot": "Не сохранено отсутствие самостоятельных строк ПЧ→M2/M3 в полном разделе КЖ Па4.1/Ва4.1. Замечания о повторных строках иных систем не покрывают эту связь. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Проследить каждую отдельную операцию: немаркированные участки после ПЧ, их наличие в КЖ, баланс 730/700. Ранее найденная близкая гипотеза T-025 не покрывает эти три проверки."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_drive_operation_scope.json",
+          "sha256": "93a4c8c4f398de07d8d52caed427545057589e8d6ca528d427bc4ced1e71938e",
+          "pointer": "/traces/1",
+          "observed_stage": "coarse_object_coverage_and_uncompleted_local_graph_operations",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     },
     {
       "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
       "coverage": "absent",
       "coverage_reason_snapshot": "Не сохранён баланс шести участков4×2,5 листа36:730м против700м локальной ведомости. F-088 касается другого баланса4×4:70/60 и не является совпадением. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Проследить каждую отдельную операцию: немаркированные участки после ПЧ, их наличие в КЖ, баланс 730/700. Ранее найденная близкая гипотеза T-025 не покрывает эти три проверки."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_drive_operation_scope.json",
+          "sha256": "93a4c8c4f398de07d8d52caed427545057589e8d6ca528d427bc4ced1e71938e",
+          "pointer": "/traces/2",
+          "observed_stage": "coarse_object_coverage_and_uncompleted_local_graph_operations",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     },
     {
       "target_id": "AK14:65ea2c2649999f640c83",
