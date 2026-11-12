@@ -135,8 +135,65 @@
       "matched_claims_and_sources": true,
       "baseline_request_sha256": "2ea9d7011bceac30fb3d259edea985736a500ad7631d3acd6b98cd15016abc06",
       "candidate_request_sha256": "7786ab40515024dedc9b2244c238e85a96a4130f2425cf0fc14f667bdb6c3480",
-      "semantic_comparison": "not_completed",
-      "status": "response_not_available"
+      "semantic_comparison": "question_visibility_control_passed_context_search_still_required",
+      "status": "structurally_valid_after_unique_quote_rebinding_requires_source_review",
+      "validation": {
+        "finding_id": "F-020",
+        "request_sha256": "7786ab40515024dedc9b2244c238e85a96a4130f2425cf0fc14f667bdb6c3480",
+        "response_sha256": "983554adf8eea0b9bef48de3989f2eb5518f3720722881f01b8989d9e8628a89",
+        "selection": "DEV-selected routing controls; prior purpose from current-run finding only; same source context as each selected baseline. Not blind evaluation.",
+        "semantic_verified": false,
+        "production_acceptance": false,
+        "status": "structurally_valid_after_unique_quote_rebinding_requires_source_review",
+        "error": "invalid_input_span",
+        "offset_rebinding": {
+          "repairs": [
+            {
+              "part_id": "P1",
+              "span_index": 0,
+              "unit_id": "problem",
+              "reported": {
+                "start": 0,
+                "end": 84
+              },
+              "bound": {
+                "start": 0,
+                "end": 85
+              }
+            }
+          ],
+          "raw_response_changed": false,
+          "claim_content_changed": false,
+          "normalized_response_path": "/tmp/auditmanager_publication_purpose_controls_20261112_run/evaluations/publication_purpose_020/uniquely_bound_response.json",
+          "normalized_response_sha256": "ee57df8506343496b133d223b724fd2404e0433835e2475087874409724b3904"
+        },
+        "review_scope": "claim_fields",
+        "unreviewed_claim_fields": [],
+        "part_counts_not_finding_counts": true,
+        "projection_path": "/tmp/auditmanager_publication_purpose_controls_20261112_run/evaluations/publication_purpose_020/publication_projection.json",
+        "projection_sha256": "b7f6cac0de3c7879ed679500966d8ce82588fd36d3c771a69131413b4c062dcb",
+        "counts": {
+          "technical_findings": 0,
+          "questions": 1,
+          "withdrawn": 0,
+          "pending": 2,
+          "history_only": 2
+        }
+      },
+      "baseline_projection_sha256": "9f6977fea31dbd1ea1de315a2e9bc5cfe4be88ee31f7341ed293a2c3e05ec10c",
+      "baseline_part_counts": {
+        "technical_findings": 0,
+        "questions": 0,
+        "pending": 3,
+        "withdrawn": 0,
+        "history_only": 2
+      },
+      "part_counts_are_not_defect_counts_or_quality_scores": true,
+      "semantic_assessment": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/purpose_trial_F020_source_assessment.json",
+        "sha256": "201483f6b2fd874859dff3a02d02a07a47275e5cf7126831003238385d8f9acf"
+      },
+      "final_release_completed": false
     },
     {
       "finding_id": "F-008",

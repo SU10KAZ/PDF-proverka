@@ -1,0 +1,35 @@
+{
+  "finding_id": "F-020",
+  "status": "question_visibility_control_passed_context_search_still_required",
+  "candidate_projection_path": "/tmp/auditmanager_publication_purpose_controls_20261112_run/evaluations/publication_purpose_020/publication_projection.json",
+  "candidate_projection_sha256": "b7f6cac0de3c7879ed679500966d8ce82588fd36d3c771a69131413b4c062dcb",
+  "baseline_assessment_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F020_assessment.json",
+  "baseline_assessment_sha256": "532cb99997de2248ab9f804209d1858b4a4acb74a108ed3c31b0c70574d86504",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_smoke_control_cable_question_review_20261112.json",
+  "source_review_sha256": "3b5db66d3aff64e437958dd7d728bc14b11fe682339d6d01dfb9a629f2dc3822",
+  "checks": [
+    "One bounded construction/duration question visible; no technical violation asserted.",
+    "420 m six circuits and generic PVC materials preserved without assigning materials to all circuits.",
+    "Known temperature control function no longer requested as unknown.",
+    "Norm applicability and actual failure remain internal uncertainty; no separate normative query to engineer."
+  ],
+  "part_count_comparison": {
+    "baseline_technical": 0,
+    "candidate_technical": 0,
+    "baseline_questions": 0,
+    "candidate_questions": 1,
+    "interpretation": "Restores useful question visibility without declaring violation or exposing all pending parts."
+  },
+  "offset_rebinding": {
+    "required": true,
+    "repair_count": 1,
+    "raw_response_changed": false,
+    "claim_content_changed": false
+  },
+  "remaining_context": "Search linked design solutions before asserting engineer intervention required. This control verifies proposed routing, not exhausted search or final admission.",
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "normative_compliance_verified": false,
+  "production_acceptance": false,
+  "final_release_completed": false
+}
