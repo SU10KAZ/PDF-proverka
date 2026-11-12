@@ -1,0 +1,26 @@
+{
+  "status": "shared_object_complementary_defect_bases_not_automatic_duplicates",
+  "records": [
+    {
+      "finding_id": "F-003",
+      "part_id": "p4",
+      "projection_path": "/tmp/auditmanager_publication_F003_context1_20261112_run/publication_projection.json",
+      "projection_sha256": "14cfd68d882b0babd868d471698ddee2e8618b5b3c81f5b3e5bc3d06f16d7f44",
+      "basis": "Pump Пн5.1 has M5 in functional/list, M2 in external connections, M1 in journal for Пн5.1.-21."
+    },
+    {
+      "finding_id": "F-071",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_071/publication_projection.json",
+      "projection_sha256": "b1c4fc34f4f303a9f7e3178cb775c730d825da1feac00e8adb978199a0ce0a2a",
+      "basis": "Within external connections of the same cabinet, separate fan Пн5.1р and pump Пн5.1 both use M2; lines -9 and -21 identify separate objects."
+    }
+  ],
+  "source_review_evidence": [
+    "publication_F003_context1_assessment.json",
+    "publication_full_fields_F071_assessment.json"
+  ],
+  "decision": "Do not suppress either basis because the pump or M2 is shared. May group editorially only if both cross-document identity conflict and same-drawing duplicate position remain explicit with their own evidence. Preserve other F003 systems and literal МЗ.",
+  "counterfactual_preservation_check": "Aligning pump labels between documents need not remove an intra-drawing duplicate if chosen label remains M2; renaming a duplicate position on one drawing need not reconcile the other two documents. Both operations require tracked resolution.",
+  "scope": "Coordinator comparison of exact preserved statements and previously reviewed primary sources, not engineer acceptance or a model deduplication result.",
+  "production_acceptance": false
+}

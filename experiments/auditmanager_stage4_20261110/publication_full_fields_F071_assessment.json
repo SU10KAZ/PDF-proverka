@@ -1,6 +1,6 @@
 {
   "finding_id": "F-071",
-  "status": "two_distinct_motor_positions_preserved_peer_overlap_pending",
+  "status": "two_distinct_motor_positions_preserved_complementary_peer_basis",
   "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_071/publication_projection.json",
   "projection_sha256": "b1c4fc34f4f303a9f7e3178cb775c730d825da1feac00e8adb978199a0ce0a2a",
   "graphics": [
@@ -36,7 +36,7 @@
     "Вырезки исходного GRAPHIC подтверждают M2 над двигателем вентилятора Пн5.1р с U/V/W/PE и M2 над циркуляционным насосом Пн5.1 с L/N/PE.",
     "Отдельные линии Пн5.1-9 и Пн5.1-21 подтверждают два объекта в одном шкафу, а не повтор ссылки на один двигатель.",
     "Правильная заменяющая позиция не назначена. Уточнение режима резерва оставлено pending и не поглотило основное замечание.",
-    "Риск реальной ошибки подключения остаётся условным. Перекрытие с F003 требует итогового объединения; два ID не считать двумя независимыми дефектами."
+    "Риск реальной ошибки подключения остаётся условным. F003 и F071 имеют общий насос, но разные основания: междокументное расхождение и повтор позиции на одной схеме. Не удалять одно как дубль; см. publication_F003_F071_peer_basis_review.json."
   ],
   "review_authority": "coordinator_not_engineer_acceptance",
   "engineer_decision": null,
