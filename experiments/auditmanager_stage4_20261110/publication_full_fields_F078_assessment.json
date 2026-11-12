@@ -1,0 +1,35 @@
+{
+  "finding_id": "F-078",
+  "status": "project_passage_instruction_conflict_preserved_without_fire_rating_claim",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_078/publication_projection.json",
+  "projection_sha256": "8e69cf3afbd5bb472143982cd930e9f4e55c5bf456060a81c39ee316fdca7a4f",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_3a652e527d9242058c018c7b7199b5e6.png",
+      "block_id": "blk_3a652e527d9242058c018c7b7199b5e6",
+      "sha256": "ce4011bdd397822bd1415ce8299474c19d7861a5e21a423e3e89817d37e5fdf1",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "authoritative_md_spans": [
+    {
+      "block_id": "blk_0f3dd0d612604a15b2e186aea9a6dde1",
+      "start": 289343,
+      "end": 291710,
+      "sha256": "dafb4018698d054c8fc483d71a2d41f0cab7b371acab5024d38a7e03d964cb3c"
+    }
+  ],
+  "checks": [
+    "Непосредственно просмотрен узел А: лоток, кабели, пена и герметик FIREFIX; металлическая труба не показана и не подписана.",
+    "Авторитетное примечание 3 требует металлические трубы для проходов через стены и перекрытия, исключения для узла А нет. Подтверждена несогласованность документации.",
+    "Рекомендация согласовать конструкцию и условный монтажный риск сохранены вместе с техническим тезисом.",
+    "Фактическая огнестойкость и соответствие сертификату не проверены; примечание 12 отсылает к КР. Нельзя выводить нарушение огнестойкости из отсутствия трубы на узле.",
+    "Повторяющиеся расположения группы AK_passage_node_A_note_3 требуют объединения с сохранением листов; отдельная проверка F078 не подтверждает отсутствие дублей в итоговом отчёте."
+  ],
+  "duplicate_group": "AK_passage_node_A_note_3",
+  "location_sheet": 50,
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
