@@ -18,6 +18,10 @@
     "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": {
       "classic": "0",
       "candidate": "1"
+    },
+    "AUDIT_MERGE_PRIMARY_TEXT": {
+      "classic": "0",
+      "candidate": "1"
     }
   },
   "candidate_context": {
@@ -32,7 +36,8 @@
   "limitations": [
     "Budgets are draft upper bounds, not evidence of completed source coverage or acceptable cost.",
     "Separate final source/wording check is connected; only citation-only failures permit one completion and a fresh independent check. Other holds preserve the original and remain explicit.",
-    "Grouping, unresolved original controls, single-module isolation, evaluator freeze and full comparative runs remain pending."
+    "Grouping, unresolved original controls, single-module isolation, evaluator freeze and full comparative runs remain pending.",
+    "source_review arm includes source TEXT handoff to merge; prior preflights must be regenerated after this explicit configuration change."
   ],
   "new_model_calls": 0,
   "full_six_comparison_started": false,
@@ -41,5 +46,6 @@
     "enabled": false,
     "reason": "AK bounded positive control passed; EOM negative control remains semantically disputed. No model grouping hook in shared candidate.",
     "evidence": "grouping_scope_pair_evidence/assessment.json"
-  }
+  },
+  "latest_primary_text_wiring_evidence": "primary_text_method_wiring_assessment.json"
 }

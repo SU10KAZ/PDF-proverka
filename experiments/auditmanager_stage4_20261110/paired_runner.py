@@ -19,7 +19,8 @@ def method_profile(variant):
     """Switch isolation only; not proof of equivalence to historical classic.
 
     Inventory includes its dependent object operations and context retrieval.
-    Source review includes its mandatory independent release check. Neither is
+    Source review includes primary TEXT handoff to merge and its mandatory
+    independent release check. Neither is
     enabled alone without its safety dependencies. Candidate is their union.
     classic_current provides an all-off control on the same candidate source.
     """
@@ -33,7 +34,8 @@ def method_profile(variant):
         config.update(source_review_max_findings=256,source_review_auto_graphic_regions=True,
                       source_final_check_max_findings=256,source_final_check_complete_citations=True)
     enabled='1' if inventory else '0'
-    env=dict(AUDIT_OBJECT_CONTEXT_FOLLOWUPS=enabled,AUDIT_OBJECT_GRAPHIC_DETAILS=enabled,
+    env=dict(AUDIT_MERGE_PRIMARY_TEXT='1' if review else '0',
+             AUDIT_OBJECT_CONTEXT_FOLLOWUPS=enabled,AUDIT_OBJECT_GRAPHIC_DETAILS=enabled,
              AUDIT_OBJECT_TERMINAL_DISPOSITION=enabled,
              AUDIT_OBJECT_OPERATION_MAX_REQUESTS='128' if inventory else '8')
     return config,env

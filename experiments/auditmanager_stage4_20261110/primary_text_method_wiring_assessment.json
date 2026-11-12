@@ -1,0 +1,24 @@
+{
+  "status": "primary_text_handoff_explicitly_wired_for_candidate",
+  "problem": "The merge implementation requires AUDIT_MERGE_PRIMARY_TEXT=1, but method_profile previously omitted it. Candidate could execute with source handoff disabled or inherited ambient behavior.",
+  "change": {
+    "classic": "0",
+    "classic_current": "0",
+    "inventory": "0",
+    "source_review": "1",
+    "candidate": "1"
+  },
+  "arm_interpretation": "source_review is now explicitly source-handoff plus source review plus final check; do not label it a pure verifier-only ablation.",
+  "verification": [
+    "19 existing wiring/runner tests passed before change.",
+    "10 paired-profile and primary-text tests passed after change.",
+    "Real candidate preflight imports 80 backend modules from selected source root, installs inventory/review/final callbacks and reports primary-text flag1; no model calls.",
+    "Six saved source-only merge packets fit the 1,000,000 character budget at 194,017–596,992 characters; full current trial outputs and system instruction still require runtime budget validation."
+  ],
+  "effects": [
+    "Earlier trial preflights are stale for the modified profiles and must be regenerated before freezing comparative runs.",
+    "No production environment was changed."
+  ],
+  "stage4_complete": false,
+  "production_changed": false
+}

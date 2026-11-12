@@ -21,6 +21,7 @@ def test_real_preflight_enables_only_selected_callbacks(tmp_path,variant,callbac
     report=json.loads((tmp_path/'transport_preflight.json').read_text())
     assert {k for k in report['context_option_keys'] if k.endswith('_invoke')}==callbacks
     assert report['environment']['AUDIT_OBJECT_CONTEXT_FOLLOWUPS']==('1' if 'inventory_invoke' in callbacks else '0')
+    assert report['environment']['AUDIT_MERGE_PRIMARY_TEXT']==('1' if 'source_review_invoke' in callbacks else '0')
     assert 'grouping_invoke' not in report['context_option_keys']
     assert report['model_calls']==0
     assert report['cross_arm_imports']=={}

@@ -1,0 +1,41 @@
+{
+  "rows": [
+    {
+      "discipline": "AK",
+      "source_only_chars": 596992,
+      "budget": 1000000,
+      "status": "source_payload_fits_without_system_prompt"
+    },
+    {
+      "discipline": "ITP",
+      "source_only_chars": 588394,
+      "budget": 1000000,
+      "status": "source_payload_fits_without_system_prompt"
+    },
+    {
+      "discipline": "AR",
+      "source_only_chars": 194017,
+      "budget": 1000000,
+      "status": "source_payload_fits_without_system_prompt"
+    },
+    {
+      "discipline": "KM",
+      "source_only_chars": 248192,
+      "budget": 1000000,
+      "status": "source_payload_fits_without_system_prompt"
+    },
+    {
+      "discipline": "VK",
+      "source_only_chars": 266152,
+      "budget": 1000000,
+      "status": "source_payload_fits_without_system_prompt"
+    },
+    {
+      "discipline": "EOM",
+      "source_only_chars": 541425,
+      "budget": 1000000,
+      "status": "source_payload_fits_without_system_prompt"
+    }
+  ],
+  "scope": "Saved classic input JSON and whole authoritative MD TEXT, no system prompt; this is a lower-bound size check, not a full runtime prompt preflight."
+}
