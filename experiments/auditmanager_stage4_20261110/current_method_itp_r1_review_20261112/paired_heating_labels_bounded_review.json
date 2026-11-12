@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "scope": "Bounded paired heating pipe labels and stale final references",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "id": "F-074",
+      "assessment": "Paired T111/T211 published loads1.229/1.225 confirmed with equal flow61.45 and pipe159x4.5, supply/return80/60, same consumers. Difference0.004 is a documented inconsistency; correct design load and equipment consequences remain unproved.",
+      "target": "not assigned in this bounded review",
+      "visible_fields": {
+        "problem": "Тепловые нагрузки в подписях парных трубопроводов отопления Т111 и Т211 не согласованы.",
+        "description": "Первоначальное описание:\nНа листе 9 для подающей линии Т111 отопления жилья, МОП и технических помещений указано Q=1,229 Гкал/ч, а для обратной линии Т211 того же назначения — Q=1,225 Гкал/ч. Обе выноски задают G=61,45 м³/ч и трубу Ø159×4,5 мм; температуры подачи и обратки составляют 80 и 60 °C. Принадлежность к первой зоне подтверждается обозначениями узлов Т11 и Т21 на приложенном плане и подписью узла подачи. Разность опубликованных нагрузок равна 0,004 Гкал/ч. Подтверждено несогласование подписей; правильная расчётная нагрузка и влияние расхождения на подбор оборудования не установлены.\n\nДополнительная проверка:\nТ111 подписан нагрузкой 1,229 Гкал/ч при расходе 61,45 м³/ч.\nОба значения непосредственно прочитаны в верхней выноске Т111 на приложенном изображении узла УУТЭ отопления Т11 первой зоны.\n\nТ211 подписан нагрузкой 1,225 Гкал/ч при том же расходе.\nВыноска Т211 на разрезе 18-18 содержит Q=1,225 Гкал/ч и G=61,45 м³/ч. Выноска Т111 независимо подтверждает тот же расход; обе линии имеют одинаковое назначение и размер Ø159×4,5 мм.\n\nНагрузки парных линий Т111 и Т211 расходятся на 0,004 Гкал/ч.\nРазность непосредственно проверенных значений составляет 1,229−1,225=0,004 Гкал/ч. Выноски обозначают подающую и обратную линии отопления одних потребителей; план дополнительно подтверждает принадлежность узлов Т11 и Т21 первой зоне. Установлено расхождение опубликованных параметров, без выбора правильного значения.\n\nДля подачи Т111 указано 1,229 Гкал/ч.\nВ верхней выноске приложенного изображения узла Т11 непосредственно прочитано Q=1,229 Гкал/ч для подающей линии Т111 отопления жилья, МОП и технических помещений.\n\nДля обратки Т211 указано 1,225 Гкал/ч при равном расходе 61,45 м³/ч.\nНа разрезе 18-18 непосредственно прочитаны Q=1,225 Гкал/ч и G=61,45 м³/ч. Расход Т111 также равен 61,45 м³/ч; совпадают потребители и размер трубы. Подписи узлов на плане относят Т11 и Т21 к первой зоне. Утверждение сохранено в общем замечании F-076.\n\nВ данном фрагменте Т111 имеет нагрузку 1,229 Гкал/ч.\nВ верхней правой выноске узла Т11 непосредственно прочитано Q=1,229 Гкал/ч для Т111, подающей линии отопления жилья, МОП и техпомещений. Эта сторона сравнения сохранена в F-076.\n\nВ данном фрагменте Т211 имеет нагрузку 1,225 Гкал/ч при расходе 61,45 м³/ч.\nПодтверждено с уточнением места: Т211 показан на втором приложенном изображении, разрезе 18-18. В верхней выноске над синим узлом непосредственно указаны Q=1,225 Гкал/ч и G=61,45 м³/ч. Эти параметры той же выноски уже сохранены в F-076.\n\nНагрузки подачи Т111 и обратки Т211 одного контура расходятся на 0,004 Гкал/ч при одинаковом расходе 61,45 м³/ч.\nВыноски обозначают подающую и обратную линии отопления жилья, МОП и техпомещений; совпадают размер Ø159×4,5 мм и расход 61,45 м³/ч, температуры составляют 80 и 60 °C. Разность прочитанных нагрузок равна 1,229−1,225=0,004 Гкал/ч. Это полностью соответствует конфликту F-076. Правильная нагрузка и влияние на оборудование данным сравнением не определяются.\n\nНагрузка Т111 равна 1,229 Гкал/ч при расходе 61,45 м³/ч.\nВ верхней правой подписи Т111 непосредственно указаны Q=1,229 Гкал/ч и G=61,45 м³/ч. Оба параметра уже включены в F-076.\n\nНагрузка Т211 равна 1,225 Гкал/ч при том же расходе.\nВ верхней выноске Т211 на разрезе 18-18 прочитаны Q=1,225 Гкал/ч и G=61,45 м³/ч. Выноска Т111 на первом изображении подтверждает равный расход. Эта сторона сравнения полностью охвачена F-076.\n\nДля одного контура отопления жилья, МОП и техпомещений указаны разные нагрузки Т111 и Т211, требующие согласования.\nПарность линий подтверждается обозначениями подачи и обратки, одинаковыми потребителями, размером Ø159×4,5 мм и расходом 61,45 м³/ч на одном листе. Нагрузки 1,229 и 1,225 Гкал/ч различаются на 0,004 Гкал/ч. F-076 сохраняет это несогласование и рекомендацию уточнить расчётную нагрузку и согласовать выноски. Безусловная замена оборудования не обоснована и не утверждается.",
+        "solution": "Уточнить расчётную нагрузку ветви отопления жилья, МОП и технических помещений первой зоны и согласовать значения Q в выносках Т111 и Т211.",
+        "report_section": "technical_findings"
+      }
+    }
+  ],
+  "graphics": [
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8e4e78d833774d1094ea7fc72932c0ff.png",
+        "sha256": "89a963ddc75e1cd7a81dee28b10d2ff797f2383be5d965d2e05407587df3215f"
+      },
+      "method": "Codex parent direct raster inspection",
+      "observation": "T111 supply housing/common/technical rooms:159x4.5,Q1.229,G61.45,T80C,P6.5bar; unit T11 zone1."
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_27af51f0cd26488ea08ffa55589b0c3e.png",
+        "sha256": "9ae3ec6ff303ff8f3b6317bd8cfa1b49ab22653581184818e10d9f0393bf4c7a"
+      },
+      "method": "Codex parent direct raster inspection",
+      "observation": "Section18-18 T211 return same consumers:159x4.5,Q1.225,G61.45,T60C,P5.5bar."
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cc80e7962a094791b984d8fb5391e886.png",
+        "sha256": "df5eab1b75e59001cf78cb3cded3596c55d5726badde250c456889c012e1a3b3"
+      },
+      "method": "Codex parent direct raster inspection",
+      "observation": "Plan labels red T11 heating zone1 on right and blue T21 heating zone1 along lower wall."
+    }
+  ],
+  "calculations": {
+    "load_difference_Gcal_h": "0.004"
+  },
+  "publication_defect": {
+    "kind": "stale_internal_finding_reference",
+    "mentioned_id": "F-076",
+    "mentioned_id_exists_in_final": false,
+    "actual_containing_id": "F-074",
+    "occurrences": 7,
+    "assessment": "Claim remains in final F-074. Nonexistent F-076 references are navigation defects, not evidence of a lost claim. Repeated addenda do not constitute additional findings.",
+    "proposed_behavior": "Resolve references through stable finding identity during final numbering; never infer a replacement from number proximity alone."
+  },
+  "preserve": "Retain paired-pipe evidence and bounded uncertainty. Utility and final section need separate adjudication.",
+  "entire_output_reviewed": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0
+}

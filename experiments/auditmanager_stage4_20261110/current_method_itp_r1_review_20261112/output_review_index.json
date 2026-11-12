@@ -2,8 +2,8 @@
   "version": 1,
   "final_sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
   "finding_count": 74,
-  "findings_with_bounded_review": 63,
-  "findings_without_bounded_review": 11,
+  "findings_with_bounded_review": 64,
+  "findings_without_bounded_review": 10,
   "entire_output_reviewed": false,
   "whole_output_precision_finalized": false,
   "quality_score": null,
@@ -691,8 +691,13 @@
     },
     {
       "id": "F-074",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/paired_heating_labels_bounded_review.json",
+          "sha256": "ea9292527c33fb663ce4a658498517dbf9baa8ef42c4f8a93ce7199ad4e1dede"
+        }
+      ]
     }
   ]
 }
