@@ -1,0 +1,56 @@
+{
+  "finding_id": "F-084",
+  "status": "confirmed_designation_discrepancy_kept_as_original_question_stale_references_removed",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_084/publication_projection.json",
+  "projection_sha256": "6dbf750339aa39931becd6a1f07c735c8f2f5bd71cbf0cfc426be4860def30dc",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+      "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+      "sha256": "dd058661889a4dc4848d14c89c82942d241702c6c954001e2acef9f5a28b3851",
+      "directly_viewed": true,
+      "detail": "original"
+    },
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_400a32e7aac048e6a9d6da65c598995f.png",
+      "block_id": "blk_400a32e7aac048e6a9d6da65c598995f",
+      "sha256": "9f1c56a09670dc3bf5436ad8a321abef871308f8be8292c116e32b30cad1b5bb",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "authoritative_md_spans": [
+    {
+      "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+      "start": 430911,
+      "end": 432676,
+      "sha256": "6825b5ab5e54c91c7334d32faa0d1bb3fb659cdc9825daf4e3b2b15b55b428e7"
+    }
+  ],
+  "source_metadata_checks": [
+    {
+      "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+      "start": 151699,
+      "end": 152352,
+      "sha256": "f67fe56b4f804b87d6998565dcbfedb37996d270049bd383d6d9bb44c7c28b10",
+      "role": "source_binding_not_graphic_semantics"
+    },
+    {
+      "block_id": "blk_400a32e7aac048e6a9d6da65c598995f",
+      "start": 257553,
+      "end": 258199,
+      "sha256": "c317213eca092691c356745f44ed91159631c4523ea667e928048d5057dd83f1",
+      "role": "source_binding_not_graphic_semantics"
+    }
+  ],
+  "checks": [
+    "Прямая графическая проверка: функциональная схема ШУ-ПД4.14 при системе ПД4.1.4; схема подключений ЩУ-ПД4.1.4 с ТЕ1 и линией ПД4.1.4-1. Авторитетный КЖ подтверждает вторую марку и ту же цепь.",
+    "Исходный раздел questions и рекомендательное назначение сохранены. Подтверждённая разница написания не превращена в доказательство неверного монтажа.",
+    "Рекомендация согласовать марку и условный риск сохранены в одном вопросе без назначения правильного написания.",
+    "Устаревшие служебные ссылки F036 перенесены в историю и не образуют нового инженерного вопроса.",
+    "Номера листов оставлены моделью непроверенными. Метаданные MD просмотрены отдельно; подтверждение координатором не доказывает автоматическую навигацию модели."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
