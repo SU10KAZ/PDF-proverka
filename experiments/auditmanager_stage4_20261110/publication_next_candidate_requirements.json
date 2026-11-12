@@ -89,6 +89,18 @@
         "experiments/auditmanager_stage4_20261110/publication_f040_final_gate_assessment.json"
       ],
       "limits": "End-to-end improvement not proven; final gate held and original report unchanged. Do not count disappearance from a draft projection as successful removal."
+    },
+    {
+      "id": "PUB-08",
+      "behavior": "Separate source-document inconsistencies from errors in the auditor input. Correct an auditor typo in current wording when bound source evidence resolves it; preserve the correction in review history, never publish it as an engineer question about the project.",
+      "negative_cases": [
+        "F-062 addendum/1/claim omits р in Ва5.1 while its reason and the image identify Ва5.1р. Projection incorrectly creates a question to fix the audit wording."
+      ],
+      "positive_controls": [
+        "F-053 TS2 in the actual functional diagram versus TS1/ТС1 in wiring and journal remains a genuine project-document discrepancy."
+      ],
+      "verification": "Prove input provenance and attached-source identity. Revised parent must preserve the actual polarity issue; corrected typo must not become a separate question. Positive control must retain the project discrepancy.",
+      "limits": "Control pair source-reviewed, not engineer-accepted; candidate mechanism and comparative model test pending."
     }
   ],
   "sealed_queue_modified": false,

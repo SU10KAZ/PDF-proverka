@@ -1,0 +1,22 @@
+{
+  "finding_id": "F-062",
+  "status": "polarity_core_preserved_audit_typo_exported_as_question",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_062/publication_projection.json",
+  "projection_sha256": "529f3eaa042a7f17d38157e39cdbb77c2f0314edb0549fea172ec9f14321ce28",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+      "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+      "directly_viewed": true
+    }
+  ],
+  "checks": [
+    "Повторно проверенные PDS3/Ва5.1 и PDS4/Ва5.1р: плюс на всасывании, минус на нагнетании при показанном ΔP=100 Па. Основное замечание и рекомендация сохранены.",
+    "Пропуск суффикса р обнаружен в добавлении аудитора, а не в проектном источнике. Исправление этого добавления ошибочно вынесено вопросом инженеру.",
+    "Самостоятельного проектного вопроса нет; суффикс уже исправлен в основном тексте. Сохранить коррекцию в истории, не создавать строку для инженера.",
+    "Реальный отказ подтверждения работы остаётся условным, паспорт и программа не проверены."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

@@ -1,0 +1,21 @@
+{
+  "finding_id": "F-063",
+  "status": "curtain_motor_quantity_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_063/publication_projection.json",
+  "projection_sha256": "3b33d8b8321d0da6778274b233714c6a2611d0f7efbf044c27cca45844947f4e",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+      "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+      "directly_viewed": true
+    }
+  ],
+  "checks": [
+    "На схеме видны четыре самостоятельных двигателя М3,М4,М5,М6 у У4.3–У4.6; авторитетный перечень содержит 2 в строке M3-M6.",
+    "Подтверждена разность локальных количеств 4/2, не фактическая недопоставка. Модель сохранила условие о неизменном схемном решении для исправления количества до 4.",
+    "Указание учёта в ОВ не снимает локального конфликта; комплектация по смежному разделу остаётся непроверенной. Рекомендация и условный риск не размножены на отдельные вопросы."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

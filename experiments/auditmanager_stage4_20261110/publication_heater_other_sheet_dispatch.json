@@ -1,0 +1,10 @@
+{
+  "preparation_path": "/tmp/auditmanager_publication_heater_other_sheet_20261112/preparation.json",
+  "preparation_sha256": "6fbf6306b136618be44d403e71fda9dfcf1bbda670fbc9fd9c9d01b127b0dfb0",
+  "output_dir": "/tmp/auditmanager_publication_heater_other_sheet_20261112_run",
+  "exec_session_id": 98756,
+  "model": "codex/gpt-6-astra",
+  "purpose": "Repeat unchanged two-pass publication method for F060; source-only observations untrusted; no expected answer supplied.",
+  "selection_is_DEV_not_blind": true,
+  "production_acceptance": false
+}

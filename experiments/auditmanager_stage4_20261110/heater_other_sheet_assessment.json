@@ -1,0 +1,15 @@
+{
+  "status": "key_line_connectivity_distinction_reproduced_on_other_sheet",
+  "reading_request_path": "/tmp/auditmanager_heater_other_sheet_20261112/request.json",
+  "reading_request_sha256": "5bf5aa700de4c518d47cef71609bde3ff57b417948501ade0337305f26ffea71",
+  "reading_response_path": "/tmp/auditmanager_heater_other_sheet_20261112_run/heater_other_sheet_attempt_1.json",
+  "reading_response_sha256": "e396a04f3d968b558ce53f8ded80dcaff0f886bebe7e4c6be5fc96fba71cc29a",
+  "image_sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+  "direct_source_review": "Previously viewed original image: thin working line continues to TS1, separate legend lightning is dark and unconnected. Same central triangles do not establish full symbol identity.",
+  "limits": [
+    "Peripheral geometry and exact endpoint junctions remain uncertain; not every descriptive detail certified.",
+    "Graphic reading does not decide whether a legend question merits publication.",
+    "DEV-selected sheet, not new-project transfer evidence."
+  ],
+  "production_acceptance": false
+}

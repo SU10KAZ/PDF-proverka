@@ -1,10 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 61,
+  "reviewed_distinct_findings": 63,
   "unreviewed_finding_ids": [
-    "F-062",
-    "F-063",
     "F-064",
     "F-065",
     "F-066",
@@ -28,7 +26,7 @@
     "F-084",
     "F-085"
   ],
-  "batch_successful_responses": 61,
+  "batch_successful_responses": 63,
   "batch_status_snapshot": "running",
   "process_liveness_not_inferred_from_status_file": true,
   "selected_followups": [
@@ -1070,6 +1068,40 @@
         "pending": 0,
         "withdrawn": 0,
         "history_only": 1
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-062",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F062_assessment.json",
+      "assessment_sha256": "3a38b8f2f565715d34d401dd96314d242f0d41a7cbfd455c647825133532b4bb",
+      "status": "polarity_core_preserved_audit_typo_exported_as_question",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_062/publication_projection.json",
+      "projection_sha256": "529f3eaa042a7f17d38157e39cdbb77c2f0314edb0549fea172ec9f14321ce28",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 1,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 0
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-063",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F063_assessment.json",
+      "assessment_sha256": "3f7d3763209fac07eeb480f6867e0ca4d0375c9a12b597208c7be5af4a172c44",
+      "status": "curtain_motor_quantity_conflict_preserved",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_063/publication_projection.json",
+      "projection_sha256": "3b33d8b8321d0da6778274b233714c6a2611d0f7efbf044c27cca45844947f4e",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 0,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 2
       },
       "engineer_accepted": false,
       "production_accepted": false
