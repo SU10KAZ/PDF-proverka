@@ -10,38 +10,44 @@ from .run_primary_text_runtime_probe import sha, write
 from .run_runtime_probe_recovery import verify_packet
 
 
-def evaluate(root, output):
+def evaluate(root, output, finding_id=None):
     preparation = root / 'preparation.json'
     prepared = json.loads(preparation.read_text())
     state = json.loads((output / 'status.json').read_text())
     if state['preparation_sha256'] != sha(preparation):
         raise ValueError('Preparation changed')
-    if state['status'] != 'completed_unadjudicated':
-        raise ValueError('Collection is not successfully terminal')
+    if state['status'] not in {'running', 'completed_unadjudicated', 'ready_packets_completed_held_pending',
+                                'failed_requires_inspection', 'stopped_before_dispatch'}:
+        raise ValueError('Unknown collection state')
     sources = prepared['sources']
     source_file = Path(sources['sealed_findings_path'])
     if sha(source_file) != sources['sealed_findings_sha256'] or sha(Path(sources['md_path'])) != sources['md_sha256']:
         raise ValueError('Primary input changed')
-    if len(prepared['requests']) != 1:
-        raise ValueError('Single packet evaluator only')
-    request = verify_packet(prepared['requests'][0])
+    selected = [r for r in prepared['requests'] if finding_id is None or r.get('finding_id') == finding_id]
+    if len(selected) != 1:
+        raise ValueError('Select exactly one packet by finding ID')
+    row = selected[0]
+    request = verify_packet(row)
     envelope = json.loads(request['messages'][-1]['content'])
     packet = envelope['packet']
     findings = json.loads(source_file.read_text())['findings']
     matches = [f for f in findings if f.get('id') == packet['finding_id']]
     if len(matches) != 1:
         raise ValueError('Ambiguous original finding')
-    attempts = [a for a in state['attempts'] if a['success']]
+    attempts = [a for a in state['attempts'] if a['success'] and a['stage'] == request['stage']]
     if len(attempts) != 1:
         raise ValueError('Ambiguous model response')
     attempt = attempts[0]
-    if attempt['request_sha256'] != prepared['requests'][0]['sha256']:
+    if attempt['request_sha256'] != row['sha256']:
         raise ValueError('Response belongs to another request')
     response_file = Path(attempt['response_path'])
     if sha(response_file) != attempt['response_sha256']:
         raise ValueError('Model response changed')
     response = json.loads(response_file.read_text())['json_data']
-    receipt = {'request_sha256': attempt['request_sha256'],
+    if len(prepared['requests']) > 1:
+        output = output / 'evaluations' / request['stage']
+        output.mkdir(parents=True, exist_ok=True)
+    receipt = {'finding_id': packet['finding_id'], 'request_sha256': attempt['request_sha256'],
                'response_sha256': attempt['response_sha256'],
                'selection': prepared['selection'], 'semantic_verified': False,
                'production_acceptance': False}
@@ -68,5 +74,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('root', type=Path)
     parser.add_argument('output', type=Path)
+    parser.add_argument('--finding-id')
     args = parser.parse_args()
-    print(json.dumps(evaluate(args.root.resolve(), args.output.resolve()), ensure_ascii=False, indent=2))
+    print(json.dumps(evaluate(args.root.resolve(), args.output.resolve(), args.finding_id), ensure_ascii=False, indent=2))

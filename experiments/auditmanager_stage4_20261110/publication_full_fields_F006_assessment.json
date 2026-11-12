@@ -1,0 +1,40 @@
+{
+  "status": "full_field_pilot_source_review_passed_with_conditional_risk_pending",
+  "finding_id": "F-006",
+  "validation": {
+    "finding_id": "F-006",
+    "request_sha256": "29fb7ab5a5bc92ec150474846ac5cecffd62e656e42db62d2d0cb5b171558569",
+    "response_sha256": "5b0755d476f56673595590aa6f5a86020f800002d370efd87fc54dacd79fc3eb",
+    "selection": "DEV-known F-006 full-field pilot; generic current-run source-link selection, no coordinator or engineer answers.",
+    "semantic_verified": false,
+    "production_acceptance": false,
+    "status": "structurally_valid_requires_source_review",
+    "review_scope": "claim_fields",
+    "unreviewed_claim_fields": [],
+    "part_counts_not_finding_counts": true,
+    "projection_path": "/tmp/auditmanager_publication_F006_full_fields_pilot_20261112_run/publication_projection.json",
+    "projection_sha256": "cd49dfa6b5d771d08cadc67a7dc056c1cc6685dc9149591a702c93cff45039b3",
+    "counts": {
+      "technical_findings": 1,
+      "questions": 0,
+      "withdrawn": 0,
+      "pending": 1,
+      "history_only": 2
+    }
+  },
+  "source_review_authority": "coordinator_not_engineer_acceptance",
+  "source_record": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_sensor_range_counts_review_20261112.json",
+  "source_record_sha256": "381e0f39815205625beeda70e5f91066dcddbf42f5569d243494d83846ce6125",
+  "checks": {
+    "all_eight_input_units_accounted": true,
+    "all_three_range_distributions_preserved": true,
+    "recommendation_to_reconcile_retained_in_current_statement": true,
+    "correct_design_not_arbitrarily_selected": true,
+    "conditional_supply_risk_not_declared_actual_defect": true,
+    "obsolete_limit_and_service_link_only_in_history": true,
+    "no_new_engineer_question_created": true
+  },
+  "pending_risk": "Actual unsuitable equipment requires design/selected equipment characteristics; no automatic repeat or lookup triggered. This does not suppress the verified document conflict.",
+  "production_acceptance": false,
+  "next_step": "Collect remaining 84 full-field AK projections, validate and review them before judging filter effectiveness or integrating production."
+}
