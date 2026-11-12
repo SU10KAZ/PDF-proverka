@@ -1,0 +1,36 @@
+{
+  "source_report_path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+  "source_report_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "source_md_path": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "entry_sha256": "99143446dc58956aab84edc2b864167643b342679065f1443cdd353419e878b9",
+  "request_sha256": "89406d7577b02551954c35b870f15237a0a17905479940f68b84f868c2002e07",
+  "decision_origin": "explicit_coordinator_review_not_model_response",
+  "original_85_findings_preserved_in_sealed_report": true,
+  "other_84_findings_identical_in_local_preview": true,
+  "target_retained_in_pending_archive": false,
+  "source_only_observation_attached": true,
+  "final_model_check_completed": false,
+  "production_acceptance": false,
+  "action": "question",
+  "question_basis": "minor_confirmed",
+  "target_retained_as_question_in_preview": true,
+  "finding_id": "F-040",
+  "status": "minor_revision_dispatched_not_accepted",
+  "run_root": "/tmp/auditmanager_publication_f040_minor_20261112",
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "source_review": {
+    "image_path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_e3e39f8820d7474caa10ab626d2a2c91.png",
+    "directly_viewed": true,
+    "detail": "original"
+  },
+  "observations": [
+    "The coordinator revisited the actual graphic after the rejected final-check response; raw model output is not treated as validated evidence.",
+    "Central filled triangles on Pm4.1 differ visibly from thin crossing strokes of the water-heater legend. TS1 line is not an electric lightning symbol.",
+    "Water connections, temperatures and M3/Y3 identify water function directly; retain limited editorial mismatch in questions under user-selected profile.",
+    "Earlier proposal to defer all of F040 was too broad. Preserve original electric-identity claim and its uncertainty in review history; do not claim technical refutation or inherited engineer acceptance.",
+    "Other 84 findings are identical in local preview. Final independent gate and rendered export still required."
+  ],
+  "engineer_decision": null
+}

@@ -1,0 +1,22 @@
+{
+  "finding_id": "F-059",
+  "status": "output_dot_count_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_059/publication_projection.json",
+  "projection_sha256": "3f5b4786b04ea4712a2aff846637e7ae19a523d04bacf4df88826f4098463853",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+      "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Повторно пересчитаны DO: 2,8,10,11,14,16 — 6 при печатном итоге 5. Пожар относится к DI и не добавлен в DO.",
+    "Рекомендация и условный риск сохранены с основным замечанием; нет отдельного лишнего вопроса.",
+    "Фактическая нехватка выходов не доказана. Согласование допускает исправление итога или состава точек."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
