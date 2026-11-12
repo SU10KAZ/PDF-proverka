@@ -1,5 +1,5 @@
 """Validate review receipts, never equate matching quotes with semantic truth."""
-from .source_review_metadata import graphic_stamp_metadata
+from .source_review_metadata import graphic_stamp_metadata, text_stamp_metadata
 import hashlib
 import json
 import math
@@ -73,6 +73,9 @@ def validate_source_review(response, queue, findings, md):
     if metadata != expected_metadata:
         errors.append('packet_graphic_metadata_mismatch')
     metadata_allowed = {r['block_id']: r['stamp'] for r in expected_metadata if r in metadata}
+    # TEXT packets already include their literal Stamp lines. Accept only those
+    # exact stamps in verified, supplied text blocks, never arbitrary MD content.
+    metadata_allowed.update({r['block_id']: r['stamp'] for r in text_stamp_metadata(md, allowed)})
     claims = response.get('claims')
     if not isinstance(claims, list) or not claims:
         errors.append('missing_claims')

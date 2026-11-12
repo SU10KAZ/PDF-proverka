@@ -4,13 +4,22 @@ import re
 
 
 def graphic_stamp_metadata(md, block_ids):
+    return _stamp_metadata(md, block_ids, ('IMAGE', 'GRAPHIC'))
+
+
+def text_stamp_metadata(md, block_ids):
+    """Stamps embedded in authoritative text; caller must restrict to sent blocks."""
+    return _stamp_metadata(md, block_ids, ('TEXT', 'TABLE'))
+
+
+def _stamp_metadata(md, block_ids, kinds):
     headers = list(re.finditer(r'^###[ \t]+BLOCK[^\n]*?\[([^]]+)\]:[ \t]*(\S+)[^\n]*$', md, re.M | re.I))
     counts = Counter(h.group(2) for h in headers)
     wanted = set(block_ids)
     result = []
     for i, h in enumerate(headers):
         bid = h.group(2)
-        if bid not in wanted or counts[bid] != 1 or h.group(1).upper() not in ('IMAGE', 'GRAPHIC'):
+        if bid not in wanted or counts[bid] != 1 or h.group(1).upper() not in kinds:
             continue
         body = md[h.end():headers[i+1].start() if i+1 < len(headers) else len(md)]
         body = re.split(r'^##[ \t]+(?:Page|СТРАНИЦА)\b', body, maxsplit=1, flags=re.M | re.I)[0]

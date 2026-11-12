@@ -75,3 +75,26 @@ def test_graphic_without_prepared_stamp_remains_usable():
     q['packets'][0].pop('graphic_metadata')
     request = prepare_source_review_request(q, f, md)
     assert json.loads(request['messages'][1]['content'])['graphic_metadata'] == []
+
+
+@pytest.mark.parametrize('mutation', ['none', 'unsent', 'body_quote', 'wrong_stamp', 'duplicate_stamp', 'page_boundary'])
+def test_text_stamp_requires_exact_supplied_authoritative_block(mutation):
+    body = '> **Stamp:** Code: ITP | Sheet: 7\nLiteral calculation\n'
+    if mutation == 'duplicate_stamp': body += '> **Stamp:** Code: OTHER\n'
+    if mutation == 'page_boundary': body = '## Page 2\n' + body
+    md = '### BLOCK #1 [TEXT]: t\n' + body + '### BLOCK #2 [TEXT]: other\nOther source\n'
+    f = {'id': 'F1', 'source_evidence_review_status': 'pending',
+         'source_review_requests': [{'block_ids': ['other' if mutation == 'unsent' else 't']}]}
+    q = build_source_review_queue([f], md)
+    request = prepare_source_review_request(q, f, md)
+    payload = json.loads(request['messages'][1]['content'])
+    response = {k: payload[k] for k in ('finding_id', 'finding_sha256', 'source_md_sha256', 'context_sha256')}
+    quote = {'body_quote': 'Literal calculation', 'wrong_stamp': 'Sheet: 8'}.get(mutation, 'Code: ITP | Sheet: 7')
+    response['claims'] = [{'claim_id': 'c1', 'claim': 'Document identity', 'reason': 'Literal stamp',
+                           'status': 'supported', 'evidence': [{'type': 'metadata', 'block_id': 't', 'quote': quote}]}]
+    result = validate_source_review(response, q, [f], md)
+    if mutation == 'none':
+        assert result['errors'] == []
+        assert not result['semantic_verified']
+    else:
+        assert any('metadata' in error for error in result['errors'])

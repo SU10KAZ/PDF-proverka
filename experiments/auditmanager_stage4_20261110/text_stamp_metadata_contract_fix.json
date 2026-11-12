@@ -1,0 +1,21 @@
+{
+  "observed_failure": "invalid_final_check_sources: claim_0:metadata_not_in_packet",
+  "cause": "Final checker quoted the exact Stamp line embedded in a supplied authoritative TEXT block as type=metadata; validator allowed graphic stamps only despite the prompt allowing supplied block metadata.",
+  "fix": "Accept exact unique Stamp lines only in authoritative TEXT/TABLE blocks verified as present in the packet. Keep graphic metadata binding unchanged.",
+  "negative_controls": [
+    "Unsent text block",
+    "Ordinary body text presented as metadata",
+    "Changed stamp quote",
+    "Duplicate stamp",
+    "Stamp beyond page boundary"
+  ],
+  "tests": {
+    "command": "python -m pytest -q tests/test_source_review_metadata.py tests/test_source_review_final_check.py tests/test_source_review_results.py",
+    "result": "38 passed in 0.73s"
+  },
+  "live_verification": "Same frozen final-check request and saved model response revalidated, applied and exported. No inference retry.",
+  "release_assessment": "experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/assessment.json",
+  "model_output_modified": false,
+  "semantic_acceptance_implied_by_quote_match": false,
+  "production_acceptance": false
+}
