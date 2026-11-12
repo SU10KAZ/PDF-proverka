@@ -1,0 +1,70 @@
+{
+  "finding_id": "F-083",
+  "status": "semantic_profile_failure_after_successful_source_reading",
+  "source_candidate": {
+    "path": "/tmp/auditmanager_publication_f083_source_review_20261112/workflow/candidate.json",
+    "sha256": "ac717961e647fdeebd0d1c20e50d8edb705f3d1aae183f658eb635426dcf5bb1"
+  },
+  "source_review": {
+    "path": "/tmp/auditmanager_publication_f083_source_review_20261112/workflow/00_review/result.json",
+    "sha256": "e9e73438f4adfa0673b95c21ee1449f4cf77a49b617c95b89c0c828c84dd4834"
+  },
+  "adjudication": {
+    "path": "/tmp/auditmanager_publication_f083_source_review_20261112/workflow/05_adjudication/result.json",
+    "sha256": "e40f77159042295864f1f1550a626e1a350aab9528da150ef38653108d679617"
+  },
+  "publication_control": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_identity_scope_F083_assessment.json",
+    "sha256": "29ef10bf644c51c8947823102165cc0389afb14269b7b40ce5b40df3ce9c8a77"
+  },
+  "observed_source_reading": "Three room-separated pairs and three BURR preserved; complete grid not counted as extra objects. Full identity domain remains unknown.",
+  "observed_adjudication": "Просмотрены все 11 изображений. Подтверждено повторение К5.3 и К5.4 у трёх отдельных графических групп с собственными БУРР, включая две группы корпуса 6. Сохраняется установленное повторение обозначений на схеме; фактическая адресация оборудования и обязательность переименования не установлены. Содержание F-012 отсутствует, поэтому сравнение с ним исключено. Замечание сохраняется в техническом разделе: обозначения относятся к отдельным группам управления, а выбор исправления требует проверки идентификации по ОВ и АК. Оснований считать это подтверждённой малозначительной редакционной ошибкой нет. Непроверенные правила уникальности не заменяются вопросом инженеру: следующий шаг — сопоставление конкретных схем и спецификаций трёх помещений.",
+  "claim_reviews": [
+    {
+      "claim_id": "F-083-C1",
+      "role": "defect_basis",
+      "verdict": "supported",
+      "reason": "На detail_8 в помещении СС 5.Т.1 и на detail_9 в помещениях СС 6.Т.5 и 6.Т.9 непосредственно видны одинаковые марки К5.3 и К5.4. Сопоставление выполнено для одного исходного чертежа и разных помещений. Подтверждается повторение графических обозначений, но не нарушение установленного правила уникальности или фактическая маркировка оборудования."
+    },
+    {
+      "claim_id": "F-083-C2",
+      "role": "context",
+      "verdict": "supported",
+      "reason": "Общий вид подтверждает положение рассматриваемых групп в корпусах 5 и 6. В detail_9 две рамки помещений 6.Т.5 и 6.Т.9 видны одновременно, каждая содержит отдельную пару и собственный БУРР. Третья группа расположена в помещении 5.Т.1 на detail_8. Это три группы на исходной схеме, а не результат повторного подсчёта перекрывающихся деталей."
+    },
+    {
+      "claim_id": "F-083-C3",
+      "role": "context",
+      "verdict": "needs_data",
+      "reason": "Текст F-012 не supplied; изображения не устанавливают предмет другого замечания. Для проверки отсутствия дублирования требуется описание и решение F-012."
+    },
+    {
+      "claim_id": "F-083-C4",
+      "role": "context",
+      "verdict": "supported",
+      "reason": "Одна марка К5.3 либо К5.4 соответствует нескольким отдельно изображённым объектам. Поэтому при использовании марки без помещения возможна неоднозначная идентификация при согласовании, монтаже и наладке. Это условный риск; ошибки адресации контроллеров или фактического монтажа не установлены."
+    },
+    {
+      "claim_id": "F-083-C5",
+      "role": "recommendation",
+      "verdict": "needs_data",
+      "reason": "Подтверждённое повторение обосновывает проверку и согласование идентификации. Однако обязательность индивидуального переименования и исправления именно общей схемы не доказана. Необходимо сопоставить марки этих трёх помещений в схемах и спецификациях ОВ и АК и проверить состав принятого полного идентификатора. Итоговая рекомендация ограничена этой проверкой и условным исправлением выявленных расхождений."
+    },
+    {
+      "claim_id": "F-083-C6",
+      "role": "context",
+      "verdict": "needs_data",
+      "reason": "Показано повторение обозначений в документации, но не установлено, как оборудование идентифицируется в эксплуатации. Предоставленных данных недостаточно для положительного обоснования категории «ЭКСПЛУАТАЦИОННОЕ»."
+    }
+  ],
+  "failure": "Literal repeated short labels plus a conditional risk when room is omitted do not establish a technical conflict under an unknown full-identifier convention. Different physical groups alone do not prove shared uniqueness scope.",
+  "stage_at_fault": "source_review_workflow.prepare_adjudication_request / output profile interpretation",
+  "action": "Hold before final release. Transfer generic identity-domain rule to source review/adjudication; repeat negative F083 and positive F071 on same sources. Do not silently mark complete or overwrite failed run.",
+  "limits": [
+    "Coordinator source-supported evaluation, not a newly supplied engineer decision.",
+    "Question versus bounded internal deferral still depends on retrieval/profile policy; neither implies a proven technical defect.",
+    "No source-only inference about global uniqueness allowed."
+  ],
+  "production_acceptance": false,
+  "stage4_complete": false
+}
