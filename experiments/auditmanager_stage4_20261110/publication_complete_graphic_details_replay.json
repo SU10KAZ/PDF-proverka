@@ -1,0 +1,19 @@
+{
+  "status": "two_local_packets_verified_not_dispatched",
+  "preparation_path": "/tmp/auditmanager_publication_complete_graphic_details_20261112/preparation.json",
+  "preparation_sha256": "9a1787b741b3cd01dd241935d35d5b9abc4b53cbe1bb69645b98ea67b9d59c4c",
+  "finding_ids": [
+    "F-082",
+    "F-083"
+  ],
+  "checks": [
+    "All ten source-bound tiles retained, original whole attachment replaced",
+    "Input claim units, TEXT and system instructions unchanged",
+    "Packet fingerprints and file hashes valid",
+    "Incomplete grid and changed tile rejected"
+  ],
+  "model_calls": 0,
+  "readability_or_model_quality_proven": false,
+  "sealed_run_modified": false,
+  "production_acceptance": false
+}

@@ -44,18 +44,27 @@ def verify_tiles(manifest):
     return next(iter(ids)), [grid[(r, c)] for r in range(rows) for c in range(columns)]
 
 
-def prepare(root, manifest_path, output):
+def prepare(root, manifest_path, output, *, replace_attached=False):
     manifest = json.loads(manifest_path.read_text())
     ref, tiles = verify_tiles(manifest)
     original = json.loads((root / 'preparation.json').read_text())
     output.mkdir(parents=True, exist_ok=False)
     requests = []
     for row in original['requests']:
-        if not any(x['ref'] == ref for x in row.get('unavailable_linked_sources', [])):
-            continue
         request = verify_packet(row)
+        attached_paths = [path for path in request['image_hashes']
+                          if Path(path).stem.removeprefix('block_') == ref]
+        unavailable = any(x['ref'] == ref for x in row.get('unavailable_linked_sources', []))
+        if not unavailable and not (replace_attached and attached_paths):
+            continue
         envelope = json.loads(request['messages'][-1]['content'])
         packet = envelope['packet']
+        if attached_paths:
+            if not replace_attached:
+                raise ValueError('Graphic both attached and unavailable')
+            packet['attached_graphic_refs'] = [r for r in packet['attached_graphic_refs'] if r != ref]
+            for path in attached_paths:
+                del request['image_hashes'][path]
         bindings = [{'ref': Path(path).stem.removeprefix('block_'), 'path': path}
                     for path in request['image_hashes']]
         for t in tiles:
@@ -81,7 +90,9 @@ def prepare(root, manifest_path, output):
     record = {**original, 'requests': requests, 'dispatched': False,
               'selection': original['selection'] + ' Oversized linked graphic replaced by ALL tiles, no reviewer-based region selection.',
               'tile_manifest': {'path': str(manifest_path), 'sha256': sha(manifest_path)},
-              'parent_preparation_sha256': sha(root / 'preparation.json')}
+              'parent_preparation_sha256': sha(root / 'preparation.json'),
+              'replace_attached': replace_attached,
+              'readability_verified': False}
     write(output / 'preparation.json', record)
     return {'prepared': len(requests), 'ready': sum(r['transport_size_ready'] for r in requests),
             'packets': [{k:r[k] for k in ('finding_id','images','image_bytes')} for r in requests],
@@ -93,5 +104,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('root', 'manifest', 'output'):
         parser.add_argument(name, type=Path)
+    parser.add_argument('--replace-attached', action='store_true',
+                        help='Replace already attached whole graphic with every verified tile; no model call.')
     args = parser.parse_args()
-    print(json.dumps(prepare(args.root.resolve(), args.manifest.resolve(), args.output.resolve()), ensure_ascii=False))
+    print(json.dumps(prepare(args.root.resolve(), args.manifest.resolve(), args.output.resolve(), replace_attached=args.replace_attached), ensure_ascii=False))
