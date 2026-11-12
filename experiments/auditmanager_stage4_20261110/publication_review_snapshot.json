@@ -1,9 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 65,
+  "reviewed_distinct_findings": 66,
   "unreviewed_finding_ids": [
-    "F-066",
     "F-067",
     "F-068",
     "F-069",
@@ -24,7 +23,7 @@
     "F-084",
     "F-085"
   ],
-  "batch_successful_responses": 64,
+  "batch_successful_responses": 65,
   "batch_status_snapshot": "running",
   "process_liveness_not_inferred_from_status_file": true,
   "selected_followups": [
@@ -1134,6 +1133,23 @@
         "pending": 2,
         "withdrawn": 0,
         "history_only": 1
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-066",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F066_assessment.json",
+      "assessment_sha256": "625e6d0ef5bda63bab33ff64ae36915bb111eae9b0cee13e27a7bb8029bfd862",
+      "status": "five_line_cable_sum_preserved_dependent_risk_split_as_question",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_066/publication_projection.json",
+      "projection_sha256": "5464a6b24b249777ee2016ecff4d1eef4b59890369e6edd8158a94b7319d4c05",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 1,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 2
       },
       "engineer_accepted": false,
       "production_accepted": false

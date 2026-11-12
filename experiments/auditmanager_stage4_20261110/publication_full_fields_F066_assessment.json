@@ -1,0 +1,29 @@
+{
+  "finding_id": "F-066",
+  "status": "five_line_cable_sum_preserved_dependent_risk_split_as_question",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_066/publication_projection.json",
+  "projection_sha256": "5464a6b24b249777ee2016ecff4d1eef4b59890369e6edd8158a94b7319d4c05",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_fcd31b6618d34e0f982af6c418e3bf37.png",
+      "sha256": "7265169d198c15255584b261cce1dbc1517006493ca16c6a463b4607bc01325f",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "authoritative_text": {
+    "path": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+    "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+    "quote": "|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 45 | м |"
+  },
+  "checks": [
+    "Прослежены Пкр4.1-4 к TS1, -5 к PDS1, -6 к PDS2, -7 к PDS3, -12 к контактам Y1: пять линий КСПВПГнг(A)-HF 1x2x0,75 по 10 м, итого 50 м против 45 м в ведомости того же шкафа.",
+    "Экранированные линии КСПЭВПГ другой марки и силовые линии не включены в эту сумму.",
+    "Рекомендация 50 м ограничена сохранением схемных линий; фактическая недопоставка не объявлена доказанной.",
+    "Условный риск закупки вынесен отдельным вопросом без отдельного проектного решения. Присоединить его к исходной находке; не увеличивать нагрузку на инженера повторной строкой."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
