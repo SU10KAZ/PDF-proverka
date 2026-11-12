@@ -1,0 +1,347 @@
+{
+  "version": 1,
+  "scope": "Two source-reviewed graphic misses traced through detector inputs, raw outputs and later operations",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_id": "ITP58_GVS_branch_flows:f563ab4150d33b1acce3",
+      "observation": "Both raw detectors emitted empty findings; gate had zero candidates. Retrieved context selected onlyPDF7drawinglist, not calculation orpumpK15duty. LaterO07operation discusses connections/thermal duties but not branch sums; section6-6block not among its cited sources.",
+      "stage_assessment": "Initial detection with missing comparison context; no target-specific candidate was available for candidate recovery. Later bounded operation did not establish branch-flow comparison. Image-reading error itself is not proved.",
+      "detector_packets": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488093446069879/request.json",
+          "sha256": "dd22b770aaab93c9c7dc2c0ac3a60f78b0e8911088b83271d6938ad480a409d5",
+          "stage": "block_analysis",
+          "model": "codex/gpt-6-astra",
+          "image_hashes": {
+            "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7527066e645e47bb917a9fc17fb82ccc.png": "f33722b2cc7117e431c01cf6c19c274f7b07a0a4042a6ce7cea7349ab1db9e49"
+          },
+          "attempt_receipt": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488093446069879/attempts.json",
+            "sha256": "c05eafaeb753de316d834b6c0082b0a9641194fd9239606d992eeb12f099ac19",
+            "last_is_error": false
+          },
+          "text_presence": {
+            "1.711": false,
+            "1.707": false,
+            "12.13": false,
+            "T311": false,
+            "K15": false
+          }
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488093449970662/request.json",
+          "sha256": "dd22b770aaab93c9c7dc2c0ac3a60f78b0e8911088b83271d6938ad480a409d5",
+          "stage": "block_analysis",
+          "model": "codex/gpt-6-astra",
+          "image_hashes": {
+            "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7527066e645e47bb917a9fc17fb82ccc.png": "f33722b2cc7117e431c01cf6c19c274f7b07a0a4042a6ce7cea7349ab1db9e49"
+          },
+          "attempt_receipt": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488093449970662/attempts.json",
+            "sha256": "c0e0404be836f6a16e625a13c265566276277e1241c771b35ace4f6b63ddba20",
+            "last_is_error": false
+          },
+          "text_presence": {
+            "1.711": false,
+            "1.707": false,
+            "12.13": false,
+            "T311": false,
+            "K15": false
+          }
+        }
+      ],
+      "raw_detector_evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261112_125148__ensemble_codex-only_high/block_blk_7527066e645e47bb917a9fc17fb82ccc.json",
+        "sha256": "7aca0b10020c3a136b04c91c2d9cb0ecea352ba581df35ec6e196c61ba1a857d",
+        "pointer": "/result/detector_results",
+        "finding_counts": [
+          0,
+          0
+        ]
+      },
+      "block_stage": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+        "sha256": "c0956d4c62ff84ff9cd034558334128b34c15e89afdc3ca6888732891ef58d9e",
+        "pointer": "/block_analyses/8",
+        "evidence_gate": {
+          "schema_version": 1,
+          "candidates": 0,
+          "published": 0,
+          "deferred": 0,
+          "min_confidence": 0.8,
+          "max_published_per_block": null,
+          "reason_counts": {}
+        },
+        "retrieval": {
+          "scope": "all_document_vector_text_other_pages",
+          "query_terms": [
+            "4-4",
+            "6-6",
+            "33-33",
+            "35-35",
+            "36-36",
+            "ИТП_Разрезы",
+            "4-4...6-6"
+          ],
+          "candidate_hits": 1,
+          "selected_hits": 1,
+          "selected_pages": [
+            7
+          ],
+          "status": "hits"
+        },
+        "gap_search": {
+          "enabled": false,
+          "performed": false,
+          "status": "disabled",
+          "searched_categories": [],
+          "summary": "Поиск новых проблем отключён. Оба списка замечаний пусты, сопоставление не требуется.",
+          "findings_added": 0,
+          "duplicates_rejected": 0
+        }
+      },
+      "registered_object": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+        "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+        "pointer": "/object_registry/6",
+        "object": {
+          "id": "O-07",
+          "identity": "Узел ГВС 1-й зоны: К6 НН-07-41-TMTL18, К15 HELIX V 603-1/16/E/KS/400-50-N, клапан 32 VF-3R-65-52",
+          "scope": "ГВС 1-й зоны; два теплообменника по 50%, один рабочий и один резервный насос",
+          "kind": "Функциональный узел",
+          "source_refs": [
+            "blk_ae35014464b5493f84ca38481c3ffa60",
+            "blk_df17c007b7cf4eef8eca49f51580a275",
+            "blk_d6b45a98c27d4511b7ae8ddfb1668ebc",
+            "blk_4de04f93b8b745ceb034696663bfcc58"
+          ]
+        }
+      },
+      "later_operation": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operations_c88b753b5560a786.json",
+        "sha256": "645108156040a529bcbef449e16183b129b9d460b0ca66def2856659a6eeb6bc",
+        "pointer": "/object_operation_results",
+        "operations": [
+          {
+            "operation": "dimension_consistency",
+            "status": "needs_data",
+            "source_refs": [
+              "blk_df17c007b7cf4eef8eca49f51580a275",
+              "blk_d6b45a98c27d4511b7ae8ddfb1668ebc",
+              "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+              "blk_10f7f3fbc82f4e11be9c81cdf6e4bc5c",
+              "blk_5d085f4c917a4e568fd33327e6f8edea",
+              "blk_94b58ecf5d404f7d90c272d267eb2e48"
+            ],
+            "reason": "Осмотрены все четыре изображения: обвязка К15 на разрезах 4-4 и 10-10, теплообменники позиции 6 и клапан 32 на разрезах 7-7 и 8-8, узел ГВС 1-й зоны на аксонометрии. В расчете теплообменника присоединения F1–F4 указаны Ду50 Ру25; на разрезах трубопроводы его обвязки обозначены Ø80. Для К15 паспортные присоединения составляют 1 1/4 дюйма PN16, а трубопроводы Т4 на разрезах обозначены Ø50. Клапан 32 обозначен DN65 в обвязке Ø80. Различие размеров трубопроводов и присоединений само по себе не является конфликтом: необходима проверка переходных деталей. По представленным изображениям нельзя однозначно определить размеры всех переходов и исполнения ответных соединений. Требуются монтажные узлы присоединений и соответствующие позиции спецификации; отсутствие переходов не установлено."
+          },
+          {
+            "operation": "calculation_consistency",
+            "status": "needs_data",
+            "source_refs": [
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_df17c007b7cf4eef8eca49f51580a275",
+              "blk_d6b45a98c27d4511b7ae8ddfb1668ebc",
+              "blk_4de04f93b8b745ceb034696663bfcc58",
+              "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+              "blk_10f7f3fbc82f4e11be9c81cdf6e4bc5c",
+              "blk_5d085f4c917a4e568fd33327e6f8edea",
+              "blk_94b58ecf5d404f7d90c272d267eb2e48"
+            ],
+            "reason": "Проверена связь расхода, напора, КПД и мощности К15: расчетная мощность на валу согласуется с указанными 0,32 кВт с учетом округления. Учтен один рабочий насос; резервный не добавлялся к расходу. Для тепловой части получены разные численные основания: расчет выбранного теплообменника содержит 0,4186 Гкал/ч на аппарат, разрезы 7-7, 8-8 и аксонометрия обозначают 0,403 Гкал/ч при 50%, анкета задает максимальную нагрузку зоны 0,728 Гкал/ч. Эти значения могут относиться к нагрузке потребителя, нагрузке с циркуляционными потерями и подбору оборудования; их эквивалентность не установлена. Требуются расчет нагрузки с учетом циркуляции, режим совместной работы двух аппаратов и расчет клапана 32 с единицей ΔP и основанием расхода 35 м³/ч. Массовые расходы теплообменника не приравнивались к объемному расходу клапана или циркуляционного насоса. Недостаточность оборудования и ошибка теплового баланса не доказаны."
+          }
+        ]
+      }
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:cae0fec45b0437f86c1a",
+      "observation": "Raw detectors emitted empty list and one unrelatedvalve-flowfindingG009. Target1.711appears in supplied user text, but1.707comparison does not. Retrieval selectedPDF7/9/26/40/53/153rather than the requiredK1calculation. LaterO02operation concerned tankdimensions/calculation, notK1label.",
+      "stage_assessment": "Source-relation coverage gap before final merging; target label available but correspondingcalculation not in detector text. Generic node registry and calculation operation did not guarantee comparison of every component.",
+      "detector_packets": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488176073869651/request.json",
+          "sha256": "163b524a1085023d21a4b1d7aac5866000251e30d997ceff04ce628ec836237e",
+          "stage": "block_analysis",
+          "model": "codex/gpt-6-astra",
+          "image_hashes": {
+            "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png": "7354443aa6ecdf7232110223a7b30b0dd25276027e3006175c728eb1fdc35edd"
+          },
+          "attempt_receipt": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488176073869651/attempts.json",
+            "sha256": "6ea240780174384a15fb6d4bc6395e8c05145590e178699a4c1b27ef377e41bc",
+            "last_is_error": false
+          },
+          "text_presence": {
+            "1.711": true,
+            "1.707": false,
+            "12.13": false,
+            "T311": false,
+            "K15": false
+          }
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488176075318415/request.json",
+          "sha256": "163b524a1085023d21a4b1d7aac5866000251e30d997ceff04ce628ec836237e",
+          "stage": "block_analysis",
+          "model": "codex/gpt-6-astra",
+          "image_hashes": {
+            "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png": "7354443aa6ecdf7232110223a7b30b0dd25276027e3006175c728eb1fdc35edd"
+          },
+          "attempt_receipt": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488176075318415/attempts.json",
+            "sha256": "52a5f75ee5cb68069aad18d6322afcb1b396e65923083ef3c2fbb2e97ac682f9",
+            "last_is_error": false
+          },
+          "text_presence": {
+            "1.711": true,
+            "1.707": false,
+            "12.13": false,
+            "T311": false,
+            "K15": false
+          }
+        }
+      ],
+      "raw_detector_evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/_stage01_findings_only_runs/20261112_125148__ensemble_codex-only_high/block_blk_6496640ac5e44e98a89acc7af56d0509.json",
+        "sha256": "ff56dae0f624e7f3322632293888766a8a76b0000af03efcb31d6a09be280f6d",
+        "pointer": "/result/detector_results",
+        "finding_counts": [
+          0,
+          1
+        ]
+      },
+      "block_stage": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+        "sha256": "c0956d4c62ff84ff9cd034558334128b34c15e89afdc3ca6888732891ef58d9e",
+        "pointer": "/block_analyses/13",
+        "evidence_gate": {
+          "schema_version": 1,
+          "candidates": 1,
+          "published": 1,
+          "deferred": 0,
+          "min_confidence": 0.8,
+          "max_published_per_block": null,
+          "reason_counts": {}
+        },
+        "retrieval": {
+          "scope": "all_document_vector_text_other_pages",
+          "query_terms": [
+            "40-40",
+            "15-15",
+            "16-16",
+            "100-140",
+            "Три",
+            "независимых",
+            "разреза",
+            "масштабе",
+            "узлами",
+            "трубопроводов",
+            "отопления",
+            "ГВС",
+            "вентилем",
+            "VFM-2R-100-140",
+            "DN100мм",
+            "параметрами",
+            "режимов"
+          ],
+          "candidate_hits": 33,
+          "selected_hits": 6,
+          "selected_pages": [
+            7,
+            9,
+            26,
+            40,
+            53,
+            153
+          ],
+          "status": "hits"
+        },
+        "gap_search": {
+          "enabled": false,
+          "performed": false,
+          "status": "disabled",
+          "searched_categories": [],
+          "summary": "Поиск новых проблем отключён. В левом списке замечаний нет; замечание codex:001 правого списка остаётся new.",
+          "findings_added": 0,
+          "duplicates_rejected": 0
+        }
+      },
+      "registered_object": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+        "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+        "pointer": "/object_registry/1",
+        "object": {
+          "id": "O-02",
+          "identity": "Узел отопления 1-й зоны: К1 НН-21-116-TMTL43, К9 IL 65/140-7,5/2-R, К18 SPL BASIC 2-C-60 с LVF 600 и RM 80 PN10, клапан 27 VFM-2R-100-140",
+          "scope": "Отопление жилья 1-й зоны, аренды и автостоянки; позиции внутри узла являются отдельными агрегированными группами оборудования",
+          "kind": "Функциональный узел",
+          "source_refs": [
+            "blk_1601889b50624245a5c590ad23d87175",
+            "blk_ae35014464b5493f84ca38481c3ffa60",
+            "blk_176aff361f9542daa86a2daecc090272",
+            "blk_432d08b6de194751ae756f627e3e5bb8",
+            "blk_b4fb33513ca44182af058d09c8ab2dbb"
+          ]
+        }
+      },
+      "later_operation": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operations_5b051b292826d72c.json",
+        "sha256": "e86aa79287fa03506796d73581504ff5c5f036b016f18fd9c7d6a10743345aeb",
+        "pointer": "/object_operation_results",
+        "operations": [
+          {
+            "operation": "dimension_consistency",
+            "status": "needs_data",
+            "source_refs": [
+              "blk_b4fb33513ca44182af058d09c8ab2dbb",
+              "blk_1601889b50624245a5c590ad23d87175",
+              "blk_63043bc6592f43068fc91591b7274963",
+              "blk_cc80e7962a094791b984d8fb5391e886"
+            ],
+            "reason": "Осмотрены оба изображения: план, лист 3, в зоне К18 и разрез 37-37, лист 5, в зоне LVF 600. На разрезе около бака читается размер 780 мм, согласующийся с диаметром в подборе и экспликации. Однако представленных размерных привязок недостаточно для проверки основания, проходов и монтажного пространства бака высотой 2080 мм. Масштабное изображение без однозначных размерных привязок не доказывает достаточность зазоров. Размерный конфликт не установлен; проверка размещения остается незавершенной."
+          },
+          {
+            "operation": "calculation_consistency",
+            "status": "needs_data",
+            "source_refs": [
+              "blk_b4fb33513ca44182af058d09c8ab2dbb",
+              "blk_b45c5d1f31c948e092289923f6558a2f",
+              "blk_1601889b50624245a5c590ad23d87175",
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_176aff361f9542daa86a2daecc090272",
+              "blk_432d08b6de194751ae756f627e3e5bb8"
+            ],
+            "reason": "Пересчитаны объем расширения, расчетный объем бака, средняя температура и давление АУПД. Установлено локальное противоречие: при собственном расчетном объеме 606,9 л и требовании выбирать объем не менее расчетного принят один основной бак 600 л. При этом методика указывает нагрев от 10 °C, а приложенная таблица расширения отсчитывается от 0 °C; основание применения коэффициента 2,258 требует уточнения. Это ограничивает вывод о физически необходимом объеме, но не устраняет противоречие внутри представленного подбора. Проверка всего узла не завершена: для сопоставления расхода К9 82,83 м³/ч с расходом холодной стороны К1 85,35 т/ч нужны плотность при расчетном режиме и согласованная расчетная граница. Плотность 998,31 кг/м³ в подборе насоса относится к 20 °C и не подтверждает пересчет для контура 80/60 °C. Требуются также гидравлический расчет К9 и расчет клапана 27; рабочий и резервный насосы не суммировались."
+          }
+        ]
+      }
+    }
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "limits": [
+    "Absence of target strings alone is not an exclusive causal proof; conclusions combine actual packets, raw detector outputs, retrieved pages and operation records.",
+    "Two same-model detectors agreeing on empty output is not independent truth evidence.",
+    "No claim of global failure or final comparative improvement; frozen series remains running."
+  ],
+  "recommendation": {
+    "behavior": "Record observed graphic object labels, roles, units and parameters before searching for cross-document comparisons. Resolve specific calculation/specification counterparts for each component, then execute named comparison operations. Empty findings must not count as completed checks when required counterparts were absent.",
+    "retain": "Preserve validG009valve-flowquestion while addingK1labelcomparison; preserve explicit supply/circulation roles and one-working-one-reserveK15without inferring pump inadequacy from raw sums.",
+    "controls": "Use source-verified branch-flow positive with refuted ambiguousT411/T412negative; distinguishK1label discrepancy from already preservedK2/K6labels and valve-flowquestion. Existing control artifacts contain source evidence; no new engineer adjudication claimed.",
+    "status": "diagnostic proposal, not implemented in frozen runtime"
+  }
+}
