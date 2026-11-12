@@ -196,3 +196,37 @@ def reconcile_publication(finding, packet, response):
         if cursor != len(units[key]):
             raise InvalidPublication('omitted_or_overlapping_input_text')
     return result
+
+
+def rebind_unique_input_quotes(packet, response):
+    """Repair only wrong offsets of literal, uniquely located input quotes.
+
+    Preserve the raw response separately. This never rewrites a claim, outcome,
+    evidence or quote. The caller must still run full reconciliation validation:
+    unique occurrences alone do not prove complete, nonoverlapping coverage.
+    """
+    bound = deepcopy(response)
+    units = {u['id']: u['text'] for u in packet['input_units']}
+    repairs = []
+    if not isinstance(bound, dict) or not isinstance(bound.get('parts'), list):
+        raise InvalidPublication('missing_parts')
+    for part in bound['parts']:
+        if not isinstance(part, dict) or not isinstance(part.get('input_spans'), list):
+            raise InvalidPublication('missing_input_spans')
+        for index, span in enumerate(part['input_spans']):
+            if not isinstance(span, dict) or not isinstance(span.get('unit_id'), str) or span['unit_id'] not in units:
+                raise InvalidPublication('unknown_input_unit')
+            text, quote = units[span['unit_id']], span.get('quote')
+            if not isinstance(quote, str) or not quote:
+                raise InvalidPublication('missing_literal_input_quote')
+            start, end = span.get('start'), span.get('end')
+            if type(start) is int and type(end) is int and 0 <= start < end <= len(text) and text[start:end] == quote:
+                continue
+            location = text.find(quote)
+            if location < 0 or text.find(quote, location + 1) >= 0:
+                raise InvalidPublication('input_quote_not_uniquely_located')
+            repairs.append({'part_id': part.get('id'), 'span_index': index, 'unit_id': span['unit_id'],
+                            'reported': {'start': start, 'end': end},
+                            'bound': {'start': location, 'end': location + len(quote)}})
+            span.update(start=location, end=location + len(quote))
+    return bound, repairs

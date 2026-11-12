@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from backend.app.pipeline.stages.findings_merge.publication_reconciliation import (
-    InvalidPublication, reconcile_publication,
+    InvalidPublication, reconcile_publication, rebind_unique_input_quotes,
 )
 from .run_primary_text_runtime_probe import sha, write
 from .run_runtime_probe_recovery import verify_packet
@@ -55,11 +55,26 @@ def evaluate(root, output, finding_id=None):
         projection = reconcile_publication(matches[0], packet, response)
     except InvalidPublication as exc:
         receipt.update(status='invalid_publication_requires_inspection', error=str(exc))
-        write(output / 'publication_validation.json', receipt)
-        return receipt
+        if str(exc) != 'invalid_input_span':
+            write(output / 'publication_validation.json', receipt)
+            return receipt
+        try:
+            bound, repairs = rebind_unique_input_quotes(packet, response)
+            projection = reconcile_publication(matches[0], packet, bound)
+        except InvalidPublication as binding_error:
+            receipt['rebinding_error'] = str(binding_error)
+            write(output / 'publication_validation.json', receipt)
+            return receipt
+        normalized_path = output / 'uniquely_bound_response.json'
+        write(normalized_path, bound)
+        receipt['offset_rebinding'] = {'repairs': repairs, 'raw_response_changed': False,
+                                      'claim_content_changed': False,
+                                      'normalized_response_path': str(normalized_path),
+                                      'normalized_response_sha256': sha(normalized_path)}
     destination = output / 'publication_projection.json'
     write(destination, projection)
-    receipt.update(status='structurally_valid_requires_source_review',
+    receipt.update(status=('structurally_valid_after_unique_quote_rebinding_requires_source_review'
+                           if receipt.get('offset_rebinding') else 'structurally_valid_requires_source_review'),
                    review_scope=projection['review_scope'],
                    unreviewed_claim_fields=projection['unreviewed_claim_fields'],
                    part_counts_not_finding_counts=True,

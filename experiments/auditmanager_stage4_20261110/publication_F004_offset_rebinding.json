@@ -1,0 +1,97 @@
+{
+  "status": "offset_error_recovered_without_semantic_changes",
+  "finding_id": "F-004",
+  "validation": {
+    "finding_id": "F-004",
+    "request_sha256": "56279ee05f6bd155950d1065c00a21a3b90f1dd50dd9a173dc9feeae4759a74d",
+    "response_sha256": "30d16ed51acfb686d67dccc3e42b6df5ceaba0958356b4e224e190b340110522",
+    "selection": "Remaining 84 DEV-known AK findings, full-field current-run source links; F-006 reused from completed pilot. All tiles used for oversized GRAPHIC; no engineer or coordinator answers supplied.",
+    "semantic_verified": false,
+    "production_acceptance": false,
+    "status": "structurally_valid_after_unique_quote_rebinding_requires_source_review",
+    "error": "invalid_input_span",
+    "offset_rebinding": {
+      "repairs": [
+        {
+          "part_id": "motor_m2",
+          "span_index": 7,
+          "unit_id": "addendum/3/reason",
+          "reported": {
+            "start": 0,
+            "end": 137
+          },
+          "bound": {
+            "start": 0,
+            "end": 138
+          }
+        },
+        {
+          "part_id": "motor_m5",
+          "span_index": 5,
+          "unit_id": "addendum/5/reason",
+          "reported": {
+            "start": 0,
+            "end": 135
+          },
+          "bound": {
+            "start": 0,
+            "end": 136
+          }
+        },
+        {
+          "part_id": "processing_references",
+          "span_index": 3,
+          "unit_id": "addendum/3/reason",
+          "reported": {
+            "start": 137,
+            "end": 156
+          },
+          "bound": {
+            "start": 138,
+            "end": 157
+          }
+        },
+        {
+          "part_id": "processing_references",
+          "span_index": 5,
+          "unit_id": "addendum/5/reason",
+          "reported": {
+            "start": 135,
+            "end": 151
+          },
+          "bound": {
+            "start": 136,
+            "end": 152
+          }
+        }
+      ],
+      "raw_response_changed": false,
+      "claim_content_changed": false,
+      "normalized_response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_004/uniquely_bound_response.json",
+      "normalized_response_sha256": "160585532feff63e7f69cbbec158a6c3928e25b28d1254ee00b53175c19f55af"
+    },
+    "review_scope": "claim_fields",
+    "unreviewed_claim_fields": [],
+    "part_counts_not_finding_counts": true,
+    "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_004/publication_projection.json",
+    "projection_sha256": "485286cec52d78999506e58cb6a21490fd038f216e1aca99a0b34da82e0d2c60",
+    "counts": {
+      "technical_findings": 3,
+      "questions": 1,
+      "withdrawn": 0,
+      "pending": 3,
+      "history_only": 1
+    }
+  },
+  "tests": {
+    "passed": 22,
+    "scope": "publication reconciliation and recovery addenda"
+  },
+  "semantic_review_complete": false,
+  "open_semantic_checks": [
+    "Verify all three motor-role/identity conflicts against sources.",
+    "Determine whether separate recommendation question adds unnecessary engineer load.",
+    "Keep unresolved operating-mode and connection-risk claims distinct from confirmed document conflicts."
+  ],
+  "production_acceptance": false
+}

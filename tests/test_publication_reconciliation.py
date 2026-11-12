@@ -143,3 +143,29 @@ def test_full_contract_includes_risk_solution_and_norms_without_silent_inheritan
     response['packet_sha256'] = fingerprint(packet)
     with pytest.raises(InvalidPublication, match='omitted_or_overlapping'):
         reconcile_publication(finding, packet, response)
+
+
+def test_unique_literal_span_rebinding_preserves_model_claims_and_raw_response():
+    from backend.app.pipeline.stages.findings_merge.publication_reconciliation import rebind_unique_input_quotes
+    finding, packet, response = example()
+    response['parts'][0]['input_spans'][0]['end'] -= 1
+    before = deepcopy(response)
+    bound, repairs = rebind_unique_input_quotes(packet, response)
+    assert response == before and len(repairs) == 1
+    assert bound['parts'][0]['statement'] == before['parts'][0]['statement']
+    assert bound['parts'][0]['evidence'] == before['parts'][0]['evidence']
+    assert reconcile_publication(finding, packet, bound)['technical_findings']
+
+
+def test_rebinding_rejects_ambiguous_quotes_and_does_not_fill_omitted_claims():
+    from backend.app.pipeline.stages.findings_merge.publication_reconciliation import rebind_unique_input_quotes
+    finding, packet, response = example()
+    response['parts'][0]['input_spans'].pop()
+    bound, repairs = rebind_unique_input_quotes(packet, response)
+    assert not repairs
+    with pytest.raises(InvalidPublication, match='omitted_or_overlapping'):
+        reconcile_publication(finding, packet, bound)
+    packet['input_units'][0]['text'] = 'same same'
+    response['parts'][0]['input_spans'][0].update(start=1, end=5, quote='same')
+    with pytest.raises(InvalidPublication, match='not_uniquely_located'):
+        rebind_unique_input_quotes(packet, response)
