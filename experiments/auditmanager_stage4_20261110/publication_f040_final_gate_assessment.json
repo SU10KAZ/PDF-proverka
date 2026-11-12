@@ -1,0 +1,31 @@
+{
+  "finding_id": "F-040",
+  "status": "final_gate_held_graphic_interpretation_repeated_no_report_change",
+  "receipt_path": "/tmp/auditmanager_publication_f040_admission_20261112/receipt.json",
+  "receipt_sha256": "f29712651a9e8ddf72329f3f868d185a8eee1a32b85807fa653195502f827dd6",
+  "input_document_sha256": "94744ee989c33e849e517ecb75c7cf38781b53a000dda5e23521e0dda2e8df80",
+  "output_document_sha256": "94744ee989c33e849e517ecb75c7cf38781b53a000dda5e23521e0dda2e8df80",
+  "input_equals_output": true,
+  "findings_retained": 85,
+  "checks": {
+    "source_support": "fail",
+    "quantities_and_scope": "pass",
+    "original_clause_preservation": "fail",
+    "uncertainty_and_consequences": "fail",
+    "profile_and_norms": "fail",
+    "peer_overlap": "pass",
+    "final_citations": "fail"
+  },
+  "observations": [
+    "Final checker repeats electric-symbol identification using overlapping strokes, despite the earlier source-only reading distinguishing the TS1 line.",
+    "Final request contains original image, original/proposed finding and peer presentation context; it does not include the independent source-only graphic observations.",
+    "This proves a context handoff omission, not that the final checker must automatically trust the earlier model reading.",
+    "No edit applied, no final Excel export created, no suppression or deferral accepted."
+  ],
+  "required_change": "Bind source-only observations to exact image and source-only request, pass them as explicitly untrusted observations into the final source check, require independent image comparison; exclude coordinator decisions and expected outcomes. Test stale image/request rejection and preserve positive controls.",
+  "limits": [
+    "Gate was respected; repeated model interpretation is not adjudicated as engineering truth.",
+    "Current 85-row report remains the unchanged experimental input, not production-approved output."
+  ],
+  "production_acceptance": false
+}

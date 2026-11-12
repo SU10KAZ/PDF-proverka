@@ -81,12 +81,14 @@
         "Same sheet F-006: pressure range and quantity conflicts must survive; no whole-image or whole-finding blanket suppression.",
         "Source-only reading must still recognize the separately depicted electric heater and its legend example."
       ],
-      "verification": "Two-pass publication F040 running; then verify surviving F006 clauses and final rendering. Repeat on other sheets before general adoption.",
+      "verification": "Source-only reading distinguishes the TS1 line; F040 reconciliation removes technical claim but leaves replacement questions; F006 positive survives. Final gate without reading handoff repeats the misreading and holds. Add bound untrusted observations to final check, then verify complete export and other-sheet controls.",
       "evidence_paths": [
         "experiments/auditmanager_stage4_20261110/heater_source_reading_assessment.json",
-        "experiments/auditmanager_stage4_20261110/publication_heater_reading_dispatch.json"
+        "experiments/auditmanager_stage4_20261110/publication_heater_reading_dispatch.json",
+        "experiments/auditmanager_stage4_20261110/publication_heater_pair_summary.json",
+        "experiments/auditmanager_stage4_20261110/publication_f040_final_gate_assessment.json"
       ],
-      "limits": "Initial source-only shape distinction passed locally; final publication improvement and preserved-positive pair not yet proven."
+      "limits": "End-to-end improvement not proven; final gate held and original report unchanged. Do not count disappearance from a draft projection as successful removal."
     }
   ],
   "sealed_queue_modified": false,
