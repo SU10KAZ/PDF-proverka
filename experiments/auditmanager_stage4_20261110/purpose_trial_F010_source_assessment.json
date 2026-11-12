@@ -1,0 +1,30 @@
+{
+  "finding_id": "F-010",
+  "status": "routing_control_passed_question_preserved_context_search_not_closed",
+  "candidate_projection_path": "/tmp/auditmanager_publication_purpose_controls_20261112_run/evaluations/publication_purpose_010/publication_projection.json",
+  "candidate_projection_sha256": "e624109ce679f794d4dd51751ba48d44838e151c845d61a4776c4c06a8c86b82",
+  "baseline_assessment_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F010_assessment.json",
+  "baseline_assessment_sha256": "a509bde39a42c562ca85a8c30c018495a8b44f2c0c88f9437c89098942b88e81",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+  "source_review_sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea",
+  "checks": [
+    "У1–У4 versus У4.3–У4.6 difference retained; four units not expanded into extra physical curtains.",
+    "Master/slave technical error not asserted; question retains requested designation reconciliation.",
+    "Recommendation and conditional risk attached to same question.",
+    "No normative conclusion about letter У; limitation remains internal."
+  ],
+  "part_count_comparison": {
+    "baseline_technical": 1,
+    "candidate_technical": 0,
+    "baseline_questions": 0,
+    "candidate_questions": 1,
+    "interpretation": "Corrects unsupported promotion without removing useful source observation."
+  },
+  "remaining_context": "Candidate explicitly requests existing project sheets 23 and 41; their contents must be checked before declaring context exhausted or final engineer action unavoidable.",
+  "limits": [
+    "DEV control, not independent transfer test.",
+    "No final-release or production acceptance."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}

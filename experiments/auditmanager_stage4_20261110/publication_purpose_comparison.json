@@ -45,7 +45,37 @@
       "baseline_request_sha256": "c49b081fb92f93a456d3a2cf77162d7804dc27424f6462e552d31a804aee98e8",
       "candidate_request_sha256": "53808c40f66e5a83cc290e17fcc7fce372f9c886472eec7b51693f863cd34422",
       "semantic_comparison": "not_completed",
-      "status": "response_not_available"
+      "status": "structurally_valid_requires_source_review",
+      "validation": {
+        "finding_id": "F-010",
+        "request_sha256": "53808c40f66e5a83cc290e17fcc7fce372f9c886472eec7b51693f863cd34422",
+        "response_sha256": "d32615486d11d6a1c256c134b4caede5eb8f72f288e1e2bc355673bb1b5004e1",
+        "selection": "DEV-selected routing controls; prior purpose from current-run finding only; same source context as each selected baseline. Not blind evaluation.",
+        "semantic_verified": false,
+        "production_acceptance": false,
+        "status": "structurally_valid_requires_source_review",
+        "review_scope": "claim_fields",
+        "unreviewed_claim_fields": [],
+        "part_counts_not_finding_counts": true,
+        "projection_path": "/tmp/auditmanager_publication_purpose_controls_20261112_run/evaluations/publication_purpose_010/publication_projection.json",
+        "projection_sha256": "e624109ce679f794d4dd51751ba48d44838e151c845d61a4776c4c06a8c86b82",
+        "counts": {
+          "technical_findings": 0,
+          "questions": 1,
+          "withdrawn": 0,
+          "pending": 1,
+          "history_only": 0
+        }
+      },
+      "baseline_projection_sha256": "8ea028613a64ab322d7a7f44a27e0a622a86c6b8ea4f0e600e1ebc9d39733c64",
+      "baseline_part_counts": {
+        "technical_findings": 1,
+        "questions": 0,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 0
+      },
+      "part_counts_are_not_defect_counts_or_quality_scores": true
     },
     {
       "finding_id": "F-012",
