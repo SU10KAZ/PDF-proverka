@@ -1,0 +1,28 @@
+{
+  "finding_id": "F-064",
+  "status": "valve_quantity_conflict_preserved_no_procurement_overclaim",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_064/publication_projection.json",
+  "projection_sha256": "760ab3b4c8e28089602a2f578571080bccea2fa583bc6aa058b30eea42b06bb3",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+      "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+      "directly_viewed": true
+    }
+  ],
+  "authoritative_text": {
+    "path": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+    "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+    "quote": "| Y1, Y2 | Регулирующий клапан с электроприводом в комплекте смесительного узла с насосом | 4 | Учтено в разделе ЗАВ-РД-ОВ1.2-ПА |"
+  },
+  "checks": [
+    "На схеме непосредственно просмотрены два регулирующих клапана с приводами Y1 и Y2 при насосах M1 и M2. Ручная арматура не включена в их число.",
+    "Количество 4 в авторитетном перечне против двух изображённых клапанов сохранено как локальный конфликт.",
+    "Уменьшение количества до 2 обусловлено подтверждением полноты состава; избыточная закупка и полный состав ОВ не объявлены доказанными.",
+    "Рекомендация и условный риск объединены с основным замечанием, отдельные вопросы не созданы."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
