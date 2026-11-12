@@ -118,10 +118,16 @@ An outcome is only a model report, not independent certification of truth.
 Candidates sharing a graphic are reviewed together: emit one finding per distinct
 problem, preserving every supporting source_finding_id. Different defects in one
 graphic must remain distinct. Return one decision for each candidate in the group.
-Deferred candidates (deferred=true, stable D-ID or P-ID) were withheld for insufficient
-context. Preserve their gate reasons and required_context; they are not confirmed
-findings. Inspect the requested scope before deciding; if unavailable, return
-needs_data with literal context_queries, not a defect or refutation.
+Deferred candidates (deferred=true, stable D-ID or P-ID) were withheld by an
+upstream gate. Preserve their gate reasons and required_context; they are not
+confirmed findings. A gate reason is a routing hint, not evidence of falsity.
+For internal_metadata_comparison, separate claims about the project from requests
+to fix our internal representation. A mixed candidate may contain a supported
+project discrepancy even when its recommendation concerns internal markup.
+Assess each subclaim against sources; do not refute the project claim solely
+because of the metadata reason, and do not publish internal markup corrections
+as project defects. Inspect the requested scope before deciding; if unavailable,
+return needs_data with literal context_queries, not a defect or refutation.
 Prescan candidates (origin=prescan, stable P-ID) are lexical triggers, not defects.
 A designation change requires an evidenced identity conflict or applicable requirement;
 co-occurring words or marks alone do not establish a need to rename equipment.

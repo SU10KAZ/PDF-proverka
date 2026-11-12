@@ -152,3 +152,43 @@ def test_text_evidence_with_explicit_refs_is_preserved_without_quote_invention()
     request = CodexTargetedPass('candidate_recovery_test', 'test.json',
                                [{'role': 'user', 'content': json.dumps(packet)}], ())
     assert not validate_recovery_payload(request, {'findings': [finding]})['findings']
+
+
+def test_mixed_metadata_candidate_survives_gate_to_source_recovery(tmp_path, monkeypatch):
+    from backend.app.pipeline.stages.block_analysis.finding_evidence_gate import gate_findings
+    import backend.app.pipeline.stages.prepare.candidate_recovery as recovery
+
+    monkeypatch.setattr(recovery, 'resolve_blocks_dir', lambda _: tmp_path / 'missing_crops')
+    original = {
+        'finding': 'Номер 0.0.2.2 присвоен венткамере и помещению РУ.',
+        'recommendation': 'Исправить тип фрагмента в разметке.',
+        'claim_type': 'contradiction', 'affected_entity': '0.0.2.2',
+        'evidence_quote': '0.0.2.2 — Венткамера; 0.0.2.2 — РУ.',
+        'evidence_kind': 'text', 'context_status': 'sufficient',
+        'confidence': 0.95, 'counterevidence_checked': True,
+        'source_block_ids': ['t1'],
+    }
+    published, deferred, _ = gate_findings([original])
+    assert published == []
+    assert deferred[0]['_evidence_gate']['reasons'] == ['internal_metadata_comparison']
+    base = {'findings': [{'id': 'F-existing', 'problem': 'Existing useful result'}]}
+    for name, data in {
+        '02_text_analysis.json': {'text_findings': []},
+        '01_blocks_analysis.json': {'block_analyses': [{
+            'block_id': 't1', 'findings': published, 'deferred_findings': deferred}]},
+        '03_findings.json': base,
+    }.items():
+        (tmp_path / name).write_text(json.dumps(data, ensure_ascii=False))
+    md = tmp_path / 'document.md'
+    md.write_text('## Page 1\n### BLOCK [TEXT]: t1\n' + original['evidence_quote'])
+    request, = build_recovery_passes(tmp_path, md)
+    packet = json.loads(request.messages[-1]['content'])
+    candidate = packet['candidate']
+    assert candidate['deferred'] is True
+    assert candidate['source_id'].startswith('D-')
+    assert candidate['candidate'] == deferred[0]
+    assert original['evidence_quote'] in packet['authoritative_md']
+    assert 't1' in packet['allowed_source_refs']
+    assert packet['existing_findings'] == base['findings']
+    assert json.loads((tmp_path / '03_findings.json').read_text()) == base
+    assert '_evidence_gate' not in original

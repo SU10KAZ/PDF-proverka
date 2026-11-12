@@ -1,0 +1,26 @@
+{
+  "status": "mixed_metadata_recovery_contract_verified",
+  "change": "Recovery instructions distinguish an upstream routing reason from source evidence; separate project claims from internal-markup requests before deciding.",
+  "verification": {
+    "command": "python -m pytest -q tests/test_candidate_recovery.py tests/test_stage01_evidence_context.py tests/test_subclaim_coverage.py",
+    "result": "22 passed in 0.70s",
+    "case": "Synthetic mixed project claim + internal metadata recommendation passes through actual gate and recovery builder with original candidate, exact TEXT, stable deferred ID and unchanged existing findings."
+  },
+  "files": [
+    {
+      "path": "backend/app/pipeline/stages/prepare/candidate_recovery.py",
+      "sha256": "ca3dd3a6e2a24fae4b97b550379ab8273687e625321e8a931de6a59915d49a34"
+    },
+    {
+      "path": "tests/test_candidate_recovery.py",
+      "sha256": "0012f4bdc23e885703536b2f0a06810ccf52b586c47122d33d65a6fbd8c5cc09"
+    }
+  ],
+  "limits": [
+    "This is a structural integration control, not an engineer-confirmed historical negative pair.",
+    "No model call was made for the changed instruction; semantic behavior remains to be tested.",
+    "No candidate is automatically published or refuted by this change."
+  ],
+  "stage4_complete": false,
+  "production_changed": false
+}
