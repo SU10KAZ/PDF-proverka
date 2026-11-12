@@ -496,12 +496,26 @@
     },
     {
       "target_id": "B-ITP-F-025:c98f6c16f19022b52eb6",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-033"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/hydraulics_and_gvs_load_bounded_review.json",
+          "sha256": "7d0cd0aa62edff8553e6dfddf090e1a211f411ec8f5c2e60053efb5c4dd75bf8"
+        }
+      ],
+      "reason": "Repeated0.66velocity for76.40/61.12flows in same219x6pipe retained; conditional calculated velocity not actual measured hydraulics.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-033": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      }
     },
     {
       "target_id": "B-ITP-F-026:97276f557b9fbedb0bef",
@@ -713,12 +727,26 @@
     },
     {
       "target_id": "B-ITP-F-037:8139bf7df3bbe04da245",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-036"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/hydraulics_and_gvs_load_bounded_review.json",
+          "sha256": "7d0cd0aa62edff8553e6dfddf090e1a211f411ec8f5c2e60053efb5c4dd75bf8"
+        }
+      ],
+      "reason": "First-zone inlet95.59versus91.59m retained;9/5m differences to required86.59 are conditional, not measured losses.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-036": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      }
     },
     {
       "target_id": "B-ITP-F-038:705f2262875c31478443",
@@ -749,39 +777,99 @@
     },
     {
       "target_id": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-053",
+        "F-070"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_drawing_volumes_bounded_review.json",
+          "sha256": "fd06bdda0f7365c66a0c422cdbdc45c19179ca1219290da36628e097086fffcd"
+        }
+      ],
+      "reason": "K22drawing1000versus1500L per unit retained; two outputs are same discrepancy, not two independent defects; no deficit from count of views.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-053": "technical_findings",
+          "F-070": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      }
     },
     {
       "target_id": "B-ITP-F-042:ecfe1ebab48bd184691d",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-048"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_drawing_volumes_bounded_review.json",
+          "sha256": "fd06bdda0f7365c66a0c422cdbdc45c19179ca1219290da36628e097086fffcd"
+        }
+      ],
+      "reason": "K23plan100versus200L in explication/specification retained; correct or sufficient volume not inferred.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-048": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      }
     },
     {
       "target_id": "B-ITP-F-044:de24b888831313c4d337",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-049",
+        "F-058"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/inlet_parameters_bounded_review.json",
+          "sha256": "0894f79dbbf0fae99ff5f780fcdd1eee4ac818d7593f3c8acba90b83ece5722f"
+        }
+      ],
+      "reason": "Both inlet load5.205/5.229 and flow260.25/261.50 retained across two rows; same325x7inlet90/70relationship established. No changed equipment inferred.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-049": "technical_findings",
+          "F-058": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      }
     },
     {
       "target_id": "B-ITP-F-050:5cd9d3d1be70ff9681c3",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-059"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/masses_bounded_review.json",
+          "sha256": "5ce64bb8d107d8fed175b9b05be6845ca784c94770fdc41030d5fe9b7370b02c"
+        }
+      ],
+      "reason": "Same LVF400callout91own/60with piping retained with actual note definitions; correct mass/foundation error not inferred.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-059": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      }
     },
     {
       "target_id": "B-ITP-F-051:6c86cc6a433d4ce0abd6",
@@ -794,12 +882,28 @@
     },
     {
       "target_id": "H-ITP-63:7ba4e763f9b6758d0f09",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-016",
+        "F-066"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ],
+      "reason": "K10same47.08flow,model/article2786092matched;21.29/21.91head discrepancy retained twice, no duplicate target credit.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-016": "technical_findings",
+          "F-066": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      }
     },
     {
       "target_id": "H-ITP-64:0a12321728e29d5b1832",
@@ -821,30 +925,88 @@
     },
     {
       "target_id": "ITP40:e4eaac37781fedf2ad41",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-054"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heating_branch_flows_bounded_review.json",
+          "sha256": "f043eba25b4da605f877930d011f347121bed79cfd89aa3e1f6b8028e71cd409"
+        }
+      ],
+      "reason": "Position29zone3flow10.7/9.55 and literal pressure figures0.446/0.356 retained with missing graphic unit explicit. No silent conversion tobar.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-054": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      },
+      "grouping_assessment": {
+        "status": "not_grouped_as_requested",
+        "related_finding_ids": [
+          "F-054",
+          "F-055"
+        ],
+        "limit": "Both distinct aspects retained but evaluator asks one third-zone theme; no full presentation-compliance claim."
+      }
     },
     {
       "target_id": "ITP40:24bca8b6c47714314059",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-046"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/arithmetic_bounded_review.json",
+          "sha256": "0c3815a1ed98768b8bbc2f16e6ba671b138598541383b80faf944b8ef6089282"
+        }
+      ],
+      "reason": "Third-zoneGVS9.05input versus9.08substitution retained as question with recalculation, not separate equipment failure.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-046": "questions"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      }
     },
     {
       "target_id": "ITP40:bbd2b9236034c12aec3c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-055"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heating_branch_flows_bounded_review.json",
+          "sha256": "f043eba25b4da605f877930d011f347121bed79cfd89aa3e1f6b8028e71cd409"
+        }
+      ],
+      "reason": "Same third-zone load0.200/0.191comparison retained; correct load and design consequences unknown.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-055": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      },
+      "grouping_assessment": {
+        "status": "not_grouped_as_requested",
+        "related_finding_ids": [
+          "F-054",
+          "F-055"
+        ],
+        "limit": "Both distinct aspects retained but evaluator asks one third-zone theme; no full presentation-compliance claim."
+      }
     },
     {
       "target_id": "ITP44_GVS_maxima:2ad6745f21c33bf142fc",
@@ -1087,21 +1249,49 @@
     },
     {
       "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-051"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_labels_bounded_review.json",
+          "sha256": "cbb345dcab45ba26b5a96ecf0a03ac2303e2a7d9d661d513b60c58ae22110b6f"
+        }
+      ],
+      "reason": "K2section1.005versus adopted1.012 including15percent margin retained; not raw-load comparison or equipment insufficiency.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-051": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      }
     },
     {
       "target_id": "ITP_heat_exchanger_labels:92be8d7a03f9ca816e16",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-050"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_labels_bounded_review.json",
+          "sha256": "cbb345dcab45ba26b5a96ecf0a03ac2303e2a7d9d661d513b60c58ae22110b6f"
+        }
+      ],
+      "reason": "K6section0.403versus0.419 and calculation0.4186 retained with two50percent units and15percent margin.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-050": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      }
     },
     {
       "target_id": "ITP_heat_exchanger_labels:cae0fec45b0437f86c1a",
