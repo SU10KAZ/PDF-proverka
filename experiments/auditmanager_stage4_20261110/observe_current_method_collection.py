@@ -2,11 +2,42 @@
 import argparse
 from collections import Counter
 import json
+import hashlib
 from pathlib import Path
 import time
 from .observe_baseline_collection import process, read
 
 ROOT = Path('/tmp/auditmanager_current_method_trial_context_20261112')
+
+
+
+def recovery_progress(base):
+    """Read plan identities and file presence only, never candidate propositions."""
+    manifest = read(base/'input_manifest.json')
+    if not isinstance(manifest, list) or len(manifest) != 1:
+        return {'status': 'input_manifest_unavailable'}
+    output = Path(manifest[0]['output_dir'])
+    plan_path = output/'03_candidate_recovery_plan.json'
+    if not plan_path.exists():
+        return {'status': 'not_planned'}
+    plan = read(plan_path)
+    requests = plan.get('requests', [])
+    if plan.get('count') != len(requests):
+        return {'status': 'inconsistent_plan'}
+    expected = []
+    for packet in requests:
+        candidate = packet.get('candidate', {})
+        if not all(isinstance(candidate.get(k), str) for k in ('origin', 'pointer')):
+            return {'status': 'unrecognized_plan_identity'}
+        key = hashlib.sha256((candidate['origin'] + candidate['pointer']).encode()).hexdigest()[:16]
+        expected.append(output/f'03_candidate_recovery_{key}.json')
+    if len(set(expected)) != len(expected):
+        return {'status': 'ambiguous_plan_identity'}
+    present = sum(p.is_file() for p in expected)
+    return {'status': 'plan_observed', 'planned_requests': len(expected),
+            'output_files_present': present, 'output_files_pending': len(expected)-present,
+            'semantic_results_read': False,
+            'limits': 'File presence for the current saved plan, not acceptance or full-audit completion.'}
 
 
 def observe(root=ROOT):
@@ -32,6 +63,7 @@ def observe(root=ROOT):
             'execution_complete': complete, 'execution_status': status.get('status', run.get('status')),
             'process': process(run.get('pid'), 'paired_runner'),
             'block_progress': status.get('block_progress'), 'stages': status.get('stages', {}),
+            'candidate_recovery_progress': recovery_progress(base),
             'request_records_created': len(folders), 'attempt_receipts': len(attempts),
             'failed_attempt_receipts': sum(a.get('is_error') is True for a in attempts),
             'reported_models': sorted({str(a.get('reported_model') or a.get('model') or 'unknown') for a in attempts}),
