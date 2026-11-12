@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "scope": "ITP classic_current repeat 1 only; sealed historical regression, not independent transfer validation",
+  "sources": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+      "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/claim_adjudication_index.json",
+      "sha256": "38cef84e168db9ce6de408122ae6817d0bd7806f3b2d595b74bb56fb52f52dae"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/loss_trace_index.json",
+      "sha256": "591e3cf46b3fcfc31edd64ac5c630c540376dd4a7e1b7e9aa76c3cca572cdb47"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/output_burden_and_routing_review.json",
+      "sha256": "e5f4035b7cd537b5e51e23a94ba606a06cac4293d8128fbb5301405f5009a288"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/question_adjudication_index.json",
+      "sha256": "02b8dbd4884b3567b19adcbf573b7898c1eb93452ec477d163c21a0c5be48175"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valve_claim_adjudication.json",
+      "sha256": "641747f0beb7b73cc8f7ee7616eb381acbff5bf9538f02dccb92ef5acb8da3f2"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_temperature_and_volume_claim_adjudication.json",
+      "sha256": "84ade90672fedb392a082c9a3710f34bd36575aa9f8d7e387e11272283bacf2c"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  ],
+  "coverage": {
+    "technical": {
+      "total": 19,
+      "counts": {
+        "full": 14,
+        "partial": 3,
+        "absent": 2
+      },
+      "strict_full_coverage_percent": 73.68,
+      "full_or_partial_percent_not_recall": 89.47
+    },
+    "question": {
+      "total": 56,
+      "counts": {
+        "full": 27,
+        "partial": 6,
+        "absent": 23
+      },
+      "strict_full_coverage_percent": 48.21,
+      "full_or_partial_percent_not_recall": 58.93
+    },
+    "negative": {
+      "total": 12,
+      "counts": {
+        "absent": 12
+      }
+    }
+  },
+  "claim_review": {
+    "total": 74,
+    "bounded_claim_adjudication": 74,
+    "source_review_only": 0
+  },
+  "loss_trace": {
+    "total": 34,
+    "bounded_trace_recorded": 34,
+    "not_traced": 0
+  },
+  "output_burden": {
+    "output_rows": 74,
+    "section_counts": {
+      "questions": 14,
+      "technical_findings": 60
+    },
+    "confirmed_duplicate_pairs": 8,
+    "rows_in_confirmed_duplicate_pairs": 16,
+    "avoidable_extra_rows_in_these_pairs": 8,
+    "row_count_after_only_these_proposed_merges": 66,
+    "reference_targets_with_section_disagreement": 27,
+    "unique_output_rows_with_section_disagreement": 33,
+    "unresolved_visible_reference_occurrences": 7
+  },
+  "additional_wrong_existing_reference_owners": [
+    "F-014",
+    "F-064"
+  ],
+  "normative_scope_pending": [
+    "F-002",
+    "F-003"
+  ],
+  "whole_output_precision": null,
+  "engineer_review_time_seconds": null,
+  "monetary_cost": null,
+  "comparative_improvement": null,
+  "stage4_complete": false,
+  "production_acceptance": false,
+  "limits": [
+    "Full coverage is semantic coverage of a frozen reference atom, not proof that the entire emitted row is correct.",
+    "Partial matches are reported separately and receive no full-recall credit.",
+    "Absence of historical negative targets is not causal evidence that a new filter worked.",
+    "Bounded adjudications include mixed, refuted and unresolved claims; 74 reviewed does not mean 74 valid.",
+    "34 recorded loss traces do not establish exclusive causes or tested fixes.",
+    "Eight duplicate pairs are a confirmed lower bound, not an exhaustive uniqueness assessment.",
+    "Section disagreement is not technical falsehood. Questions remain a separate output category.",
+    "No comparison to unfinished experimental arms, no measured engineer time or billed cost."
+  ]
+}
