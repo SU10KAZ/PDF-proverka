@@ -1,0 +1,62 @@
+{
+  "finding_id": "F-085",
+  "status": "cross_document_detector_address_conflict_preserved_with_literal_TEXT_and_mounting_limit",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_085_tiles/publication_projection.json",
+  "projection_sha256": "529d1e1439b26165be8165c0ceead0024904eba624171269ca52a492349f1ba9",
+  "graphics": [
+    {
+      "block_id": "blk_f42735b18cb140928c3d9f29d2891ae2",
+      "page_index": 57,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        1024.080019879219,
+        0.0,
+        2437.7681161167675,
+        1205.044701143721
+      ],
+      "grid_row": 0,
+      "grid_column": 1,
+      "path": "/tmp/auditmanager_sheet54_full_graphic_tiles_20261112/detail_tile_1.png",
+      "width": 1839,
+      "height": 1567,
+      "sha256": "aadfcf0193c04158a33372ac5cca5c4b3e438112e0acc793ac3f968eb8c8353d"
+    },
+    {
+      "block_id": "blk_f42735b18cb140928c3d9f29d2891ae2",
+      "page_index": 57,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        2155.0304968692576,
+        1036.8989288911089,
+        3568.7185931068057,
+        2326.016516161136
+      ],
+      "grid_row": 1,
+      "grid_column": 2,
+      "path": "/tmp/auditmanager_sheet54_full_graphic_tiles_20261112/detail_tile_7.png",
+      "width": 1839,
+      "height": 1677,
+      "sha256": "3937461cd1c7b9656c75307d408501b6c3e964c32792d8a421abdfeb7a9ac167"
+    }
+  ],
+  "authoritative_md_evidence": [
+    {
+      "line": 5437,
+      "text": "| БПС-1.13 | СТГ-З-И-1.12 | СТГ-З-И-1.13 | КИС-Пнг(А)-НФ | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(А)-НФ 2x2x0.78 | 20 |  |"
+    },
+    {
+      "line": 5488,
+      "text": "| БПС-3.13 | СТГ-З-И-3.12 | СТГ-З-И-3.13 | КИС-Пнг(A)-HF | 2x2x0.78 | 20 | труба гофр. | КИС-Пнг(A)-HF 2x2x0.78 | 20 |  |"
+    }
+  ],
+  "checks": [
+    "Непосредственно просмотренные выноски БПС-1.13 возле 343 и БПС-3.13 возле 597 относятся к разным сигнализаторам. Обе подписаны СТГ-3-И-1.13.",
+    "Авторитетный КЖ различает окончания СТГ-З-И-1.13 и СТГ-З-И-3.13. Таблица применимости подтверждает группу 3, дымовую зону 4 и шкаф ШАУВ-1-К5АС.",
+    "Сохранён именно документальный адресный конфликт. Рекомендация исправить адресную часть обусловлена согласованием полной записи; буквальное З в TEXT не заменено на 3.",
+    "Повторные формулировки, условный риск и рекомендация объединены в один технический тезис. Отсутствующая схема подключения не объявлена просмотренной.",
+    "Фактическое неверное подключение не установлено. Его непроверенность не подавляет доказанное расхождение документов и не образует новый вопрос."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

@@ -1,0 +1,23 @@
+{
+  "finding_id": "F-082",
+  "status": "complete_tiles_restore_literal_repetition_keep_question_not_violation",
+  "projection_path": "/tmp/auditmanager_publication_complete_graphic_details_20261112_run/evaluations/publication_reconciliation_082_tiles/publication_projection.json",
+  "projection_sha256": "88e036955060bbc4275a6f6914024f92b086d6e369958484fdac7fb5f425e88f",
+  "baseline_assessment": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F082_assessment.json",
+    "sha256": "169e8526d6d79d057c0a163e39911fe5a887d482697974b9d50c1ded5f0bf6e7"
+  },
+  "source_checkpoint": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_final_five_source_checkpoint.json",
+    "sha256": "a6b0bca9755c5e28d407e5799bcdad95b98b5ad75c299fdbff69357ecec75d3a"
+  },
+  "checks": [
+    "Модель восстановила одиннадцать повторов ПУ-У1.1 под шестью У1.1–У1.6 и пятью У2.1,У2.2,У3,У4,У5; это совпадает с непосредственным просмотром tile0.",
+    "Сохранён один вопрос о назначении подписи и идентификации с условным риском; не назначены произвольные новые марки и не утверждено нарушение обязательной уникальности.",
+    "Ответственный комплект и фактическое подключение остаются неизвестными. Они не приравнены к техническому дефекту.",
+    "Входные тезисы, TEXT и инструкции не менялись; общий рисунок заменён всеми десятью связанными фрагментами, без контрольного ответа.",
+    "Один DEV-контроль подтверждает восстановление чтения в этом случае; необходимость инженерного вопроса после полного добора контекста и итоговый выпуск ещё не доказаны."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
