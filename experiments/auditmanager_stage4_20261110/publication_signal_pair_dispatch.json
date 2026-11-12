@@ -1,0 +1,16 @@
+{
+  "preparation_path": "/tmp/auditmanager_publication_signal_pair_20261112/preparation.json",
+  "preparation_sha256": "bc289d538259430e5a444be21a503e0b01d85baa508e4cafe3081745e6554587",
+  "output_dir": "/tmp/auditmanager_publication_signal_pair_20261112_run",
+  "pid": 1090052,
+  "exec_session_id": 67765,
+  "model": "codex/gpt-6-astra",
+  "cases": [
+    "F-037",
+    "F-038"
+  ],
+  "purpose": "Test unchanged final purpose-aware instructions on source-reviewed signal direction pair; no expected outcomes supplied.",
+  "source_inputs_unchanged": true,
+  "coordinator_or_engineer_answers_supplied": false,
+  "production_acceptance": false
+}

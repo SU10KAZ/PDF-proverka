@@ -1,0 +1,27 @@
+{
+  "finding_id": "F-039",
+  "status": "pressure_range_conflict_preserved_without_invented_sensor_failure",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_039/publication_projection.json",
+  "projection_sha256": "2eb2381f7a2d1d3f7acc763143f1edcdd82efdc915de5b12e1d037749f69c104",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_roof_pressure_range_chain_review_20261112.json",
+  "source_review_sha256": "f7a140f0fd24d687080af2365abe6e2c844b84a8c9e83fe9b375576e44b7a9fe",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+      "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+      "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Связь PDS3 с позицией 12 и диапазоном 20–200 Па сохранена; перечень и спецификация дают 50–500 Па.",
+    "Уставка 50 Па входит в оба диапазона: непригодность и необходимость настройки ниже 50 Па не утверждаются.",
+    "Примечание о ПНР не используется как основание снять расхождение исполнения.",
+    "Рекомендация относится к тому же конфликту; служебные ссылки убраны из пользовательской формулировки.",
+    "Условный риск оставлен pending; конечная видимость требует интеграционной проверки."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
