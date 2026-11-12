@@ -1,0 +1,431 @@
+{
+  "status": "bounded_failure_stage_trace_three_themes",
+  "run": "ak_r1_classic_current",
+  "production_changed": false,
+  "runtime_changed": false,
+  "traces": [
+    {
+      "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
+      "source_candidate": "T-006",
+      "evidence_indices": [
+        0,
+        1,
+        2
+      ],
+      "request_evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/requests/AK/1794469260248661411/request.json",
+        "sha256": "35f83556e44d38c10d3f789c3776f69b9c7518d3fe02d7313714c0fd4ac7ce24",
+        "pointer": "/messages/1/content (JSON)/context_search_receipt/backlog",
+        "backlog_item": {
+          "block_id": "blk_fcd31b6618d34e0f982af6c418e3bf37",
+          "kind": "IMAGE",
+          "page": 31,
+          "queries": [
+            "ШАУВ-3-К4ПЧ"
+          ],
+          "query_match_kinds": {
+            "ШАУВ-3-К4ПЧ": "metadata_token"
+          },
+          "start_line": 2457,
+          "source_provenance": {
+            "code": "13АВ-РД-АК2-ПА",
+            "stage": "Р",
+            "sheet": "27",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        "attached_image_block_ids": [
+          "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "blk_4e142b330766407099c7d561f0a8eb6a",
+          "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "blk_c0ed6bca935843c18344796377677f2f",
+          "blk_1421872a752e4019a31247d056c0e9bc",
+          "blk_397f9663589b40bfbde9b898e99e5117"
+        ]
+      },
+      "stage": "context_retrieval_and_recovery",
+      "established": "Кандидат найден текстовым этапом. Нужный графический блок найден поиском по шкафу, но удержан context_budget. Повторная проверка оставила этот атом needs_data; итоговая связь T-006→F-061 покрывает другой Пкр5.1. Отсутствие Пкр4.1 в выдаче не является отсутствием исходника во входе.",
+      "recommendation": "Планировать добор по незакрытому атому и точному шкафу; обслуживать найденный backlog до повторения уже проверенных фрагментов. Не считать составной кандидат закрытым по одной связи source_id.",
+      "limit": "Это доказательство одного пути потери; ещё не доказано, что изменение ранжирования само по себе восстановит корректную находку. Проверять независимым повтором с тем же исходным кандидатом без контрольного ответа."
+    },
+    {
+      "target_id": "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
+      "source_candidate": "T-020",
+      "evidence_indices": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "stage": "subclaim_adjudication_and_output_routing",
+      "established": "Исходный кандидат уже сформулирован вопросом о применимости. Проверка подтверждает количества, но удерживает количественную часть из-за недоказанной недостачи45. Эталон не требует доказать недостачу: нужен отдельный вопрос о применимости узла. Конфликт марки подвеса F-028 сохраняется, вопрос количества теряется.",
+      "recommendation": "Сохранять подтверждённое наблюдение и адресный вопрос отдельно от недоказанного последствия. Проверять сформулированный запрос, не подменять его более сильным требованием закупки.",
+      "control_pair": "Положительный: уточнить4консоли/плиту и15/15. Отрицательный: безусловно объявить недостачу45. Это границы одного случая, не независимая историческая пара.",
+      "limit": "Практическая полезность нового вопроса инженером здесь не оценена; не выдавать его техническим дефектом."
+    },
+    {
+      "theme": "AK100_F015_drive_cable_graph",
+      "evidence_indices": [
+        7
+      ],
+      "stage": "initial_graphic_detection_observed_only",
+      "established": "Первичный анализ блока листа36 выполнен двумя проходами Astra. Оба списка замечаний пусты; key_values_read пуст, дополнительный gap_search отключён. Найденный междокументный контекст ограничен выбранными страницами6/7/94/95/98.",
+      "recommendation": "Проверить извлечение отдельных участков до/после ПЧ и обязательное выполнение баланса/адресной сверки, затем сравнить с inventory вариантом.",
+      "limit": "Это не полный причинный разбор всей дальнейшей обработки AK100. Пустой список не доказывает, что графика прочитана неверно; отсутствие операции на всех следующих этапах ещё не установлено."
+    }
+  ],
+  "extracted_evidence": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "fa3c0992a0a6adaf45009245b46d1f5421d12e8dc104ae85c3f68a15f8751a8b",
+      "pointer": "/text_findings/5",
+      "value": {
+        "id": "T-006",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "source": "Перечни элементов, листы 9, 13 и 15; КЖ, листы 6, 7, 13, 14 и 17",
+        "finding": "Позиционные обозначения двигателей не согласованы с кабельным журналом. Для Пкр4.1 насос обозначен М3, но кабель Пкр4.1-13 заканчивается на М2, уже указанном для вентилятора. Для Пкр5.1 вентиляторы обозначены М1 и М3, насос М2, тогда как КЖ относит четырехжильный кабель Пкр5.1-9 к М2, а трехжильный Пкр5.1-13 к М3. Для Пн5.1 насос обозначен М5, но кабель Пн5.1.-21 заканчивается на М1, уже занятом вентилятором. Необходимо согласовать конечные устройства до выпуска монтажных подключений.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_6414183ffe264f65a253b3d6a5155da1",
+          "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_ba2cc771448645a5b9a7203af971680b",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "blk_0074662f330048ff843342b285e6a016"
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_0e00d42053965fce_context.json",
+      "sha256": "00951530ee48c8e365faf2a593d4973db1d80fc8b7ffc989f0674db91130a85b",
+      "pointer": "/candidate_decisions/0/subclaims/0",
+      "value": {
+        "id": "1",
+        "claim": "Пкр4.1: насос М3 в перечне, но конец кабеля Пкр4.1-13 обозначен М2, занятым вентилятором.",
+        "decision": "needs_data",
+        "reason": "Изображение листа 9 подтверждает М3 у насоса в контуре теплоносителя и М1, М2 у вентилятора; перечень задаёт те же назначения. В КЖ Пкр4.1-9 и Пкр4.1-13 адресованы M2. Однако функциональная схема содержит номера сигналов, а не марки кабелей: принадлежность Пкр4.1-13 насосу по ней не прослеживается. Число жил и отсутствие адреса M3 в представленном разделе КЖ не заменяют эту привязку. Ведомость указывает нужную схему ШАУВ-3-К4ПЧ на листе 27; её изображение удержано бюджетом контекста. Утверждение остаётся непроверенным, а не опровергнутым.",
+        "source_refs": [
+          "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "blk_6414183ffe264f65a253b3d6a5155da1",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_6e394962eb18407fb17b09f063c30a5c"
+        ],
+        "required_source_refs": [
+          "blk_fcd31b6618d34e0f982af6c418e3bf37"
+        ],
+        "target_finding_ids": [],
+        "context_queries": [
+          "Пкр4.1-13",
+          "ШАУВ-3-К4ПЧ"
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_coverage.json",
+      "sha256": "7874b0db0e29aef4710d25ed427b5843c9ead2dfafa91fbe4bc770e676ed155f",
+      "pointer": "/candidates/5",
+      "value": {
+        "origin": "text",
+        "pointer": "/text_findings/5",
+        "candidate": {
+          "id": "T-006",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "documentation",
+          "report_section": "technical_findings",
+          "source": "Перечни элементов, листы 9, 13 и 15; КЖ, листы 6, 7, 13, 14 и 17",
+          "finding": "Позиционные обозначения двигателей не согласованы с кабельным журналом. Для Пкр4.1 насос обозначен М3, но кабель Пкр4.1-13 заканчивается на М2, уже указанном для вентилятора. Для Пкр5.1 вентиляторы обозначены М1 и М3, насос М2, тогда как КЖ относит четырехжильный кабель Пкр5.1-9 к М2, а трехжильный Пкр5.1-13 к М3. Для Пн5.1 насос обозначен М5, но кабель Пн5.1.-21 заканчивается на М1, уже занятом вентилятором. Необходимо согласовать конечные устройства до выпуска монтажных подключений.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_6414183ffe264f65a253b3d6a5155da1",
+            "blk_08e6971dafd541b2a40e0aa270404a4e",
+            "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+            "blk_13738f8bb6f840fcb0cb37491b612396",
+            "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+            "blk_ba2cc771448645a5b9a7203af971680b",
+            "blk_611c64e52f5d4223aaee5cf72c58e34e",
+            "blk_0074662f330048ff843342b285e6a016"
+          ]
+        },
+        "source_id": "T-006",
+        "linked_findings": [
+          {
+            "id": "F-061",
+            "pointer": "/findings/60"
+          }
+        ],
+        "semantic_preservation_verified": false,
+        "status": "linked_requires_semantic_review"
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "fa3c0992a0a6adaf45009245b46d1f5421d12e8dc104ae85c3f68a15f8751a8b",
+      "pointer": "/text_findings/19",
+      "value": {
+        "id": "T-020",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Ведомости крепления к кровле, листы 48, 50 и 53; СО, лист 10, позиции 22.5–22.8",
+        "finding": "В типовом комплекте опоры на одну плиту указаны один подвес BSD4120, четыре консоли ВВН-60 и четыре анкера. В СО на 15 плит предусмотрены 15 подвесов BSD2120, 15 консолей и 60 анкеров. Требуется указать, какие опоры выполняются по каждому узлу, и согласовать исполнение подвеса и количество консолей. Умножение четырех консолей на все 15 плит без таблицы применимости не доказывает недостачу 45 консолей.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_56331ec5845f4d73be99b93df1faec9c",
+          "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_710c30a0eb6b242a.json",
+      "sha256": "e2b81ac96613f001ab119508186a1d52543b1c1ffe8e50ac177921e769e83c13",
+      "pointer": "/candidate_decisions/0/subclaims/1",
+      "value": {
+        "id": "2",
+        "claim": "Типовая опора содержит четыре ВВН-60 и четыре анкера; СО на 15 плит содержит 15 консолей и 60 анкеров.",
+        "decision": "needs_data",
+        "reason": "Текст каждой ведомости подтверждает одну плиту, четыре консоли ВВН-60 и четыре анкера; позиции 22.5–22.8 СО подтверждают 15 плит, 15 консолей BВH6060 и 60 анкеров, единицы учёта — штуки. Однако распределение опор по исполнениям не представлено. Изображения планов и узлов не приложены, их описания не заменяют проверку графики. Поэтому недостача 45 консолей и необходимость увеличения количества не установлены; количественное противоречие остаётся на проверке применимости, без публикации технического дефекта.",
+        "source_refs": [
+          "blk_56331ec5845f4d73be99b93df1faec9c",
+          "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "required_source_refs": [],
+        "required_context": "Распределение 15 плит по исполнениям опор и количество консолей на каждое исполнение; изображения планов и узлов листов 48, 50 и 53, если применимость задана графически. Идентификатор дополнительного текстового источника распределения в предоставленном контексте не указан.",
+        "target_finding_ids": [],
+        "context_queries": [
+          "Крепление к кровле",
+          "Опора под лотковые трассы",
+          "Плита трамвайная",
+          "Консоль ВВН-60",
+          "BВH6060",
+          "Узел по монтажу лотка на кровле"
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_710c30a0eb6b242a_context.json",
+      "sha256": "0e79778aa9f95abb4c741d7107b133150819ce2e1898b7936190f2e725d9da36",
+      "pointer": "/candidate_decisions/0",
+      "value": {
+        "origin": "text",
+        "pointer": "/text_findings/19",
+        "source_id": "T-020",
+        "decision": "needs_data",
+        "reason": "Различие марок подвеса подтверждено исходными ведомостями и СО и уже охвачено F-028. Количественная часть остаётся нерешённой: проверены все три изображения узлов, но они не устанавливают распределение 15 плит по исполнениям опор. Недостача 45 консолей не доказана. Новое замечание не добавляется; вопрос применимости сохраняется как запрос контекста.",
+        "source_refs": [
+          "blk_56331ec5845f4d73be99b93df1faec9c",
+          "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_98835baf7fed4bf1934dc55088895af9",
+          "blk_6e1b1e0631904e1c8330bf2c4f47744c",
+          "blk_978fa763ed7e4a39977b35b866485e2e"
+        ],
+        "required_source_refs": [
+          "blk_6bbe4f5589d242cba9cd14e68b45421e",
+          "blk_28daea0860b8443c93220c68cf4f97e9",
+          "blk_47b4422b84f2413495ab9da6b8332760"
+        ],
+        "target_finding_ids": [
+          "F-028"
+        ],
+        "context_queries": [
+          "Крепление к кровле",
+          "Узел по монтажу лотка на кровле",
+          "Плита трамвайная",
+          "Консоль ВВН-60",
+          "BВH6060",
+          "Опора под лотковые трассы"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "В ведомостях листов 48, 50 и 53 указан BSD4120, а в СО для 15 плит — BSD2120.",
+            "decision": "duplicate",
+            "reason": "Каждая из трёх исходных ведомостей содержит «Подвес ДКС BSD4120 двойной», количество 1. Позиции 22.5 и 22.6 СО предусматривают 15 плит и 15 подвесов BSD2120. F-028 полностью сохраняет это различие марок в тех же документах. Технический профиль существующего замечания обусловлен разными указаниями исполнения комплектующего; правильная марка и применимость ко всем опорам не определены.",
+            "source_refs": [
+              "blk_56331ec5845f4d73be99b93df1faec9c",
+              "blk_39fda1bca4154e719671c8db8fa6eeed",
+              "blk_6136fac6ecc947f49aa62c1e5803f276",
+              "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+            ],
+            "required_source_refs": [],
+            "target_finding_ids": [
+              "F-028"
+            ]
+          },
+          {
+            "id": "2",
+            "claim": "Типовая опора содержит четыре ВВН-60 и четыре анкера; СО на 15 плит содержит 15 консолей и 60 анкеров.",
+            "decision": "needs_data",
+            "reason": "Буквальные количества подтверждены: каждая ведомость содержит одну плиту, четыре консоли ВВН-60 и четыре анкера; СО — 15 плит, 15 консолей BВH6060 и 60 анкеров, всё в штуках. На каждом из трёх приложенных изображений показаны плита 570×460, вертикальный подвес, один видимый консольный элемент сбоку и четыре отверстия крепления в плане. Эти проекции не задают полный количественный состав всех исполнений и не подтверждают применение четырёх консолей к каждой из 15 плит. Изображения самих планов не приложены; их описания не заменяют проверку размещения и применимости. Поэтому вывод о недостаче 45 консолей и требование увеличить закупку остаются needs_data. F-028 охватывает марки подвесов, но не закрывает эту количественную проверку.",
+            "source_refs": [
+              "blk_56331ec5845f4d73be99b93df1faec9c",
+              "blk_39fda1bca4154e719671c8db8fa6eeed",
+              "blk_6136fac6ecc947f49aa62c1e5803f276",
+              "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+              "blk_98835baf7fed4bf1934dc55088895af9",
+              "blk_6e1b1e0631904e1c8330bf2c4f47744c",
+              "blk_978fa763ed7e4a39977b35b866485e2e"
+            ],
+            "required_source_refs": [
+              "blk_6bbe4f5589d242cba9cd14e68b45421e",
+              "blk_28daea0860b8443c93220c68cf4f97e9",
+              "blk_47b4422b84f2413495ab9da6b8332760"
+            ],
+            "required_context": "Изображения планов листов 48, 50 и 53 с привязками опор; распределение 15 плит по исполнениям и количество консолей каждого исполнения. Если это задано отдельной ведомостью, нужен её первичный текст. Проверенные изображения узлов повторно запрашивать не требуется.",
+            "target_finding_ids": [],
+            "context_queries": [
+              "Крепление к кровле",
+              "Узел по монтажу лотка на кровле",
+              "Плита трамвайная",
+              "Консоль ВВН-60",
+              "BВH6060",
+              "Опора под лотковые трассы"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_coverage.json",
+      "sha256": "7874b0db0e29aef4710d25ed427b5843c9ead2dfafa91fbe4bc770e676ed155f",
+      "pointer": "/candidates/19",
+      "value": {
+        "origin": "text",
+        "pointer": "/text_findings/19",
+        "candidate": {
+          "id": "T-020",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "documentation",
+          "report_section": "questions",
+          "source": "Ведомости крепления к кровле, листы 48, 50 и 53; СО, лист 10, позиции 22.5–22.8",
+          "finding": "В типовом комплекте опоры на одну плиту указаны один подвес BSD4120, четыре консоли ВВН-60 и четыре анкера. В СО на 15 плит предусмотрены 15 подвесов BSD2120, 15 консолей и 60 анкеров. Требуется указать, какие опоры выполняются по каждому узлу, и согласовать исполнение подвеса и количество консолей. Умножение четырех консолей на все 15 плит без таблицы применимости не доказывает недостачу 45 консолей.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_56331ec5845f4d73be99b93df1faec9c",
+            "blk_39fda1bca4154e719671c8db8fa6eeed",
+            "blk_6136fac6ecc947f49aa62c1e5803f276",
+            "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+          ]
+        },
+        "source_id": "T-020",
+        "linked_findings": [
+          {
+            "id": "F-028",
+            "pointer": "/findings/27"
+          }
+        ],
+        "semantic_preservation_verified": false,
+        "status": "linked_requires_semantic_review"
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c",
+      "pointer": "/block_analyses/31",
+      "value": {
+        "block_id": "blk_397f9663589b40bfbde9b898e99e5117",
+        "page": 40,
+        "sheet": "Лист 36",
+        "label": "",
+        "sheet_type": null,
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "not_enriched": false,
+        "coverage_status": "ready",
+        "analysis_status": "analyzed",
+        "context_source": "structured_alia_scheme",
+        "detectors_ok": [
+          "codex/gpt-6-astra",
+          "codex/gpt-6-astra"
+        ],
+        "detectors_failed": [],
+        "summary": "",
+        "key_values_read": [],
+        "evidence_text_refs": [],
+        "findings": [],
+        "evidence_gate": {
+          "schema_version": 1,
+          "candidates": 0,
+          "published": 0,
+          "deferred": 0,
+          "min_confidence": 0.8,
+          "max_published_per_block": null,
+          "reason_counts": {}
+        },
+        "deferred_findings": [],
+        "document_retrieval": {
+          "scope": "all_document_vector_text_other_pages",
+          "query_terms": [
+            "ШАУВ-1-К5АС.1",
+            "электрических",
+            "соединений",
+            "присоединений",
+            "оборудования",
+            "шкафа",
+            "управления",
+            "включающая",
+            "температурные",
+            "датчики",
+            "давления",
+            "электродвигатели",
+            "приводы"
+          ],
+          "candidate_hits": 20,
+          "selected_hits": 5,
+          "selected_pages": [
+            6,
+            7,
+            94,
+            95,
+            98
+          ],
+          "status": "hits"
+        },
+        "dual_review": {
+          "schema_version": 1,
+          "status": "ok",
+          "reviewer_model": "codex/gpt-6-astra",
+          "relationships": [],
+          "unmatched_refs": [],
+          "counts": {
+            "matches": 0,
+            "extensions": 0,
+            "new": 0,
+            "disputed": 0,
+            "gap_findings": 0
+          },
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Оба списка замечаний пусты. Дополнительный поиск отключён.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "comparison_models": [
+            "codex/gpt-6-astra::leg:1",
+            "codex/gpt-6-astra::leg:2"
+          ]
+        }
+      }
+    }
+  ],
+  "coverage_boundary": "No live second-run contents inspected. No frozen evaluator/input/source changes. Candidate link is not semantic preservation."
+}
