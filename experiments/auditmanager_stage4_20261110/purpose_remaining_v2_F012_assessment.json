@@ -1,0 +1,33 @@
+{
+  "finding_id": "F-012",
+  "status": "bounded_core_preserved_additional_question_requires_context_review",
+  "candidate_projection_path": "/tmp/auditmanager_publication_purpose_remaining_v2_20261112_run/evaluations/publication_purpose_012/publication_projection.json",
+  "candidate_projection_sha256": "767f713a566b027ceefea9bb528500d30786dc8d004d0c0ead2250d70d2ae252",
+  "request_sha256": "ee201a0388e66af8feb5fdce3413552ef87afcb55d7fcf1181abb6ef46c36c60",
+  "matched_claims_sources_and_images": true,
+  "previous_source_review": {
+    "path": "experiments/auditmanager_stage4_20261110/purpose_trial_F012_source_assessment.json",
+    "sha256": "12d5f2414af10b79113740a120fa4f036d438ce07068b0345fd45d2793caef59"
+  },
+  "checks": [
+    "Сохранён конфликт исполнения БУРР/БИС и Haier, рекомендация и условный закупочный риск присоединены к технической формулировке.",
+    "Сохранён самостоятельный вопрос о единице комплектования: одна сплит-система или пара.",
+    "Дополнительно выделен вопрос о назначении адаптеров и значении внешнего источника питания. Он не является дублирующей рекомендацией, но требует поиска документации до передачи инженеру.",
+    "220 В не объявлено доказательством наличия внешнего блока питания, адаптеру не приписана неподтверждённая функция.",
+    "Вопросов осталось два: сокращение количества вопросов против исходного v2 не достигнуто; наличие этого вопроса не доказывает техническую несовместимость."
+  ],
+  "counts_not_quality_scores": {
+    "technical_findings": 1,
+    "questions": 2,
+    "pending": 0,
+    "history_only": 0
+  },
+  "limits": [
+    "DEV control, not independent audit or engineer acceptance.",
+    "Final admission and Excel output not verified for this candidate.",
+    "General quality and workload improvement not proven."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "final_release_completed": false
+}

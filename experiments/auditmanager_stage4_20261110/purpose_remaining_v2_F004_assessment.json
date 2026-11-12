@@ -1,0 +1,32 @@
+{
+  "finding_id": "F-004",
+  "status": "bounded_core_and_recommendation_control_passed_final_risk_visibility_open",
+  "candidate_projection_path": "/tmp/auditmanager_publication_purpose_remaining_v2_20261112_run/evaluations/publication_purpose_004/publication_projection.json",
+  "candidate_projection_sha256": "817cf328468179dfbd8be82a8ea295c3897e1500451d8be903f9c1368d5272be",
+  "request_sha256": "60e46c8c5587e00fc2554ed606aee2a231d74598138a40876e7715acfd17a957",
+  "matched_claims_sources_and_images": true,
+  "previous_source_review": {
+    "path": "experiments/auditmanager_stage4_20261110/purpose_trial_F004_source_assessment.json",
+    "sha256": "6848935cd41c287dc623abe4e0fc309822f3331fc37869b893a8af415bebd42b"
+  },
+  "checks": [
+    "Сохранены все три ранее проверенных расхождения: M2 насос против перечня вентиляторов; M4 вентилятор против перечня насоса; M5 есть на схеме и в журнале, отсутствует в перечне.",
+    "Рекомендация согласования включена в техническую формулировку; отдельного вопроса-рекомендации нет.",
+    "Количество ПЧ не превращено в число работающих двигателей; фактическая ошибка монтажа не утверждается.",
+    "Условный риск остался в pending, поэтому его сохранение в итоговом отчёте этим ответом не доказано."
+  ],
+  "counts_not_quality_scores": {
+    "technical_findings": 1,
+    "questions": 0,
+    "pending": 2,
+    "history_only": 1
+  },
+  "limits": [
+    "DEV control, not independent audit or engineer acceptance.",
+    "Final admission and Excel output not verified for this candidate.",
+    "General quality and workload improvement not proven."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "final_release_completed": false
+}
