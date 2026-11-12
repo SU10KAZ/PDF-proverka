@@ -1,0 +1,90 @@
+{
+  "control": "H05-P03",
+  "original_requirement": "АР: остаток75мм на угловом участке сопоставить с проектным диапазоном опор.",
+  "operation_observed": true,
+  "calculation": {
+    "finish_m": "20.990",
+    "tile_mm": 40,
+    "lower_levels_m": [
+      "20.840",
+      "20.875",
+      "20.870",
+      "20.910"
+    ],
+    "conditional_heights_mm": [
+      110,
+      75,
+      80,
+      40
+    ],
+    "project_range_mm": [
+      25,
+      50
+    ],
+    "conditional_excess_mm": [
+      60,
+      25,
+      30,
+      0
+    ]
+  },
+  "source_inspection": "Three saved graphic blocks visually inspected against their exact bound hashes. Lower/finish plans share corner geometry and K-3; roof schedule explicitly gives 40 mm and 25–50 mm. Source stamps for sheets 5 and 7 identify AR6.2 sections 2,3; a nearby boundary label Section 1 alone does not establish different source applicability.",
+  "conditions": [
+    "Lower levels must be the actual surface immediately below supports.",
+    "Finish 20.990 must apply at corresponding points."
+  ],
+  "physical_violation_proven": false,
+  "approved_fields": {
+    "problem": "Требуется уточнить высотную увязку К-3 в угловой области Ф.1.",
+    "description": "На нижнем плане углового участка Ф.1 показаны отметки +20,840, +20,875, +20,870 и +20,910; соответствующий участок финишного покрытия К-3 обозначен +20,990. Ведомость К-3 задает плитку 40 мм и регулируемые опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся непосредственно к поверхности опирания, а финиш +20,990 применим в соответствующих точках, расчетная высота под плиткой составляет соответственно 110, 75, 80 и 40 мм. Первые три значения выходят за диапазон, четвертое входит в него. Однако в рассмотренных источниках послойная привязка нижних отметок не установлена однозначно. Это основание для уточнения проектного решения; фактическое превышение высоты опор или невозможность монтажа не установлены.",
+    "solution": "Уточнить поверхности отсчета нижних отметок в угловом участке Ф.1 и показать локальную высотную увязку К-3: поверхность опирания, низ плитки и финиш +20,990 в соответствующих точках с учетом промежуточных слоев при их наличии. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия."
+  },
+  "retention": {
+    "approved_fields_equal_later_final": true,
+    "prior_findings_unchanged_in_later_release": 24,
+    "excel_occurrences": 1,
+    "separate_questions_section": true,
+    "exact_user_fields_in_excel": true
+  },
+  "distinction": "The required conditional comparison is executed and retained. This is not proof of actual excessive support height, blind rediscovery, or full-audit acceptance.",
+  "remaining_acceptance": [
+    "Demonstrate automatic operation and retention in a frozen full audit.",
+    "Do not treat unavailable level-to-layer mapping as either confirmed installation impossibility or refutation."
+  ],
+  "new_model_calls": 0,
+  "frozen_matrix_modified": false,
+  "stage4_complete": false,
+  "production_acceptance": false,
+  "images": [
+    {
+      "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_7542a26ddb2e4317bf9a1c3e1e239b62.png",
+      "sha256": "4d019dccbfa7499d275343ed7a63cdcdc8c3b5a261c28ae2753845b6c0cb76b7",
+      "width": 2230,
+      "height": 1352
+    },
+    {
+      "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f3aec0b585f6435080a6caa87767ba7c.png",
+      "sha256": "b2ea91738b345a61639775c648f0964f66fe8b9ca12db56a9d78c03d3f18c430",
+      "width": 2233,
+      "height": 1341
+    },
+    {
+      "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+      "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+      "width": 906,
+      "height": 702
+    }
+  ],
+  "files": {
+    "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/candidate.json": "dd53bc7327cae34c8e29d5e7774e1b11166d28e51cee5a045b92d3a3a82747f8",
+    "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/00_review/request.json": "ac2e2fc509677814b994af0805826ec0495194bf2406420f583f1a0172408772",
+    "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/03_findings.json": "53e91fe51b6081a71514cc8671e59fc05d2bbfff68687973922ef7d9192d58bd",
+    "/tmp/auditmanager_ar_roof_reviewed_question_20261111/03_findings.json": "2e1d151ea61d9c2de5ec836a8fc4f78320f13e2df5515f91aa39a8d762e20d58",
+    "/tmp/auditmanager_ar_rope_current_release_20261112/report.xlsx": "d1dd3e3b1ae57ca68db1eb6a6ca273f0f21db11592db67f659c06d7d85747ae1",
+    "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/02_work/document.md": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+    "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/stage4_original_control_matrix.json": "942a58a148f50b95e45da81ca461004749430bb341442920b89ac61b12822413"
+  }
+}
