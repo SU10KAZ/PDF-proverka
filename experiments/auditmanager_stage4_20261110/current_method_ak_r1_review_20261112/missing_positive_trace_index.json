@@ -7,8 +7,8 @@
   },
   "summary": {
     "missing_or_partial_positive_atoms": 22,
-    "bounded_stage_evidence_available": 11,
-    "cause_not_established": 11
+    "bounded_stage_evidence_available": 13,
+    "cause_not_established": 9
   },
   "rows": [
     {
@@ -111,17 +111,33 @@
       "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
       "coverage": "partial",
       "coverage_reason_snapshot": "Полностью сохранены семь марок листов 7/8, длины 20,20,5×25 м и различающиеся распределения прокладки, без объявления дословного дублирования. Сумма повторного набора 165 м явно не приведена: исходные данные позволяют её восстановить, но расчётная часть атома в выдаче не выполнена.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Сравнить первичный кандидат, уточнение и итог: вычислялись ли 165/210 м либо расчёт вообще не выполнялся. Наличие исходных длин не считать выполненной арифметикой."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_repeated_row_arithmetic.json",
+          "sha256": "3cd056ab1f79f786546944a35be2196721dcf5c0aeedfa9a02e35149be696cae",
+          "pointer": "/traces/0",
+          "observed_stage": "candidate_and_review_arithmetic_scope",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     },
     {
       "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
       "coverage": "partial",
       "coverage_reason_snapshot": "Сохранены все 14 марок листов 25/26 и длины по 15 м; повтор не объявлен дополнительными физическими кабелями. Явный итог 210 м не приведён. Также итог отнесён к questions вместо technical эталона; формальная оценка раздела оставлена unchecked при частичном покрытии.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Сравнить первичный кандидат, уточнение и итог: вычислялись ли 165/210 м либо расчёт вообще не выполнялся. Наличие исходных длин не считать выполненной арифметикой."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_repeated_row_arithmetic.json",
+          "sha256": "3cd056ab1f79f786546944a35be2196721dcf5c0aeedfa9a02e35149be696cae",
+          "pointer": "/traces/1",
+          "observed_stage": "candidate_and_review_arithmetic_scope",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
