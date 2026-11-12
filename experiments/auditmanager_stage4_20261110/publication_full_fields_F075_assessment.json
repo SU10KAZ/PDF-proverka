@@ -1,0 +1,44 @@
+{
+  "finding_id": "F-075",
+  "status": "local_cable_total_preserved_with_unproven_cause_separated",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_075/publication_projection.json",
+  "projection_sha256": "8fc4487aa6cdaafa1f4d7e3c8f52c9ee2a10e2c35737ac22bfcf6e759ec2a3d3",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_397f9663589b40bfbde9b898e99e5117.png",
+      "block_id": "blk_397f9663589b40bfbde9b898e99e5117",
+      "sha256": "96df1986c5929c97c62369499fd26e3a7eb38071d3066a995f0aff8684fc9893",
+      "directly_viewed": true,
+      "detail": "original"
+    },
+    {
+      "path": "/tmp/F075_motor_segments.png",
+      "sha256": "750bcb59decd517f9405d3fc99c8a0106c6e4eb038a6124e4e10d518745915ef",
+      "source_pixel_crop": [
+        1070,
+        140,
+        1580,
+        710
+      ],
+      "directly_viewed": true
+    }
+  ],
+  "authoritative_md_spans": [
+    {
+      "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+      "start": 208813,
+      "end": 209875,
+      "sha256": "790ebe535af11ad7173cfbf7ee27799c8d17f23d450890bcd28fe40d0989c532"
+    }
+  ],
+  "checks": [
+    "Повторно просмотрены шесть отдельных силовых участков: M1/M5 по 20 м, два межшкафных по 330 м, два от ПЧ к M2/M3 по 15 м; линия RS другой марки исключена. Итого 730 м.",
+    "Авторитетный TEXT содержит 700 м кабеля ППГнг(A)-HF 4x2,5мм²; расхождение 30 м подтверждено.",
+    "Рекомендация и условный риск сохранены в одном техническом тезисе. Требование 730 м обусловлено сохранением проектных длин.",
+    "Совпадение разности с двумя участками по 15 м не доказывает причину ошибки. Модель оставила её непроверенной отдельно, сохранив подтверждённое расхождение.",
+    "Поставка, заказ и сводная спецификация не проверены. Pending-части не означают самостоятельных вопросов инженеру или оснований снятия локального расхождения."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
