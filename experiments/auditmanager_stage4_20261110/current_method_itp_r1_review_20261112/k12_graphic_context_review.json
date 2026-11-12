@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "finding_ids": [
+    "F-044",
+    "F-069"
+  ],
+  "sources": {
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "prior_question_review": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/document_and_parameter_question_adjudication.json",
+      "sha256": "b2d2da813689c76385a94639f353f75d6c4eb4b889180f4a439d802424fab6aa"
+    }
+  },
+  "navigation": [
+    {
+      "purpose": "pump_identity",
+      "pattern": "40\\s*/\\s*220|217|16[.,]98|16[.,]64|К12|K12",
+      "hits": [
+        {
+          "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+          "kind": "IMAGE",
+          "line": 473
+        },
+        {
+          "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+          "kind": "IMAGE",
+          "line": 831
+        },
+        {
+          "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+          "kind": "IMAGE",
+          "line": 958
+        },
+        {
+          "block_id": "blk_128a43447f394e0687d841e25e436e75",
+          "kind": "IMAGE",
+          "line": 4147
+        }
+      ],
+      "absence_proven": false
+    },
+    {
+      "purpose": "curve_navigation",
+      "pattern": "крив|график|диаграмм|характеристик",
+      "hits": [
+        {
+          "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "kind": "IMAGE",
+          "line": 383
+        },
+        {
+          "block_id": "blk_7d05e8efe5c84824821f86dad3ccd42f",
+          "kind": "IMAGE",
+          "line": 815
+        },
+        {
+          "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+          "kind": "IMAGE",
+          "line": 855
+        },
+        {
+          "block_id": "blk_0cb95f43fa78424db035c2183e65f61c",
+          "kind": "IMAGE",
+          "line": 5247
+        },
+        {
+          "block_id": "blk_cb2a56b168154cc0aba1d9faf506432b",
+          "kind": "IMAGE",
+          "line": 5375
+        },
+        {
+          "block_id": "blk_3fbddb2b1e404846ae0c58826ee3bd89",
+          "kind": "IMAGE",
+          "line": 5502
+        },
+        {
+          "block_id": "blk_1f8cd402e98f432cad1ad665a03a4c77",
+          "kind": "IMAGE",
+          "line": 5626
+        }
+      ],
+      "absence_proven": false
+    }
+  ],
+  "graphic_observations": [
+    {
+      "block_id": "blk_128a43447f394e0687d841e25e436e75",
+      "image": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_128a43447f394e0687d841e25e436e75.png",
+        "sha256": "c4063b3b34fed1a321c7724a88cc86016d5dbd1f99a0a0bc5aca57b45a704d9e"
+      },
+      "method": "Parent direct view_image inspection",
+      "observation": "Direct raster inspection: header IL 40/220-1,5/4-R, dimensional views and star-connection diagram. No H-Q curve on this image.",
+      "related_authoritative_text_block": "blk_b5a8bd535c584d08a9854e4257e4833d"
+    },
+    {
+      "block_id": "blk_0cb95f43fa78424db035c2183e65f61c",
+      "image": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0cb95f43fa78424db035c2183e65f61c.png",
+        "sha256": "72bc6cf7f572758621224a8eff8edf6dc207c9f6217c61a7034458c63f3e7a78"
+      },
+      "method": "Parent direct view_image inspection",
+      "observation": "Direct raster inspection: head/flow/efficiency graph; bottom labels Pmax 17.4 Bar, Vsystem 18.00 m³. Adjacent authoritative selection text identifies the primary heating circuit, not K12 DOO.",
+      "related_authoritative_text_block": "blk_26b23c5bfabe4917a156a91077b5458d"
+    },
+    {
+      "block_id": "blk_1f8cd402e98f432cad1ad665a03a4c77",
+      "image": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1f8cd402e98f432cad1ad665a03a4c77.png",
+        "sha256": "7bd3602a2689255a97546b36235ac59a2b3b9ce5885d453f8c71da52bb479166"
+      },
+      "method": "Parent direct view_image inspection",
+      "observation": "Direct raster inspection: head/flow/efficiency graph; bottom labels Pmax 16.3 Bar, Vsystem 1.88 m³. Adjacent authoritative selection text identifies heating zone 3, not K12 DOO.",
+      "related_authoritative_text_block": "blk_c25d98d5cc6e4b05a83580352fea374b"
+    }
+  ],
+  "decision": "The inspected graphic candidates do not resolve comparability of K12 working head 16.98 m and product maximum head 16.64 m. Retain one bounded clarification; no pump inadequacy conclusion.",
+  "identity_rule": "A head/flow chart must be bound to the same pump instance, circuit, execution and operating basis before using it as corroboration or refutation. Similar chart shape or pump-related wording is insufficient.",
+  "limits": [
+    "Search of graphic navigation text is not an exhaustive proof that no K12 curve exists anywhere in the project.",
+    "No external catalogue lookup or manufacturer answer obtained.",
+    "No TEXT raster reread or extraction correction performed.",
+    "No graph values from unrelated equipment used to replace the K12 data sheet."
+  ],
+  "next_action": "If more project sources are retrieved, verify explicit K12/execution and operating-basis identity before closing the question. Keep duplicate F-069 from upgrading uncertainty to a technical defect.",
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}
