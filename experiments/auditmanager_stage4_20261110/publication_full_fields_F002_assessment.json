@@ -1,0 +1,42 @@
+{
+  "finding_id": "F-002",
+  "status": "source_supported_conflict_preserved_with_separate_editorial_question",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_002/publication_projection.json",
+  "projection_sha256": "8959887fad58ddca990850e667efb63c9a2dd5ec5f689bdd884755bf3c8f6608",
+  "request_path": "/tmp/auditmanager_publication_full_fields_AK_20261112/publication_reconciliation_002.json",
+  "request_sha256": "459b2ffa088a989cc23748ff7f7c497d1bc6b29265733294d6d23bc2aa1f256c",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_text_findings_source_review_20261112.json",
+  "source_review_sha256": "81e583b420abb071f88f36272799c7d45afe8981a319d69f05d32d7c5a224c8c",
+  "primary_source_checks": {
+    "repeated_marks_sheets_7_8": 7,
+    "repeated_marks_sheets_25_26": 14,
+    "Pm4_1_1_splits": [
+      "15/10",
+      "10/15"
+    ],
+    "Pm4_1_2_to_5_splits": [
+      "20/5",
+      "15/10"
+    ],
+    "length_each": 25,
+    "literal_NF_HF_and_TS1_TC1_preserved": true
+  },
+  "checks": [
+    "Does not declare entire sheet 8 a duplicate.",
+    "Does not mandate arbitrary deletion or establish actual double purchase.",
+    "Physical number of lines remains unresolved.",
+    "Editorial spelling question is separated from technical conflict and needs usefulness/load evaluation."
+  ],
+  "counts": {
+    "technical_parts": 1,
+    "question_parts": 1,
+    "pending_parts": 1
+  },
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "limitations": [
+    "Source-supported question is not automatically an improvement; engineer workload is unmeasured.",
+    "This does not establish full recall or preservation for all 85 findings."
+  ]
+}
