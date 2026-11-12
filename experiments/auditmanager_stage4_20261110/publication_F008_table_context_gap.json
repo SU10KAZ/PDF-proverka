@@ -1,0 +1,25 @@
+{
+  "finding_id": "F-008",
+  "status": "two_conflicts_retained_third_deferred_due_to_missing_table_heading",
+  "parent_response": {
+    "path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_008_attempt_1.json",
+    "sha256": "103be14e9d8300635fc0711179ea481b423296e7eba757a7e570d947f102c028"
+  },
+  "observation": "Supplied block #250 begins at position 15.4 and includes 15.7. Adjacent block #249 contains group 15 cabinet header and positions 15.1–15.3, but was not linked in the original publication packet.",
+  "source_heading": {
+    "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+    "group_row": "| 15 | Шкаф ШАУВ-3-К6ПЧ |",
+    "literal_system_note": "Пкрб.1",
+    "do_not_silently_correct_MD": true
+  },
+  "prepared_followup": {
+    "path": "/tmp/auditmanager_publication_F008_context1_20261112/preparation.json",
+    "sha256": "fd77f65f6eed825c2bc0bf165151f9fc0f8e8ca35f3d770d481dccf6c3b5b22a",
+    "dispatched": false
+  },
+  "proposed_generic_behavior": "For a source table continuation, retrieve its group heading and applicability notes from the same-version table before concluding missing identity. Record unresolved ambiguity when continuity cannot be established.",
+  "publication_issue": "Recommendation is emitted as a separate question; independent engineer question not established.",
+  "full_semantic_acceptance": false,
+  "production_acceptance": false,
+  "next_action": "Complete/review existing F-003 continuation, then run this prepared F-008 continuation; original 84-request queue remains unchanged."
+}
