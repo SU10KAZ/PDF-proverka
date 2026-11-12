@@ -1,0 +1,28 @@
+{
+  "status_at_observation": "running",
+  "pid": 1054205,
+  "session_id": 17276,
+  "run_directory": "/tmp/auditmanager_publication_F003_context1_20261112_run",
+  "preparation_path": "/tmp/auditmanager_publication_F003_context1_20261112/preparation.json",
+  "preparation_sha256": "7ca4a8062613d49558b619b90756afd86e80916bcd6f9cea61bb698749ec20ae",
+  "model": "codex/gpt-6-astra",
+  "parent_response": {
+    "path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_003_attempt_1.json",
+    "sha256": "3e09a4469106fc228604ff639dc7defe02c3d6651cb1167891a84010a51c52bd"
+  },
+  "additional_source_navigation": [
+    {
+      "block_id": "blk_fcd31b6618d34e0f982af6c418e3bf37",
+      "prepared_md_stamp_for_navigation": "> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 27 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-3-К4ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+      "image_sha256": "7265169d198c15255584b261cce1dbc1517006493ca16c6a463b4607bc01325f"
+    },
+    {
+      "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+      "prepared_md_stamp_for_navigation": "> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 33 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-4-К5ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+      "image_sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba"
+    }
+  ],
+  "scope": "Two requested missing connection diagrams, no physical installation evidence. Parent full response retained; no credit assigned before new source review.",
+  "main84_queue_untouched": true,
+  "production_acceptance": false
+}

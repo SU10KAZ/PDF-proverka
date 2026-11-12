@@ -1,0 +1,37 @@
+{
+  "finding_id": "F-007",
+  "status": "source_supported_two_location_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_007/publication_projection.json",
+  "projection_sha256": "c9ab0a3fd8b56f4dc4c8bdb700acac1377e3af2fd91b12dcfab69399c59c7078",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_two_channel_sensors_quantity_review_20261112.json",
+  "source_review_sha256": "7c78a399a2644480d46413d767282ea4e98d918bbf1d3ac2d898f623df59576e",
+  "graphics": [
+    {
+      "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+      "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+      "directly_viewed": true,
+      "detail": "original"
+    },
+    {
+      "block_id": "blk_54608a880c2545aa926c442d213988c3",
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+      "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Both combined TE3/TE4 list rows have quantity 1; respective specification positions 8.6/14.6 have quantity 2.",
+    "Separate TE3 and TE4 sensors visible after fans on both diagrams; signal indices 12/20 and 11/20 respectively.",
+    "Separate journal references preserved; MD letter/digit spelling not silently repaired.",
+    "Recommendation remains document reconciliation, without requiring separate rows as a universal formatting rule.",
+    "Risk stays conditional; actual procurement shortage is not established.",
+    "Obsolete image-unavailable caveat and internal references moved to history."
+  ],
+  "question_parts": 0,
+  "pending_boundary": "Actual procurement shortage is unknown; it is not a prerequisite for retaining the supported document conflict.",
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
