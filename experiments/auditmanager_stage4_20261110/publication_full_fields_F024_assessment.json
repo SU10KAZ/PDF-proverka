@@ -1,0 +1,25 @@
+{
+  "finding_id": "F-024",
+  "status": "measurement_point_conflict_preserved_operating_mode_limits_retained",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_024/publication_projection.json",
+  "projection_sha256": "1f6890b00817e1b369ab80739c15ec79cd6019c8c85703fca3a32011deac7d13",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_control_logic_source_review_20261112.json",
+  "source_review_sha256": "c4f6dd51c155a4fced854d4de0f7b0db0f28f482d0e009cbb0e1105dfa965362",
+  "checks": [
+    "Function list uses downstream air temperature, operating protection uses outside air temperature; document difference preserved.",
+    "OR predicate remains true for outside temperature <=3 irrespective of return-water temperature, but this does not prove continuous physical heating or immediate shutdown.",
+    "Winter startup completion above 40 C is not silently reused as operating protection exit condition.",
+    "Standby valve closing does not establish operating-mode transitions.",
+    "Recommendation question combines conflict correction and unresolved transition design; merge repeated correction into parent and retain only independently actionable clarification after context search."
+  ],
+  "control_pair": {
+    "preserve": "Different measurement points in function list and operating algorithm.",
+    "reject": "Inferring constant actual protective operation or assigning startup 40 C exit rule to operating protection.",
+    "engineer_confirmed_pair": false,
+    "basis": "Same-version source and logical scope control"
+  },
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "physical_operation_verified": false,
+  "production_acceptance": false
+}

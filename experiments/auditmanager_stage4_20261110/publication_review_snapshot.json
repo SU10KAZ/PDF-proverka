@@ -1,9 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 23,
+  "reviewed_distinct_findings": 24,
   "unreviewed_finding_ids": [
-    "F-024",
     "F-025",
     "F-026",
     "F-027",
@@ -460,6 +459,23 @@
         "technical_findings": 1,
         "questions": 0,
         "pending": 1,
+        "withdrawn": 0,
+        "history_only": 0
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-024",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F024_assessment.json",
+      "assessment_sha256": "8c380b8eff5f69d95f88d69f1f087cc43afac20c47027e818f7df41941fe6ae2",
+      "status": "measurement_point_conflict_preserved_operating_mode_limits_retained",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_024/publication_projection.json",
+      "projection_sha256": "1f6890b00817e1b369ab80739c15ec79cd6019c8c85703fca3a32011deac7d13",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 1,
+        "pending": 2,
         "withdrawn": 0,
         "history_only": 0
       },
