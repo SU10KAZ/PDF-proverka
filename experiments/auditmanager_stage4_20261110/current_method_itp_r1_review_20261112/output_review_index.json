@@ -2,8 +2,8 @@
   "version": 1,
   "final_sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
   "finding_count": 74,
-  "findings_with_bounded_review": 54,
-  "findings_without_bounded_review": 20,
+  "findings_with_bounded_review": 58,
+  "findings_without_bounded_review": 16,
   "entire_output_reviewed": false,
   "whole_output_precision_finalized": false,
   "quality_score": null,
@@ -446,13 +446,23 @@
     },
     {
       "id": "F-050",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_labels_bounded_review.json",
+          "sha256": "cbb345dcab45ba26b5a96ecf0a03ac2303e2a7d9d661d513b60c58ae22110b6f"
+        }
+      ]
     },
     {
       "id": "F-051",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_labels_bounded_review.json",
+          "sha256": "cbb345dcab45ba26b5a96ecf0a03ac2303e2a7d9d661d513b60c58ae22110b6f"
+        }
+      ]
     },
     {
       "id": "F-052",
@@ -481,13 +491,23 @@
     },
     {
       "id": "F-056",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_labels_bounded_review.json",
+          "sha256": "cbb345dcab45ba26b5a96ecf0a03ac2303e2a7d9d661d513b60c58ae22110b6f"
+        }
+      ]
     },
     {
       "id": "F-057",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_labels_bounded_review.json",
+          "sha256": "cbb345dcab45ba26b5a96ecf0a03ac2303e2a7d9d661d513b60c58ae22110b6f"
+        }
+      ]
     },
     {
       "id": "F-058",
