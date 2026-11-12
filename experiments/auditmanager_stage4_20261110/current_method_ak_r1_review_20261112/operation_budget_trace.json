@@ -1,0 +1,436 @@
+{
+  "status": "confirmed_operation_budget_and_scope_gap",
+  "run": "ak_r1_classic_current",
+  "production_changed": false,
+  "runtime_changed": false,
+  "evidence_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "extracted_evidence": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "fa3c0992a0a6adaf45009245b46d1f5421d12e8dc104ae85c3f68a15f8751a8b",
+      "pointer": "/object_operation_results/41",
+      "value": {
+        "object_id": "О-09",
+        "operation": "quantity_balance",
+        "status": "checked",
+        "reason": "Воспроизводимые проверки выявили расхождения ШАУВ-2-К4ПЧ и Пн5.1.-10; сумма шести линий FRHF составляет 420 м и совпадает с СО.",
+        "source_refs": [
+          "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "blk_bcea3caf8104407b919f6960e2c12274",
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "fa3c0992a0a6adaf45009245b46d1f5421d12e8dc104ae85c3f68a15f8751a8b",
+      "pointer": "/object_operation_results/44",
+      "value": {
+        "object_id": "О-09",
+        "operation": "document_links",
+        "status": "needs_data",
+        "reason": "Для полного баланса необходимы графические схемы, устранение дублей КЖ и подтверждение эквивалентности записей КСВПГ, КСПВПГ, КСПВППГ и НФ/HF.",
+        "source_refs": [
+          "blk_019b790b96c0452e9b83c348ec3d429c",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "context_queries": [
+          "КСВПГнг(A)-HF",
+          "КСПВПГнг(A)-HF",
+          "КСПВППГнг(А)-HF",
+          "КИС-Пнг(А)-НФ"
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "fa3c0992a0a6adaf45009245b46d1f5421d12e8dc104ae85c3f68a15f8751a8b",
+      "pointer": "/object_inventory_coverage/92",
+      "value": {
+        "block_id": "blk_1c493988cdf14cee9ad351ef2e706470",
+        "status": "needs_data",
+        "object_ids": [
+          "О-02",
+          "О-09"
+        ],
+        "reason": "Растр не предоставлен."
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "fa3c0992a0a6adaf45009245b46d1f5421d12e8dc104ae85c3f68a15f8751a8b",
+      "pointer": "/object_inventory_coverage/101",
+      "value": {
+        "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+        "status": "needs_data",
+        "object_ids": [
+          "О-02",
+          "О-09"
+        ],
+        "reason": "Растр не предоставлен."
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+      "sha256": "dca026e53701994d93a4233162a10dd187739e02c83d3aa5efce2871cd5a74a6",
+      "pointer": "/backlog/2",
+      "value": {
+        "object_id": "О-09",
+        "operations": [
+          {
+            "object_id": "О-09",
+            "operation": "requirement_applicability",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_019b790b96c0452e9b83c348ec3d429c",
+              "blk_a256f98d4e01408d90baba99d8b2cc19",
+              "blk_b8f98350127c4603bb6811846ec13309",
+              "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+            ],
+            "receipt": {
+              "object_id": "О-09",
+              "operation": "requirement_applicability",
+              "status": "needs_data",
+              "reason": "Нет токов, защит, допустимых параметров линий приводов и интерфейсов. Ограничение горизонтального канала СКС 90 м не перенесено на силовые, CAN и RS-485 линии.",
+              "source_refs": [
+                "blk_c13afb271fc74ce4a28b79e59652ee51",
+                "blk_3705aceeb77e406ebacc38fcaf7f2d28"
+              ],
+              "context_queries": [
+                "Ва4.1",
+                "E5-MINI",
+                "CAN",
+                "RS-485"
+              ]
+            }
+          },
+          {
+            "object_id": "О-09",
+            "operation": "document_links",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_019b790b96c0452e9b83c348ec3d429c",
+              "blk_a256f98d4e01408d90baba99d8b2cc19",
+              "blk_b8f98350127c4603bb6811846ec13309",
+              "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+            ],
+            "receipt": {
+              "object_id": "О-09",
+              "operation": "document_links",
+              "status": "needs_data",
+              "reason": "Для полного баланса необходимы графические схемы, устранение дублей КЖ и подтверждение эквивалентности записей КСВПГ, КСПВПГ, КСПВППГ и НФ/HF.",
+              "source_refs": [
+                "blk_019b790b96c0452e9b83c348ec3d429c",
+                "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+                "blk_b8f98350127c4603bb6811846ec13309"
+              ],
+              "context_queries": [
+                "КСВПГнг(A)-HF",
+                "КСПВПГнг(A)-HF",
+                "КСПВППГнг(А)-HF",
+                "КИС-Пнг(А)-НФ"
+              ]
+            }
+          },
+          {
+            "object_id": "О-09",
+            "operation": "calculation_consistency",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_019b790b96c0452e9b83c348ec3d429c",
+              "blk_a256f98d4e01408d90baba99d8b2cc19",
+              "blk_b8f98350127c4603bb6811846ec13309",
+              "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+            ],
+            "reason": "missing_receipt"
+          }
+        ],
+        "status": "not_checked",
+        "reason": "request_budget"
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+      "sha256": "dca026e53701994d93a4233162a10dd187739e02c83d3aa5efce2871cd5a74a6",
+      "pointer": "/coverage_complete",
+      "value": false
+    }
+  ],
+  "operation_outputs": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_object_operations_00f8f3860e636e3d.json",
+      "sha256": "53a6efe09a551a27940e9816e2e3d6becfee99f3369b661b3a5bc97e86b8b0df",
+      "operations": [
+        {
+          "object_id": "О-06",
+          "operation": "quantity_balance",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-06",
+          "operation": "dimension_consistency",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-06",
+          "operation": "document_links",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-06",
+          "operation": "calculation_consistency",
+          "status": "needs_data"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_object_operations_238913e95b483bce.json",
+      "sha256": "608447c2e7cea15d50f918878e50d03787e78a2e9fe025e6e9bcbfb82e22fa8c",
+      "operations": [
+        {
+          "object_id": "О-01",
+          "operation": "requirement_applicability",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-01",
+          "operation": "calculation_consistency",
+          "status": "needs_data"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_object_operations_3e087919cadbbdaf.json",
+      "sha256": "b32e5f2ee5d366508fa60e4810b7486822be6df8f66805b84aeae97eb274d0be",
+      "operations": [
+        {
+          "object_id": "О-04",
+          "operation": "dimension_consistency",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-04",
+          "operation": "requirement_applicability",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-04",
+          "operation": "calculation_consistency",
+          "status": "needs_data"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_object_operations_43c94c7ced1d6b76.json",
+      "sha256": "8bf2d7498a64aa8e6996722f0a6ef0f3db8101c6c438191d9977acab629ef17a",
+      "operations": [
+        {
+          "object_id": "О-03",
+          "operation": "dimension_consistency",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-03",
+          "operation": "requirement_applicability",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-03",
+          "operation": "calculation_consistency",
+          "status": "needs_data"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_object_operations_6e05fb99f185d7b4.json",
+      "sha256": "ac88cfb09b6f12b7ac63c6963c2c79a1784560e7d478724418bb62118c741a71",
+      "operations": [
+        {
+          "object_id": "О-07",
+          "operation": "identity_across_views",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-07",
+          "operation": "dimension_consistency",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-07",
+          "operation": "calculation_consistency",
+          "status": "needs_data"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_object_operations_7bd48b3ebe7624c0.json",
+      "sha256": "cf88ea5b10e23826dc6baa70151a8a152b89ea323eeb45c63797445c372ffb59",
+      "operations": [
+        {
+          "object_id": "О-05",
+          "operation": "identity_across_views",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-05",
+          "operation": "quantity_balance",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-05",
+          "operation": "dimension_consistency",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-05",
+          "operation": "document_links",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-05",
+          "operation": "calculation_consistency",
+          "status": "needs_data"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_object_operations_b579183f626c8e9f.json",
+      "sha256": "502df1700cb8e9c0b0b11555e209ad8f7d54b9b4d9bd27a0d13470006f258efa",
+      "operations": [
+        {
+          "object_id": "О-02",
+          "operation": "dimension_consistency",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-02",
+          "operation": "calculation_consistency",
+          "status": "needs_data"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_object_operations_dd80e331842f847a.json",
+      "sha256": "f3cd7fddc36c52a563bf026f00561efdf6969d31b9d336f8cbf30932379add1d",
+      "operations": [
+        {
+          "object_id": "О-08",
+          "operation": "dimension_consistency",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-08",
+          "operation": "document_links",
+          "status": "needs_data"
+        },
+        {
+          "object_id": "О-08",
+          "operation": "calculation_consistency",
+          "status": "needs_data"
+        }
+      ]
+    }
+  ],
+  "budget_backlog": [
+    {
+      "object_id": "О-09",
+      "reason": "request_budget",
+      "operations": [
+        "requirement_applicability",
+        "document_links",
+        "calculation_consistency"
+      ]
+    },
+    {
+      "object_id": "О-10",
+      "reason": "request_budget",
+      "operations": [
+        "quantity_balance",
+        "dimension_consistency",
+        "requirement_applicability",
+        "calculation_consistency"
+      ]
+    },
+    {
+      "object_id": "О-11",
+      "reason": "request_budget",
+      "operations": [
+        "identity_across_views",
+        "dimension_consistency",
+        "calculation_consistency"
+      ]
+    },
+    {
+      "object_id": "О-12",
+      "reason": "request_budget",
+      "operations": [
+        "identity_across_views",
+        "dimension_consistency",
+        "calculation_consistency"
+      ]
+    },
+    {
+      "object_id": "О-13",
+      "reason": "request_budget",
+      "operations": [
+        "identity_across_views",
+        "dimension_consistency",
+        "requirement_applicability",
+        "calculation_consistency"
+      ]
+    },
+    {
+      "object_id": "О-14",
+      "reason": "request_budget",
+      "operations": [
+        "identity_across_views",
+        "dimension_consistency",
+        "calculation_consistency"
+      ]
+    },
+    {
+      "object_id": "О-15",
+      "reason": "request_budget",
+      "operations": [
+        "dimension_consistency",
+        "requirement_applicability",
+        "calculation_consistency"
+      ]
+    }
+  ],
+  "findings": [
+    "Восемь сохранённых дополнительных объектных запросов охватываютО-01–О-08. О-09–О-15 остаются в backlog сrequest_budget. coverage_complete=false.",
+    "Кабельная группаО-09 имеет quantity_balance=checked с конкретными основаниями поШАУВ-2-К4ПЧ, Пн5.1.-10 иFRHF420м. Эта квитанция не подтверждает баланс всех шкафов.",
+    "ДляО-09 document_links=needs_data прямо перечисляет различающиеся маркиКСВПГ/КСПВПГ/КСПВППГ. Дополнительная проверка этих связей не исполнена в просмотренной серии объектных запросов.",
+    "Растры листов25/28 доступны во входе аудита, но текстовый этап отмечает их needs_data:растр не предоставлен. Нельзя подменять доступность во всём входе фактической доступностью конкретному запросу."
+  ],
+  "relation_to_targets": [
+    "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+    "AK_F053_local_cable_balance:3ea87f3768012a815077",
+    "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c"
+  ],
+  "limits": [
+    "Бюджетная остановка дополнительной операции подтверждена; восстановление каждого пропуска при увеличении бюджета ещё не доказано.",
+    "Общий quantity_balance=checked не назван ложным: он подтверждает ограниченные выполненные вычисления, но не весь кабельный реестр.",
+    "Клеммный пропуск листа28 не объявляется следствием кабельного бюджета без отдельной причинной связи.",
+    "Не меняем лимиты активной серии: сравнение должно оставаться воспроизводимым."
+  ],
+  "proposed_behavior": [
+    "Фиксировать охват операции адресными объектами/линиями и ведомостями; общая категорияКабели не заменяет полный реестр.",
+    "Сохранять необработанный backlog для продолжения с остатком бюджета; явно показывать непроверенный объём и стоимость завершения.",
+    "Проверить стратегию распределения запросов между группами и приоритет точных незакрытых связей, не считать первые8 групп полным покрытием проекта."
+  ],
+  "acceptance_test": "После текущей замороженной серии сравнить ограниченный и продолженный бюджет на одинаковых исходниках: восстановление адресных положительных атомов, отсутствие новых ложных утверждений, сохранение прежних находок и прирост времени/квоты. Историю и контрольные ответы исполнителям не передавать."
+}
