@@ -13,6 +13,7 @@ from pathlib import Path
 from .source_review_results import validate_source_review
 from .source_review_evidence import evidence_digest
 from .source_review_output_refs import final_reference_updates
+from .source_review_reference_retention import check_context_reference_retention
 
 
 def _has_search_boundary(value):
@@ -185,6 +186,7 @@ def apply_review_admissions(document, entries, md):
             action=_check_decision(response,decision,original)
             display_updates=_review_display_fields(original,decision,action)
             reference_updates=final_reference_updates(response,decision,md)
+            check_context_reference_retention(response,decision,original,md)
             history={'finding_id':fid,'original_finding':deepcopy(original),'decision':deepcopy(decision),
                      'response':deepcopy(response),'source_md_sha256':hashlib.sha256(md.encode()).hexdigest()}
             # Only mutate once all checks have passed for this entry.

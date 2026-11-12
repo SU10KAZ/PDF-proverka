@@ -1,0 +1,30 @@
+{
+  "status": "optional_context_reference_contract_integrated_and_locally_verified",
+  "control": "H06-P03",
+  "tests_passed": 96,
+  "test_files": [
+    "tests/test_source_review_reference_retention.py",
+    "tests/test_source_review_admission.py",
+    "tests/test_source_review_output_refs.py",
+    "tests/test_source_review_workflow.py",
+    "tests/test_source_review_release_workflow.py",
+    "tests/test_source_review_completion_workflow.py"
+  ],
+  "known_case": "AR-O27-crossdoc C8: selected KM8 missing from approved user fields; admission refuses before mutating any finding.",
+  "automatic_reference_selection_verified": false,
+  "legacy_decisions_unchanged_without_obligations": true,
+  "model_calls": 0,
+  "stage4_control_closed": false,
+  "production_acceptance": false,
+  "frozen_comparison_modified": false,
+  "remaining": [
+    "Model selection of required context references must be evaluated; historical C8 is supplied explicitly in this local contract test.",
+    "Wire validated selection to context_reference_obligations and test repair plus semantic admission before accepting the final wording.",
+    "Test an independently supported irrelevant-reference negative case; synthetic boundary tests are not a historical pair."
+  ],
+  "files": {
+    "backend/app/pipeline/stages/findings_verify/source_review_reference_retention.py": "ddf929fd5963895c0f4089c85fb5212c295b3030ab3dd08950abe4ad924d5feb",
+    "backend/app/pipeline/stages/findings_verify/source_review_admission.py": "6b538d8025ad1e56f922e90880e7f189112b4a789cb851e60c68abceffaefc92",
+    "tests/test_source_review_reference_retention.py": "9c0f60dc059b4d622f89a46da81576cc9005766c29389613a78f667c25a30325"
+  }
+}
