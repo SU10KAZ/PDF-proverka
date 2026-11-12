@@ -1,0 +1,37 @@
+{
+  "finding_id": "F-067",
+  "status": "screened_cable_sum_preserved_recommendation_pending",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_067/publication_projection.json",
+  "projection_sha256": "87f30912c4e69b7dc837ad99bef2d869901dbc0625010fdf19535771eddbeb4e",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_fcd31b6618d34e0f982af6c418e3bf37.png",
+      "sha256": "7265169d198c15255584b261cce1dbc1517006493ca16c6a463b4607bc01325f",
+      "directly_viewed": true
+    },
+    {
+      "path": "/tmp/ak_F067_cable_lengths_inspection.png",
+      "sha256": "3a1af95cc14143de2d808b90739be631fc2f77ea9e9c312328b1ef9e89141a6a",
+      "source_pixel_crop": [
+        300,
+        380,
+        620,
+        640
+      ],
+      "display_resize": [
+        960,
+        780
+      ],
+      "directly_viewed": true
+    }
+  ],
+  "checks": [
+    "Повторно прочитаны на увеличенном GRAPHIC: Пкр4.1-1 L=15м, -2 L=10м, -3 L=10м; сумма однопарного экранированного кабеля 35 м против 40 м в авторитетной ведомости.",
+    "Пкр4.1-10 имеет 2x2x0,75 и не включён в однопарный кабель. Не вводится общий процент запаса.",
+    "Не объявлены доказанными необоснованность заказа или фактический избыток поставки.",
+    "Полезная рекомендация согласовать количество и проверить основание 5 м помещена pending. При итоговой выдаче нужно сохранить её с основной находкой, не потерять вместе с неопределённостью закупки."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
