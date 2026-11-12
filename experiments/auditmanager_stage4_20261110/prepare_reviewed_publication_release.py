@@ -13,15 +13,18 @@ from backend.app.pipeline.stages.findings_verify.source_review_final_check impor
 from .run_primary_text_runtime_probe import sha, write
 
 
-def prepare(review_root, destination):
+def prepare(review_root, destination, candidate_path=None):
     manifest = json.loads((review_root / 'manifest.json').read_text())
     report = Path(manifest['report_path'])
     source = Path(manifest['md_path'])
     assert sha(report) == manifest['report_sha256']
     assert sha(source) == manifest['md_sha256']
-    candidate_path = review_root / 'workflow/candidate.json'
+    candidate_path = candidate_path or review_root / 'workflow/candidate.json'
     candidate = json.loads(candidate_path.read_text())
-    if candidate.get('status') != 'candidate_ready':
+    receipts = candidate.get('receipts', [])
+    ready_pair = (candidate_path != review_root / 'workflow/candidate.json'
+                  and len(receipts) == 1 and receipts[0].get('status') == 'applied')
+    if candidate.get('status') != 'candidate_ready' and not ready_pair:
         raise ValueError('source_review_not_ready')
     entry = candidate['entry']
     finding = json.loads((review_root / 'finding.json').read_text())
@@ -64,5 +67,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('review_root', type=Path)
     parser.add_argument('destination', type=Path)
+    parser.add_argument('--candidate', type=Path)
     args = parser.parse_args()
-    print(json.dumps(prepare(args.review_root.resolve(), args.destination.resolve()), ensure_ascii=False))
+    print(json.dumps(prepare(args.review_root.resolve(), args.destination.resolve(),
+                            args.candidate.resolve() if args.candidate else None), ensure_ascii=False))
