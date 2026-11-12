@@ -1,0 +1,135 @@
+{
+  "status": "offline_candidate_local_validation_only",
+  "source_files": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/document_graph.json",
+      "sha256": "c10bba68a5f2320bbf1daf29056586c904f5999f9ad0ba9a8da419c830368dd4"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/navigation_candidate.py",
+      "sha256": "e31631c36ac0c8dd2f50cff1ae7b7a0807645c63300765e8dfeb4d72ada299f5"
+    }
+  ],
+  "same_document_binding": "Both source files from same sealed run and version directory; caller prerequisite.",
+  "unit_cases_passed": 6,
+  "real_cases": [
+    {
+      "finding_id": "F-003",
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          6
+        ],
+        "patch": {
+          "page": 6,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 6
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "resolved_sheet": "Лист 2",
+      "expected_sheet": "Лист 2"
+    },
+    {
+      "finding_id": "F-004",
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          6
+        ],
+        "patch": {
+          "page": 6,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 6
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "resolved_sheet": "Лист 2",
+      "expected_sheet": "Лист 2"
+    },
+    {
+      "finding_id": "F-005",
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          8
+        ],
+        "patch": {
+          "page": 8,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 8
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "resolved_sheet": "Лист 4",
+      "expected_sheet": "Лист 4"
+    },
+    {
+      "finding_id": "F-006",
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          8
+        ],
+        "patch": {
+          "page": 8,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 8
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "resolved_sheet": "Лист 4",
+      "expected_sheet": "Лист 4"
+    },
+    {
+      "finding_id": "F-007",
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          8
+        ],
+        "patch": {
+          "page": 8,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 8
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "resolved_sheet": "Лист 4",
+      "expected_sheet": "Лист 4"
+    }
+  ],
+  "source_output_unchanged": true,
+  "scope": "Only five reproduced cases; not whole-output regression or stage acceptance.",
+  "remaining": [
+    "Whole-output comparison against preserved navigation and multi-document cases.",
+    "Sheet labels and renderer integration are not changed by prototype.",
+    "No execution-path integration during active frozen series."
+  ],
+  "production_changed": false,
+  "live_trial_changed": false
+}
