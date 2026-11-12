@@ -1,0 +1,462 @@
+{
+  "version": 1,
+  "scope": "16 additional AK reference groups; context/lineage assessment, not engineering truth re-adjudication",
+  "sources": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings_pre_merge.json",
+      "sha256": "c65ece3a6b197bd74af155ac0c07a6d72cb71fc7f5adefcddabacad0dbee4829"
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/visible_reference_lineage_diagnostic.json",
+      "sha256": "e483e3ae44c5c8663a338dd3964f48aa6faa2a79aab377278d8704f45a557c94"
+    }
+  ],
+  "exporter": {
+    "path": "backend/app/pipeline/stages/report/generate_excel_report.py",
+    "sha256": "a47d3943df8f3ddd32199e1b655edc3204749a1c58dd37d917ef658751e4facc",
+    "functions": [
+      "PROJ_COLUMNS",
+      "f_problem",
+      "f_description",
+      "f_solution",
+      "f_risk"
+    ],
+    "frozen_source": {
+      "path": "/tmp/auditmanager_current_method_sources_20261112/candidate_d228885f327a/backend/app/pipeline/stages/report/generate_excel_report.py",
+      "sha256": "a47d3943df8f3ddd32199e1b655edc3204749a1c58dd37d917ef658751e4facc"
+    },
+    "matches_frozen_source": true
+  },
+  "rows": [
+    {
+      "finding_id": "F-009",
+      "field": "description",
+      "reference": "F-091",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-085",
+      "current_reference_exists": false,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "ик-реле «Спрут Т-06» и управляющий сигнал на пускатель, а позиция 20.1 СО — шесть МВТ 3280 с элементом NTC10К. F-009 сохраняет это расхождение типов; F-091 сохраняет то же расхождение с контекстом аналогового входа функциональной схемы. Новое замечание не требуется. Технический профиль обоснован различием исполнения прибора и способа"
+      ],
+      "owner_pointer": "/findings/8/description",
+      "pre_merge_target_pointer": "/findings/90",
+      "expected_final_target_pointer": "/findings/84",
+      "actual_final_target_problem": null,
+      "expected_final_target_problem": "Разные исполнения температурного прибора в описании алгоритма и спецификации",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": true,
+      "reference_token_present_in_exported_core_fields": true,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-021",
+      "field": "description",
+      "reference": "F-071",
+      "occurrences": 2,
+      "expected_target_by_lineage": "F-066",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "этого исполнения и предусматривает 10 м 3x2,5. Изображение дополнительно связывает 3×2,5 с По5.1-9. F-021 сохраняет расхождение состава таблицы и КЖ, F-071 — прямое расхождение исполнения этой линии на схеме и в КЖ. Мощность и защита нужны для выбора исправления, но не для подтверждения противоречия.\n\nУказанные в таблице шкафа 10 м П",
+        "ронагревателю, L=10м; её исполнение и длина соответствуют строке таблицы этого листа. Привязка установлена по схеме, а не только по совпадению длины. F-071 уже сохраняет её конфликт с 4x4,0 в КЖ, F-021 — соответствующее расхождение таблицы. «Вместо» означает альтернативные указания документов, а не доказанную фактическую замену кабел"
+      ],
+      "owner_pointer": "/findings/20/description",
+      "pre_merge_target_pointer": "/findings/70",
+      "expected_final_target_pointer": "/findings/65",
+      "actual_final_target_problem": "Узел А и примечание 3 листа 50 задают несогласованные решения прохода кабелей через строительную конструкцию.",
+      "expected_final_target_problem": "Для кабеля По5.1-9 схема внешних подключений и кабельный журнал задают разные количество и сечение жил.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": true,
+      "reference_token_present_in_exported_core_fields": true,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-048",
+      "field": "reason",
+      "reference": "F-045",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-044",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "Расхождение затрагивает адресное назначение сигналов конкретных двигателей, поэтому относится к technical_findings. F-045 описывает другую систему на листе 11 и данное место не охватывает."
+      ],
+      "owner_pointer": "/findings/47/reason",
+      "pre_merge_target_pointer": "/findings/44",
+      "expected_final_target_pointer": "/findings/43",
+      "actual_final_target_problem": "Полярность отбора давления PDS3 и PDS4 противоположна направлению повышения давления на вытяжных вентиляторах.",
+      "expected_final_target_problem": "Подписи состояния основного и резервного вентиляторов Ва3.1 перепутаны между каналами 16 и 19.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-053",
+      "field": "reason",
+      "reference": "F-053",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-051",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "н междокументный конфликт обозначения защитного прибора и адреса его подключения в пределах одной системы и шкафа, поэтому выбран technical_findings. F-053 относится к Пу5.1 и другому шкафу и не охватывает По5.1."
+      ],
+      "owner_pointer": "/findings/52/reason",
+      "pre_merge_target_pointer": "/findings/52",
+      "expected_final_target_pointer": "/findings/50",
+      "actual_final_target_problem": "Обозначение термостата По5.1 на функциональной схеме расходится с перечнем элементов и кабельным журналом.",
+      "expected_final_target_problem": "Обозначение термостата Пу5.1 на функциональной схеме расходится с перечнем элементов и кабельным журналом.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-055",
+      "field": "reason",
+      "reference": "F-046",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-045",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "ение показывает направление потока, точки отбора, знаки входов и положительную уставку. Это техническое противоречие подключения измерительных цепей. F-046 относится к Ва3.1/Ва3.1р на листе 11 и данное место не охватывает."
+      ],
+      "owner_pointer": "/findings/54/reason",
+      "pre_merge_target_pointer": "/findings/45",
+      "expected_final_target_pointer": "/findings/44",
+      "actual_final_target_problem": "[Объединено 3 замечаний] Для PDS2–PDS4 таблица сигналов и перечень элементов листа 11 задают разные диапазоны давления.",
+      "expected_final_target_problem": "Полярность отбора давления PDS3 и PDS4 противоположна направлению повышения давления на вытяжных вентиляторах.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-056",
+      "field": "reason",
+      "reference": "F-056",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-054",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "арактер ошибочных итогов, не представлен, поэтому замечание сохранено в technical_findings. G-050 и G-051 объединены как одна проблема одной таблицы; F-056 относится к другому шкафу."
+      ],
+      "owner_pointer": "/findings/55/reason",
+      "pre_merge_target_pointer": "/findings/55",
+      "expected_final_target_pointer": "/findings/53",
+      "actual_final_target_problem": "Итоги DI=10 и DO=5 не соответствуют отметкам в таблице сигналов ШАУВ-3-К6ПЧ.",
+      "expected_final_target_problem": "Итог DO=10 не соответствует 11 подключениям в таблице сигналов ШАУВ-1-К5АС.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-058",
+      "field": "reason",
+      "reference": "F-046",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-045",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "енно показывает направление потока, точки отбора, знаки входов и положительную уставку. Это техническое противоречие подключения измерительных цепей. F-046 и F-057 относятся к другим системам и листам."
+      ],
+      "owner_pointer": "/findings/57/reason",
+      "pre_merge_target_pointer": "/findings/45",
+      "expected_final_target_pointer": "/findings/44",
+      "actual_final_target_problem": "[Объединено 3 замечаний] Для PDS2–PDS4 таблица сигналов и перечень элементов листа 11 задают разные диапазоны давления.",
+      "expected_final_target_problem": "Полярность отбора давления PDS3 и PDS4 противоположна направлению повышения давления на вытяжных вентиляторах.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-058",
+      "field": "reason",
+      "reference": "F-057",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-055",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "азывает направление потока, точки отбора, знаки входов и положительную уставку. Это техническое противоречие подключения измерительных цепей. F-046 и F-057 относятся к другим системам и листам."
+      ],
+      "owner_pointer": "/findings/57/reason",
+      "pre_merge_target_pointer": "/findings/56",
+      "expected_final_target_pointer": "/findings/54",
+      "actual_final_target_problem": "В легенде листа 21 символ водяного нагревателя Пкр6.1 назван секцией электрического нагревателя.",
+      "expected_final_target_problem": "Полярность отборов давления PDS3 и PDS4 противоположна повышению давления на вентиляторах Ва4.1 и Ва4.1р.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-059",
+      "field": "reason",
+      "reference": "F-045",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-044",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        " определяет адрес сигналов работы и аварии конкретных двигателей, поэтому относится к technical_findings. G-055 и G-058 объединены как одна проблема. F-045 и F-050 относятся к другим системам."
+      ],
+      "owner_pointer": "/findings/58/reason",
+      "pre_merge_target_pointer": "/findings/44",
+      "expected_final_target_pointer": "/findings/43",
+      "actual_final_target_problem": "Полярность отбора давления PDS3 и PDS4 противоположна направлению повышения давления на вытяжных вентиляторах.",
+      "expected_final_target_problem": "Подписи состояния основного и резервного вентиляторов Ва3.1 перепутаны между каналами 16 и 19.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-059",
+      "field": "reason",
+      "reference": "F-050",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-048",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "яет адрес сигналов работы и аварии конкретных двигателей, поэтому относится к technical_findings. G-055 и G-058 объединены как одна проблема. F-045 и F-050 относятся к другим системам."
+      ],
+      "owner_pointer": "/findings/58/reason",
+      "pre_merge_target_pointer": "/findings/49",
+      "expected_final_target_pointer": "/findings/47",
+      "actual_final_target_problem": "Функция пуска/останова электронагревателя Пу5.1 показана на дискретном входе DI.",
+      "expected_final_target_problem": "Подписи состояния основных и резервных вентиляторов Пн5.1 и Вн5.1 перепутаны.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-067",
+      "field": "reason",
+      "reference": "F-055",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-053",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "ной прослеженной линии одного шкафа. Это не вопрос глобальной уникальности коротких обозначений. В существующих замечаниях этот конфликт не сохранён; F-055 относится к другому прибору — термостату линии По5.1-2."
+      ],
+      "owner_pointer": "/findings/66/reason",
+      "pre_merge_target_pointer": "/findings/54",
+      "expected_final_target_pointer": "/findings/52",
+      "actual_final_target_problem": "Полярность отборов давления PDS3 и PDS4 противоположна повышению давления на вентиляторах Ва4.1 и Ва4.1р.",
+      "expected_final_target_problem": "Обозначение термостата По5.1 на функциональной схеме расходится с перечнем элементов и кабельным журналом.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-070",
+      "field": "reason",
+      "reference": "F-073",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-068",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "полнения кабеля конкретной линии. Совпадение размера и длины не устанавливает эквивалентность марок или исключительно редакционный характер различия. F-073 касается других линий и другого шкафа; существующие замечания СУК2-2 не охватывают."
+      ],
+      "owner_pointer": "/findings/69/reason",
+      "pre_merge_target_pointer": "/findings/72",
+      "expected_final_target_pointer": "/findings/67",
+      "actual_final_target_problem": "Вертикальная размерная цепь установки шкафа на листе 53 противоречива.",
+      "expected_final_target_problem": "Для четырёх линий ШАУВ-1-К6ПЧ схема подключений и кабельный журнал задают разные марки кабеля.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-085",
+      "field": "description",
+      "reference": "F-091",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-085",
+      "current_reference_exists": false,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "ик-реле «Спрут Т-06» и управляющий сигнал на пускатель, а позиция 20.1 СО — шесть МВТ 3280 с элементом NTC10К. F-009 сохраняет это расхождение типов; F-091 сохраняет то же расхождение с контекстом аналогового входа функциональной схемы. Новое замечание не требуется. Технический профиль обоснован различием исполнения прибора и способа"
+      ],
+      "owner_pointer": "/findings/84/description",
+      "pre_merge_target_pointer": "/findings/90",
+      "expected_final_target_pointer": "/findings/84",
+      "actual_final_target_problem": null,
+      "expected_final_target_problem": "Разные исполнения температурного прибора в описании алгоритма и спецификации",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": true,
+      "reference_token_present_in_exported_core_fields": true,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-087",
+      "field": "reason",
+      "reference": "F-060",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-056",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "оставки не установлен. Положительных оснований считать расхождение только редакционным нет. F-012 и F-013 относятся к другим шкафам и типам датчиков; F-060 и F-061 рассматривают другие проблемы листа 21."
+      ],
+      "owner_pointer": "/findings/86/reason",
+      "pre_merge_target_pointer": "/findings/59",
+      "expected_final_target_pointer": "/findings/55",
+      "actual_final_target_problem": "Обозначение шкафа системы ПД4.1.4 на функциональной схеме не согласовано с кабельным журналом.",
+      "expected_final_target_problem": "Итоги DI=10 и DO=5 не соответствуют отметкам в таблице сигналов ШАУВ-3-К6ПЧ.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-087",
+      "field": "reason",
+      "reference": "F-061",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-057",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "не установлен. Положительных оснований считать расхождение только редакционным нет. F-012 и F-013 относятся к другим шкафам и типам датчиков; F-060 и F-061 рассматривают другие проблемы листа 21."
+      ],
+      "owner_pointer": "/findings/86/reason",
+      "pre_merge_target_pointer": "/findings/60",
+      "expected_final_target_pointer": "/findings/56",
+      "actual_final_target_problem": "Конечные устройства кабелей Пкр5.1-9 и Пкр5.1-13 на схеме внешних подключений не согласованы с кабельным журналом.",
+      "expected_final_target_problem": "В легенде листа 21 символ водяного нагревателя Пкр6.1 назван секцией электрического нагревателя.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    },
+    {
+      "finding_id": "F-088",
+      "field": "reason",
+      "reference": "F-071",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-066",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false,
+      "contexts": [
+        "личества кабельной продукции между КЖ и закупочной спецификацией. Оно отдельно от конфликтов таблицы шкафа и схемы подключения, сохранённых в F-021 и F-071. Оснований считать его только редакционным нет: согласованное исполнение и итоговый объём поставки требуют определения."
+      ],
+      "owner_pointer": "/findings/87/reason",
+      "pre_merge_target_pointer": "/findings/70",
+      "expected_final_target_pointer": "/findings/65",
+      "actual_final_target_problem": "Узел А и примечание 3 листа 50 задают несогласованные решения прохода кабелей через строительную конструкцию.",
+      "expected_final_target_problem": "Для кабеля По5.1-9 схема внешних подключений и кабельный журнал задают разные количество и сечение жил.",
+      "assessment": "stale_reference_confirmed_by_context_and_exact_lineage",
+      "reason": "Text describes the same-topic finding or its distinct object scope using a pre-merge ID; it does not label that ID as a historical reference. The final ID is missing or names a different finding.",
+      "source_field_exported_to_excel": false,
+      "reference_token_present_in_exported_core_fields": false,
+      "recommendation": "Remove internal duplicate/disposition commentary from engineer text or render references from stable finding identity after merge. Do not alter project evidence or suppress the finding."
+    }
+  ],
+  "counts": {
+    "reviewed_groups": 16,
+    "confirmed_stale_groups": 16,
+    "exported_source_field_groups": 3,
+    "internal_reason_groups": 13
+  },
+  "limits": [
+    "Scope of Excel exposure verified against current exporter functions; web UI exposure not established.",
+    "A wrong cross-reference does not prove that the engineering claim is false.",
+    "No runtime correction or whole-output precision acceptance."
+  ],
+  "runtime_changed": false,
+  "stage4_complete": false,
+  "all_diagnostic_groups_excel_exposure": {
+    "exported_core_fields": {
+      "groups": 24,
+      "occurrences": 48,
+      "finding_rows": 24
+    },
+    "internal_reason": {
+      "groups": 13,
+      "occurrences": 13,
+      "finding_rows": 10
+    }
+  }
+}
