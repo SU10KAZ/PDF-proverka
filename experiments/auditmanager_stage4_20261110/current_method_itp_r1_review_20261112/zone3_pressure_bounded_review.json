@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "scope": "Heating zone3 working pressure and protective setpoint",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "id": "F-008",
+      "assessment": "Pump model and zone match across technical sheet and explication. Published pump maximum16bar versus same-zone AUPD maximum/nominal16.3bar confirmed. This is parameter coordination evidence, not a measured0.3bar exceedance at each pump port.",
+      "target": "not assigned in this bounded review",
+      "quote_checks": [
+        {
+          "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+          "quote": "| Макс. рабочее давление | 16 бар |",
+          "line": 3813
+        },
+        {
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "quote": "| K11 | IL 40/140-2,2/2-R | Насос циркуляционный системы отопления 3-ая зона, Q=12,42 м³/ч, H=19,29 м.в.см., 3x380В, N=2,2 кВт | 2 | 48,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |",
+          "line": 361
+        },
+        {
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "quote": "| Макс. давление в системе, Рмакс | бар | 16,3 | Рстат.предвар. + 1 бар |",
+          "line": 5586
+        },
+        {
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "quote": "1. Расчет номинального рабочего давления Rсист Rсист = Rст + 1 = 16,3 бар",
+          "line": 5618
+        }
+      ],
+      "visible_fields": {
+        "problem": "Допустимое рабочее давление насосов К11 ниже рабочего давления, принятого в подборе АУПД отопления третьей зоны.",
+        "description": "Первоначальное описание:\nДля IL 40/140-2,2/2-R установлен предел рабочего давления 16 бар. Экспликация относит это исполнение к насосам К11 отопления третьей зоны. Подбор АУПД той же системы задаёт максимальное и номинальное рабочее давление 16,3 бар — на 0,3 бар выше предела насоса. Схема показывает насосную группу К11 и установку К20 в контуре третьей зоны. Подтверждено несогласование проектных параметров оборудования и системы. Точное давление на патрубках насоса и величина его превышения в отдельных режимах требуют расчёта распределения давлений.\n\nДополнительная проверка:\nНасос IL 40/140-2,2/2-R рассчитан на 16 бар, а АУПД третьей зоны — на 16,3 бар.\nТехнический лист прямо устанавливает предел 16 бар, а подбор АУПД отопления третьей зоны — максимальное и номинальное рабочее давление 16,3 бар. Экспликация и приложенная схема связывают оборудование с одним контуром. В F-008 сохранено несогласование проектных параметров без объявления 16,3 бар точным давлением на каждом патрубке.\n\nНасос IL 40/140-2,2/2-R рассчитан на 16 бар, а АУПД третьей зоны — на 16,3 бар.\nТехнический лист отопления третьей зоны прямо устанавливает максимальное рабочее давление насоса 16 бар; подбор АУПД той же зоны задаёт максимальное и номинальное рабочее давление системы 16,3 бар. Экспликация связывает насос с К11, а на крайней правой группе схемы показаны насосные ветви и подключение К20. Несогласование проектных параметров полностью сохранено в F-008. Точное давление на каждом патрубке этим сравнением не определяется. Технический профиль обусловлен сопоставлением рабочего давления системы с допустимым давлением оборудования.",
+        "solution": "Согласовать рабочие давления отопления третьей зоны, подбор АУПД и допустимое давление К11. Проверить давление на обоих патрубках при расчётных режимах; при сохранении принятых давлений подобрать соответствующее исполнение насосов и присоединений.",
+        "report_section": "technical_findings"
+      }
+    },
+    {
+      "id": "F-009",
+      "assessment": "Position45 explicitly assigns opening pressure20bar to heating zone3; same-zone K11 technical sheet gives16bar maximum. Four-bar difference confirmed as published parameter comparison. Actual installed setting and protection sufficiency require separate hydraulic review.",
+      "target": "not assigned in this bounded review",
+      "quote_checks": [
+        {
+          "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "quote": "| 45 | Предохранительный клапан фланцевый КПП 496-01-16-3Н-20 Ду20, Рср.=20 бар | КПП 496-01-16-3Н-020х032-20 Ду20, 20бар |  | ADL | шт | 1 |  | отопление 3-зона |",
+          "line": 1150
+        },
+        {
+          "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+          "quote": "| Макс. рабочее давление | 16 бар |",
+          "line": 3813
+        },
+        {
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "quote": "| K11 | IL 40/140-2,2/2-R | Насос циркуляционный системы отопления 3-ая зона, Q=12,42 м³/ч, H=19,29 м.в.см., 3x380В, N=2,2 кВт | 2 | 48,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |",
+          "line": 361
+        }
+      ],
+      "visible_fields": {
+        "problem": "Давление срабатывания предохранительного клапана отопления третьей зоны превышает допустимое рабочее давление насосов этого контура.",
+        "description": "Первоначальное описание:\nДля предохранительного клапана позиции 45 спецификация задаёт Рср.=20 бар и назначение «отопление 3-зона». Технический лист насоса IL 40/140-2,2/2-R той же системы устанавливает максимальное рабочее давление 16 бар. Таким образом, заданное давление срабатывания клапана на 4 бар выше предела насоса. Это отдельное несогласование защитной уставки с характеристикой оборудования; оно сохраняется независимо от уточнения рабочего давления 16,3 бар.\n\nДополнительная проверка:\nПредохранительный клапан контура настроен на 20 бар.\nСтрока 45 спецификации прямо задаёт Рср.=20 бар для отопления третьей зоны. Подтверждена проектная уставка, а не фактическая настройка установленного клапана. Её несогласование с пределом насоса 16 бар сохранено отдельно в F-009.\n\nПредохранительный клапан контура настроен на 20 бар.\nПозиция 45 первичной спецификации прямо задаёт Рср.=20 бар с назначением «отопление 3-зона». Подтверждена проектная уставка, а не фактическая настройка установленного клапана. Это утверждение и его сопоставление с пределом насоса 16 бар уже сохранены в F-009 отдельно от рабочего давления АУПД в F-008. Технический профиль касается согласования защитной уставки с допустимым давлением оборудования; распределение давления между клапаном и насосом требует предусмотренной в F-009 проверки.",
+        "solution": "Согласовать давление срабатывания клапана позиции 45 с допустимыми давлениями оборудования контура и распределением давления между клапаном и насосами. Проверить достаточность защиты во всех расчётных режимах и отразить согласованные параметры в спецификации.",
+        "report_section": "technical_findings"
+      }
+    }
+  ],
+  "graphics": [
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png",
+        "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2"
+      },
+      "method": "Codex parent direct raster inspection during GVS formula review",
+      "observation": "Rightmost heating group shows K11 pump pair and K20 connected within that group; position45 on supply-side branch is labelled opening pressure20bar. No quantitative port pressure distribution calculated."
+    }
+  ],
+  "calculations": {
+    "published_working_pressure_difference_bar": "0.3",
+    "published_setpoint_difference_bar": "4"
+  },
+  "negative_control": {
+    "ids": [
+      "F-008",
+      "F-009"
+    ],
+    "assessment": "Same pump and zone but distinct comparisons: normal system pressure versus equipment limit, and protective opening setpoint versus equipment limit. A deduplication rule must not discard the second issue merely because the equipment identity matches.",
+    "limit": "May present together with both aspects retained; not an independently engineer-adjudicated control pair."
+  },
+  "preserve": "Do not convert system pressure into exact port pressure without checking hydraulic position and regimes. Do not describe a specified setpoint as a measured installed adjustment.",
+  "entire_output_reviewed": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0
+}
