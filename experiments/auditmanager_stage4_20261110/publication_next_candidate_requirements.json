@@ -47,6 +47,17 @@
         "F-008 confirmed quantity conflicts should route technical"
       ],
       "verification": "Explicit semantic admission plus separate content truth and profile usefulness decisions."
+    },
+    {
+      "id": "PUB-05",
+      "behavior": "For graphic identifiers, retain literal observation and location separately from object correspondence. Matching cabinet, purpose and length does not authorize rewriting the identifier. Verify disputed spelling in a focused graphic view before final admission.",
+      "negative_cases": [
+        "F-019 repeated СКЗ-1 despite graphic СУК3-1"
+      ],
+      "positive_controls": [
+        "Keep confirmed 45 m cable mark discrepancy and four 30 m line discrepancies"
+      ],
+      "verification": "Semantic source review must detect repeated graphical misreading even when all structural validations pass; no global normalization or whole-finding suppression."
     }
   ],
   "sealed_queue_modified": false,

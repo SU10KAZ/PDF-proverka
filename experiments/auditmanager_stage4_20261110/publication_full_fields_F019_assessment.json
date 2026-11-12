@@ -1,0 +1,47 @@
+{
+  "finding_id": "F-019",
+  "status": "supported_core_preserved_graphic_identifier_error_repeated",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_019/publication_projection.json",
+  "projection_sha256": "40f1c86acd5c8d30c26e80cc186125d4e8aa8be2885d694e87eac3deeb9b0893",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_cable_mark_variants_source_review_20261112.json",
+  "source_review_sha256": "d7a75481f2d75611692f009d9f65ac5f389f101d4f8c92b074cd8d94ca3981ec",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_b8712be58c8b43f6ac75cfa6420d5479.png",
+      "block_id": "blk_b8712be58c8b43f6ac75cfa6420d5479",
+      "sha256": "1e2341ee22473618e8dd909d53c863618bd86d002b9d77d0b4b5e71ef6e9c0ba",
+      "directly_viewed": true,
+      "detail": "original"
+    },
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+      "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+      "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Four 30 m control cable lines show КСПВПГ on graphic versus КСВПГ in journal.",
+    "Summary specification КСПВППГ and local lists КСПВПГ remain literal distinct designations; manufacturer equivalence unverified.",
+    "45 m entry cable shows КСПВПГ versus journal КСПВП; same cabinet, entry purpose and length support correspondence.",
+    "Graphic cable identifier is СУК3-1, not СКЗ-1 stated in proposed publication; journal СУКЗ-1 must remain literal.",
+    "НФ/HF question remains separate without assuming equivalence or incompatible fire properties."
+  ],
+  "semantic_error": {
+    "stage": "graphic_reading_and_publication_reconciliation",
+    "model_text": "СКЗ-1",
+    "source_graphic_reading": "СУК3-1",
+    "affected_fields": [
+      "technical statement",
+      "graphic evidence observation",
+      "superseded caveat evidence"
+    ],
+    "entire_finding_false": false,
+    "ready_for_final_publication": false,
+    "required_action": "Correct graphic identifier only after bound semantic review; preserve confirmed cable mark discrepancy and distinguish journal spelling. Do not globally normalize lookalike letters or digits."
+  },
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
