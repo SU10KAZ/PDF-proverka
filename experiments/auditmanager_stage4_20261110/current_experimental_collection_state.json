@@ -1,0 +1,43 @@
+{
+  "status": "old_experimental_collection_terminal_new_candidate_not_dispatched",
+  "source_status": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/experimental_collection_status.json",
+    "sha256": "54e0cd1e95ba74e90c104a8493f3a1c0dd51c117314e1c326a79d597133bbeeb"
+  },
+  "recorded_status": "failed_requires_inspection",
+  "process_observations": [
+    {
+      "pid": 4072242,
+      "proc_entry_exists": false
+    },
+    {
+      "pid": 736122,
+      "proc_entry_exists": false
+    },
+    {
+      "pid": 836457,
+      "proc_entry_exists": false
+    }
+  ],
+  "runs": [
+    {
+      "variant": "classic_current",
+      "discipline": "AK",
+      "repeat": 1,
+      "execution_status": "completed_unadjudicated",
+      "exit_code": 0
+    },
+    {
+      "variant": "inventory",
+      "discipline": "AK",
+      "repeat": 1,
+      "execution_status": "failed",
+      "exit_code": 1
+    }
+  ],
+  "known_repair": "single_source_exceeds_budget was addressed before this turn; current six-source preflight succeeds with 21/15/11/14/9/23 packets. Do not restart old failed protocol.",
+  "baseline": "18 completed baseline status files rehashed; baseline_runtime_summary.json is authoritative locator, not old all_trial_input_copies_check.json.",
+  "next_execution_boundary": "Current candidate and source metadata differ from old frozen experiment. Freeze new candidate/protocol only after remaining method controls are accepted. Preserve DEV-known exposure and same-input comparability.",
+  "stage4_complete": false,
+  "model_calls_this_check": 0
+}
