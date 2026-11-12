@@ -1,10 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 35,
+  "reviewed_distinct_findings": 37,
   "unreviewed_finding_ids": [
-    "F-036",
-    "F-037",
     "F-038",
     "F-039",
     "F-040",
@@ -54,7 +52,7 @@
     "F-084",
     "F-085"
   ],
-  "batch_successful_responses": 36,
+  "batch_successful_responses": 37,
   "batch_status_snapshot": "running",
   "process_liveness_not_inferred_from_status_file": true,
   "selected_followups": [
@@ -650,6 +648,40 @@
       "projection_sha256": "c34f766a80fc2692b57966657fa9dfaeae01de8cc0b98eb7345983df6275fb54",
       "part_counts_not_finding_counts": {
         "technical_findings": 1,
+        "questions": 1,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 0
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-036",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F036_assessment.json",
+      "assessment_sha256": "dfe5b46bd0ed4a82b422cebc03bb62c894a42d708d34402d3986bfa44cff41e8",
+      "status": "duplicate_drive_identifier_conflict_preserved",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_036/publication_projection.json",
+      "projection_sha256": "fd7715ca1f696e01046533af599c924a6687c017f67eb8baa716dcd5f75fe91b",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 0,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 1
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-037",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F037_assessment.json",
+      "assessment_sha256": "5d8f4af4005c9d99da80e4dafd598ee13b9778ea14996c425e3c76ea708568c9",
+      "status": "unsupported_command_direction_replaced_with_actionable_question",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_037/publication_projection.json",
+      "projection_sha256": "31b39d24bfc777734dfd980fcecdd2853109f4d8aa50c446bba08a76538efa1a",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 0,
         "questions": 1,
         "pending": 1,
         "withdrawn": 0,

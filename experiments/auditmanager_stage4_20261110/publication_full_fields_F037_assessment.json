@@ -1,0 +1,26 @@
+{
+  "finding_id": "F-037",
+  "status": "unsupported_command_direction_replaced_with_actionable_question",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_037/publication_projection.json",
+  "projection_sha256": "31b39d24bfc777734dfd980fcecdd2853109f4d8aa50c446bba08a76538efa1a",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+  "source_review_sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+      "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+      "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Отметка DI без DO сохранена как наблюдение.",
+    "Название пуск/стоп не объявлено доказательством выходной команды.",
+    "Сохранены обе альтернативы: выходная команда либо вход состояния.",
+    "Фактическое неправильное управление нагревателем не утверждается; требуется поиск электрической схемы и алгоритма до передачи вопроса."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
