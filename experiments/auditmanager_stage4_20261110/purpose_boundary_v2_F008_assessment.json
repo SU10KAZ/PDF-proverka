@@ -1,0 +1,21 @@
+{
+  "finding_id": "F-008",
+  "status": "boundary_v2_positive_control_passed_three_document_conflicts_restored",
+  "candidate_projection_path": "/tmp/auditmanager_publication_purpose_boundary_v2_20261112_run/evaluations/publication_purpose_008/publication_projection.json",
+  "candidate_projection_sha256": "dbcc20c0f2fdc12b4a66efb23f73d3c582d31d0540741c3f8db627075421972a",
+  "source_assessment_path": "experiments/auditmanager_stage4_20261110/publication_F008_context1_assessment.json",
+  "source_assessment_sha256": "9dfe151db0774177b0cd57b842086e458dc0a1c153b33fa20cb86e73f0a5b512",
+  "checks": [
+    "All three quantity conflicts restored to technical: outdoor 2 versus 1, surface 2 versus 1, duct 2 versus 1.",
+    "Group 15 cabinet heading and Вм6.1 applicability retained; literal Пкрб.1 not normalized.",
+    "No automatic correct quantity or actual excess supply asserted.",
+    "Recommendation and conditional procurement risk attached, not separate questions."
+  ],
+  "limits": [
+    "Possible reserve unsupported in supplied fragments is not proof of reconciliation. An explicit verified reserve allocation could change comparison scope and must not be forbidden by a universal rule.",
+    "Only two controls rerun after prompt revision; other three require rerun on final prompt.",
+    "No final release, full-audit comparison or independent transfer acceptance."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
