@@ -1,0 +1,22 @@
+{
+  "preparation_path": "/tmp/auditmanager_publication_purpose_controls_20261112/preparation.json",
+  "preparation_sha256": "29e4f6aed459111182d70ff45e41bc9f614efe6683d74c443aff7c6e9fc39198",
+  "output_dir": "/tmp/auditmanager_publication_purpose_controls_20261112_run",
+  "process_pid": 1070772,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "status_at_dispatch": "running",
+  "cases": [
+    "F-004",
+    "F-010",
+    "F-012",
+    "F-020",
+    "F-008"
+  ],
+  "selection": "DEV failure/preservation controls, not blind; F008 uses its completed context-followup sources.",
+  "method_change": "Contract v3 prior purpose plus generic routing instructions; source text and images unchanged against selected baseline.",
+  "historical_engineer_answers_supplied": false,
+  "coordinator_verdicts_supplied": false,
+  "retries": "Existing direct runner: at most 3 outer attempts, 10 seconds between errors; no OpenRouter.",
+  "production_acceptance": false
+}
