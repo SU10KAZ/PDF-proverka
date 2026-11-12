@@ -1,0 +1,14 @@
+{
+  "request_sha256": "23a2a828cad291c6b595f9c1a913afc7016a59054a29c56f6d2183724f952137",
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "message_chars": 143310,
+  "md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+  "md_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/02_work/document.md",
+  "images": [],
+  "known_case": true,
+  "engineer_answers_supplied": false,
+  "expected_target_ids_supplied": false,
+  "existing_findings_supplied": true,
+  "automatic_retries": 0
+}

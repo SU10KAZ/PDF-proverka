@@ -1,0 +1,5294 @@
+{
+  "meta": {
+    "project_id": "classic-control-ITP",
+    "audit_completed": "2026-11-07",
+    "total_findings": 53,
+    "blocks_analyzed": 48,
+    "by_severity": {
+      "КРИТИЧЕСКОЕ": 5,
+      "ЭКОНОМИЧЕСКОЕ": 2,
+      "ЭКСПЛУАТАЦИОННОЕ": 30,
+      "РЕКОМЕНДАТЕЛЬНОЕ": 11,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 2
+    },
+    "codex_targeted_added": 0,
+    "codex_targeted_stages": [],
+    "codex_targeted_enabled": true,
+    "stage01_atomicity_guard": {
+      "split_groups": 1,
+      "restored_findings": 2
+    },
+    "finding_source_counts": {
+      "gpt": 0,
+      "codex": 19,
+      "gpt_codex": 0,
+      "claude": 0,
+      "claude_codex": 0,
+      "other": 0,
+      "unattributed": 34
+    },
+    "finding_source_schema_version": 1,
+    "finding_comparison_counts": {
+      "match": 11,
+      "extension": 1,
+      "new": 7,
+      "disputed": 0,
+      "unclassified": 34
+    },
+    "finding_comparison_schema_version": 1,
+    "findings_renumbered": 37,
+    "normative_candidate_contract": {
+      "candidates": 55,
+      "with_clause_candidate": 1,
+      "normalized": 0
+    },
+    "quality_summary": {
+      "total": 53,
+      "high_relevance": 8,
+      "medium_relevance": 41,
+      "low_relevance": 4,
+      "likely_formal_only": 2,
+      "high_severity_formal_only": 0
+    },
+    "analysis_coverage": {
+      "schema_version": 1,
+      "summary": {
+        "gemma_uncovered_count": 0,
+        "single_block_failed_count": 0,
+        "stage02_crop_missing_count": 0,
+        "excluded_from_full_analysis_count": 0,
+        "base_gemma_covered_count": 0,
+        "base_gemma_total_count": 0,
+        "high_detail_candidates": 0,
+        "high_detail_successful": 0,
+        "high_detail_skipped_large": 0,
+        "base_only_blocks_count": 0,
+        "upgraded_to_300_count": 0
+      },
+      "gemma_uncovered_blocks": [],
+      "single_block_failed_blocks": [],
+      "stage02_crop_missing_blocks": [],
+      "blocks_analyzed_only_with_100_dpi_base": [],
+      "blocks_upgraded_to_300": [],
+      "excluded_blocks_from_full_analysis": [],
+      "sections": [
+        {
+          "title": "Блоки без подготовленного контекста",
+          "blocks": []
+        },
+        {
+          "title": "Ошибки single-block анализа",
+          "blocks": []
+        },
+        {
+          "title": "Блоки, исключённые из полноценного анализа",
+          "blocks": []
+        },
+        {
+          "title": "Блоки, оставшиеся на base 100 DPI",
+          "blocks": []
+        },
+        {
+          "title": "Блоки, upgraded до 300 DPI",
+          "blocks": []
+        }
+      ]
+    }
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "теплообменники",
+      "sheet": "Лист 3",
+      "page": [
+        41,
+        59,
+        94,
+        103
+      ],
+      "problem": "Расчётное давление теплообменников ниже давления подключённых контуров",
+      "description": "В расчётах теплообменников указано 16 кгс/см², приблизительно 15,69 бар. Для первичного контура приведены 17,5 и 17,9 атм, для греющего контура — 17,4 бар, для отопления третьей зоны — 16,3 бар. Напор ХВС третьей зоны ГВС составляет 179,55 м вод. ст., приблизительно 17,6 бар. Фланцы Ру25 не определяют допустимое давление самого аппарата.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.9,
+          "reason": "Проверить требования к выбору оборудования по рабочему давлению.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Согласовать максимальные давления по контурам и подобрать теплообменники соответствующего исполнения.",
+      "risk": "Разрушение аппарата и затопление помещения ИТП.",
+      "source_finding_ids": [
+        "T-001"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_9e12a8bcbfb24db49d81af74c06e24f0"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 50,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-002",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "насосы",
+      "sheet": null,
+      "page": [
+        82,
+        91,
+        94,
+        103
+      ],
+      "problem": "Допустимое давление выбранных насосов составляет 16 бар при большем давлении систем",
+      "description": "Для насоса греющего контура IL 100/160-18,5/2 указано 16 бар при расчётных 17,4 бар. Насос отопления третьей зоны IL 40/140-2,2/2 выбран для системы с давлением 16,3 бар. Исполнение HELIX V 603 третьей зоны ГВС допускает 16 бар при напоре ХВС около 17,6 бар.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.9,
+          "reason": "Проверить требования к выбору насосов по допустимому давлению.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-002"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Рассчитать максимальное давление в точке установки каждого насоса с учётом создаваемого напора и заменить неподходящие исполнения.",
+      "risk": "Повреждение насосов и потеря циркуляции либо подачи ГВС.",
+      "source_finding_ids": [
+        "T-002"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_55ab0b4be112477eb9dec207df68000e"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "sheet_unavailable": true,
+      "sheet_unavailable_reason": "page_not_in_map",
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 52,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-003",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "арматура",
+      "sheet": "Листы 4., 5., 3",
+      "page": [
+        27,
+        28,
+        41
+      ],
+      "problem": "На магистралях с давлением выше 16 бар предусмотрены изделия PN16",
+      "description": "Фильтры DN300, гибкие вставки и обратные затворы для магистралей указаны с PN16. Исходные давления 17,5–17,9 кгс/см² соответствуют приблизительно 17,16–17,55 бар. Требуется проверить принадлежность каждого изделия к высоконапорному контуру и допустимое давление всей обвязки.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.88,
+          "reason": "Проверить требования к подбору арматуры по рабочему давлению.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-003"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Составить ведомость давления по участкам и заменить изделия с недостаточным PN, включая регулирующие клапаны первичной стороны.",
+      "risk": "Разгерметизация обвязки при рабочем давлении.",
+      "source_finding_ids": [
+        "T-003"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+        "blk_f249587fe98945f7a1c5d30e102aaa68"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 32,
+        "engineering_relevance": "low",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": true,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-004",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "арматура",
+      "sheet": "Лист 3.",
+      "page": [
+        26,
+        59,
+        73,
+        82,
+        91
+      ],
+      "problem": "Уставки предохранительных клапанов выше допустимого давления части оборудования",
+      "description": "Клапаны греющего контура, отопления третьей зоны и ГВС третьей зоны назначены на 20 бар, тогда как подключённые теплообменники и насосы рассчитаны примерно на 16 бар или 16 кгс/см².",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.92,
+          "reason": "Проверить требования к защите оборудования от превышения давления и настройке предохранительных клапанов.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-004"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "После согласования рабочих давлений пересчитать уставки, допустимое повышение давления при сбросе и пропускную способность клапанов.",
+      "risk": "Защита может сработать после превышения предельного давления оборудования.",
+      "source_finding_ids": [
+        "T-004"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_acc3bf59f8f447f988de16849e40e9f1",
+        "blk_e65f4bff781945f19da5a4ec2919b764"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 70,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-005",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "трубопроводы",
+      "sheet": "Лист 11.2",
+      "page": [
+        7,
+        18,
+        41
+      ],
+      "problem": "Пробное давление трубопроводов ввода указано ниже рабочего",
+      "description": "В указаниях по монтажу единое пробное давление записано как «12,5 кг/см» с ошибочной единицей. На аксонометрической схеме для подачи и обратки приведены рабочие давления 17,5 и 17,9 кгс/см². Указанное испытание не подтверждает прочность трубопроводов ввода при проектном давлении.",
+      "norm": "СП 74.13330.2023 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 74.13330.2023",
+          "cited_designation": "СП 74.13330.2023",
+          "candidate_relevance": 0.9,
+          "reason": "Проверить требования к испытанию трубопроводов и назначению пробного давления.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-005",
+              "G-023"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-005",
+                "G-023"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Назначить пробное давление отдельно для каждого контура, исправить единицы и указать порядок отключения оборудования с меньшим допустимым испытательным давлением.",
+      "risk": "Скрытый дефект трубопровода может проявиться при эксплуатации.",
+      "source_finding_ids": [
+        "T-005",
+        "G-023"
+      ],
+      "source_block_ids": [
+        "blk_94b58ecf5d404f7d90c272d267eb2e48"
+      ],
+      "related_block_ids": [
+        "blk_94b58ecf5d404f7d90c272d267eb2e48",
+        "blk_90da5d0d361c48008030c2bf87767ced",
+        "blk_9167c15ea57c423ea6ad708738bb420f",
+        "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+          "page": 18
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-023",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 81,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "construction",
+          "operations"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-006",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "электроснабжение",
+      "sheet": "Лист 17",
+      "page": 55,
+      "problem": "Инструкция предписывает замену предохранителей при включённом питании",
+      "description": "Пункт 8.4 пояснительной записки безусловно предписывает заменять предохранители в блоках питания под напряжением, без указания конструкции, состояния нагрузки и защитных мероприятий.",
+      "norm": "ПУЭ (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ПУЭ",
+          "cited_designation": "ПУЭ",
+          "candidate_relevance": 0.65,
+          "reason": "Проверить применимые требования электробезопасности при обслуживании электрооборудования.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-006"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-006"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Установить основной порядок замены при снятом напряжении; исключения описывать только для подтверждённого оборудования и предусмотренных мер защиты.",
+      "risk": "Поражение персонала электрическим током.",
+      "source_finding_ids": [
+        "T-006"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_67b9571de5e74033b6c491043f8c87d1"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 52,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-007",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "электроснабжение",
+      "sheet": "Лист 19",
+      "page": [
+        57,
+        150
+      ],
+      "problem": "Категория электроснабжения ИТП противоречит техническому заданию",
+      "description": "Пояснительная записка назначает II категорию, а пункт 5.2.6.1 технического задания требует I категорию для теплового пункта и насосных станций, технологическое резервирование и отдельное ВРУ с учётом электроэнергии.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Согласовать категорию с заказчиком и отразить принятое решение в задании на электроснабжение и электротехнических чертежах.",
+      "risk": "Недостаточная надёжность питания насосов и автоматики.",
+      "source_finding_ids": [
+        "T-007"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_2a57b9d72094420086e4401e9bfbbc9e",
+        "blk_8a446a40473d48d18d60edba74661d9e"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 54,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-008",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "расчётные нагрузки",
+      "sheet": "Листы 4, 5",
+      "page": [
+        42,
+        43
+      ],
+      "problem": "Не раскрыт коэффициент совместности максимальных нагрузок ГВС",
+      "description": "Сумма максимумов трёх зон составляет 1,286 Гкал/ч, а итог таблицы — 1,081 Гкал/ч. На листе общих данных меньшее значение названо нагрузкой с коэффициентом неравномерности; соответствующий коэффициент приблизительно равен 0,8406, но его расчёт в пояснительной записке отсутствует.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.75,
+          "reason": "Проверить правила определения совместной расчётной нагрузки ГВС.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-008"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Привести основание коэффициента совместности и уточнить заголовок итоговой строки таблицы.",
+      "risk": "Неверное толкование расчётной нагрузки при последующих расчётах.",
+      "source_finding_ids": [
+        "T-008"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_3050f16afc994b889498a2535ea14a52"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 32,
+        "engineering_relevance": "low",
+        "impact_axes": [],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": true,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-009",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "теплообменники",
+      "sheet": "Лист 10",
+      "page": [
+        48,
+        64,
+        65,
+        66
+      ],
+      "problem": "В расчётах теплообменников ГВС температура входящей воды отличается от исходных условий",
+      "description": "Пояснительная записка и техническое задание задают нагрев воды от 5 до 65 °С, а три расчёта теплообменников используют входную температуру 16,54 °С. Возможное смешение ХВС с циркуляционной водой количественно не обосновано.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить расчётные температурные условия подбора подогревателей ГВС.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-009"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Представить баланс смешения и расчёт для максимального водоразбора; при непосредственной подаче воды 5 °С пересчитать площади аппаратов.",
+      "risk": "Недостаточная производительность ГВС при максимальном водоразборе.",
+      "source_finding_ids": [
+        "T-009"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_a5c04128f54f404e900b3ee4e3a854ba"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 40,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-010",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "тепловая схема",
+      "sheet": "Листы 6, 10",
+      "page": [
+        44,
+        48
+      ],
+      "problem": "В расчёте одноступенчатой ГВС использована температура после первой ступени",
+      "description": "Формула среднего расхода сетевой воды использует температуру t′=30 °С как температуру после первой ступени подогрева, хотя принятая схема описана как одноступенчатая.",
+      "norm": "СП 41-101-95 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 41-101-95",
+          "cited_designation": "СП 41-101-95",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить расчётную методику расхода сетевой воды для принятой схемы ГВС.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-010"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-010"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Пересчитать расходы для фактической схемы либо пояснить физический смысл и источник температуры 30 °С.",
+      "risk": "Неверный расчёт расхода первичного теплоносителя.",
+      "source_finding_ids": [
+        "T-010"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 40,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-011",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "насосы",
+      "sheet": "Листы 12, 13",
+      "page": [
+        50,
+        51
+      ],
+      "problem": "Расчёт циркуляционных расходов ГВС содержит арифметические и размерностные ошибки",
+      "description": "Без преждевременного округления получаются 4,377; 2,275 и 0,845 м³/ч вместо 4,29; 2,21 и 0,78 м³/ч. Для второй зоны выражение 1,3×0,016×1000/10 даёт 2,08, а не 2,21. Запись «Gцирк макс=1,5×Qцирк» размерностно неполна.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.7,
+          "reason": "Проверить методику определения циркуляционного расхода ГВС.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-011"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-011"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Исправить формулы и подстановки, затем сверить расходы с рабочими точками насосов.",
+      "risk": "Неправильная настройка циркуляции ГВС.",
+      "source_finding_ids": [
+        "T-011"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_fed30df45d124919a8b7cc13253733b1"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 52,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-012",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "регулирующие клапаны",
+      "sheet": "Лист 10",
+      "page": [
+        17,
+        52,
+        53,
+        54,
+        55
+      ],
+      "problem": "Расчёт клапанов и разрезы задают разные расходы и потери давления",
+      "description": "Для клапана отопления третьей зоны VFM-2R-32-16 на разрезах указаны 10,7 м³/ч и 0,446 бар, а в расчёте — 9,55 м³/ч и 0,356 бар. Кроме того, в подборе Kv для этой зоны 9,55/√0,5 равно 13,51 м³/ч, а не 14,45. Для клапана ГВС третьей зоны подставлены 9,08 вместо 9,05 м³/ч.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.82,
+          "reason": "Проверить гидравлический подбор регулирующих клапанов.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-012",
+              "G-015",
+              "G-016"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-012",
+                "G-015",
+                "G-016"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Установить единый расчётный расход третьей зоны, пересчитать Kv и потери, согласовать подписи разрезов и расчёт.",
+      "risk": "Неверная рабочая точка клапана и недостаточное качество регулирования.",
+      "source_finding_ids": [
+        "T-012",
+        "G-015",
+        "G-016"
+      ],
+      "source_block_ids": [
+        "blk_b8c120f6cbc04397b8c5514a03fa3152"
+      ],
+      "related_block_ids": [
+        "blk_b8c120f6cbc04397b8c5514a03fa3152",
+        "blk_296b8547a33a47dbb7a9b8e546d964e0"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "page": 17
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-015",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-016",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют одинаковое расхождение параметров VFM-2R-32-16: на разрезах 41-41 и 42-42 расход 10,7 м³/ч и ΔР=0,446, в расчёте — 9,55 м³/ч и 0,356 бар.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:003"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют одинаковое расхождение параметров VFM-2R-32-16: на разрезах 41-41 и 42-42 расход 10,7 м³/ч и ΔР=0,446, в расчёте — 9,55 м³/ч и 0,356 бар.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 45,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-013",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "регулирующие клапаны",
+      "sheet": "Листы 14, 15, 16, 17",
+      "page": [
+        52,
+        53,
+        54,
+        55
+      ],
+      "problem": "Не показана гидравлическая увязка регулируемых ветвей",
+      "description": "После выбора клапанов расчётные потери составляют приблизительно 0,188–0,490 бар при исходно принятом перепаде 0,5 бар. Расчёт авторитета клапанов и остаточного располагаемого перепада отсутствует. Само отличие фактической потери от 0,5 бар не доказывает ошибочный подбор.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить требования к гидравлической увязке и регулированию ветвей.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-013"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Представить расчёт авторитета и баланса перепадов, включая параллельные клапаны вентиляции и трёхходовые клапаны ГВС.",
+      "risk": "Неустойчивая работа автоматики при переменных расходах.",
+      "source_finding_ids": [
+        "T-013"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_296b8547a33a47dbb7a9b8e546d964e0"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 44,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-014",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "регулирующие клапаны",
+      "sheet": "Листы 2.1, 3., 14",
+      "page": [
+        9,
+        26,
+        52
+      ],
+      "problem": "Для клапана ГВС второй зоны указаны несовместимые марка и Kvs",
+      "description": "Экспликация и расчёт задают VF-3R-50-40 с Kv=40 м³/ч, а спецификация — VFM-3R-50-40 с Kvs=4,0 м³/ч. При расходе 18,85 м³/ч расчётная потеря составляет соответственно 0,222 или 22,21 бар.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.82,
+          "reason": "Проверить подбор пропускной способности клапана по расходу и перепаду давления.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-014"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-014"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить тип, артикул и Kvs клапана до закупки и согласовать все документы.",
+      "risk": "Поставка клапана с недостаточной пропускной способностью.",
+      "source_finding_ids": [
+        "T-014"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_11981549aceb463ba84c7c0de619d2fc",
+        "blk_30789714316b48908c5addc9bfb135d2"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 66,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-015",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "регулирующие клапаны",
+      "sheet": "Лист 10",
+      "page": [
+        9,
+        17,
+        26,
+        54
+      ],
+      "problem": "Характеристики арматуры расходятся между экспликацией, спецификацией и разрезом",
+      "description": "Для клапана отопления ДОО VFM-2R-20-6,3 разрез и расчёт указывают DN20, экспликация — DN25. Для трёхходовых клапанов ГВС экспликация задаёт PN25, спецификация — PN16. Для соленоидных клапанов расходятся обозначения EV220WR и EV220B и значения Kv для DN20.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.75,
+          "reason": "Проверить соответствие характеристик арматуры расчётным параметрам контуров.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-015",
+              "G-013",
+              "G-014"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-015",
+                "G-013",
+                "G-014"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Проверить артикулы и паспорта выбранных изделий и исправить DN, PN и Kv в экспликации и спецификации.",
+      "risk": "Ошибочная закупка и невозможность монтажа или регулирования.",
+      "source_finding_ids": [
+        "T-015",
+        "G-013",
+        "G-014"
+      ],
+      "source_block_ids": [
+        "blk_b8c120f6cbc04397b8c5514a03fa3152"
+      ],
+      "related_block_ids": [
+        "blk_b8c120f6cbc04397b8c5514a03fa3152",
+        "blk_11981549aceb463ba84c7c0de619d2fc",
+        "blk_30789714316b48908c5addc9bfb135d2"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "page": 17
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-013",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-014",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:004"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют одинаковое расхождение диаметра VFM-2R-20-6,3: DN20 на разрезе 24-24 и в расчёте против DN25 в экспликации.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют одинаковое расхождение диаметра VFM-2R-20-6,3: DN20 на разрезе 24-24 и в расчёте против DN25 в экспликации.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 59,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-016",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "sheet": null,
+      "page": 78,
+      "problem": "Для насоса К12 IL 40/220-1,5/4-R в экспликации на странице PDF 8 указана мощность 0,55 кВт, тогда как технические данные на странице PDF 76, расчёт на странице PDF 52 и спецификация на странице PDF 24 указывают 1,5 кВт.",
+      "description": "Для насоса К12 IL 40/220-1,5/4-R в экспликации на странице PDF 8 указана мощность 0,55 кВт, тогда как технические данные на странице PDF 76, расчёт на странице PDF 52 и спецификация на странице PDF 24 указывают 1,5 кВт.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.72,
+          "reason": "Проверить подтверждение рабочей точки и электрической мощности выбранного насоса.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-037",
+              "G-038"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-016",
+                "G-037",
+                "G-038",
+                "G-041"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Исправить мощность насоса К12 в экспликации на 1,5 кВт в соответствии с техническими данными и спецификацией.",
+      "risk": "Неверный выбор электрической защиты и неподтверждённая производительность насоса.",
+      "source_finding_ids": [
+        "G-037",
+        "G-038",
+        "T-016"
+      ],
+      "source_block_ids": [
+        "blk_128a43447f394e0687d841e25e436e75"
+      ],
+      "related_block_ids": [
+        "blk_128a43447f394e0687d841e25e436e75"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_128a43447f394e0687d841e25e436e75",
+          "page": 78
+        }
+      ],
+      "highlight_regions": [],
+      "source_stage": "stage01_atomicity_guard",
+      "atomicity_guard": {
+        "split_from": "F-016",
+        "reason": "distinct_nonrecommendational_candidates_same_block"
+      },
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-037",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-038",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:003"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания описывают одно противоречие мощности насоса К12 IL 40/220-1,5/4-R: 0,55 кВт в экспликации против 1,5 кВт в технических данных и расчёте.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания описывают одно противоречие мощности насоса К12 IL 40/220-1,5/4-R: 0,55 кВт в экспликации против 1,5 кВт в технических данных и расчёте.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "sheet_unavailable": true,
+      "sheet_unavailable_reason": "page_not_in_map",
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 55,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "recovery_link_receipts": [
+        {
+          "source_id": "T-016",
+          "target_id": "F-016",
+          "target_signature": "d319a7196e4a065259ef116587ff5a3686fe7f37a83a55521807e57da533f44c",
+          "receipt": {
+            "origin": "text",
+            "pointer": "/text_findings/15",
+            "decision": "duplicate",
+            "reason": "Оба самостоятельных утверждения уже представлены для того же насоса: расхождение мощности сохранено в F-016, противоречие напоров — в F-017. Новое замечание не требуется. Решение фиксирует смысловое дублирование, а не независимое подтверждение отсутствующих в переданном контексте источников.",
+            "source_refs": [
+              "blk_1601889b50624245a5c590ad23d87175"
+            ],
+            "target_finding_ids": [
+              "F-016",
+              "F-017"
+            ],
+            "subclaims": [
+              {
+                "id": "T-016-power",
+                "claim": "Для насоса отопления ДОО K12 IL 40/220-1,5/4-R экспликация указывает 0,55 кВт, тогда как спецификация, расчёт и технический лист указывают 1,5 кВт.",
+                "decision": "duplicate",
+                "reason": "F-016 сохраняет это расхождение для той же позиции и тех же документов. В предоставленном авторитетном TEXT непосредственно проверены марка IL 40/220-1,5/4-R и запись N=0,55 кВт. Значение 1,5 кВт в остальных документах в этом контексте независимо не проверено; текст существующего замечания использован только для сопоставления содержания.",
+                "source_refs": [
+                  "blk_1601889b50624245a5c590ad23d87175"
+                ],
+                "required_source_refs": [],
+                "target_finding_ids": [
+                  "F-016"
+                ]
+              },
+              {
+                "id": "T-016-head",
+                "claim": "В техническом листе насоса IL 40/220-1,5/4-R рабочий напор 16,98 м превышает указанный максимальный напор 16,64 м.",
+                "decision": "duplicate",
+                "reason": "F-017 полностью сохраняет самостоятельное утверждение о противоречии этих напоров и требование проверить характеристику насоса. Предоставленная экспликация подтверждает только H=16,98 м. Технический лист и его изображение не представлены; решение о дублировании не подтверждает достоверность значения максимального напора или невозможность рабочей точки.",
+                "source_refs": [
+                  "blk_1601889b50624245a5c590ad23d87175"
+                ],
+                "required_source_refs": [],
+                "target_finding_ids": [
+                  "F-017"
+                ]
+              }
+            ]
+          },
+          "semantic_verified": false
+        }
+      ]
+    },
+    {
+      "id": "F-017",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "pumps",
+      "sheet": null,
+      "page": 78,
+      "problem": "В технических данных насоса IL 40/220-1,5/4-R напор фактической рабочей точки 16,98 м превышает указанный максимальный напор 16,64 м.",
+      "description": "В технических данных насоса IL 40/220-1,5/4-R напор фактической рабочей точки 16,98 м превышает указанный максимальный напор 16,64 м.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.72,
+          "reason": "Проверить подтверждение рабочей точки и электрической мощности выбранного насоса.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-041"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-016",
+                "G-037",
+                "G-038",
+                "G-041"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Проверить характеристику насоса и исправить противоречащие значения напора в технических данных.",
+      "risk": "Неверный выбор электрической защиты и неподтверждённая производительность насоса.",
+      "source_finding_ids": [
+        "G-041",
+        "T-016"
+      ],
+      "source_block_ids": [
+        "blk_128a43447f394e0687d841e25e436e75"
+      ],
+      "related_block_ids": [
+        "blk_128a43447f394e0687d841e25e436e75"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_128a43447f394e0687d841e25e436e75",
+          "page": 78
+        }
+      ],
+      "highlight_regions": [],
+      "source_stage": "stage01_atomicity_guard",
+      "atomicity_guard": {
+        "split_from": "F-016",
+        "reason": "distinct_nonrecommendational_candidates_same_block"
+      },
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-041",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "sheet_unavailable": true,
+      "sheet_unavailable_reason": "page_not_in_map",
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 55,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      },
+      "recovery_link_receipts": [
+        {
+          "source_id": "T-016",
+          "target_id": "F-017",
+          "target_signature": "7cd99495eca8635c010b80d8ddbc632df450974279f09cf1196f89cc42236100",
+          "receipt": {
+            "origin": "text",
+            "pointer": "/text_findings/15",
+            "decision": "duplicate",
+            "reason": "Оба самостоятельных утверждения уже представлены для того же насоса: расхождение мощности сохранено в F-016, противоречие напоров — в F-017. Новое замечание не требуется. Решение фиксирует смысловое дублирование, а не независимое подтверждение отсутствующих в переданном контексте источников.",
+            "source_refs": [
+              "blk_1601889b50624245a5c590ad23d87175"
+            ],
+            "target_finding_ids": [
+              "F-016",
+              "F-017"
+            ],
+            "subclaims": [
+              {
+                "id": "T-016-power",
+                "claim": "Для насоса отопления ДОО K12 IL 40/220-1,5/4-R экспликация указывает 0,55 кВт, тогда как спецификация, расчёт и технический лист указывают 1,5 кВт.",
+                "decision": "duplicate",
+                "reason": "F-016 сохраняет это расхождение для той же позиции и тех же документов. В предоставленном авторитетном TEXT непосредственно проверены марка IL 40/220-1,5/4-R и запись N=0,55 кВт. Значение 1,5 кВт в остальных документах в этом контексте независимо не проверено; текст существующего замечания использован только для сопоставления содержания.",
+                "source_refs": [
+                  "blk_1601889b50624245a5c590ad23d87175"
+                ],
+                "required_source_refs": [],
+                "target_finding_ids": [
+                  "F-016"
+                ]
+              },
+              {
+                "id": "T-016-head",
+                "claim": "В техническом листе насоса IL 40/220-1,5/4-R рабочий напор 16,98 м превышает указанный максимальный напор 16,64 м.",
+                "decision": "duplicate",
+                "reason": "F-017 полностью сохраняет самостоятельное утверждение о противоречии этих напоров и требование проверить характеристику насоса. Предоставленная экспликация подтверждает только H=16,98 м. Технический лист и его изображение не представлены; решение о дублировании не подтверждает достоверность значения максимального напора или невозможность рабочей точки.",
+                "source_refs": [
+                  "blk_1601889b50624245a5c590ad23d87175"
+                ],
+                "required_source_refs": [],
+                "target_finding_ids": [
+                  "F-017"
+                ]
+              }
+            ]
+          },
+          "semantic_verified": false
+        }
+      ]
+    },
+    {
+      "id": "F-018",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "насосы",
+      "sheet": "Листы 1., 13",
+      "page": [
+        24,
+        51,
+        70,
+        72
+      ],
+      "problem": "Напор рабочей точки насоса отопления второй зоны указан неодинаково",
+      "description": "Для IL 50/140-4/2-R при расходе 47,08 м³/ч в экспликации и расчёте приведено 21,29 м, а в технических данных — 21,91 м.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.65,
+          "reason": "Проверить документирование рабочей точки насосного оборудования.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-017",
+              "G-032",
+              "G-033"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-017",
+                "G-032",
+                "G-033"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить характеристику выбранного исполнения и принять одно значение напора для расчёта и настройки.",
+      "risk": "Неточная настройка частотного регулирования.",
+      "source_finding_ids": [
+        "T-017",
+        "G-032",
+        "G-033"
+      ],
+      "source_block_ids": [
+        "blk_64d234df62024a40b06b044dcb8f4bc9"
+      ],
+      "related_block_ids": [
+        "blk_64d234df62024a40b06b044dcb8f4bc9",
+        "blk_ae35014464b5493f84ca38481c3ffa60"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_64d234df62024a40b06b044dcb8f4bc9",
+          "page": 72
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-032",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-033",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:003"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют одинаковое расхождение напора IL 50/140-4/2-R: 21,91 м в технических данных против 21,29 м в экспликации и расчёте подбора.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют одинаковое расхождение напора IL 50/140-4/2-R: 21,91 м в технических данных против 21,29 м в экспликации и расчёте подбора.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 55,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-019",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "нагрузки на конструкции",
+      "sheet": "Листы 2, 1.",
+      "page": [
+        8,
+        24,
+        69,
+        72,
+        75,
+        78
+      ],
+      "problem": "Массы одинакового оборудования расходятся в документации",
+      "description": "Для насоса первой зоны указаны 98, 94 и 90 кг; для насоса второй зоны — 87 и 67 кг; для насоса третьей зоны — 48 и 57 кг; для насоса ДОО — 29, 60 и 64 кг. Насос греющего контура имеет значения 284, 181 и 203 кг, теплообменник первой зоны — 650,88 и 458,01 кг. Требуется различать массу изделия и массу с обвязкой и теплоносителем.",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.65,
+          "reason": "Проверить согласованность сведений об оборудовании в рабочей документации.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-018",
+              "G-031",
+              "G-034",
+              "G-035",
+              "G-036",
+              "G-039",
+              "G-040"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-018",
+                "G-031",
+                "G-034",
+                "G-035",
+                "G-036",
+                "G-039",
+                "G-040"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить исполнения по артикулам, согласовать паспортные массы и отдельно передать строителям нагрузки с обвязкой и заполнением.",
+      "risk": "Неверные нагрузки на фундаменты и ошибки при подборе средств монтажа.",
+      "source_finding_ids": [
+        "T-018",
+        "G-031",
+        "G-034",
+        "G-035",
+        "G-036",
+        "G-039",
+        "G-040"
+      ],
+      "source_block_ids": [
+        "blk_606823ca386e49ffbe2f96d95e08793b",
+        "blk_64d234df62024a40b06b044dcb8f4bc9",
+        "blk_396954f77098430281d203e5380eb32e",
+        "blk_128a43447f394e0687d841e25e436e75"
+      ],
+      "related_block_ids": [
+        "blk_606823ca386e49ffbe2f96d95e08793b",
+        "blk_64d234df62024a40b06b044dcb8f4bc9",
+        "blk_396954f77098430281d203e5380eb32e",
+        "blk_128a43447f394e0687d841e25e436e75",
+        "blk_1601889b50624245a5c590ad23d87175"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_606823ca386e49ffbe2f96d95e08793b",
+          "page": 69
+        },
+        {
+          "type": "image",
+          "block_id": "blk_64d234df62024a40b06b044dcb8f4bc9",
+          "page": 72
+        },
+        {
+          "type": "image",
+          "block_id": "blk_396954f77098430281d203e5380eb32e",
+          "page": 75
+        },
+        {
+          "type": "image",
+          "block_id": "blk_128a43447f394e0687d841e25e436e75",
+          "page": 78
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-031",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-034",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-035",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-036",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-039",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-040",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют расхождение массы насоса K10: 87,0 кг в экспликации против 67 кг в технических данных. Разная оценка severity не меняет сути проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:004"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют расхождение массы насоса K10: 87,0 кг в экспликации против 67 кг в технических данных. Разная оценка severity не меняет сути проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 69,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-020",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "насосы",
+      "sheet": "Лист 9",
+      "page": [
+        47,
+        94,
+        97,
+        100,
+        103,
+        106
+      ],
+      "problem": "Исходные объёмы систем для расчёта подпитки и баков не согласованы",
+      "description": "Расход подпитки первой зоны 6,23 м³/ч при коэффициенте 20% подразумевает объём 31,15 м³, анкеты дают 24,9255 м³, подбор установки поддержания давления — 20,676 м³. Для второй зоны встречаются 18,3; 15,2 и 13,016 м³, для третьей — 4,5; 3,7 и 1,883 м³, для вентиляции — 18,15; 14,3 и 27 м³.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить методику определения объёма систем для подпитки и расширения.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-019"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-019"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Составить единый баланс объёмов с трубопроводами ИТП и пересчитать подпитку и расширение.",
+      "risk": "Недостаточная производительность подпитки или объём расширительных баков.",
+      "source_finding_ids": [
+        "T-019"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_a203939b21504fa6935b621a29929d7d"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 70,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-021",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "расчётные нагрузки",
+      "sheet": "Лист 4",
+      "page": [
+        42,
+        94,
+        97,
+        100,
+        103
+      ],
+      "problem": "Подбор установок поддержания давления выполнен по другим нагрузкам",
+      "description": "В подборе приняты 5,858 вместо 5,229 Гкал/ч для греющего контура, 0,958 вместо 0,880 для отопления второй зоны и 0,214 вместо 0,191 для третьей зоны. Для первой зоны указаны 1,488 вместо 1,483 Гкал/ч.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.7,
+          "reason": "Проверить согласование исходных данных подбора оборудования.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-020"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-020"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Установить действующую таблицу нагрузок и повторить подбор по согласованным данным.",
+      "risk": "Подбор оборудования по устаревшей расчётной версии.",
+      "source_finding_ids": [
+        "T-020"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_26b23c5bfabe4917a156a91077b5458d"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 50,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "schedule"
+        ],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-022",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "расширительные баки",
+      "sheet": null,
+      "page": 97,
+      "problem": "Номинальный объём выбранного бака первой зоны меньше расчётного",
+      "description": "Расчётный объём составляет 606,9 л, выбран LVF 600 объёмом 600 л. Недостаток равен 6,9 л, при этом расчётный лист требует выбирать объём не меньше расчётного.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.78,
+          "reason": "Проверить требования к расчётному объёму компенсационного бака.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-021"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить исходный объём системы и коэффициенты, затем выбрать бак достаточного типоразмера.",
+      "risk": "Недостаточная компенсация температурного расширения.",
+      "source_finding_ids": [
+        "T-021"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_b4fb33513ca44182af058d09c8ab2dbb"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "sheet_unavailable": true,
+      "sheet_unavailable_reason": "page_not_in_map",
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 40,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-023",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "расширительные баки",
+      "sheet": null,
+      "page": [
+        106,
+        107
+      ],
+      "problem": "Предварительное давление баков не согласовано с расчётом полезного объёма",
+      "description": "Для баков ДОО и вентиляции указана предварительная настройка 3,0 бар при минимальном давлении системы 2,5 бар, а полезный объём рассчитан по иному начальному давлению. При 3,0 бар оценочная потребность составляет около 247 л для ДОО и 3810 л для вентиляции вместо выбранных 200 и 3000 л.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.83,
+          "reason": "Проверить расчёт приёмной способности мембранных баков с учётом предварительного и рабочего давления.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-022"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Согласовать предварительное, минимальное и максимальное давления и повторить расчёт объёмов.",
+      "risk": "Рост давления при нагреве и срабатывание защиты.",
+      "source_finding_ids": [
+        "T-022"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_7e913f6c32cb4db7aa9d9b8688b6e979"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "sheet_unavailable": true,
+      "sheet_unavailable_reason": "page_not_in_map",
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 58,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "schedule"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-024",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "температурные режимы",
+      "sheet": "Лист 10",
+      "page": [
+        17,
+        42,
+        106,
+        107
+      ],
+      "problem": "Температурные графики ДОО и вентиляции не согласованы с исходными данными",
+      "description": "На разрезе отопления ДОО показано 80/60 °С вместо заданных 75/55 °С. Бак ДОО также подобран для 80/60 °С, баки вентиляции — для 80/60 °С вместо 85/60 °С. Последнее уменьшает принятую среднюю температуру и расчётное расширение.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.77,
+          "reason": "Проверить согласование расчётных температур систем и подбора оборудования.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-023",
+              "G-019",
+              "G-021"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-023",
+                "G-019",
+                "G-021"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Подтвердить графики ДОО и вентиляции, исправить подписи разрезов и пересчитать баки.",
+      "risk": "Ошибочный подбор оборудования и неверные эксплуатационные параметры.",
+      "source_finding_ids": [
+        "T-023",
+        "G-019",
+        "G-021"
+      ],
+      "source_block_ids": [
+        "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+      ],
+      "related_block_ids": [
+        "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+        "blk_3050f16afc994b889498a2535ea14a52"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+          "page": 17
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-019",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-021",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:003"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одно противоречие: для отопления ДОО на разрезе указан график 80/60 °C, а в исходных данных — 75/55 °C. Детализация эквивалентна.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одно противоречие: для отопления ДОО на разрезе указан график 80/60 °C, а в исходных данных — 75/55 °C. Детализация эквивалентна.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 75,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "operations"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-025",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "трубопроводы",
+      "sheet": "Листы 6, 7, 8, 9",
+      "page": [
+        44,
+        45,
+        46,
+        47
+      ],
+      "problem": "Ряд скоростей теплоносителя не соответствует расходу и внутреннему диаметру",
+      "description": "Для трубы 325×7 мм при 261,5 м³/ч получается около 0,956 вместо 1,01 м/с; для 159×4,5 мм при 74,15 м³/ч — 1,166 вместо 1,25; для 219×6 мм при 76,40 и 61,12 м³/ч — 0,631 и 0,504 вместо одинаковых 0,66 м/с. Для 76×3 мм при 0,90 м³/ч получается около 0,065 вместо 0,12 м/с.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.72,
+          "reason": "Проверить гидравлический расчёт трубопроводов.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-024"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-024"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Пересчитать скорости и связанные удельные потери давления по фактическим внутренним диаметрам.",
+      "risk": "Искажение гидравлической увязки; превышение 3 м/с на перечисленных участках не установлено.",
+      "source_finding_ids": [
+        "T-024"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 50,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-026",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "спецификация",
+      "sheet": "Лист 6.",
+      "page": 29,
+      "problem": "Итоги длин труб в спецификации неоднозначны",
+      "description": "Сумма длин труб ИТП составляет 976,9 м, рядом указаны «Общий итог: 2546» и «977.0» без расшифровки. Дренажные трубы суммарно составляют 159,0 м, рядом приведены «158.8» и «Общий итог: 199».",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.65,
+          "reason": "Проверить требования к однозначному представлению объёмов и единиц в документации.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-025"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-025"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Расшифровать единицы и основания итогов и исправить ведомость объёмов.",
+      "risk": "Ошибки при закупке труб и составлении сметы.",
+      "source_finding_ids": [
+        "T-025"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+        "blk_d0ef4dbea56d4b74b97a10119fbee223"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 56,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-027",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "спецификация",
+      "sheet": "Листы 4., 6., 7., 8., 9., 10., 11.",
+      "page": [
+        27,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34
+      ],
+      "problem": "В спецификации оставлены незавершённые обозначения изделий",
+      "description": "В строках дренажной трубы и соединительных деталей встречаются «Решение не найдено», «Нет в каталоге» и «<варианты>». Для фильтра DN300 не определена масса. До использования ведомости следует исключить возможные артефакты выгрузки исходного документа.",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.78,
+          "reason": "Проверить полноту обозначений и характеристик в спецификации оборудования и материалов.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-026"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-026"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить исходную спецификацию и заполнить типоразмеры, материалы, исполнения и массу.",
+      "risk": "Неоднозначная закупка и замена проектных изделий произвольными аналогами.",
+      "source_finding_ids": [
+        "T-026"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+        "blk_f249587fe98945f7a1c5d30e102aaa68"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 42,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-028",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "трубопроводы",
+      "sheet": "Листы 6., 7., 8., 9., 10.",
+      "page": [
+        29,
+        30,
+        31,
+        32,
+        33
+      ],
+      "problem": "Присоединительные размеры труб, муфт и переходов не согласованы",
+      "description": "Для группы DN65 указаны грувлочные детали с кодом 076 и гибкая муфта FC073E; совместимость с трубой наружным диаметром 75,5 мм не подтверждена. Переходы DN40×20 и DN50×20 обозначены 45×20 и 57×20. Переходы 114×89 и 168×76 не совпадают с трубами 108×4 и 159×4,5 мм.",
+      "norm": "ГОСТ 3262-75 (норматив-кандидат), пункт не подтверждён; ГОСТ 17378-2001 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 3262-75",
+          "cited_designation": "ГОСТ 3262-75",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить наружные диаметры труб с указанными условными проходами.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-027"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-027"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "ГОСТ 17378-2001",
+          "cited_designation": "ГОСТ 17378-2001",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить размеры и обозначения стальных переходов.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-027"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-027"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить фактические наружные диаметры и толщины труб, исполнения фитингов и способы соединения по паспортам.",
+      "risk": "Несовместимость деталей при монтаже.",
+      "source_finding_ids": [
+        "T-027"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+        "blk_d0ef4dbea56d4b74b97a10119fbee223"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 82,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-029",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "теплоизоляция",
+      "sheet": "Листы 6., 15.",
+      "page": [
+        29,
+        38
+      ],
+      "problem": "Ведомость изоляции не соответствует диаметрам магистральных труб",
+      "description": "Для трубы 325×7 мм длиной 85,1 м отсутствует цилиндр соответствующего размера. Размер 273×40 указан дважды, длинами 2 и 97 м, хотя трубы 273×7 предусмотрено 1,7 м.",
+      "norm": "СП 61.13330.2012 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 61.13330.2012",
+          "cited_designation": "СП 61.13330.2012",
+          "candidate_relevance": 0.7,
+          "reason": "Проверить выбор изоляции по диаметру трубопровода.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-028"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-028"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить длины труб и изоляции, указать изделия для диаметра 325 мм и уточнить применение матов.",
+      "risk": "Некомплектная поставка теплоизоляции.",
+      "source_finding_ids": [
+        "T-028"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+        "blk_d0ef4dbea56d4b74b97a10119fbee223"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 56,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-030",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "крепления трубопроводов",
+      "sheet": "Листы 6., 13.",
+      "page": [
+        29,
+        36
+      ],
+      "problem": "Количество креплений магистрали Дн325 не указано",
+      "description": "Для трубы 325×7 мм длиной 85,1 м строка креплений Дн325 не содержит количества и единицы. Для трубы Дн273 длиной 1,7 м предусмотрены 32 комплекта креплений, что требует сверки распределения по диаметрам.",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.62,
+          "reason": "Проверить комплектность спецификации креплений.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-029"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-029"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить схему опор и заполнить количества креплений по каждому диаметру.",
+      "risk": "Неполная поставка опор и задержка монтажа.",
+      "source_finding_ids": [
+        "T-029"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+        "blk_d0ef4dbea56d4b74b97a10119fbee223"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 94,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-031",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "спецификация",
+      "sheet": "Листы 2., 5.",
+      "page": [
+        25,
+        28
+      ],
+      "problem": "Марка бака и позиционные номера в спецификации неоднозначны",
+      "description": "Бак объёмом 50 л обозначен RM 580 PN16 вместо RM 50 в экспликации и подборе. Номер позиции 89 присвоен двум разным кранам DN25 и DN32.",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.72,
+          "reason": "Проверить однозначность марок и позиционных обозначений.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-030"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-030"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Исправить марку бака и присвоить разным кранам отдельные позиции.",
+      "risk": "Ошибки при закупке и привязке изделий на чертежах.",
+      "source_finding_ids": [
+        "T-030"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+        "blk_5e8d45b076bf429e863f27b16da7b261"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 54,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-032",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "металлоконструкции",
+      "sheet": "Лист 12.",
+      "page": 35,
+      "problem": "Вид швеллера не соответствует указанному стандарту",
+      "description": "Швеллер 100×50×5 назван горячекатаным, а указан ГОСТ 8278-83 на гнутые равнополочные швеллеры. Массу и несущую способность опор нельзя подтверждать без выбора конкретного профиля.",
+      "norm": "ГОСТ 8278-83 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 8278-83",
+          "cited_designation": "ГОСТ 8278-83",
+          "candidate_relevance": 0.88,
+          "reason": "Проверить область применения стандарта и сортамент профиля.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-031"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-031"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Согласовать вид профиля, стандарт, размеры и массу погонного метра.",
+      "risk": "Поставка и расчёт опоры для разных изделий.",
+      "source_finding_ids": [
+        "T-031"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_9e9fdca2261a4324959220546412f377",
+        "blk_f409d1ebb4764f25aa0c123ad7fd22e9"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 66,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-033",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "нормативные ссылки",
+      "sheet": "Листы 11., 12.",
+      "page": [
+        34,
+        35
+      ],
+      "problem": "В спецификации сохранены ссылки на заменённые стандарты",
+      "description": "Для фланцев указан ГОСТ 12820-80, для оцинкованного листа — ГОСТ 14918-80. В исходных данных они отмечены как заменённые в РФ соответственно ГОСТ 33259-2015 и ГОСТ 14918-2020; соответствие конкретных изделий новым исполнениям не проверено.",
+      "norm": "ГОСТ 12820-80 (норматив-кандидат), пункт не подтверждён; ГОСТ 33259-2015 (норматив-кандидат), пункт не подтверждён; ГОСТ 14918-80 (норматив-кандидат), пункт не подтверждён; ГОСТ 14918-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 12820-80",
+          "cited_designation": "ГОСТ 12820-80",
+          "candidate_relevance": 0.7,
+          "reason": "Проверить статус прежнего стандарта на фланцы.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-032"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-032"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "ГОСТ 33259-2015",
+          "cited_designation": "ГОСТ 33259-2015",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить актуальные исполнения и присоединительные размеры фланцев.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-032"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-032"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "ГОСТ 14918-80",
+          "cited_designation": "ГОСТ 14918-80",
+          "candidate_relevance": 0.7,
+          "reason": "Проверить статус прежнего стандарта на оцинкованный лист.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-032"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-032"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "ГОСТ 14918-2020",
+          "cited_designation": "ГОСТ 14918-2020",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить актуальные характеристики оцинкованного листа.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-032"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-032"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Проверить действующие обозначения и соответствие изделий по размерам и материалам, затем исправить спецификацию.",
+      "risk": "Неоднозначная поставка изделий по устаревшим обозначениям.",
+      "source_finding_ids": [
+        "T-032"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_033ce4c4cbae41368d96485419afe95a",
+        "blk_fd984f8c5d03427497ffd926feaf8ed5"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 58,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-034",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "нормативные ссылки",
+      "sheet": "Лист 12.1",
+      "page": [
+        7,
+        20,
+        41
+      ],
+      "problem": "Нормативные документы приведены с неполными или разными реквизитами",
+      "description": "СП 510.1325800.2022 назван по-разному на плане фундаментов и в ведомости. Правила эксплуатации и учёта приведены без утверждающих реквизитов. Одновременно указаны СП 74.13330.2023 и предшествующий СНиП 3.05.03-85. Актуальность приказа Минэнерго №115 на дату проекта не установлена.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён; СП 74.13330.2023 (норматив-кандидат), пункт не подтверждён; СНиП 3.05.03-85 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить официальное наименование документа.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-033",
+              "G-026"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-033",
+                "G-026"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "СП 74.13330.2023",
+          "cited_designation": "СП 74.13330.2023",
+          "candidate_relevance": 0.65,
+          "reason": "Проверить актуальную редакцию требований монтажа и испытаний.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-033",
+              "G-026"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-033"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "СНиП 3.05.03-85",
+          "cited_designation": "СНиП 3.05.03-85",
+          "candidate_relevance": 0.6,
+          "reason": "Проверить применимость предшествующей редакции.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-033",
+              "G-026"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-033"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Оформить единый перечень с официальными названиями, полными реквизитами и проверенными редакциями.",
+      "risk": "Применение неоднозначных требований при монтаже и эксплуатации.",
+      "source_finding_ids": [
+        "T-033",
+        "G-026"
+      ],
+      "source_block_ids": [
+        "blk_693e53fec5744b27b721eb667e933ef5"
+      ],
+      "related_block_ids": [
+        "blk_693e53fec5744b27b721eb667e933ef5",
+        "blk_90da5d0d361c48008030c2bf87767ced",
+        "blk_9167c15ea57c423ea6ad708738bb420f",
+        "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+          "page": 20
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-026",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 59,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction",
+          "operations"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-035",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "дренаж",
+      "sheet": "Листы 11.2, 11, 18, 19",
+      "page": [
+        18,
+        19,
+        56,
+        57
+      ],
+      "problem": "Указания по спускникам и уклонам записаны неоднозначно",
+      "description": "Диапазоны для спускников сформулированы как «до Ду125» и «свыше Ду150», поэтому Ду150 не охвачен. Уклоны пола и сливного трубопровода записаны «0,01 мм», хотя уклон является безразмерной величиной; в другом месте указан 0,01 без единиц.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.67,
+          "reason": "Проверить требования к дренированию и уклонам трубопроводов ИТП.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-034"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-034"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить диапазоны диаметров и записать уклоны как 0,01 либо 10 мм/м.",
+      "risk": "Ошибочное выполнение дренажной системы.",
+      "source_finding_ids": [
+        "T-034"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_c2e6708f6356460eb04d337fd749e8c7"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 50,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-036",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "контрольно-измерительные приборы",
+      "sheet": "Лист 5.",
+      "page": [
+        28,
+        94,
+        103
+      ],
+      "problem": "Диапазон части манометров не покрывает расчётное давление",
+      "description": "Основная группа манометров рассчитана на 0–1,6 МПа, то есть до 16 бар. Для греющего контура и третьих зон указаны давления выше этой границы. В спецификации есть только четыре манометра 0–2,5 МПа, их распределение по участкам не установлено.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.75,
+          "reason": "Проверить выбор диапазонов приборов контроля давления по месту установки.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-035"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-035"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Указать диапазон каждого манометра на схеме и заменить приборы, работающие за верхней границей шкалы.",
+      "risk": "Невозможность достоверно контролировать давление высоконапорных участков.",
+      "source_finding_ids": [
+        "T-035"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_29a310ba9cf94b72b83f0944dfb47467",
+        "blk_a84dc3455457476dadbc35029e2e7ae8"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 40,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-037",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "исходные данные",
+      "sheet": "Лист 4",
+      "page": [
+        42,
+        108,
+        109
+      ],
+      "problem": "Напор ХВС первой зоны указан с расхождением 4 м",
+      "description": "Пояснительная записка принимает на вводе 95,59 м вод. ст., анкета абонента — 91,59 м вод. ст. Требуемый выходной напор по анкете составляет 86,59 м, поэтому расхождение существенно для располагаемого перепада.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.65,
+          "reason": "Проверить исходные давления и гидравлическую увязку оборудования ГВС.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-036"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-036"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Согласовать исходный напор с водопроводной частью и пересчитать баланс давления.",
+      "risk": "Недостаточный располагаемый напор либо неверный подбор арматуры.",
+      "source_finding_ids": [
+        "T-036"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_3050f16afc994b889498a2535ea14a52"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 50,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-038",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "компоновка",
+      "sheet": "Лист 1",
+      "page": [
+        7,
+        108
+      ],
+      "problem": "Отметка пола ИТП указана тремя разными значениями",
+      "description": "В ведомости рабочих чертежей указано −4,000, в общей части анкеты −4,900, в строке размещения ИТП той же анкеты −4,450. Не установлено, какие значения относятся к чистому полу и конструкциям.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Уточнить отметки по архитектурным чертежам и согласовать высотные привязки и расчёты статического давления.",
+      "risk": "Ошибки высотных привязок и расчёта давления.",
+      "source_finding_ids": [
+        "T-037"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_90da5d0d361c48008030c2bf87767ced",
+        "blk_9167c15ea57c423ea6ad708738bb420f",
+        "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 40,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-039",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "состав документации",
+      "sheet": "Листы 1, 1., 15., 20",
+      "page": [
+        7,
+        24,
+        38,
+        39,
+        58
+      ],
+      "problem": "Ведомость прилагаемых документов не соответствует представленному комплекту",
+      "description": "Ведомость указывает спецификацию на 12 листах и пояснительную записку на 15 листах, тогда как их представленная нумерация достигает соответственно 15 и 20. Обозначение спецификации в ведомости заканчивается на «.С», в штампах — «.СО».",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.75,
+          "reason": "Проверить требования к ведомости прилагаемых документов и обозначениям.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-038"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-038"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Актуализировать листаж и обозначения документов в ведомости.",
+      "risk": "Неоднозначное определение состава комплекта.",
+      "source_finding_ids": [
+        "T-038"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_90da5d0d361c48008030c2bf87767ced",
+        "blk_9167c15ea57c423ea6ad708738bb420f",
+        "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 20,
+        "engineering_relevance": "low",
+        "impact_axes": [],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": true,
+        "severity_mismatch": false,
+        "review_priority": "normal"
+      }
+    },
+    {
+      "id": "F-040",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "исходные данные",
+      "sheet": null,
+      "page": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        114,
+        115
+      ],
+      "problem": "Титульные листы и техническое задание относят объект к разным этапам",
+      "description": "Титульные листы указывают этап 1, приложенное техническое задание — этап 2 при совпадающих кадастровом номере и названии объекта.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Подтвердить принадлежность задания и исправить идентификацию этапа в комплекте.",
+      "risk": "Применение требований другого этапа строительства.",
+      "source_finding_ids": [
+        "T-039"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_8c5527e3317248dca7d78ca059f0ec46"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "sheet_unavailable": true,
+      "sheet_unavailable_reason": "page_not_in_map",
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 40,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-041",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "спецификация",
+      "sheet": "Листы 1., 15.",
+      "page": [
+        24,
+        38,
+        166
+      ],
+      "problem": "В спецификации отсутствует предусмотренная заданием колонка",
+      "description": "Пункт 5.18.3.1 технического задания требует колонку «Код работ» по РСР или локальной смете. В представленных таблицах она отсутствует.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Дополнить спецификацию колонкой либо оформить согласованное изменение задания.",
+      "risk": "Затруднения при увязке спецификации со сметой.",
+      "source_finding_ids": [
+        "T-040"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_ae35014464b5493f84ca38481c3ffa60"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [],
+      "highlight_regions": [],
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 50,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "schedule"
+        ],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-042",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "расширительные баки",
+      "sheet": "Листы 9, 14",
+      "page": [
+        16,
+        23,
+        25
+      ],
+      "problem": "Объёмы баков на чертежах отличаются от спецификации",
+      "description": "Бак теплоснабжения К22 на разрезе и плане подписан как 1000 л, а в спецификации — 1500 л. Бак ДОО К23 на плане подписан как 100 л, в спецификации — 200 л. По описаниям листов нельзя надёжно определить количество всех изображённых баков.",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.78,
+          "reason": "Проверить согласованность марок и характеристик оборудования на чертежах и в спецификации.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-041",
+              "G-012",
+              "G-027",
+              "G-028",
+              "G-029",
+              "G-030"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-041",
+                "G-012",
+                "G-027",
+                "G-028",
+                "G-029",
+                "G-030"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить исходные чертежи, расчёт подбора и спецификацию, затем согласовать объёмы, габариты и количество баков.",
+      "risk": "Поставка баков неверного объёма и ошибки строительных заданий.",
+      "source_finding_ids": [
+        "T-041",
+        "G-012",
+        "G-027",
+        "G-028",
+        "G-029",
+        "G-030"
+      ],
+      "source_block_ids": [
+        "blk_27af51f0cd26488ea08ffa55589b0c3e",
+        "blk_06029d59a01b4b779037ffcee1ae5260"
+      ],
+      "related_block_ids": [
+        "blk_27af51f0cd26488ea08ffa55589b0c3e",
+        "blk_06029d59a01b4b779037ffcee1ae5260",
+        "blk_cc80e7962a094791b984d8fb5391e886",
+        "blk_94b58ecf5d404f7d90c272d267eb2e48"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+          "page": 16
+        },
+        {
+          "type": "image",
+          "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+          "page": 23
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-012",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-027",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-028",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-029",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-030",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:003"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одинаковое расхождение объёма бака К22: 1000 л на плане и 1500 л в экспликации.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:004"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одинаковое расхождение объёма бака К23: 100 л на плане и 200 л в экспликации.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одинаковое расхождение объёма бака К23: 100 л на плане и 200 л в экспликации.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одинаковое расхождение объёма бака К22: 1000 л на плане и 1500 л в экспликации.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 71,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-043",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "теплообменники",
+      "sheet": "Лист 10",
+      "page": [
+        17,
+        49,
+        61
+      ],
+      "problem": "Мощность теплообменника отопления третьей зоны на разрезе не совпадает с расчётом",
+      "description": "На разрезах указано 0,246 Гкал/ч с пометкой 100%, а расчёт и экспликация задают около 0,220 Гкал/ч с заявленным запасом 15%. Требуется уточнить, означает ли подпись нагрузку потребителя либо мощность аппарата.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.75,
+          "reason": "Проверить согласование расчётной нагрузки и мощности теплообменника.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-042",
+              "G-020"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-042",
+                "G-020"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить назначение подписи 0,246 Гкал/ч и привести разрезы, экспликацию и расчёт к одной мощности.",
+      "risk": "Неоднозначный выбор теплообменника при закупке.",
+      "source_finding_ids": [
+        "T-042",
+        "G-020"
+      ],
+      "source_block_ids": [
+        "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+      ],
+      "related_block_ids": [
+        "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+        "blk_b8c120f6cbc04397b8c5514a03fa3152"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+          "page": 17
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-020",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 59,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-044",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "расчётные нагрузки",
+      "sheet": "Листы 5, 11.2",
+      "page": [
+        12,
+        18,
+        43,
+        44
+      ],
+      "problem": "Нагрузка и расход теплового ввода расходятся между разрезом, аксонометрией и расчётом",
+      "description": "Разрез и аксонометрия приводят 5,205 Гкал/ч и 260,25 м³/ч, а пояснительная записка — 5,229 Гкал/ч и 261,50 м³/ч. Обе пары согласованы между собой при перепаде 20 °С, но относятся к разным исходным нагрузкам.",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.65,
+          "reason": "Проверить согласованность расчётных данных на чертежах и в пояснительной записке.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-043",
+              "G-002",
+              "G-003",
+              "G-022",
+              "G-024"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-043",
+                "G-002",
+                "G-003",
+                "G-022",
+                "G-024"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Установить действующую расчётную версию и исправить нагрузку и расход на разрезе и аксонометрии либо в расчёте.",
+      "risk": "Использование разных исходных расходов при подборе оборудования.",
+      "source_finding_ids": [
+        "T-043",
+        "G-002",
+        "G-003",
+        "G-022",
+        "G-024"
+      ],
+      "source_block_ids": [
+        "blk_871a2c95697d4a93adb86dd3e2456614",
+        "blk_94b58ecf5d404f7d90c272d267eb2e48"
+      ],
+      "related_block_ids": [
+        "blk_871a2c95697d4a93adb86dd3e2456614",
+        "blk_bd55e9b9fbff4d0886c6084a326ec05e",
+        "blk_94b58ecf5d404f7d90c272d267eb2e48",
+        "blk_049ee88c136045da9910995a4c44a1e8"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_871a2c95697d4a93adb86dd3e2456614",
+          "page": 12
+        },
+        {
+          "type": "image",
+          "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+          "page": 18
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-002",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-003",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-022",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-024",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "extension",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания описывают одинаковое расхождение нагрузки Т1: 5,205 Гкал/ч на разрезах и 5,229 Гкал/ч в расчёте, разница 0,024 Гкал/ч. Различная оценка серьёзности не меняет сути проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания описывают одинаковое расхождение нагрузки Т1: 5,205 Гкал/ч на разрезах и 5,229 Гкал/ч в расчёте, разница 0,024 Гкал/ч. Различная оценка серьёзности не меняет сути проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "extension",
+            "role": "base",
+            "counterpart_refs": [
+              "codex:003"
+            ],
+            "confidence": 0.99,
+            "reason": "Оба замечания указывают расхождение нагрузок 5,205 и 5,229 Гкал/ч на 0,024 Гкал/ч. Правое дополнительно связывает расход 260,25 м³/ч с меньшей нагрузкой при графике 90/70 °С и требует согласовать расход.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "extension",
+            "role": "extends",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 0.99,
+            "reason": "Оба замечания указывают расхождение нагрузок 5,205 и 5,229 Гкал/ч на 0,024 Гкал/ч. Правое дополнительно связывает расход 260,25 м³/ч с меньшей нагрузкой при графике 90/70 °С и требует согласовать расход.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 63,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "schedule"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-045",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "нормативные ссылки",
+      "sheet": "Лист 4",
+      "page": 11,
+      "problem": "Ссылка на пункт 7.2 СП 510 в указании об установке двери требует проверки",
+      "description": "На плане ИТП указание установить дверь ссылается на пункт 7.2 СП 510.1325800.2022, тогда как приведённая на этом листе формулировка пункта относится к размещению ИТП в помещениях с деформационными швами.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), кандидат п. 7.2",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить содержание пункта 7.2 и найти применимое требование к двери помещения ИТП.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-001"
+              ],
+              "designation_source": "исходное замечание"
+            }
+          },
+          "clause_candidate": "7.2",
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Проверить первоисточник и указать применимый пункт либо убрать ссылку из указания.",
+      "risk": "Ошибочная нормативная привязка монтажного решения.",
+      "source_finding_ids": [
+        "G-001"
+      ],
+      "source_block_ids": [
+        "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c"
+      ],
+      "related_block_ids": [
+        "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "page": 11
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-001",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 63,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-046",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "расчётные нагрузки",
+      "sheet": "Лист 7",
+      "page": [
+        14,
+        42
+      ],
+      "problem": "Нагрузка отопления второй зоны и мощность аппарата на разрезах не согласованы с расчётом",
+      "description": "На разрезах 11-11 и 12-12 нагрузка второй зоны подписана как 1,005 Гкал/ч, в таблице нагрузок — 0,880 Гкал/ч; расхождение 0,125 Гкал/ч, или 14,2%. На другом разрезе мощность теплообменника К2 указана 1,005 Гкал/ч, в экспликации — 1,012 Гкал/ч. Запас мощности отдельно не обозначен.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.76,
+          "reason": "Проверить согласование нагрузки потребителя и мощности теплообменника с учётом запаса.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-004",
+              "G-005",
+              "G-007",
+              "G-009"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-004",
+                "G-005",
+                "G-007",
+                "G-009"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Раздельно указать нагрузку зоны, расчётный запас и мощность аппарата, согласовав значения на разрезах, в экспликации и таблице.",
+      "risk": "Неверная оценка требуемой мощности и расхода второй зоны.",
+      "source_finding_ids": [
+        "G-004",
+        "G-005",
+        "G-007",
+        "G-009"
+      ],
+      "source_block_ids": [
+        "blk_dbf7b3d84e5642c9805145cb7502e78d",
+        "blk_5d085f4c917a4e568fd33327e6f8edea"
+      ],
+      "related_block_ids": [
+        "blk_dbf7b3d84e5642c9805145cb7502e78d",
+        "blk_5d085f4c917a4e568fd33327e6f8edea"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_dbf7b3d84e5642c9805145cb7502e78d",
+          "page": 14
+        },
+        {
+          "type": "image",
+          "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "page": 14
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-004",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-005",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-007",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-009",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают одно расхождение нагрузки отопления II зоны: 1,005 Гкал/ч в разрезах 11-11 и 12-12 против 0,880 Гкал/ч на странице PDF 42, разница 0,125 Гкал/ч. Указание 14,2% слева не является существенным дополнением; различие категорий серьёзности не меняет сути проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают одно расхождение нагрузки отопления II зоны: 1,005 Гкал/ч в разрезах 11-11 и 12-12 против 0,880 Гкал/ч на странице PDF 42, разница 0,125 Гкал/ч. Указание 14,2% слева не является существенным дополнением; различие категорий серьёзности не меняет сути проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:004"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют одинаковое расхождение мощности К2 отопления II зоны: 1,005 Гкал/ч на разрезе и 1,012 Гкал/ч в экспликации.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 63,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "schedule"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-047",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "теплообменники",
+      "sheet": "Лист 7",
+      "page": 14,
+      "problem": "Мощность теплообменника ГВС первой зоны на разрезе ниже значения экспликации",
+      "description": "Для теплообменника К6 на разрезе 7-7 указано 0,403 Гкал/ч, а в экспликации и расчёте — 0,419 Гкал/ч.",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.65,
+          "reason": "Проверить согласованность характеристики оборудования на чертеже и в экспликации.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-006",
+              "G-008"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-006",
+                "G-008"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить принятую мощность аппарата и исправить разрез либо экспликацию с расчётом.",
+      "risk": "Ошибочная мощность в монтажной и закупочной документации.",
+      "source_finding_ids": [
+        "G-006",
+        "G-008"
+      ],
+      "source_block_ids": [
+        "blk_5d085f4c917a4e568fd33327e6f8edea"
+      ],
+      "related_block_ids": [
+        "blk_5d085f4c917a4e568fd33327e6f8edea"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "page": 14
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-006",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-008",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:003"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют расхождение мощности К6 ГВС I зоны: 0,403 Гкал/ч на разрезе и 0,419 Гкал/ч в экспликации. Дополнительная ссылка слева на расчёт подтверждает ту же проблему.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют расхождение мощности К6 ГВС I зоны: 0,403 Гкал/ч на разрезе и 0,419 Гкал/ч в экспликации. Дополнительная ссылка слева на расчёт подтверждает ту же проблему.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 59,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-048",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "расчётные нагрузки",
+      "sheet": "Лист 8",
+      "page": [
+        15,
+        43
+      ],
+      "problem": "Нагрузка отопления первой зоны на разрезах превышает принятую в расчёте",
+      "description": "На разрезах указано 1,711 Гкал/ч, в расчёте расхода сетевой воды — 1,483 Гкал/ч. Расхождение составляет 0,228 Гкал/ч, или 15,4% от расчётного значения.",
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.73,
+          "reason": "Проверить согласование нагрузки отопления и расчётного расхода теплоносителя.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-010",
+              "G-011"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-010",
+                "G-011"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Установить расчётную нагрузку первой зоны и согласовать расход и подписи разрезов.",
+      "risk": "Неверный подбор оборудования и расхода первой зоны.",
+      "source_finding_ids": [
+        "G-010",
+        "G-011"
+      ],
+      "source_block_ids": [
+        "blk_6496640ac5e44e98a89acc7af56d0509"
+      ],
+      "related_block_ids": [
+        "blk_6496640ac5e44e98a89acc7af56d0509"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+          "page": 15
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-010",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-011",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одно расхождение нагрузки отопления I зоны: 1,711 Гкал/ч в разрезах против 1,483 Гкал/ч в расчёте. Вычисление разницы слева и упоминание подбора оборудования справа не меняют сути и эквивалентной детализации проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одно расхождение нагрузки отопления I зоны: 1,711 Гкал/ч в разрезах против 1,483 Гкал/ч в расчёте. Вычисление разницы слева и упоминание подбора оборудования справа не меняют сути и эквивалентной детализации проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 45,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-049",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "расчётные нагрузки",
+      "sheet": "Лист 10",
+      "page": [
+        17,
+        42
+      ],
+      "problem": "Нагрузка отопления третьей зоны на разрезе отличается от таблицы",
+      "description": "На разрезе 23-23 указано 0,200 Гкал/ч, в таблице нагрузок — 0,191 Гкал/ч. Разница составляет 0,009 Гкал/ч, или 4,7%.",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.63,
+          "reason": "Проверить согласованность расчётных параметров в разных документах комплекта.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-017",
+              "G-018"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-017",
+                "G-018"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить основание различия и привести разрез и таблицу к одному значению.",
+      "risk": "Неоднозначный расчёт расхода и мощности третьей зоны.",
+      "source_finding_ids": [
+        "G-017",
+        "G-018"
+      ],
+      "source_block_ids": [
+        "blk_d0a62bc2e56f4d07bb33a73622429881"
+      ],
+      "related_block_ids": [
+        "blk_d0a62bc2e56f4d07bb33a73622429881"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+          "page": 17
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-017",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-018",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания описывают одно расхождение нагрузки отопления 3-й зоны: 0,200 Гкал/ч на разрезе 23-23 против 0,191 Гкал/ч на стр. PDF 42. Расчет разницы в левом замечании не добавляет самостоятельной проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания описывают одно расхождение нагрузки отопления 3-й зоны: 0,200 Гкал/ч на разрезе 23-23 против 0,191 Гкал/ч на стр. PDF 42. Расчет разницы в левом замечании не добавляет самостоятельной проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 45,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-050",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "нагрузки на конструкции",
+      "sheet": "Лист 12.1",
+      "page": 20,
+      "problem": "Масса бака LVF 400 с обвязкой меньше массы самого бака",
+      "description": "На плане фундаментов собственная масса LVF 400 указана как 91 кг, а масса с обвязкой и теплоносителем — 60 кг. Последняя меньше собственной на 31 кг.",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.66,
+          "reason": "Проверить достоверность исходных нагрузок в задании строителям.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-025"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-025"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить сухую и заполненную массу бака с обвязкой и исправить строительное задание.",
+      "risk": "Занижение нагрузки на основание оборудования.",
+      "source_finding_ids": [
+        "G-025"
+      ],
+      "source_block_ids": [
+        "blk_693e53fec5744b27b721eb667e933ef5"
+      ],
+      "related_block_ids": [
+        "blk_693e53fec5744b27b721eb667e933ef5"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+          "page": 20
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-025",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 55,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-051",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "насосы",
+      "sheet": null,
+      "page": 81,
+      "problem": "Назначение насоса IL 65/120-4/2-R в документации противоречиво",
+      "description": "В спецификации насос отнесён к системе теплоснабжения, а в расчёте подбора — к системе вентиляции. По приведённым данным нельзя установить, относится ли расхождение к ошибке наименования или к выбору насоса.",
+      "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "candidate_relevance": 0.58,
+          "reason": "Проверить согласованность назначения оборудования в спецификации и расчёте.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-042"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-042"
+              ],
+              "designation_source": "экспертная оценка"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить позицию насоса с тепловой схемой и расчётом, затем исправить назначение в спецификации.",
+      "risk": "Ошибочная привязка оборудования при монтаже и эксплуатации.",
+      "source_finding_ids": [
+        "G-042"
+      ],
+      "source_block_ids": [
+        "blk_3162e0fafc32457285830ec07afdd653"
+      ],
+      "related_block_ids": [
+        "blk_3162e0fafc32457285830ec07afdd653"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_3162e0fafc32457285830ec07afdd653",
+          "page": 81
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-042",
+            "mode": "independent",
+            "detected_at": "2026-11-06T21:56:05.864405+00:00",
+            "context_source": "raw_vector"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "sheet_unavailable": true,
+      "sheet_unavailable_reason": "page_not_in_map",
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 71,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "construction",
+          "operations"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-052",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "problem": "В ведомости и указаниях по монтажу приведён заменённый СНиП 12-03-2001",
+      "description": "Строка 247: «|  | СНиП 12-03-2001 | Безопасность труда в строительстве. Часть 1. Общие требования |  |». Обозначение повторено в указаниях по монтажу, строка 264: «СНиП 12-03-2001 Часть 1. \"Безопасность труда в строительстве. Общие требования,\"». По LOCAL VERIFIED NORM STATUS статус СНиП 12-03-2001 — replaced.",
+      "page": 7,
+      "norm": "СНиП 12-03-2001 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "solution": "Уточнить действующий документ по безопасности труда и исправить обе ссылки.",
+      "risk": "Указания по монтажу ссылаются на заменённый документ.",
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "page": 7,
+          "md_lines": "строка 247"
+        },
+        {
+          "type": "text",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "page": 7,
+          "md_lines": "строка 264"
+        }
+      ],
+      "source_stage": "alia_docnorm_audit",
+      "sheet": "Лист 1",
+      "candidate_norm_references": [
+        {
+          "designation": "СНиП 12-03-2001",
+          "cited_designation": "СНиП 12-03-2001",
+          "candidate_relevance": 0.5,
+          "reason": "legacy_norm_field",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.norm",
+            "source_finding_ids": []
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 52,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "safety",
+          "construction"
+        ],
+        "formalism_flags": [
+          "formal_reference_category",
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-053",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "problem": "Название СП 510.1325800.2022 в ведомости не совпадает с названием, приведённым на планах",
+      "description": "Строка 243 ведомости: «|  | СП 510.1325800.2022 | Проектирование тепловых пунктов |  |». На плане в строке 969 тот же СП 510.1325800.2022 назван «Тепловые пункты и системы внутреннего теплоснабжения».",
+      "page": 7,
+      "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "solution": "Сверить официальное название СП 510.1325800.2022 и привести его в ведомости и на планах к единой записи.",
+      "risk": "Неодинаковое название затрудняет однозначную идентификацию ссылочного документа.",
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "page": 7,
+          "md_lines": "строка 243"
+        },
+        {
+          "type": "text",
+          "block_id": null,
+          "page": 19,
+          "md_lines": "строка 969"
+        }
+      ],
+      "source_stage": "alia_docnorm_audit",
+      "sheet": "Лист 1",
+      "candidate_norm_references": [
+        {
+          "designation": "СП 510.1325800.2022",
+          "cited_designation": "СП 510.1325800.2022",
+          "candidate_relevance": 0.5,
+          "reason": "legacy_norm_field",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.norm",
+            "source_finding_ids": []
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 2,
+        "engineering_relevance": "low",
+        "impact_axes": [],
+        "formalism_flags": [
+          "formal_reference_category",
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": true,
+        "severity_mismatch": false,
+        "review_priority": "normal"
+      }
+    }
+  ],
+  "analysis_coverage": {
+    "schema_version": 1,
+    "summary": {
+      "gemma_uncovered_count": 0,
+      "single_block_failed_count": 0,
+      "stage02_crop_missing_count": 0,
+      "excluded_from_full_analysis_count": 0,
+      "base_gemma_covered_count": 0,
+      "base_gemma_total_count": 0,
+      "high_detail_candidates": 0,
+      "high_detail_successful": 0,
+      "high_detail_skipped_large": 0,
+      "base_only_blocks_count": 0,
+      "upgraded_to_300_count": 0
+    },
+    "gemma_uncovered_blocks": [],
+    "single_block_failed_blocks": [],
+    "stage02_crop_missing_blocks": [],
+    "blocks_analyzed_only_with_100_dpi_base": [],
+    "blocks_upgraded_to_300": [],
+    "excluded_blocks_from_full_analysis": [],
+    "sections": [
+      {
+        "title": "Блоки без подготовленного контекста",
+        "blocks": []
+      },
+      {
+        "title": "Ошибки single-block анализа",
+        "blocks": []
+      },
+      {
+        "title": "Блоки, исключённые из полноценного анализа",
+        "blocks": []
+      },
+      {
+        "title": "Блоки, оставшиеся на base 100 DPI",
+        "blocks": []
+      },
+      {
+        "title": "Блоки, upgraded до 300 DPI",
+        "blocks": []
+      }
+    ]
+  },
+  "candidate_recovery_reports": [
+    {
+      "parent_target_binding": {
+        "resolved": {},
+        "pending": [],
+        "semantic_verified": false
+      },
+      "link_repairs": {
+        "applied": [
+          {
+            "source_id": "T-016",
+            "target_id": "F-016",
+            "target_signature": "d319a7196e4a065259ef116587ff5a3686fe7f37a83a55521807e57da533f44c",
+            "receipt": {
+              "origin": "text",
+              "pointer": "/text_findings/15",
+              "decision": "duplicate",
+              "reason": "Оба самостоятельных утверждения уже представлены для того же насоса: расхождение мощности сохранено в F-016, противоречие напоров — в F-017. Новое замечание не требуется. Решение фиксирует смысловое дублирование, а не независимое подтверждение отсутствующих в переданном контексте источников.",
+              "source_refs": [
+                "blk_1601889b50624245a5c590ad23d87175"
+              ],
+              "target_finding_ids": [
+                "F-016",
+                "F-017"
+              ],
+              "subclaims": [
+                {
+                  "id": "T-016-power",
+                  "claim": "Для насоса отопления ДОО K12 IL 40/220-1,5/4-R экспликация указывает 0,55 кВт, тогда как спецификация, расчёт и технический лист указывают 1,5 кВт.",
+                  "decision": "duplicate",
+                  "reason": "F-016 сохраняет это расхождение для той же позиции и тех же документов. В предоставленном авторитетном TEXT непосредственно проверены марка IL 40/220-1,5/4-R и запись N=0,55 кВт. Значение 1,5 кВт в остальных документах в этом контексте независимо не проверено; текст существующего замечания использован только для сопоставления содержания.",
+                  "source_refs": [
+                    "blk_1601889b50624245a5c590ad23d87175"
+                  ],
+                  "required_source_refs": [],
+                  "target_finding_ids": [
+                    "F-016"
+                  ]
+                },
+                {
+                  "id": "T-016-head",
+                  "claim": "В техническом листе насоса IL 40/220-1,5/4-R рабочий напор 16,98 м превышает указанный максимальный напор 16,64 м.",
+                  "decision": "duplicate",
+                  "reason": "F-017 полностью сохраняет самостоятельное утверждение о противоречии этих напоров и требование проверить характеристику насоса. Предоставленная экспликация подтверждает только H=16,98 м. Технический лист и его изображение не представлены; решение о дублировании не подтверждает достоверность значения максимального напора или невозможность рабочей точки.",
+                  "source_refs": [
+                    "blk_1601889b50624245a5c590ad23d87175"
+                  ],
+                  "required_source_refs": [],
+                  "target_finding_ids": [
+                    "F-017"
+                  ]
+                }
+              ]
+            },
+            "semantic_verified": false
+          },
+          {
+            "source_id": "T-016",
+            "target_id": "F-017",
+            "target_signature": "7cd99495eca8635c010b80d8ddbc632df450974279f09cf1196f89cc42236100",
+            "receipt": {
+              "origin": "text",
+              "pointer": "/text_findings/15",
+              "decision": "duplicate",
+              "reason": "Оба самостоятельных утверждения уже представлены для того же насоса: расхождение мощности сохранено в F-016, противоречие напоров — в F-017. Новое замечание не требуется. Решение фиксирует смысловое дублирование, а не независимое подтверждение отсутствующих в переданном контексте источников.",
+              "source_refs": [
+                "blk_1601889b50624245a5c590ad23d87175"
+              ],
+              "target_finding_ids": [
+                "F-016",
+                "F-017"
+              ],
+              "subclaims": [
+                {
+                  "id": "T-016-power",
+                  "claim": "Для насоса отопления ДОО K12 IL 40/220-1,5/4-R экспликация указывает 0,55 кВт, тогда как спецификация, расчёт и технический лист указывают 1,5 кВт.",
+                  "decision": "duplicate",
+                  "reason": "F-016 сохраняет это расхождение для той же позиции и тех же документов. В предоставленном авторитетном TEXT непосредственно проверены марка IL 40/220-1,5/4-R и запись N=0,55 кВт. Значение 1,5 кВт в остальных документах в этом контексте независимо не проверено; текст существующего замечания использован только для сопоставления содержания.",
+                  "source_refs": [
+                    "blk_1601889b50624245a5c590ad23d87175"
+                  ],
+                  "required_source_refs": [],
+                  "target_finding_ids": [
+                    "F-016"
+                  ]
+                },
+                {
+                  "id": "T-016-head",
+                  "claim": "В техническом листе насоса IL 40/220-1,5/4-R рабочий напор 16,98 м превышает указанный максимальный напор 16,64 м.",
+                  "decision": "duplicate",
+                  "reason": "F-017 полностью сохраняет самостоятельное утверждение о противоречии этих напоров и требование проверить характеристику насоса. Предоставленная экспликация подтверждает только H=16,98 м. Технический лист и его изображение не представлены; решение о дублировании не подтверждает достоверность значения максимального напора или невозможность рабочей точки.",
+                  "source_refs": [
+                    "blk_1601889b50624245a5c590ad23d87175"
+                  ],
+                  "required_source_refs": [],
+                  "target_finding_ids": [
+                    "F-017"
+                  ]
+                }
+              ]
+            },
+            "semantic_verified": false
+          }
+        ],
+        "pending": [],
+        "semantic_verified": false
+      },
+      "addenda_publication": {
+        "applied": [],
+        "pending": [],
+        "semantic_verified": false
+      },
+      "context_retrieval": null,
+      "stage": "candidate_recovery_T-016",
+      "candidate_decisions": [
+        {
+          "origin": "text",
+          "pointer": "/text_findings/15",
+          "decision": "duplicate",
+          "reason": "Оба самостоятельных утверждения уже представлены для того же насоса: расхождение мощности сохранено в F-016, противоречие напоров — в F-017. Новое замечание не требуется. Решение фиксирует смысловое дублирование, а не независимое подтверждение отсутствующих в переданном контексте источников.",
+          "source_refs": [
+            "blk_1601889b50624245a5c590ad23d87175"
+          ],
+          "target_finding_ids": [
+            "F-016",
+            "F-017"
+          ],
+          "subclaims": [
+            {
+              "id": "T-016-power",
+              "claim": "Для насоса отопления ДОО K12 IL 40/220-1,5/4-R экспликация указывает 0,55 кВт, тогда как спецификация, расчёт и технический лист указывают 1,5 кВт.",
+              "decision": "duplicate",
+              "reason": "F-016 сохраняет это расхождение для той же позиции и тех же документов. В предоставленном авторитетном TEXT непосредственно проверены марка IL 40/220-1,5/4-R и запись N=0,55 кВт. Значение 1,5 кВт в остальных документах в этом контексте независимо не проверено; текст существующего замечания использован только для сопоставления содержания.",
+              "source_refs": [
+                "blk_1601889b50624245a5c590ad23d87175"
+              ],
+              "required_source_refs": [],
+              "target_finding_ids": [
+                "F-016"
+              ]
+            },
+            {
+              "id": "T-016-head",
+              "claim": "В техническом листе насоса IL 40/220-1,5/4-R рабочий напор 16,98 м превышает указанный максимальный напор 16,64 м.",
+              "decision": "duplicate",
+              "reason": "F-017 полностью сохраняет самостоятельное утверждение о противоречии этих напоров и требование проверить характеристику насоса. Предоставленная экспликация подтверждает только H=16,98 м. Технический лист и его изображение не представлены; решение о дублировании не подтверждает достоверность значения максимального напора или невозможность рабочей точки.",
+              "source_refs": [
+                "blk_1601889b50624245a5c590ad23d87175"
+              ],
+              "required_source_refs": [],
+              "target_finding_ids": [
+                "F-017"
+              ]
+            }
+          ]
+        }
+      ],
+      "format_repair": null,
+      "pending": [],
+      "semantic_verified": false,
+      "original_candidate_decisions": [
+        {
+          "origin": "text",
+          "pointer": "/text_findings/15",
+          "decision": "duplicate",
+          "reason": "Оба самостоятельных утверждения уже представлены для того же насоса: расхождение мощности сохранено в F-016, противоречие напоров — в F-017. Новое замечание не требуется. Решение фиксирует смысловое дублирование, а не независимое подтверждение отсутствующих в переданном контексте источников.",
+          "source_refs": [
+            "blk_1601889b50624245a5c590ad23d87175"
+          ],
+          "target_finding_ids": [
+            "F-016",
+            "F-017"
+          ],
+          "subclaims": [
+            {
+              "id": "T-016-power",
+              "claim": "Для насоса отопления ДОО K12 IL 40/220-1,5/4-R экспликация указывает 0,55 кВт, тогда как спецификация, расчёт и технический лист указывают 1,5 кВт.",
+              "decision": "duplicate",
+              "reason": "F-016 сохраняет это расхождение для той же позиции и тех же документов. В предоставленном авторитетном TEXT непосредственно проверены марка IL 40/220-1,5/4-R и запись N=0,55 кВт. Значение 1,5 кВт в остальных документах в этом контексте независимо не проверено; текст существующего замечания использован только для сопоставления содержания.",
+              "source_refs": [
+                "blk_1601889b50624245a5c590ad23d87175"
+              ],
+              "required_source_refs": [],
+              "target_finding_ids": [
+                "F-016"
+              ]
+            },
+            {
+              "id": "T-016-head",
+              "claim": "В техническом листе насоса IL 40/220-1,5/4-R рабочий напор 16,98 м превышает указанный максимальный напор 16,64 м.",
+              "decision": "duplicate",
+              "reason": "F-017 полностью сохраняет самостоятельное утверждение о противоречии этих напоров и требование проверить характеристику насоса. Предоставленная экспликация подтверждает только H=16,98 м. Технический лист и его изображение не представлены; решение о дублировании не подтверждает достоверность значения максимального напора или невозможность рабочей точки.",
+              "source_refs": [
+                "blk_1601889b50624245a5c590ad23d87175"
+              ],
+              "required_source_refs": [],
+              "target_finding_ids": [
+                "F-017"
+              ]
+            }
+          ]
+        }
+      ],
+      "finding_target_binding": {
+        "repairs": [],
+        "unresolved": [],
+        "local_to_final": {},
+        "semantic_verified": false
+      }
+    }
+  ]
+}

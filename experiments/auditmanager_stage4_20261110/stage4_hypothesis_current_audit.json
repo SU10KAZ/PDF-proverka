@@ -65,11 +65,16 @@
         {
           "path": "experiments/auditmanager_stage4_20261110/EOM_F032_output_replay.json",
           "sha256": "d5063f39edd4db71c21ff006e5f20d3c74bf317be2a06c4a18122e834a52b1a7"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/H01_duplicate_controls_assessment.json",
+          "sha256": "57db9e1be352420d12a50b0eff835e98103adbe417d4ac2e43bc0e6fe366df32"
         }
       ],
       "control_interpretation": [
         "АК размерная цепь сохранена в F080; серия 85 показывает полезные восстановленные тезисы и реальные ошибки. Это проверка сохранения в проекции, не финальный сравнительный аудит.",
-        "ЭОМ F001/F030 имеют отдельные replay с сохранённой формулировкой модели и 50 другими строками; профиль принят локально, не автономно. F032 сохраняет расхождения площадей и источники, но выбор раздела удержан evaluator_errata. Эти три исходно требуемых контроля присутствуют."
+        "ЭОМ F001/F030 имеют отдельные replay с сохранённой формулировкой модели и 50 другими строками; профиль принят локально, не автономно. F032 сохраняет расхождения площадей и источники, но выбор раздела удержан evaluator_errata. Эти три исходно требуемых контроля присутствуют.",
+        "Four original no-duplicate controls rerun with current Astra/high recovery contract: T004→F004/F005, T008→F009/F010, T017→F023/F024, ITP T016→F016/F017. Zero new findings; actual merge preserves content of all 65 AK and 53 ITP rows while adding provenance. ITP missing passport truth is not certified by duplicate matching."
       ],
       "limits": [
         "Связь ID или присутствие текста не доказывают техническую верность.",

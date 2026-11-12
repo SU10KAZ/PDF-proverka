@@ -1,0 +1,18 @@
+{
+  "status": "four_original_H01_duplicate_controls_pass_bounded_preservation",
+  "requirement": "AK T004/T008/T017 and ITP T016: already preserved meanings must not be published twice.",
+  "observed": "Four Astra/high responses emit no new findings and map every original project claim to the expected existing finding. Real validate_recovery_payload, combine_findings_with_targeted and reconcile_candidate_decisions accept the structural links.",
+  "preserved": {
+    "AK": 65,
+    "ITP": 53
+  },
+  "source_check": "AK selected authoritative TEXT rows independently inspected: PDS 1/3 versus specification 3/1, TE2 1 versus 2; Y1/Y2 quantity4 and M3-M6 quantity2; three support tables have four consoles and BSD4120 versus specification15 consoles and BSD2120. Target finding meanings also match the previously sealed stage2 assessment.",
+  "limits": [
+    "ITP duplicate relation is supported by same equipment and thesis in existing F016/F017; this does not independently verify missing passport data.",
+    "Recovery links are provenance, not verified engineering evidence.",
+    "Only original content and counts are preserved; source_finding_ids and recovery_link_receipts are intentionally added.",
+    "No six-project completeness, final Excel delivery, or production acceptance claimed."
+  ],
+  "stage4_complete": false,
+  "production_accepted": false
+}
