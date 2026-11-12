@@ -1,0 +1,215 @@
+{
+  "status": "two_additional_bounded_graphic_findings_reviewed",
+  "run": "ak_r1_classic_current",
+  "final": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+  },
+  "claims": [
+    {
+      "finding_id": "F-078",
+      "output_pointer": "/findings/77",
+      "source_finding": {
+        "object_id": "О-05",
+        "operation": "identity_across_views",
+        "severity": "medium",
+        "problem": "На плане две группы смесительных узлов не различены обозначениями приборов",
+        "description": "На листе 54 две пространственно раздельные группы выносок повторяют М2, Y2, TS2. На функциональной схеме листа 23 различены M1/Y1/TS1 для У4.3–У4.4 и M2/Y2/TS2 для У4.5–У4.6; лист 41 также различает эти экземпляры. Поэтому план не дает однозначного соответствия обеих групп приборов схемам. Наличие лишних устройств или ошибочного монтажа не установлено.",
+        "solution": "Уточнить привязку обеих групп на плане и обозначить каждую в соответствии с ее экземплярами на функциональной схеме и схеме подключений.",
+        "sheet": "Листы 54, 23, 41",
+        "evidence": [
+          {
+            "block_id": "blk_e20c8afbb3bf4f8b92e962ceeab35cae",
+            "description": "Две группы левых выносок: М2/Y2/TS2 в верхней группе и повторные М2/Y2/TS2 ниже."
+          },
+          {
+            "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+            "description": "Для двух пар завес показаны отдельные M1/Y1/TS1 и M2/Y2/TS2."
+          },
+          {
+            "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+            "description": "В верхней части схемы отдельно обозначены Y1, Y2, M1, M2, TS1 и TS2."
+          }
+        ],
+        "report_section": "technical_findings",
+        "operation_semantic_verified": false,
+        "source_finding_ids": [
+          "O-73e6143f09126d420259a37c"
+        ],
+        "operation_candidate_lineage": [
+          {
+            "source_finding_id": "O-73e6143f09126d420259a37c",
+            "status": "requires_semantic_review",
+            "source_claim": "problem: На плане две группы смесительных узлов не различены обозначениями приборов\ndescription: На листе 54 две пространственно раздельные группы выносок повторяют М2, Y2, TS2. На функциональной схеме листа 23 различены M1/Y1/TS1 для У4.3–У4.4 и M2/Y2/TS2 для У4.5–У4.6; лист 41 также различает эти экземпляры. Поэтому план не дает однозначного соответствия обеих групп приборов схемам. Наличие лишних устройств или ошибочного монтажа не установлено.\nsolution: Уточнить привязку обеих групп на плане и обозначить каждую в соответствии с ее экземплярами на функциональной схеме и схеме подключений.",
+            "existing_block_ids": [
+              "blk_e20c8afbb3bf4f8b92e962ceeab35cae",
+              "blk_523708af1c384b0e8bc6767d93644336",
+              "blk_e7bf605cde374aec808e8a5deb78ce97"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "id": "F-078",
+        "source_stage": "object_operations_7bd48b3ebe7624c0",
+        "sheet_title": "54; сопоставление с 23, 41",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "norm": null,
+        "norm_quote": null,
+        "quality": {
+          "practicality_score": 54,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "O-73e6143f09126d420259a37c",
+            "source_claim": "problem: На плане две группы смесительных узлов не различены обозначениями приборов\ndescription: На листе 54 две пространственно раздельные группы выносок повторяют М2, Y2, TS2. На функциональной схеме листа 23 различены M1/Y1/TS1 для У4.3–У4.4 и M2/Y2/TS2 для У4.5–У4.6; лист 41 также различает эти экземпляры. Поэтому план не дает однозначного соответствия обеих групп приборов схемам. Наличие лишних устройств или ошибочного монтажа не установлено.\nsolution: Уточнить привязку обеих групп на плане и обозначить каждую в соответствии с ее экземплярами на функциональной схеме и схеме подключений.",
+            "block_ids": [
+              "blk_e20c8afbb3bf4f8b92e962ceeab35cae",
+              "blk_523708af1c384b0e8bc6767d93644336",
+              "blk_e7bf605cde374aec808e8a5deb78ce97"
+            ]
+          }
+        ]
+      },
+      "graphics": [
+        {
+          "block_id": "blk_e20c8afbb3bf4f8b92e962ceeab35cae",
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e20c8afbb3bf4f8b92e962ceeab35cae.png",
+          "sha256": "eb95f273361305ef2869fba7f94d845fb4a334216457fe97884336daab99c6cd",
+          "directly_viewed_original_resolution": true
+        },
+        {
+          "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+          "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+          "directly_viewed_original_resolution": true
+        },
+        {
+          "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+          "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+          "directly_viewed_original_resolution": true
+        }
+      ],
+      "technical_status": "confirmed_narrow_repeated_labels_and_missing_cross_view_mapping",
+      "confirmed": [
+        "Левые выноски плана дважды содержатM2/Y2/TS2; группы линий выносок различимы.",
+        "Функциональная схема различаетM1/Y1/TS1 уУ4.3–У4.4 иM2/Y2/TS2 уУ4.5–У4.6.",
+        "Внешняя схема отдельно подписываетY1/Y2, M1/M2, TS1/TS2."
+      ],
+      "limits": [
+        "Наличие двух наборов выносок не доказывает два дополнительных физических устройства.",
+        "По этому фрагменту не назначать автоматически верхнему или нижнему набору индексы1: требуется адресная привязка.",
+        "Повторяемые марки кабелейУ4-1/2/5 сами по себе не ошибка: внешняя схема показывает межприборные связи.",
+        "Подтверждён повод согласовать соответствие приборов между листами, а не фактический ошибочный монтаж."
+      ],
+      "engineer_decision": null,
+      "engineering_utility": "not_assessed",
+      "independent_discovery": false
+    },
+    {
+      "finding_id": "F-079",
+      "output_pointer": "/findings/78",
+      "source_finding": {
+        "object_id": "О-05",
+        "operation": "identity_across_views",
+        "severity": "medium",
+        "problem": "Неоднозначно обозначены три правых подключения БД-ТЗ1, включая RS-485",
+        "description": "На листе 41 цепи SQ1, пожарного сигнала и RS-485 приходят к трем отдельно изображенным колодкам одного БД-ТЗ1. У всех повторены номера 1–2 и обозначения КВ/Uhd, а позиционные обозначения колодок отсутствуют. Отдельные графические колодки могут объяснять повторение номеров, но полный адрес «блок — колодка — контакт» восстановить нельзя. Дополнительно подписи выводов под заголовком RS-485 совпадают с подписями контактных входов. Подтверждена локальная неоднозначность адресации и назначения выводов, а не соединение разных цепей на одной физической клемме или неисправность интерфейса.",
+        "solution": "По заводской схеме конкретного исполнения БД-ТЗ1 указать обозначения разъемов, номера и назначение контактов для SQ1, АПС и RS-485; согласовать интерфейс с принимающим шкафом.",
+        "sheet": "41",
+        "evidence": [
+          {
+            "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+            "description": "Нижняя правая часть: три пары 1–2 с подписями КВ/Uhd под SQ1/У4-6, входом пожарной сигнализации и RS-485. Общая принадлежность БД-ТЗ1 показана рамкой, индивидуальные обозначения колодок не приведены."
+          }
+        ],
+        "report_section": "technical_findings",
+        "operation_semantic_verified": false,
+        "source_finding_ids": [
+          "O-6123772ed5aaed0a511e8891"
+        ],
+        "operation_candidate_lineage": [
+          {
+            "source_finding_id": "O-6123772ed5aaed0a511e8891",
+            "status": "requires_semantic_review",
+            "source_claim": "problem: Неоднозначно обозначены три правых подключения БД-ТЗ1, включая RS-485\ndescription: На листе 41 цепи SQ1, пожарного сигнала и RS-485 приходят к трем отдельно изображенным колодкам одного БД-ТЗ1. У всех повторены номера 1–2 и обозначения КВ/Uhd, а позиционные обозначения колодок отсутствуют. Отдельные графические колодки могут объяснять повторение номеров, но полный адрес «блок — колодка — контакт» восстановить нельзя. Дополнительно подписи выводов под заголовком RS-485 совпадают с подписями контактных входов. Подтверждена локальная неоднозначность адресации и назначения выводов, а не соединение разных цепей на одной физической клемме или неисправность интерфейса.\nsolution: По заводской схеме конкретного исполнения БД-ТЗ1 указать обозначения разъемов, номера и назначение контактов для SQ1, АПС и RS-485; согласовать интерфейс с принимающим шкафом.",
+            "existing_block_ids": [
+              "blk_e7bf605cde374aec808e8a5deb78ce97"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "id": "F-079",
+        "source_stage": "object_operations_7bd48b3ebe7624c0",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "norm": null,
+        "norm_quote": null,
+        "quality": {
+          "practicality_score": 80,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "O-6123772ed5aaed0a511e8891",
+            "source_claim": "problem: Неоднозначно обозначены три правых подключения БД-ТЗ1, включая RS-485\ndescription: На листе 41 цепи SQ1, пожарного сигнала и RS-485 приходят к трем отдельно изображенным колодкам одного БД-ТЗ1. У всех повторены номера 1–2 и обозначения КВ/Uhd, а позиционные обозначения колодок отсутствуют. Отдельные графические колодки могут объяснять повторение номеров, но полный адрес «блок — колодка — контакт» восстановить нельзя. Дополнительно подписи выводов под заголовком RS-485 совпадают с подписями контактных входов. Подтверждена локальная неоднозначность адресации и назначения выводов, а не соединение разных цепей на одной физической клемме или неисправность интерфейса.\nsolution: По заводской схеме конкретного исполнения БД-ТЗ1 указать обозначения разъемов, номера и назначение контактов для SQ1, АПС и RS-485; согласовать интерфейс с принимающим шкафом.",
+            "block_ids": [
+              "blk_e7bf605cde374aec808e8a5deb78ce97"
+            ]
+          }
+        ]
+      },
+      "graphics": [
+        {
+          "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+          "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+          "directly_viewed_original_resolution": true
+        }
+      ],
+      "technical_status": "confirmed_local_connector_identification_question",
+      "confirmed": [
+        "ПодSQ1, пожарным сигналом иRS-485 показаны три отдельные колодки в рамкеБД-ТЗ1; каждая имеет номера1/2.",
+        "ПодRS-485 повторяется видимая подписьКВ, как у двух контактных подключений.",
+        "На просмотренном фрагменте отдельные позиционные имена этих колодок не приведены; функциональные заголовки различают цепи."
+      ],
+      "limits": [
+        "Физическое объединение трёх цепей на одной клемме не доказано; отдельные колодки допускают локальную повторную нумерацию.",
+        "Без заводской схемы не установлены правильные назначения контактов и неработоспособностьRS-485.",
+        "Точное буквенное прочтение второй мелкой подписи не используется как самостоятельное доказательство; достаточно повторной графической подписи и отсутствия индивидуального имени разъёма.",
+        "F-069 охватывает часть этой же темыRS-485: считать дополнительный объёмSQ1/АПС, не два полностью независимых дефекта."
+      ],
+      "engineer_decision": null,
+      "engineering_utility": "not_assessed",
+      "independent_discovery": false
+    }
+  ],
+  "production_changed": false,
+  "evaluator_changed": false,
+  "limits": [
+    "Factual source verification does not assign final severity or measured engineering utility.",
+    "No manufacturer specification or normative requirement checked; no physical failures inferred.",
+    "Do not add these cases to frozen targets during active collection."
+  ]
+}
