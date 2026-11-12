@@ -287,10 +287,89 @@
         "H04 нельзя объявить завершённым по успешной арифметике или одному F051."
       ],
       "complete": false
+    },
+    {
+      "hypothesis": "H05",
+      "status": "bounded_same_object_comparisons_and_conditional_question_evidenced_compound_controls_open",
+      "code": [
+        {
+          "path": "backend/app/pipeline/stages/prepare/object_operation_passes.py",
+          "sha256": "a6b866da065e7db1a63bc460eff0abe83c1fe412d8a3f0edadafec3bb52bac8c",
+          "symbol": "build_object_operation_passes"
+        },
+        {
+          "path": "backend/app/pipeline/stages/prepare/calculation_consistency.py",
+          "sha256": "bfcafd19b161d812ae2e88b7ac934eb930b8441f86ad974ec9c3d3253fe651d9",
+          "symbol": "CALCULATION_INSTRUCTIONS / has_calculation_trace"
+        }
+      ],
+      "observed_mechanisms": [
+        "Промпт требует совпадения экземпляра, исполнения, области, единиц и физической базы до сравнения. Недостающий контекст порождает needs_data и запрос источников.",
+        "Подтверждённый локальный конфликт должен сохраняться при неопределённых последствиях или варианте исправления; запрет универсальных допусков указан в инструкции.",
+        "Расчётная трасса отдельно проверяется на наличие выражения, результата, единицы, базы и существующих ссылок; семантическая сопоставимость не доказана структурной проверкой."
+      ],
+      "tests_located": [
+        {
+          "path": "tests/test_calculation_consistency.py",
+          "sha256": "a6f2c9893a64a1b949ea9e24dcaffce93ed4877d11ac6e9e560ebef9694ecbd6"
+        },
+        {
+          "path": "tests/test_object_operation_passes.py",
+          "sha256": "0182f91f4767eddc7efd7e933a7e52c60db3e503b357b0e732b5f5b5d6d7802c"
+        }
+      ],
+      "test_scope": "Inspected test definitions cover calculation trace requirements and needs_data without new context; no new execution or semantic physics certification claimed.",
+      "live_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/KM_OGM20_geometry_assessment.json",
+          "sha256": "14f4c184719ed453ca7d793150bca3b3beb2bb2b88920368df94090413107963"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/ITP_gvs_graphic_window_assessment.json",
+          "sha256": "9455bbb51307a76c4cf8d5b01e7bd9d8d71d3c60fd8f30928ef86f63cacc5d40"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/ITP_gvs_pump_context_assessment.json",
+          "sha256": "50e889a18646e4b0296aa58e2394e3ea3cfa349c78bef777e69eb77e2d461bf0"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/ITP_H72_independent_mapping_search.json",
+          "sha256": "cef257cb007b56ebeaffffb8b4629fc84e76b369422db6fa2eea7a979dbb64c2"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AR_roof_recovered_question_assessment.json",
+          "sha256": "6adf46736f602b239b9c647384988274af058ea5c12049d4da6f223707b7253d"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AR_roof_reviewed_question_assessment.json",
+          "sha256": "5173664ad3899ed326ea73e749053b582c6dd4fecd68c79b7821f6ac4b739696"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/KM_handrail_claim_check_assessment.json",
+          "sha256": "7bb4eb71f493fe7a1d56baefb0332a1ff791a39633f19d5be07bf5cbd9c1ff4b"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/benchmark_errata.json",
+          "sha256": "2f020949deeefd91560b3344f3b55e53db956760ac1861c6d8da3bec19589ece"
+        }
+      ],
+      "control_interpretation": [
+        "ОГМ20: сохранён локальный конфликт отметок -2.350/-2.500 одной площадки; правильная отметка и физические последствия не установлены. Финальный выпуск этим контролем не подтверждён.",
+        "ИТП: подробные изображения позволили сопоставить Т411 2.73/5.89; расширенный контроль выделил суммы 4.30/9.02 и рабочую точку К15 4.31 без утверждения недостаточности насоса. Это не закрывает все части исторического случая.",
+        "ИТП H72: поиск не установил связь расчётной трубы 76x3.0 с конкретным участком спецификации 76x3.5. Нет доказанного дефекта толщины или гидравлической неисправности.",
+        "АР: более поздний AR_roof_reviewed_question_assessment фиксирует сохранение условного вопроса после проверки источников, adjudication и экспорта с 23 другими строками. Ранний провал передачи контекста не следует выдавать за конечный результат. 75/110/80/40 мм не объявляются установленными высотами опор.",
+        "Гнутый поручень: арифметика 2730+400+110=3240 не доказывает полную пространственную развёртку или лишние 400 мм. needs_data не является окончательным опровержением.",
+        "КМ F014: прежнее основание снятия противоречит выноске ОГМ5. Случай исключён из истинно/ложно и приёмки фильтра до разрешения идентичности; ошибочное снятие не подтверждает исходный дефект."
+      ],
+      "limits": [
+        "Контроли DEV с известным предметом; не независимое обнаружение и не переносимость.",
+        "Нет общего детерминированного доказательства физической сопоставимости; промпт и структурная квитанция различаются.",
+        "Полные составные контроли ИТП, финальное сохранение КМ и спорная идентичность остаются открыты."
+      ],
+      "complete": false
     }
   ],
   "not_yet_audited": [
-    "H05",
     "H06",
     "H07"
   ],
