@@ -1,0 +1,42 @@
+{
+  "finding_id": "F-081",
+  "status": "node_A_conflict_preserved_fire_rating_unproven_sheet_binding_checked",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_081/publication_projection.json",
+  "projection_sha256": "2be11a95d758d9e967b5eec4fb6dce1a8ec27cb1a068ba367e98b2a1d2cd35e6",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_256f5749f1274c84b54b8873170bdccc.png",
+      "block_id": "blk_256f5749f1274c84b54b8873170bdccc",
+      "sha256": "3a813bc3ba16aa30dea69307e3280aacb6b3b046a0760404547dd96da9831436",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "authoritative_md_spans": [
+    {
+      "block_id": "blk_77d8c6a52e15473eb0dda8aa27b37511",
+      "start": 349643,
+      "end": 352023,
+      "sha256": "912863fade8be5cb2d729c1ea85a7491ae1316ab4da5a64dc99187b7c980c0f0"
+    }
+  ],
+  "source_metadata_check": {
+    "start": 345140,
+    "end": 345740,
+    "sha256": "8756b614f3b5c003d93b6d597ff919bba952f771e4e4aba58f7c528f7ce266fd",
+    "role": "source_binding_only",
+    "observed_sheet": "54"
+  },
+  "checks": [
+    "Повторный просмотр: узел А в лотке не показывает трубу, соседний узел Б прямо подписывает металлическую гильзу. Замечание модели ограничено узлом А.",
+    "TEXT примечания 3 требует трубы; исключения для лотка нет. Согласование и условный риск сохранены вместе с техническим тезисом.",
+    "Недостаточная огнестойкость не объявлена доказанной и не превращена в отдельный вопрос.",
+    "Pending о листе 54 разрешён координатором по метаданным IMAGE и TEXT одного исходного MD. Автоматическое извлечение такой привязки моделью не доказано.",
+    "Повторяющиеся места группы AK_passage_node_A_note_3 должны объединяться с сохранением всех мест; этот отдельный результат не доказывает итоговую дедупликацию."
+  ],
+  "duplicate_group": "AK_passage_node_A_note_3",
+  "location_sheet": 54,
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
