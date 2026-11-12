@@ -1,0 +1,37 @@
+{
+  "status": "selection_and_repair_candidate_prepared_not_dispatched",
+  "control": "H06-P03",
+  "test_count": 18,
+  "tests_passed": 18,
+  "test_scope": "Real historical omission with simulated provider selection/repair; provenance and dispatch boundaries. No measured model performance.",
+  "prepared_binding": {
+    "model": "codex/gpt-6-astra",
+    "reasoning_effort": "high",
+    "maximum_new_calls": 2,
+    "automatic_retries": 0,
+    "known_source_control": true,
+    "prior_model_review_supplied": true,
+    "engineer_answers_supplied": false,
+    "expected_reference_or_control_answer_supplied": false,
+    "message_chars": 103489,
+    "image_count": 0,
+    "request_sha256": "3bd2d9417c7e52f8a97881b069dae7ddce874b3065f6a6dd4b13da11eea8a4e9",
+    "inputs": {
+      "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ar_rope_bundle_source_evidence/bundle.json": "c4bb8148325d165390cf1836eff5b33204426816cb448596ec77e337ae6517ce",
+      "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/adjudication/candidate.json": "c4139312b92ca49a092de1f0aa20b86e94b82b38d5fe2b6e08fcc7d666bc66c5",
+      "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/run_ar_reference_retention_candidate.py": "5499172608cfc6402ae73eae88ed01f4dbbcb0ae729e3840c465663430f7ee3d",
+      "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/reference_retention_workflow.py": "2cd35b855a1e446fe0dd33ebf051cd48f7680710e1d4a1f87bf9c37f104b9e44",
+      "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/reference_retention_candidate.py": "ca04459082800a70515efc376a6dca97e796f077c89f29c7584a1b6faca29977"
+    }
+  },
+  "next_action": "After current frozen comparison finishes, execute run_ar_reference_retention_candidate --execute; assess selected references and repaired wording against source, then pass successful candidate through semantic admission and final export with 24 prior findings preserved.",
+  "stage4_control_closed": false,
+  "production_acceptance": false,
+  "runtime_integrated": false,
+  "live_trial_changed": false,
+  "code_bindings": {
+    "reference_retention_workflow.py": "2cd35b855a1e446fe0dd33ebf051cd48f7680710e1d4a1f87bf9c37f104b9e44",
+    "run_ar_reference_retention_candidate.py": "5499172608cfc6402ae73eae88ed01f4dbbcb0ae729e3840c465663430f7ee3d",
+    "test_reference_retention_workflow.py": "0998183d0f3a51427bf8d4f30f668d7010b024f30d2bf04d91248bcacb43691f"
+  }
+}
