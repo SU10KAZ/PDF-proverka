@@ -283,12 +283,31 @@
     },
     {
       "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-037",
+        "F-061"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/mass_register_coverage_gap.json",
+          "sha256": "cf2a845a834157317950d5079e12777a4dedaa921eba6b0d360b2fe938392a1e"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/masses_bounded_review.json",
+          "sha256": "5ce64bb8d107d8fed175b9b05be6845ca784c94770fdc41030d5fe9b7370b02c"
+        }
+      ],
+      "reason": "Five of six equipment comparisons retained at least in part; K12mass29/60/64 absent, K9specification94 missing. Do not credit partial object list as six-item three-source register.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-037": "technical_findings",
+          "F-061": "technical_findings"
+        }
+      }
     },
     {
       "target_id": "B-ITP-F-019:7e4bf6b3afd2b736df6c",

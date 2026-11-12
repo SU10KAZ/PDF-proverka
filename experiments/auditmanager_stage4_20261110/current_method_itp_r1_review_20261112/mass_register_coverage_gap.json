@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    },
+    "graphic": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+      "sha256": "054e48c413554acbe425a0a73a982a4f39c215d2b53aeb5877ccd77d8d686713"
+    }
+  },
+  "retained": {
+    "F-037": [
+      "K1 three-source mass conflict",
+      "K14 three-source mass conflict"
+    ],
+    "F-061": [
+      "K9 explication/technical sheet98/90",
+      "K10 explication/technical sheet87/67",
+      "K11 explication/technical sheet48/57"
+    ]
+  },
+  "missing": [
+    "K12 comparison29/60/64kg not retained as a mass finding.",
+    "K9 specification94kg side not retained in F061; correct two-source comparison is not complete three-source register."
+  ],
+  "K12_source_quotes": [
+    {
+      "line": 362,
+      "quote": "| K12 | IL 40/220-1,5/4-R | Насос циркуляционный системы отопления ДОО, Q=4,42 м³/ч, H=16,98 м.в.см., 3x380В, N=0,55 кВт | 2 | 29,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |"
+    },
+    {
+      "line": 1073,
+      "quote": "| 12 | Насос циркуляции системы отопления ДОО G=4,42 м³/ч, H=16,98 м.бд.см, N=1,5 кВт | IL 40/220-1.5/4 | 2786053 | ООО «ВИЛО РУС» | шт | 2 | 60 | 1 рабочий, 1 резервный |"
+    },
+    {
+      "line": 4062,
+      "quote": "| Вес | 64 кг |"
+    }
+  ],
+  "publication_limit": {
+    "id": "F-061",
+    "problem": "[Объединено 3 замечаний] Масса насоса К9 не согласована между экспликацией и техническим листом.",
+    "solution": "Уточнить состав массы К9, включая учёт частотного преобразователя и дополнительных элементов, и согласовать массу единицы в экспликации с техническими данными принятой комплектации.",
+    "observation": "Body preserves K9/K10/K11; main title and action name onlyK9. Do not count K10/K11 as absent merely from title."
+  },
+  "trace_status": "First navigation search found no dictionary-level K12+mass candidate in five early artifacts; this narrow search is not proof of never detected. Full stage trace remains required.",
+  "runtime_changed": false,
+  "model_calls": 0
+}
