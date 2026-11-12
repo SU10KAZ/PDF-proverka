@@ -1,0 +1,24 @@
+{
+  "finding_id": "F-026",
+  "status": "identifier_conflicts_preserved_extra_questions_and_profile_disagreement",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_026/publication_projection.json",
+  "projection_sha256": "5a8ffb226c2ab5852c8e353697919bf1892227b3f142f695b7a704e4bee0c80f",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+  "source_review_sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea",
+  "checks": [
+    "35341 repeated for tray and tags, BSD2120 repeated for hanger and pipe; all literal conflicts preserved.",
+    "Different cables remain distinct despite repeated position 21.10.",
+    "No replacement catalogue numbers invented; no actual procurement error claimed.",
+    "Recommendation and risk are separate question parts, increasing presentation burden without independent engineer action.",
+    "Position duplication moved to questions unlike frozen reference technical routing; factual coverage retained, profile adjudication remains explicit."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "profile_reference": {
+    "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+    "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32",
+    "reference_changed": false,
+    "historical_engineer_acceptance_established": false
+  }
+}

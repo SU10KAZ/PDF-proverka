@@ -1,0 +1,36 @@
+{
+  "finding_id": "F-025",
+  "status": "source_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_025/publication_projection.json",
+  "projection_sha256": "32f45fbf2d8330c8c1ed230b07595a6d00a9973ffb5c45106db8768cc765a24d",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+  "source_review_sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea",
+  "checks": [
+    "BSD4120 in all three roof tables versus BSD2120/BSD-21 in specification retained.",
+    "All three graphics show generic hanger, approximate 400 height and 570x460 base; no model designation or installed geometry certified.",
+    "Recommendation and conditional risk stay with technical conflict; no arbitrary replacement."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_98835baf7fed4bf1934dc55088895af9.png",
+      "sha256": "e70ffed5f0ab39b6c0bec139a21a1758c2d20ce9aeec0e0c30c71e5208bc5f72",
+      "directly_viewed": true,
+      "detail": "original"
+    },
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_6e1b1e0631904e1c8330bf2c4f47744c.png",
+      "sha256": "4584454d0b6f655ff0797a4c7526f42439f19861f5c5607f9b141904d98a4481",
+      "directly_viewed": true,
+      "detail": "original"
+    },
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_978fa763ed7e4a39977b35b866485e2e.png",
+      "sha256": "dd1639fcbd7fab08dc46cb0b59a93fe616bd296a1abbf52a76491d68383ef783",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ]
+}
