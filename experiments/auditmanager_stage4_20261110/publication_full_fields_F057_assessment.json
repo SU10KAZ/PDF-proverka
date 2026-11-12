@@ -1,0 +1,22 @@
+{
+  "finding_id": "F-057",
+  "status": "signal_direction_question_preserved_recommendation_split",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_057/publication_projection.json",
+  "projection_sha256": "f49942f4fff662ac79b96aff7a5ffe03e6ea096170eeb16ed021b645aeeffba2",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+      "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "На схеме П6.1.4 линия 17 относится к нагревателю, в матрице DI отмечен, DO пуст. Название пуск/стоп не определяет направление сигнала.",
+    "Повторно пересчитаны DO: 2,7,9,12,18 — 5, печатный итог верен. Не установлена необходимость добавлять выход.",
+    "Вопрос о назначении сохранён без утверждения фактической неисправности. Вторую запись-рекомендацию следует присоединить к первому вопросу."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

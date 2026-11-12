@@ -1,10 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 56,
+  "reviewed_distinct_findings": 58,
   "unreviewed_finding_ids": [
-    "F-057",
-    "F-058",
     "F-059",
     "F-060",
     "F-061",
@@ -33,7 +31,7 @@
     "F-084",
     "F-085"
   ],
-  "batch_successful_responses": 57,
+  "batch_successful_responses": 58,
   "batch_status_snapshot": "running",
   "process_liveness_not_inferred_from_status_file": true,
   "selected_followups": [
@@ -990,6 +988,40 @@
         "pending": 1,
         "withdrawn": 0,
         "history_only": 0
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-057",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F057_assessment.json",
+      "assessment_sha256": "363238727d979550290f115232c93c04ec4ddf20c6b03af5ac19e7fcf37d2327",
+      "status": "signal_direction_question_preserved_recommendation_split",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_057/publication_projection.json",
+      "projection_sha256": "f49942f4fff662ac79b96aff7a5ffe03e6ea096170eeb16ed021b645aeeffba2",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 0,
+        "questions": 2,
+        "pending": 2,
+        "withdrawn": 0,
+        "history_only": 0
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-058",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F058_assessment.json",
+      "assessment_sha256": "6c0176cc463ef77dc3f04bc42a55be3f31e72492af9696ee26e27e59281deef6",
+      "status": "input_dot_count_conflict_preserved",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_058/publication_projection.json",
+      "projection_sha256": "38ff2dbbe8b3c1ce01c3abc024ba0b4259e98b9644c57680256952c194104a13",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 0,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 1
       },
       "engineer_accepted": false,
       "production_accepted": false

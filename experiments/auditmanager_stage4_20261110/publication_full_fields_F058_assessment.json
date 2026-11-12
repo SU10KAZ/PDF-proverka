@@ -1,0 +1,22 @@
+{
+  "finding_id": "F-058",
+  "status": "input_dot_count_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_058/publication_projection.json",
+  "projection_sha256": "38ff2dbbe8b3c1ce01c3abc024ba0b4259e98b9644c57680256952c194104a13",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+      "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Повторно пересчитаны DI: 3,4,5,6,8,10,11,12,15,16,17 и Пожар от АПС — 12 при итоге 10.",
+    "Не повторён прежний неполный подсчёт 11/10: ненумерованный вход Пожар учтён.",
+    "Рекомендация и условный риск объединены с технической находкой. Фактический недостаток входов контроллера не утверждается."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
