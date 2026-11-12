@@ -1,0 +1,9 @@
+{
+  "source_candidate_sha256": "b10f312f19cdec0f0ac548e286f95657c1620e9eb0c9c6c7432d91d8a381a237",
+  "request_sha256": "e54d4700e699488e0c9717861075487d709eeb4e9108774f9040a420f1b40f82",
+  "model": "codex/gpt-6-astra",
+  "history_or_engineer_answers_supplied": false,
+  "previous_adjudication_supplied": false,
+  "automatic_retries": 0,
+  "reason": "Previous decision used free prose as report severity."
+}

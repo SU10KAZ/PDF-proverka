@@ -1,0 +1,97 @@
+{
+  "status": "automatic_admission_and_export_verified_profile_disagreement_retained",
+  "baseline": {
+    "path": "/tmp/auditmanager_eom_f032_output_20261111/03_findings.json",
+    "sha256": "0fbd8959a9c0be7e25acc0bddc2d82cf04a7c1a5747e5f2e5bbc1df99df4845f"
+  },
+  "md": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/document.md",
+    "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+  },
+  "records": [
+    {
+      "finding_id": "F-001",
+      "receipt": {
+        "finding_id": "F-001",
+        "status": "applied",
+        "action": "revise"
+      },
+      "actual_section": "technical_findings",
+      "severity": "СУЩЕСТВЕННОЕ",
+      "manual_override": false,
+      "model_response_sha256": "6527567bbe164d1a9660102105afc628f950b82c360402261905c9fcb403d634"
+    },
+    {
+      "finding_id": "F-030",
+      "receipt": {
+        "finding_id": "F-030",
+        "status": "applied",
+        "action": "revise"
+      },
+      "actual_section": "technical_findings",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "manual_override": false,
+      "model_response_sha256": "4996a34dc99d82b2beec44c4f7c33dd6a5a336ef538b8d9c72b525aae886f2d7"
+    }
+  ],
+  "other_findings_unchanged": 49,
+  "unique_excel_rows": 51,
+  "final_release_check_completed": false,
+  "production_acceptance": false,
+  "limits": [
+    "Known-source development control, not independent discovery.",
+    "Model preserves technical routing, unlike prior local questions override; neither is declared engineering truth.",
+    "No equipment fault, wrong supply or normative breach is established.",
+    "Severity and section agreement are not accepted from model self-assessment."
+  ],
+  "files": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/03_findings.json",
+      "sha256": "c07f5fed477b6c609b8b51b35b08721d281dde69564894c562a31897cdf0a22a"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/F-001/attempt.json",
+      "sha256": "b37dd94ab5192f67133da0327cfcd7db5613677b7650435571518a14c7da8d34"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/F-001/binding.json",
+      "sha256": "cec0100c747cc42688a5b762d3789f4c16e2a1d8cd4f9d8d58307d54a9df472b"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/F-001/candidate.json",
+      "sha256": "d6a046904853109a08b14ab2677c965e2b1f427ed8711909ffc5d12729b5e31f"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/F-001/request.json",
+      "sha256": "7b32941fb1cb0ea6f22193ed14350f7ca6b90e5f1a08ec05c8dc91157d6c6172"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/F-001/result.json",
+      "sha256": "6527567bbe164d1a9660102105afc628f950b82c360402261905c9fcb403d634"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/F-030/attempt.json",
+      "sha256": "b37dd94ab5192f67133da0327cfcd7db5613677b7650435571518a14c7da8d34"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/F-030/binding.json",
+      "sha256": "1f63a21a7da803d92ffd63c7d6687ea36be1b195a3b65ff73444a83a05bf6f6e"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/F-030/candidate.json",
+      "sha256": "dd77a8ed5e0e5c0eed0ea9fe862e3ce55acb06198d9c42d9143bc03829f08aec"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/F-030/request.json",
+      "sha256": "b1a2fa75baf29f3d44b9c7930e47952ec10b69f363443e0986ced52b6ff9593e"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/F-030/result.json",
+      "sha256": "4996a34dc99d82b2beec44c4f7c33dd6a5a336ef538b8d9c72b525aae886f2d7"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/report.xlsx",
+      "sha256": "edcd4e05f5e4a83f272beef17149c0c4be43802a6177005885fea7036eface5e"
+    }
+  ]
+}

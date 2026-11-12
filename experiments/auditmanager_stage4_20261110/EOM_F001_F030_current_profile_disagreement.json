@@ -1,0 +1,37 @@
+{
+  "status": "automatic_routing_disagrees_with_prior_local_profile",
+  "cases": [
+    {
+      "candidate_id": "B-EOM-F-001",
+      "original_adjudication": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F001_cable_description.json",
+        "sha256": "905f1f26daecb1841c99b8c7c2a70103cf60d545a0bb95358d82e9267004b5e5"
+      },
+      "original_output_section": "Вопросы и уточнения",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+      "current_profile": "technical_findings",
+      "current_source": "eom_current_profile_evidence/F-001/candidate.json",
+      "evaluation": "Retain original label and report disagreement; do not tune the runtime to the label or call the model result engineer acceptance. Score factual preservation and unsupported consequences independently. Any later evaluator revision must be frozen before comparison and show sensitivity to both section labels."
+    },
+    {
+      "candidate_id": "B-EOM-F-030",
+      "original_adjudication": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F030_CT_minimum_substitutions.json",
+        "sha256": "537dee4a137c78461c807d74d1def9412b209d680414692bc6b0dbd638082946"
+      },
+      "original_output_section": "Вопросы и уточнения",
+      "engineer_decision": "Отдельное решение инженера по кандидату B-EOM-F-030 не установлено.",
+      "current_profile": "technical_findings",
+      "current_source": "eom_current_profile_evidence/F-030/candidate.json",
+      "evaluation": "Retain original label and report disagreement; do not tune the runtime to the label or call the model result engineer acceptance. Score factual preservation and unsupported consequences independently. Any later evaluator revision must be frozen before comparison and show sensitivity to both section labels."
+    }
+  ],
+  "evidence": {
+    "path": "experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/assessment.json",
+    "sha256": "2f9f1430fc0e67e855efb2e5d92fc0df101be7a5a4fdbcb0b8cab73d51265292"
+  },
+  "frozen_benchmark_modified": false,
+  "runtime_profile_modified": false,
+  "new_engineer_truth_claimed": false,
+  "production_acceptance": false
+}

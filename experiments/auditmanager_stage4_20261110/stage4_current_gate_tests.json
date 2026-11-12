@@ -1,0 +1,193 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_calculation_consistency.py",
+    "tests/test_paired_method_profiles.py",
+    "tests/test_object_identity_candidates.py",
+    "tests/test_requirement_checks.py",
+    "tests/test_object_operation_followup.py",
+    "tests/test_subclaim_coverage.py",
+    "tests/test_recovery_context.py",
+    "tests/test_publication_reconciliation.py",
+    "tests/test_object_balance.py",
+    "tests/test_candidate_recovery.py",
+    "tests/test_object_registry_integrity.py",
+    "tests/test_text_analysis_md_prescan.py",
+    "tests/test_object_registry.py",
+    "tests/test_source_review_context.py",
+    "tests/test_object_operation_passes.py",
+    "tests/test_quantity_checks.py",
+    "tests/test_source_review_admission.py",
+    "tests/test_source_review_metadata.py",
+    "tests/test_source_review_final_check.py",
+    "tests/test_source_review_results.py"
+  ],
+  "exit_code": 0,
+  "output": "/opt/py312/lib/python3.12/site-packages/pytest_asyncio/plugin.py:208: PytestDeprecationWarning: The configuration option \"asyncio_default_fixture_loop_scope\" is unset.\nThe event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: \"function\", \"class\", \"module\", \"package\", \"session\"\n\n  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))\n........................................................................ [ 37%]\n........................................................................ [ 74%]\n.................................................                        [100%]\n193 passed in 5.71s\n",
+  "files": [
+    {
+      "path": "backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py",
+      "sha256": "cea617cb89944cbec5a11ca8363d01816aa49121d68c5d7a1f183b8c1f61f189"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/publication_reconciliation.py",
+      "sha256": "4f443fb4278c3ab39fa7b5f5591e2edcafdc81441efca1c8d8e4819a91ae90fb"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+      "sha256": "cf1fa5ec01ca73708036ad41cfe7f6a82fd8f3e25a6360b277045cfb2b6e7be3"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/subclaim_coverage.py",
+      "sha256": "26938f09a4f5ef3a2a7c979121eaf17ab03b14fa96e4573ab85ccdd03b65ce36"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_verify/source_review_admission.py",
+      "sha256": "b434304a75faa8212e6155b409053e7299cf387df88b9743d313552c553b5e70"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_verify/source_review_context.py",
+      "sha256": "a97af5a65b3fcec5bfeb7ac3b6c3a52c90d06a99c31021ef6d4eaa9f4623102f"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/calculation_consistency.py",
+      "sha256": "bfcafd19b161d812ae2e88b7ac934eb930b8441f86ad974ec9c3d3253fe651d9"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/candidate_recovery.py",
+      "sha256": "174e35616568cf815fe5431aeb16e7fa4263bfe153df1f16cffe1bf8b3a7f437"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/object_operation_followup.py",
+      "sha256": "cb56cfd86e4c493bb803bcd2261a06dcf720ae2e08646ad8fbfda95173fc21a3"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/object_operation_passes.py",
+      "sha256": "a6b866da065e7db1a63bc460eff0abe83c1fe412d8a3f0edadafec3bb52bac8c"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/prompt_builder.py",
+      "sha256": "acf20ecc404a13d36cb6389056bccf1eb276b8c30a976886e734b1e280085496"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/quantity_provenance.py",
+      "sha256": "9850e27d3d0df110d413d67bc713ff761abffbea28077e69728b718cb8b8ea21"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/recovery_context.py",
+      "sha256": "841c10967cf078349cad8814f329afa47a6b5bb986fed3ddb6ad67325440d440"
+    },
+    {
+      "path": "backend/app/pipeline/stages/text_analysis/md_prescan.py",
+      "sha256": "b9f9e7b422698579f069879d2c109a5dc694f1fa5aec6b585b1fdd008990031b"
+    },
+    {
+      "path": "backend/app/pipeline/stages/text_analysis/object_balance.py",
+      "sha256": "16cd08043fb7bc4254af36cfea08d8ceb08d5025253793be10b2e2def3624807"
+    },
+    {
+      "path": "backend/app/pipeline/stages/text_analysis/object_identity_candidates.py",
+      "sha256": "0f3b4dab71c8245513330d718b8508faa1944d584393a92c0d1427a61bf44eb4"
+    },
+    {
+      "path": "backend/app/pipeline/stages/text_analysis/object_registry.py",
+      "sha256": "dd1791da8fa1404dcd06db43e929a9c8ddf04bde401729e71dbb06bdb2b4a148"
+    },
+    {
+      "path": "backend/app/pipeline/stages/text_analysis/quantity_checks.py",
+      "sha256": "a6d0fafc430866e0ea53f9877bb1b43fd576584aedcf4be2fdfaf92ffe3fa21f"
+    },
+    {
+      "path": "backend/app/pipeline/stages/text_analysis/requirement_checks.py",
+      "sha256": "8f2b2c06ee41e868037ec4c427f6403400e949d22bbd100da342b7ab0394d1da"
+    },
+    {
+      "path": "backend/app/pipeline/stages/text_analysis/runner.py",
+      "sha256": "3f9b71c25de54a18d92a8e673b55baf514f895c97087a6fd9eb5bc92edcb9694"
+    },
+    {
+      "path": "tests/test_calculation_consistency.py",
+      "sha256": "a6f2c9893a64a1b949ea9e24dcaffce93ed4877d11ac6e9e560ebef9694ecbd6"
+    },
+    {
+      "path": "tests/test_candidate_recovery.py",
+      "sha256": "fd402ebaddfb9ba9643f775148f6dd32776ca4eafb989cc1a185cd88e74ca213"
+    },
+    {
+      "path": "tests/test_object_balance.py",
+      "sha256": "db2b177fdab8a2af1bfa8160ef23a53827ef41db04b7cb82f03609b6ed885302"
+    },
+    {
+      "path": "tests/test_object_identity_candidates.py",
+      "sha256": "647f7e43e469d1ebaa6f7880e59decad967d2fdcc1285810715a0ede059bfa81"
+    },
+    {
+      "path": "tests/test_object_operation_followup.py",
+      "sha256": "ec54cc8e1f4596d54afc7709768cb77d3b0d8ce348aab80eec8e15a318c2a9f5"
+    },
+    {
+      "path": "tests/test_object_operation_passes.py",
+      "sha256": "0182f91f4767eddc7efd7e933a7e52c60db3e503b357b0e732b5f5b5d6d7802c"
+    },
+    {
+      "path": "tests/test_object_registry.py",
+      "sha256": "591d2aefd25528a538802fdc7f595c3390b4daa5234e26db651889b4ebe8ecf6"
+    },
+    {
+      "path": "tests/test_object_registry_integrity.py",
+      "sha256": "75226949462ffa2ee51fded9ee7f953168b083ebf5f778fafcdf085588a55c74"
+    },
+    {
+      "path": "tests/test_paired_method_profiles.py",
+      "sha256": "a97a5ed3d40d4db5c9c22327ea8afc58e8e8aaba56c4882daedb657e08c21871"
+    },
+    {
+      "path": "tests/test_publication_reconciliation.py",
+      "sha256": "73fd5e5ccfaf5b6ba582f1e164b340b64cbe396b636e5ccee2a83fe41225f5ae"
+    },
+    {
+      "path": "tests/test_quantity_checks.py",
+      "sha256": "7e792ede47d475fe04e9b4e1cad2157bdbc39a2b7424bf639528626f7ba3c3d1"
+    },
+    {
+      "path": "tests/test_recovery_context.py",
+      "sha256": "4d8bcfb3dc839e72839aa4dcdd59978eb1433428b50ff28af823d04733a5cc63"
+    },
+    {
+      "path": "tests/test_requirement_checks.py",
+      "sha256": "176bd1e9a75176c340a3a68f9cabf5bd9f714d7d3d133fb58a6199513e07cc0e"
+    },
+    {
+      "path": "tests/test_source_review_admission.py",
+      "sha256": "57ae70520f462efdf3eb66eb10482fa123fb85aa1e4b620e7623815d3ec43017"
+    },
+    {
+      "path": "tests/test_source_review_context.py",
+      "sha256": "baf5ef1ff0a3c145495a349db99bdf5bbb3cc007c20d181368cfc9a6a8db1d7d"
+    },
+    {
+      "path": "tests/test_source_review_final_check.py",
+      "sha256": "7fab9f400170026be71ade28859b0df8646b0ba7eccb3c15e999aa7c2502b4bf"
+    },
+    {
+      "path": "tests/test_source_review_metadata.py",
+      "sha256": "f0b26e6349e7bdd2ecf85d04d14b3d59cc8d6f4099061835c969f120d75b52be"
+    },
+    {
+      "path": "tests/test_source_review_results.py",
+      "sha256": "42ff26d15eb90f4ee9b6c4ac8a8ce884fbd43acb246ff59e77747314edc1558c"
+    },
+    {
+      "path": "tests/test_subclaim_coverage.py",
+      "sha256": "1a7bd8d3fe63c2493787513ed5456861bdb8f492b0888c1307f6506c92e80cce"
+    },
+    {
+      "path": "tests/test_text_analysis_md_prescan.py",
+      "sha256": "f3203851888db2dbe1bde0adc75356f311e976fffd9e81114afec4388255f1ad"
+    }
+  ],
+  "scope": "193 implementation/contract regression tests; not semantic quality, whole-project completeness, or production acceptance."
+}
