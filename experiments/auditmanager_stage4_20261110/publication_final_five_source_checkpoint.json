@@ -1,0 +1,109 @@
+{
+  "status": "source_precheck_only_no_publication_acceptance",
+  "records": [
+    {
+      "finding_id": "F-081",
+      "source_ledger": "experiments/auditmanager_stage4_20261110/runtime_AK_passage_nodes_source_review_20261112.json",
+      "ledger_sha256": "a1a27817cf754e076e547697c08a84a1c1a12f9d44ec9b08f5fdc692661335ea",
+      "graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_256f5749f1274c84b54b8873170bdccc.png",
+          "block_id": "blk_256f5749f1274c84b54b8873170bdccc",
+          "sha256": "3a813bc3ba16aa30dea69307e3280aacb6b3b046a0760404547dd96da9831436",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "source_review": "На листе 54 узел А непосредственно показывает групповой кабельный проход в лотке, пену и герметик FIREFIX; металлическая труба или гильза не обозначена. Авторитетное примечание 3 требует металлические трубы для проходов через стены и перекрытия без исключения для узла А. Несогласованность проектных указаний подтверждена. Это не доказательство недостаточной огнестойкости: сертификат, фактическая проходка и требуемый предел не проверялись; примечание 12 отсылает к КР. Соседний узел Б явно содержит подпись «Закладная гильза (труба металлическая)»; перенос отсутствия трубы с узла А на весь лист был бы ложным.",
+      "publication_response_reviewed": false
+    },
+    {
+      "finding_id": "F-082",
+      "source_ledger": "experiments/auditmanager_stage4_20261110/runtime_AK_final_plan_details_source_review_20261112.json",
+      "ledger_sha256": "de3b35dde00c390db66e5a90b18c869150f7659cc8533199f3b9a1931ba1cb9d",
+      "graphics": [
+        {
+          "path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/detail_tile_0.png",
+          "sha256": "196e110a08c546487d43b4181e2b14f28f142c935e73ef998e1c4a58da5bf5b8",
+          "block_id": "blk_0792816c162c469289b461843d2c307b",
+          "directly_viewed": true,
+          "detail": "original",
+          "manifest_path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/manifest.json",
+          "manifest_sha256": "7c5e918d277e164cb72075ffbc7b4dcdb69eb042c790192a96c99328a1f268cc"
+        }
+      ],
+      "source_review": "На непосредственно просмотренном фрагменте корпуса1 шесть отдельных пар завеса–пульт подУ1.1–У1.6 и пять подУ2.1,У2.2,У3,У4,У5. Все11пультов подписаныПУ-У1.1. Подсчёт выполнен по одному фрагменту без сложения перекрывающихся деталей. Легенда определяетПУ-Уп как пульт,но не устанавливает ответственностьАК2-ПА за каждую завесу корпуса1. Повтор обозначения подтверждён; глобальная уникальность и принадлежность комплекту не доказаны. Оставить вопрос об адресации и ответственном комплекте. Не выдавать11отдельных технических нарушений. УпоминаниеF-036 и служебныхparent:... относится к внутренним идентификаторам и должно быть исключено из пользовательского описания.",
+      "publication_response_reviewed": false
+    },
+    {
+      "finding_id": "F-083",
+      "source_ledger": "experiments/auditmanager_stage4_20261110/runtime_G003_scope_source_review.json",
+      "ledger_sha256": "946d70947f88c902541e5f7115b61774c38dd9a4e6cd28b217e72b5d6953aaaa",
+      "graphics": [
+        {
+          "block_id": "blk_0792816c162c469289b461843d2c307b",
+          "page_index": 8,
+          "pdf_rotation": 0,
+          "clip_rotated_page_points": [
+            3483.373331174254,
+            1132.2883895397185,
+            4967.785542502999,
+            2366.4509620666504
+          ],
+          "grid_row": 1,
+          "grid_column": 3,
+          "path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/detail_tile_8.png",
+          "width": 1901,
+          "height": 1580,
+          "sha256": "cd01fb581da93f8dae790715b593d398809221e3b5436eb6ea3ca5eeb673058a"
+        },
+        {
+          "block_id": "blk_0792816c162c469289b461843d2c307b",
+          "page_index": 8,
+          "pdf_rotation": 0,
+          "clip_rotated_page_points": [
+            4670.90310023725,
+            1132.2883895397185,
+            6006.874090433121,
+            2366.4509620666504
+          ],
+          "grid_row": 1,
+          "grid_column": 4,
+          "path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/detail_tile_9.png",
+          "width": 1711,
+          "height": 1580,
+          "sha256": "d71e372e1b9aca64a85fb03d5062f1de08d2f61ed0520dd2bb9c0aece72a778c"
+        }
+      ],
+      "source_review": "Повторно просмотрены три отдельные рамки помещений 5.Т.1, 6.Т.5 и 6.Т.9; в каждой К5.3/К5.4 и отдельный БУРР. Связи с АК-К6 книгой 1 и диспетчеризацией не устанавливают глобальную уникальность короткой марки. Технический конфликт адресов по этим изображениям не подтверждён.",
+      "publication_response_reviewed": false
+    },
+    {
+      "finding_id": "F-084",
+      "source_ledger": "experiments/auditmanager_stage4_20261110/runtime_AK_supply_scope_and_cabinet_identity_review_20261112.json",
+      "ledger_sha256": "f8d7706edb65f26589b8aa4d2a40c7cf291ed49f8a09ba1479560b43c4c53806",
+      "graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+          "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+          "sha256": "dd058661889a4dc4848d14c89c82942d241702c6c954001e2acef9f5a28b3851",
+          "directly_viewed": true,
+          "detail": "original"
+        },
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_400a32e7aac048e6a9d6da65c598995f.png",
+          "block_id": "blk_400a32e7aac048e6a9d6da65c598995f",
+          "sha256": "9f1c56a09670dc3bf5436ad8a321abef871308f8be8292c116e32b30cad1b5bb",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "source_review": "На функциональной схеме непосредственно прочитано ШУ-ПД4.14; система рядом обозначена ПД4.1.4. На схеме подключений шкаф ЩУ-ПД4.1.4, к нему приходит ТЕ1 кабелем ПД4.1.4-1. Авторитетная строка КЖ связывает ТЕ1 (ПД 4.1.4) с ЩУ-ПД4.1.4 той же маркой кабеля. Расхождение обозначений одного шкафа подтверждено, ошибочное физическое подключение не доказано. Два упоминания F-036 в добавлениях — устаревшие внутренние ссылки: опубликованный F-036 относится к повтору SC UZ1, а не этому шкафу. При редактуре убрать или исправить ссылки, сохранив подтверждённое замечание.",
+      "publication_response_reviewed": false
+    }
+  ],
+  "directly_viewed_in_this_continuation": true,
+  "source_text_authority": "Existing MD TEXT retained; GRAPHIC checked visually; no PDF text reextraction.",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
