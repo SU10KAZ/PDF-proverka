@@ -1,0 +1,399 @@
+{
+  "status": "diagnostic_not_semantic_adjudication",
+  "findings": 88,
+  "missing_visible_references": [
+    {
+      "finding_id": "F-009",
+      "field": "description",
+      "reference": "F-091"
+    },
+    {
+      "finding_id": "F-085",
+      "field": "description",
+      "reference": "F-091"
+    },
+    {
+      "finding_id": "F-087",
+      "field": "description",
+      "reference": "F-093"
+    }
+  ],
+  "historical_target_mentions": [
+    {
+      "finding_id": "F-044",
+      "addendum_pointer": "/findings/43/recovery_addenda/2",
+      "historical_target_id": "F-045",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-044",
+      "addendum_pointer": "/findings/43/recovery_addenda/3",
+      "historical_target_id": "F-045",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-047",
+      "addendum_pointer": "/findings/46/recovery_addenda/0",
+      "historical_target_id": "F-048",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-047",
+      "addendum_pointer": "/findings/46/recovery_addenda/1",
+      "historical_target_id": "F-048",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-050",
+      "addendum_pointer": "/findings/49/recovery_addenda/0",
+      "historical_target_id": "F-052",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-050",
+      "addendum_pointer": "/findings/49/recovery_addenda/1",
+      "historical_target_id": "F-052",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-051",
+      "addendum_pointer": "/findings/50/recovery_addenda/1",
+      "historical_target_id": "F-053",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-052",
+      "addendum_pointer": "/findings/51/recovery_addenda/1",
+      "historical_target_id": "F-054",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-053",
+      "addendum_pointer": "/findings/52/recovery_addenda/1",
+      "historical_target_id": "F-055",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-054",
+      "addendum_pointer": "/findings/53/recovery_addenda/0",
+      "historical_target_id": "F-056",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-054",
+      "addendum_pointer": "/findings/53/recovery_addenda/1",
+      "historical_target_id": "F-056",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-055",
+      "addendum_pointer": "/findings/54/recovery_addenda/1",
+      "historical_target_id": "F-057",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-057",
+      "addendum_pointer": "/findings/56/recovery_addenda/1",
+      "historical_target_id": "F-061",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-060",
+      "addendum_pointer": "/findings/59/recovery_addenda/1",
+      "historical_target_id": "F-065",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-061",
+      "addendum_pointer": "/findings/60/recovery_addenda/0",
+      "historical_target_id": "F-066",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-061",
+      "addendum_pointer": "/findings/60/recovery_addenda/2",
+      "historical_target_id": "F-066",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-061",
+      "addendum_pointer": "/findings/60/recovery_addenda/3",
+      "historical_target_id": "F-066",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-062",
+      "addendum_pointer": "/findings/61/recovery_addenda/0",
+      "historical_target_id": "F-067",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-062",
+      "addendum_pointer": "/findings/61/recovery_addenda/1",
+      "historical_target_id": "F-067",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-063",
+      "addendum_pointer": "/findings/62/recovery_addenda/0",
+      "historical_target_id": "F-068",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-064",
+      "addendum_pointer": "/findings/63/recovery_addenda/0",
+      "historical_target_id": "F-069",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-065",
+      "addendum_pointer": "/findings/64/recovery_addenda/0",
+      "historical_target_id": "F-070",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-065",
+      "addendum_pointer": "/findings/64/recovery_addenda/1",
+      "historical_target_id": "F-070",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-066",
+      "addendum_pointer": "/findings/65/recovery_addenda/0",
+      "historical_target_id": "F-071",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-066",
+      "addendum_pointer": "/findings/65/recovery_addenda/1",
+      "historical_target_id": "F-071",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-067",
+      "addendum_pointer": "/findings/66/recovery_addenda/0",
+      "historical_target_id": "F-072",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-067",
+      "addendum_pointer": "/findings/66/recovery_addenda/1",
+      "historical_target_id": "F-072",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/0",
+      "historical_target_id": "F-073",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/1",
+      "historical_target_id": "F-073",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/2",
+      "historical_target_id": "F-073",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/3",
+      "historical_target_id": "F-073",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/4",
+      "historical_target_id": "F-073",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/5",
+      "historical_target_id": "F-073",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/6",
+      "historical_target_id": "F-073",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/7",
+      "historical_target_id": "F-073",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-071",
+      "addendum_pointer": "/findings/70/recovery_addenda/0",
+      "historical_target_id": "F-076",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-071",
+      "addendum_pointer": "/findings/70/recovery_addenda/1",
+      "historical_target_id": "F-076",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-073",
+      "addendum_pointer": "/findings/72/recovery_addenda/0",
+      "historical_target_id": "F-078",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-073",
+      "addendum_pointer": "/findings/72/recovery_addenda/1",
+      "historical_target_id": "F-078",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": true
+    },
+    {
+      "finding_id": "F-087",
+      "addendum_pointer": "/findings/86/recovery_addenda/0",
+      "historical_target_id": "F-093",
+      "visible_fields": [
+        "description"
+      ],
+      "current_reference_exists": false
+    }
+  ],
+  "affected_historical_findings": 21,
+  "limits": [
+    "Missing IDs may deliberately refer to another report; review context.",
+    "Historical target mentions require lineage review before correction.",
+    "No global ID substitution, quality score or project defect count.",
+    "Caller must verify a terminal sealed output before supplying findings."
+  ],
+  "source": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+  },
+  "prior_manual_audit": {
+    "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/stale_visible_reference_audit.json",
+    "sha256": "5799ea54a17969e6f491f396ab72905136fb20c627cbc34d40d027d7c1da6202"
+  },
+  "manual_pointer_agreement": true
+}
