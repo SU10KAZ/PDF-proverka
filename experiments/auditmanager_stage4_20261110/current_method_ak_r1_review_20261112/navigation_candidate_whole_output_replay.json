@@ -1,0 +1,2962 @@
+{
+  "status": "offline_whole_output_replay_not_integration_acceptance",
+  "source_sha256": {
+    "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+    "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/document_graph.json": "c10bba68a5f2320bbf1daf29056586c904f5999f9ad0ba9a8da419c830368dd4",
+    "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+  },
+  "rows_checked": 88,
+  "change_summary": {
+    "no_top_level_page_change": 35,
+    "replace_page_not_supported_by_cited_blocks": 5,
+    "expand_supporting_pages_preserve_existing": 39,
+    "fill_missing_page": 9
+  },
+  "graph_vs_md_page_mismatches": [],
+  "source_output_unchanged": true,
+  "rows": [
+    {
+      "finding_id": "F-001",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 9,
+      "proposal": {
+        "status": "consistent",
+        "pages": [
+          9
+        ],
+        "patch": {},
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-002",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 9,
+      "proposal": {
+        "status": "consistent",
+        "pages": [
+          9
+        ],
+        "patch": {},
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-003",
+      "change_kind": "replace_page_not_supported_by_cited_blocks",
+      "old_page": 4,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          6
+        ],
+        "patch": {
+          "page": 6,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 6
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": false
+    },
+    {
+      "finding_id": "F-004",
+      "change_kind": "replace_page_not_supported_by_cited_blocks",
+      "old_page": 4,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          6
+        ],
+        "patch": {
+          "page": 6,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 6
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": false
+    },
+    {
+      "finding_id": "F-005",
+      "change_kind": "replace_page_not_supported_by_cited_blocks",
+      "old_page": 4,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          8
+        ],
+        "patch": {
+          "page": 8,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 8
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": false
+    },
+    {
+      "finding_id": "F-006",
+      "change_kind": "replace_page_not_supported_by_cited_blocks",
+      "old_page": 4,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          8
+        ],
+        "patch": {
+          "page": 8,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 8
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": false
+    },
+    {
+      "finding_id": "F-007",
+      "change_kind": "replace_page_not_supported_by_cited_blocks",
+      "old_page": 4,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          8
+        ],
+        "patch": {
+          "page": 8,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 8
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": false
+    },
+    {
+      "finding_id": "F-008",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 6,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          6
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 6
+            },
+            {
+              "index": 1,
+              "page": 6
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-009",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 8,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          8,
+          28,
+          102
+        ],
+        "patch": {
+          "page": [
+            8,
+            28,
+            102
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 8
+            },
+            {
+              "index": 1,
+              "page": 8
+            },
+            {
+              "index": 2,
+              "page": 102
+            },
+            {
+              "index": 3,
+              "page": 28
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-010",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 14,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          14,
+          95
+        ],
+        "patch": {
+          "page": [
+            14,
+            95
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 14
+            },
+            {
+              "index": 1,
+              "page": 14
+            },
+            {
+              "index": 2,
+              "page": 95
+            },
+            {
+              "index": 3,
+              "page": 95
+            },
+            {
+              "index": 4,
+              "page": 95
+            },
+            {
+              "index": 5,
+              "page": 95
+            },
+            {
+              "index": 6,
+              "page": 14
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-011",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 18,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          18,
+          24,
+          72,
+          73,
+          82,
+          83,
+          97,
+          100
+        ],
+        "patch": {
+          "page": [
+            18,
+            24,
+            72,
+            73,
+            82,
+            83,
+            97,
+            100
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 18
+            },
+            {
+              "index": 1,
+              "page": 97
+            },
+            {
+              "index": 2,
+              "page": 97
+            },
+            {
+              "index": 3,
+              "page": 72
+            },
+            {
+              "index": 4,
+              "page": 73
+            },
+            {
+              "index": 5,
+              "page": 24
+            },
+            {
+              "index": 6,
+              "page": 100
+            },
+            {
+              "index": 7,
+              "page": 100
+            },
+            {
+              "index": 8,
+              "page": 82
+            },
+            {
+              "index": 9,
+              "page": 83
+            },
+            {
+              "index": 10,
+              "page": 18
+            },
+            {
+              "index": 11,
+              "page": 24
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-012",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 94,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          12,
+          94
+        ],
+        "patch": {
+          "page": [
+            12,
+            94
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 94
+            },
+            {
+              "index": 1,
+              "page": 94
+            },
+            {
+              "index": 2,
+              "page": 94
+            },
+            {
+              "index": 3,
+              "page": 94
+            },
+            {
+              "index": 4,
+              "page": 12
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-013",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 95,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          14,
+          95
+        ],
+        "patch": {
+          "page": [
+            14,
+            95
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 95
+            },
+            {
+              "index": 1,
+              "page": 95
+            },
+            {
+              "index": 2,
+              "page": 95
+            },
+            {
+              "index": 3,
+              "page": 14
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-014",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 15,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          15,
+          67
+        ],
+        "patch": {
+          "page": [
+            15,
+            67
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 15
+            },
+            {
+              "index": 1,
+              "page": 15
+            },
+            {
+              "index": 2,
+              "page": 67
+            },
+            {
+              "index": 3,
+              "page": 67
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-015",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 15,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          15,
+          67
+        ],
+        "patch": {
+          "page": [
+            15,
+            67
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 15
+            },
+            {
+              "index": 1,
+              "page": 15
+            },
+            {
+              "index": 2,
+              "page": 67
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-016",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 63,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          30,
+          63,
+          64
+        ],
+        "patch": {
+          "page": [
+            30,
+            63,
+            64
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 63
+            },
+            {
+              "index": 1,
+              "page": 64
+            },
+            {
+              "index": 2,
+              "page": 30
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-017",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 65,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          65,
+          66
+        ],
+        "patch": {
+          "page": [
+            65,
+            66
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 65
+            },
+            {
+              "index": 1,
+              "page": 66
+            },
+            {
+              "index": 2,
+              "page": 65
+            },
+            {
+              "index": 3,
+              "page": 66
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-018",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 83,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          42,
+          83,
+          84
+        ],
+        "patch": {
+          "page": [
+            42,
+            83,
+            84
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 83
+            },
+            {
+              "index": 1,
+              "page": 84
+            },
+            {
+              "index": 2,
+              "page": 83
+            },
+            {
+              "index": 3,
+              "page": 84
+            },
+            {
+              "index": 4,
+              "page": 83
+            },
+            {
+              "index": 5,
+              "page": 84
+            },
+            {
+              "index": 6,
+              "page": 42
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-019",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 30,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          30,
+          63,
+          64
+        ],
+        "patch": {
+          "page": [
+            30,
+            63,
+            64
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 30
+            },
+            {
+              "index": 1,
+              "page": 63
+            },
+            {
+              "index": 2,
+              "page": 63
+            },
+            {
+              "index": 3,
+              "page": 63
+            },
+            {
+              "index": 4,
+              "page": 63
+            },
+            {
+              "index": 5,
+              "page": 63
+            },
+            {
+              "index": 6,
+              "page": 63
+            },
+            {
+              "index": 7,
+              "page": 64
+            },
+            {
+              "index": 8,
+              "page": 64
+            },
+            {
+              "index": 9,
+              "page": 63
+            },
+            {
+              "index": 10,
+              "page": 63
+            },
+            {
+              "index": 11,
+              "page": 63
+            },
+            {
+              "index": 12,
+              "page": 30
+            },
+            {
+              "index": 13,
+              "page": 30
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-020",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 37,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          37,
+          73,
+          74,
+          75
+        ],
+        "patch": {
+          "page": [
+            37,
+            73,
+            74,
+            75
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 37
+            },
+            {
+              "index": 1,
+              "page": 74
+            },
+            {
+              "index": 2,
+              "page": 73
+            },
+            {
+              "index": 3,
+              "page": 75
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-021",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 39,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          39,
+          77
+        ],
+        "patch": {
+          "page": [
+            39,
+            77
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 77
+            },
+            {
+              "index": 1,
+              "page": 39
+            },
+            {
+              "index": 2,
+              "page": 39
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-022",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 32,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          32,
+          65,
+          102,
+          103
+        ],
+        "patch": {
+          "page": [
+            32,
+            65,
+            102,
+            103
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 32
+            },
+            {
+              "index": 1,
+              "page": 65
+            },
+            {
+              "index": 2,
+              "page": 102
+            },
+            {
+              "index": 3,
+              "page": 103
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-023",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 7,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          5,
+          7,
+          27
+        ],
+        "patch": {
+          "page": [
+            5,
+            7,
+            27
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 7
+            },
+            {
+              "index": 1,
+              "page": 7
+            },
+            {
+              "index": 2,
+              "page": 5
+            },
+            {
+              "index": 3,
+              "page": 27
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-024",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 27,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          27
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 27
+            },
+            {
+              "index": 1,
+              "page": 27
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-025",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 27,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          27
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 27
+            },
+            {
+              "index": 1,
+              "page": 27
+            },
+            {
+              "index": 2,
+              "page": 27
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-026",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 27,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          27,
+          102
+        ],
+        "patch": {
+          "page": [
+            27,
+            102
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 27
+            },
+            {
+              "index": 1,
+              "page": 102
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-027",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 46,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          46,
+          102
+        ],
+        "patch": {
+          "page": [
+            46,
+            102
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 46
+            },
+            {
+              "index": 1,
+              "page": 46
+            },
+            {
+              "index": 2,
+              "page": 46
+            },
+            {
+              "index": 3,
+              "page": 46
+            },
+            {
+              "index": 4,
+              "page": 102
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-028",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 52,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          52,
+          54,
+          57,
+          103
+        ],
+        "patch": {
+          "page": [
+            52,
+            54,
+            57,
+            103
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 52
+            },
+            {
+              "index": 1,
+              "page": 54
+            },
+            {
+              "index": 2,
+              "page": 57
+            },
+            {
+              "index": 3,
+              "page": 103
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-029",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 103,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          103
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 103
+            },
+            {
+              "index": 1,
+              "page": 103
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-030",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 103,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          103
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 103
+            },
+            {
+              "index": 1,
+              "page": 103
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-031",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 104,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          103,
+          104
+        ],
+        "patch": {
+          "page": [
+            103,
+            104
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 103
+            },
+            {
+              "index": 1,
+              "page": 104
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-032",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 105,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          1,
+          105
+        ],
+        "patch": {
+          "page": [
+            1,
+            105
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 1
+            },
+            {
+              "index": 1,
+              "page": 105
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-033",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 8,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          8
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 8
+            },
+            {
+              "index": 1,
+              "page": 8
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-034",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 101,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          26,
+          44,
+          58,
+          101
+        ],
+        "patch": {
+          "page": [
+            26,
+            44,
+            58,
+            101
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 101
+            },
+            {
+              "index": 1,
+              "page": 101
+            },
+            {
+              "index": 2,
+              "page": 58
+            },
+            {
+              "index": 3,
+              "page": 26
+            },
+            {
+              "index": 4,
+              "page": 44
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-035",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 24,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          24,
+          42
+        ],
+        "patch": {
+          "page": [
+            24,
+            42
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 24
+            },
+            {
+              "index": 1,
+              "page": 42
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-036",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 23,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          23
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 23
+            },
+            {
+              "index": 1,
+              "page": 23
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-037",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 77,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          21,
+          39,
+          77
+        ],
+        "patch": {
+          "page": [
+            21,
+            39,
+            77
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 77
+            },
+            {
+              "index": 1,
+              "page": 21
+            },
+            {
+              "index": 2,
+              "page": 21
+            },
+            {
+              "index": 3,
+              "page": 39
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-038",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 83,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          24,
+          42,
+          83,
+          84
+        ],
+        "patch": {
+          "page": [
+            24,
+            42,
+            83,
+            84
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 83
+            },
+            {
+              "index": 1,
+              "page": 24
+            },
+            {
+              "index": 2,
+              "page": 24
+            },
+            {
+              "index": 3,
+              "page": 42
+            },
+            {
+              "index": 4,
+              "page": 84
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-039",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 12,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          12
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 12
+            },
+            {
+              "index": 1,
+              "page": 12
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-040",
+      "change_kind": "no_top_level_page_change",
+      "old_page": [
+        12,
+        14,
+        18,
+        24
+      ],
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          12,
+          14,
+          18,
+          24
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 12
+            },
+            {
+              "index": 1,
+              "page": 14
+            },
+            {
+              "index": 2,
+              "page": 18
+            },
+            {
+              "index": 3,
+              "page": 24
+            },
+            {
+              "index": 4,
+              "page": 24
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-041",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 12,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          12
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 12
+            },
+            {
+              "index": 1,
+              "page": 12
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-042",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 13,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          13
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 13
+            },
+            {
+              "index": 1,
+              "page": 13
+            },
+            {
+              "index": 2,
+              "page": 13
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-043",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 14,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          14
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 14
+            },
+            {
+              "index": 1,
+              "page": 14
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-044",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 15,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          15
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 15
+            },
+            {
+              "index": 1,
+              "page": 15
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-045",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 15,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          15
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 15
+            },
+            {
+              "index": 1,
+              "page": 15
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-046",
+      "change_kind": "no_top_level_page_change",
+      "old_page": [
+        15,
+        22,
+        26
+      ],
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          15,
+          22,
+          26
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 15
+            },
+            {
+              "index": 1,
+              "page": 15
+            },
+            {
+              "index": 2,
+              "page": 15
+            },
+            {
+              "index": 3,
+              "page": 15
+            },
+            {
+              "index": 4,
+              "page": 15
+            },
+            {
+              "index": 5,
+              "page": 22
+            },
+            {
+              "index": 6,
+              "page": 22
+            },
+            {
+              "index": 7,
+              "page": 22
+            },
+            {
+              "index": 8,
+              "page": 22
+            },
+            {
+              "index": 9,
+              "page": 22
+            },
+            {
+              "index": 10,
+              "page": 26
+            },
+            {
+              "index": 11,
+              "page": 26
+            },
+            {
+              "index": 12,
+              "page": 26
+            },
+            {
+              "index": 13,
+              "page": 26
+            },
+            {
+              "index": 14,
+              "page": 26
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-047",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 17,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          17,
+          97
+        ],
+        "patch": {
+          "page": [
+            17,
+            97
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 17
+            },
+            {
+              "index": 1,
+              "page": 17
+            },
+            {
+              "index": 2,
+              "page": 97
+            },
+            {
+              "index": 3,
+              "page": 97
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-048",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 19,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          19
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 19
+            },
+            {
+              "index": 1,
+              "page": 19
+            },
+            {
+              "index": 2,
+              "page": 19
+            },
+            {
+              "index": 3,
+              "page": 19
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-049",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 19,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          19
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 19
+            },
+            {
+              "index": 1,
+              "page": 19
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-050",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 20,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          20
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 20
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-051",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 20,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          20,
+          76
+        ],
+        "patch": {
+          "page": [
+            20,
+            76
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 20
+            },
+            {
+              "index": 1,
+              "page": 20
+            },
+            {
+              "index": 2,
+              "page": 76
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-052",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 21,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          21
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 21
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-053",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 21,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          21,
+          77
+        ],
+        "patch": {
+          "page": [
+            21,
+            77
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 21
+            },
+            {
+              "index": 1,
+              "page": 21
+            },
+            {
+              "index": 2,
+              "page": 77
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-054",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 22,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          22
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 22
+            },
+            {
+              "index": 1,
+              "page": 22
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-055",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 22,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          22
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 22
+            },
+            {
+              "index": 1,
+              "page": 22
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-056",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 25,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          25
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 25
+            },
+            {
+              "index": 1,
+              "page": 25
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-057",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 25,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          25
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 25
+            },
+            {
+              "index": 1,
+              "page": 25
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-058",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 26,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          26
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 26
+            },
+            {
+              "index": 1,
+              "page": 26
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-059",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 26,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          26
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 26
+            },
+            {
+              "index": 1,
+              "page": 26
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-060",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 28,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          28,
+          93
+        ],
+        "patch": {
+          "page": [
+            28,
+            93
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 28
+            },
+            {
+              "index": 1,
+              "page": 93
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-061",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 35,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          17,
+          35,
+          71,
+          72
+        ],
+        "patch": {
+          "page": [
+            17,
+            35,
+            71,
+            72
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 35
+            },
+            {
+              "index": 1,
+              "page": 71
+            },
+            {
+              "index": 2,
+              "page": 35
+            },
+            {
+              "index": 3,
+              "page": 72
+            },
+            {
+              "index": 4,
+              "page": 17
+            },
+            {
+              "index": 5,
+              "page": 17
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-062",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 36,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          36
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 36
+            },
+            {
+              "index": 1,
+              "page": 36
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-063",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 36,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          36
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 36
+            },
+            {
+              "index": 1,
+              "page": 36
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-064",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 37,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          19,
+          37
+        ],
+        "patch": {
+          "page": [
+            19,
+            37
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 37
+            },
+            {
+              "index": 1,
+              "page": 19
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-065",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 37,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          19,
+          37,
+          75
+        ],
+        "patch": {
+          "page": [
+            19,
+            37,
+            75
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 37
+            },
+            {
+              "index": 1,
+              "page": 19
+            },
+            {
+              "index": 2,
+              "page": 75
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-066",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 39,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          39,
+          77
+        ],
+        "patch": {
+          "page": [
+            39,
+            77
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 39
+            },
+            {
+              "index": 1,
+              "page": 77
+            },
+            {
+              "index": 2,
+              "page": 39
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-067",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 39,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          39,
+          77
+        ],
+        "patch": {
+          "page": [
+            39,
+            77
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 39
+            },
+            {
+              "index": 1,
+              "page": 77
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-068",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 41,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          41,
+          81
+        ],
+        "patch": {
+          "page": [
+            41,
+            81
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 41
+            },
+            {
+              "index": 1,
+              "page": 81
+            },
+            {
+              "index": 2,
+              "page": 81
+            },
+            {
+              "index": 3,
+              "page": 81
+            },
+            {
+              "index": 4,
+              "page": 81
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-069",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 45,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          45
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 45
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-070",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 47,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          47,
+          90
+        ],
+        "patch": {
+          "page": [
+            47,
+            90
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 47
+            },
+            {
+              "index": 1,
+              "page": 90
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-071",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 54,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          54
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 54
+            },
+            {
+              "index": 1,
+              "page": 54
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-072",
+      "change_kind": "no_top_level_page_change",
+      "old_page": [
+        56,
+        58
+      ],
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          56,
+          58
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 56
+            },
+            {
+              "index": 1,
+              "page": 56
+            },
+            {
+              "index": 2,
+              "page": 58
+            },
+            {
+              "index": 3,
+              "page": 58
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-073",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 57,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          57
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 57
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-074",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": [
+        16,
+        34
+      ],
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          7,
+          16,
+          34
+        ],
+        "patch": {
+          "page": [
+            7,
+            16,
+            34
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 16
+            },
+            {
+              "index": 1,
+              "page": 34
+            },
+            {
+              "index": 2,
+              "page": 7
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-075",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 57,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          57
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 57
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-076",
+      "change_kind": "fill_missing_page",
+      "old_page": null,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          9,
+          58,
+          86,
+          101
+        ],
+        "patch": {
+          "page": [
+            9,
+            58,
+            86,
+            101
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 101
+            },
+            {
+              "index": 1,
+              "page": 9
+            },
+            {
+              "index": 2,
+              "page": 58
+            },
+            {
+              "index": 3,
+              "page": 86
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": null
+    },
+    {
+      "finding_id": "F-077",
+      "change_kind": "fill_missing_page",
+      "old_page": null,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          7
+        ],
+        "patch": {
+          "page": 7,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 7
+            },
+            {
+              "index": 1,
+              "page": 7
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": null
+    },
+    {
+      "finding_id": "F-078",
+      "change_kind": "fill_missing_page",
+      "old_page": null,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          27,
+          45,
+          58
+        ],
+        "patch": {
+          "page": [
+            27,
+            45,
+            58
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 58
+            },
+            {
+              "index": 1,
+              "page": 27
+            },
+            {
+              "index": 2,
+              "page": 45
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": null
+    },
+    {
+      "finding_id": "F-079",
+      "change_kind": "fill_missing_page",
+      "old_page": null,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          45
+        ],
+        "patch": {
+          "page": 45,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 45
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": null
+    },
+    {
+      "finding_id": "F-080",
+      "change_kind": "fill_missing_page",
+      "old_page": null,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          27
+        ],
+        "patch": {
+          "page": 27,
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 27
+            },
+            {
+              "index": 1,
+              "page": 27
+            },
+            {
+              "index": 2,
+              "page": 27
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": null
+    },
+    {
+      "finding_id": "F-081",
+      "change_kind": "fill_missing_page",
+      "old_page": null,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          27,
+          45
+        ],
+        "patch": {
+          "page": [
+            27,
+            45
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 27
+            },
+            {
+              "index": 1,
+              "page": 27
+            },
+            {
+              "index": 2,
+              "page": 45
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": null
+    },
+    {
+      "finding_id": "F-082",
+      "change_kind": "fill_missing_page",
+      "old_page": null,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          7,
+          27
+        ],
+        "patch": {
+          "page": [
+            7,
+            27
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 7
+            },
+            {
+              "index": 1,
+              "page": 27
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": null
+    },
+    {
+      "finding_id": "F-083",
+      "change_kind": "no_top_level_page_change",
+      "old_page": 46,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          46
+        ],
+        "patch": {
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 46
+            },
+            {
+              "index": 1,
+              "page": 46
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-084",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 46,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          7,
+          9,
+          46
+        ],
+        "patch": {
+          "page": [
+            7,
+            9,
+            46
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 46
+            },
+            {
+              "index": 1,
+              "page": 7
+            },
+            {
+              "index": 2,
+              "page": 9
+            },
+            {
+              "index": 3,
+              "page": 46
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-085",
+      "change_kind": "fill_missing_page",
+      "old_page": null,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          8,
+          28,
+          51,
+          102
+        ],
+        "patch": {
+          "page": [
+            8,
+            28,
+            51,
+            102
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 8
+            },
+            {
+              "index": 1,
+              "page": 102
+            },
+            {
+              "index": 2,
+              "page": 28
+            },
+            {
+              "index": 3,
+              "page": 51
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": null
+    },
+    {
+      "finding_id": "F-086",
+      "change_kind": "fill_missing_page",
+      "old_page": null,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          8,
+          28
+        ],
+        "patch": {
+          "page": [
+            8,
+            28
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 8
+            },
+            {
+              "index": 1,
+              "page": 28
+            },
+            {
+              "index": 2,
+              "page": 28
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": null
+    },
+    {
+      "finding_id": "F-087",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 101,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          25,
+          100,
+          101
+        ],
+        "patch": {
+          "page": [
+            25,
+            100,
+            101
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 100
+            },
+            {
+              "index": 1,
+              "page": 101
+            },
+            {
+              "index": 2,
+              "page": 25
+            },
+            {
+              "index": 3,
+              "page": 25
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    },
+    {
+      "finding_id": "F-088",
+      "change_kind": "expand_supporting_pages_preserve_existing",
+      "old_page": 102,
+      "proposal": {
+        "status": "proposed",
+        "pages": [
+          39,
+          64,
+          73,
+          76,
+          77,
+          83,
+          102
+        ],
+        "patch": {
+          "page": [
+            39,
+            64,
+            73,
+            76,
+            77,
+            83,
+            102
+          ],
+          "evidence_pages": [
+            {
+              "index": 0,
+              "page": 64
+            },
+            {
+              "index": 1,
+              "page": 73
+            },
+            {
+              "index": 2,
+              "page": 76
+            },
+            {
+              "index": 3,
+              "page": 83
+            },
+            {
+              "index": 4,
+              "page": 77
+            },
+            {
+              "index": 5,
+              "page": 102
+            },
+            {
+              "index": 6,
+              "page": 39
+            }
+          ]
+        },
+        "scope": "PDF pages only; no semantic acceptance"
+      },
+      "existing_pages_retained": true
+    }
+  ],
+  "decision": "Do not integrate blanket top-level page expansion. Separate correction of invalid/missing primary location from additional source-page navigation; validate renderer/Excel semantics first.",
+  "limits": [
+    "All88 proposals checked for source-page binding, not semantic truth of evidence or findings.",
+    "Evidence may contain context-only addenda; a correct block-page mapping does not prove every page is an appropriate primary navigation target.",
+    "No renderer, portal navigation or Excel integration tested.",
+    "No model calls or changes to active trial or production."
+  ]
+}
