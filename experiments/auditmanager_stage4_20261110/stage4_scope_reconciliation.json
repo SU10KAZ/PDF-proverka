@@ -219,5 +219,56 @@
       "remaining": "Re-adjudicate incorrect negative explanation; do not use for filter acceptance. Final candidate delivery remains stage6.",
       "production_acceptance": false
     }
-  ]
+  ],
+  "publication_checkpoint_20261112": {
+    "status": "all85_source_reviews_complete_new_identity_candidate_under_test",
+    "evidence": [
+      {
+        "path": "experiments/auditmanager_stage4_20261110/publication_series_85_synthesis.json",
+        "sha256": "f6fe5d60ad0207d05f02a94055853c607ce587211bd3bd334af0d1860a9ca9ab"
+      },
+      {
+        "path": "experiments/auditmanager_stage4_20261110/publication_review_snapshot.json",
+        "sha256": "b5ce934a857174e6c75976d36c6086af33756b1bfe93d66f1b0f3478dca64bf3"
+      },
+      {
+        "path": "experiments/auditmanager_stage4_20261110/publication_editorial_controls_summary.json",
+        "sha256": "0ccde5b46ec80acacc628fa74225f8e2ab308b01f4c78c824c2e005163f618c4"
+      },
+      {
+        "path": "experiments/auditmanager_stage4_20261110/publication_complete_tiles_summary.json",
+        "sha256": "088925172d86eae6740ce757105e740e768bdd908fa908f8110829e74f4f2c51"
+      },
+      {
+        "path": "experiments/auditmanager_stage4_20261110/publication_identity_controls_summary.json",
+        "sha256": "90d301254f44c95b47ff781262d04d7e4799536cb5db61471d072fefa2865c6c"
+      },
+      {
+        "path": "experiments/auditmanager_stage4_20261110/publication_identity_scope_preparation.json",
+        "sha256": "137423976d36c8430d6eb9ab6cda6284745e86d56ffbb53f4e4e9337032c92be"
+      }
+    ],
+    "confirmed": [
+      "85 unique finding reviews present and source/projection-bound; includes F003/F008 followups and reused F006 pilot.",
+      "Existing editorial candidate preserves five bounded controls but fails F083 identity scope.",
+      "Complete image grids restore F082/F083 literal reading; do not by themselves fix profile classification.",
+      "F040 bounded final admission and Excel preserve other84; this is one coordinator-revised case."
+    ],
+    "integration_observation": {
+      "module": "backend/app/pipeline/stages/findings_merge/publication_reconciliation.py",
+      "backend_reference_search": "Only constant definitions found for EDITORIAL_PROVENANCE_INSTRUCTIONS and IDENTITY_SCOPE_INSTRUCTIONS; preparation/dispatch currently experimental.",
+      "existing_final_hooks": "backend/app/pipeline/stages/findings_verify/runner.py: run_findings_verify calls source_review_workflow, admission and release phases when configured.",
+      "gap": "No inspected end-to-end publication-to-final-admission integration for all reconciled claim fields. Do not infer it from the standalone projection."
+    },
+    "remaining_stage4_actions": [
+      "Review four current identity-domain controls against primary evidence; failure requires bounded correction or explicit unsupported-rule limitation.",
+      "Finish requirement-by-requirement H01–H07 implementation/control audit using current receipts, replacing stale running summaries as needed."
+    ],
+    "later_required_actions": [
+      "Stage6: connect all retained/changed parts to final wording, evidence, explicit admission and grouping without losing unresolved obligations.",
+      "Stage5/7: quality/cost and frozen six-project comparison with independent transfer cases."
+    ],
+    "stage4_complete": false,
+    "production_changed": false
+  }
 }
