@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "scope": "Three compound normative questions; factual decomposition without unproved applicability verdict",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "prior_direct_graphic_review": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/normative_references_bounded_review.json",
+      "sha256": "0e880d0414621a5f2327e4d023419b4bab86e66d2b5dc332654c752f272bb76d",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-001",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/0"
+      },
+      "factual_assessment": "mixed_supported_title_question_and_incorrect_package_availability_statement",
+      "supported": "Project TEXT uses a different title; official Rosstandart metadata confirms Тепловые пункты и системы внутреннего теплоснабжения. Prior direct graphic review confirms the correct title on the drawing.",
+      "correction": "Retain the bounded bibliographic correction. Replace the graphic-description basis with the inspected raster; remove the statement that the original drawing was not attached to the audit package.",
+      "limit": "Availability to the whole run and attachment to one targeted request are different; no technical violation established.",
+      "normative_dependency": "title_resolved; technical applicability not asserted"
+    },
+    {
+      "finding_id": "F-002",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/1"
+      },
+      "factual_assessment": "compound_question_with_refuted_graphic_reading_and_unresolved_clause_applicability",
+      "refuted": "Prior direct raster inspection of both door notes reads СП, not ГОСТ; the competing graphic description is not authoritative.",
+      "correction": "Remove the ГОСТ-to-СП premise. Keep clause-to-door applicability as an internal unresolved verification task until the full applicable clause is available. Do not reject or confirm both subclaims together.",
+      "limit": "Official full clause 7.2 not obtained; no conclusion that the door instruction violates it.",
+      "normative_dependency": "full_clause_7_2_and_project_applicable_edition_unresolved"
+    },
+    {
+      "finding_id": "F-003",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/2"
+      },
+      "factual_assessment": "local_reference_question_supported_but_normative_resolution_incomplete",
+      "supported": "Authoritative project TEXT simultaneously references SP74 and SNiP3.05.03-85. Rosstandart metadata identifies SP74 as Тепловые сети and excludes heating points and pump stations from its stated scope.",
+      "correction": "Explicitly investigate whether the cited installation instruction concerns network works or internal ITP works. Remove internal phrase LOCAL VERIFIED NORM STATUS from the user-facing question.",
+      "limit": "Scope exclusion alone does not prove that every project work item is outside the standard. Original SNiP title, applicable edition, transition basis and specific technical conflict remain unverified from primary full text. Do not prescribe automatic normative replacement.",
+      "normative_dependency": "project_scope_and_primary_full_text_unresolved"
+    }
+  ],
+  "external_sources": [
+    {
+      "url": "https://protect.gost.ru/sp/details/e6b363b3-4682-45dc-9258-c165ca7943a3",
+      "support": "Official title of SP510",
+      "scope": "metadata_only"
+    },
+    {
+      "url": "https://protect.gost.ru/sp/changesdetails/176969e5-86ee-405d-a62c-4a033d4dc1ef",
+      "support": "Amendment 1 approved 31 March 2026, effective 1 May 2026",
+      "scope": "metadata_only_not_project_applicability"
+    },
+    {
+      "url": "https://protect.gost.ru/sp/details/f993f3a4-3988-459e-9a8f-e3de5db96e5d",
+      "support": "Official title and stated exclusion of heating points and pump stations",
+      "scope": "metadata_scope_not_full_clause_audit"
+    }
+  ],
+  "access_limit": {
+    "official_viewer": "Image response was an authorization-required placeholder, not a standard page. No clause evidence extracted.",
+    "placeholder_file": {
+      "path": "/tmp/itp_sp510_official/page_4.png",
+      "sha256": "e3a0159f7880cfaaa86820693af818b40db4b4230b641e1585cdfd26449e7057",
+      "pointer": ""
+    },
+    "other_primary_attempts": [
+      "Official construction requirement registry returned 502 via web tool.",
+      "Ministry amendment page inaccessible via web tool."
+    ]
+  },
+  "recommendation": "Separate bibliographic identity, actual drawing reading, normative scope and project applicability. Question routing must not turn an unverified image description into a project defect.",
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}

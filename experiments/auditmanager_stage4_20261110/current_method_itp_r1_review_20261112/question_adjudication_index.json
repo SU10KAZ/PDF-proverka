@@ -9,18 +9,30 @@
   "rows": [
     {
       "finding_id": "F-001",
-      "status": "normative_scope_review_pending",
-      "evidence": null
+      "status": "bounded_claim_adjudication_with_normative_limits",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/normative_question_adjudication.json",
+        "sha256": "53488bf9c9587686b6700f3cbeee0de6568ca3fc0efc301d2a02d435757bb5b3",
+        "pointer": "/finding_adjudications/0"
+      }
     },
     {
       "finding_id": "F-002",
-      "status": "normative_scope_review_pending",
-      "evidence": null
+      "status": "bounded_claim_adjudication_with_normative_limits",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/normative_question_adjudication.json",
+        "sha256": "53488bf9c9587686b6700f3cbeee0de6568ca3fc0efc301d2a02d435757bb5b3",
+        "pointer": "/finding_adjudications/1"
+      }
     },
     {
       "finding_id": "F-003",
-      "status": "normative_scope_review_pending",
-      "evidence": null
+      "status": "bounded_claim_adjudication_with_normative_limits",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/normative_question_adjudication.json",
+        "sha256": "53488bf9c9587686b6700f3cbeee0de6568ca3fc0efc301d2a02d435757bb5b3",
+        "pointer": "/finding_adjudications/2"
+      }
     },
     {
       "finding_id": "F-029",
@@ -122,8 +134,12 @@
       }
     }
   ],
-  "bounded_claim_adjudications": 11,
-  "normative_scope_reviews_pending": 3,
+  "bounded_claim_adjudications": 14,
+  "normative_scope_reviews_pending": 2,
   "whole_output_precision_finalized": false,
-  "limits": "11 reviewed question rows are not 11 independent defects or 11 newly engineer-accepted findings. Manufacturer context and question usefulness may remain unresolved."
+  "limits": "All 14 question rows have bounded claim assessments; F-002/F-003 normative applicability remains unresolved. This is not whole-output precision, engineer acceptance or a count of independent useful defects.",
+  "pending_normative_finding_ids": [
+    "F-002",
+    "F-003"
+  ]
 }
