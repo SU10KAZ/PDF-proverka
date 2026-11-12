@@ -1,0 +1,27 @@
+{
+  "finding_id": "F-048",
+  "status": "drive_identifier_mapping_conflict_preserved_scope_caveat_required",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_048/publication_projection.json",
+  "projection_sha256": "2ae730a9eb532fc5c44d6b500e025e353c037bad55e793bc00c7b1557f09634c",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_signal_matrix_source_review_20261112.json",
+  "source_review_sha256": "696cef2225675edda4d5c44c03ad19bcfd6af7f4de207482ca565906121c55af",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+      "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+      "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "UZ2,UZ3,UZ2,UZ3 против перечня UZ1–UZ4, четыре позиции, сохранены.",
+    "Решение не назначает конкретные новые номера, однако индивидуальное обозначение должно допускать полное обозначение с указанием отдельного щита.",
+    "Позиция СО9.2 предусматривает отдельные щиты Пн5.1/Вн5.1: локальное повторение номеров само по себе не запрещено.",
+    "Сохранить требование адресной связи с общим перечнем, не универсальный запрет повторяющихся локальных номеров.",
+    "Фактические адреса устройств и ошибки наладки не объявлены известными."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
