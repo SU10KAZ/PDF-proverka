@@ -184,5 +184,67 @@
   "negative_controls_absent_reviewed": 20,
   "filter_credit": false,
   "unavailable_target_count": 4,
-  "dispositioned_target_count": 100
+  "dispositioned_target_count": 100,
+  "evaluation_amendments": [
+    {
+      "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+      "before": {
+        "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+        "availability": "available",
+        "coverage": "partial",
+        "finding_ids": [
+          "F-065"
+        ],
+        "evidence": [
+          {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+            "finding_ids": [
+              "F-065"
+            ]
+          },
+          {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+            "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+          },
+          {
+            "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+            "availability": "All source-card TEXT and GRAPHIC evidence verified in same-version frozen run input."
+          }
+        ],
+        "reason": "Сохранены три адреса насоса: M1 в Пн5.1.-21 КЖ, M2 схемы подключений, M5 перечня. В прочитанном F-065 не названа функциональная схема как отдельный источник M5, обязательная в исходном адресном контексте. Пока частичное покрытие; полный просмотр остальных строк может уточнить оценку.",
+        "section_assessment": "unchecked",
+        "engineer_confirmation": "No separate engineer decision in source cards; factual comparison only."
+      },
+      "after": {
+        "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+        "availability": "available",
+        "coverage": "full",
+        "finding_ids": [
+          "F-065"
+        ],
+        "evidence": [
+          {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+            "finding_ids": [
+              "F-065"
+            ]
+          },
+          {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+            "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+          },
+          {
+            "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+            "availability": "All source-card TEXT and GRAPHIC evidence verified in same-version frozen run input."
+          }
+        ],
+        "reason": "F-065 сохраняет все три обозначения насоса Пн5.1: M1 конечного адреса Пн5.1.-21 КЖ, M2 внешней схемы с адресной линией Пн5.1-21, M5 перечня. Функция насоса и связь одной линии между документами явно установлены. Отдельное повторное цитирование функциональной схемы не является необходимым дополнительным атомом frozen цели «Насос Пн5.1 имеет три обозначения M1/M5/M2». Прежний partial был избыточно строгим требованием к перечню цитируемых источников; исправлено после проверки полного F-065.",
+        "section_assessment": "correct",
+        "engineer_confirmation": "No separate engineer decision in source cards; factual comparison only."
+      },
+      "reason": "Correct over-strict source-enumeration requirement; frozen target and evaluator unchanged."
+    }
+  ]
 }

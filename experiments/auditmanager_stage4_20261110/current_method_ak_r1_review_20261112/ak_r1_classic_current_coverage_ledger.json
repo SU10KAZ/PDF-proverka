@@ -942,7 +942,7 @@
     {
       "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
       "availability": "available",
-      "coverage": "partial",
+      "coverage": "full",
       "finding_ids": [
         "F-065"
       ],
@@ -963,8 +963,8 @@
           "availability": "All source-card TEXT and GRAPHIC evidence verified in same-version frozen run input."
         }
       ],
-      "reason": "Сохранены три адреса насоса: M1 в Пн5.1.-21 КЖ, M2 схемы подключений, M5 перечня. В прочитанном F-065 не названа функциональная схема как отдельный источник M5, обязательная в исходном адресном контексте. Пока частичное покрытие; полный просмотр остальных строк может уточнить оценку.",
-      "section_assessment": "unchecked",
+      "reason": "F-065 сохраняет все три обозначения насоса Пн5.1: M1 конечного адреса Пн5.1.-21 КЖ, M2 внешней схемы с адресной линией Пн5.1-21, M5 перечня. Функция насоса и связь одной линии между документами явно установлены. Отдельное повторное цитирование функциональной схемы не является необходимым дополнительным атомом frozen цели «Насос Пн5.1 имеет три обозначения M1/M5/M2». Прежний partial был избыточно строгим требованием к перечню цитируемых источников; исправлено после проверки полного F-065.",
+      "section_assessment": "correct",
       "engineer_confirmation": "No separate engineer decision in source cards; factual comparison only."
     },
     {

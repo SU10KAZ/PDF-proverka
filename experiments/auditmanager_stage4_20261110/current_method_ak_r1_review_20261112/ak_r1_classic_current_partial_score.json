@@ -9,11 +9,11 @@
         "denominator": 55,
         "availability_available": 55,
         "absent": 9,
-        "full": 40,
-        "partial": 6
+        "full": 41,
+        "partial": 5
       },
       "review_complete": true,
-      "full_match_rate": 0.7272727272727273,
+      "full_match_rate": 0.7454545454545455,
       "meaning": "fully preserved target rate"
     },
     "question": {
@@ -44,7 +44,7 @@
     }
   },
   "section_accuracy_counts": {
-    "correct": 46,
+    "correct": 47,
     "incorrect": 7
   },
   "filter_effectiveness": null,
