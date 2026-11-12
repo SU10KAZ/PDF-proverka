@@ -1,0 +1,15 @@
+{
+  "preparation_path": "/tmp/auditmanager_heater_source_reading_20261112/preparation.json",
+  "preparation_sha256": "cd734aac9870f6669af23b284213359ecd73eb8d215195d415cbfd16c3421375",
+  "request_path": "/tmp/auditmanager_heater_source_reading_20261112/request.json",
+  "request_sha256": "a15f0afff9ead564fcd1acb6945bd07de57da59ca8bf918028f1eb2e09b62633",
+  "output_dir": "/tmp/auditmanager_heater_source_reading_20261112_run",
+  "pid": 1096311,
+  "exec_session_id": 44728,
+  "model": "codex/gpt-6-astra",
+  "purpose": "Source-only shape and connectivity reading to test whether candidate anchoring can be reduced.",
+  "candidate_or_expected_answer_supplied": false,
+  "same_image_as_F040": true,
+  "selection_is_DEV_not_blind": true,
+  "production_acceptance": false
+}
