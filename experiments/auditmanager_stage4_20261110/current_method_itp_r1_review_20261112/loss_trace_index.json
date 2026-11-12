@@ -24,8 +24,14 @@
       "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
       "coverage": "partial",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/mass_and_valve_source_coverage_traces.json",
+          "sha256": "2bdb55bbf501597dc23c6627b3503fc32d01b9f7669b406189462ae3705b161e",
+          "pointer": "/cases/0"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -390,8 +396,14 @@
       "target_id": "ITP_F004_safety_valve_setpoints:composite:1",
       "coverage": "partial",
       "route": "technical",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/mass_and_valve_source_coverage_traces.json",
+          "sha256": "2bdb55bbf501597dc23c6627b3503fc32d01b9f7669b406189462ae3705b161e",
+          "pointer": "/cases/1"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -411,8 +423,8 @@
   ],
   "counts": {
     "total": 34,
-    "bounded_trace_recorded": 20,
-    "not_traced": 14
+    "bounded_trace_recorded": 22,
+    "not_traced": 12
   },
   "remaining_requirements": [
     "Finish stage attribution for remaining targets, including missing parts of partly traced compound targets.",

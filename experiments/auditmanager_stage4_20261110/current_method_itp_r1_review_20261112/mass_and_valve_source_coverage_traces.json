@@ -1,0 +1,275 @@
+{
+  "version": 1,
+  "scope": "Mass-comparison scope and supplied-but-uncompared valve schematic",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
+      "assessment": "T026masscandidate namesK1/K14/LVF400andotherexchangers; its recovery expands exchangerpositions but notK12pump. G033comparesK9explication98withtechnical90, omitting specification94. FinalF061retains this two-source comparison plusK10/K11body; merging narrows title/actiontoK9butdoesnotdeleteK10/K11body. K12missing andK9thirdsourceare initial comparison-coverage gaps in inspected chains, not proven discarded establishedfindings.",
+      "candidate_evidence": [
+        {
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+            "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+            "pointer": "/text_findings/25"
+          },
+          "candidate": {
+            "id": "T-026",
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+            "category": "documentation",
+            "report_section": "questions",
+            "source": "Экспликация, листы 2–2.1; спецификация, листы 1–2; приложенные подборы",
+            "finding": "Массы одного и того же оборудования не согласованы между документами. Например, теплообменник отопления 1-й зоны: 650,88 кг в экспликации и 458,01 кг в спецификации и подборе; насос греющего контура: 284, 181 и 203 кг соответственно; бак LVF 400: 60 кг в подборе и 91 кг в спецификации. Для ряда теплообменников отличаются также спецификация и расчетный лист. Требуется установить состав учитываемой массы и актуальные данные для монтажа и нагрузок на основания. Производитель прямо оговаривает ориентировочный характер габаритов и масс теплообменников, поэтому разности не являются доказательством ошибки несущих конструкций.",
+            "norm": null,
+            "norm_quote": null,
+            "related_block_ids": [
+              "blk_1601889b50624245a5c590ad23d87175",
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+              "blk_176aff361f9542daa86a2daecc090272",
+              "blk_55ab0b4be112477eb9dec207df68000e",
+              "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+              "blk_03477e8997474e0c9053d3984e2d5488"
+            ]
+          }
+        },
+        {
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+            "sha256": "c0956d4c62ff84ff9cd034558334128b34c15e89afdc3ca6888732891ef58d9e",
+            "pointer": "/block_analyses/30/findings/0"
+          },
+          "candidate": {
+            "id": "G-033",
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+            "category": "documentation",
+            "finding": "Для насоса К9 IL 65/140-7,5/2-R указана разная масса единицы оборудования: 98,0 кг в экспликации на листе 2 и 90 кг в технических данных на странице PDF 67. Расхождение составляет 8 кг.\n\nРекомендация: Уточнить массу насоса для принятой комплектации и согласовать значения в экспликации и технических данных.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_606823ca386e49ffbe2f96d95e08793b",
+            "value_found": "Масса ед.кг.: 98,0; Вес: 90 кг",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T125144Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-033",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T12:51:44.473977+00:00",
+                  "context_source": "raw_vector"
+                }
+              ],
+              "context_source": "raw_vector"
+            },
+            "comparison_ref": "codex:001",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          }
+        }
+      ],
+      "recovery_evidence": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+          "pointer": "/candidate_recovery_reports/25"
+        },
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Для теплообменника первой зоны приведены массы 650,88 и 458,01 кг.",
+            "decision": "retained"
+          },
+          {
+            "id": "2",
+            "claim": "Для насоса греющего контура приведены массы 284, 181 и 203 кг.",
+            "decision": "retained"
+          },
+          {
+            "id": "3",
+            "claim": "Для LVF 400 приведены массы 60 и 91 кг.",
+            "decision": "retained"
+          },
+          {
+            "id": "4",
+            "claim": "Для теплообменника позиции 3 масса в спецификации 142,32 кг отличается от массы нетто 139,35 кг в расчёте w203119578.",
+            "decision": "retained"
+          },
+          {
+            "id": "4.1",
+            "claim": "Для теплообменника позиции 4 масса в спецификации 124,91 кг отличается от массы нетто 122,68 кг в расчёте w203119860.",
+            "decision": "retained"
+          },
+          {
+            "id": "4.2",
+            "claim": "Для теплообменника позиции 6 масса в спецификации 103,04 кг отличается от массы нетто 106,22 кг в расчёте w203119579.",
+            "decision": "retained"
+          },
+          {
+            "id": "4.3",
+            "claim": "Для теплообменника позиции 8 масса в спецификации 86,58 кг отличается от массы нетто 87,05 кг в расчёте w203119581.",
+            "decision": "retained"
+          },
+          {
+            "id": "5",
+            "claim": "Изготовитель теплообменников называет массы ориентировочными, запрещает использовать их в конструкторских чертежах и предусматривает уточнение при поставке.",
+            "decision": "retained"
+          },
+          {
+            "id": "5.1",
+            "claim": "Примечания листа 12.1 различают массу оборудования без теплоносителя и массу с обвязкой с учётом теплоносителя.",
+            "decision": "retained"
+          }
+        ]
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/mass_register_coverage_gap.json",
+        "sha256": "cf2a845a834157317950d5079e12777a4dedaa921eba6b0d360b2fe938392a1e"
+      },
+      "recommendation": "Enumerate equipmentmasssources with explicit notchecked cells rather than example-only comparisons. Preserve manufacturer provisional caveats, distinguishbare/assembledmass, and retainallaffectedobjectsintitle/actionwhenmerging. No structuralfailureinferred."
+    },
+    {
+      "target_id": "ITP_F004_safety_valve_setpoints:composite:1",
+      "assessment": "T004states20barfromspecification. Both recovery requests actually attach full schematic with45label16.0bar, but recovery retained/duplicatedonlyspec20versuspump16. Source imageavailability confirmed; schematic16/spec20comparison never appears in these decisions. Do not call this missing image, proven visual misread, or inevitable protection failure. Exact cognitive cause unknown; sourcecross-checkwasnotdemonstrated.",
+      "candidate_evidence": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/3"
+        },
+        "candidate": {
+          "id": "T-004",
+          "severity": "КРИТИЧЕСКОЕ",
+          "category": "pumps",
+          "report_section": "technical_findings",
+          "source": "Технические данные насоса отопления 3-й зоны, страница 73; расчет АУПД, страница 103; анкета, страница 110",
+          "finding": "Насос IL 40/140-2,2/2-R отопления 3-й зоны рассчитан на максимальное рабочее давление 16 бар, тогда как подбор АУПД задает 16,3 бар. Анкета требует на подающем выходе ИТП 164,7 м вод. ст., или около 16,15 бар. Предохранительный клапан этого контура настроен на 20 бар. Необходимо согласовать допустимое давление насоса, рабочие давления и защитные уставки; величину превышения следует уточнить по месту установки насоса и расчету всего контура.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_0b2352f4797f4c28a80ed1702b4009a9",
+            "blk_c25d98d5cc6e4b05a83580352fea374b",
+            "blk_32601a7d4ca34927972f1c398ca5621f",
+            "blk_acc3bf59f8f447f988de16849e40e9f1"
+          ]
+        }
+      },
+      "actual_requests": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794491142342509662/request.json",
+          "sha256": "6c1e1e512cba79b85dbb776e5eee8c95515a1608a5ad8bfeaf396e4acd28034d",
+          "stage": "candidate_recovery_3cdd02e26903f3bc",
+          "image_hashes": {
+            "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2"
+          },
+          "attempts": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794491142342509662/attempts.json",
+            "sha256": "e1759a2c90e22c3668b314151a4b6b857c8f8e44c63f5c40fce0d9699529ad7b",
+            "last_is_error": false
+          }
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794495103279440681/request.json",
+          "sha256": "10b712aecdd84721f39b691c5111d0cc7a9542efab8b243f98269c8e45158fd7",
+          "stage": "candidate_recovery_3cdd02e26903f3bc_context",
+          "image_hashes": {
+            "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2"
+          },
+          "attempts": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794495103279440681/attempts.json",
+            "sha256": "0969d22d5ad0a78428363b404187088f790032491259fa112a10c3e22a64b23a",
+            "last_is_error": false
+          }
+        }
+      ],
+      "recovery_evidence": [
+        {
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/candidate_recovery_reports/3"
+          },
+          "stage": "candidate_recovery_3cdd02e26903f3bc",
+          "subclaims": [
+            {
+              "id": "3",
+              "claim": "Предохранительный клапан контура настроен на 20 бар.",
+              "decision": "retained",
+              "reason": "Строка 45 спецификации прямо задаёт Рср.=20 бар для отопления третьей зоны. Подтверждена проектная уставка, а не фактическая настройка установленного клапана. Её несогласование с пределом насоса 16 бар сохранено отдельно в F-009.",
+              "source_refs": [
+                "blk_acc3bf59f8f447f988de16849e40e9f1",
+                "blk_0b2352f4797f4c28a80ed1702b4009a9",
+                "blk_1601889b50624245a5c590ad23d87175"
+              ],
+              "required_source_refs": [],
+              "target_finding_ids": [
+                "F-009"
+              ]
+            }
+          ]
+        },
+        {
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/candidate_recovery_reports/54"
+          },
+          "stage": "candidate_recovery_3cdd02e26903f3bc_context",
+          "subclaims": [
+            {
+              "id": "3",
+              "claim": "Предохранительный клапан контура настроен на 20 бар.",
+              "decision": "duplicate",
+              "reason": "Позиция 45 первичной спецификации прямо задаёт Рср.=20 бар с назначением «отопление 3-зона». Подтверждена проектная уставка, а не фактическая настройка установленного клапана. Это утверждение и его сопоставление с пределом насоса 16 бар уже сохранены в F-009 отдельно от рабочего давления АУПД в F-008. Технический профиль касается согласования защитной уставки с допустимым давлением оборудования; распределение давления между клапаном и насосом требует предусмотренной в F-009 проверки.",
+              "source_refs": [
+                "blk_acc3bf59f8f447f988de16849e40e9f1",
+                "blk_0b2352f4797f4c28a80ed1702b4009a9",
+                "blk_1601889b50624245a5c590ad23d87175"
+              ],
+              "required_source_refs": [],
+              "target_finding_ids": [
+                "F-009"
+              ]
+            }
+          ]
+        }
+      ],
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/zone3_pressure_bounded_review.json",
+        "sha256": "a7676224f9566fe295c244b9ddad7fab3d887dcaeb7326c61188d28e06e5059d",
+        "boundary": "Source review records corrected directcropreading16.0bar; prior evaluator20reading was erroneous and correctionhistory retained."
+      },
+      "recommendation": "Before preserving safety-setting comparison, require addressed observation of samepositioninschemeandorderedspecification and check generalsettinginstruction. Targeted crop if full image not legible. Preserve16/20documentconflict as unresolved setting reconciliation; never automatically select16orassertactual20setting.",
+      "control_pair": "Preserve source-verified16scheme/20specconflict; rejectfalseclaimscheme45itselfshows20. Exactfinalsettingandprotectionboundariesremainunproved."
+    }
+  ],
+  "runtime_changed": false,
+  "model_calls": 0
+}
