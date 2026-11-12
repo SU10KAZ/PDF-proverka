@@ -1,0 +1,11 @@
+{
+  "status": "final_check_allows_bounded_internal_deferral",
+  "receipt_sha256": "b04c01cf856bda1b18999b8e69a786bf6ec134cd4fed25554f92c371e9fcf03f",
+  "root": "/tmp/auditmanager_publication_f083_scope_final_check_20261112",
+  "visible_findings": 84,
+  "other84_unchanged": true,
+  "original_preserved_exactly_in_pending": true,
+  "not_refuted": true,
+  "next_evidence": "publication_f083_linked_navigation.json",
+  "production_acceptance": false
+}
