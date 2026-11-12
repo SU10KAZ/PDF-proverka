@@ -1,9 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 71,
+  "reviewed_distinct_findings": 72,
   "unreviewed_finding_ids": [
-    "F-072",
     "F-073",
     "F-074",
     "F-075",
@@ -1229,6 +1228,23 @@
         "questions": 0,
         "pending": 2,
         "withdrawn": 1,
+        "history_only": 1
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-072",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F072_assessment.json",
+      "assessment_sha256": "107acd11e66c2765c51a8b417b1686651550ca651e5ba9dd9f4cc79658c8adf5",
+      "status": "distinct_valve_position_conflict_preserved",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_072/publication_projection.json",
+      "projection_sha256": "6e6258e72b97ea0d733610919061c77b1a59333fcbe8716d35560b1adac6b36a",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 0,
+        "pending": 1,
+        "withdrawn": 0,
         "history_only": 1
       },
       "engineer_accepted": false,

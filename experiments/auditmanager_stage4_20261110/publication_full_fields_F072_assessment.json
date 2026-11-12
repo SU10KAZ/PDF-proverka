@@ -1,0 +1,45 @@
+{
+  "finding_id": "F-072",
+  "status": "distinct_valve_position_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_072/publication_projection.json",
+  "projection_sha256": "6e6258e72b97ea0d733610919061c77b1a59333fcbe8716d35560b1adac6b36a",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+      "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+      "directly_viewed": true
+    },
+    {
+      "path": "/tmp/ak_F072_regulating.png",
+      "sha256": "f72f3f59e084c00522f49dcd6e57c16e8f72253beb668dfb5d40f8750ee056af",
+      "source_pixel_crop": [
+        1650,
+        0,
+        1800,
+        740
+      ],
+      "directly_viewed": true
+    },
+    {
+      "path": "/tmp/ak_F072_air.png",
+      "sha256": "726cb1f8fa95569c5603cd0c3a5fd801bd7cccbc3f32c0c4be017ea76a20ee2c",
+      "source_pixel_crop": [
+        2450,
+        0,
+        2620,
+        740
+      ],
+      "directly_viewed": true
+    }
+  ],
+  "checks": [
+    "Y7 непосредственно прочитан у регулирующего клапана теплоносителя Пн5.1 с24В/0–10В, ХТ1, Пн5.1-10 и у воздушного клапана Вн5.1 сL/N/S1–S3, ХТ8, Вн5.1-7/-8.",
+    "Два назначения и независимые линии подтверждают два исполнительных механизма, а не два изображения одного устройства.",
+    "Новая правильная позиция не назначена; расхождение с другими документами оставлено предметом сверки, не объявлено фактом.",
+    "Уточнение о воде заменено нейтральным теплоносителем; неопределённость состава среды не подавила доказанный повтор позиции.",
+    "Рекомендация и условный риск сохранены в одной находке без лишних вопросов."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
