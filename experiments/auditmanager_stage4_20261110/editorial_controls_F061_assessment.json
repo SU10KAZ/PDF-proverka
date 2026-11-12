@@ -1,0 +1,19 @@
+{
+  "finding_id": "F-061",
+  "status": "bounded_dependent_risk_control_pass",
+  "projection_path": "/tmp/auditmanager_publication_editorial_controls_20261112_run/evaluations/publication_purpose_061/publication_projection.json",
+  "projection_sha256": "f00dd1e8500de508ee85cb67d02e1608c1212150ab002c138459a7580e1ffce0",
+  "baseline_assessment_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F061_assessment.json",
+  "checks": [
+    "Confirmed PDS2–PDS4 ranges20–200 versus50–500 retained with signal mapping10/26/20.",
+    "Setpoint100 remains inside both ranges; PNR note not misused to select an instrument range.",
+    "Redundant question about possibility of procurement risk removed; conditional ambiguity and reconciliation recommendation retained in parent technical finding.",
+    "Actual chosen instrument or procurement failure not asserted."
+  ],
+  "limits": [
+    "One DEV control; useful unresolved signal question F057 still must survive before accepting risk/question boundary.",
+    "No final admission or Excel comparison for this five-case instruction yet."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
