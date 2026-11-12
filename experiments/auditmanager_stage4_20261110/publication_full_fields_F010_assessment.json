@@ -1,0 +1,26 @@
+{
+  "finding_id": "F-010",
+  "status": "literal_facts_preserved_technical_promotion_not_accepted",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_010/publication_projection.json",
+  "projection_sha256": "8ea028613a64ab322d7a7f44a27e0a622a86c6b8ea4f0e600e1ebc9d39733c64",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+  "source_review_sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea",
+  "checks": [
+    "Both naming sets U1-U4 and U4.3-U4.6 are present in authoritative text.",
+    "No extra physical curtains or mandatory replacement of letter U inferred."
+  ],
+  "limits": [
+    "Prior reviewed scope is a designation-mapping question. No new supported connection/design defect establishes technical promotion in this response.",
+    "Keep question routing pending explicit profile adjudication; do not count this as a technically false literal observation."
+  ],
+  "counts": {
+    "technical_findings": 1,
+    "questions": 0,
+    "withdrawn": 0,
+    "pending": 1,
+    "history_only": 0
+  },
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

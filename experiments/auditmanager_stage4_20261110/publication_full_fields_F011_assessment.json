@@ -1,0 +1,27 @@
+{
+  "finding_id": "F-011",
+  "status": "source_supported_device_choice_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_011/publication_projection.json",
+  "projection_sha256": "c729eefaf2809ed50d383787bfdf3d128d850aaf6bb07710df92cd2ee6906083",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_control_logic_source_review_20261112.json",
+  "source_review_sha256": "c4f6dd51c155a4fced854d4de0f7b0db0f28f482d0e009cbb0e1105dfa965362",
+  "checks": [
+    "Sprut T-06 relay sensor and 18C algorithm remain contrasted with six MBT3280 NTC10K probes, 200mm.",
+    "Recommendation to reconcile device, cabinet input and signal processing retained.",
+    "No direct thermistor-to-coil wiring or actual incompatibility asserted.",
+    "Normative clause/status remains unverified; metadata note is not presented as a project defect."
+  ],
+  "limits": [
+    "Unverified cabinet/interface details and normative applicability remain separate; no full technical acceptance beyond the document conflict."
+  ],
+  "counts": {
+    "technical_findings": 1,
+    "questions": 0,
+    "withdrawn": 0,
+    "pending": 3,
+    "history_only": 1
+  },
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

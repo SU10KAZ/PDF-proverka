@@ -1,0 +1,27 @@
+{
+  "finding_id": "F-009",
+  "status": "source_supported_counts_preserved_cross_finding_overlap_pending",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_009/publication_projection.json",
+  "projection_sha256": "e93f66b7be0e373357d4b7698581078433f4678036a9a20817965d648f975b18",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+  "source_review_sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631",
+  "checks": [
+    "Four separate fan motors M3-M6 and two regulating valves Y1/Y2 directly inspected.",
+    "List quantities 2 and 4 conflict with individual depicted counts; OV package scope remains unresolved.",
+    "No physical shortage/overdelivery asserted.",
+    "Obsolete uncounted-graphic caveat removed."
+  ],
+  "limits": [
+    "Current supported content overlaps original F-063 and F-064. Preserve both atoms while consolidating after their new responses; do not count this as independent new defects."
+  ],
+  "counts": {
+    "technical_findings": 1,
+    "questions": 0,
+    "withdrawn": 0,
+    "pending": 1,
+    "history_only": 1
+  },
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
