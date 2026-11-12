@@ -7,8 +7,8 @@
   },
   "summary": {
     "missing_or_partial_positive_atoms": 22,
-    "bounded_stage_evidence_available": 10,
-    "cause_not_established": 12
+    "bounded_stage_evidence_available": 11,
+    "cause_not_established": 11
   },
   "rows": [
     {
@@ -191,9 +191,17 @@
       "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
       "coverage": "absent",
       "coverage_reason_snapshot": "F-068 сохраняет четыре адресные линии схема/КЖ, но не конфликт локальных ведомостей КСПВПГнг с СО21.4 КСПВППГнг. Общая рекомендация согласовать связанные ведомости не заменяет обнаружения третьей марки. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Проследить третью марку СО21.4 КСПВППГнг: обнаружена ли она наряду с уже сохранёнными четырьмя линиями схема/КЖ и куда направлена."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_third_cable_brand.json",
+          "sha256": "89ec0cb1daad6d6ac812d7854d383eb6e82f5a117900c068449f6608ffe559ae",
+          "pointer": "",
+          "observed_stage": "internal_observation_to_candidate_and_operation_budget",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     },
     {
       "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",

@@ -1,0 +1,473 @@
+{
+  "status": "bounded_third_cable_brand_trace",
+  "run": "ak_r1_classic_current",
+  "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+  "stage": "internal_observation_to_candidate_and_operation_budget",
+  "established": [
+    "В arithmetic_review прямо отмечено: численная сумма 7040 м совпадает с СО21.4, но марка КСПВППГ отличается от КСПВПГ локальных таблиц.",
+    "О-09 document_links отдельно перечисляет три марки КСВПГ, КСПВПГ, КСПВППГ и оставляет эквивалентность needs_data.",
+    "Повторная операция О-09 отложена в backlog с причиной request_budget. Это конкретное ограничение дальнейшей проверки, а не доказательство, что увеличение бюджета автоматически исправит выдачу.",
+    "F-068 сохраняет четыре адресные линии схема/КЖ и пару КСПВПГ/КСВПГ; общая рекомендация согласовать ведомости не предъявляет третью марку СО21.4."
+  ],
+  "proposed_behavior": "Разделять буквальное несогласование марки и установление эквивалентности изделий. Уже замеченное расхождение должно иметь отдельное решение о выпуске/снятии/недостающем контексте. При ограниченном бюджете учитывать незавершённые адресные сравнения, а не только порядок объектов; изменение бюджета оценивать вместе с затратами.",
+  "control_pair": {
+    "preserve": "Буквальная третья марка СО21.4 относительно локальных таблиц после проверки одинакового вида кабеля и границ суммирования.",
+    "do_not_assert": "Неправильность выбранного изделия, недостача или полная эквивалентность по одному совпадению суммы7040 м.",
+    "independent_engineer_validated_pair": false
+  },
+  "limits": [
+    "Причина ограничена наблюдаемыми записями: внутреннее обнаружение, незавершённая операция и отсутствие тезиса в итоговом F-068.",
+    "Сумма7040 м здесь не пересчитывалась по всем первичным таблицам; цитируется действие аудита, а не новая инженерная приёмка баланса.",
+    "Наличие марки в цитате другого замечания не равно выдаче адресного расхождения.",
+    "Полезные четыре линии F-068 должны быть сохранены при добавлении третьего документа."
+  ],
+  "evidence": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "fa3c0992a0a6adaf45009245b46d1f5421d12e8dc104ae85c3f68a15f8751a8b",
+      "pointer": "/arithmetic_review/cable_summary_review/5",
+      "value": {
+        "scope": "Неэкранированные контрольные линии 1х2х0,75",
+        "calculation": "310+50+45+160+930+180+150+135+595+125+110+2400+180+135+165+700+35+635=7040 м",
+        "project_target": "7040 м, СО 21.4",
+        "result": "Число совпадает, но в СО записано КСПВППГ, а в таблицах КСПВПГ. Полный баланс исполнения не подтвержден."
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "fa3c0992a0a6adaf45009245b46d1f5421d12e8dc104ae85c3f68a15f8751a8b",
+      "pointer": "/object_operation_results/44",
+      "value": {
+        "object_id": "О-09",
+        "operation": "document_links",
+        "status": "needs_data",
+        "reason": "Для полного баланса необходимы графические схемы, устранение дублей КЖ и подтверждение эквивалентности записей КСВПГ, КСПВПГ, КСПВППГ и НФ/HF.",
+        "source_refs": [
+          "blk_019b790b96c0452e9b83c348ec3d429c",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "context_queries": [
+          "КСВПГнг(A)-HF",
+          "КСПВПГнг(A)-HF",
+          "КСПВППГнг(А)-HF",
+          "КИС-Пнг(А)-НФ"
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+      "sha256": "dca026e53701994d93a4233162a10dd187739e02c83d3aa5efce2871cd5a74a6",
+      "pointer": "/backlog/2",
+      "value": {
+        "object_id": "О-09",
+        "operations": [
+          {
+            "object_id": "О-09",
+            "operation": "requirement_applicability",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_019b790b96c0452e9b83c348ec3d429c",
+              "blk_a256f98d4e01408d90baba99d8b2cc19",
+              "blk_b8f98350127c4603bb6811846ec13309",
+              "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+            ],
+            "receipt": {
+              "object_id": "О-09",
+              "operation": "requirement_applicability",
+              "status": "needs_data",
+              "reason": "Нет токов, защит, допустимых параметров линий приводов и интерфейсов. Ограничение горизонтального канала СКС 90 м не перенесено на силовые, CAN и RS-485 линии.",
+              "source_refs": [
+                "blk_c13afb271fc74ce4a28b79e59652ee51",
+                "blk_3705aceeb77e406ebacc38fcaf7f2d28"
+              ],
+              "context_queries": [
+                "Ва4.1",
+                "E5-MINI",
+                "CAN",
+                "RS-485"
+              ]
+            }
+          },
+          {
+            "object_id": "О-09",
+            "operation": "document_links",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_019b790b96c0452e9b83c348ec3d429c",
+              "blk_a256f98d4e01408d90baba99d8b2cc19",
+              "blk_b8f98350127c4603bb6811846ec13309",
+              "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+            ],
+            "receipt": {
+              "object_id": "О-09",
+              "operation": "document_links",
+              "status": "needs_data",
+              "reason": "Для полного баланса необходимы графические схемы, устранение дублей КЖ и подтверждение эквивалентности записей КСВПГ, КСПВПГ, КСПВППГ и НФ/HF.",
+              "source_refs": [
+                "blk_019b790b96c0452e9b83c348ec3d429c",
+                "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+                "blk_b8f98350127c4603bb6811846ec13309"
+              ],
+              "context_queries": [
+                "КСВПГнг(A)-HF",
+                "КСПВПГнг(A)-HF",
+                "КСПВППГнг(А)-HF",
+                "КИС-Пнг(А)-НФ"
+              ]
+            }
+          },
+          {
+            "object_id": "О-09",
+            "operation": "calculation_consistency",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_019b790b96c0452e9b83c348ec3d429c",
+              "blk_a256f98d4e01408d90baba99d8b2cc19",
+              "blk_b8f98350127c4603bb6811846ec13309",
+              "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+            ],
+            "reason": "missing_receipt"
+          }
+        ],
+        "status": "not_checked",
+        "reason": "request_budget"
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+      "pointer": "/findings/67",
+      "value": {
+        "id": "F-068",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "problem": "Для четырёх линий ШАУВ-1-К6ПЧ схема подключений и кабельный журнал задают разные марки кабеля.",
+        "description": "Первоначальное описание:\nНа схеме внешних подключений листа 37 линии В6.1.1-4, В6.1.2-1, В6.1.2-4 и В6.1.4-1 подписаны КСПВПГнг(А)-HF 1×2×0,75, L=30 м. В строках B6.1.1-4, B6.1.2-1, B6.1.2-4 и B6.1.4-1 кабельного журнала листа 23 указана марка КСВПГнг(A)-HF при тех же размере и длине. Соответствие линий установлено по шкафу, маркировкам и конечным устройствам ХТ1, PDS2, ХТ2 и PDS3. Буквальные записи MD сохранены. Подтверждено различие обозначений марки; эквивалентность исполнений и правильная марка не установлены.\n\nДополнительная проверка:\nВ6.1.1-4: КСПВПГнг(А)-HF на схеме против КСВПГнг(А)-HF в КЖ.\nНа схеме линия В6.1.1-4 к ХТ1 подписана КСПВПГнг(А)-HF; строка B6.1.1-4 от того же шкафа к XТ1 содержит КСВПГнг(A)-HF. Размер 1×2×0,75 и длина 30 м совпадают. Расхождение марки сохранено в F-073.\n\nВ6.1.2-1: КСПВПГнг(А)-HF на схеме против КСВПГнг(А)-HF в КЖ.\nНа схеме линия В6.1.2-1 к PDS2 подписана КСПВПГнг(А)-HF; строка B6.1.2-1 от ШАУВ-1-К6ПЧ к PDS2 содержит КСВПГнг(A)-HF. Подтверждено различие марки одной линии, сохранённое в F-073.\n\nВ6.1.2-4: КСПВПГнг(А)-HF на схеме против КСВПГнг(А)-HF в КЖ.\nНа схеме линия В6.1.2-4 к контактной цепи Y2 через ХТ2 подписана КСПВПГнг(А)-HF. Строка B6.1.2-4 от того же шкафа к XТ2 содержит КСВПГнг(A)-HF. Расхождение сохранено в F-073.\n\nВ6.1.4-1: КСПВПГнг(А)-HF на схеме против КСВПГнг(А)-HF в КЖ.\nНа схеме линия В6.1.4-1 к PDS3 подписана КСПВПГнг(А)-HF; строка B6.1.4-1 от того же шкафа к PDS3 содержит КСВПГнг(A)-HF. Различие подтверждено и сохранено в F-073; эквивалентность марок не предполагается.\n\nМарка В6.1.1-4 различается: КСПВПГнг(А)-HF и КСВПГнг(А)-HF.\nПодпись линии В6.1.1-4 к ХТ1 на изображении содержит КСПВПГнг(А)-HF; исходная строка B6.1.1-4 КЖ содержит КСВПГнг(A)-HF. Этот же конфликт совместно с G-079 сохранён в F-073.\n\nМарка В6.1.2-1 различается: КСПВПГнг(А)-HF и КСВПГнг(А)-HF.\nДля подключения PDS2 схема задаёт КСПВПГнг(А)-HF на линии В6.1.2-1, а КЖ — КСВПГнг(A)-HF в строке B6.1.2-1. Общий шкаф и конечный прибор подтверждают соответствие линий. Сохранено в F-073.\n\nМарка В6.1.2-4 различается: КСПВПГнг(А)-HF и КСВПГнг(А)-HF.\nЛиния В6.1.2-4 к ХТ2 на изображении подписана КСПВПГнг(А)-HF, тогда как строка B6.1.2-4 КЖ к XТ2 содержит КСВПГнг(A)-HF. Подтверждённое различие сохранено в общем F-073.\n\nМарка В6.1.4-1 различается: КСПВПГнг(А)-HF и КСВПГнг(А)-HF.\nНа схеме В6.1.4-1 к PDS3 указан КСПВПГнг(А)-HF; в строке B6.1.4-1 КЖ к тому же прибору — КСВПГнг(A)-HF. Различие марки сохранено в F-073 без выбора правильного исполнения.",
+        "source": "13АВ-РД-АК2-ПА, лист 37, схема внешних подключений ШАУВ-1-К6ПЧ; 13АВ-РД-АК2-ПА.КЖ, лист 23, четыре строки кабелей",
+        "page": 41,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Установить принятое исполнение четырёх линий и согласовать обозначение марки в схеме, кабельном журнале и связанных ведомостях кабелей.",
+        "risk": "Разные обозначения марки допускают неоднозначный выбор кабеля при комплектовании и монтаже.",
+        "reason": "Выбран technical_findings: расходится реквизит технического исполнения кабеля для четырёх конкретных подключений. Совпадение размера и длины не подтверждает эквивалентность марок и не устанавливает исключительно редакционный характер различия. В существующих замечаниях этот конфликт данного шкафа не сохранён. Оба кандидата объединены в одно замечание.",
+        "source_finding_ids": [
+          "G-079",
+          "G-080"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_b8712be58c8b43f6ac75cfa6420d5479",
+            "type": "graphic",
+            "observation": "Линия В6.1.1-4 к контактам привода Y1 через ХТ1, линия В6.1.2-1 к PDS2, линия В6.1.2-4 к контактам Y2 через ХТ2 и линия В6.1.4-1 к PDS3 имеют подписи КСПВПГнг(А)-HF 1×2×0,75 и L=30м.",
+            "location": "Лист 37, колонки PDS2, PDS3, Y1 и Y2; вертикальные подписи четырёх кабелей над шкафом ШАУВ-1-К6ПЧ"
+          },
+          {
+            "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+            "type": "text",
+            "quote": "| B6.1.1-4 | ШАУВ-1-К6ПЧ | XТ1 | КСВПГнг(A)-HF | 1x2x0,75 | 30 |",
+            "location": "Страница 81, КЖ, лист 23, строка B6.1.1-4, графы маркировки, трассы и проектного кабеля"
+          },
+          {
+            "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+            "type": "text",
+            "quote": "| B6.1.2-1 | ШАУВ-1-К6ПЧ | PDS2 | КСВПГнг(A)-HF | 1x2x0,75 | 30 |",
+            "location": "Страница 81, КЖ, лист 23, строка B6.1.2-1, графы маркировки, трассы и проектного кабеля"
+          },
+          {
+            "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+            "type": "text",
+            "quote": "| B6.1.2-4 | ШАУВ-1-К6ПЧ | XТ2 | КСВПГнг(A)-HF | 1x2x0,75 | 30 |",
+            "location": "Страница 81, КЖ, лист 23, строка B6.1.2-4, графы маркировки, трассы и проектного кабеля"
+          },
+          {
+            "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+            "type": "text",
+            "quote": "| B6.1.4-1 | ШАУВ-1-К6ПЧ | PDS3 | КСВПГнг(A)-HF | 1x2x0,75 | 30 |",
+            "location": "Страница 81, КЖ, лист 23, строка B6.1.4-1, графы маркировки, трассы и проектного кабеля"
+          }
+        ],
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_ccd1181a32f0f8f9",
+        "source_block_ids": [
+          "blk_b8712be58c8b43f6ac75cfa6420d5479",
+          "blk_aa193b92cd134c37853e3c8ec6ccd32d"
+        ],
+        "recovery_addendum_base_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34",
+        "recovery_addendum_snapshot_signatures": [
+          "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34",
+          "6493efdd7a82e04ad80076ed5e2f81c729ede4e2c51352c5935b5155a35c05f2",
+          "8bb3bda74876fb7b23c32327a937769a970542fc807e5906e77f56dbd2536d5e",
+          "f416fb487989112fa4734cf8eb1b9ac769e164535649495f35892b96f30e352b",
+          "4d69cd69dce64bb5ef267b21a80e6c712efda5042f5a998ae2a508d65a643014",
+          "39d121c47aed37010408c6823c9c59793270a1799fa5f0d1177db3c65a76bdb8",
+          "a6f52ec1799ea7851acf2a130a53d5423b65e8d6a1e60c24a301edf5b31bb844",
+          "2a8f6505e9fa0d0899e31ccac42b662d299478559b6fdcf364ed1a1d429b5475"
+        ],
+        "recovery_original_description": "На схеме внешних подключений листа 37 линии В6.1.1-4, В6.1.2-1, В6.1.2-4 и В6.1.4-1 подписаны КСПВПГнг(А)-HF 1×2×0,75, L=30 м. В строках B6.1.1-4, B6.1.2-1, B6.1.2-4 и B6.1.4-1 кабельного журнала листа 23 указана марка КСВПГнг(A)-HF при тех же размере и длине. Соответствие линий установлено по шкафу, маркировкам и конечным устройствам ХТ1, PDS2, ХТ2 и PDS3. Буквальные записи MD сохранены. Подтверждено различие обозначений марки; эквивалентность исполнений и правильная марка не установлены.",
+        "recovery_addenda": [
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/32/findings/0",
+            "source_id": "G-079",
+            "claim_id": "1",
+            "claim": "В6.1.1-4: КСПВПГнг(А)-HF на схеме против КСВПГнг(А)-HF в КЖ.",
+            "reason": "На схеме линия В6.1.1-4 к ХТ1 подписана КСПВПГнг(А)-HF; строка B6.1.1-4 от того же шкафа к XТ1 содержит КСВПГнг(A)-HF. Размер 1×2×0,75 и длина 30 м совпадают. Расхождение марки сохранено в F-073.",
+            "source_refs": [
+              "blk_b8712be58c8b43f6ac75cfa6420d5479",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d"
+            ],
+            "source_types": {
+              "blk_b8712be58c8b43f6ac75cfa6420d5479": "graphic",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d": "text"
+            },
+            "target_id": "F-073",
+            "target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34",
+            "semantic_verified": false,
+            "id": "f91aee0c1d6c47a461b1f21dd918399b6c035a0a185ec144a8f4e82006fd001b",
+            "reported_target_id": "F-073",
+            "reported_target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/32/findings/0",
+            "source_id": "G-079",
+            "claim_id": "2",
+            "claim": "В6.1.2-1: КСПВПГнг(А)-HF на схеме против КСВПГнг(А)-HF в КЖ.",
+            "reason": "На схеме линия В6.1.2-1 к PDS2 подписана КСПВПГнг(А)-HF; строка B6.1.2-1 от ШАУВ-1-К6ПЧ к PDS2 содержит КСВПГнг(A)-HF. Подтверждено различие марки одной линии, сохранённое в F-073.",
+            "source_refs": [
+              "blk_b8712be58c8b43f6ac75cfa6420d5479",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d"
+            ],
+            "source_types": {
+              "blk_b8712be58c8b43f6ac75cfa6420d5479": "graphic",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d": "text"
+            },
+            "target_id": "F-073",
+            "target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34",
+            "semantic_verified": false,
+            "id": "9da47fecf6b7c5fab5efc1fcc458e3dd1b48bf3605661d251d0e1613274e11fa",
+            "reported_target_id": "F-073",
+            "reported_target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/32/findings/0",
+            "source_id": "G-079",
+            "claim_id": "3",
+            "claim": "В6.1.2-4: КСПВПГнг(А)-HF на схеме против КСВПГнг(А)-HF в КЖ.",
+            "reason": "На схеме линия В6.1.2-4 к контактной цепи Y2 через ХТ2 подписана КСПВПГнг(А)-HF. Строка B6.1.2-4 от того же шкафа к XТ2 содержит КСВПГнг(A)-HF. Расхождение сохранено в F-073.",
+            "source_refs": [
+              "blk_b8712be58c8b43f6ac75cfa6420d5479",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d"
+            ],
+            "source_types": {
+              "blk_b8712be58c8b43f6ac75cfa6420d5479": "graphic",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d": "text"
+            },
+            "target_id": "F-073",
+            "target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34",
+            "semantic_verified": false,
+            "id": "eacaea144670c063c4aa8200df7d00d5e508e9e0dde8e372ded068f11ff52f7e",
+            "reported_target_id": "F-073",
+            "reported_target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/32/findings/0",
+            "source_id": "G-079",
+            "claim_id": "4",
+            "claim": "В6.1.4-1: КСПВПГнг(А)-HF на схеме против КСВПГнг(А)-HF в КЖ.",
+            "reason": "На схеме линия В6.1.4-1 к PDS3 подписана КСПВПГнг(А)-HF; строка B6.1.4-1 от того же шкафа к PDS3 содержит КСВПГнг(A)-HF. Различие подтверждено и сохранено в F-073; эквивалентность марок не предполагается.",
+            "source_refs": [
+              "blk_b8712be58c8b43f6ac75cfa6420d5479",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d"
+            ],
+            "source_types": {
+              "blk_b8712be58c8b43f6ac75cfa6420d5479": "graphic",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d": "text"
+            },
+            "target_id": "F-073",
+            "target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34",
+            "semantic_verified": false,
+            "id": "684f6b6c493c83404584cd184a7d9cb2fac629434b0702bad1b80ec976591e9b",
+            "reported_target_id": "F-073",
+            "reported_target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/32/findings/1",
+            "source_id": "G-080",
+            "claim_id": "1",
+            "claim": "Марка В6.1.1-4 различается: КСПВПГнг(А)-HF и КСВПГнг(А)-HF.",
+            "reason": "Подпись линии В6.1.1-4 к ХТ1 на изображении содержит КСПВПГнг(А)-HF; исходная строка B6.1.1-4 КЖ содержит КСВПГнг(A)-HF. Этот же конфликт совместно с G-079 сохранён в F-073.",
+            "source_refs": [
+              "blk_b8712be58c8b43f6ac75cfa6420d5479",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d"
+            ],
+            "source_types": {
+              "blk_b8712be58c8b43f6ac75cfa6420d5479": "graphic",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d": "text"
+            },
+            "target_id": "F-073",
+            "target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34",
+            "semantic_verified": false,
+            "id": "09c1d90ff8fe110b3184fd418e885e8d6a990e059a9841d7b4d1640d67c2909e",
+            "reported_target_id": "F-073",
+            "reported_target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/32/findings/1",
+            "source_id": "G-080",
+            "claim_id": "2",
+            "claim": "Марка В6.1.2-1 различается: КСПВПГнг(А)-HF и КСВПГнг(А)-HF.",
+            "reason": "Для подключения PDS2 схема задаёт КСПВПГнг(А)-HF на линии В6.1.2-1, а КЖ — КСВПГнг(A)-HF в строке B6.1.2-1. Общий шкаф и конечный прибор подтверждают соответствие линий. Сохранено в F-073.",
+            "source_refs": [
+              "blk_b8712be58c8b43f6ac75cfa6420d5479",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d"
+            ],
+            "source_types": {
+              "blk_b8712be58c8b43f6ac75cfa6420d5479": "graphic",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d": "text"
+            },
+            "target_id": "F-073",
+            "target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34",
+            "semantic_verified": false,
+            "id": "f906e4c0c4915607f87631d8f9748e960d88f10509efce02c90c322aaa11328c",
+            "reported_target_id": "F-073",
+            "reported_target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/32/findings/1",
+            "source_id": "G-080",
+            "claim_id": "3",
+            "claim": "Марка В6.1.2-4 различается: КСПВПГнг(А)-HF и КСВПГнг(А)-HF.",
+            "reason": "Линия В6.1.2-4 к ХТ2 на изображении подписана КСПВПГнг(А)-HF, тогда как строка B6.1.2-4 КЖ к XТ2 содержит КСВПГнг(A)-HF. Подтверждённое различие сохранено в общем F-073.",
+            "source_refs": [
+              "blk_b8712be58c8b43f6ac75cfa6420d5479",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d"
+            ],
+            "source_types": {
+              "blk_b8712be58c8b43f6ac75cfa6420d5479": "graphic",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d": "text"
+            },
+            "target_id": "F-073",
+            "target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34",
+            "semantic_verified": false,
+            "id": "23ad50bb92d64fdf04836e52b3e17af504b8c3b6a417e8a960d74fa4ee5cf2d0",
+            "reported_target_id": "F-073",
+            "reported_target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/32/findings/1",
+            "source_id": "G-080",
+            "claim_id": "4",
+            "claim": "Марка В6.1.4-1 различается: КСПВПГнг(А)-HF и КСВПГнг(А)-HF.",
+            "reason": "На схеме В6.1.4-1 к PDS3 указан КСПВПГнг(А)-HF; в строке B6.1.4-1 КЖ к тому же прибору — КСВПГнг(A)-HF. Различие марки сохранено в F-073 без выбора правильного исполнения.",
+            "source_refs": [
+              "blk_b8712be58c8b43f6ac75cfa6420d5479",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d"
+            ],
+            "source_types": {
+              "blk_b8712be58c8b43f6ac75cfa6420d5479": "graphic",
+              "blk_aa193b92cd134c37853e3c8ec6ccd32d": "text"
+            },
+            "target_id": "F-073",
+            "target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34",
+            "semantic_verified": false,
+            "id": "697213cc05a927c03b7d99d6ce52b3d40f0eb2b9d2d3f8dd50467b5d9e338b47",
+            "reported_target_id": "F-073",
+            "reported_target_signature": "15eb043d0b3024b29f903c7d7b47615cfe039bf8d8d58aede1ffeea81a8fcb34"
+          }
+        ],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-079",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-080",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают одинаковое расхождение марки четырёх кабелей В6.1.1-4, В6.1.2-1, В6.1.2-4 и В6.1.4-1: КСПВПГнг(А)-HF на листе 37 и КСВПГнг(A)-HF в кабельном журнале на листе 23.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают одинаковое расхождение марки четырёх кабелей В6.1.1-4, В6.1.2-1, В6.1.2-4 и В6.1.4-1: КСПВПГнг(А)-HF на листе 37 и КСВПГнг(A)-HF в кабельном журнале на листе 23.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 37",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 56,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      }
+    }
+  ],
+  "engineer_decision": null,
+  "runtime_changed": false,
+  "production_changed": false,
+  "frozen_evaluator_changed": false
+}
