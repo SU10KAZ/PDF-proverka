@@ -1,0 +1,33 @@
+{
+  "finding_id": "F-074",
+  "status": "same_supply_voltage_terminal_disagreement_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_074/publication_projection.json",
+  "projection_sha256": "c05d9c5743000019e2fb69c71e9922fbdde3452de6f66aa7b7d64ac8974a269c",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+      "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+      "directly_viewed": true
+    },
+    {
+      "path": "/tmp/ak_F074_supply_inspection.png",
+      "sha256": "b6ddb3971ccea10fa46e47489d549b7a71a70e317509bae181d11b3641106c76",
+      "source_pixel_crop": [
+        0,
+        0,
+        230,
+        816
+      ],
+      "directly_viewed": true
+    }
+  ],
+  "checks": [
+    "В одном столбце прослежены надпись ввода 380В/2,0кВт и три проводника к L,N,PE через Q1/X1 шкафа ШАУВ-6-К5ПЧ.",
+    "Сохранена необходимость согласования напряжения и обозначений проводников этого ввода; правильное напряжение или конкретная переделка не назначены.",
+    "Ссылка на ЭМ2-ПА не считается просмотренным проектом электроснабжения. Требуемое исполнение остаётся неопределённым.",
+    "Фактическая опасная схема, нарушение нормы или реальный дефект монтажа не заявлены. Не выводится универсальное правило из частного сочетания подписей."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
