@@ -1,0 +1,41 @@
+{
+  "finding_id": "F-012",
+  "status": "bounded_control_passed_conflict_and_independent_question_preserved",
+  "candidate_projection_path": "/tmp/auditmanager_publication_purpose_controls_20261112_run/evaluations/publication_purpose_012/publication_projection.json",
+  "candidate_projection_sha256": "093f420a4a950e62ccbc8f26d3a2a1314466ba86566c9f731ffb4c7debd21045",
+  "baseline_assessment_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F012_assessment.json",
+  "baseline_assessment_sha256": "d592dc9dc84499354f2f3910619a890c210bea0288e0a0c7cad03811072be1f4",
+  "checks": [
+    "Different БУРР/БИС versus Haier configuration preserved as technical document conflict.",
+    "Application-unit ambiguity remains separate useful question; 1:2 versus 3:6 not treated as arithmetic error.",
+    "Recommendation and conditional procurement risk integrated into technical statement.",
+    "220 V mains input not equated with external power module; adapter function not invented."
+  ],
+  "part_count_comparison": {
+    "baseline_technical": 1,
+    "candidate_technical": 1,
+    "baseline_questions": 2,
+    "candidate_questions": 1,
+    "interpretation": "Only redundant recommendation question consolidated; independent clarification retained."
+  },
+  "source_graphics_reused_unchanged": [
+    {
+      "block_id": "blk_66ba3cf1e99c46a292deb3fecd22f58a",
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_66ba3cf1e99c46a292deb3fecd22f58a.png",
+      "sha256": "bb1ad5076255d43b3f37bacc2855e9f860699cbf8d9ba175c84c5e1f03864d0d",
+      "directly_viewed": true,
+      "detail": "original"
+    },
+    {
+      "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+      "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "final_release_completed": false
+}
