@@ -7,8 +7,8 @@
   },
   "summary": {
     "output_rows": 88,
-    "rows_with_some_reviewed_claim": 75,
-    "rows_without_target_or_additional_review": 13,
+    "rows_with_some_reviewed_claim": 78,
+    "rows_without_target_or_additional_review": 10,
     "whole_output_precision_established": false
   },
   "priority_unreviewed_rows": [
@@ -16,15 +16,12 @@
     "F-002",
     "F-004",
     "F-005",
-    "F-020",
-    "F-021",
     "F-026",
     "F-045",
     "F-055",
     "F-058",
     "F-059",
-    "F-069",
-    "F-088"
+    "F-069"
   ],
   "rows": [
     {
@@ -464,7 +461,15 @@
       "problem": "Для ШАУВ-4-К5ПЧ суммарное количество кабеля 2×2×0,75 в таблице меньше длины одной соответствующей линии в КЖ.",
       "report_section": "technical_findings",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch6.json",
+          "sha256": "ae9c5b4dc00afcad6e40e18e4d7164a506fc4bab7266746d5d26477d0f6b5bdd",
+          "pointer": "/claims/0",
+          "disposition": "confirmed_narrow_document_discrepancy",
+          "scope": "Narrow document discrepancies; stale wording and conditional totals remain explicit."
+        }
+      ],
       "known_review_observations": [
         {
           "finding_ids": [
@@ -477,9 +482,9 @@
         }
       ],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Resolve stale wording and duplicate/overlapping topics before final acceptance"
     },
     {
       "finding_id": "F-021",
@@ -487,7 +492,15 @@
       "problem": "В таблице кабелей ШАУВ-6-К5ПЧ отсутствуют предусмотренные кабельным журналом 10 м ППГнг(А)-HF 4×4,0 для По5.1-9.",
       "report_section": "technical_findings",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch6.json",
+          "sha256": "ae9c5b4dc00afcad6e40e18e4d7164a506fc4bab7266746d5d26477d0f6b5bdd",
+          "pointer": "/claims/1",
+          "disposition": "confirmed_narrow_document_discrepancy",
+          "scope": "Narrow document discrepancies; stale wording and conditional totals remain explicit."
+        }
+      ],
       "known_review_observations": [
         {
           "finding_ids": [
@@ -500,9 +513,9 @@
         }
       ],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Resolve stale wording and duplicate/overlapping topics before final acceptance"
     },
     {
       "finding_id": "F-022",
@@ -2029,12 +2042,20 @@
       "problem": "Сумма пяти отдельных линий кабеля ППГнг(А)-HF 4×4,0 в КЖ превышает количество в спецификации на 10 м.",
       "report_section": "technical_findings",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch6.json",
+          "sha256": "ae9c5b4dc00afcad6e40e18e4d7164a506fc4bab7266746d5d26477d0f6b5bdd",
+          "pointer": "/claims/2",
+          "disposition": "confirmed_narrow_document_discrepancy",
+          "scope": "Narrow document discrepancies; stale wording and conditional totals remain explicit."
+        }
+      ],
       "known_review_observations": [],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Resolve stale wording and duplicate/overlapping topics before final acceptance"
     }
   ],
   "limits": [
