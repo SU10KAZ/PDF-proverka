@@ -1,0 +1,15 @@
+{
+  "final_receipt": "applied",
+  "prior_findings_unchanged": 24,
+  "final_findings": 25,
+  "question_id": "F-025",
+  "question_exported_separately": true,
+  "manual_verdict_override": false,
+  "full_audit_acceptance": false,
+  "production_acceptance": false,
+  "limitations": [
+    "Known-source control, not blind discovery.",
+    "Applicable KM9.2/KM8 content remains unverified; no physical defect established.",
+    "Internal O27 editorial wording still needs product-level assessment."
+  ]
+}

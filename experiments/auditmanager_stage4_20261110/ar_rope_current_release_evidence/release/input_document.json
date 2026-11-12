@@ -1,0 +1,3757 @@
+{
+  "meta": {
+    "project_id": "classic-control-AR",
+    "audit_completed": "2026-11-07",
+    "total_findings": 24,
+    "blocks_analyzed": 42,
+    "by_severity": {
+      "КРИТИЧЕСКОЕ": 0,
+      "ЭКОНОМИЧЕСКОЕ": 6,
+      "ЭКСПЛУАТАЦИОННОЕ": 7,
+      "РЕКОМЕНДАТЕЛЬНОЕ": 6,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 1
+    },
+    "codex_targeted_added": 1,
+    "codex_targeted_stages": [
+      "AR_roof_terminal_disposition"
+    ],
+    "codex_targeted_enabled": true,
+    "finding_source_counts": {
+      "gpt": 0,
+      "codex": 10,
+      "gpt_codex": 0,
+      "claude": 0,
+      "claude_codex": 0,
+      "other": 0,
+      "unattributed": 12
+    },
+    "finding_source_schema_version": 1,
+    "finding_comparison_counts": {
+      "match": 1,
+      "extension": 4,
+      "new": 5,
+      "disputed": 0,
+      "unclassified": 12
+    },
+    "finding_comparison_schema_version": 1,
+    "normative_candidate_contract": {
+      "candidates": 12,
+      "with_clause_candidate": 0,
+      "normalized": 0
+    },
+    "quality_summary": {
+      "total": 22,
+      "high_relevance": 6,
+      "medium_relevance": 12,
+      "low_relevance": 4,
+      "likely_formal_only": 0,
+      "high_severity_formal_only": 0
+    },
+    "analysis_coverage": {
+      "schema_version": 1,
+      "summary": {
+        "gemma_uncovered_count": 0,
+        "single_block_failed_count": 0,
+        "stage02_crop_missing_count": 0,
+        "excluded_from_full_analysis_count": 0,
+        "base_gemma_covered_count": 0,
+        "base_gemma_total_count": 0,
+        "high_detail_candidates": 0,
+        "high_detail_successful": 0,
+        "high_detail_skipped_large": 0,
+        "base_only_blocks_count": 0,
+        "upgraded_to_300_count": 0
+      },
+      "gemma_uncovered_blocks": [],
+      "single_block_failed_blocks": [],
+      "stage02_crop_missing_blocks": [],
+      "blocks_analyzed_only_with_100_dpi_base": [],
+      "blocks_upgraded_to_300": [],
+      "excluded_blocks_from_full_analysis": [],
+      "sections": [
+        {
+          "title": "Блоки без подготовленного контекста",
+          "blocks": []
+        },
+        {
+          "title": "Ошибки single-block анализа",
+          "blocks": []
+        },
+        {
+          "title": "Блоки, исключённые из полноценного анализа",
+          "blocks": []
+        },
+        {
+          "title": "Блоки, оставшиеся на base 100 DPI",
+          "blocks": []
+        },
+        {
+          "title": "Блоки, upgraded до 300 DPI",
+          "blocks": []
+        }
+      ]
+    }
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "sheet": "Лист 1",
+      "page": 3,
+      "problem": "В указаниях по зимним работам приведены заменённые редакции сводов правил.",
+      "description": "В общих указаниях указаны СП 48.13330.2011 и СП 45.13330.2012. При этом ведомость ссылочных документов уже содержит СП 48.13330.2019. Статус первых двух редакций по представленным данным — «заменён».",
+      "norm": "СП 48.13330.2019 (норматив-кандидат), пункт не подтверждён; СП 45.13330.2017 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 48.13330.2019",
+          "cited_designation": "СП 48.13330.2019",
+          "candidate_relevance": 0.9,
+          "reason": "Проверить сведения о замене прежней редакции и применимую редакцию правил организации строительства.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "СП 45.13330.2017",
+          "cited_designation": "СП 45.13330.2017",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить сведения о замене прежней редакции правил производства земляных работ.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Проверить применимые редакции на дату разработки и согласовать ссылки в общих указаниях с ведомостью ссылочных документов.",
+      "risk": "Подрядчик может руководствоваться разными редакциями требований при выполнении работ.",
+      "source_finding_ids": [
+        "T-001"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_9229dc363c184ae3abca81013e330dfa",
+          "page": 3
+        },
+        {
+          "type": "text",
+          "block_id": "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "page": 3
+        },
+        {
+          "type": "text",
+          "block_id": "blk_da80f01d01214295afe19fe6063fe5e1",
+          "page": 3
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 16,
+        "engineering_relevance": "low",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "formal_reference_category",
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-002",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "sheet": "Листы 1, 7",
+      "page": [
+        3,
+        9
+      ],
+      "problem": "В ссылках на материалы приведены заменённые стандарты.",
+      "description": "Для рулонных кровельных материалов указан ГОСТ 30547-97, для строительных растворов — ГОСТ 28013-98. Согласно предоставленным сведениям оба стандарта заменены; актуальность применимых редакций и обозначения поставляемых материалов нужно сверить.",
+      "norm": "ГОСТ 30547-2020 (норматив-кандидат), пункт не подтверждён; ГОСТ 28013-2023 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 30547-2020",
+          "cited_designation": "ГОСТ 30547-2020",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить сведения о замене стандарта на рулонные кровельные материалы.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-002"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "ГОСТ 28013-2023",
+          "cited_designation": "ГОСТ 28013-2023",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить сведения о замене стандарта на строительные растворы.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-002"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить применимые редакции стандартов и согласовать ссылки с паспортами предусмотренных материалов.",
+      "risk": "Неоднозначные требования к материалам при закупке и входном контроле.",
+      "source_finding_ids": [
+        "T-002"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_9229dc363c184ae3abca81013e330dfa",
+          "page": 3
+        },
+        {
+          "type": "text",
+          "block_id": "blk_507c287c56f04302a7ca1097e7af79ff",
+          "page": 9
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 36,
+        "engineering_relevance": "low",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "formal_reference_category"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-003",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Лист 8",
+      "page": 10,
+      "problem": "Итоговая длина ограждений и экранов отличается от суммы строк.",
+      "description": "В ведомости указан итог 259,48 м. Сумма пяти длин 153,82 + 27,35 + 35,43 + 12,69 + 30,18 составляет 259,47 м.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Исправить итог или уточнить исходные длины и правило округления.",
+      "risk": "Расхождение в объёме закупки и учёта на 0,01 м.",
+      "source_finding_ids": [
+        "T-003"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "page": 10
+        },
+        {
+          "type": "text",
+          "block_id": "blk_6ff6b58a285e4ec1b276342a846e08e7",
+          "page": 10
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 52,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-004",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Лист 7",
+      "page": 9,
+      "problem": "Количество штучных регулируемых опор задано дробными числами.",
+      "description": "В ведомости материалов указано 75,82 шт. опор для покрытия К-3 и 2144,84 шт. для К-4. Эти величины не определяют комплектовочную потребность.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Подсчитать целое количество опор по схеме расстановки и отдельно указать запас.",
+      "risk": "Ошибки комплектации и стоимости поставки.",
+      "source_finding_ids": [
+        "T-004"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_507c287c56f04302a7ca1097e7af79ff",
+          "page": 9
+        },
+        {
+          "type": "text",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "page": 9
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 68,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "cost",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-005",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Лист 7",
+      "page": 9,
+      "problem": "Расход плитки для покрытия К-3 не согласован с площадью остальных слоёв.",
+      "description": "Площадь плитки указана 18,96 м², геотекстиля и гидроизоляции — 10,84 м², пароизоляции — 10,83 м². Превышение относительно 10,84 м² составляет 8,12 м², или 74,9%; его основание не раскрыто.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Проверить границы облицовки, раскрой и запас плитки; уточнить ведомость.",
+      "risk": "Завышение закупки либо неверный объём покрытия.",
+      "source_finding_ids": [
+        "T-005"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_507c287c56f04302a7ca1097e7af79ff",
+          "page": 9
+        },
+        {
+          "type": "text",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "page": 9
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 74,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-006",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "roof",
+      "sheet": "Листы 7, 9, 11",
+      "page": [
+        9,
+        11,
+        13
+      ],
+      "problem": "Состав защитных слоёв покрытия К-4 противоречив.",
+      "description": "Таблица слоёв содержит термообработанный геотекстиль 300 г/м² непосредственно над гидроизоляцией, а ведомость материалов — противопожарную мембрану АЛЬФА ПРОФ НГ без отдельной позиции геотекстиля. В перечне слоёв узла размещения молниеотвода мембрана также отсутствует. Неясно, предусмотрены оба материала или один заменяет другой.",
+      "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 17.13330.2017",
+          "cited_designation": "СП 17.13330.2017",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить требования к составу и защитным слоям эксплуатируемой кровли.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-006",
+              "G-019"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-006",
+                "G-019"
+              ],
+              "designation_source": "analysis candidate"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Установить назначение каждого слоя, согласовать узел, таблицу слоёв и ведомость материалов; проверить сохранение принятой противопожарной функции.",
+      "risk": "Монтаж покрытия с иным составом и свойствами, чем предусмотрено проектным решением.",
+      "source_finding_ids": [
+        "T-006",
+        "G-019"
+      ],
+      "source_block_ids": [
+        "blk_b9257ef1636a40f9a224955e061eb46e"
+      ],
+      "related_block_ids": [
+        "blk_b9257ef1636a40f9a224955e061eb46e"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+          "page": 11
+        },
+        {
+          "type": "text",
+          "block_id": "blk_507c287c56f04302a7ca1097e7af79ff",
+          "page": 9
+        },
+        {
+          "type": "text",
+          "block_id": "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "page": 13
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-019",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 59,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "safety",
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "reference_maintenance",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-007",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "sheet": "Листы 8, 10",
+      "page": [
+        10,
+        12
+      ],
+      "problem": "Ссылки на комплекты металлических конструкций противоречат друг другу.",
+      "description": "На листе 8 ограждения отнесены к КМ5.2, лестницы — к КМ6.2. На листе 10 ограждения отнесены к КМ4.2, лестницы — к КМ5.2. В повторяющихся примечаниях к кровле для лестниц указан КМ6.2.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Сверить обозначения комплектов с фактическими чертежами КМ и исправить ссылки на обоих листах.",
+      "risk": "Применение неверных узлов крепления или спецификаций при изготовлении.",
+      "source_finding_ids": [
+        "T-007"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "page": 10
+        },
+        {
+          "type": "text",
+          "block_id": "blk_2f3068ab00334ed49a43fbc0d168a15b",
+          "page": 12
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 46,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-008",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Листы 1, 10, 12",
+      "page": [
+        3,
+        12,
+        14,
+        15
+      ],
+      "problem": "Нумерация листов и ссылка на лист 13 требуют согласования.",
+      "description": "В ведомости рабочих чертежей номер 12 присвоен листам «Узлы» и «Светопрозрачное ограждение кровли», лист 13 отсутствует. Блоки страниц 14 и 15 также имеют обозначение «Лист 12», тогда как примечание на листе 10 ссылается на лист 13.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Сверить штампы оригиналов, устранить повтор номера и исправить ведомость и перекрёстные ссылки.",
+      "risk": "Исполнители могут обратиться к неверному листу с узлами ограждения.",
+      "source_finding_ids": [
+        "T-008"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_d9481af62d6447f6b591d328f7d0d3a9",
+        "blk_c725ce887579494f86b4968fc113b951"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_9229dc363c184ae3abca81013e330dfa",
+          "page": 3
+        },
+        {
+          "type": "text",
+          "block_id": "blk_2f3068ab00334ed49a43fbc0d168a15b",
+          "page": 12
+        },
+        {
+          "type": "image",
+          "block_id": "blk_d9481af62d6447f6b591d328f7d0d3a9",
+          "page": 14
+        },
+        {
+          "type": "image",
+          "block_id": "blk_c725ce887579494f86b4968fc113b951",
+          "page": 15
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 35,
+        "engineering_relevance": "low",
+        "impact_axes": [
+          "schedule"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "reference_maintenance",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-009",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "fire_safety",
+      "sheet": "Лист 1",
+      "page": 3,
+      "problem": "Назначение помещений, отнесённых к подклассу Ф3.6, требует проверки.",
+      "description": "В общих данных к Ф3.6 отнесены «подсобные и бытовые помещения, детский клуб». Соответствие этой классификации фактическому назначению и режиму работы детского клуба не подтверждено.",
+      "norm": "ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ФЗ 123-ФЗ",
+          "cited_designation": "ФЗ 123-ФЗ",
+          "candidate_relevance": 0.95,
+          "reason": "Проверить классификацию зданий и помещений по функциональной пожарной опасности.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-009"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить назначение и режим работы помещений, затем согласовать подкласс с разделом пожарной безопасности и проверить связанные решения по отделению и эвакуации.",
+      "risk": "Применение требований пожарной безопасности, не соответствующих фактическому использованию помещений.",
+      "source_finding_ids": [
+        "T-009"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_9229dc363c184ae3abca81013e330dfa",
+          "page": 3
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 68,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "safety"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-010",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "sheet": "Лист 8",
+      "page": 10,
+      "problem": "Формула стекла калитки ДН-2 не разъяснена и неоднозначна.",
+      "description": "Для калитки приведены формула 1010.4 и состав из двух стёкол толщиной по 10 мм с прослойкой 1,52 мм. Принятая система обозначения формулы в комплекте не раскрыта, поэтому её соответствие заданному составу нельзя установить однозначно.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Указать однозначную формулу и состав стекла по документации изготовителя.",
+      "risk": "Заказ остекления с иной толщиной или конструкцией.",
+      "source_finding_ids": [
+        "T-010"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "page": 10
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 64,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-011",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Лист 15",
+      "page": 17,
+      "problem": "В реестре отступлений неточно названо изменение доступа на кровлю.",
+      "description": "В строке 4 наименование параметра относится к эксплуатируемой кровле, тогда как исходное и изменённое решения описывают доступ на неэксплуатируемую кровлю.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Уточнить наименование параметра в реестре.",
+      "risk": "Неоднозначное толкование предмета отступления.",
+      "source_finding_ids": [
+        "T-011"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_61f174f49da34cb0821c0b91863cd608",
+          "page": 17
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 52,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "operations"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-012",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "roof",
+      "sheet": "Лист 3",
+      "page": 5,
+      "problem": "Уклон кровли у парапетной воронки не согласован с примечанием.",
+      "description": "В узле парапетной воронки на кровле указан уклон 2%, а примечание требует увеличить его до 5% в радиусе не менее 500 мм вокруг воронки. Обозначенные 5,2% относятся к колпаку парапета.",
+      "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 17.13330.2017",
+          "cited_designation": "СП 17.13330.2017",
+          "candidate_relevance": 0.9,
+          "reason": "Проверить требования к уклонам кровли в зоне водосточной воронки.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-001"
+              ],
+              "designation_source": "analysis candidate"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Показать в узле участок кровли с уклоном и радиусом, согласованными с примечанием.",
+      "risk": "Застой воды возле воронки и ускоренное повреждение кровли.",
+      "source_finding_ids": [
+        "G-001"
+      ],
+      "source_block_ids": [
+        "blk_70fe5a65859f4c0ab666ce5e17f1452d"
+      ],
+      "related_block_ids": [
+        "blk_70fe5a65859f4c0ab666ce5e17f1452d"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+          "page": 5
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-001",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 73,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-013",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Лист 7",
+      "page": 9,
+      "problem": "Для покрытия К-3 указаны разные материалы плитки.",
+      "description": "В ведомости конструкции К-3 предусмотрена бетонная тротуарная плитка толщиной 40 мм, а в ведомости материалов той же марки — плитка из натурального камня 600×600×40 мм.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Принять единый материал финишного покрытия и согласовать обе ведомости.",
+      "risk": "Ошибочная стоимость и поставка материала, отличающегося от проектного решения.",
+      "source_finding_ids": [
+        "G-002",
+        "G-004"
+      ],
+      "source_block_ids": [
+        "blk_602b484f088b4a029d3ba6e01df3f645"
+      ],
+      "related_block_ids": [
+        "blk_602b484f088b4a029d3ba6e01df3f645"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "page": 9
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-002",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-004",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "extension",
+        "relations": [
+          {
+            "relation": "extension",
+            "role": "extends",
+            "counterpart_refs": [
+              "codex:003"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют для К-3 расхождение между бетонной плиткой 40 мм и натуральным камнем 600×600×40 мм; левое дополнительно охватывает К-4.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "extension",
+            "role": "base",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют для К-3 расхождение между бетонной плиткой 40 мм и натуральным камнем 600×600×40 мм; левое дополнительно охватывает К-4.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 79,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "cost",
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-014",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "insulation",
+      "sheet": "Лист 7",
+      "page": 9,
+      "problem": "Материал теплоизоляции К-3 назван противоречиво.",
+      "description": "Для слоя толщиной 130 мм одновременно указаны «экструзионный пенополистирол» и марка LOGICPIR PROF Ф/Ф, относящаяся к PIR-плитам. Это разные материалы.",
+      "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 17.13330.2017",
+          "cited_designation": "СП 17.13330.2017",
+          "candidate_relevance": 0.75,
+          "reason": "Проверить требования к теплоизоляционному слою кровли и его обозначению.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-003"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-003"
+              ],
+              "designation_source": "analysis candidate"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить предусмотренный тип утеплителя и согласовать наименование, марку и толщину во всех ведомостях.",
+      "risk": "Укладка материала с иными теплотехническими и эксплуатационными характеристиками.",
+      "source_finding_ids": [
+        "G-003"
+      ],
+      "source_block_ids": [
+        "blk_602b484f088b4a029d3ba6e01df3f645"
+      ],
+      "related_block_ids": [
+        "blk_602b484f088b4a029d3ba6e01df3f645"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "page": 9
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-003",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 47,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "operations"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-015",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Листы 7, 9",
+      "page": [
+        9,
+        11
+      ],
+      "problem": "Материал финишного покрытия К-4 различается в ведомостях и узле.",
+      "description": "Ведомость конструкции К-4 и узел размещения молниеотвода указывают бетонную плитку толщиной 40 мм, а ведомость материалов — плитку из натурального камня 600×600×40 мм.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Согласовать материал с проектом благоустройства и привести узел и ведомости к одному решению.",
+      "risk": "Изготовление и закупка покрытия с разной стоимостью и характеристиками.",
+      "source_finding_ids": [
+        "G-002",
+        "G-005",
+        "G-017",
+        "G-018"
+      ],
+      "source_block_ids": [
+        "blk_602b484f088b4a029d3ba6e01df3f645",
+        "blk_b9257ef1636a40f9a224955e061eb46e"
+      ],
+      "related_block_ids": [
+        "blk_602b484f088b4a029d3ba6e01df3f645",
+        "blk_b9257ef1636a40f9a224955e061eb46e"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "page": 9
+        },
+        {
+          "type": "image",
+          "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+          "page": 11
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-002",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-005",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-017",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-018",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "extension",
+        "relations": [
+          {
+            "relation": "extension",
+            "role": "extends",
+            "counterpart_refs": [
+              "codex:003"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют для К-3 расхождение между бетонной плиткой 40 мм и натуральным камнем 600×600×40 мм; левое дополнительно охватывает К-4.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одно противоречие материала покрытия К-4: бетонная плитка 40 мм в схеме и натуральный камень 600×600×40 мм в ведомости. Детализация эквивалентна.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одно противоречие материала покрытия К-4: бетонная плитка 40 мм в схеме и натуральный камень 600×600×40 мм в ведомости. Детализация эквивалентна.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 67,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "cost",
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-016",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Лист 7",
+      "page": 9,
+      "problem": "Площадь парапетного отлива не согласована с его размерами.",
+      "description": "Для позиции Оп-1 указаны длина 145,44 м, ширина 690 мм и площадь 78,5 м². Произведение длины на ширину составляет 100,35 м², что больше указанной площади на 21,85 м² без учёта загибов.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Пересчитать расход стали по фактической развёртке профиля и исправить площадь.",
+      "risk": "Недостаточная закупка материала или неверная сметная стоимость.",
+      "source_finding_ids": [
+        "G-006"
+      ],
+      "source_block_ids": [
+        "blk_82cbe376e70f4cc3833a1203b0d0a0ee"
+      ],
+      "related_block_ids": [
+        "blk_82cbe376e70f4cc3833a1203b0d0a0ee"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_82cbe376e70f4cc3833a1203b0d0a0ee",
+          "page": 9
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-006",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 100,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "cost",
+          "schedule",
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-017",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Лист 8",
+      "page": 10,
+      "problem": "Высоты шумозащитных экранов на видах отличаются от ведомости.",
+      "description": "Для ОГШ-1 на видах В.1–В.3, В.7 и В.8 указано 5700 мм против 5900 мм в ведомости; для ОГШ-2 на видах В.7–В.9 — 2600 против 2800 мм; для ОГШ-3 на видах В.4–В.7 — 1690–1700 против 1900 мм. Расхождение составляет 200 мм, для размера 1690 мм — 210 мм. Причину различия точек отсчёта высоты следует установить по конструктивному решению.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Уточнить точки отсчёта размеров и согласовать высоты всех трёх марок на видах, в ведомости и в разделе КМ.",
+      "risk": "Изготовление экранов неверной высоты, изменение стоимости и расчётной эффективности шумозащиты.",
+      "source_finding_ids": [
+        "G-007",
+        "G-008",
+        "G-010",
+        "G-011",
+        "G-012",
+        "G-013",
+        "G-014",
+        "G-015",
+        "G-016"
+      ],
+      "source_block_ids": [
+        "blk_3d63e546cfb54b108a681fffc5c2e192",
+        "blk_622df5aee83e4bb09a3944020fb92380",
+        "blk_c52dea9d372c4c468025a641ffac8192",
+        "blk_fc7a4e61819c4c0ca3606d47a0282ae6"
+      ],
+      "related_block_ids": [
+        "blk_3d63e546cfb54b108a681fffc5c2e192",
+        "blk_622df5aee83e4bb09a3944020fb92380",
+        "blk_c52dea9d372c4c468025a641ffac8192",
+        "blk_fc7a4e61819c4c0ca3606d47a0282ae6"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_3d63e546cfb54b108a681fffc5c2e192",
+          "page": 10
+        },
+        {
+          "type": "image",
+          "block_id": "blk_622df5aee83e4bb09a3944020fb92380",
+          "page": 10
+        },
+        {
+          "type": "image",
+          "block_id": "blk_c52dea9d372c4c468025a641ffac8192",
+          "page": 10
+        },
+        {
+          "type": "image",
+          "block_id": "blk_fc7a4e61819c4c0ca3606d47a0282ae6",
+          "page": 10
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-007",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-008",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-010",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-011",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-012",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-013",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-014",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-015",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-016",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "extension",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают одно расхождение высоты ОГШ-1: 5700 мм на видах В.1–В.3 против 5900 мм в ведомости; разница 200 мм.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают одно расхождение высоты ОГШ-1: 5700 мм на видах В.1–В.3 против 5900 мм в ведомости; разница 200 мм.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "extension",
+            "role": "extends",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют высоту ОГШ-2 2600 мм на видах В.8, В.9 вместо 2800 мм в ведомости. Левое дополнительно содержит расхождение высоты ОГШ-1.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "extension",
+            "role": "base",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания фиксируют высоту ОГШ-2 2600 мм на видах В.8, В.9 вместо 2800 мм в ведомости. Левое дополнительно содержит расхождение высоты ОГШ-1.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 67,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "cost",
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-018",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "sheet": "Лист 8",
+      "page": 10,
+      "problem": "Заполнение шумозащитного экрана на аксонометрии не согласовано с ведомостью.",
+      "description": "На аксонометрическом виде указаны стальные ламели, а в ведомости для ОГШ-1, ОГШ-2 и ОГШ-3 — акустические сэндвич-панели с минераловатным утеплителем толщиной 30 мм. Марка экрана на аксонометрии не установлена, поэтому применимость двух описаний к одному изделию требует проверки.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Указать марку экрана на аксонометрии и согласовать её заполнение с ведомостью и рабочими решениями КМ.",
+      "risk": "Поставка или монтаж экрана с заполнением, не соответствующим принятому решению по шумозащите.",
+      "source_finding_ids": [
+        "G-009"
+      ],
+      "source_block_ids": [
+        "blk_3833cfb33b574f36b5a8f0764f7471e5"
+      ],
+      "related_block_ids": [
+        "blk_3833cfb33b574f36b5a8f0764f7471e5"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_3833cfb33b574f36b5a8f0764f7471e5",
+          "page": 10
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-009",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "extension",
+        "relations": [
+          {
+            "relation": "extension",
+            "role": "base",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 0.94,
+            "reason": "Оба замечания сопоставляют стальные ламели в аксонометрии с акустическими сэндвич-панелями толщиной 30 мм для ОГШ-1, ОГШ-2 и ОГШ-3. Правое существенно дополняет левое: отсутствие марки на аксонометрии не позволяет подтвердить, что описания относятся к одному изделию, и требует установить привязку вида.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 79,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-019",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "roof",
+      "sheet": "Лист 11",
+      "page": 13,
+      "problem": "Размер зоны повышенного уклона у внутренней воронки не согласован с примечанием.",
+      "description": "В типовом узле от оси воронки показано по 300 мм в каждую сторону, тогда как примечание задаёт радиус увеличенного уклона не менее 500 мм.",
+      "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 17.13330.2017",
+          "cited_designation": "СП 17.13330.2017",
+          "candidate_relevance": 0.9,
+          "reason": "Проверить требования к уклонам кровли в зоне внутренней водосточной воронки.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-020"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-020"
+              ],
+              "designation_source": "analysis candidate"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить назначение размера 300 мм и показать на узле зону повышенного уклона радиусом не менее 500 мм согласно примечанию.",
+      "risk": "Застой воды возле внутренней воронки.",
+      "source_finding_ids": [
+        "G-020"
+      ],
+      "source_block_ids": [
+        "blk_f09f368364644083843f0762eb294a7d"
+      ],
+      "related_block_ids": [
+        "blk_f09f368364644083843f0762eb294a7d"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_f09f368364644083843f0762eb294a7d",
+          "page": 13
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-020",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 73,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-020",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Листы 8, 12",
+      "page": [
+        10,
+        15
+      ],
+      "problem": "Высота ограждения ОГН-4 различается на чертеже и в ведомости.",
+      "description": "На изображении ограждения указано 2110 мм, в ведомости наружных ограждений — 2100 мм. Разница составляет 10 мм; точки отсчёта размеров не разъяснены.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Уточнить точки отсчёта и согласовать высоту на чертеже и в ведомости.",
+      "risk": "Неоднозначный размер при изготовлении и приёмке ограждения.",
+      "source_finding_ids": [
+        "G-021",
+        "G-022"
+      ],
+      "source_block_ids": [
+        "blk_eb64722d53da4f5aa3e984fa2fb552c5"
+      ],
+      "related_block_ids": [
+        "blk_eb64722d53da4f5aa3e984fa2fb552c5"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_eb64722d53da4f5aa3e984fa2fb552c5",
+          "page": 15
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-021",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-022",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:31:36.350498+00:00",
+            "context_source": "structured_architecture"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают одно расхождение высоты ОГН-4: 2110 мм на странице PDF 15 и 2100 мм в ведомости на странице PDF 10, разница 10 мм. Разная оценка серьёзности не меняет сути проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают одно расхождение высоты ОГН-4: 2110 мм на странице PDF 15 и 2100 мм в ведомости на странице PDF 10, разница 10 мм. Разная оценка серьёзности не меняет сути проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 49,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-021",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "problem": "Приведён заменённый СНиП 12-03-2001.",
+      "description": "В общих указаниях указано «- СНиП 12-03-2001 \"Безопасность труда в строительстве\".» (строка 270), а в ведомости ссылочных документов — «| СНиП 12-03-2001 | \"Безопасность труда в строительстве. Часть 1. Общие требования\" |  |» (строка 314). LOCAL VERIFIED NORM STATUS определяет СНиП 12-03-2001 как replaced.",
+      "page": null,
+      "norm": "СНиП 12-03-2001 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "solution": "Проверить применимый документ по безопасности труда и согласовать ссылки в указаниях и ведомости.",
+      "risk": "При производстве работ могут применить требования заменённого документа.",
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_6ef90a858b8e47e1ac668fa68744b9f2",
+          "page": null,
+          "md_lines": "строки 263-270"
+        },
+        {
+          "type": "text",
+          "block_id": "blk_2c751cd478764bae9d5e0b1df794ad89",
+          "page": null,
+          "md_lines": "строка 314"
+        }
+      ],
+      "source_stage": "alia_docnorm_audit",
+      "sheet": "Лист 1",
+      "candidate_norm_references": [
+        {
+          "designation": "СНиП 12-03-2001",
+          "cited_designation": "СНиП 12-03-2001",
+          "candidate_relevance": 0.5,
+          "reason": "legacy_norm_field",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.norm",
+            "source_finding_ids": []
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 30,
+        "engineering_relevance": "low",
+        "impact_axes": [
+          "safety"
+        ],
+        "formalism_flags": [
+          "formal_reference_category",
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-022",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "problem": "Плитка из натурального камня указана со ссылкой на заменённый ГОСТ 9480-2012.",
+      "description": "В ведомости материалов для К-3 приведена строка «| Плитка тротуарная из натурального камня габ.размерами 600х600х40 мм (по согласованию) | ГОСТ 9480-2012 | 18,96 | м² |» (строка 1025), для К-4 — такая же строка с количеством 536,21 м² (строка 1034). LOCAL VERIFIED NORM STATUS определяет ГОСТ 9480-2012 как replaced; замена — ГОСТ 9480-2024.",
+      "page": null,
+      "norm": "ГОСТ 9480-2012 (норматив-кандидат), пункт не подтверждён; ГОСТ 9480-2024 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "solution": "Уточнить применимую редакцию стандарта для предусмотренной плитки и исправить обе строки ведомости.",
+      "risk": "Неоднозначные требования к плитке при закупке и входном контроле.",
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "page": null,
+          "md_lines": "строки 1025, 1034"
+        }
+      ],
+      "source_stage": "alia_docnorm_audit",
+      "sheet": "Лист 7",
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 9480-2012",
+          "cited_designation": "ГОСТ 9480-2012",
+          "candidate_relevance": 0.5,
+          "reason": "legacy_norm_field",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.norm",
+            "source_finding_ids": []
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "ГОСТ 9480-2024",
+          "cited_designation": "ГОСТ 9480-2024",
+          "candidate_relevance": 0.5,
+          "reason": "legacy_norm_field",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.norm",
+            "source_finding_ids": []
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 44,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "schedule",
+          "construction"
+        ],
+        "formalism_flags": [
+          "formal_reference_category",
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "documentation",
+      "finding": "Требуется уточнить размещение третьего кровельного аэратора АК-1: спецификация на листе 2 предусматривает 3 шт., а на плане кровли на отм. +41.280 явно обозначены два. На представленном плане на отм. +44.870 и аксонометрии шумозащитных экранов третья позиция АК-1 не идентифицирована. Это вопрос согласованности документации, а не подтверждённое отсутствие аэратора.",
+      "norm_quote": null,
+      "value_found": "Спецификация АК-1 — 3 шт.; на плане листа 2 — два явно обозначенных места установки; третье место по представленным материалам не установлено.",
+      "recommendation": "Указать место установки третьего АК-1 и ссылку на соответствующий план. Если предусмотрены только два аэратора, согласовать количество в спецификации с проектным решением.",
+      "claim_type": "context_gap",
+      "problem_class": "aerator_quantity_unresolved",
+      "affected_entity": "кровельные аэраторы АК-1",
+      "evidence_quote": "TEXT спецификации: «АК-1 | Аэратор кровельный ТЕХНОниколь 110x470 | 3». На изображении плана листа 2 в правой части кровли К-1 имеются две отдельные выноски «Кровельный аэратор АК-1». На изображениях листа 4 третья позиция АК-1 не идентифицирована.",
+      "evidence_kind": "cross_sheet",
+      "location": "ПД-00580716-АР6.2: лист 2 — спецификация кровельных аэраторов и правая часть плана на отм. +41.280, верхняя и нижняя площадки К-1; лист 4 — план на отм. +44.870 и аксонометрия шумозащитных экранов.",
+      "confidence": 0.9,
+      "counterevidence_checked": true,
+      "report_section": "questions",
+      "source_finding_ids": [
+        "D-0137bcb0d75d03a0f7291883"
+      ],
+      "source_refs": [
+        "blk_2fc185aaba9941a8a14de201a4b9c198",
+        "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+        "blk_d1465109f2c843cd8d4190cde8e9b75d",
+        "blk_edb43acbc543429aaae9aff33ffd8539"
+      ],
+      "evidence": [
+        {
+          "block_id": "blk_2fc185aaba9941a8a14de201a4b9c198",
+          "type": "text",
+          "origin": "model_source_refs"
+        },
+        {
+          "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+          "type": "graphic",
+          "origin": "model_source_refs"
+        },
+        {
+          "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+          "type": "graphic",
+          "origin": "model_source_refs"
+        },
+        {
+          "block_id": "blk_edb43acbc543429aaae9aff33ffd8539",
+          "type": "graphic",
+          "origin": "model_source_refs"
+        }
+      ],
+      "recovery_evidence_adapted_from": "source_refs",
+      "recovery_semantic_verified": false,
+      "id": "F-023",
+      "source_stage": "candidate_recovery_d71f605fdeb71a17_context",
+      "problem": "Требуется уточнить размещение третьего кровельного аэратора АК-1: спецификация на листе 2 предусматривает 3 шт., а на плане кровли на отм. +41.280 явно обозначены два. На представленном плане на отм. +44.870 и аксонометрии шумозащитных экранов третья позиция АК-1 не идентифицирована. Это вопрос согласованности документации, а не подтверждённое отсутствие аэратора."
+    },
+    {
+      "object_id": "P03",
+      "operation": "dimension_consistency",
+      "severity": "question",
+      "problem": "Требуется уточнить высотную увязку К-3 в угловой области Ф.1.",
+      "description": "На нижнем плане углового участка Ф.1 показаны отметки +20,840, +20,875, +20,870 и +20,910; соответствующий участок финишного покрытия К-3 обозначен +20,990. Ведомость К-3 задает плитку 40 мм и регулируемые опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся непосредственно к поверхности опирания, а финиш +20,990 применим в соответствующих точках, расчетная высота под плиткой составляет соответственно 110, 75, 80 и 40 мм. Первые три значения выходят за диапазон, четвертое входит в него. Однако в рассмотренных источниках послойная привязка нижних отметок не установлена однозначно. Это основание для уточнения проектного решения; фактическое превышение высоты опор или невозможность монтажа не установлены.",
+      "solution": "Уточнить поверхности отсчета нижних отметок в угловом участке Ф.1 и показать локальную высотную увязку К-3: поверхность опирания, низ плитки и финиш +20,990 в соответствующих точках с учетом промежуточных слоев при их наличии. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия.",
+      "sheet": "5",
+      "related_sheets": [
+        "7"
+      ],
+      "report_section": "questions",
+      "question_basis": "actionable_source_ambiguity",
+      "profile_reason": "Неоднозначность касается размерной согласованности конкретного углового участка Ф.1: от поверхности отсчета нижних отметок зависит высота пространства под плиткой и применимость опор/зазора 25–50 мм. Основанием служит сочетание непосредственно показанных отметок и параметров К-3, а не сама по себе неполнота пакета.",
+      "engineer_action_required": true,
+      "evidence": [
+        {
+          "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+          "sheet": "5",
+          "description": "На нижнем плане Ф.1 ниже Б10₁, вдоль углового участка к В1₁, расположены выноски +20,840, +20,875, +20,870 и +20,910."
+        },
+        {
+          "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+          "sheet": "5",
+          "description": "На соответствующем финишном плане угловая область маркирована К-3 с отметкой +20,990."
+        },
+        {
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "sheet": "7",
+          "description": "В строке К-3 предусмотрены бетонная плитка толщиной 40 мм и регулируемые опоры/воздушный зазор 25–50 мм."
+        }
+      ],
+      "operation_semantic_verified": false,
+      "source_finding_ids": [
+        "O-8524225dffeb6d942abcd0da"
+      ],
+      "operation_candidate_lineage": [
+        {
+          "source_finding_id": "O-8524225dffeb6d942abcd0da",
+          "status": "requires_semantic_review",
+          "source_claim": "problem: Требуется уточнить высотную увязку К-3 в угловой области Ф.1.\ndescription: Для одного углового участка нижний план содержит отметки +20,840, +20,875, +20,870 и +20,910, финишный план — +20,990, а ведомость К-3 предусматривает плитку 40 мм и опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся к поверхности непосредственно под опорами, в трех перечисленных точках условная высота под плиткой составляет 110, 75 и 80 мм и выходит за указанный диапазон. Однако принадлежность этих отметок поверхности под опорами не установлена. Поэтому требуется уточнение конструкции, а не констатация превышения или невозможности монтажа.\nsolution: Уточнить, к какой поверхности относятся нижние отметки в угловом участке, и показать локальную высотную увязку К-3 с финишным уровнем +20,990. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия.",
+          "existing_block_ids": [
+            "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+            "blk_f3aec0b585f6435080a6caa87767ba7c",
+            "blk_602b484f088b4a029d3ba6e01df3f645"
+          ],
+          "unresolved_block_ids": [],
+          "upstream_operation_context": {
+            "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+            "request_sha256": "de16b048ece9dbbd6441e6c3fa00590d8302f73a352cecba4ab3ac3ad500d3b9",
+            "supplied_source_ids": [
+              "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+              "blk_086a84d1c3534d70aa25347a3af1c2bb",
+              "blk_4627d64c6a6c4e76a9abc5e278844a50",
+              "blk_d84a19bcb0fd4084a6ef27c7a6ebf020",
+              "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+              "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+              "blk_f3aec0b585f6435080a6caa87767ba7c",
+              "blk_43ba3b4bee434762829a4599c645e859",
+              "blk_a89f9cfd753e412fa2177ba8cb560ab8",
+              "blk_092e358681fc45ada6058a3f894b2582",
+              "blk_f2425907b04848fa875228c27e181eb3",
+              "blk_d1465109f2c843cd8d4190cde8e9b75d",
+              "blk_0dc65bdd718344b78468a4d4cb3728de",
+              "blk_8df48eff096342b68d80dbde8a26883e",
+              "blk_602b484f088b4a029d3ba6e01df3f645",
+              "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+              "blk_0fe02f45469f44bda5c419dc4901d78c",
+              "blk_3153a1f5ffb148518526e06c26ad1fcd",
+              "blk_991adbd801a742779ab41df7896030b7",
+              "blk_b9257ef1636a40f9a224955e061eb46e",
+              "blk_f09f368364644083843f0762eb294a7d",
+              "blk_2fc185aaba9941a8a14de201a4b9c198",
+              "blk_856c9c095c754ef5a3e0444e6c1aacd7",
+              "blk_b29aa98eb0994f5c8f5901f9aa255c41",
+              "blk_4db6123b16be49dabceac1e51f96be26",
+              "blk_1a2e44c6b0e04c8d88fe4e33bb3e26d9",
+              "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+              "blk_ba73c64702884635a06b2882d4e2bf91",
+              "blk_fa94f8e6d5184c38a68292a0f7afdba7"
+            ],
+            "attached_graphic_ids": [
+              "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+              "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+              "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+              "blk_f3aec0b585f6435080a6caa87767ba7c",
+              "blk_092e358681fc45ada6058a3f894b2582",
+              "blk_d1465109f2c843cd8d4190cde8e9b75d",
+              "blk_8df48eff096342b68d80dbde8a26883e",
+              "blk_602b484f088b4a029d3ba6e01df3f645",
+              "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+              "blk_0fe02f45469f44bda5c419dc4901d78c",
+              "blk_3153a1f5ffb148518526e06c26ad1fcd",
+              "blk_991adbd801a742779ab41df7896030b7",
+              "blk_b9257ef1636a40f9a224955e061eb46e",
+              "blk_f09f368364644083843f0762eb294a7d"
+            ],
+            "reported_inspections_untrusted": [
+              {
+                "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "sheet": "5",
+                "description": "Нижний план Ф.1: воронка В-2 ниже Б10₁, продольная полоса, закругление и переход к В1₁. Видны 10,8%, две подписи 1,5% и локальные высотные выноски. Размеров между точками этих выносок вдоль расчетных путей нет."
+              },
+              {
+                "block_id": "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                "sheet": "5",
+                "description": "Общий план шестого этажа на +20,810 устанавливает положение углового участка и ссылку Ф.1 на лист 5; локальных длин уклонов не дает."
+              },
+              {
+                "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+                "sheet": "5",
+                "description": "Соответствующий угловой участок финишного покрытия К-3 имеет отметку +20,990 и плиточную раскладку. Красные угловые знаки обозначают начало раскладки согласно условным обозначениям, а не численные уклоны."
+              },
+              {
+                "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                "sheet": "7",
+                "description": "Строка К-3: плитка 40 мм, регулируемые опоры/воздушный зазор 25–50 мм, общая толщина от 250 мм. Локального разреза с привязкой этих слоев к высотным выноскам P03 нет."
+              },
+              {
+                "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                "sheet": "2",
+                "description": "План и аксонометрия кровли на +41,280 относятся к другому уровню; геометрию уклонов P03 не определяют."
+              },
+              {
+                "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+                "sheet": "3",
+                "description": "План финишного покрытия на +41,280 и разрез К-4 не являются локальным разрезом К-3 шестого этажа."
+              },
+              {
+                "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                "sheet": "4",
+                "description": "План кровли на +44,870 и аксонометрия экранов относятся к верхним конструкциям; размеров и отметок расчетных путей P03 нет."
+              },
+              {
+                "block_id": "blk_8df48eff096342b68d80dbde8a26883e",
+                "sheet": "14",
+                "description": "Схема крепления альпинистов на +41,280 содержит размеры расстановки креплений, неприменимые к расчету уклонов P03."
+              },
+              {
+                "block_id": "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                "sheet": "3",
+                "description": "Узел Г показывает парапетный водосток в покрытии К-1; на графике читается отметка +43,700. Привязки к К-3 на шестом этаже и к конкретной В-2 объекта P03 нет. Уклоны и размеры этого узла на P03 не перенесены."
+              },
+              {
+                "block_id": "blk_0fe02f45469f44bda5c419dc4901d78c",
+                "sheet": "11",
+                "description": "Узел К показывает примыкание кровли к парапету с ограждением; узел И — выход на кровлю К-4 с отметками +41,290 и +40,690. Локальные поверхности отсчета К-3 и высоты опор P03 не установлены."
+              },
+              {
+                "block_id": "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                "sheet": "2",
+                "description": "Узлы А и П относятся к К-4; узел Б показывает сопряжение К-4 и К-1. Отметки +41,280 и +40,690 и ограждение ОГН-4 не устанавливают конструкцию участка P03 с ОГН-5."
+              },
+              {
+                "block_id": "blk_991adbd801a742779ab41df7896030b7",
+                "sheet": "12",
+                "description": "Узел Л показывает примыкание покрытия с маркой К-1.1 к стене; на графике читается +44,550. Регулируемые опоры и привязка к К-3 объекта P03 не показаны."
+              },
+              {
+                "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+                "sheet": "9",
+                "description": "Схема размещения молниеотвода показывает регулируемую опору в К-4. Она поясняет устройство другого покрытия, но не задает фактическую высоту опор К-3 на P03."
+              },
+              {
+                "block_id": "blk_f09f368364644083843f0762eb294a7d",
+                "sheet": "11",
+                "description": "Типовой узел внутреннего водостока с надставным элементом относится к К-4. Он не является узлом парапетной В-2 и не подтверждает перенос размеров локального понижения на P03."
+              },
+              {
+                "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "sheet": "5",
+                "description": "Нижний план Ф.1: В-2 ниже Б10₁, прямой участок, закругление и переход к В1₁. Читаются 10,8%, две подписи 1,5% и локальные высотные выноски; межосевые размеры не задают длины этих расчетных путей."
+              },
+              {
+                "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+                "sheet": "5",
+                "description": "Финишный план того же углового участка: К-3, +20,990, плиточная раскладка и ОГН-5. Красные угловые знаки являются началом раскладки по легенде."
+              },
+              {
+                "block_id": "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                "sheet": "5",
+                "description": "Общий план шестого этажа с указателем Ф.1 устанавливает расположение участка, но не дает локальной геометрии уклонов."
+              },
+              {
+                "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                "sheet": "7",
+                "description": "Строка К-3: плитка 40 мм, регулируемые опоры/воздушный зазор 25–50 мм, общая толщина от 250 мм. Привязки высотных выносок P03 к отдельным слоям нет."
+              },
+              {
+                "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                "sheet": "2",
+                "description": "План и аксонометрия кровли на +41,280 относятся к другому высотному уровню."
+              },
+              {
+                "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+                "sheet": "3",
+                "description": "Финишный план на +41,280 и разрез К-4 не устанавливают конструкцию К-3 участка P03."
+              },
+              {
+                "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                "sheet": "4",
+                "description": "План кровли на +44,870 и аксонометрия экранов не содержат локальной высотной увязки P03."
+              },
+              {
+                "block_id": "blk_8df48eff096342b68d80dbde8a26883e",
+                "sheet": "14",
+                "description": "Размеры схемы крепления альпинистов на +41,280 относятся к размещению креплений, а не к расчетным путям уклонов P03."
+              },
+              {
+                "block_id": "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                "sheet": "3",
+                "description": "Узел Г: парапетный водосток К-1, отметка +43,700. Прямая применимость к В-2 в К-3 шестого этажа не установлена."
+              },
+              {
+                "block_id": "blk_0fe02f45469f44bda5c419dc4901d78c",
+                "sheet": "11",
+                "description": "Узел К показывает парапет с ограждением; узел И — выход на кровлю К-4 с отметками +41,290 и +40,690. Локальной привязки к P03 нет."
+              },
+              {
+                "block_id": "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                "sheet": "2",
+                "description": "Узлы А и П относятся к К-4, узел Б — к сопряжению К-4 и К-1. Высоты опор К-3 они не определяют."
+              },
+              {
+                "block_id": "blk_991adbd801a742779ab41df7896030b7",
+                "sheet": "12",
+                "description": "Узел Л: примыкание К-1.1 к стене, отметка +44,550. Связь с конструкцией P03 не показана."
+              },
+              {
+                "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+                "sheet": "9",
+                "description": "Схема молниеотвода и регулируемой опоры относится к К-4; фактическую высоту опор К-3 не задает."
+              },
+              {
+                "block_id": "blk_f09f368364644083843f0762eb294a7d",
+                "sheet": "11",
+                "description": "Узел внутреннего водостока относится к К-4 и не устанавливает устройство парапетной В-2 объекта P03."
+              }
+            ],
+            "reported_context_queries": [
+              "Ф.1",
+              "К-3",
+              "Б10₁",
+              "+20,840",
+              "+20,990",
+              "В-2"
+            ],
+            "local_search_stop": {
+              "status": "no_additional_sources",
+              "omitted": [],
+              "absence_proven": false
+            },
+            "boundary": "Supplied sources and local search stop are provenance, not completeness. Inspection descriptions are prior model observations, not established facts. Recheck applicability and evidence independently.",
+            "semantic_verified": false
+          }
+        }
+      ],
+      "id": "F-024",
+      "source_stage": "AR_roof_terminal_disposition",
+      "requires_human_review": true,
+      "source_evidence_review_status": "reviewed_question",
+      "source_review_requests": [
+        {
+          "source_finding_id": "O-8524225dffeb6d942abcd0da",
+          "source_claim": "problem: Требуется уточнить высотную увязку К-3 в угловой области Ф.1.\ndescription: Для одного углового участка нижний план содержит отметки +20,840, +20,875, +20,870 и +20,910, финишный план — +20,990, а ведомость К-3 предусматривает плитку 40 мм и опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся к поверхности непосредственно под опорами, в трех перечисленных точках условная высота под плиткой составляет 110, 75 и 80 мм и выходит за указанный диапазон. Однако принадлежность этих отметок поверхности под опорами не установлена. Поэтому требуется уточнение конструкции, а не констатация превышения или невозможности монтажа.\nsolution: Уточнить, к какой поверхности относятся нижние отметки в угловом участке, и показать локальную высотную увязку К-3 с финишным уровнем +20,990. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия.",
+          "block_ids": [
+            "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+            "blk_f3aec0b585f6435080a6caa87767ba7c",
+            "blk_602b484f088b4a029d3ba6e01df3f645"
+          ],
+          "upstream_operation_context": {
+            "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+            "request_sha256": "de16b048ece9dbbd6441e6c3fa00590d8302f73a352cecba4ab3ac3ad500d3b9",
+            "supplied_source_ids": [
+              "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+              "blk_086a84d1c3534d70aa25347a3af1c2bb",
+              "blk_4627d64c6a6c4e76a9abc5e278844a50",
+              "blk_d84a19bcb0fd4084a6ef27c7a6ebf020",
+              "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+              "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+              "blk_f3aec0b585f6435080a6caa87767ba7c",
+              "blk_43ba3b4bee434762829a4599c645e859",
+              "blk_a89f9cfd753e412fa2177ba8cb560ab8",
+              "blk_092e358681fc45ada6058a3f894b2582",
+              "blk_f2425907b04848fa875228c27e181eb3",
+              "blk_d1465109f2c843cd8d4190cde8e9b75d",
+              "blk_0dc65bdd718344b78468a4d4cb3728de",
+              "blk_8df48eff096342b68d80dbde8a26883e",
+              "blk_602b484f088b4a029d3ba6e01df3f645",
+              "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+              "blk_0fe02f45469f44bda5c419dc4901d78c",
+              "blk_3153a1f5ffb148518526e06c26ad1fcd",
+              "blk_991adbd801a742779ab41df7896030b7",
+              "blk_b9257ef1636a40f9a224955e061eb46e",
+              "blk_f09f368364644083843f0762eb294a7d",
+              "blk_2fc185aaba9941a8a14de201a4b9c198",
+              "blk_856c9c095c754ef5a3e0444e6c1aacd7",
+              "blk_b29aa98eb0994f5c8f5901f9aa255c41",
+              "blk_4db6123b16be49dabceac1e51f96be26",
+              "blk_1a2e44c6b0e04c8d88fe4e33bb3e26d9",
+              "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+              "blk_ba73c64702884635a06b2882d4e2bf91",
+              "blk_fa94f8e6d5184c38a68292a0f7afdba7"
+            ],
+            "attached_graphic_ids": [
+              "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+              "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+              "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+              "blk_f3aec0b585f6435080a6caa87767ba7c",
+              "blk_092e358681fc45ada6058a3f894b2582",
+              "blk_d1465109f2c843cd8d4190cde8e9b75d",
+              "blk_8df48eff096342b68d80dbde8a26883e",
+              "blk_602b484f088b4a029d3ba6e01df3f645",
+              "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+              "blk_0fe02f45469f44bda5c419dc4901d78c",
+              "blk_3153a1f5ffb148518526e06c26ad1fcd",
+              "blk_991adbd801a742779ab41df7896030b7",
+              "blk_b9257ef1636a40f9a224955e061eb46e",
+              "blk_f09f368364644083843f0762eb294a7d"
+            ],
+            "reported_inspections_untrusted": [
+              {
+                "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "sheet": "5",
+                "description": "Нижний план Ф.1: воронка В-2 ниже Б10₁, продольная полоса, закругление и переход к В1₁. Видны 10,8%, две подписи 1,5% и локальные высотные выноски. Размеров между точками этих выносок вдоль расчетных путей нет."
+              },
+              {
+                "block_id": "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                "sheet": "5",
+                "description": "Общий план шестого этажа на +20,810 устанавливает положение углового участка и ссылку Ф.1 на лист 5; локальных длин уклонов не дает."
+              },
+              {
+                "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+                "sheet": "5",
+                "description": "Соответствующий угловой участок финишного покрытия К-3 имеет отметку +20,990 и плиточную раскладку. Красные угловые знаки обозначают начало раскладки согласно условным обозначениям, а не численные уклоны."
+              },
+              {
+                "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                "sheet": "7",
+                "description": "Строка К-3: плитка 40 мм, регулируемые опоры/воздушный зазор 25–50 мм, общая толщина от 250 мм. Локального разреза с привязкой этих слоев к высотным выноскам P03 нет."
+              },
+              {
+                "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                "sheet": "2",
+                "description": "План и аксонометрия кровли на +41,280 относятся к другому уровню; геометрию уклонов P03 не определяют."
+              },
+              {
+                "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+                "sheet": "3",
+                "description": "План финишного покрытия на +41,280 и разрез К-4 не являются локальным разрезом К-3 шестого этажа."
+              },
+              {
+                "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                "sheet": "4",
+                "description": "План кровли на +44,870 и аксонометрия экранов относятся к верхним конструкциям; размеров и отметок расчетных путей P03 нет."
+              },
+              {
+                "block_id": "blk_8df48eff096342b68d80dbde8a26883e",
+                "sheet": "14",
+                "description": "Схема крепления альпинистов на +41,280 содержит размеры расстановки креплений, неприменимые к расчету уклонов P03."
+              },
+              {
+                "block_id": "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                "sheet": "3",
+                "description": "Узел Г показывает парапетный водосток в покрытии К-1; на графике читается отметка +43,700. Привязки к К-3 на шестом этаже и к конкретной В-2 объекта P03 нет. Уклоны и размеры этого узла на P03 не перенесены."
+              },
+              {
+                "block_id": "blk_0fe02f45469f44bda5c419dc4901d78c",
+                "sheet": "11",
+                "description": "Узел К показывает примыкание кровли к парапету с ограждением; узел И — выход на кровлю К-4 с отметками +41,290 и +40,690. Локальные поверхности отсчета К-3 и высоты опор P03 не установлены."
+              },
+              {
+                "block_id": "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                "sheet": "2",
+                "description": "Узлы А и П относятся к К-4; узел Б показывает сопряжение К-4 и К-1. Отметки +41,280 и +40,690 и ограждение ОГН-4 не устанавливают конструкцию участка P03 с ОГН-5."
+              },
+              {
+                "block_id": "blk_991adbd801a742779ab41df7896030b7",
+                "sheet": "12",
+                "description": "Узел Л показывает примыкание покрытия с маркой К-1.1 к стене; на графике читается +44,550. Регулируемые опоры и привязка к К-3 объекта P03 не показаны."
+              },
+              {
+                "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+                "sheet": "9",
+                "description": "Схема размещения молниеотвода показывает регулируемую опору в К-4. Она поясняет устройство другого покрытия, но не задает фактическую высоту опор К-3 на P03."
+              },
+              {
+                "block_id": "blk_f09f368364644083843f0762eb294a7d",
+                "sheet": "11",
+                "description": "Типовой узел внутреннего водостока с надставным элементом относится к К-4. Он не является узлом парапетной В-2 и не подтверждает перенос размеров локального понижения на P03."
+              },
+              {
+                "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "sheet": "5",
+                "description": "Нижний план Ф.1: В-2 ниже Б10₁, прямой участок, закругление и переход к В1₁. Читаются 10,8%, две подписи 1,5% и локальные высотные выноски; межосевые размеры не задают длины этих расчетных путей."
+              },
+              {
+                "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+                "sheet": "5",
+                "description": "Финишный план того же углового участка: К-3, +20,990, плиточная раскладка и ОГН-5. Красные угловые знаки являются началом раскладки по легенде."
+              },
+              {
+                "block_id": "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                "sheet": "5",
+                "description": "Общий план шестого этажа с указателем Ф.1 устанавливает расположение участка, но не дает локальной геометрии уклонов."
+              },
+              {
+                "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                "sheet": "7",
+                "description": "Строка К-3: плитка 40 мм, регулируемые опоры/воздушный зазор 25–50 мм, общая толщина от 250 мм. Привязки высотных выносок P03 к отдельным слоям нет."
+              },
+              {
+                "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                "sheet": "2",
+                "description": "План и аксонометрия кровли на +41,280 относятся к другому высотному уровню."
+              },
+              {
+                "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+                "sheet": "3",
+                "description": "Финишный план на +41,280 и разрез К-4 не устанавливают конструкцию К-3 участка P03."
+              },
+              {
+                "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                "sheet": "4",
+                "description": "План кровли на +44,870 и аксонометрия экранов не содержат локальной высотной увязки P03."
+              },
+              {
+                "block_id": "blk_8df48eff096342b68d80dbde8a26883e",
+                "sheet": "14",
+                "description": "Размеры схемы крепления альпинистов на +41,280 относятся к размещению креплений, а не к расчетным путям уклонов P03."
+              },
+              {
+                "block_id": "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                "sheet": "3",
+                "description": "Узел Г: парапетный водосток К-1, отметка +43,700. Прямая применимость к В-2 в К-3 шестого этажа не установлена."
+              },
+              {
+                "block_id": "blk_0fe02f45469f44bda5c419dc4901d78c",
+                "sheet": "11",
+                "description": "Узел К показывает парапет с ограждением; узел И — выход на кровлю К-4 с отметками +41,290 и +40,690. Локальной привязки к P03 нет."
+              },
+              {
+                "block_id": "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                "sheet": "2",
+                "description": "Узлы А и П относятся к К-4, узел Б — к сопряжению К-4 и К-1. Высоты опор К-3 они не определяют."
+              },
+              {
+                "block_id": "blk_991adbd801a742779ab41df7896030b7",
+                "sheet": "12",
+                "description": "Узел Л: примыкание К-1.1 к стене, отметка +44,550. Связь с конструкцией P03 не показана."
+              },
+              {
+                "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+                "sheet": "9",
+                "description": "Схема молниеотвода и регулируемой опоры относится к К-4; фактическую высоту опор К-3 не задает."
+              },
+              {
+                "block_id": "blk_f09f368364644083843f0762eb294a7d",
+                "sheet": "11",
+                "description": "Узел внутреннего водостока относится к К-4 и не устанавливает устройство парапетной В-2 объекта P03."
+              }
+            ],
+            "reported_context_queries": [
+              "Ф.1",
+              "К-3",
+              "Б10₁",
+              "+20,840",
+              "+20,990",
+              "В-2"
+            ],
+            "local_search_stop": {
+              "status": "no_additional_sources",
+              "omitted": [],
+              "absence_proven": false
+            },
+            "boundary": "Supplied sources and local search stop are provenance, not completeness. Inspection descriptions are prior model observations, not established facts. Recheck applicability and evidence independently.",
+            "semantic_verified": false
+          }
+        }
+      ],
+      "context_search_boundary": {
+        "scope": "Ограниченная проверка предоставленных материалов ПД-00580716-АР6.2, секции 2, 3, применительно к угловому участку Ф.1 шестого этажа.",
+        "reported_queries_reviewed": [
+          "Ф.1",
+          "К-3",
+          "Б10₁",
+          "+20,840",
+          "+20,990",
+          "В-2"
+        ],
+        "images_inspected": [
+          "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+          "blk_f3aec0b585f6435080a6caa87767ba7c",
+          "blk_602b484f088b4a029d3ba6e01df3f645",
+          "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+          "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+          "blk_092e358681fc45ada6058a3f894b2582",
+          "blk_d1465109f2c843cd8d4190cde8e9b75d",
+          "blk_8df48eff096342b68d80dbde8a26883e",
+          "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+          "blk_0fe02f45469f44bda5c419dc4901d78c",
+          "blk_3153a1f5ffb148518526e06c26ad1fcd",
+          "blk_991adbd801a742779ab41df7896030b7",
+          "blk_b9257ef1636a40f9a224955e061eb46e",
+          "blk_f09f368364644083843f0762eb294a7d"
+        ],
+        "text_reviewed": "Все предоставленные блоки authoritative_text: условные обозначения, примечания, ведомость воронок, спецификация аэраторов, состав покрытия на листе 11 и сведения по молниезащите. TEXT принят без исправлений по растрам.",
+        "actual_review": "Сопоставлены нижний и финишный планы Ф.1, общий план шестого этажа и строка К-3 ведомости. Проверены дополнительные планы на +41,280 и +44,870, схема креплений, узлы Г, К, И, А, Б, П, Л, схема молниеотвода и узел внутреннего водостока. Их марки, уровни и назначение не устанавливают поверхность опирания К-3 в рассматриваемых точках.",
+        "limitations": "Поисковые запросы и local_search_stop являются сообщенной поисковой историей; самостоятельный поиск не выполнялся. Числа попаданий и полнота поиска по проекту не подтверждены. Завершен обзор предоставленного ограниченного набора, а не доказательство отсутствия других источников. Общие примечания о понижении воронок не дают послойной привязки рассматриваемых отметок.",
+        "absence_proven": false
+      },
+      "decision_affected": "Определить поверхность отсчета нижних отметок и локальную конструкцию К-3; подтвердить возможность применения опор/воздушного зазора 25–50 мм при финише +20,990 либо согласовать необходимые изменения отметок и состава покрытия.",
+      "source_review_response_sha256": "0b45ad951635ef8d6ab17710cc4d8f983d58066e9ae308d1875397bf73f42077"
+    },
+    {
+      "id": "AR-O27-crossdoc",
+      "problem": "Каким конкретным комплектом, листом, маркой и согласованной с АР6.2 v001 версией задано крепление O27 к индивидуальной стойке ОГН-4 на кровле +41,280, и где документирована передача усилий от каната через фиксатор и стойку в несущую конструкцию?",
+      "description": "Известные факты:\nВ АР узел канатных креплений показан в контексте индивидуальных стоек стеклянного ограждения ОГН-4.\nДетали пластин и анкеров представленных КМ5.2 относятся к трубчатым ограждениям Огр-1–Огр-4.\nАдресная связь этих деталей КМ5.2 с O27 не установлена.\nНеустановленные данные:\nПрименимый конструктивный комплект и его согласованная версия.\nДетали фиксатора, его соединения со стойкой и крепления стойки к основанию.\nЭксплуатационные воздействия и расчетное обоснование именно этой цепочки.",
+      "solution": "Указать существующие применимые листы и версии, сопоставить их с точками плана АР и представить соответствующие детали и расчетные основания. Если связь с КМ5.2 предполагается, подтвердить ее адресным документом с объяснением различий исполнения; не назначать анкеры O27 по сходству названий марок.",
+      "severity": "question",
+      "report_section": "questions",
+      "question_basis": "actionable_source_ambiguity",
+      "profile_reason": "Каким конкретным комплектом, листом, маркой и согласованной с АР6.2 v001 версией задано крепление O27 к индивидуальной стойке ОГН-4 на кровле +41,280, и где документирована передача усилий от каната через фиксатор и стойку в несущую конструкцию?",
+      "engineer_action_required": true,
+      "source_evidence_review_status": "pending",
+      "source_review_requests": [
+        {
+          "source_finding_id": "AR-O27-source-question",
+          "source_claim": "{\"question\": \"Каким конкретным комплектом, листом, маркой и согласованной с АР6.2 v001 версией задано крепление O27 к индивидуальной стойке ОГН-4 на кровле +41,280, и где документирована передача усилий от каната через фиксатор и стойку в несущую конструкцию?\", \"evidence\": [\"АР v001: blk_c2c52346b94e41d082d3db11655d2706 показывает стойку ОГН-4, стеклянное ограждение, обвязку канатом и фиксирующий элемент.\", \"АР v001: blk_a904b495f6cc409eb97d93ceaa3cf274 раскрывает локальную схему O27; blk_8df48eff096342b68d80dbde8a26883e — размещение креплений на +41,280.\", \"КМ5.2 v001: blk_4d1866590cff44e38805059bb7ba7eaf и v002: blk_c91448c8c5ee4743bc73e7f17b686ce3 показывают другое, трубчатое исполнение Огр-1–Огр-4.\", \"Ведомости blk_c64f170e3f0c49019ae895a5a997133c и blk_ba009d045c7c4efba360f827965b8cba адресуют крепления альпинистов секций С2, С3 к КМ9.2.\"], \"known_facts\": [\"В АР узел канатных креплений показан в контексте индивидуальных стоек стеклянного ограждения ОГН-4.\", \"Детали пластин и анкеров представленных КМ5.2 относятся к трубчатым ограждениям Огр-1–Огр-4.\", \"Адресная связь этих деталей КМ5.2 с O27 не установлена.\"], \"unknowns\": [\"Применимый конструктивный комплект и его согласованная версия.\", \"Детали фиксатора, его соединения со стойкой и крепления стойки к основанию.\", \"Эксплуатационные воздействия и расчетное обоснование именно этой цепочки.\"], \"engineer_action\": \"Указать существующие применимые листы и версии, сопоставить их с точками плана АР и представить соответствующие детали и расчетные основания. Если связь с КМ5.2 предполагается, подтвердить ее адресным документом с объяснением различий исполнения; не назначать анкеры O27 по сходству названий марок.\"}",
+          "block_ids": [
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_4f5a5c1b47a7ddd4f821f962",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_55e71c1dfc34e335afc39be5",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_dc01061d43b1ae2cd6a1895f",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_5c034eb56aca64bf4dc808ea",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_c5476aff8bccd2f32de85a99",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_5049ff0b9d441f2de36bff4d",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_0ef3c69fb44692977f88cc0d",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_36809c11ee7a9f468238605d",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_9b6a30d779f3a55a70ba875f",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_1831655d4d240eafeead5728",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_5963ffb4be6d268e17f29764",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_d16d639eb0bda53757f43a9a",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_fbefe31bc050cff3c4caf4d9",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_fb25aa9f3d78748db8a7f2b3",
+            "blk_doc_439fc9c2bc64c81d4a6a53cd_3de0f12d7e400ff628175bae",
+            "blk_doc_1c01212194ad933933ea6808_699791e01ad717f5b719de8a",
+            "blk_doc_1c01212194ad933933ea6808_0b3941a08eaf5929bed06b14",
+            "blk_doc_1c01212194ad933933ea6808_75ca3a08a142036dcbfab33d",
+            "blk_doc_1c01212194ad933933ea6808_4f2994bfd1d6bfe64e908d09",
+            "blk_doc_1c01212194ad933933ea6808_740e7ee1f62627d7cd656fed",
+            "blk_doc_1c01212194ad933933ea6808_542ceb3c8bdfa6d1145b8263",
+            "blk_doc_1c01212194ad933933ea6808_441c8393e3228230c4c3c8ae",
+            "blk_doc_1c01212194ad933933ea6808_cc8a8b83691d7949ddc72461",
+            "blk_doc_1c01212194ad933933ea6808_90b0611133f98ca0edd6c034",
+            "blk_doc_1c01212194ad933933ea6808_840ac9b0426240142c3970a6",
+            "blk_doc_1c01212194ad933933ea6808_41ed9da6b6e6f57067081d48",
+            "blk_doc_1c01212194ad933933ea6808_98c5e5df73d738b1d646b703",
+            "blk_doc_1c01212194ad933933ea6808_cddd5bc09c8ca8c070516ff2",
+            "blk_doc_1c01212194ad933933ea6808_ec25948915b77858616b5002",
+            "blk_doc_1c01212194ad933933ea6808_5f1952de82eff95626a1e863",
+            "blk_doc_1c01212194ad933933ea6808_427691b9c3d3123f5da482e6",
+            "blk_doc_1c01212194ad933933ea6808_0d59274815d2269491620191",
+            "blk_doc_1c01212194ad933933ea6808_840ad5e602d55a73b5bf72e9",
+            "blk_doc_1c01212194ad933933ea6808_350d261035885044299ed9e6",
+            "blk_doc_c007f6bb47214b8ee40de364_1d7ebaa13efe298ac2c225ef",
+            "blk_doc_c007f6bb47214b8ee40de364_70c1ef080e6f7aab6f0d20dd",
+            "blk_doc_c007f6bb47214b8ee40de364_43257f89c77caf37f93879ef",
+            "blk_doc_c007f6bb47214b8ee40de364_4c4aa46c2dc60a2df5b3c60b",
+            "blk_doc_c007f6bb47214b8ee40de364_270ccc9cd4a3ee9fba671ba7",
+            "blk_doc_c007f6bb47214b8ee40de364_d6b8de288f04c98a5f7ff9a1",
+            "blk_doc_c007f6bb47214b8ee40de364_e22f765b289a29c05a619aaf",
+            "blk_doc_c007f6bb47214b8ee40de364_b567abe67b69b5a1b118aef8",
+            "blk_doc_c007f6bb47214b8ee40de364_df87051e83034b97ab5d9ee9",
+            "blk_doc_c007f6bb47214b8ee40de364_ee4a8f8d21a8cc79024edff1",
+            "blk_doc_c007f6bb47214b8ee40de364_84da2d52b3d61ae2b5e1279c",
+            "blk_doc_c007f6bb47214b8ee40de364_0a2f8f88290e121a25dce46f",
+            "blk_doc_c007f6bb47214b8ee40de364_ade0df9cf60d46aabfc0639d",
+            "blk_doc_c007f6bb47214b8ee40de364_7c37d6b72ac6996edf35405c",
+            "blk_doc_c007f6bb47214b8ee40de364_76d35d978796bc8ed5f4ae4b",
+            "blk_doc_c007f6bb47214b8ee40de364_2920a0d4f3d0d8ce8f67fb31",
+            "blk_doc_c007f6bb47214b8ee40de364_788296dfd1b8dcb824306c55",
+            "blk_doc_c007f6bb47214b8ee40de364_79ef6a7124c3d060674849bd",
+            "blk_doc_c007f6bb47214b8ee40de364_2c060b1e92eed23fdf906b38"
+          ]
+        }
+      ]
+    }
+  ],
+  "analysis_coverage": {
+    "schema_version": 1,
+    "summary": {
+      "gemma_uncovered_count": 0,
+      "single_block_failed_count": 0,
+      "stage02_crop_missing_count": 0,
+      "excluded_from_full_analysis_count": 0,
+      "base_gemma_covered_count": 0,
+      "base_gemma_total_count": 0,
+      "high_detail_candidates": 0,
+      "high_detail_successful": 0,
+      "high_detail_skipped_large": 0,
+      "base_only_blocks_count": 0,
+      "upgraded_to_300_count": 0
+    },
+    "gemma_uncovered_blocks": [],
+    "single_block_failed_blocks": [],
+    "stage02_crop_missing_blocks": [],
+    "blocks_analyzed_only_with_100_dpi_base": [],
+    "blocks_upgraded_to_300": [],
+    "excluded_blocks_from_full_analysis": [],
+    "sections": [
+      {
+        "title": "Блоки без подготовленного контекста",
+        "blocks": []
+      },
+      {
+        "title": "Ошибки single-block анализа",
+        "blocks": []
+      },
+      {
+        "title": "Блоки, исключённые из полноценного анализа",
+        "blocks": []
+      },
+      {
+        "title": "Блоки, оставшиеся на base 100 DPI",
+        "blocks": []
+      },
+      {
+        "title": "Блоки, upgraded до 300 DPI",
+        "blocks": []
+      }
+    ]
+  },
+  "candidate_recovery_reports": [
+    {
+      "link_repairs": {
+        "applied": [],
+        "pending": [],
+        "semantic_verified": false
+      },
+      "context_retrieval": null,
+      "stage": "candidate_recovery_d71f605fdeb71a17",
+      "candidate_decisions": [
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/0/deferred_findings/0",
+          "source_id": "D-0137bcb0d75d03a0f7291883",
+          "decision": "needs_data",
+          "reason": "На приложенном изображении плана кровли на отм. +41.280, лист 2, в правой части показаны два обозначения «Кровельный аэратор АК-1». Авторитетный TEXT спецификации подтверждает количество АК-1 — 3 шт. Однако требуемый план кровли на отм. +44.870, лист 4, не предоставлен. Размещение третьего аэратора и область действия спецификации не установлены; расхождение нельзя ни подтвердить, ни опровергнуть.",
+          "source_refs": [
+            "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+            "blk_2fc185aaba9941a8a14de201a4b9c198"
+          ],
+          "deferred": true,
+          "gate_reasons": [
+            "non_publishable_claim_type",
+            "insufficient_context",
+            "speculative_wording"
+          ],
+          "required_context": [
+            "План кровли 2, 3 секций на отм. +44.870 (лист 4)"
+          ],
+          "context_queries": [
+            "План кровли 2, 3 секций на отм. +44.870",
+            "АК-1",
+            "Спецификация кровельных аэраторов"
+          ]
+        }
+      ],
+      "pending": [],
+      "semantic_verified": false
+    },
+    {
+      "link_repairs": {
+        "applied": [],
+        "pending": [],
+        "semantic_verified": false
+      },
+      "context_retrieval": null,
+      "stage": "candidate_recovery_d71f605fdeb71a17_context",
+      "candidate_decisions": [
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/0/deferred_findings/0",
+          "source_id": "D-0137bcb0d75d03a0f7291883",
+          "decision": "retained",
+          "reason": "Запрошенный план листа 4 предоставлен и осмотрен вместе с обеими другими приложенными картинками. Спецификация подтверждает 3 шт. АК-1, на плане листа 2 идентифицированы два места установки. План на отм. +44.870 и аксонометрия не позволяют идентифицировать третий АК-1. Кандидат сохранён только как вопрос о размещении третьей позиции и согласовании количества; технический дефект и необходимость уменьшения количества не подтверждены. Существующих замечаний для дублирования нет.",
+          "source_refs": [
+            "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+            "blk_2fc185aaba9941a8a14de201a4b9c198",
+            "blk_d1465109f2c843cd8d4190cde8e9b75d",
+            "blk_edb43acbc543429aaae9aff33ffd8539"
+          ],
+          "deferred": true,
+          "gate_reasons": [
+            "non_publishable_claim_type",
+            "insufficient_context",
+            "speculative_wording"
+          ],
+          "required_context": [
+            "План кровли 2, 3 секций на отм. +44.870 (лист 4)"
+          ],
+          "required_context_reviewed": true
+        }
+      ],
+      "pending": [],
+      "semantic_verified": false
+    }
+  ],
+  "source_review_history": [
+    {
+      "finding_id": "F-024",
+      "original_finding": {
+        "object_id": "P03",
+        "operation": "dimension_consistency",
+        "severity": "question",
+        "problem": "Требуется уточнить высотную увязку К-3 в угловой области Ф.1.",
+        "description": "Для одного углового участка нижний план содержит отметки +20,840, +20,875, +20,870 и +20,910, финишный план — +20,990, а ведомость К-3 предусматривает плитку 40 мм и опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся к поверхности непосредственно под опорами, в трех перечисленных точках условная высота под плиткой составляет 110, 75 и 80 мм и выходит за указанный диапазон. Однако принадлежность этих отметок поверхности под опорами не установлена. Поэтому требуется уточнение конструкции, а не констатация превышения или невозможности монтажа.",
+        "solution": "Уточнить, к какой поверхности относятся нижние отметки в угловом участке, и показать локальную высотную увязку К-3 с финишным уровнем +20,990. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия.",
+        "sheet": "5",
+        "related_sheets": [
+          "7"
+        ],
+        "report_section": "questions",
+        "question_basis": "actionable_source_ambiguity",
+        "profile_reason": "Неоднозначность касается размерной согласованности конкретного участка К-3: от поверхности отсчета отметок зависит применимая высота опор и увязка слоев покрытия. Основание вопроса — совместно заданные отметки и толщины, а не отсутствие документа в пакете.",
+        "engineer_action_required": true,
+        "evidence": [
+          {
+            "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+            "sheet": "5",
+            "description": "На нижнем плане Ф.1 ниже Б10₁, вдоль углового участка к В1₁, расположены выноски +20,840, +20,875, +20,870 и +20,910."
+          },
+          {
+            "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+            "sheet": "5",
+            "description": "На соответствующем финишном плане угловая область маркирована К-3 с отметкой +20,990."
+          },
+          {
+            "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+            "sheet": "7",
+            "description": "В строке К-3 предусмотрены бетонная плитка толщиной 40 мм и регулируемые опоры/воздушный зазор 25–50 мм."
+          }
+        ],
+        "operation_semantic_verified": false,
+        "source_finding_ids": [
+          "O-8524225dffeb6d942abcd0da"
+        ],
+        "operation_candidate_lineage": [
+          {
+            "source_finding_id": "O-8524225dffeb6d942abcd0da",
+            "status": "requires_semantic_review",
+            "source_claim": "problem: Требуется уточнить высотную увязку К-3 в угловой области Ф.1.\ndescription: Для одного углового участка нижний план содержит отметки +20,840, +20,875, +20,870 и +20,910, финишный план — +20,990, а ведомость К-3 предусматривает плитку 40 мм и опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся к поверхности непосредственно под опорами, в трех перечисленных точках условная высота под плиткой составляет 110, 75 и 80 мм и выходит за указанный диапазон. Однако принадлежность этих отметок поверхности под опорами не установлена. Поэтому требуется уточнение конструкции, а не констатация превышения или невозможности монтажа.\nsolution: Уточнить, к какой поверхности относятся нижние отметки в угловом участке, и показать локальную высотную увязку К-3 с финишным уровнем +20,990. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия.",
+            "existing_block_ids": [
+              "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+              "blk_f3aec0b585f6435080a6caa87767ba7c",
+              "blk_602b484f088b4a029d3ba6e01df3f645"
+            ],
+            "unresolved_block_ids": [],
+            "upstream_operation_context": {
+              "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+              "request_sha256": "de16b048ece9dbbd6441e6c3fa00590d8302f73a352cecba4ab3ac3ad500d3b9",
+              "supplied_source_ids": [
+                "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "blk_086a84d1c3534d70aa25347a3af1c2bb",
+                "blk_4627d64c6a6c4e76a9abc5e278844a50",
+                "blk_d84a19bcb0fd4084a6ef27c7a6ebf020",
+                "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                "blk_f3aec0b585f6435080a6caa87767ba7c",
+                "blk_43ba3b4bee434762829a4599c645e859",
+                "blk_a89f9cfd753e412fa2177ba8cb560ab8",
+                "blk_092e358681fc45ada6058a3f894b2582",
+                "blk_f2425907b04848fa875228c27e181eb3",
+                "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                "blk_0dc65bdd718344b78468a4d4cb3728de",
+                "blk_8df48eff096342b68d80dbde8a26883e",
+                "blk_602b484f088b4a029d3ba6e01df3f645",
+                "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                "blk_0fe02f45469f44bda5c419dc4901d78c",
+                "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                "blk_991adbd801a742779ab41df7896030b7",
+                "blk_b9257ef1636a40f9a224955e061eb46e",
+                "blk_f09f368364644083843f0762eb294a7d",
+                "blk_2fc185aaba9941a8a14de201a4b9c198",
+                "blk_856c9c095c754ef5a3e0444e6c1aacd7",
+                "blk_b29aa98eb0994f5c8f5901f9aa255c41",
+                "blk_4db6123b16be49dabceac1e51f96be26",
+                "blk_1a2e44c6b0e04c8d88fe4e33bb3e26d9",
+                "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+                "blk_ba73c64702884635a06b2882d4e2bf91",
+                "blk_fa94f8e6d5184c38a68292a0f7afdba7"
+              ],
+              "attached_graphic_ids": [
+                "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                "blk_f3aec0b585f6435080a6caa87767ba7c",
+                "blk_092e358681fc45ada6058a3f894b2582",
+                "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                "blk_8df48eff096342b68d80dbde8a26883e",
+                "blk_602b484f088b4a029d3ba6e01df3f645",
+                "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                "blk_0fe02f45469f44bda5c419dc4901d78c",
+                "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                "blk_991adbd801a742779ab41df7896030b7",
+                "blk_b9257ef1636a40f9a224955e061eb46e",
+                "blk_f09f368364644083843f0762eb294a7d"
+              ],
+              "reported_inspections_untrusted": [
+                {
+                  "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                  "sheet": "5",
+                  "description": "Нижний план Ф.1: воронка В-2 ниже Б10₁, продольная полоса, закругление и переход к В1₁. Видны 10,8%, две подписи 1,5% и локальные высотные выноски. Размеров между точками этих выносок вдоль расчетных путей нет."
+                },
+                {
+                  "block_id": "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                  "sheet": "5",
+                  "description": "Общий план шестого этажа на +20,810 устанавливает положение углового участка и ссылку Ф.1 на лист 5; локальных длин уклонов не дает."
+                },
+                {
+                  "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+                  "sheet": "5",
+                  "description": "Соответствующий угловой участок финишного покрытия К-3 имеет отметку +20,990 и плиточную раскладку. Красные угловые знаки обозначают начало раскладки согласно условным обозначениям, а не численные уклоны."
+                },
+                {
+                  "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                  "sheet": "7",
+                  "description": "Строка К-3: плитка 40 мм, регулируемые опоры/воздушный зазор 25–50 мм, общая толщина от 250 мм. Локального разреза с привязкой этих слоев к высотным выноскам P03 нет."
+                },
+                {
+                  "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                  "sheet": "2",
+                  "description": "План и аксонометрия кровли на +41,280 относятся к другому уровню; геометрию уклонов P03 не определяют."
+                },
+                {
+                  "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+                  "sheet": "3",
+                  "description": "План финишного покрытия на +41,280 и разрез К-4 не являются локальным разрезом К-3 шестого этажа."
+                },
+                {
+                  "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                  "sheet": "4",
+                  "description": "План кровли на +44,870 и аксонометрия экранов относятся к верхним конструкциям; размеров и отметок расчетных путей P03 нет."
+                },
+                {
+                  "block_id": "blk_8df48eff096342b68d80dbde8a26883e",
+                  "sheet": "14",
+                  "description": "Схема крепления альпинистов на +41,280 содержит размеры расстановки креплений, неприменимые к расчету уклонов P03."
+                },
+                {
+                  "block_id": "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                  "sheet": "3",
+                  "description": "Узел Г показывает парапетный водосток в покрытии К-1; на графике читается отметка +43,700. Привязки к К-3 на шестом этаже и к конкретной В-2 объекта P03 нет. Уклоны и размеры этого узла на P03 не перенесены."
+                },
+                {
+                  "block_id": "blk_0fe02f45469f44bda5c419dc4901d78c",
+                  "sheet": "11",
+                  "description": "Узел К показывает примыкание кровли к парапету с ограждением; узел И — выход на кровлю К-4 с отметками +41,290 и +40,690. Локальные поверхности отсчета К-3 и высоты опор P03 не установлены."
+                },
+                {
+                  "block_id": "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                  "sheet": "2",
+                  "description": "Узлы А и П относятся к К-4; узел Б показывает сопряжение К-4 и К-1. Отметки +41,280 и +40,690 и ограждение ОГН-4 не устанавливают конструкцию участка P03 с ОГН-5."
+                },
+                {
+                  "block_id": "blk_991adbd801a742779ab41df7896030b7",
+                  "sheet": "12",
+                  "description": "Узел Л показывает примыкание покрытия с маркой К-1.1 к стене; на графике читается +44,550. Регулируемые опоры и привязка к К-3 объекта P03 не показаны."
+                },
+                {
+                  "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+                  "sheet": "9",
+                  "description": "Схема размещения молниеотвода показывает регулируемую опору в К-4. Она поясняет устройство другого покрытия, но не задает фактическую высоту опор К-3 на P03."
+                },
+                {
+                  "block_id": "blk_f09f368364644083843f0762eb294a7d",
+                  "sheet": "11",
+                  "description": "Типовой узел внутреннего водостока с надставным элементом относится к К-4. Он не является узлом парапетной В-2 и не подтверждает перенос размеров локального понижения на P03."
+                },
+                {
+                  "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                  "sheet": "5",
+                  "description": "Нижний план Ф.1: В-2 ниже Б10₁, прямой участок, закругление и переход к В1₁. Читаются 10,8%, две подписи 1,5% и локальные высотные выноски; межосевые размеры не задают длины этих расчетных путей."
+                },
+                {
+                  "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+                  "sheet": "5",
+                  "description": "Финишный план того же углового участка: К-3, +20,990, плиточная раскладка и ОГН-5. Красные угловые знаки являются началом раскладки по легенде."
+                },
+                {
+                  "block_id": "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                  "sheet": "5",
+                  "description": "Общий план шестого этажа с указателем Ф.1 устанавливает расположение участка, но не дает локальной геометрии уклонов."
+                },
+                {
+                  "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                  "sheet": "7",
+                  "description": "Строка К-3: плитка 40 мм, регулируемые опоры/воздушный зазор 25–50 мм, общая толщина от 250 мм. Привязки высотных выносок P03 к отдельным слоям нет."
+                },
+                {
+                  "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                  "sheet": "2",
+                  "description": "План и аксонометрия кровли на +41,280 относятся к другому высотному уровню."
+                },
+                {
+                  "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+                  "sheet": "3",
+                  "description": "Финишный план на +41,280 и разрез К-4 не устанавливают конструкцию К-3 участка P03."
+                },
+                {
+                  "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                  "sheet": "4",
+                  "description": "План кровли на +44,870 и аксонометрия экранов не содержат локальной высотной увязки P03."
+                },
+                {
+                  "block_id": "blk_8df48eff096342b68d80dbde8a26883e",
+                  "sheet": "14",
+                  "description": "Размеры схемы крепления альпинистов на +41,280 относятся к размещению креплений, а не к расчетным путям уклонов P03."
+                },
+                {
+                  "block_id": "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                  "sheet": "3",
+                  "description": "Узел Г: парапетный водосток К-1, отметка +43,700. Прямая применимость к В-2 в К-3 шестого этажа не установлена."
+                },
+                {
+                  "block_id": "blk_0fe02f45469f44bda5c419dc4901d78c",
+                  "sheet": "11",
+                  "description": "Узел К показывает парапет с ограждением; узел И — выход на кровлю К-4 с отметками +41,290 и +40,690. Локальной привязки к P03 нет."
+                },
+                {
+                  "block_id": "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                  "sheet": "2",
+                  "description": "Узлы А и П относятся к К-4, узел Б — к сопряжению К-4 и К-1. Высоты опор К-3 они не определяют."
+                },
+                {
+                  "block_id": "blk_991adbd801a742779ab41df7896030b7",
+                  "sheet": "12",
+                  "description": "Узел Л: примыкание К-1.1 к стене, отметка +44,550. Связь с конструкцией P03 не показана."
+                },
+                {
+                  "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+                  "sheet": "9",
+                  "description": "Схема молниеотвода и регулируемой опоры относится к К-4; фактическую высоту опор К-3 не задает."
+                },
+                {
+                  "block_id": "blk_f09f368364644083843f0762eb294a7d",
+                  "sheet": "11",
+                  "description": "Узел внутреннего водостока относится к К-4 и не устанавливает устройство парапетной В-2 объекта P03."
+                }
+              ],
+              "reported_context_queries": [
+                "Ф.1",
+                "К-3",
+                "Б10₁",
+                "+20,840",
+                "+20,990",
+                "В-2"
+              ],
+              "local_search_stop": {
+                "status": "no_additional_sources",
+                "omitted": [],
+                "absence_proven": false
+              },
+              "boundary": "Supplied sources and local search stop are provenance, not completeness. Inspection descriptions are prior model observations, not established facts. Recheck applicability and evidence independently.",
+              "semantic_verified": false
+            }
+          }
+        ],
+        "id": "F-024",
+        "source_stage": "AR_roof_terminal_disposition",
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "O-8524225dffeb6d942abcd0da",
+            "source_claim": "problem: Требуется уточнить высотную увязку К-3 в угловой области Ф.1.\ndescription: Для одного углового участка нижний план содержит отметки +20,840, +20,875, +20,870 и +20,910, финишный план — +20,990, а ведомость К-3 предусматривает плитку 40 мм и опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся к поверхности непосредственно под опорами, в трех перечисленных точках условная высота под плиткой составляет 110, 75 и 80 мм и выходит за указанный диапазон. Однако принадлежность этих отметок поверхности под опорами не установлена. Поэтому требуется уточнение конструкции, а не констатация превышения или невозможности монтажа.\nsolution: Уточнить, к какой поверхности относятся нижние отметки в угловом участке, и показать локальную высотную увязку К-3 с финишным уровнем +20,990. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия.",
+            "block_ids": [
+              "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+              "blk_f3aec0b585f6435080a6caa87767ba7c",
+              "blk_602b484f088b4a029d3ba6e01df3f645"
+            ],
+            "upstream_operation_context": {
+              "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+              "request_sha256": "de16b048ece9dbbd6441e6c3fa00590d8302f73a352cecba4ab3ac3ad500d3b9",
+              "supplied_source_ids": [
+                "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "blk_086a84d1c3534d70aa25347a3af1c2bb",
+                "blk_4627d64c6a6c4e76a9abc5e278844a50",
+                "blk_d84a19bcb0fd4084a6ef27c7a6ebf020",
+                "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                "blk_f3aec0b585f6435080a6caa87767ba7c",
+                "blk_43ba3b4bee434762829a4599c645e859",
+                "blk_a89f9cfd753e412fa2177ba8cb560ab8",
+                "blk_092e358681fc45ada6058a3f894b2582",
+                "blk_f2425907b04848fa875228c27e181eb3",
+                "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                "blk_0dc65bdd718344b78468a4d4cb3728de",
+                "blk_8df48eff096342b68d80dbde8a26883e",
+                "blk_602b484f088b4a029d3ba6e01df3f645",
+                "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                "blk_0fe02f45469f44bda5c419dc4901d78c",
+                "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                "blk_991adbd801a742779ab41df7896030b7",
+                "blk_b9257ef1636a40f9a224955e061eb46e",
+                "blk_f09f368364644083843f0762eb294a7d",
+                "blk_2fc185aaba9941a8a14de201a4b9c198",
+                "blk_856c9c095c754ef5a3e0444e6c1aacd7",
+                "blk_b29aa98eb0994f5c8f5901f9aa255c41",
+                "blk_4db6123b16be49dabceac1e51f96be26",
+                "blk_1a2e44c6b0e04c8d88fe4e33bb3e26d9",
+                "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+                "blk_ba73c64702884635a06b2882d4e2bf91",
+                "blk_fa94f8e6d5184c38a68292a0f7afdba7"
+              ],
+              "attached_graphic_ids": [
+                "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                "blk_f3aec0b585f6435080a6caa87767ba7c",
+                "blk_092e358681fc45ada6058a3f894b2582",
+                "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                "blk_8df48eff096342b68d80dbde8a26883e",
+                "blk_602b484f088b4a029d3ba6e01df3f645",
+                "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                "blk_0fe02f45469f44bda5c419dc4901d78c",
+                "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                "blk_991adbd801a742779ab41df7896030b7",
+                "blk_b9257ef1636a40f9a224955e061eb46e",
+                "blk_f09f368364644083843f0762eb294a7d"
+              ],
+              "reported_inspections_untrusted": [
+                {
+                  "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                  "sheet": "5",
+                  "description": "Нижний план Ф.1: воронка В-2 ниже Б10₁, продольная полоса, закругление и переход к В1₁. Видны 10,8%, две подписи 1,5% и локальные высотные выноски. Размеров между точками этих выносок вдоль расчетных путей нет."
+                },
+                {
+                  "block_id": "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                  "sheet": "5",
+                  "description": "Общий план шестого этажа на +20,810 устанавливает положение углового участка и ссылку Ф.1 на лист 5; локальных длин уклонов не дает."
+                },
+                {
+                  "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+                  "sheet": "5",
+                  "description": "Соответствующий угловой участок финишного покрытия К-3 имеет отметку +20,990 и плиточную раскладку. Красные угловые знаки обозначают начало раскладки согласно условным обозначениям, а не численные уклоны."
+                },
+                {
+                  "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                  "sheet": "7",
+                  "description": "Строка К-3: плитка 40 мм, регулируемые опоры/воздушный зазор 25–50 мм, общая толщина от 250 мм. Локального разреза с привязкой этих слоев к высотным выноскам P03 нет."
+                },
+                {
+                  "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                  "sheet": "2",
+                  "description": "План и аксонометрия кровли на +41,280 относятся к другому уровню; геометрию уклонов P03 не определяют."
+                },
+                {
+                  "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+                  "sheet": "3",
+                  "description": "План финишного покрытия на +41,280 и разрез К-4 не являются локальным разрезом К-3 шестого этажа."
+                },
+                {
+                  "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                  "sheet": "4",
+                  "description": "План кровли на +44,870 и аксонометрия экранов относятся к верхним конструкциям; размеров и отметок расчетных путей P03 нет."
+                },
+                {
+                  "block_id": "blk_8df48eff096342b68d80dbde8a26883e",
+                  "sheet": "14",
+                  "description": "Схема крепления альпинистов на +41,280 содержит размеры расстановки креплений, неприменимые к расчету уклонов P03."
+                },
+                {
+                  "block_id": "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                  "sheet": "3",
+                  "description": "Узел Г показывает парапетный водосток в покрытии К-1; на графике читается отметка +43,700. Привязки к К-3 на шестом этаже и к конкретной В-2 объекта P03 нет. Уклоны и размеры этого узла на P03 не перенесены."
+                },
+                {
+                  "block_id": "blk_0fe02f45469f44bda5c419dc4901d78c",
+                  "sheet": "11",
+                  "description": "Узел К показывает примыкание кровли к парапету с ограждением; узел И — выход на кровлю К-4 с отметками +41,290 и +40,690. Локальные поверхности отсчета К-3 и высоты опор P03 не установлены."
+                },
+                {
+                  "block_id": "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                  "sheet": "2",
+                  "description": "Узлы А и П относятся к К-4; узел Б показывает сопряжение К-4 и К-1. Отметки +41,280 и +40,690 и ограждение ОГН-4 не устанавливают конструкцию участка P03 с ОГН-5."
+                },
+                {
+                  "block_id": "blk_991adbd801a742779ab41df7896030b7",
+                  "sheet": "12",
+                  "description": "Узел Л показывает примыкание покрытия с маркой К-1.1 к стене; на графике читается +44,550. Регулируемые опоры и привязка к К-3 объекта P03 не показаны."
+                },
+                {
+                  "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+                  "sheet": "9",
+                  "description": "Схема размещения молниеотвода показывает регулируемую опору в К-4. Она поясняет устройство другого покрытия, но не задает фактическую высоту опор К-3 на P03."
+                },
+                {
+                  "block_id": "blk_f09f368364644083843f0762eb294a7d",
+                  "sheet": "11",
+                  "description": "Типовой узел внутреннего водостока с надставным элементом относится к К-4. Он не является узлом парапетной В-2 и не подтверждает перенос размеров локального понижения на P03."
+                },
+                {
+                  "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                  "sheet": "5",
+                  "description": "Нижний план Ф.1: В-2 ниже Б10₁, прямой участок, закругление и переход к В1₁. Читаются 10,8%, две подписи 1,5% и локальные высотные выноски; межосевые размеры не задают длины этих расчетных путей."
+                },
+                {
+                  "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+                  "sheet": "5",
+                  "description": "Финишный план того же углового участка: К-3, +20,990, плиточная раскладка и ОГН-5. Красные угловые знаки являются началом раскладки по легенде."
+                },
+                {
+                  "block_id": "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                  "sheet": "5",
+                  "description": "Общий план шестого этажа с указателем Ф.1 устанавливает расположение участка, но не дает локальной геометрии уклонов."
+                },
+                {
+                  "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                  "sheet": "7",
+                  "description": "Строка К-3: плитка 40 мм, регулируемые опоры/воздушный зазор 25–50 мм, общая толщина от 250 мм. Привязки высотных выносок P03 к отдельным слоям нет."
+                },
+                {
+                  "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                  "sheet": "2",
+                  "description": "План и аксонометрия кровли на +41,280 относятся к другому высотному уровню."
+                },
+                {
+                  "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+                  "sheet": "3",
+                  "description": "Финишный план на +41,280 и разрез К-4 не устанавливают конструкцию К-3 участка P03."
+                },
+                {
+                  "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                  "sheet": "4",
+                  "description": "План кровли на +44,870 и аксонометрия экранов не содержат локальной высотной увязки P03."
+                },
+                {
+                  "block_id": "blk_8df48eff096342b68d80dbde8a26883e",
+                  "sheet": "14",
+                  "description": "Размеры схемы крепления альпинистов на +41,280 относятся к размещению креплений, а не к расчетным путям уклонов P03."
+                },
+                {
+                  "block_id": "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                  "sheet": "3",
+                  "description": "Узел Г: парапетный водосток К-1, отметка +43,700. Прямая применимость к В-2 в К-3 шестого этажа не установлена."
+                },
+                {
+                  "block_id": "blk_0fe02f45469f44bda5c419dc4901d78c",
+                  "sheet": "11",
+                  "description": "Узел К показывает парапет с ограждением; узел И — выход на кровлю К-4 с отметками +41,290 и +40,690. Локальной привязки к P03 нет."
+                },
+                {
+                  "block_id": "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                  "sheet": "2",
+                  "description": "Узлы А и П относятся к К-4, узел Б — к сопряжению К-4 и К-1. Высоты опор К-3 они не определяют."
+                },
+                {
+                  "block_id": "blk_991adbd801a742779ab41df7896030b7",
+                  "sheet": "12",
+                  "description": "Узел Л: примыкание К-1.1 к стене, отметка +44,550. Связь с конструкцией P03 не показана."
+                },
+                {
+                  "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+                  "sheet": "9",
+                  "description": "Схема молниеотвода и регулируемой опоры относится к К-4; фактическую высоту опор К-3 не задает."
+                },
+                {
+                  "block_id": "blk_f09f368364644083843f0762eb294a7d",
+                  "sheet": "11",
+                  "description": "Узел внутреннего водостока относится к К-4 и не устанавливает устройство парапетной В-2 объекта P03."
+                }
+              ],
+              "reported_context_queries": [
+                "Ф.1",
+                "К-3",
+                "Б10₁",
+                "+20,840",
+                "+20,990",
+                "В-2"
+              ],
+              "local_search_stop": {
+                "status": "no_additional_sources",
+                "omitted": [],
+                "absence_proven": false
+              },
+              "boundary": "Supplied sources and local search stop are provenance, not completeness. Inspection descriptions are prior model observations, not established facts. Recheck applicability and evidence independently.",
+              "semantic_verified": false
+            }
+          }
+        ]
+      },
+      "decision": {
+        "response_sha256": "0b45ad951635ef8d6ab17710cc4d8f983d58066e9ae308d1875397bf73f42077",
+        "origin": "explicit_source_review",
+        "reviewer": "candidate_adjudicator",
+        "reason": "Подтверждено основание существующего вопроса: для одного участка К-3 заданы нижние отметки, финишный уровень и диапазон опор, но их послойная увязка в рассмотренных источниках не определена однозначно. Условная арифметика верна; фактическое превышение высоты опор из нее не следует. Все 14 изображений и предоставленный авторитетный TEXT рассмотрены. Дополнительные планы и узлы не разрешают локальную неоднозначность К-3. Вопрос сохраняется в пределах выполненного обзора источников, без утверждения физического дефекта или отсутствия деталировки во всем проекте.",
+        "action": "question",
+        "question_basis": "actionable_source_ambiguity",
+        "profile_reason": "Неоднозначность касается размерной согласованности конкретного углового участка Ф.1: от поверхности отсчета нижних отметок зависит высота пространства под плиткой и применимость опор/зазора 25–50 мм. Основанием служит сочетание непосредственно показанных отметок и параметров К-3, а не сама по себе неполнота пакета.",
+        "context_search_completed": true,
+        "engineer_action_required": true,
+        "context_search_boundary": {
+          "scope": "Ограниченная проверка предоставленных материалов ПД-00580716-АР6.2, секции 2, 3, применительно к угловому участку Ф.1 шестого этажа.",
+          "reported_queries_reviewed": [
+            "Ф.1",
+            "К-3",
+            "Б10₁",
+            "+20,840",
+            "+20,990",
+            "В-2"
+          ],
+          "images_inspected": [
+            "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+            "blk_f3aec0b585f6435080a6caa87767ba7c",
+            "blk_602b484f088b4a029d3ba6e01df3f645",
+            "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+            "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+            "blk_092e358681fc45ada6058a3f894b2582",
+            "blk_d1465109f2c843cd8d4190cde8e9b75d",
+            "blk_8df48eff096342b68d80dbde8a26883e",
+            "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+            "blk_0fe02f45469f44bda5c419dc4901d78c",
+            "blk_3153a1f5ffb148518526e06c26ad1fcd",
+            "blk_991adbd801a742779ab41df7896030b7",
+            "blk_b9257ef1636a40f9a224955e061eb46e",
+            "blk_f09f368364644083843f0762eb294a7d"
+          ],
+          "text_reviewed": "Все предоставленные блоки authoritative_text: условные обозначения, примечания, ведомость воронок, спецификация аэраторов, состав покрытия на листе 11 и сведения по молниезащите. TEXT принят без исправлений по растрам.",
+          "actual_review": "Сопоставлены нижний и финишный планы Ф.1, общий план шестого этажа и строка К-3 ведомости. Проверены дополнительные планы на +41,280 и +44,870, схема креплений, узлы Г, К, И, А, Б, П, Л, схема молниеотвода и узел внутреннего водостока. Их марки, уровни и назначение не устанавливают поверхность опирания К-3 в рассматриваемых точках.",
+          "limitations": "Поисковые запросы и local_search_stop являются сообщенной поисковой историей; самостоятельный поиск не выполнялся. Числа попаданий и полнота поиска по проекту не подтверждены. Завершен обзор предоставленного ограниченного набора, а не доказательство отсутствия других источников. Общие примечания о понижении воронок не дают послойной привязки рассматриваемых отметок.",
+          "absence_proven": false
+        },
+        "decision_affected": "Определить поверхность отсчета нижних отметок и локальную конструкцию К-3; подтвердить возможность применения опор/воздушного зазора 25–50 мм при финише +20,990 либо согласовать необходимые изменения отметок и состава покрытия.",
+        "claim_reviews": [
+          {
+            "claim_id": "F-024-C1",
+            "role": "defect_basis",
+            "verdict": "supported",
+            "reason": "На изображении blk_7542a26ddb2e4317bf9a1c3e1e239b62 у участка ниже Б10₁, закругления и перехода к В1₁ непосредственно показаны +20,840, +20,875, +20,870 и +20,910. Это выноски разных точек одного участка. Общий план blk_000cf32a4e3b4a12974ea5fb7b608c39 подтверждает положение фрагмента Ф.1 на шестом этаже.",
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": true
+          },
+          {
+            "claim_id": "F-024-C2",
+            "role": "defect_basis",
+            "verdict": "supported",
+            "reason": "На blk_f3aec0b585f6435080a6caa87767ba7c соответствующий участок перед закруглением обозначен К-3 и +20,990. Соответствие подтверждается конфигурацией стен, закругления и ОГН-5. Это отметка финишного участка; отдельных высотных выносок во всех расчетных точках здесь нет. Назначение отделки К-3 подтверждено TEXT blk_086a84d1c3534d70aa25347a3af1c2bb.",
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": true
+          },
+          {
+            "claim_id": "F-024-C3",
+            "role": "defect_basis",
+            "verdict": "supported",
+            "reason": "В строке К-3 изображения blk_602b484f088b4a029d3ba6e01df3f645 непосредственно указаны плитка 40 мм и пластиковые регулируемые опоры HILST серии LIFT либо аналог/воздушный зазор 25–50 мм. Общая толщина от 250 мм относится ко всему покрытию и не заменяет диапазон данного слоя. Диапазон 30–230 мм из других узлов нельзя переносить на К-3.",
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": true
+          },
+          {
+            "claim_id": "F-024-C4",
+            "role": "defect_basis",
+            "verdict": "supported",
+            "reason": "По непосредственно показанным исходным данным трех изображений расчет h = (20,990 − z) × 1000 − 40 дает для +20,840, +20,875, +20,870 и +20,910 соответственно 110, 75, 80 и 40 мм. Первые три значения превышают 50 мм на 60, 25 и 30 мм, четвертое входит в диапазон 25–50 мм. Это расчетные разности, а не округленные коэффициенты или измеренные высоты опор. Вывод поддержан только условно: нижняя отметка должна относиться непосредственно к поверхности опирания, а +20,990 — к верху плитки в той же точке.",
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": true
+          },
+          {
+            "claim_id": "F-024-C5",
+            "role": "defect_basis",
+            "verdict": "supported",
+            "reason": "Нижний план Ф.1 содержит высотные выноски без однозначной связи с отдельным слоем К-3, а схема и состав К-3 в ведомости не привязаны к этим выноскам. Формулировка «верх покрытия» в TEXT blk_d84a19bcb0fd4084a6ef27c7a6ebf020 не устанавливает непосредственно низ опор на отдельном плане покрытия шестого этажа. Проверенные изображения 4, 6, 7 и 8 относятся к другим уровням или назначению; изображения 9–14 показывают К-1, К-1.1, К-4 либо узел без локальной привязки к этим точкам К-3. В пределах данного обзора поверхность отсчета остается неустановленной. Проектное отсутствие соответствующего решения не утверждается.",
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": true
+          },
+          {
+            "claim_id": "F-024-C6",
+            "role": "context",
+            "verdict": "needs_data",
+            "reason": "Фактическая применимость диапазона 25–50 мм не установлена: планы и ведомость не определяют локальную высоту опор с учетом поверхности отсчета и всех промежуточных слоев. Нужна однозначная послойная увязка рассматриваемых точек. Это открытый предмет существующего вопроса, а не подтвержденное основание физического дефекта; ни применимость, ни невозможность монтажа не доказаны.",
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": false
+          },
+          {
+            "claim_id": "F-024-C7",
+            "role": "recommendation",
+            "verdict": "supported",
+            "supporting_claim_ids": [
+              "F-024-C1",
+              "F-024-C2",
+              "F-024-C3",
+              "F-024-C4",
+              "F-024-C5"
+            ],
+            "reason": "Непосредственно подтвержденные отметки и параметры К-3 дают условные результаты по обе стороны границы 50 мм, а поверхность отсчета не определена. Поэтому уточнение локальной увязки влияет на конкретный выбор конструкции. Рекомендация соразмерна основанию: сначала установить поверхности и высоты, затем подтвердить параметры или согласовать изменения. Категория question обоснована необходимостью проектного решения, без утверждения аварии, обязательной замены опор или нарушения нормы.",
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": true
+          }
+        ],
+        "approved_fields": {
+          "problem": "Требуется уточнить высотную увязку К-3 в угловой области Ф.1.",
+          "description": "На нижнем плане углового участка Ф.1 показаны отметки +20,840, +20,875, +20,870 и +20,910; соответствующий участок финишного покрытия К-3 обозначен +20,990. Ведомость К-3 задает плитку 40 мм и регулируемые опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся непосредственно к поверхности опирания, а финиш +20,990 применим в соответствующих точках, расчетная высота под плиткой составляет соответственно 110, 75, 80 и 40 мм. Первые три значения выходят за диапазон, четвертое входит в него. Однако в рассмотренных источниках послойная привязка нижних отметок не установлена однозначно. Это основание для уточнения проектного решения; фактическое превышение высоты опор или невозможность монтажа не установлены.",
+          "solution": "Уточнить поверхности отсчета нижних отметок в угловом участке Ф.1 и показать локальную высотную увязку К-3: поверхность опирания, низ плитки и финиш +20,990 в соответствующих точках с учетом промежуточных слоев при их наличии. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия."
+        },
+        "final_wording_verified": true,
+        "display_field_reviews": {
+          "severity": {
+            "original_value_sha256": "6d6ca52ed3519c9caf99237c1b77d7a63cca5a5ef32b7131d6fe85a86f91a979",
+            "value": "question",
+            "consistent_with_final_claim": true,
+            "reason": "Сохранена категория существующего вопроса. Положительное основание — подтвержденная зависимость применимости заданного диапазона опор от неоднозначной послойной привязки отметок конкретного участка. Формулировка требует проектного уточнения и не приписывает объекту установленный физический дефект, нормативное нарушение или доказанные последствия."
+          }
+        }
+      },
+      "response": {
+        "finding_id": "F-024",
+        "finding_sha256": "eb529b767ecad79b888975f56a11a52ae6fbc6177021f1bba5d6c5ec6c595ed2",
+        "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+        "context_sha256": null,
+        "claims": [
+          {
+            "claim_id": "F-024-C1",
+            "claim": "Нижний план углового участка Ф.1 содержит отметки +20,840, +20,875, +20,870 и +20,910.",
+            "status": "supported",
+            "reason": "Перечисленные выноски видны на участке К-3 ниже оси Б10₁, включающем закругление и переход к оси В1₁. Это несколько точек одного углового участка, а не одна точка с противоречащими отметками.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "image_sha256": "4d019dccbfa7499d275343ed7a63cdcdc8c3b5a261c28ae2753845b6c0cb76b7",
+                "bbox_norm_xyxy": [
+                  0.075,
+                  0.5,
+                  0.365,
+                  0.83
+                ],
+                "observation": "На нижнем плане у прямого участка и закругления К-3 показаны +20,840, +20,875, +20,870 и +20,910; рядом обозначены В-2 и ОГН-5."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+                "image_sha256": "e36a141cf40ac3388876bc60bbc478ce5d31b827a188f82fcfaffdd218047f63",
+                "bbox_norm_xyxy": [
+                  0.2,
+                  0.7,
+                  0.58,
+                  0.9
+                ],
+                "observation": "Общий план шестого этажа содержит указатель Ф.1/5 на наружный угловой участок балконов/террас."
+              }
+            ]
+          },
+          {
+            "claim_id": "F-024-C2",
+            "claim": "Соответствующий угловой участок финишного покрытия К-3 обозначен отметкой +20,990.",
+            "status": "supported",
+            "reason": "Соответствие участков подтверждается конфигурацией закругления, стен и ограждения ОГН-5. На финишном плане перед закруглением стоит марка К-3 с отметкой +20,990. Это обозначение финишного участка, а не отдельная высотная выноска в каждой точке нижнего плана.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+                "image_sha256": "b2ea91738b345a61639775c648f0964f66fe8b9ca12db56a9d78c03d3f18c430",
+                "bbox_norm_xyxy": [
+                  0.165,
+                  0.53,
+                  0.415,
+                  0.83
+                ],
+                "observation": "Финишный план показывает плиточную раскладку на закругляющемся участке, ОГН-5 и обозначение К-3 с отметкой +20,990."
+              },
+              {
+                "type": "text",
+                "block_id": "blk_086a84d1c3534d70aa25347a3af1c2bb",
+                "quote": "- Покрытие балконов/террас (отделка): Тип К-3"
+              }
+            ]
+          },
+          {
+            "claim_id": "F-024-C3",
+            "claim": "Ведомость К-3 предусматривает плитку толщиной 40 мм и регулируемые опоры/воздушный зазор 25–50 мм.",
+            "status": "supported",
+            "reason": "В строке марки К-3 пункт 1 задает бетонную тротуарную плитку 40 мм, пункт 2 — пластиковые регулируемые опоры HILST серии LIFT либо аналог и воздушный зазор 25–50 мм. Общая толщина «от 250» относится ко всей конструкции и не заменяет диапазон пункта 2.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                "image_sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+                "bbox_norm_xyxy": [
+                  0.007,
+                  0.379,
+                  0.981,
+                  0.601
+                ],
+                "observation": "Строка К-3: пункт 1 — плитка 40 мм; пункт 2 — регулируемые опоры/воздушный зазор 25–50 мм; далее перечислены геотекстиль, гидроизоляция, стяжка, утеплитель и нижележащие слои."
+              }
+            ]
+          },
+          {
+            "claim_id": "F-024-C4",
+            "claim": "Если нижние отметки обозначают поверхность непосредственно под опорами, условная высота под плиткой составляет 110, 75 и 80 мм в трех указанных точках и превышает 50 мм.",
+            "status": "supported",
+            "reason": "Исходные величины: финиш +20,990 м; плитка 40 мм из пункта 1 строки К-3; допустимый по пункту 2 диапазон 25–50 мм; нижние отметки +20,840, +20,875, +20,870, +20,910 м. Операция h = (20,990 − z) × 1000 − 40 дает соответственно 110, 75, 80 и 40 мм. Первые три результата превышают 50 мм на 60, 25 и 30 мм; четвертый входит в диапазон. Арифметика верна только при заявленной принадлежности нижних отметок поверхности опирания и применении финишного уровня +20,990 к соответствующим точкам. Она не доказывает фактические высоты установленных опор.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "image_sha256": "4d019dccbfa7499d275343ed7a63cdcdc8c3b5a261c28ae2753845b6c0cb76b7",
+                "bbox_norm_xyxy": [
+                  0.12,
+                  0.55,
+                  0.36,
+                  0.82
+                ],
+                "observation": "Выноски нижнего плана задают четыре исходные отметки условного расчета."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+                "image_sha256": "b2ea91738b345a61639775c648f0964f66fe8b9ca12db56a9d78c03d3f18c430",
+                "bbox_norm_xyxy": [
+                  0.19,
+                  0.633,
+                  0.226,
+                  0.676
+                ],
+                "observation": "Марка К-3 на финишном плане сопровождается отметкой +20,990."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                "image_sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+                "bbox_norm_xyxy": [
+                  0.267,
+                  0.383,
+                  0.902,
+                  0.434
+                ],
+                "observation": "Пункты 1 и 2 строки К-3 задают вычитаемые 40 мм и сравниваемый диапазон 25–50 мм."
+              }
+            ]
+          },
+          {
+            "claim_id": "F-024-C5",
+            "claim": "Принадлежность нижних отметок поверхности непосредственно под опорами является неустановленным условием расчета.",
+            "status": "supported",
+            "reason": "На плане есть выноски к поверхности покрытия, но нет однозначной послойной привязки этих отметок к низу опор. Формулировка легенды «верх покрытия» сама по себе не определяет нужный слой при наличии отдельных планов покрытия и отделки. Все 14 изображений рассмотрены: дополнительные планы относятся к другим высотным уровням, а показанные узлы — к К-1, К-1.1 или К-4 либо не имеют локальной привязки к рассматриваемому К-3. Они не устраняют эту неопределенность. Вывод ограничен предоставленными материалами и не означает отсутствия нужной деталировки во всем проекте.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_d84a19bcb0fd4084a6ef27c7a6ebf020",
+                "quote": "- Относительная отметка (верх покрытия)"
+              },
+              {
+                "type": "image",
+                "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "image_sha256": "4d019dccbfa7499d275343ed7a63cdcdc8c3b5a261c28ae2753845b6c0cb76b7",
+                "bbox_norm_xyxy": [
+                  0.12,
+                  0.55,
+                  0.36,
+                  0.82
+                ],
+                "observation": "Высотные выноски расположены на плане; послойного разреза через их точки и низ опор здесь нет."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+                "image_sha256": "d50ef30ba544c25b65902f067b9b882ef4f4bbdaf6825eb521187d1819336544",
+                "bbox_norm_xyxy": [
+                  0.02,
+                  0.055,
+                  0.99,
+                  0.97
+                ],
+                "observation": "План кровли на +41,280 и аксонометрия показывают участки К-1 и К-4; локальная увязка К-3 шестого этажа не показана."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+                "image_sha256": "102c52c1d31987aebc078ec45b62cab5e3621e444917a3769dd821fb93e2d0f6",
+                "bbox_norm_xyxy": [
+                  0.025,
+                  0.055,
+                  0.99,
+                  0.96
+                ],
+                "observation": "Финишный план кровли на +41,280 и верхний разрез относятся к К-4 и верхней кровле."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+                "image_sha256": "ecd8f35f878168be37687d5a02865910baee55f47b002691386ecc2d6cdfe16c",
+                "bbox_norm_xyxy": [
+                  0.025,
+                  0.08,
+                  0.99,
+                  0.96
+                ],
+                "observation": "План на +44,870 и аксонометрия шумозащитных экранов не задают поверхности отсчета отметок углового К-3."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_8df48eff096342b68d80dbde8a26883e",
+                "image_sha256": "ccb9b31c5a720817a68734d81f69f0e7f402a9d25b8f624db3a57c1bbbc00447",
+                "bbox_norm_xyxy": [
+                  0.025,
+                  0.025,
+                  0.91,
+                  0.91
+                ],
+                "observation": "Схема на +41,280 задает размещение креплений альпинистов по периметру, а не высоты опор К-3."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_70fe5a65859f4c0ab666ce5e17f1452d",
+                "image_sha256": "416269d2707b1c9e56e2e12194eade7f268ba2f64c3a085b587f8eb7ce6807f1",
+                "bbox_norm_xyxy": [
+                  0.04,
+                  0.065,
+                  0.87,
+                  0.95
+                ],
+                "observation": "Узел Г показывает парапетный водосток покрытия К-1 и отметку +43,700; привязка к угловому К-3 не обозначена."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_0fe02f45469f44bda5c419dc4901d78c",
+                "image_sha256": "48f62da7b22e733a31e6abca7e03bff51db5ad13493258fafef2f00e5150b973",
+                "bbox_norm_xyxy": [
+                  0.015,
+                  0.01,
+                  0.9,
+                  0.99
+                ],
+                "observation": "Узел К показывает примыкание к парапету, узел И — выход на кровлю К-4 с отметками +41,290 и +40,690. Связь с точками нижнего плана Ф.1 не показана."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_3153a1f5ffb148518526e06c26ad1fcd",
+                "image_sha256": "e066003bebe372a635227d528404d106e8efbe2d616a6bf50d62a25de512bac9",
+                "bbox_norm_xyxy": [
+                  0.065,
+                  0.035,
+                  0.97,
+                  0.97
+                ],
+                "observation": "Узлы А и П имеют марку К-4, узел Б показывает сопряжение К-4 и К-1; высотной привязки опор углового К-3 нет."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_991adbd801a742779ab41df7896030b7",
+                "image_sha256": "2a6c7f9f6f97186bebabcd60a80b3249c4b1c554fbbc4df2518bbb4f5006dcb6",
+                "bbox_norm_xyxy": [
+                  0.035,
+                  0.02,
+                  0.97,
+                  0.99
+                ],
+                "observation": "Узел Л обозначен К-1.1 и отметкой +44,550; конструкция с опорами К-3 здесь не показана."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+                "image_sha256": "7dd38136e060454182817ea43ee1391af5c00ccef3033610e3f9bcd509207f98",
+                "bbox_norm_xyxy": [
+                  0.025,
+                  0.11,
+                  0.88,
+                  0.9
+                ],
+                "observation": "Схема молниеотвода показывает регулируемую опору в конструкции К-4, без привязки к нижним отметкам Ф.1."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_f09f368364644083843f0762eb294a7d",
+                "image_sha256": "0b0c8b751412818275785ffa63a516959420682a06b1c24b985790d6690ec855",
+                "bbox_norm_xyxy": [
+                  0.08,
+                  0.06,
+                  0.96,
+                  0.91
+                ],
+                "observation": "Типовой внутренний водосток с надставным элементом обозначен К-4; он не устанавливает поверхность опирания К-3 у парапетной В-2."
+              }
+            ]
+          },
+          {
+            "claim_id": "F-024-C6",
+            "claim": "Фактическая применимость опор/зазора 25–50 мм в рассматриваемых точках К-3.",
+            "status": "needs_data",
+            "reason": "Условный расчет выявляет существенную зависимость результата от поверхности отсчета, но не устанавливает фактическую высоту опор. Не определены положение каждой отметки в составе покрытия и локальная конструкция под опорами. Поэтому ни фактическое превышение диапазона, ни невозможность монтажа не доказаны.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "image_sha256": "4d019dccbfa7499d275343ed7a63cdcdc8c3b5a261c28ae2753845b6c0cb76b7",
+                "bbox_norm_xyxy": [
+                  0.12,
+                  0.55,
+                  0.36,
+                  0.82
+                ],
+                "observation": "Нижние отметки даны на плане, без разреза через опоры в этих точках."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                "image_sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+                "bbox_norm_xyxy": [
+                  0.007,
+                  0.379,
+                  0.981,
+                  0.601
+                ],
+                "observation": "Ведомость задает общий состав К-3 и диапазон опор, но не привязывает отдельные слои к выноскам углового участка."
+              }
+            ],
+            "missing_data": [
+              "Однозначное указание слоя или поверхности, к которой относятся +20,840, +20,875, +20,870 и +20,910.",
+              "Локальная высотная увязка основания опор, низа плитки и финиша +20,990 в соответствующих точках, включая дополнительные слои или подкладки при их наличии."
+            ]
+          },
+          {
+            "claim_id": "F-024-C7",
+            "claim": "Требуется инженерное уточнение высотной увязки К-3; категория severity: question и предложенное условное решение соответствуют характеру замечания.",
+            "status": "supported",
+            "reason": "Основание вопроса — совместно заданные высотные отметки, толщина плитки и диапазон опор, для которых условный расчет дает разные результаты применимости. Уточнение поверхности отсчета влияет на конкретное решение: можно ли сохранить заданные опоры и состав покрытия при финише +20,990. Предложение показать локальную увязку и затем подтвердить либо согласовать параметры соразмерно этой неоднозначности. Это вопрос о согласованности проектных данных, без доказанного физического дефекта, обязательности замены опор или установленного нарушения нормы. Повторный поиск уже просмотренных материалов сам по себе вопрос не разрешает.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+                "image_sha256": "4d019dccbfa7499d275343ed7a63cdcdc8c3b5a261c28ae2753845b6c0cb76b7",
+                "bbox_norm_xyxy": [
+                  0.12,
+                  0.55,
+                  0.36,
+                  0.82
+                ],
+                "observation": "Нижний план задает несколько локальных уровней углового участка К-3."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+                "image_sha256": "b2ea91738b345a61639775c648f0964f66fe8b9ca12db56a9d78c03d3f18c430",
+                "bbox_norm_xyxy": [
+                  0.165,
+                  0.53,
+                  0.415,
+                  0.83
+                ],
+                "observation": "Соответствующий финишный участок К-3 обозначен +20,990."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                "image_sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+                "bbox_norm_xyxy": [
+                  0.267,
+                  0.383,
+                  0.902,
+                  0.434
+                ],
+                "observation": "Плитка 40 мм и опоры/зазор 25–50 мм образуют конкретные параметры, требующие увязки с отметками."
+              }
+            ]
+          }
+        ]
+      },
+      "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+    }
+  ]
+}

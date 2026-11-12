@@ -1,0 +1,176 @@
+{
+  "final_receipt": "applied",
+  "prior_findings_unchanged": 24,
+  "final_findings": 25,
+  "question_id": "F-025",
+  "question_exported_separately": true,
+  "manual_verdict_override": false,
+  "full_audit_acceptance": false,
+  "production_acceptance": false,
+  "limitations": [
+    "Known-source control, not blind discovery.",
+    "Applicable KM9.2/KM8 content remains unverified; no physical defect established.",
+    "Internal O27 editorial wording still needs product-level assessment."
+  ],
+  "image_bindings": [
+    {
+      "block_id": "blk_doc_439fc9c2bc64c81d4a6a53cd_d16d639eb0bda53757f43a9a",
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_439fc9c2bc64c81d4a6a53cd_d16d639eb0bda53757f43a9a.png",
+      "sha256": "ada6f98bef863cfa58e17d4bf8c8fce8278e6964a8f678932897d883ded5d00b",
+      "width": 1311,
+      "height": 1124
+    },
+    {
+      "block_id": "blk_doc_439fc9c2bc64c81d4a6a53cd_fbefe31bc050cff3c4caf4d9",
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_439fc9c2bc64c81d4a6a53cd_fbefe31bc050cff3c4caf4d9.png",
+      "sha256": "0da32f0c27ccd69266a321354d1c1f4a7ae5483c731f1b49f1850f362301b0bf",
+      "width": 800,
+      "height": 769
+    },
+    {
+      "block_id": "blk_doc_439fc9c2bc64c81d4a6a53cd_fb25aa9f3d78748db8a7f2b3",
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_439fc9c2bc64c81d4a6a53cd_fb25aa9f3d78748db8a7f2b3.png",
+      "sha256": "ccb9b31c5a720817a68734d81f69f0e7f402a9d25b8f624db3a57c1bbbc00447",
+      "width": 2459,
+      "height": 2086
+    },
+    {
+      "block_id": "blk_doc_1c01212194ad933933ea6808_5f1952de82eff95626a1e863",
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_1c01212194ad933933ea6808_5f1952de82eff95626a1e863.png",
+      "sha256": "251e41c8254a982ffcd933a3aa192e22508fb126b11af73f69953563951fecff",
+      "width": 2675,
+      "height": 3231
+    },
+    {
+      "block_id": "blk_doc_1c01212194ad933933ea6808_427691b9c3d3123f5da482e6",
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_1c01212194ad933933ea6808_427691b9c3d3123f5da482e6.png",
+      "sha256": "726a7a000c223681ad842d05c6e8a97db8e67a5445a9069a6d63fbba658c4010",
+      "width": 3153,
+      "height": 1119
+    },
+    {
+      "block_id": "blk_doc_1c01212194ad933933ea6808_0d59274815d2269491620191",
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_1c01212194ad933933ea6808_0d59274815d2269491620191.png",
+      "sha256": "55d3efa7fe156cbc206a380402a919b2b1176f0cd7297ff7c978dfb2b5c2e873",
+      "width": 1191,
+      "height": 419
+    },
+    {
+      "block_id": "blk_doc_1c01212194ad933933ea6808_840ad5e602d55a73b5bf72e9",
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_1c01212194ad933933ea6808_840ad5e602d55a73b5bf72e9.png",
+      "sha256": "f8a1a5afff758e6ad88c41e6aa3e19bbcd75c0c6fc74401e45aa06e3a597ee1d",
+      "width": 1840,
+      "height": 1263
+    },
+    {
+      "block_id": "blk_doc_c007f6bb47214b8ee40de364_76d35d978796bc8ed5f4ae4b",
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_c007f6bb47214b8ee40de364_76d35d978796bc8ed5f4ae4b.png",
+      "sha256": "fb1ff359259ecc0b03eec4aaed0ea3672c686f47ac51cf895155368201968b3f",
+      "width": 2923,
+      "height": 3306
+    },
+    {
+      "block_id": "blk_doc_c007f6bb47214b8ee40de364_2920a0d4f3d0d8ce8f67fb31",
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_c007f6bb47214b8ee40de364_2920a0d4f3d0d8ce8f67fb31.png",
+      "sha256": "996fc49e43d16fe2e6b53abd6d65a5e86a168f17e1f5e343ff411a08b129daac",
+      "width": 3047,
+      "height": 1033
+    },
+    {
+      "block_id": "blk_doc_c007f6bb47214b8ee40de364_788296dfd1b8dcb824306c55",
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_c007f6bb47214b8ee40de364_788296dfd1b8dcb824306c55.png",
+      "sha256": "2e446bfe0303ded94a7494ece41e9a2e7a5dd91fced4c2e855d30d47afcef280",
+      "width": 1124,
+      "height": 474
+    },
+    {
+      "block_id": "blk_doc_c007f6bb47214b8ee40de364_79ef6a7124c3d060674849bd",
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_c007f6bb47214b8ee40de364_79ef6a7124c3d060674849bd.png",
+      "sha256": "4801912cf407c21a844f11b0820a054262c6e6a42aa22ebbedc94ff98cae2038",
+      "width": 2027,
+      "height": 1267
+    }
+  ],
+  "files": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/adjudication/attempt.json",
+      "sha256": "ee2d2ebff71e1de57e2de25ad56d7f2f9c12a17576abe4cfc3e233b38b4d3a4b"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/adjudication/binding.json",
+      "sha256": "e2acb9c40e018bd7813666a178f418113436ac4f38ec71742f166e9f595968b7"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/adjudication/candidate.json",
+      "sha256": "c4139312b92ca49a092de1f0aa20b86e94b82b38d5fe2b6e08fcc7d666bc66c5"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/adjudication/output.json",
+      "sha256": "cbc1598673164980d95ff08cffa229c88f795a981ed86f0c5750c5cf12ae3e7b"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/adjudication/request.json",
+      "sha256": "bea9e022ff7f91c8798a6f42826b5d8d3e5ae367dc61f0930d42acf78f89b8dd"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/adjudication/result.json",
+      "sha256": "d4f357f72abe45be58f843a07b46cb1acc2911db6e699ddd8c920799d44cdf38"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/03_findings.json",
+      "sha256": "53e91fe51b6081a71514cc8671e59fc05d2bbfff68687973922ef7d9192d58bd"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/assessment.json",
+      "sha256": "030acc5c2cda1953d3eb46032d50cda9c38e0ba0f9af946a200eef11fdc4010a"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/binding.json",
+      "sha256": "87f6a5873c139d37ed586ccd4e15689f239a89ede649c6737d68babdc3be5856"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/input_document.json",
+      "sha256": "621b58dce0d139d24cc1f73a34ce20ca5ae999aeca5998bb01cbe681b98aa4b7"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/receipt.json",
+      "sha256": "5d85d9afa9b1c79d893b46df7743f7c088f227019c4e093c6482a5321c634968"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/report.xlsx",
+      "sha256": "d1dd3e3b1ae57ca68db1eb6a6ca273f0f21db11592db67f659c06d7d85747ae1"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/request.json",
+      "sha256": "8eeb273de880ed982435a11d48a90349bcaf83ca149a138e5b973e4f7592f9a1"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/workflow/attempt.json",
+      "sha256": "98a5045374c840027f0217a9cfa254c129d97982c30871b26866520ecd287bf5"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/workflow/binding.json",
+      "sha256": "6a406b370acd57fbdfc778e29b832fd420f2b73e9c12f35ac25f218c780fef06"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/workflow/receipt.json",
+      "sha256": "5d85d9afa9b1c79d893b46df7743f7c088f227019c4e093c6482a5321c634968"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/workflow/request.json",
+      "sha256": "8eeb273de880ed982435a11d48a90349bcaf83ca149a138e5b973e4f7592f9a1"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/workflow/result.json",
+      "sha256": "7800eed71e67ed4a9d4ac122c8b0b54d59ad6109c9ad3e1b3c069cd28b02a3ea"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/workflow/result_binding.json",
+      "sha256": "1e9fbdb63532f0ecf428eab3ad3d0e72603ab499bb757f5d935f608440a4eac0"
+    }
+  ],
+  "source_bundle": {
+    "path": "experiments/auditmanager_stage4_20261110/ar_rope_bundle_source_evidence/bundle.json",
+    "sha256": "c4bb8148325d165390cf1836eff5b33204426816cb448596ec77e337ae6517ce"
+  }
+}

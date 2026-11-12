@@ -1,0 +1,15 @@
+{
+  "inputs": {
+    "/tmp/auditmanager_ar_rope_current_profile_20261112/candidate.json": "c4139312b92ca49a092de1f0aa20b86e94b82b38d5fe2b6e08fcc7d666bc66c5",
+    "/tmp/auditmanager_ar_rope_bundle_review_20261111/bundle.json": "c4bb8148325d165390cf1836eff5b33204426816cb448596ec77e337ae6517ce",
+    "/tmp/auditmanager_ar_rope_bundle_review_20261111/finding.json": "b27ce9d37dcbd6597e2e000b20fc395972dbc5047d2a3a5c74f0d8d142f066c5",
+    "/tmp/auditmanager_ar_roof_reviewed_question_20261111/03_findings.json": "2e1d151ea61d9c2de5ec836a8fc4f78320f13e2df5515f91aa39a8d762e20d58"
+  },
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "message_chars": 134312,
+  "image_count": 11,
+  "known_case": true,
+  "engineer_answers_supplied": false,
+  "automatic_retries": 0
+}

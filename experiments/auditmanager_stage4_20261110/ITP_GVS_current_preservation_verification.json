@@ -1,0 +1,52 @@
+{
+  "status": "current_admission_and_saved_output_verified",
+  "receipts": [
+    {
+      "finding_id": "ITP-GVS-circulation-conflict",
+      "status": "applied",
+      "action": "revise"
+    },
+    {
+      "finding_id": "ITP-T311-flow-conflict",
+      "status": "applied",
+      "action": "revise"
+    }
+  ],
+  "original_rows_unchanged": 53,
+  "final_unique_excel_rows": 55,
+  "files": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/ITP/findings_verify.json",
+      "sha256": "3a3c2505680f1086348eebb0d72aad9c0a6eb9c356789dd0eb97b04d6da21c3a"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/itp_gvs_circulation_source_evidence/workflow/candidate.json",
+      "sha256": "2ab7802ccf3d8ebb8e635508130ffc7aa7d5a383a386e2672911f73bc01a4347"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/itp_gvs_supply_source_evidence/workflow/candidate.json",
+      "sha256": "1eebafff51284ca20429781e86a375f8cf48f30aa64c9704219a7952c50f788f"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/itp_gvs_supply_source_evidence/03_findings_combined.json",
+      "sha256": "58de7e9ab27f85dbfe1d51d9ffa8a220c74662607fb1779a63d3793162063cc0"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ITP_GVS_combined_control.xlsx",
+      "sha256": "28cef9614fb1e11571719c3f80f5971f99dcabd5a03443ac5499b0af922c8761"
+    }
+  ],
+  "new_model_calls": 0,
+  "limits": [
+    "Local known-case composition; automatic semantic deduplication not proved.",
+    "Final model release check not covered.",
+    "T312 supply balance and same-pipe wall mapping remain unresolved.",
+    "Unchanged baseline is not truth certification."
+  ],
+  "stage4_complete": false,
+  "production_acceptance": false
+}
