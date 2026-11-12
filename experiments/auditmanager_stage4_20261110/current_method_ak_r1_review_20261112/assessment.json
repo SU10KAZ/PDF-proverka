@@ -1,0 +1,88 @@
+{
+  "status": "first_sealed_run_target_review_not_trial_acceptance",
+  "run": "ak_r1_classic_current",
+  "model": "codex/gpt-6-astra",
+  "reasoning": "high",
+  "source_commit": "d228885f327a82b5a3bf3da4866c0cc3f4e126cb",
+  "completed_audits_in_series_at_review": 1,
+  "planned_audits": 54,
+  "final_findings": 88,
+  "target_dispositions": {
+    "total": 100,
+    "full": 53,
+    "partial": 8,
+    "positive_absent": 15,
+    "negative_claim_absent": 20,
+    "unavailable_external_evidence": 4
+  },
+  "output_section_disagreements": 7,
+  "confirmed_duplicate_pairs": [
+    [
+      "F-023",
+      "F-077"
+    ],
+    [
+      "F-024",
+      "F-080"
+    ],
+    [
+      "F-025",
+      "F-081"
+    ],
+    [
+      "F-034",
+      "F-076"
+    ],
+    [
+      "F-009",
+      "F-085"
+    ],
+    [
+      "F-073",
+      "F-075"
+    ]
+  ],
+  "limitations": [
+    "Atomic control rows overlap and are not100 independent defects. Historical engineering acceptance exists for only a subset; do not label all matches engineer-approved.",
+    "No comparison with inventory/source_review yet. First run does not establish improvement, stability or production readiness.",
+    "Four cases lack external evidence in frozen inputs; keep denominators fixed and coverage unscored. Do not relabel them misses or filter successes.",
+    "Twenty absent false claims prove only non-repetition in final output, not candidate detection and reasoned suppression.",
+    "New findings, unsupported additions, overlap burden and causes of lost findings still require review. Full atom coverage is not whole-finding precision.",
+    "Five earlier partial matches require final consistency review of explicit arithmetic and object/context retention. Keep current dispositions provisional.",
+    "Evaluation artifacts were kept outside live audit inputs; frozen evaluator and source capsule unchanged."
+  ],
+  "next_actions": [
+    "Trace15 missing positive atoms and8 partial matches through sealed candidate/merge/review snapshots without inferring stage from final absence.",
+    "Review novel assertions and all extra claims for factual validity, uncertainty and workload.",
+    "Compare identical frozen targets across methods and repetitions when each run is terminal and sealed.",
+    "Continue remaining stage4 gates; stages5–8 remain outside this narrow result."
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/ak_r1_classic_current_coverage_ledger.json",
+      "sha256": "1b275e16da3da98c1bb46cdf830d376692ca84b9a7b0ad3d446fecb15941f57e"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/ak_r1_classic_current_review_notes.json",
+      "sha256": "e47f86e6507f9c679b6176a447a4efff5692a991d8e793d48434d6ab7643adde"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/ak_r1_classic_current_partial_score.json",
+      "sha256": "da863c4c0ca741dab28f06030720166f055559f00d05f0828830698b6fc05b1b"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/ak_r1_classic_current_external_availability.json",
+      "sha256": "305796d3a28f6a84905192da59b993c782338d7eb989136d5790cc19bd38028e"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/ak_r1_classic_current_full_output_read_receipt.json",
+      "sha256": "14392e7f1435dfcc89df0492b4e57ec3c6030c752048452ec6c4522aa841de7d"
+    }
+  ],
+  "final": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+  },
+  "production_changed": false,
+  "filter_credit": false
+}

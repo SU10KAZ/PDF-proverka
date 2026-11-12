@@ -1,0 +1,2590 @@
+{
+  "schema_version": 1,
+  "discipline": "AK",
+  "evaluator_sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e",
+  "findings_sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+  "reviewer": "primary assistant: sealed-output semantic comparison against frozen source adjudication; engineer status retained separately; not final trial acceptance",
+  "entire_output_reviewed": true,
+  "targets": [
+    {
+      "target_id": "AK100_F015_drive_cable_graph:efafe11e28c59a6064d1",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "В итоговых88 замечаниях отсутствует конфликт трёх межшкафных марок Ва4.1 лист36 с Ba3.1 КЖ22 для ШАУВ-1-К5АС.ПЧ. F-034/076 касаются привязки VFD к системам в СО, а не этих кабельных марок. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Не сохранена находка двух немаркированных участков ПЧ→M2/M3 по15м на листе36. Другие конфликты обозначений двигателей не покрывают этот объект и операцию. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25d3c70866a6e840202d",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Не сохранено отсутствие самостоятельных строк ПЧ→M2/M3 в полном разделе КЖ Па4.1/Ва4.1. Замечания о повторных строках иных систем не покрывают эту связь. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Не сохранён баланс шести участков4×2,5 листа36:730м против700м локальной ведомости. F-088 касается другого баланса4×4:70/60 и не является совпадением. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-022"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-022"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+          "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All target-required project TEXT and GRAPHIC inputs verified; manufacturer leaflet is not needed for TEXT-only TU/area scope."
+        }
+      ],
+      "reason": "Полностью сохранён узкий атом отсутствия3×2,5 в полном разделе21 СО с адресной линией П4.1.1-4. Review_scope связывает зачёт именно с этой линией; По5.1-9 отдельно покрывается F020 и не требуется повторно для полного зачёта этого атома.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK14:65ea2c2649999f640c83",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-062",
+        "F-063"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-062",
+            "F-063"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK14.json",
+          "sha256": "bb941339701a63e2ae2989a1dda9e5e8cd9aae4f8eb3639899fd049ebf73280a"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All target-required project TEXT and GRAPHIC inputs verified; manufacturer leaflet is not needed for TEXT-only TU/area scope."
+        }
+      ],
+      "reason": "Из пяти подтверждённых шкафов сохранён ШАУВ-3-К5ПЧ:23/24 у PDS4/PDS5 и29–31 у M1/M2. Не сохранены ШАУВ-4-К4ПЧ, ШАУВ-1-К4АС, ШАУВ-4-К5ПЧ и ШАУВ-1-К6АС. Неоднозначность контактов БД-ТЗ1 — другой объект.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK57:9851f2c4946bad03af44",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-042",
+        "F-043",
+        "F-046",
+        "F-047"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-042",
+            "F-043",
+            "F-046",
+            "F-047"
+          ]
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+          "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All six quoted TEXT rows and four GRAPHIC block files exist in the hash-bound run input."
+        }
+      ],
+      "reason": "Все шесть адресных приборов сохранены: Пкр4.1 PDS3 — F-042, Пм4.1 PDS4 — F-043, Па3.1/Ва3.1/Ва3.1р PDS2/PDS3/PDS4 листа 11 — первый член F-046, Пкр5.1 PDS3 — F-047. Везде сопоставлены 20–200 Па таблицы и 50–500 Па перечня; физическая непригодность не объявлена. Дополнительные листы 18/22 в F-046 не входят в этот зачёт.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK57:a998dcf058f81b7ac194",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-010",
+        "F-043"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-010",
+            "F-043"
+          ]
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+          "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All six quoted TEXT rows and four GRAPHIC block files exist in the hash-bound run input."
+        }
+      ],
+      "reason": "Для ШАУВ-4-К4ПЧ F-010 сохраняет перечень 1/3 и СО 3/1 при общем количестве четыре; F-043 сохраняет таблицу 2/2 и адресный конфликт PDS4. Совместно сохранено трёхстороннее расхождение, а не только числа без связи.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK57:d6f8484b24bc88adcab5",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "F-042/043/046/047 признают включение уставок50/100 в интервалы; тезис об их выходе за50–500 отсутствует. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-049"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-049"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+          "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Сохранены четыре адресных символа UZ2/UZ3/UZ2/UZ3 и конфликт с перечнем UZ1–UZ4; решение требует согласовать соответствие двигателям, не объявляя глобальную уникальность, недостачу ПЧ или отказ.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK65_F043_UZ_identity:ab637698bce5025cb6df",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+          "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "Ложное совпадение обозначений схемы и перечня не утверждается; F-049 сохраняет конфликтUZ2/UZ3 сUZ1–UZ4. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK7:4c7010afca7e2923c94b",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK7.json",
+          "sha256": "244524861dafa21ed85aa490e087c7ea10a654b59f18184b137f99eade018260"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "AO3 против2 листа14 не заявлено. Другие направления сигналов и матрица листа21 — отдельные проверки. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+          "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Не сохранён вопрос межкомплектного учёта группы5:61 датчик таблицы против43 датчиков/КСИ СО с явной ссылкой наАК1-ПА. F-001/002 про интерфейсы и книгу2 не покрывают эту границу комплектности. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:f0a1212b87b41e035c75",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+          "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "Отсутствие подключения группы5 газоанализа не утверждается. Вопросы RS485/Ethernet не являются этой претензией. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "F-027 сохраняет конфликт изготовителей, F-084 единицу комплекта, F-083 шифры питания, но тезис общих данных «без внешнего источника питания» против220В/QF1 БУРР-1М не обнаружен. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-027"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-027"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Сохранён документальный конфликт БУРР-1М/БИС-1М Алекс электроникс и Haier TD0027170RU/адаптеров СО18.1–18.2. Несовместимость и количественный дефицит не объявлены. Отдельный атом питания этим не зачтён.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-084"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-084"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Неоднозначность одной сплит-системы против комплекта ротации пары сохранена в questions; кратность требуется уточнить, количественная ошибка не объявлена.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-013"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-013"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F005_surface_sensor_quantity.json",
+          "sha256": "48b97c42cfa0b0277fb9cf701da41869de070db06fd4ec75fb99b0a388d1e722"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative_TEXT and every graphic_evidence block verified in hash-bound run input."
+        }
+      ],
+      "reason": "Сохранён конфликт одного TE2 перечня листа 10 и двух DT-H2/Pt позиции 4.8 СО того же ШАУВ-4-К4ПЧ. Назначение второго прибора оставлено для согласования; безусловное удаление не предложено.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No separate engineer decision in frozen source card; factual match only."
+    },
+    {
+      "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-012"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-012"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json",
+          "sha256": "7dfe111f83f7d778b22f32158e23e25225b08f4f4ec3226926ddce63dfb1ef6a"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative_TEXT and every graphic_evidence block verified in hash-bound run input."
+        }
+      ],
+      "reason": "Для ШАУВ-2-К4ПЧ сохранены две позиции 2.5/2.7 по одному наружному датчику против одного TE1 перечня листа 8. Связь с П4.1.3/П4.1.4 указана; повторный учёт не объявлен установленным. Подтверждающая одна линия КЖ в итоговом описании не перечислена, но целевое расхождение количества и объекта сохранено.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No separate engineer decision in frozen source card; factual match only."
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-011"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative_TEXT and every graphic_evidence block verified in hash-bound run input."
+        }
+      ],
+      "reason": "Лист 14, П5.1.1/П5.1.3: сохранены два раздельных TE3/TE4 схемы, количество 1 перечня, 2 позиции 8.6 СО и отдельные подключения. Факт полностью сохранён, однако итоговый questions отличается от technical замороженного эталона.",
+      "section_assessment": "incorrect",
+      "engineer_confirmation": "No separate engineer decision in frozen source card; factual match only."
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-011"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative_TEXT and every graphic_evidence block verified in hash-bound run input."
+        }
+      ],
+      "reason": "Лист 20, П6.1.1/П6.1.4: сохранены два отдельных TE3/TE4, количество 1 перечня и 2 позиции 14.6 СО ШАУВ-2-К6ПЧ. Буквальная Пб.1.4-1 не исправляется. Факт сохранён в questions, что отличается от technical замороженного эталона.",
+      "section_assessment": "incorrect",
+      "engineer_confirmation": "No separate engineer decision in frozen source card; factual match only."
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-035"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-035"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+          "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative_TEXT and every graphic_evidence block verified in hash-bound run input."
+        }
+      ],
+      "reason": "Сохранён отдельный вопрос пустого количества TC2 листа 20 с указанием комплектности электронагревателю. Отсутствие защиты или поставки не утверждается; раздел questions соответствует эталону.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No separate engineer decision in frozen source card; factual match only."
+    },
+    {
+      "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-087"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-087"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json",
+          "sha256": "c9bf31b3153a37963b0821177ba1398e145ddd70d03bda5a6432545628397940"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative_TEXT and every graphic_evidence block verified in hash-bound run input."
+        }
+      ],
+      "reason": "Сохранены один TE3 схемы/перечня листа 21 и два канальных Pt1000 260 мм позиции 15.7 СО того же ШАУВ-3-К6ПЧ. Связь раздела установлена по шкафу, буквальная Пкрб.1 не исправлена. Назначение второго датчика не выдумано.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No separate engineer decision in frozen source card; factual match only."
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-024",
+        "F-080"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-024",
+            "F-080"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+          "sha256": "e529470f6f3da971b8308855d675cc4bf91e1a69e5f30a031c95a68db74da154"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT and GRAPHIC evidence verified in same-version frozen run input."
+        }
+      ],
+      "reason": "Сохранены четыре отдельных M3–M6 завес У4.3–У4.6 и количество 2 перечня листа 23, без недоказанной недопоставки. Две выходные строки — дубль одного атома.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No separate engineer decision in source cards; factual comparison only."
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-025",
+        "F-081"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-025",
+            "F-081"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+          "sha256": "e529470f6f3da971b8308855d675cc4bf91e1a69e5f30a031c95a68db74da154"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT and GRAPHIC evidence verified in same-version frozen run input."
+        }
+      ],
+      "reason": "Сохранены два клапана Y1/Y2 двух насосных контуров схемы и количество 4 перечня листа 23. Закупочное количество не установлено. Две выходные строки не дают двойного зачёта.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No separate engineer decision in source cards; factual comparison only."
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:0e3aed92411e9239d012",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-023",
+        "F-077"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-023",
+            "F-077"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+          "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT and GRAPHIC evidence verified in same-version frozen run input."
+        }
+      ],
+      "reason": "Сохранён вопрос двух наборов У1–У4 и У4.3–У4.6 в одном описании без вывода о дополнительных завесах. Оба совпадения находятся в questions и дублируют друг друга.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No separate engineer decision in source cards; factual comparison only."
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:d373990f04c6f3880335",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+          "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "Отсутствие подключений второго смесительного узла не утверждается. F-078/079 — идентификаторы и разъёмы. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:e86ce5509b0bfea4981d",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+          "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Не сохранён вопрос учёта межприборных участков Y1–Y2, M1–M2 и TS1–TS2 в КЖ31. F-078 о повторных обозначениях на плане и F-079 о колодках БД-ТЗ1 не покрывают кабельную комплектность. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-016"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-016"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F012_cable_section_conflict.json",
+          "sha256": "adda5976fdc931fee477376e4e53dc398de605c62cba05511adc92776b58090d"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Source-card TEXT and GRAPHIC evidence verified against frozen run input."
+        }
+      ],
+      "reason": "Одна П4.1.3-9 от того же шкафа к нагревателю сопоставлена в двух строках КЖ: 4×2,5 и 4×4,0, обе по 15 м. Отдельное замечание сохраняет конфликт сечений без вывода о двойной закупке или электрической достаточности.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Factual comparison against frozen source review; no new engineer confirmation."
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-017"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-017"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+          "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Source-card TEXT and GRAPHIC evidence verified against frozen run input."
+        }
+      ],
+      "reason": "Полностью сохранены семь марок листов 7/8, длины 20,20,5×25 м и различающиеся распределения прокладки, без объявления дословного дублирования. Сумма повторного набора 165 м явно не приведена: исходные данные позволяют её восстановить, но расчётная часть атома в выдаче не выполнена.",
+      "section_assessment": "unchecked",
+      "engineer_confirmation": "Factual comparison against frozen source review; no new engineer confirmation."
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-018"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-018"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+          "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Source-card TEXT and GRAPHIC evidence verified against frozen run input."
+        }
+      ],
+      "reason": "Сохранены все 14 марок листов 25/26 и длины по 15 м; повтор не объявлен дополнительными физическими кабелями. Явный итог 210 м не приведён. Также итог отнесён к questions вместо technical эталона; формальная оценка раздела оставлена unchecked при частичном покрытии.",
+      "section_assessment": "unchecked",
+      "engineer_confirmation": "Factual comparison against frozen source review; no new engineer confirmation."
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:b911bab30a5f2b93c3e1",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+          "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "F-017 сохраняет различия строк КЖ7/8, а не дословный дубль. F-018 относится к другому набору25/26. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Отсутствует адресный конфликт Пкр4.1-13:КЖ M2 против насоса M3 на схемах. F-061 касается Пкр5.1, F-065 Пн5.1; совпадение коротких номеров не означает покрытие Пкр4.1. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:10548e1eff411e685ffd",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "Нет утверждения, что насосная линия Пкр4.1 отсутствует во всём проекте; сохранение полезного конфликта той же линии этим не доказано. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:242d00252ded0af6828a",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-061"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-061"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT and GRAPHIC evidence verified in same-version frozen run input."
+        }
+      ],
+      "reason": "Обе линии Пкр5.1-9/-13 сохранены: схема задаёт вентилятор M3 и насос M2, КЖ — M2 и буквально МЗ. Подтверждена общность шкафа и функциональные назначения, без исправления TEXT по растру.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No separate engineer decision in source cards; factual comparison only."
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:03bfe4c21a069237b772",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "F-065 включает M2 внешней схемы наряду сM1/M5, не сводит конфликт к двум номерам и не объявляетM5 безусловно правильным. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-065"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-065"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT and GRAPHIC evidence verified in same-version frozen run input."
+        }
+      ],
+      "reason": "Сохранены три адреса насоса: M1 в Пн5.1.-21 КЖ, M2 схемы подключений, M5 перечня. В прочитанном F-065 не названа функциональная схема как отдельный источник M5, обязательная в исходном адресном контексте. Пока частичное покрытие; полный просмотр остальных строк может уточнить оценку.",
+      "section_assessment": "unchecked",
+      "engineer_confirmation": "No separate engineer decision in source cards; factual comparison only."
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-014"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative_TEXT and every graphic_evidence block verified in hash-bound run input."
+        }
+      ],
+      "reason": "Лист 11 Па3.1/Ва3.1: M2 определён по символу насоса в контуре теплоносителя и сопоставлен со строкой вентиляторов M1–M3 перечня; назначение не выводится из числа жил.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No separate engineer decision in frozen source card; factual match only."
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-014"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative_TEXT and every graphic_evidence block verified in hash-bound run input."
+        }
+      ],
+      "reason": "M4 вентилятора схемы сопоставлен с насосом перечня, отдельно от M2. Основной конфликт сохранён. Упоминание резервности в дополнительном тексте выходит за подтверждённую границу эталона и отмечено отдельно.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No separate engineer decision in frozen source card; factual match only."
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-015"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-015"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative_TEXT and every graphic_evidence block verified in hash-bound run input."
+        }
+      ],
+      "reason": "Сохранены M5 схемы Па3.1, кабель Па3.1-12 КЖ и отсутствие M5 в полном перечне листа 11. Не заявлена фактическая недопоставка.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No separate engineer decision in frozen source card; factual match only."
+    },
+    {
+      "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-034",
+        "F-076"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-034",
+            "F-076"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F018_drive_system_assignment.json",
+          "sha256": "62cb406cdf423f7781c27e355c359c2d507189af8b12a26d34f7380119ed6eeb"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Authoritative project text and source-card graphic blocks verified; external catalogue/normative conclusions are not newly accepted."
+        }
+      ],
+      "reason": "Сохранены обе позиции 16.2/16.3 раздела ШАУВ-1-К6АС и противоречие Ва4.1/Па4.1 с Ва5.1/Па5.1 по схемам и применимости. Две выходные строки дублируют один атом; пригодность мощности не заявлена доказанной.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Frozen factual source review; no new engineer usefulness judgment."
+    },
+    {
+      "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-066"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-066"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F020_heater_cable_conflict.json",
+          "sha256": "f6dbf031fc8ba16fd61cd5ebad1825e32f84c0bd4cd39527accb1a6230d293f2"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+          "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Source-card TEXT and GRAPHIC evidence verified against frozen run input."
+        }
+      ],
+      "reason": "По5.1-9 привязана к тому же ШАУВ-6-К5ПЧ и нагревателю; схема 3×2,5 и КЖ 4×4,0, обе по 10 м, сохранены с оговоркой о неизвестной электрической достаточности. Общая тема F019 не засчитывается повторно.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Factual comparison against frozen source review; no new engineer confirmation."
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:e96e359fd83734e6c3fa",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F021_cable_reading_balance.json",
+          "sha256": "e1221c563cfdf13442cf7197a43f4a81a8ce262ec4f68a3bbd2c69a5afa1d6fc"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "5×4,15м кM4 Пкр6.1 не заявлено; другие сечения относятся к другим адресным линиям. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:c6f3ad54ccd603f4f796",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F021_cable_reading_balance.json",
+          "sha256": "e1221c563cfdf13442cf7197a43f4a81a8ce262ec4f68a3bbd2c69a5afa1d6fc"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "Отсутствие кабеляM4 Пкр6.1 в ведомости листа39 не заявлено; другие балансы не являются повтором. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F022_control_cable_balance:d4470ce9730307aed184",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-019"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-019"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+          "sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Source-card TEXT and GRAPHIC evidence verified against frozen run input."
+        }
+      ],
+      "reason": "Перечислены восемь уникальных неэкранированных линий ШАУВ-2-К4ПЧ по 15 м, явно вычислены 120 м и сопоставлены с 50 м таблицы листа 26. Другой шкаф и повторные участки не прибавлены; закупочная недостача не утверждается.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Factual comparison against frozen source review; no new engineer confirmation."
+    },
+    {
+      "target_id": "AK_F022_control_cable_balance:872ea17b985add42621f",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-019"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-019"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+          "sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Source-card TEXT and GRAPHIC evidence verified against frozen run input."
+        }
+      ],
+      "reason": "Три экранированные однопарные линии названы, приведены 20+15+15=50 м и 105 м таблицы. Двухпарные линии исключены; этот баланс отделён от неэкранированного и от неизвестного закупочного избытка.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Factual comparison against frozen source review; no new engineer confirmation."
+    },
+    {
+      "target_id": "AK_F023_support_type:58cbd95ce44a50b86573",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-028"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-028"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F023_support_type.json",
+          "sha256": "b33ca81b4392fa59b48a45050d3def13fa4f6e75038357b77ec7daf6aa63d753"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Authoritative project text and source-card graphic blocks verified; external catalogue/normative conclusions are not newly accepted."
+        }
+      ],
+      "reason": "Сохранены лист 53 BSD4120 и СО 22.6 BSD2120/BSD-21, с ограничением неизвестной применимости всех опор и правильного исполнения. Дополнительные листы 48/50 не увеличивают зачёт данного атома.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Frozen factual source review; no new engineer usefulness judgment."
+    },
+    {
+      "target_id": "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F024_support_console_scope.json",
+          "sha256": "44adf7ab3a2842d4508f92cfecd4e56fdbb8cc303ab691a43f4e8ff0d0024ec9"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Отсутствует условный вопрос о соотношении4 консоли на1 плиту листа53 и15/15 в СО. Конфликты размеров, артикулов подвесов и заделки проходок являются другими атомами. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:eaa42cc0bf57fa49a886",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F025_area_arithmetic.json",
+          "sha256": "07e3ecfae124a6d164abe6ca32408a492672da6b4e93242bf06e1c5b16464480"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "Ложного итога кладовых453,2 вместо453,1 нет. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:5ba1a83908ceb33758ab",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F025_area_arithmetic.json",
+          "sha256": "07e3ecfae124a6d164abe6ca32408a492672da6b4e93242bf06e1c5b16464480"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "Ложного итога МОП583,3 вместо583,5 нет. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:88b00bcefd42161838b4",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F025_area_arithmetic.json",
+          "sha256": "07e3ecfae124a6d164abe6ca32408a492672da6b4e93242bf06e1c5b16464480"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "Ложного общего итога19058,7 вместо19058,8 нет. Размерные цепи шкафов — другая арифметика. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F026_protection_boolean_condition:04fa5c0cbbedc7704f59",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-008"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-008"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F026_protection_boolean_condition.json",
+          "sha256": "cc1fd6840fb366f09e8f1ccbee1d9fef95dc5cbd40222981dbc35909b749eea3"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All target-required project TEXT and GRAPHIC inputs verified; manufacturer leaflet is not needed for TEXT-only TU/area scope."
+        }
+      ],
+      "reason": "Цитата evidence содержит полное условие обратная вода≤20 ИЛИ наружный воздух≤3; вывод и рекомендация сохранены только о различии наружного и послекалориферного воздуха. Логическая достаточность наружного порога независимо от обратной воды и возврат к регулированию в видимой формулировке не разобраны. Это частичное покрытие, не полное отсутствие исходного условия.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F026_protection_boolean_condition:b69337bb34f8d41b6d57",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F026_protection_boolean_condition.json",
+          "sha256": "cc1fd6840fb366f09e8f1ccbee1d9fef95dc5cbd40222981dbc35909b749eea3"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "Немедленный останов только по наружной≤3 не заявлен. F-008 — конфликт параметра, а не доказательство останова. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F027_sensor_interface_scope:3eb9cafbfcfd6a395bee",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-009",
+        "F-085"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-009",
+            "F-085"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F027_sensor_interface_scope.json",
+          "sha256": "ce13d144b26733768053137e7f68d5b9cc1e428ea30e05cf60a79d73d40a2756"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative text and all source-card graphics verified in frozen run input."
+        }
+      ],
+      "reason": "Сохранены Спрут Т-06 раздела7, шесть МВТ3280 NTC10К позиции20.1 и формирование команды/аналоговый вход. Прямое подключение терморезистора к катушке не утверждается. Две строки повторяют один конфликт оборудования; F-085 дополняет контекст AI.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Frozen factual comparison; no new engineer judgment."
+    },
+    {
+      "target_id": "AK_F027_sensor_interface_scope:eb93f9ee7771db58e73f",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F027_sensor_interface_scope.json",
+          "sha256": "ce13d144b26733768053137e7f68d5b9cc1e428ea30e05cf60a79d73d40a2756"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "F-009/085 не утверждают прямой NTC на катушку без обработки; отсутствие регулятора и неработоспособность не установлены. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F028_change_register_scope:da80e943594aac429110",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-032"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-032"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F028_change_register_scope.json",
+          "sha256": "4d6c40af5a9db18ddf520f1f06842a8cc958439af0f690fd5cf2020d5b19fc05"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Authoritative project text and source-card graphic blocks verified; external catalogue/normative conclusions are not newly accepted."
+        }
+      ],
+      "reason": "Сохранён вопрос принадлежности строки 1 АК-КЗ Книга 1 комплекту АК2-ПА; глобальное удаление RS-485 или опровержение содержания отклонения не предложено. Техническая подробность замены протокола не изложена, но узкий вопрос адресата записи сохранён.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Frozen factual source review; no new engineer usefulness judgment."
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
+      "availability": "unavailable",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_evaluation_20261112/ak_r1_classic_current_external_availability.json",
+          "sha256": "305796d3a28f6a84905192da59b993c782338d7eb989136d5790cc19bd38028e"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+          "sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0"
+        }
+      ],
+      "reason": "Для утверждения об отмене акта введенияГН нужен внешний текст постановления. Вход содержит проектную ссылку, но не текст отменяющего акта. F-005 сохраняет другой вопрос применимости; отсутствие утверждения об отмене не засчитывается как пропуск при недоступном источнике.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7752ed01f36756fff7f3",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+          "sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "F-006 связывает ТУ-газ-86 только с высотой. Площадь200м² в цитате не объявлена обоснованной этимТУ. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7267cc07801d121c1339",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-006"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+          "sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All target-required project TEXT and GRAPHIC inputs verified; manufacturer leaflet is not needed for TEXT-only TU/area scope."
+        }
+      ],
+      "reason": "Сохранены неполные реквизитыТУ-газ-86 и вопрос обоснования высоты1,5м, но отдельное основание покрытия200м² не запрошено. Упоминание200м² внутри исходной цитаты F-005/006 не является обнаружением этой части вопроса.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:9a595b6986b86b78f7cb",
+      "availability": "unavailable",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_evaluation_20261112/ak_r1_classic_current_external_availability.json",
+          "sha256": "305796d3a28f6a84905192da59b993c782338d7eb989136d5790cc19bd38028e"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+          "sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0"
+        }
+      ],
+      "reason": "Лист изготовителя, которым опровергнут тезис о неверных порогах/высоте, не входит во вход аудита. В видимой выдаче ложный тезис не заявлен, но данный отрицательный контроль остаётся неоценённым и не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-003"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+          "sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Authoritative project text and source-card graphic blocks verified; external catalogue/normative conclusions are not newly accepted."
+        }
+      ],
+      "reason": "Сохранена буквальная запись ГОСТ 21.4.08-2013 и вопрос исправления реквизита, без вывода о техническом нарушении. Дополнительная гипотеза ошибки OCR и требование сверки с оригиналом отмечены отдельно как нарушение границы авторитетного TEXT.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Frozen factual source review; no new engineer usefulness judgment."
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-007"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+          "sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Authoritative project text and source-card graphic blocks verified; external catalogue/normative conclusions are not newly accepted."
+        }
+      ],
+      "reason": "Сохранено уточнение гл.7 ПУЭ в разделе заземления; ошибка реквизита не объявлена ошибкой схемы или сопротивления. Дополнительное назначение главы 1.7 отдельно этим совпадением не верифицировано.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Frozen factual source review; no new engineer usefulness judgment."
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-029"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-029"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+          "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Authoritative project text and source-card graphic blocks verified; external catalogue/normative conclusions are not newly accepted."
+        }
+      ],
+      "reason": "Сохранены две разные марки 3×2×0,78 и 2×2×0,78 под одной позицией 21.10. Решение сохраняет оба изделия и исправляет номер, но помещено в questions вместо technical замороженного эталона.",
+      "section_assessment": "incorrect",
+      "engineer_confirmation": "Frozen factual source review; no new engineer usefulness judgment."
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-030"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-030"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+          "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Authoritative project text and source-card graphic blocks verified; external catalogue/normative conclusions are not newly accepted."
+        }
+      ],
+      "reason": "Сохранены 35341 в графе типа/марки лотка 22.4 и бирки 22.9 одного изготовителя; пустая графа кода не подменена. Каталожная принадлежность не заявлена проверенной; подтверждён узкий документальный конфликт.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Frozen factual source review; no new engineer usefulness judgment."
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-031"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-031"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+          "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Authoritative project text and source-card graphic blocks verified; external catalogue/normative conclusions are not newly accepted."
+        }
+      ],
+      "reason": "Сохранены BSD2120 для подвеса 22.6 и трубы Ду32 22.13, без выдуманного правильного артикула трубы. Конфликт отделён от BSD4120/BSD2120 кровельной опоры.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Frozen factual source review; no new engineer usefulness judgment."
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+          "sha256": "d0ba9aaabb16c1ce4b6b16f7aaa9bbe3903ca1b7084bd043e6e1007636fbabfb"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "F-068 сохраняет четыре адресные линии схема/КЖ, но не конфликт локальных ведомостей КСПВПГнг с СО21.4 КСПВППГнг. Общая рекомендация согласовать связанные ведомости не заменяет обнаружения третьей марки. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-068"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-068"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+          "sha256": "d0ba9aaabb16c1ce4b6b16f7aaa9bbe3903ca1b7084bd043e6e1007636fbabfb"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative text and all source-card graphics verified in frozen run input."
+        }
+      ],
+      "reason": "Сохранены все четыре линии В6.1.1-4/В6.1.2-1/В6.1.2-4/В6.1.4-1 листа37 и соответствующие буквальные B-строки КЖ23, шкаф, конечные приборы и различие КСПВПГнг/КСВПГнг. Правильное исполнение не выдумано.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Frozen factual comparison; no new engineer judgment."
+    },
+    {
+      "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-083"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-083"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F033_power_reference_scope.json",
+          "sha256": "9c240dda69a02709b23452f71dd767d98d4719b50a184253a9911e6ab23eb836"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative text and all source-card graphics verified in frozen run input."
+        }
+      ],
+      "reason": "Локальные ссылки21/24-ГК-К5-ЭМ у БУРР и13АВ-РД-ЭМ-К5 примечания2 сохранены, границы разных цепей оставлены для уточнения. Общие ссылки13АВ-РД-ЭМ-КЗ и13АВ-РД-ЭМ2-ПА из обязательного контекста не перечислены. Раздел technical также расходится с question эталона, но оценка раздела пока unchecked при partial.",
+      "section_assessment": "unchecked",
+      "engineer_confirmation": "Frozen factual comparison; no new engineer judgment."
+    },
+    {
+      "target_id": "AK_F033_power_reference_scope:2ec9d727804fc985242e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-033"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-033"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F033_power_reference_scope.json",
+          "sha256": "9c240dda69a02709b23452f71dd767d98d4719b50a184253a9911e6ab23eb836"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative text and all source-card graphics verified in frozen run input."
+        }
+      ],
+      "reason": "Шаблонная ссылка лист6 примера РД pdf сохранена в отдельном вопросе с требованием точного адреса, без объявления отсутствия самой схемы.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Frozen factual comparison; no new engineer judgment."
+    },
+    {
+      "target_id": "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F034_sheet_title_scope.json",
+          "sha256": "6585e034e65b924f17e740e1048b28a2d32e06e1ef4f41226e46f88f3bc4292a"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Не сохранён вопрос названия листа16 в Stamp MD:Пл3.1/Вк3.1/Всу3.1 против ведомости и схемы Пу5.1/Ву5.1/Всу5.1. Иные конфликты обозначений систем не покрывают этот лист. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F035_UZ_identity:f588470dec49e00c838c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-039"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-039"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",
+          "sha256": "17877ee974090aeee8c5f2406c725cff99f585b7f47a60d464c265ca844e90ec"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact TEXT and graphic block availability verified for the frozen source cards."
+        }
+      ],
+      "reason": "Сохранены два отдельных SC UZ1 под колонками 7/14 схемы П4.1.3/П4.1.4 и SC UZ1/SC UZ2 перечня того же шкафа; необходимость назначить именно M2 номер UZ2 не объявлена установленной.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer confirmation; frozen source comparison only."
+    },
+    {
+      "target_id": "AK_F036_damper_signal_direction:8298b8f671c60e21b030",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-041"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-041"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F036_damper_signal_direction.json",
+          "sha256": "679a411c9e04b0c8c1987471b621d8fdc5d6935a1db687f71aefcf1cec7b07eb"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact TEXT and graphic block availability verified for the frozen source cards."
+        }
+      ],
+      "reason": "Обе колонки 11/13 Y2/Y3 с названием состояния 0–100% и отметками AO сохранены. Уточняется команда либо обратная связь, без автоматической замены AO на AI.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer confirmation; frozen source comparison only."
+    },
+    {
+      "target_id": "AK_F038_temperature_graphic_connection:c533a857981c11cd1b9a",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F038_temperature_graphic_connection.json",
+          "sha256": "67c1995d61ab5adda8800a0f465a1c6eb0deb791c8eab1570f2650bc9999e2a1"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "Нет ложной привязкиTE2 Пкр4.1 к воздуховоду. F-086 относится к другомуTE1 противодымного подпора. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F039_served_rooms_conflict.json",
+          "sha256": "c5a07b351f4355a0bceeca4d625d01832f64782fd1432801547cbdf40ed24840"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Не сохранён конфликт обслуживаемых помещений П4.1.1 между общими указаниями и листом10. Замечание к сигналам электронагревателя той же системы не покрывает назначение помещений. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-040",
+        "F-050",
+        "F-052"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-040",
+            "F-050",
+            "F-052"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+          "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All target-required project TEXT and GRAPHIC inputs verified; manufacturer leaflet is not needed for TEXT-only TU/area scope."
+        }
+      ],
+      "reason": "Все пять адресных DI без DO сохранены:П4.1.1/П5.1.3/П6.1.4 вF-040, Пу5.1 вF-050, По5.1 вF-052. Выбор интерфейса оставлен на согласование, пересчёт условный. Раздел technical_findings расходится с frozen questions; дополнительный П4.1.3 не увеличивает покрытие эталона.",
+      "section_assessment": "incorrect"
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-044"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-044"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact TEXT and graphic block availability verified for the frozen source cards."
+        }
+      ],
+      "reason": "Сохранены обе адресные подписи Ва3.1/M3→16 резервный и Ва3.1р/M4→19 основной. Литеральный конфликт найден; отсутствие оговорки о динамических ролях отмечено отдельно.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer confirmation; frozen source comparison only."
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:8239404083a86b949049",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "F-048 содержит11/14/26/29, а не ошибочные11/15/26/30; состояния не привязаны к колонкам давления. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-048"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-048"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact TEXT and graphic block availability verified for the frozen source cards."
+        }
+      ],
+      "reason": "Сохранены все четыре правильных колонки листа 15: 11/14/26/29 и их M1/M2/M3/M4, статические Пн5.1/Вн5.1 и противоположные подписи состояний. Ошибочные 15/30 для этого случая не использованы; полнота всей отрицательной проверки ещё не завершена.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer confirmation; frozen source comparison only."
+    },
+    {
+      "target_id": "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F042_pressure_legend_scope.json",
+          "sha256": "4ce2a068ccb529525bd5ef450e448e30bdfd57fbbc4aa15339d719306e8e54e0"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Нет вопроса о легенде PDS листа11, ограниченной вентилятором при наличии PDS1 фильтра. F-042/043/046/047 о диапазонах и F-057 о символе калорифера не покрывают этот редакционный атом. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-051"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-051"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+          "sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact TEXT and graphic block availability verified for the frozen source cards."
+        }
+      ],
+      "reason": "Пу5.1: TS2 функциональной схемы сопоставлен с TC1 перечня и концом Пу5.1-2 КЖ того же ШАУВ-5-К5ПЧ; это номер позиции, а не кириллица/латиница и не отсутствующий прибор.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer confirmation; frozen source comparison only."
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-053"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-053"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+          "sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact TEXT and graphic block availability verified for the frozen source cards."
+        }
+      ],
+      "reason": "По5.1: TS2 функциональной схемы, TC1 перечня и По5.1-2 КЖ сохранены. Обязательная четвёртая привязка TS1 внешней схемы в прочитанном F-053 отсутствует; оставлено частичное покрытие до полного просмотра вывода.",
+      "section_assessment": "unchecked",
+      "engineer_confirmation": "No new engineer confirmation; frozen source comparison only."
+    },
+    {
+      "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-037"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-037"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
+          "sha256": "1b628d71c0871ea4fc70d34f43c7229a6c4c15294586da247f4568d964746b4f"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact TEXT and graphic block availability verified for the frozen source cards."
+        }
+      ],
+      "reason": "Вос5.1-1: PDS45 КЖ сохранён буквально и сопоставлен с PDS5 функциональной и внешней схем; указаны клеммы 14–15 того же шкафа. Не объявлены фактическое ошибочное подключение или два прибора PDS4/PDS5.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer confirmation; frozen source comparison only."
+    },
+    {
+      "target_id": "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-036"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-036"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F046_position_range_editorial.json",
+          "sha256": "912b8afed5b7dd638a2fb92ba907a9cda2ab531204e7f17dabe88ee0f2c2c81b"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact TEXT and graphic block availability verified for the frozen source cards."
+        }
+      ],
+      "reason": "Лист 19: UZ1–UZ53 при количестве 3 сопоставлен с тремя UZ1/UZ2/UZ3 графики; это отдельный вопрос реквизита, без вывода о 53 физических преобразователях.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer confirmation; frozen source comparison only."
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-056"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-056"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Same-version authoritative text and graphic evidence blocks verified."
+        }
+      ],
+      "reason": "Сохранены DI12 против10 листа 21 ШАУВ-3-К6ПЧ, включая отдельный вход Пожар; аппаратная нехватка каналов не заявлена.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer judgment; narrow frozen-source match only."
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:fc51b8e1100da48a87ec",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "F-056 содержит полныйDI12 сПожаром против10. DI11 как полный итог не заявлен; DO11 F-054 — другая матрица. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-056"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-056"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Same-version authoritative text and graphic evidence blocks verified."
+        }
+      ],
+      "reason": "Сохранены шесть точек DO в колонках 2/8/10/11/14/16 против итога5 той же матрицы. Два атома представлены одним замечанием.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer judgment; narrow frozen-source match only."
+    },
+    {
+      "target_id": "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-057"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-057"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F050_heater_legend_identity.json",
+          "sha256": "f316e24040e8fd1ffc2a9d7fa9bcf2e56cc64e483684d014745f7f825ce3e5fe"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Same-version authoritative text and graphic evidence blocks verified."
+        }
+      ],
+      "reason": "Узкий факт электрического нагревателя в легенде при рабочем водяном контуре 85/60 сохранён в questions. Дополнительное тождество символов ошибочно по прямому просмотру графики и учтено отдельно; full означает покрытие атома, не правильность всей строки.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer judgment; narrow frozen-source match only."
+    },
+    {
+      "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-060"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-060"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F051_cabinet_label_scope.json",
+          "sha256": "a66c212be8c1dde3bd5132cf55aa4a8b92153efad0e9b2b3ce89f39fa3f5b853"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Same-version authoritative text and graphic evidence blocks verified."
+        }
+      ],
+      "reason": "Сохранены ШУ-ПД4.14 схемы и ЩУ-ПД4.1.4 КЖ для той же системы/датчика, с согласованием по ЭМ. Итог technical_findings отличается от question эталона.",
+      "section_assessment": "incorrect",
+      "engineer_confirmation": "No new engineer judgment; narrow frozen-source match only."
+    },
+    {
+      "target_id": "AK_F052_local_cable_balance:61ee4b031d84d67a9995",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F052_local_cable_balance.json",
+          "sha256": "269fbd7df09fb79b766b4bbed801b044d88de0bba6e8555945cb4280f992cf2e"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Target-required project evidence verified; external leaflet not needed for the TEXT-only TU scope target."
+        }
+      ],
+      "reason": "Нет пяти приводов по35м и175м. F-020 о другой линии35м иF-088 о70м не повторяют ложную сумму. Просмотрены все88 замечаний; отсутствие не даёт зачёта фильтру.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F053_local_cable_balance:3ea87f3768012a815077",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F053_local_cable_balance.json",
+          "sha256": "f0fe30025610ce7f3d413dec02072e1dd1a2937afe5cd720b3a8737b91bde092"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Нет локального баланса пяти силовых линий листа25:165м против155м. Повторные строки КЖ в F-017/018 и другие локальные балансы имеют иные объект, состав и ведомость. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "entire_visible_output_reviewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "All source-card TEXT quotes and GRAPHIC blocks verified in frozen input."
+        }
+      ],
+      "reason": "Нет вопроса о повторах29/30 у M1/M2 в ШАУВ-4-К4ПЧ. F-063 о29–31 в ШАУВ-3-К5ПЧ относится к другому шкафу; общий номер клеммы не является совпадением объекта. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:62cc730e92af787c8d46",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-062"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-062"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Same-version authoritative text and graphic evidence blocks verified."
+        }
+      ],
+      "reason": "Сохранены отдельные PDS4/PDS5 и две пары23–24 ШАУВ-3-К5ПЧ, отсутствие различающих колодок и оговорка об отсутствии доказанного физического объединения. Примечание изготовителя учтено, но итог technical вместо question.",
+      "section_assessment": "incorrect",
+      "engineer_confirmation": "No new engineer judgment; narrow frozen-source match only."
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:0fadfeadec26c587750e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-063"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-063"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+          "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Same-version authoritative text and graphic evidence blocks verified."
+        }
+      ],
+      "reason": "Сохранены отдельные M1/M2, линии П5.1.1-8/П5.1.3-5 и группы29–31 того же шкафа, без утверждения объединения силовых цепей. Итог technical вместо question.",
+      "section_assessment": "incorrect",
+      "engineer_confirmation": "No new engineer judgment; narrow frozen-source match only."
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-065"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-065"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Same-version authoritative text and graphic evidence blocks verified."
+        }
+      ],
+      "reason": "Сохранён локальный повтор M2 у вентилятора Пн5.1р и насоса Пн5.1 на листе33, со сравнением M5 перечня. Та же строка частично покрывает более широкий трёхдокументный атом F014; не считать два независимых дефекта.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer judgment; narrow frozen-source match only."
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-064"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-064"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Same-version authoritative text and graphic evidence blocks verified."
+        }
+      ],
+      "reason": "Сохранён повтор Y7 у воздушного клапана и клапана теплоносителя ШАУВ-4-К5ПЧ, со сравнением Y11 перечня. Это отдельный конфликт от M2, без глобального требования уникальности коротких марок.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer judgment; narrow frozen-source match only."
+    },
+    {
+      "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-067"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-067"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F058_temperature_endpoint.json",
+          "sha256": "7f391d6a377940f60763577625de4cf7ec7cdf80d28ddb2317108f1965f7d1f3"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Same-version authoritative text and graphic evidence blocks verified."
+        }
+      ],
+      "reason": "Сохранены По5.1-1 того же шкафа, TE2 внешней схемы приточного воздуха и TE1 КЖ; номер2/1 отделён от различия алфавитов. Ошибочный физический вход не заявлен.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer judgment; narrow frozen-source match only."
+    },
+    {
+      "target_id": "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-038"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_id": "F-038"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F060_thermostat_endpoint.json",
+          "sha256": "4ae7511ca6056afa1ff0f85c52539b4154b6ba45c99f75bac26d841da23f0d38"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Same-version authoritative text and graphic evidence blocks verified."
+        }
+      ],
+      "reason": "Сохранены оба листа25/26 КЖ с буквальной Пб.1.4-2→TC1, внешний TS2 и клеммы15/16, связь по шкафу и соседним приборам. Повтор КЖ не удваивает физический дефект.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "No new engineer judgment; narrow frozen-source match only."
+    },
+    {
+      "target_id": "AK_F061_penetration_detail_scope:5c02072a41acbc8744af",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-071",
+        "F-072"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+          "finding_ids": [
+            "F-071",
+            "F-072"
+          ]
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F061_penetration_detail_scope.json",
+          "sha256": "fd69d890fb13cea2f5adfa44fc272a31dc5e66368917c5c7159597065583df04"
+        },
+        {
+          "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "availability": "Exact authoritative text and all source-card graphics verified in frozen run input."
+        }
+      ],
+      "reason": "Сохранены все три листа50/52/54: узелА с лотком/кабелями/FIREFIX без трубы против примечания3. Предложено согласовать состав или применимость, не объявлены недостаточная огнестойкость, реальный монтаж или универсальная обязательность трубы.",
+      "section_assessment": "correct",
+      "engineer_confirmation": "Frozen factual comparison; no new engineer judgment."
+    },
+    {
+      "target_id": "AK_F064_reference_register_scope:fc47e77750c166a5d33d",
+      "availability": "unavailable",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_evaluation_20261112/ak_r1_classic_current_external_availability.json",
+          "sha256": "305796d3a28f6a84905192da59b993c782338d7eb989136d5790cc19bd38028e"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F064_reference_register_scope.json",
+          "sha256": "5d142f45af5de6a7c5002d60bedc3b7517fad1dc38ff05f0d8616263c90ca6ee"
+        }
+      ],
+      "reason": "Для эталонного опровержения общего требования нужны положения4.2.8/4.3.3/4.3.5 ГОСТ. Внешний текст стандарта в источниках прогона не подтверждён. Тезис в выдаче не заявлен, но отсутствие не оценивается как успешная нормативная проверка.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    },
+    {
+      "target_id": "AK_F065_norm_replacement_applicability:d53a7df3ef467306402d",
+      "availability": "unavailable",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_evaluation_20261112/ak_r1_classic_current_external_availability.json",
+          "sha256": "305796d3a28f6a84905192da59b993c782338d7eb989136d5790cc19bd38028e"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F065_norm_replacement_applicability.json",
+          "sha256": "ee0e2ec0de3444283d4ddfdf2bd26ef2a9bd08ac871d666d8989d6842015220b"
+        }
+      ],
+      "reason": "Проектная ссылка наГОСТ2020 доступна; подтверждение замены на2026 и дата введения требуют внешней карточки. В сохранённых запросах нет этих реквизитов, статусный этап сообщает отсутствие подсказок. Факт цитирования нормы сам по себе не является найденным замечанием; контекстный вопрос о замене не оценивается как пропуск при недоступном источнике.",
+      "section_assessment": "unchecked",
+      "filter_credit": false
+    }
+  ],
+  "limits": [
+    "Full match requires all mandatory object, relationship and location context.",
+    "Score unsupported additions and novel findings separately.",
+    "Engineer confirmation is required; model suggestions alone are not final matches."
+  ]
+}

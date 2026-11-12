@@ -1,0 +1,188 @@
+{
+  "status": "all_targets_dispositioned_external_evidence_unavailable_not_trial_acceptance",
+  "entire_output_reviewed": true,
+  "findings_sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+  "reviewed_target_count": 96,
+  "remaining_target_count": 0,
+  "production_acceptance": false,
+  "observations": [
+    {
+      "finding_id": "F-047",
+      "issue": "Stale internal references in visible description",
+      "evidence": "Описание F-047 неоднократно сообщает «сохранено в F-048», но итоговое F-048 посвящено подписям состояния вентиляторов Пн5.1/Вн5.1.",
+      "implication": "Проверить перенумерацию внутренних ссылок после объединения; содержание PDS при этом осталось в F-047."
+    },
+    {
+      "finding_ids": [
+        "F-010",
+        "F-043",
+        "F-046",
+        "F-047",
+        "F-049"
+      ],
+      "issue": "Repeated recovery explanations remain in visible description",
+      "implication": "Отдельно оценить дублирующую нагрузку; это не новые независимые дефекты и не потеря подтверждённого факта."
+    },
+    {
+      "finding_id": "F-011",
+      "issue": "Output-section disagreement with frozen evaluator",
+      "targets": [
+        "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+        "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6"
+      ],
+      "evidence": "Factual quantity conflict fully retained, routed to questions instead of technical. Model rationale: procurement and connections already include both sensors.",
+      "implication": "Record section disagreement without changing frozen evaluator during trial; no defect-recall loss."
+    },
+    {
+      "finding_id": "F-087",
+      "issue": "Stale internal ID",
+      "evidence": "Description says preserved in F-093, but final finding ID is F-087 and final list ends at F-088."
+    },
+    {
+      "finding_id": "F-014",
+      "issue": "Additional claim beyond frozen source scope",
+      "evidence": "Дополнительная проверка называет M4 резервным вытяжным вентилятором; эталон подтверждает назначение вентилятора, но резервность не устанавливает.",
+      "implication": "Narrow motor-purpose conflict matches; reserve-role assertion is not accepted by this match."
+    },
+    {
+      "issue": "Three same-object same-proposition duplicate pairs",
+      "pairs": [
+        [
+          "F-023",
+          "F-077"
+        ],
+        [
+          "F-024",
+          "F-080"
+        ],
+        [
+          "F-025",
+          "F-081"
+        ]
+      ],
+      "stage_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/snapshots/AK/findings_merge.json",
+          "sha256": "2bbdf064788ebf63d01b7b7a37c42091b98404b268d3d46502ecc72f685f5392"
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/snapshots/AK/findings_verify.json",
+          "sha256": "c7164c2e3dfd736d63f312111427ef54fd29abe93469a047762546daf652d3cb"
+        }
+      ],
+      "provenance": "First member source_stage candidate_recovery; second member source_stage object_operations_7bd48b3ebe7624c0. Both present in merge snapshot and final verification snapshot.",
+      "limits": "This establishes arrival and persistence of these three duplicate pairs; not a complete duplicate count or proof of exact internal deduplication cause."
+    },
+    {
+      "issue": "Repeated cable-set totals not explicitly retained",
+      "finding_ids": [
+        "F-017",
+        "F-018"
+      ],
+      "evidence": "All seven/14 line identities and lengths retained, but no explicit 165/210 m aggregate; scored partial rather than absence.",
+      "limits": "These totals are not proven overpurchase; no filter credit."
+    },
+    {
+      "finding_ids": [
+        "F-034",
+        "F-076"
+      ],
+      "issue": "Fourth same-object same-proposition duplicate pair",
+      "evidence": "Both address СО16.2/16.3 Ва4.1/Па4.1 versus Ва5.1/Па5.1 for ШАУВ-1-К6АС; no second independent defect."
+    },
+    {
+      "finding_id": "F-003",
+      "issue": "Unnecessary OCR uncertainty despite authoritative TEXT",
+      "evidence": "Description asks to distinguish document error from recognition error, solution asks to compare original.",
+      "limits": "Record as extra burden and source-authority mismatch; core literal reference question remains found."
+    },
+    {
+      "finding_id": "F-029",
+      "issue": "Third full-target output-section disagreement",
+      "evidence": "Duplicate 21.10 retained in questions, evaluator technical; rationale says distinct full marks and quantities already identify the products."
+    },
+    {
+      "finding_ids": [
+        "F-044",
+        "F-048"
+      ],
+      "issue": "Rotation qualification not retained",
+      "evidence": "Static equipment labels and opposite state-column labels retained, but possible dynamic main/reserve roles from general instructions are not discussed.",
+      "limits": "Documentary conflict matched; actual controller rotation or wrong indication is not established by this match."
+    },
+    {
+      "finding_id": "F-057",
+      "issue": "False symbol identity despite correct narrow legend premise",
+      "verification": "Direct graphic view: working heater diamond has no diagonal zigzag present inside legend electric-heater diamond; water circuit 85/60 is shown. TEXT label was not corrected from raster.",
+      "graphic_evidence": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-011/images/blk_7785cb8293734c16b18fc1aff53c761f_6471b342ae3c.png",
+        "sha256": "cb77f0ab9fff75ed26cf94abb22776af6fba7da5eda1674d029ae486a62104a0",
+        "block_id": "blk_7785cb8293734c16b18fc1aff53c761f"
+      },
+      "consequence": "Claim that same symbol is repeated in legend and unconditional instruction to rename it are unsupported. Narrow legend-composition question may remain.",
+      "production_acceptance": false
+    },
+    {
+      "finding_ids": [
+        "F-060",
+        "F-062",
+        "F-063"
+      ],
+      "issue": "Three additional section disagreements",
+      "evidence": "All factual addresses retained, but technical_findings versus frozen question targets; physical misconnection remains explicitly unproven."
+    },
+    {
+      "finding_ids": [
+        "F-009",
+        "F-085"
+      ],
+      "issue": "Fifth same-object same-proposition duplicate pair",
+      "evidence": "Same Спрут Т-06 / МВТ3280 NTC10К equipment discrepancy; F-085 adds AI context, and both descriptions explicitly say no new finding required.",
+      "limits": "AI context should be preserved if later merged; no live trial changes."
+    },
+    {
+      "finding_id": "F-008",
+      "issue": "Related issue must not substitute for boolean-condition target",
+      "evidence": "F-008 compares outdoor/post-heater temperature, but does not preserve reverse-water≤20 OR outdoor≤3 and independent sufficiency of outdoor condition.",
+      "limits": "AK_F026 remains unchecked until entire output review; not yet recorded absent."
+    },
+    {
+      "finding_ids": [
+        "F-020",
+        "F-021"
+      ],
+      "issue": "Superseded uncertainty remains beside resolved recovery context",
+      "evidence": "F-020 initial text says uniqueness of line not established, later complete section says only line. F-021 initial text says 3×2.5 quantity not linked to heater, later graphic establishes this link. Solutions still ask to repeat resolved retrieval.",
+      "implication": "Recovery appendices preserve information but do not reconcile final wording; assess unnecessary engineer work separately."
+    },
+    {
+      "finding_ids": [
+        "F-073",
+        "F-075"
+      ],
+      "issue": "Sixth same-object same-proposition duplicate pair",
+      "evidence": "Both sheet53 cabinet installation, same endpoints and1000+1400=2400 versus1800, delta600. No independent discrepancy."
+    },
+    {
+      "finding_ids": [
+        "F-069",
+        "F-079"
+      ],
+      "issue": "Partially overlapping BD-TZ1 questions",
+      "evidence": "Both RS-485 markings, while F-079 additionally covers three connector groups SQ1/fire/RS-485.",
+      "limits": "Do not drop entire F-079 as a duplicate; additional connector scope needs preservation."
+    }
+  ],
+  "limits": [
+    "No live unsealed outputs inspected.",
+    "No evaluator, eligibility or running audit changed.",
+    "No credit for filtering or absence; entire output has not been reviewed.",
+    "Additional systems in F-046 and novel claims are not accepted by these two matches."
+  ],
+  "remaining_full_output_read_ids": [],
+  "remaining_read_note": "All 88 problem/description/solution/section fields read, including full F-046; risk/norm fields read and truncated F-033..F-040 re-read. Partial-target source locations also read. Coverage and new-claim correctness assessment still incomplete.",
+  "negative_controls_absent_reviewed": 20,
+  "filter_credit": false,
+  "unavailable_target_count": 4,
+  "dispositioned_target_count": 100
+}
