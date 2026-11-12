@@ -1,0 +1,574 @@
+{
+  "status": "diagnostic_requires_context_review",
+  "suspected_stale_references": [
+    {
+      "finding_id": "F-009",
+      "field": "description",
+      "reference": "F-091",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-085",
+      "current_reference_exists": false,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-021",
+      "field": "description",
+      "reference": "F-071",
+      "occurrences": 2,
+      "expected_target_by_lineage": "F-066",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-044",
+      "field": "description",
+      "reference": "F-045",
+      "occurrences": 2,
+      "expected_target_by_lineage": "F-044",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-047",
+      "field": "description",
+      "reference": "F-048",
+      "occurrences": 3,
+      "expected_target_by_lineage": "F-047",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-048",
+      "field": "reason",
+      "reference": "F-045",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-044",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-050",
+      "field": "description",
+      "reference": "F-052",
+      "occurrences": 2,
+      "expected_target_by_lineage": "F-050",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-051",
+      "field": "description",
+      "reference": "F-053",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-051",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-052",
+      "field": "description",
+      "reference": "F-054",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-052",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-053",
+      "field": "description",
+      "reference": "F-055",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-053",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-053",
+      "field": "reason",
+      "reference": "F-053",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-051",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-054",
+      "field": "description",
+      "reference": "F-056",
+      "occurrences": 2,
+      "expected_target_by_lineage": "F-054",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-055",
+      "field": "description",
+      "reference": "F-057",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-055",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-055",
+      "field": "reason",
+      "reference": "F-046",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-045",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-056",
+      "field": "reason",
+      "reference": "F-056",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-054",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-057",
+      "field": "description",
+      "reference": "F-061",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-057",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-058",
+      "field": "reason",
+      "reference": "F-046",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-045",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-058",
+      "field": "reason",
+      "reference": "F-057",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-055",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-059",
+      "field": "reason",
+      "reference": "F-045",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-044",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-059",
+      "field": "reason",
+      "reference": "F-050",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-048",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-060",
+      "field": "description",
+      "reference": "F-065",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-060",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-061",
+      "field": "description",
+      "reference": "F-066",
+      "occurrences": 4,
+      "expected_target_by_lineage": "F-061",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-062",
+      "field": "description",
+      "reference": "F-067",
+      "occurrences": 2,
+      "expected_target_by_lineage": "F-062",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-063",
+      "field": "description",
+      "reference": "F-068",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-063",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-064",
+      "field": "description",
+      "reference": "F-069",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-064",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-065",
+      "field": "description",
+      "reference": "F-070",
+      "occurrences": 2,
+      "expected_target_by_lineage": "F-065",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-066",
+      "field": "description",
+      "reference": "F-071",
+      "occurrences": 4,
+      "expected_target_by_lineage": "F-066",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-067",
+      "field": "description",
+      "reference": "F-072",
+      "occurrences": 2,
+      "expected_target_by_lineage": "F-067",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-067",
+      "field": "reason",
+      "reference": "F-055",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-053",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-068",
+      "field": "description",
+      "reference": "F-073",
+      "occurrences": 8,
+      "expected_target_by_lineage": "F-068",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-070",
+      "field": "reason",
+      "reference": "F-073",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-068",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-071",
+      "field": "description",
+      "reference": "F-076",
+      "occurrences": 2,
+      "expected_target_by_lineage": "F-071",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-073",
+      "field": "description",
+      "reference": "F-078",
+      "occurrences": 2,
+      "expected_target_by_lineage": "F-073",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-085",
+      "field": "description",
+      "reference": "F-091",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-085",
+      "current_reference_exists": false,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-087",
+      "field": "description",
+      "reference": "F-093",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-087",
+      "current_reference_exists": false,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": true
+    },
+    {
+      "finding_id": "F-087",
+      "field": "reason",
+      "reference": "F-060",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-056",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-087",
+      "field": "reason",
+      "reference": "F-061",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-057",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    },
+    {
+      "finding_id": "F-088",
+      "field": "reason",
+      "reference": "F-071",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-066",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage",
+      "pair_present_in_prior_manual_audit": false
+    }
+  ],
+  "unresolved_references": [
+    {
+      "finding_id": "F-005",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-006",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-012",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-013",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-014",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-015",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-029",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-030",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-031",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-032",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-033",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-040",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-046",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-047",
+      "field": "reason",
+      "reference": "F-047",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-069",
+      "field": "reason",
+      "reference": "F-001",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-072",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-087",
+      "field": "reason",
+      "reference": "F-012",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-087",
+      "field": "reason",
+      "reference": "F-013",
+      "reason": "target_lineage_missing_or_ambiguous"
+    }
+  ],
+  "limits": [
+    "Exact lineage does not establish prose intent; references may deliberately describe historical IDs.",
+    "Changed prose is not assessed by this conservative check.",
+    "Ambiguous, absent or merged lineage is not guessed.",
+    "No runtime filtering, replacement, defect count or acceptance follows.",
+    "Prior audit pair agreement does not automatically adjudicate every occurrence in a visible field; new groups require context review."
+  ],
+  "sources": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings_pre_merge.json",
+      "sha256": "c65ece3a6b197bd74af155ac0c07a6d72cb71fc7f5adefcddabacad0dbee4829"
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+    }
+  ],
+  "seal_verification": {
+    "variant": "classic_current",
+    "discipline": "AK",
+    "repeat": 1,
+    "work": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current",
+    "status_path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/status/AK.json",
+    "status_sha256": "9cfc2f9345ce9678c63d422669144b8e7df04826416645f52986187c2ff303a6",
+    "input_manifest_sha256": "5d82b075c7965f98df3d3a76ace89cd5153bc5bcf704cbc76e9185edf1eb0ae2",
+    "final_path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "final_sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+    "snapshot_sha256": "c7164c2e3dfd736d63f312111427ef54fd29abe93469a047762546daf652d3cb",
+    "request_artifacts_verified": 897,
+    "quality_accepted": false
+  },
+  "runtime_changed": false,
+  "prior_manual_audit": {
+    "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/stale_visible_reference_audit.json",
+    "sha256": "5799ea54a17969e6f491f396ab72905136fb20c627cbc34d40d027d7c1da6202"
+  },
+  "counts": {
+    "suspected_reference_groups": 37,
+    "suspected_occurrences": 61,
+    "affected_finding_rows": 30,
+    "groups_matching_prior_manual_pairs": 21,
+    "groups_requiring_additional_context_review": 16
+  }
+}
