@@ -1,0 +1,24 @@
+{
+  "finding_id": "F-082",
+  "status": "existing_editorial_candidate_preserves_readable_identity_question",
+  "projection_path": "/tmp/auditmanager_publication_identity_controls_20261112_v1_run/evaluations/publication_identity_082/publication_projection.json",
+  "projection_sha256": "5519b73e31f1db551ac9fb23978ac06c6e75fe80d575d84cbf81c4382aa799a4",
+  "same_context_baseline": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_complete_tiles_F082_assessment.json",
+    "sha256": "54098d7bdf5ed7861fdf6bc899a57f0ff32467f2c608b73d873f049ce21eaa4d"
+  },
+  "candidate_instruction_sha256": "416f1e8abed5e6761e7993ac77c0aa7c5365c43c13f733e0935e6899fbeb195b",
+  "checks": [
+    "Подписи всех одиннадцати пультов и адреса завес совпадают с просмотренным tile0.",
+    "Один вопрос об индивидуальном/типовом назначении марки; рекомендация и условный риск при нём. Фактический дефект подключения не утверждается.",
+    "Принадлежность комплекту АК2-ПА оставлена непроверенной; нет автоматического назначения ответственного комплекта.",
+    "Внутренние сведения об объединении записей и подсчёте перекрытий не выданы инженеру отдельными вопросами.",
+    "Две ошибки границ цитаты исправлены только однозначным поиском неизменённого текста; исходный ответ сохранён."
+  ],
+  "limits": [
+    "Проверка сохранения ранее полезного результата, не самостоятельное доказательство улучшения.",
+    "Добор полного контекста, необходимость инженерного вопроса и финальный отчёт ещё не проверены."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
