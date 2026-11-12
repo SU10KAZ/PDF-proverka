@@ -1,6 +1,7 @@
 """Summarize sealed, manually adjudicated evidence; never label it acceptance."""
 import hashlib
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -35,6 +36,69 @@ def validate_references(value):
     elif isinstance(value, list):
         for item in value:
             validate_references(item)
+
+
+def transport_summary():
+    root = Path('/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control')
+    status_path = root / 'status/ITP.json'
+    expected = '178f994e43a26457023a031e6e035473d771645efc0ad5673e85a2b8c1cd41f9'
+    if digest(status_path) != expected:
+        raise ValueError('Sealed transport status changed')
+    state = load(status_path)
+    if state['status'] != 'completed_unadjudicated':
+        raise ValueError('Transport is not complete')
+    usage = state['request_usage']
+    if not usage['accounting_complete'] or usage['issues']:
+        raise ValueError('Incomplete accounting')
+    request_root = root / 'requests/ITP'
+    refs = usage['artifact_sha256']
+    stages, totals = {}, Counter()
+    attempts = failed = request_count = 0
+    for name, expected_hash in refs.items():
+        path = (request_root / name).resolve()
+        if not path.is_relative_to(request_root.resolve()) or digest(path) != expected_hash:
+            raise ValueError(f'Invalid sealed request artifact: {name}')
+        if path.name != 'attempts.json':
+            continue
+        request_count += 1
+        for receipt in load(path):
+            attempts += 1
+            failed += bool(receipt['is_error'])
+            stage = stages.setdefault(receipt['stage'], Counter())
+            stage['attempts'] += 1
+            stage['failed_attempts'] += bool(receipt['is_error'])
+            for key, value in receipt['usage'].items():
+                totals[key] += value
+                stage[key] += value
+    if (request_count, attempts, failed) != (usage['request_count'], usage['attempt_count'], usage['failed_attempt_count']):
+        raise ValueError('Receipt counts differ from seal')
+    if dict(totals) != usage['totals']:
+        raise ValueError('Receipt token or duration totals differ from seal')
+    families = {}
+    for stage, values in stages.items():
+        family = re.sub(r'_[0-9a-f]{16}(?=_|$)', '', stage)
+        families.setdefault(family, Counter()).update(values)
+    return {
+        'source': {'path': str(status_path), 'sha256': digest(status_path)},
+        'request_artifacts_hash_verified': len(refs),
+        'requests': request_count, 'attempts': attempts, 'failed_attempts': failed,
+        'wall_seconds': state['finished'] - state['started'],
+        'summed_request_duration_seconds': totals['duration_ms'] / 1000,
+        'receipt_totals': dict(totals),
+        'by_stage': {key: dict(value) for key, value in sorted(stages.items())},
+        'by_stage_family': {key: dict(value) for key, value in sorted(families.items())},
+        'by_model_and_cost_source': usage['by_model_and_cost_source'],
+        'actual_monetary_cost_usd': usage['actual_monetary_cost_usd'],
+        'monetary_cost_fully_measured': usage['monetary_cost_fully_measured'],
+        'quota_percentage': None,
+        'limits': [
+            'Subscription cost_usd=0 is an accounting placeholder, not free usage.',
+            'Request durations overlap; their sum is not elapsed wall time.',
+            'Repeated and cached input tokens are not unique project text.',
+            'Token counters are transport-reported; quota consumption and billed cost are unmeasured.',
+            'These are one baseline run costs, not an estimate for the remaining series.',
+        ],
+    }
 
 
 def build():
@@ -80,6 +144,7 @@ def build():
         'sources': [{'path': str((HERE / n).relative_to(REPO)), 'sha256': digest(HERE / n)} for n in names]
                    + [{'path': str(EVALUATOR.relative_to(REPO)), 'sha256': digest(EVALUATOR)}],
         'coverage': coverage,
+        'transport_usage': transport_summary(),
         'claim_review': claims['counts'],
         'loss_trace': traces['counts'],
         'output_burden': burden['counts'],
