@@ -1,0 +1,23 @@
+{
+  "finding_id": "F-052",
+  "status": "heater_signal_question_preserved_recommendation_split",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_052/publication_projection.json",
+  "projection_sha256": "2c1ccb7ef25dc48e7416fee8413e943c66977dc7598629ca9582b49d2f90f63c",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_66980560083f4bb483d5ce1f9c8156e2.png",
+      "sha256": "dabee90e19aaa31be7c58c1521a95a878bacbb4d195f4173824eddcca53e435c",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Непосредственно проверена колонка 7: подпись электронагревателя пуск/стоп, DI с точкой, DO без точки.",
+    "Название не объявлено доказательством выходной команды; неизвестное назначение сохранено вопросом.",
+    "Второй вопрос является рекомендацией по тому же назначению, его следует объединить с первым.",
+    "Отсутствие выхода во всей системе и реальная ошибка подключения не утверждаются."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

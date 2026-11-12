@@ -1,10 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 50,
+  "reviewed_distinct_findings": 52,
   "unreviewed_finding_ids": [
-    "F-051",
-    "F-052",
     "F-053",
     "F-054",
     "F-055",
@@ -39,7 +37,7 @@
     "F-084",
     "F-085"
   ],
-  "batch_successful_responses": 49,
+  "batch_successful_responses": 51,
   "batch_status_snapshot": "running",
   "process_liveness_not_inferred_from_status_file": true,
   "selected_followups": [
@@ -894,6 +892,40 @@
         "pending": 4,
         "withdrawn": 0,
         "history_only": 1
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-051",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F051_assessment.json",
+      "assessment_sha256": "a611807b2e215b9763e228324ca0585f7810b47a613e5e82312055b7b00a1b79",
+      "status": "thermostat_conflict_preserved_despite_disputed_list_title",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_051/publication_projection.json",
+      "projection_sha256": "b5c56e37afea876190b69110af367c37fde587ade23dbc4fcea2bf143a755aad",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 0,
+        "pending": 2,
+        "withdrawn": 0,
+        "history_only": 2
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-052",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F052_assessment.json",
+      "assessment_sha256": "abdbfec87c972b8e8054097c390021d93b78473c956eee7e1dc9e603ddda453e",
+      "status": "heater_signal_question_preserved_recommendation_split",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_052/publication_projection.json",
+      "projection_sha256": "2c1ccb7ef25dc48e7416fee8413e943c66977dc7598629ca9582b49d2f90f63c",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 0,
+        "questions": 2,
+        "pending": 2,
+        "withdrawn": 0,
+        "history_only": 0
       },
       "engineer_accepted": false,
       "production_accepted": false

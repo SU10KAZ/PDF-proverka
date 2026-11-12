@@ -1,0 +1,34 @@
+{
+  "finding_id": "F-051",
+  "status": "thermostat_conflict_preserved_despite_disputed_list_title",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_051/publication_projection.json",
+  "projection_sha256": "b5c56e37afea876190b69110af367c37fde587ade23dbc4fcea2bf143a755aad",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_thermostat_identity_chain_review_20261112.json",
+  "source_review_sha256": "0c315567a1401eb63a2985cdd27e1810746f5f510579e3b7c1016dd0f64007a5",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png",
+      "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+      "sha256": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609",
+      "directly_viewed": true,
+      "detail": "original"
+    },
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_a2c817786b3a459fb5fa2667d9492450.png",
+      "block_id": "blk_a2c817786b3a459fb5fa2667d9492450",
+      "sha256": "292eaec8678f1e4bbf28d2348b8661424e121d4b0e7182c425db37d9682e835a",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "TS2 на функциональной схеме против TS1 на подключениях и ТС1 в журнале сохранены для Пу5.1-2, ШАУВ-5-К5ПЧ, клемм 6–7.",
+    "Иное название систем в метаданных перечня не исправлено по растру; его принадлежность не используется как единственное доказательство.",
+    "Полезное расхождение независимо подтверждено журналом и схемой подключения; спорная привязка перечня не удаляет его.",
+    "Рекомендация и условный риск сохранены в одной технической формулировке.",
+    "Номер листа 34 не установлен из самого приложенного растра; при итоговой выдаче использовать проверенные метаданные, не вывод модели о недостатке видимого штампа как дефект проекта."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
