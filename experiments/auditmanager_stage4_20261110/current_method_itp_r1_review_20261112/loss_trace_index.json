@@ -274,8 +274,14 @@
       "target_id": "ITP_F009_GVS_inlet_temperature:06cdf2a18fcf30aafead",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/gvs_followup_handoff_loss_trace.json",
+          "sha256": "d4f8267a57f6e77f643e052aa574d0f5142509039d5421686033e29a88844afc",
+          "pointer": "/cases/0"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -447,8 +453,8 @@
   ],
   "counts": {
     "total": 34,
-    "bounded_trace_recorded": 26,
-    "not_traced": 8
+    "bounded_trace_recorded": 27,
+    "not_traced": 7
   },
   "remaining_requirements": [
     "Finish stage attribution for remaining targets, including missing parts of partly traced compound targets.",

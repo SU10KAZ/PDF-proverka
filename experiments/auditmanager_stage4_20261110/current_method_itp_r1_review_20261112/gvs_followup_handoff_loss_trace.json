@@ -1,0 +1,225 @@
+{
+  "version": 1,
+  "scope": "Sealed ITP classic_current repeat 1; evaluator-only causal trace",
+  "cases": [
+    {
+      "target_id": "ITP_F009_GVS_inlet_temperature:06cdf2a18fcf30aafead",
+      "coverage": "absent",
+      "route": "question",
+      "stage_assessment": "The specific unresolved mixing question was detected in targeted_follow_up, but its requested comparison and search queries were not preserved in the inspected O-07 operation packet. Generic calculation_consistency was executed on other relationships. Final metadata retains an unresolved scope, but no corresponding issued question is recorded.",
+      "source_evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+        "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+        "pointer": ""
+      },
+      "source_lines": [
+        {
+          "line": 1955,
+          "quote": "| ГВС 1-я зона | +51,97 | 5-65 | 7,24 | 0,728 |"
+        },
+        {
+          "line": 1956,
+          "quote": "| ГВС 2-я зона | +103,17 | 5-65 | 8,87 | 0,377 |"
+        },
+        {
+          "line": 1957,
+          "quote": "| ГВС 3-я зона | +141,48 | 5-65 | 10,61 | 0,181 |"
+        },
+        {
+          "line": 3183,
+          "quote": "| Температура на входе, °С | 90 | 16,54 |"
+        },
+        {
+          "line": 3249,
+          "quote": "| Температура на входе, °C |  | 90 | 16,54 |"
+        },
+        {
+          "line": 3316,
+          "quote": "| Температура на входе, °С | 90 |  | 16,54 |  |"
+        }
+      ],
+      "detected_follow_up": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/targeted_follow_up/2"
+        },
+        "record": {
+          "object_id": "O-07",
+          "status": "needs_data",
+          "source_refs": [
+            "blk_df17c007b7cf4eef8eca49f51580a275",
+            "blk_7963858ada7a4aa2bd63ef6009ec7b6f",
+            "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+            "blk_fa4cca816905454ab134c787b1d1862a"
+          ],
+          "reason": "В подборах ГВС температура нагреваемой воды на входе 16,54 °C, а исходная ХВС 5 °C. Это может быть результатом смешения с циркуляцией, поэтому требуется расчет смешения для расчетного водоразбора и подтверждение работы без циркуляции; автоматическая ошибка подбора не установлена.",
+          "context_queries": [
+            "16,54",
+            "Температура смеси",
+            "Циркуляция ГВС",
+            "Максимальный водоразбор"
+          ]
+        }
+      },
+      "actual_operation_request": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794494958275064143/request.json",
+          "sha256": "1750c396f672f21d6c03e42bd3d86e4863d53764675a1590678e2cfd28db1aaf",
+          "pointer": ""
+        },
+        "operations": [
+          {
+            "object_id": "O-07",
+            "operation": "dimension_consistency",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_df17c007b7cf4eef8eca49f51580a275",
+              "blk_d6b45a98c27d4511b7ae8ddfb1668ebc",
+              "blk_4de04f93b8b745ceb034696663bfcc58"
+            ],
+            "receipt": {
+              "object_id": "O-07",
+              "operation": "dimension_consistency",
+              "status": "needs_data",
+              "reason": "Присоединения насоса и аппарата известны, монтажная обвязка графически не проверена.",
+              "source_refs": [
+                "blk_df17c007b7cf4eef8eca49f51580a275",
+                "blk_d6b45a98c27d4511b7ae8ddfb1668ebc"
+              ],
+              "context_queries": [
+                "К6",
+                "К15",
+                "ГВС I-зона"
+              ]
+            }
+          },
+          {
+            "object_id": "O-07",
+            "operation": "calculation_consistency",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_df17c007b7cf4eef8eca49f51580a275",
+              "blk_d6b45a98c27d4511b7ae8ddfb1668ebc",
+              "blk_4de04f93b8b745ceb034696663bfcc58"
+            ],
+            "reason": "missing_receipt"
+          }
+        ],
+        "contains_temperature_literal": true,
+        "contains_specific_search_queries": {
+          "Температура смеси": false,
+          "Максимальный водоразбор": false
+        },
+        "contains_targeted_follow_up_field": false,
+        "attempts": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794494958275064143/attempts.json",
+          "sha256": "2882a203819d6379ed06e105de4942541b79aef5f6447b317510524e5355d48e",
+          "pointer": ""
+        },
+        "successful_attempt": true
+      },
+      "operation_result": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+          "pointer": "/object_operation_reports/6"
+        },
+        "stage": "object_operations_c88b753b5560a786",
+        "calculation_receipt": {
+          "object_id": "O-07",
+          "operation": "calculation_consistency",
+          "status": "needs_data",
+          "reason": "Проверена связь расхода, напора, КПД и мощности К15: расчетная мощность на валу согласуется с указанными 0,32 кВт с учетом округления. Учтен один рабочий насос; резервный не добавлялся к расходу. Для тепловой части получены разные численные основания: расчет выбранного теплообменника содержит 0,4186 Гкал/ч на аппарат, разрезы 7-7, 8-8 и аксонометрия обозначают 0,403 Гкал/ч при 50%, анкета задает максимальную нагрузку зоны 0,728 Гкал/ч. Эти значения могут относиться к нагрузке потребителя, нагрузке с циркуляционными потерями и подбору оборудования; их эквивалентность не установлена. Требуются расчет нагрузки с учетом циркуляции, режим совместной работы двух аппаратов и расчет клапана 32 с единицей ΔP и основанием расхода 35 м³/ч. Массовые расходы теплообменника не приравнивались к объемному расходу клапана или циркуляционного насоса. Недостаточность оборудования и ошибка теплового баланса не доказаны.",
+          "source_refs": [
+            "blk_ae35014464b5493f84ca38481c3ffa60",
+            "blk_df17c007b7cf4eef8eca49f51580a275",
+            "blk_d6b45a98c27d4511b7ae8ddfb1668ebc",
+            "blk_4de04f93b8b745ceb034696663bfcc58",
+            "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+            "blk_10f7f3fbc82f4e11be9c81cdf6e4bc5c",
+            "blk_5d085f4c917a4e568fd33327e6f8edea",
+            "blk_94b58ecf5d404f7d90c272d267eb2e48"
+          ],
+          "calculation_checks": [
+            {
+              "expression": "998,31 × 9,80665 × (4,31 / 3600) × 18,57 / (0,686 × 1000)",
+              "result": "0,3173 ≈ 0,32",
+              "unit": "кВт",
+              "basis": "Мощность на валу одного работающего К15 в паспортной рабочей точке при воде 20 °C: плотность 998,31 кг/м³, расход 4,31 м³/ч, напор 18,57 м, КПД насоса 68,6%. Использовано стандартное ускорение свободного падения 9,80665 м/с². Проверка относится к паспортному режиму, а не к достаточности насоса для сети ГВС.",
+              "source_refs": [
+                "blk_d6b45a98c27d4511b7ae8ddfb1668ebc"
+              ]
+            },
+            {
+              "expression": "418600 / 1000000 - 0,403",
+              "result": "0,0156",
+              "unit": "Гкал/ч",
+              "basis": "Численная разница между нагрузкой одного выбранного теплообменника в расчете w203119579 и подписью ГВС I-зоны (50%) на разрезах. Равенство расчетных режимов и учет запаса подбора не установлены; разница не доказывает ошибку.",
+              "source_refs": [
+                "blk_df17c007b7cf4eef8eca49f51580a275",
+                "blk_10f7f3fbc82f4e11be9c81cdf6e4bc5c",
+                "blk_5d085f4c917a4e568fd33327e6f8edea"
+              ]
+            },
+            {
+              "expression": "2 × 0,403 - 0,728",
+              "result": "0,078",
+              "unit": "Гкал/ч",
+              "basis": "Условное сопоставление двух аппаратов по 50% с максимальной нагрузкой зоны из анкеты. Сумма подписей составляет 0,806 Гкал/ч. Одновременный расчетный режим и состав нагрузки, включая циркуляционные потери, требуют подтверждения.",
+              "source_refs": [
+                "blk_ae35014464b5493f84ca38481c3ffa60",
+                "blk_10f7f3fbc82f4e11be9c81cdf6e4bc5c",
+                "blk_4de04f93b8b745ceb034696663bfcc58"
+              ]
+            }
+          ],
+          "context_queries": [
+            "ГВС 1 зона",
+            "циркуляционные потери",
+            "w203119579",
+            "VF-3R-65-52",
+            "0,403",
+            "0,728"
+          ]
+        },
+        "context_retrieval": {
+          "status": "disabled"
+        }
+      },
+      "retained_internal_scope": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+          "pointer": "/meta/object_coverage_review/pending_scopes/3"
+        },
+        "record": {
+          "object_ids": [
+            "O-07",
+            "O-08",
+            "O-09"
+          ],
+          "scope": "Давления ГВС, циркуляция, смешение воды 5 °C до 16,54 °C, исполнения насосов и теплообменников."
+        }
+      },
+      "recommendation": "Preserve each explicit targeted follow-up as a separately identifiable operation with its reason, source references and context queries. Record retrieval and a disposition for that specific comparison; generic object calculations must not close it. Resolve available project context before issuing an engineer question. If still unresolved, retain the bounded regime clarification separately from technical defects.",
+      "control_pair": {
+        "retain": "Question about the basis for 5 °C supply versus 16.54 °C heat-exchanger inlet, when mixing regime is not established.",
+        "reject": "Automatic assertion of undersized or incorrectly selected heat exchanger solely from the two temperatures.",
+        "limit": "This is a proposed logical control pair; no new paired model test was run."
+      },
+      "limits": [
+        "The missing follow-up in this specific packet is directly verified; an exclusive cause of the final absence is not proved.",
+        "Availability of temperature text is not evidence that the mixing comparison was performed.",
+        "An unresolved mixing basis does not prove a technical defect or absence of the calculation from the entire project."
+      ]
+    }
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "stage4_complete": false
+}
