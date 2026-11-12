@@ -1,0 +1,42 @@
+{
+  "observed_at_epoch": 1794487743.7179766,
+  "classification": "interrupted_without_terminal_receipt",
+  "cause": "not_established",
+  "collection_process": {
+    "pid": 1522613,
+    "live": false,
+    "reason": "process_absent"
+  },
+  "run_process": {
+    "pid": 1522654,
+    "live": false,
+    "reason": "process_absent"
+  },
+  "session_check": "write_stdin(86903): Unknown process id",
+  "collection_state": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/experimental_collection_status.json",
+    "sha256": "019aed37558f0463712b789c2a5c4d38e9272c57b8631b3bd9f3787133253d45"
+  },
+  "run_state": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_source_review/classic_control/status/AK.json",
+    "sha256": "e41c19a3aab5a320d5d5f565f1c9bccd247781df4cdd88039065d9c87dd98a55"
+  },
+  "trial": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/experimental_collection_trial.json",
+    "sha256": "8fc6b900edca76cd59b81e5602bc7be5ae84ce18f8c697811ddd3fe3bbc274dc"
+  },
+  "completed_attempt_receipts": 304,
+  "failed_attempt_receipts": 0,
+  "created_request_records": 305,
+  "last_request": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_source_review/classic_control/requests/AK/1794487579928843801/request.json",
+    "sha256": "4fdd1a6dce2bdfbbbb2abe4f55894b3b907166052b3a376890dec5797552eb52",
+    "stage": "source_review_review",
+    "timeout_seconds": 900
+  },
+  "quality_score": null,
+  "count_as_empty_output": false,
+  "semantic_results_read": false,
+  "preservation": "Keep all existing files and failed/interrupted slots in comparative accounting. No overwrite or silent replacement.",
+  "next_action": "Implement explicit inspected continuation for untouched frozen slots, preserving interruption evidence. Recover this slot only under separately recorded protocol; existing runner refuses existing status."
+}
