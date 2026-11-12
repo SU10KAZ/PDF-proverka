@@ -1,0 +1,18 @@
+{
+  "finding_id": "F-023",
+  "status": "question_promoted_without_established_same_circuit_conflict",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_023/publication_projection.json",
+  "projection_sha256": "3cb9472c24ccb02dc14bfe4488b749df9a2effba729da6a44c9385b905c9343a",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_control_logic_source_review_20261112.json",
+  "source_review_sha256": "c4f6dd51c155a4fced854d4de0f7b0db0f28f482d0e009cbb0e1105dfa965362",
+  "checks": [
+    "Different power-project references are present; identical circuit scope is not established.",
+    "Category I protection and category II motor supply are stated project context, not proof of separate inputs or reserve failure.",
+    "Current technical wording calls references inconsistent without proving their common scope; retain actionable applicability clarification instead.",
+    "Literal 1З АВ wording preserved; no text correction or automatic selection of correct power package."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "normative_compliance_verified": false,
+  "production_acceptance": false
+}

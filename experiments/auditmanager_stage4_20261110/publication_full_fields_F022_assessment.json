@@ -1,0 +1,18 @@
+{
+  "finding_id": "F-022",
+  "status": "literal_references_preserved_partial_question_visibility",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_022/publication_projection.json",
+  "projection_sha256": "2cd6f6a73f99d1ba9c723a3e4362d0968256ba7eb4deab7fb5b869fb4cde87a2",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_normative_reference_evidence_limits_20261112.json",
+  "source_review_sha256": "fc82f48454a8241f9e5a0e32d3486a913c0bc54e2c0bfee62306ac322e2c208f",
+  "checks": [
+    "Literal ГОСТ 21.4.08-2013 and ТУ-газ-86 preserved; no unverified replacement imposed.",
+    "Height 1.5 m not classified as technical error or universal rule.",
+    "ГОСТ clarification remains a question; ТУ identification is pending, so retain bounded reference clarification through explicit admission rather than treating every limitation as a new question.",
+    "Official normative identification and applicability remain unverified."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "normative_compliance_verified": false,
+  "production_acceptance": false
+}
