@@ -1,0 +1,26 @@
+{
+  "finding_id": "F-020",
+  "status": "source_facts_preserved_useful_question_routed_only_to_pending",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_020/publication_projection.json",
+  "projection_sha256": "9f6977fea31dbd1ea1de315a2e9bc5cfe4be88ee31f7341ed293a2c3e05ec10c",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_smoke_control_cable_question_review_20261112.json",
+  "source_review_sha256": "3b5db66d3aff64e437958dd7d728bc14b11fe682339d6d01dfb9a629f2dc3822",
+  "checks": [
+    "Six circuit lengths sum to specification 420 m.",
+    "General PVC conduit and holder rows do not prove these materials assigned to each fire-control circuit.",
+    "Function in heated pressurization is established by project text; old request to establish function is properly superseded within that scope.",
+    "Required operating duration, line construction and regulatory applicability remain unverified; no regulatory violation established."
+  ],
+  "routing_issue": {
+    "technical_parts": 0,
+    "question_parts": 0,
+    "pending_parts": 3,
+    "expected_user_visible_question": "Confirm requirements for retention of the established temperature-control function, duration and applicable line construction.",
+    "loss_boundary": "Not erased from archive or pending; user-visible question lost if final renderer emits only technical_findings and questions. Final renderer integration is not yet accepted.",
+    "required_behavior": "Represent evidential status separately from visibility and purpose. Retain a source-grounded actionable question while leaving regulatory conclusion unresolved. Do not publish all internal pending risks as questions."
+  },
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "normative_compliance_verified": false,
+  "production_acceptance": false
+}

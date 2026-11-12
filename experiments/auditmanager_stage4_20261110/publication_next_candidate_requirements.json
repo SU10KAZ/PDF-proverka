@@ -58,6 +58,18 @@
         "Keep confirmed 45 m cable mark discrepancy and four 30 m line discrepancies"
       ],
       "verification": "Semantic source review must detect repeated graphical misreading even when all structural validations pass; no global normalization or whole-finding suppression."
+    },
+    {
+      "id": "PUB-06",
+      "behavior": "Separate epistemic status from publication purpose: a source-grounded actionable clarification may be visible as a question while its technical conclusion remains needs_data. Preserve that question without upgrading to a violation.",
+      "positive_cases": [
+        "F-020 requirements for duration and line construction after function established"
+      ],
+      "negative_controls": [
+        "F-004/F-012 recommendations are not additional questions",
+        "Conditional actual procurement risks are not automatic engineer queries"
+      ],
+      "verification": "Final rendered report must retain explicit question and unresolved evidence status; no universal pending-to-question conversion. Include preservation and workload checks."
     }
   ],
   "sealed_queue_modified": false,
