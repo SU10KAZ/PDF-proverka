@@ -1,0 +1,77 @@
+{
+  "status": "requirement_audit_in_progress",
+  "basis": "experiments/auditmanager_stage3_20261110/selected_hypotheses.json",
+  "hypotheses": [
+    {
+      "hypothesis": "H01",
+      "status": "implementation_and_bounded_controls_evidenced_final_acceptance_open",
+      "code": [
+        {
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "cf1fa5ec01ca73708036ad41cfe7f6a82fd8f3e25a6360b277045cfb2b6e7be3",
+          "symbol": "backfill_text_evidence_in_findings"
+        },
+        {
+          "path": "backend/app/pipeline/stages/findings_merge/subclaim_coverage.py",
+          "sha256": "26938f09a4f5ef3a2a7c979121eaf17ab03b14fa96e4573ab85ccdd03b65ce36",
+          "symbol": "pending_subclaims"
+        },
+        {
+          "path": "backend/app/pipeline/stages/prepare/candidate_recovery.py",
+          "sha256": "a12350ff573cd93933265a962c44dda83d5334f46492408316732072cf8a9a32",
+          "symbol": "build_recovery_passes"
+        },
+        {
+          "path": "backend/app/pipeline/stages/prepare/prompt_builder.py",
+          "sha256": "acf20ecc404a13d36cb6389056bccf1eb276b8c30a976886e734b1e280085496",
+          "symbol": "build_findings_merge_messages"
+        }
+      ],
+      "observed_mechanisms": [
+        "TEXT-кандидат привязывается через text_candidate_lineage; реальный output_dir предотвращает запись в другую latest-копию.",
+        "AUDIT_MERGE_PRIMARY_TEXT=1 включает передачу исходного MD в объединение; это opt-in, не доказательство включения в production.",
+        "Непроверенные subclaims включают уже связанного кандидата в recovery. Поздняя квитанция без subclaims не стирает прежние обязательства.",
+        "Неизвестные источники, конфликтующие ID и отсутствие итоговой связи оставляют обязательство открытым. Ранее открытое retained/duplicate не закрывается одной квитанцией без subclaim_is_emitted."
+      ],
+      "tests_inspected": [
+        {
+          "path": "tests/test_subclaim_coverage.py",
+          "sha256": "1a7bd8d3fe63c2493787513ed5456861bdb8f492b0888c1307f6506c92e80cce"
+        }
+      ],
+      "test_scope": "Inspected tests cover omitted later subclaims, unknown sources, missing output IDs, conflicting claims and scheduling with image while existing finding stays unchanged. No new test run claimed.",
+      "live_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F080_assessment.json",
+          "sha256": "3a1dd38b314d68bc7a7c368838ea8762e9f20e9fe6f719b8725f247ece4a6b6d"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/publication_series_85_synthesis.json",
+          "sha256": "f6fe5d60ad0207d05f02a94055853c607ce587211bd3bd334af0d1860a9ca9ab"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/publication_review_snapshot.json",
+          "sha256": "b5ce934a857174e6c75976d36c6086af33756b1bfe93d66f1b0f3478dca64bf3"
+        }
+      ],
+      "control_interpretation": "АК размерная цепь сохранена в F080; серия 85 показывает полезные восстановленные тезисы и реальные ошибки. Это проверка сохранения в проекции, не финальный сравнительный аудит.",
+      "limits": [
+        "Связь ID или присутствие текста не доказывают техническую верность.",
+        "Неполнота разложения исходного тезиса моделью не решается одной структурой subclaims.",
+        "Полное сохранение до финального отчёта и качество всех шести проектов остаются этапами 6/7.",
+        "Эталонные ЭОМ-контроли H01 необходимо включить в общий аудит отдельно; этот ряд не подменяет их проверку."
+      ],
+      "complete": false
+    }
+  ],
+  "not_yet_audited": [
+    "H02",
+    "H03",
+    "H04",
+    "H05",
+    "H06",
+    "H07"
+  ],
+  "stage4_complete": false,
+  "production_acceptance": false
+}
