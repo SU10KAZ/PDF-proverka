@@ -1,6 +1,6 @@
 {
   "status": "resource_snapshot_not_comparative_acceptance",
-  "observed_at_unix": 1794445527.4301162,
+  "observed_at_unix": 1794446863.560462,
   "jobs": [
     {
       "run": "/tmp/auditmanager_publication_reconciliation_F006_20261112_run",
@@ -26,9 +26,9 @@
     {
       "run": "/tmp/auditmanager_publication_remaining84_20261112_run",
       "status": "running",
-      "status_sha256": "c87debe4bd0fef7c061f4bdc76e74f5a3028e7bf07898b8cbf59e990cb02a134",
+      "status_sha256": "2869a711f270ee8a76e4a2740008a2c52855fab508b6b11f02b4df60c6ee7764",
       "planned_packets": 84,
-      "completed_packets": 37
+      "completed_packets": 49
     },
     {
       "run": "/tmp/auditmanager_publication_F003_context1_20261112_run",
@@ -64,42 +64,77 @@
       "status_sha256": "8b61c395d80ccaa903e337daebef268bc3ebf556f834048728696ff79a4f920c",
       "planned_packets": 3,
       "completed_packets": 3
+    },
+    {
+      "run": "/tmp/auditmanager_publication_signal_pair_20261112_run",
+      "status": "completed_unadjudicated",
+      "status_sha256": "d90c5e2e9111431fa283865329c3b98de7e78654c90c7ede643ae1e6a4cd16dd",
+      "planned_packets": 2,
+      "completed_packets": 2
+    },
+    {
+      "run": "/tmp/auditmanager_publication_signal_context1_20261112_run",
+      "status": "completed_unadjudicated",
+      "status_sha256": "086acbc50dc3156d3620e10d049ffd9bbb0ce83f9955fe68e7b0339b36ceb01e",
+      "planned_packets": 2,
+      "completed_packets": 2
+    },
+    {
+      "run": "/tmp/auditmanager_heater_source_reading_20261112_run",
+      "status": "completed_unadjudicated",
+      "status_sha256": "96848451f76837a9e532f618433a00babd14182737d2c35480d4e3116cd4d9b8",
+      "planned_packets": 1,
+      "completed_packets": 1
+    },
+    {
+      "run": "/tmp/auditmanager_publication_heater_reading_20261112_run",
+      "status": "completed_unadjudicated",
+      "status_sha256": "cb37a58567fb6f81c51941f0e493c1ffb658e135d07b3da3b90e9d0388f9f725",
+      "planned_packets": 1,
+      "completed_packets": 1
+    },
+    {
+      "run": "/tmp/auditmanager_publication_heater_positive_20261112_run",
+      "status": "completed_unadjudicated",
+      "status_sha256": "50e63c121d4243ce42769c1e198fb7f2294da87cc5a777a0f20b5c9ee4f8424a",
+      "planned_packets": 1,
+      "completed_packets": 1
     }
   ],
-  "saved_outer_attempts": 52,
-  "successful_saved_attempts": 52,
+  "saved_outer_attempts": 72,
+  "successful_saved_attempts": 71,
   "model_counts": {
-    "codex/gpt-6-astra": 52
+    "codex/gpt-6-astra": 72
   },
   "usage": {
     "input_tokens": {
-      "reported_total": 980392,
-      "records_with_value": 52,
+      "reported_total": 1282569,
+      "records_with_value": 72,
       "complete_for_saved_attempts": true
     },
     "output_tokens": {
-      "reported_total": 257237,
-      "records_with_value": 52,
+      "reported_total": 342759,
+      "records_with_value": 72,
       "complete_for_saved_attempts": true
     },
     "cached_tokens": {
-      "reported_total": 487424,
-      "records_with_value": 52,
+      "reported_total": 673792,
+      "records_with_value": 72,
       "complete_for_saved_attempts": true
     },
     "reasoning_tokens": {
-      "reported_total": 125020,
-      "records_with_value": 52,
+      "reported_total": 173854,
+      "records_with_value": 72,
       "complete_for_saved_attempts": true
     },
     "duration_ms": {
-      "reported_total": 5529782,
-      "records_with_value": 52,
+      "reported_total": 7459788,
+      "records_with_value": 72,
       "complete_for_saved_attempts": true
     }
   },
-  "median_saved_attempt_seconds": 91.5725,
-  "elapsed_model_seconds_sum": 5529.782,
+  "median_saved_attempt_seconds": 91.12,
+  "elapsed_model_seconds_sum": 7459.788,
   "monetary_cost_estimate": null,
   "subscription_quota_fraction": null,
   "records": [
@@ -704,6 +739,201 @@
       "cost_source": "subscription"
     },
     {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_039_attempt_1.json",
+      "response_sha256": "687586f0708314c838eb8ba24b4ce727403c3072b3938f3909ba572e910bd55d",
+      "stage": "publication_reconciliation_039",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 15351,
+      "output_tokens": 5417,
+      "cached_tokens": 8192,
+      "reasoning_tokens": 3008,
+      "duration_ms": 116150,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_040_attempt_1.json",
+      "response_sha256": "83a8416eec4574476af107b4109bdd53c1bfe32f1a5d34269934c77188a4aa8b",
+      "stage": "publication_reconciliation_040",
+      "attempt": 1,
+      "success": false,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14186,
+      "output_tokens": 2636,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 1552,
+      "duration_ms": 68665,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_040_attempt_2.json",
+      "response_sha256": "7b662571adabfad41d3e13b1fbc048ec0664cb803fd468ca5f262143a5e602cb",
+      "stage": "publication_reconciliation_040",
+      "attempt": 2,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14186,
+      "output_tokens": 3140,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 1790,
+      "duration_ms": 73416,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_041_attempt_1.json",
+      "response_sha256": "fdb5209a337b34796e179c4372b730dbaed5e2e672d2cb395c41c0ad8608ee6d",
+      "stage": "publication_reconciliation_041",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14310,
+      "output_tokens": 4932,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 3106,
+      "duration_ms": 103607,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_042_attempt_1.json",
+      "response_sha256": "c68416cc82d8f1349d8d9fb8ef6b6ae4a198e76e686650c95be6ea1475a147d5",
+      "stage": "publication_reconciliation_042",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14406,
+      "output_tokens": 3630,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 2070,
+      "duration_ms": 77646,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_043_attempt_1.json",
+      "response_sha256": "02257889bccd1c4e32d5cf6948e8db9f58755d3e370595ca491ccd26be05506f",
+      "stage": "publication_reconciliation_043",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14357,
+      "output_tokens": 3947,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 2267,
+      "duration_ms": 83444,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_044_attempt_1.json",
+      "response_sha256": "af858ec549d9fb4a961479c98432e3227b58299070e0dfc7bf85985379339b8f",
+      "stage": "publication_reconciliation_044",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 17908,
+      "output_tokens": 8319,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 4603,
+      "duration_ms": 171331,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_045_attempt_1.json",
+      "response_sha256": "7d0bb43db039e4b260e13244d6da8c3bd1edf77f664e0310c206e80eadefb845",
+      "stage": "publication_reconciliation_045",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14081,
+      "output_tokens": 4156,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 2588,
+      "duration_ms": 89269,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_046_attempt_1.json",
+      "response_sha256": "243f047cc6f96e1595a47306dcfe877c64872f03d9fd9eb25946320883188e75",
+      "stage": "publication_reconciliation_046",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14179,
+      "output_tokens": 4393,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 2753,
+      "duration_ms": 94462,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_047_attempt_1.json",
+      "response_sha256": "f33b5dfbe19d6c8907cba9c496c77af2b99576d6beedff5d30aaf4c97a66ba9e",
+      "stage": "publication_reconciliation_047",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14515,
+      "output_tokens": 3877,
+      "cached_tokens": 8192,
+      "reasoning_tokens": 2061,
+      "duration_ms": 82049,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_048_attempt_1.json",
+      "response_sha256": "c8e320d6dc69be8973932e32a8be336dcba1293f7f9ecbdd7406f35e37f6e0cb",
+      "stage": "publication_reconciliation_048",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14932,
+      "output_tokens": 2908,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 1552,
+      "duration_ms": 63678,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_049_attempt_1.json",
+      "response_sha256": "6a417c1f89a10a6dc7392dc921dc44bd3c3f4579b9ef77df450dde07e4877dfa",
+      "stage": "publication_reconciliation_049",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14290,
+      "output_tokens": 3152,
+      "cached_tokens": 8192,
+      "reasoning_tokens": 1552,
+      "duration_ms": 68791,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_050_attempt_1.json",
+      "response_sha256": "d151cd337c0aefe391c94cbeb4d212e75520e14b619076a2881b65c8329c5a29",
+      "stage": "publication_reconciliation_050",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14061,
+      "output_tokens": 4443,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 2588,
+      "duration_ms": 110362,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
       "response_path": "/tmp/auditmanager_publication_F003_context1_20261112_run/publication_reconciliation_003_context1_attempt_1.json",
       "response_sha256": "2dded64314a687015ebfabc8256a20d93eae12872e22ec042b980107c68d64c8",
       "stage": "publication_reconciliation_003_context1",
@@ -882,6 +1112,111 @@
       "duration_ms": 112072,
       "reported_cost_usd": 0.0,
       "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_signal_pair_20261112_run/publication_purpose_037_attempt_1.json",
+      "response_sha256": "5e1402f457d3219c7aa5255dcdf56b2cfde4cd9c49d30b9720d0482e2e485d85",
+      "stage": "publication_purpose_037",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14355,
+      "output_tokens": 2982,
+      "cached_tokens": 0,
+      "reasoning_tokens": 1731,
+      "duration_ms": 74559,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_signal_pair_20261112_run/publication_purpose_038_attempt_1.json",
+      "response_sha256": "59ec1719711e635e8f426a55d9d5d2b3c10b72ba7524917ecc606fdfdb769ace",
+      "stage": "publication_purpose_038",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 14538,
+      "output_tokens": 3929,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 2070,
+      "duration_ms": 84209,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_signal_context1_20261112_run/publication_signal_context_037_attempt_1.json",
+      "response_sha256": "87fd619c1d7fe6d6a6513251642cfdd98f9823f2ee90a2a0cdf6c47cc945e664",
+      "stage": "publication_signal_context_037",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 16978,
+      "output_tokens": 3387,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 2070,
+      "duration_ms": 86731,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_signal_context1_20261112_run/publication_signal_context_038_attempt_1.json",
+      "response_sha256": "14d688d81826d83c79777e290f297d4fac47e595b176b1c724aa222ac11e249b",
+      "stage": "publication_signal_context_038",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 17165,
+      "output_tokens": 6182,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 3890,
+      "duration_ms": 141637,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_heater_source_reading_20261112_run/heater_source_reading_attempt_1.json",
+      "response_sha256": "4d9e51229658ca96ba399d8e62c333de77ca88ec5f5020bd73f94aed4c6aaaa1",
+      "stage": "heater_source_reading",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 13301,
+      "output_tokens": 3146,
+      "cached_tokens": 8192,
+      "reasoning_tokens": 853,
+      "duration_ms": 104187,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_heater_reading_20261112_run/publication_heater_reading_040_attempt_1.json",
+      "response_sha256": "778c7dbfeadfebcc0677ac4e96ae1a313490df1681120e5db2b28f84f6c769ba",
+      "stage": "publication_heater_reading_040",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 16441,
+      "output_tokens": 4936,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 3106,
+      "duration_ms": 110028,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "response_path": "/tmp/auditmanager_publication_heater_positive_20261112_run/publication_heater_positive_006_attempt_1.json",
+      "response_sha256": "9696b7e8577c7b07f7532028427b7800bd0903832505912d2ad684c09f4719ab",
+      "stage": "publication_heater_positive_006",
+      "attempt": 1,
+      "success": true,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 18637,
+      "output_tokens": 6010,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 3624,
+      "duration_ms": 125785,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
     }
   ],
   "production_acceptance": false,
@@ -891,5 +1226,8 @@
     "Unfinished requests and unreported internal retries are not measured by this snapshot.",
     "Per-finding research reconciliation is not yet the production topology; full-audit cost/time gates remain open.",
     "No improvement in quality or engineer workload follows from successful transport."
+  ],
+  "additional_unfinished_workflows_not_counted": [
+    "/tmp/auditmanager_publication_f040_admission_20261112"
   ]
 }

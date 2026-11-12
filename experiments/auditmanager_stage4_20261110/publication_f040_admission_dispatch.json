@@ -1,0 +1,12 @@
+{
+  "preparation_path": "/tmp/auditmanager_publication_f040_admission_20261112/preparation.json",
+  "preparation_sha256": "c439c944c9c60355f784700ae0e12f5367d8217f668925d2886d70c4d29293d0",
+  "output_dir": "/tmp/auditmanager_publication_f040_admission_20261112",
+  "pid": 1105508,
+  "exec_session_id": 18028,
+  "model": "codex/gpt-6-astra",
+  "purpose": "Independent final source check of explicit F040 internal deferral; no engineer answers or prior reviewer verdicts supplied.",
+  "request_chars": 163696,
+  "image_bytes": 406888,
+  "production_acceptance": false
+}
