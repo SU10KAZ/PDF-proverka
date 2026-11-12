@@ -1,0 +1,44 @@
+{
+  "status": "offline_candidate_local_checks_passed",
+  "control": "H06-P03",
+  "tests": {
+    "command": "python -m pytest -q experiments/auditmanager_stage4_20261110/test_reference_retention_candidate.py",
+    "passed": 12,
+    "failed": 0,
+    "initial_failure": "Two punctuation-boundary cases failed and were corrected before the passing run."
+  },
+  "runtime_integrated": false,
+  "live_trial_modified": false,
+  "stage4_control_closed": false,
+  "production_acceptance": false,
+  "known_case": "AR-O27-crossdoc / F-025: selected calculation reference KM8 retained in reasoning but absent from approved and released fields.",
+  "control_pair_status": "Real omission reproduced. Preservation, unrelated reference and stale-source tests are synthetic boundary checks, not a confirmed historical pair.",
+  "limitations": [
+    "The obligation is explicitly selected from known-control C8; automatic relevant-reference selection is not demonstrated.",
+    "Literal retention does not establish semantic correctness or applicability.",
+    "No new model call and no final historical finding rewritten."
+  ],
+  "integration_plan": [
+    {
+      "location": "backend/app/pipeline/stages/findings_verify/source_review_workflow.py::prepare_adjudication_request",
+      "behavior": "Request separate source-bound reference obligations and dispositions. Distinguish reference-existence premise from unresolved calculation contents; do not upgrade needs_data to supported."
+    },
+    {
+      "location": "backend/app/pipeline/stages/findings_verify/source_review_admission.py::_check_decision",
+      "behavior": "For selected applicable reference obligations, check actual user-facing fields before admission. Return repair task on omission, retain original candidate and full source history; never suppress or auto-insert project conclusions."
+    },
+    {
+      "location": "backend/app/pipeline/stages/findings_verify/source_review_output_refs.py::final_reference_updates",
+      "behavior": "Keep supported final citations distinct from addresses of missing context. Do not allow a needs_data consequence to become supported evidence solely because its referenced document exists."
+    },
+    {
+      "location": "next candidate replay and comparison",
+      "behavior": "Replay same known AR packet with automatic selection and repair; inspect resulting question, prior 24 findings and export. Test irrelevant catalogue references with independently supported negative cases before broad activation."
+    }
+  ],
+  "bindings": {
+    "reference_retention_candidate.py": "ca04459082800a70515efc376a6dca97e796f077c89f29c7584a1b6faca29977",
+    "test_reference_retention_candidate.py": "9c294fa8e8d872693ff9d9003ef79894f68757f6643c7a6fda1a301c9436980e",
+    "AR_calculation_reference_trace.json": "0c228edb7c99c47fdfadb5b2aca6d04c505ac085d600fede975db99c07b54496"
+  }
+}
