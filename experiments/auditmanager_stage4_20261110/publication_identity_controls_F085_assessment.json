@@ -1,0 +1,22 @@
+{
+  "finding_id": "F-085",
+  "status": "existing_editorial_candidate_preserves_cross_document_address_conflict_and_limits",
+  "projection_path": "/tmp/auditmanager_publication_identity_controls_20261112_v1_run/evaluations/publication_identity_085/publication_projection.json",
+  "projection_sha256": "1d8a5921f8ef47b8496f2f2d6827c9c88f5f40a5ad1ba7fc3cdf4222e21dcb17",
+  "same_context_baseline": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F085_assessment.json",
+    "sha256": "84a7ebcc3adaaf45ada04ebd26117dee41f16ba870d90d1b9e14bae26d1b62c4"
+  },
+  "candidate_instruction_sha256": "416f1e8abed5e6761e7993ac77c0aa7c5365c43c13f733e0935e6899fbeb195b",
+  "checks": [
+    "Сохранены две самостоятельные графические позиции и их конкретные линии БПС-1.13/БПС-3.13, сопоставленные с конечными адресами авторитетного КЖ.",
+    "Исправляется адресная часть 1.13→3.13, а не буквальное З в MD. Таблица применимости сохранена как дополнительная связь группы 3.",
+    "Все повторные формулировки, рекомендация, условный риск и предел доказательства монтажа объединены в один технический тезис.",
+    "Отсутствующая схема подключения явно не считается проверенной. Физическая ошибка подключения не заявлена."
+  ],
+  "limits": [
+    "Сохранение положительного контроля; не доказательство полного улучшения или готового финального выпуска."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}

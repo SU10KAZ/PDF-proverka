@@ -1,0 +1,31 @@
+{
+  "status": "three_controls_reviewed_two_preserved_one_scope_failure",
+  "instruction_sha256": "416f1e8abed5e6761e7993ac77c0aa7c5365c43c13f733e0935e6899fbeb195b",
+  "controls": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/publication_identity_controls_F082_assessment.json",
+      "sha256": "22e2800738a738a4ce6ab0c514e35b1f9f527ef590e81f7ab030b9025baf4708"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/publication_identity_controls_F083_assessment.json",
+      "sha256": "d09664540c3f9c2bf15bea8c2fe14dea3132964f28706ed05b313cb376f11bf5"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/publication_identity_controls_F085_assessment.json",
+      "sha256": "0fa074666766f1069a9a8aae8b6bfb93d138f460ab7a0a658abd39f318cbdf58"
+    }
+  ],
+  "results": {
+    "F-082": "question_preserved",
+    "F-083": "unsupported_technical_collision_repeated",
+    "F-085": "technical_document_conflict_preserved"
+  },
+  "next_candidate": "IDENTITY_SCOPE_INSTRUCTIONS; four controls now dispatched including F071 local position conflict",
+  "limits": [
+    "DEV controls selected after observed failures; not blind validation.",
+    "One failure blocks acceptance of identity classification; two preservation checks do not cancel it.",
+    "Projection quality is not final report admission."
+  ],
+  "stage4_complete": false,
+  "production_acceptance": false
+}
