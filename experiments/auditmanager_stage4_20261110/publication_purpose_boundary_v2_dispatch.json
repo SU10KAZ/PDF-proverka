@@ -1,0 +1,17 @@
+{
+  "preparation_path": "/tmp/auditmanager_publication_purpose_boundary_v2_20261112/preparation.json",
+  "preparation_sha256": "3cfca7b14868a48f94ef05922166c3d35147058827ea509be9c8afef92d39a37",
+  "output_dir": "/tmp/auditmanager_publication_purpose_boundary_v2_20261112_run",
+  "pid": 1078821,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "cases": [
+    "F-010",
+    "F-008"
+  ],
+  "purpose": "Regression repair: confirmed same-scope quantity conflict stays technical; designation-only ambiguity stays question.",
+  "source_inputs_unchanged": true,
+  "coordinator_or_engineer_answers_supplied": false,
+  "prompt_change": "Generic distinction between document conflict and actual procurement, without project-specific answers.",
+  "production_acceptance": false
+}
