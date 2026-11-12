@@ -2,8 +2,8 @@
   "version": 1,
   "final_sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
   "finding_count": 74,
-  "findings_with_bounded_review": 61,
-  "findings_without_bounded_review": 13,
+  "findings_with_bounded_review": 63,
+  "findings_without_bounded_review": 11,
   "entire_output_reviewed": false,
   "whole_output_precision_finalized": false,
   "quality_score": null,
@@ -441,8 +441,13 @@
     },
     {
       "id": "F-049",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/inlet_parameters_bounded_review.json",
+          "sha256": "0894f79dbbf0fae99ff5f780fcdd1eee4ac818d7593f3c8acba90b83ece5722f"
+        }
+      ]
     },
     {
       "id": "F-050",
@@ -526,8 +531,13 @@
     },
     {
       "id": "F-058",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/inlet_parameters_bounded_review.json",
+          "sha256": "0894f79dbbf0fae99ff5f780fcdd1eee4ac818d7593f3c8acba90b83ece5722f"
+        }
+      ]
     },
     {
       "id": "F-059",

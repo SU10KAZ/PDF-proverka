@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "scope": "Two bounded inlet parameter findings",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "id": "F-049",
+      "assessment": "Published inlet load discrepancy confirmed: sections1-1/2-2 and axonometry5.205 versus PZ5.229. Repeated drawing locations support one load discrepancy, not independent defects. Correct load and equipment consequences remain unproved.",
+      "target": "not assigned in this bounded review",
+      "quote_checks": [
+        {
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "quote": "| **ИТОГО на ИТП (Гкал/час)** | **2,621** | **1,527** | **1,081** | **5,229** |",
+          "line": 1975
+        }
+      ],
+      "visible_fields": {
+        "problem": "Тепловая нагрузка ввода Т1 на разрезах 1-1 и 2-2 не согласована с итоговой нагрузкой ИТП в ПЗ.",
+        "description": "Первоначальное описание:\nНа обоих разрезах в подписи подающего трубопровода из тепловой сети указано Q=5,205 Гкал/ч. Таблица «Тепловая нагрузка на ИТП (Гкал/ч)» на листе 5 ПЗ содержит итог 5,229 Гкал/ч, включающий отопление 2,621, вентиляцию 1,527 и ГВС 1,081 Гкал/ч. Разность составляет 0,024 Гкал/ч. Подтверждено несогласование опубликованных нагрузок теплового ввода и обслуживаемого ИТП. Правильное значение и необходимость изменения оборудования по этим данным не установлены.\n\nДополнительная проверка:\nНа разрезе 1-1 указана нагрузка ввода 5,205 Гкал/ч.\nЗначение непосредственно прочитано в подписи Т1 в нижней правой части разреза 1-1.\n\nНа разрезе 2-2 указана нагрузка ввода 5,205 Гкал/ч.\nЗначение непосредственно прочитано в верхней подписи параметров Т1 на разрезе 2-2.\n\nВ ПЗ указана итоговая нагрузка ИТП 5,229 Гкал/ч.\nЧасть исходного составного утверждения о значении ПЗ сохранена с ID 3. Итог прямо указан в таблице на листе 5 перед расчётом теплового ввода.\n\nНагрузка ввода на листе 11.2 равна 5,205 Гкал/ч против 5,229 в ПЗ.\nВ правых верхних выносках Т1 и Т2 непосредственно прочитано Q=5,205 Гкал/ч; итоговая таблица ПЗ задаёт 5,229 Гкал/ч. Разность равна 0,024 Гкал/ч. F-049 сохраняет то же несогласование нагрузки теплового ввода с ПЗ на разрезах 1-1 и 2-2. Аксонометрия является дополнительным местом проявления этой проблемы, а не отдельным дефектом.\n\nАксонометрия содержит Q=5,205 Гкал/ч, а ПЗ — 5,229 Гкал/ч.\nОба значения подтверждены оригинальными источниками: выносками теплового ввода на аксонометрии и итоговой строкой таблицы нагрузки ИТП. F-049 уже сохраняет конфликт 5,205 против 5,229 Гкал/ч для того же ввода; лист 11.2 добавляет графическое подтверждение и место проявления.",
+        "solution": "Согласовать нагрузку теплового ввода на разрезах 1-1 и 2-2 с тепловым балансом ПЗ, уточнив расчётный режим и состав нагрузки.",
+        "report_section": "technical_findings"
+      }
+    },
+    {
+      "id": "F-058",
+      "assessment": "Published inlet flow discrepancy confirmed: axonometry T1/T2 both260.25 versus PZ261.50, same325x7 inlet and90/70 regime. Correct flow and need to change equipment or diameter remain unproved.",
+      "target": "not assigned in this bounded review",
+      "quote_checks": [
+        {
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "quote": "1. на отопление 1-зоны (теплоноситель с параметрами 90-70°С).",
+          "line": 1983
+        },
+        {
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "quote": "Gсум = 74,15 + 44,00 + 9,55 + 3,35 + 76,40 + 54,05 = 261,50 м³ ч;",
+          "line": 2071
+        },
+        {
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "quote": "тепловой ввод диаметр Ø325 × 7,0 мм, Δh = 3,54 кгс/м² м, v = 1,01 м/сек.",
+          "line": 2073
+        }
+      ],
+      "visible_fields": {
+        "problem": "Расход сетевой воды на аксонометрии теплового ввода не согласован с расчётом ПЗ.",
+        "description": "Первоначальное описание:\nНа листе 11.2 в выносках подающего Т1 и обратного Т2 трубопроводов тепловой сети указан G=260,25 м³/ч. На листе 6 ПЗ суммарный расчётный расход сетевой воды равен 261,50 м³/ч. В обоих источниках рассматривается тепловой ввод Ø325×7,0 мм с температурным графиком 90/70 °C. Разность составляет 1,25 м³/ч. Подтверждено несогласование опубликованных расчётных параметров одного ввода; правильное значение, причина различия и необходимость изменения диаметра или оборудования не установлены.\n\nДополнительная проверка:\nРасход ввода на аксонометрии 260,25 м³/ч отличается от 261,50 м³/ч в ПЗ.\nВыноски Т1 и Т2 подтверждают 260,25 м³/ч, пункт 8 листа 6 ПЗ — 261,50 м³/ч. Совпадают назначение ввода, размер Ø325×7,0 мм и график 90/70 °C. Разность 1,25 м³/ч установлена как документальное несогласование без вывода о фактическом расходе или ошибке диаметра. Сохранено в F-058.\n\nАксонометрия содержит G=260,25 м³/ч, а ПЗ — 261,50 м³/ч.\nНа изображении прочитано G=260,25 м³/ч в обеих выносках ввода. ПЗ непосредственно задаёт сумму 261,50 м³/ч перед выбором того же ввода Ø325×7,0 мм; расчёт выполнен при 90/70 °C. Подтверждено расхождение опубликованного расхода, сохранённое в F-058 с обоими source_finding_ids. Правильный расход и необходимость изменения оборудования не определяются.",
+        "solution": "Согласовать расход теплового ввода на аксонометрии и в ПЗ по актуальному тепловому балансу и единому расчётному режиму.",
+        "report_section": "technical_findings"
+      }
+    }
+  ],
+  "graphics": [
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_871a2c95697d4a93adb86dd3e2456614.png",
+        "sha256": "97b3068dcdaebbf363f1bc3e40c9605fd90564b7d2b33b3f029d772dd86f97f9"
+      },
+      "method": "Codex parent direct raster inspection",
+      "observation": "Sections2-2 and1-1 T1 inlet: Q5.205,G260.25,325x7,90C."
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+        "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af"
+      },
+      "method": "Codex parent direct raster inspection",
+      "observation": "Upper-right T1/T2 callouts: Q5.205,G260.25,325x7; T1 90C,T2 70C."
+    }
+  ],
+  "calculations": {
+    "load_difference_Gcal_h": "0.024",
+    "flow_difference_m3_h": "1.25",
+    "PZ_flow_sum_m3_h": "261.50"
+  },
+  "grouping_assessment": {
+    "ids": [
+      "F-049",
+      "F-058"
+    ],
+    "status": "Related load and flow discrepancies of one inlet; retain both parameter comparisons if grouped.",
+    "limit": "Not literal duplicate claims. Grouping recommendation is not an engineer-confirmed utility verdict."
+  },
+  "preserve": "Repeated views must not multiply defect count; match inlet and regime before comparison; do not infer inadequate equipment from published value differences alone.",
+  "entire_output_reviewed": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0
+}
