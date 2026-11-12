@@ -1,0 +1,33 @@
+{
+  "status": "prepared_existing_candidate_on_three_same_context_controls",
+  "preparation_path": "/tmp/auditmanager_publication_identity_controls_20261112_v1/preparation.json",
+  "preparation_sha256": "69eea25e2de65be7b356cfa021b5080350a34514d7a328888dc9766698ec7ec9",
+  "candidate_instruction_sha256": "416f1e8abed5e6761e7993ac77c0aa7c5365c43c13f733e0935e6899fbeb195b",
+  "requests": [
+    {
+      "finding_id": "F-082",
+      "images": 10,
+      "chars": 16325,
+      "request_sha256": "fec74564c1ba4d920d5664e58b1c6eeaa7472b78cd3f06b81d075cf007ff18ec"
+    },
+    {
+      "finding_id": "F-083",
+      "images": 10,
+      "chars": 11841,
+      "request_sha256": "3104aadfe87ee0c5de75527aa91631ad2c6569c04e8173c28ca87c0348366fb6"
+    },
+    {
+      "finding_id": "F-085",
+      "images": 15,
+      "chars": 20374,
+      "request_sha256": "6336161670dfefee8e3a75f95d0b56582f8b945404d4ecb61482e461c48f8b93"
+    }
+  ],
+  "local_checks": [
+    "Image hashes, binding order, aliases and grid geometry unchanged",
+    "TEXT and all input claim units unchanged",
+    "Existing instruction candidate reused without case-specific hints",
+    "Original report purpose is metadata, not acceptance"
+  ],
+  "production_acceptance": false
+}
