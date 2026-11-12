@@ -2,8 +2,8 @@
   "version": 1,
   "final_sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
   "finding_count": 74,
-  "findings_with_bounded_review": 40,
-  "findings_without_bounded_review": 34,
+  "findings_with_bounded_review": 44,
+  "findings_without_bounded_review": 30,
   "entire_output_reviewed": false,
   "whole_output_precision_finalized": false,
   "quality_score": null,
@@ -281,13 +281,23 @@
     },
     {
       "id": "F-033",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/hydraulics_and_gvs_load_bounded_review.json",
+          "sha256": "7d0cd0aa62edff8553e6dfddf090e1a211f411ec8f5c2e60053efb5c4dd75bf8"
+        }
+      ]
     },
     {
       "id": "F-034",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/hydraulics_and_gvs_load_bounded_review.json",
+          "sha256": "7d0cd0aa62edff8553e6dfddf090e1a211f411ec8f5c2e60053efb5c4dd75bf8"
+        }
+      ]
     },
     {
       "id": "F-035",
@@ -296,8 +306,13 @@
     },
     {
       "id": "F-036",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/hydraulics_and_gvs_load_bounded_review.json",
+          "sha256": "7d0cd0aa62edff8553e6dfddf090e1a211f411ec8f5c2e60053efb5c4dd75bf8"
+        }
+      ]
     },
     {
       "id": "F-037",
@@ -386,8 +401,13 @@
     },
     {
       "id": "F-047",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/hydraulics_and_gvs_load_bounded_review.json",
+          "sha256": "7d0cd0aa62edff8553e6dfddf090e1a211f411ec8f5c2e60053efb5c4dd75bf8"
+        }
+      ]
     },
     {
       "id": "F-048",
