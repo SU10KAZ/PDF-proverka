@@ -1,0 +1,220 @@
+{
+  "status": "diagnostic_requires_context_review",
+  "suspected_stale_references": [
+    {
+      "finding_id": "F-014",
+      "field": "description",
+      "reference": "F-074",
+      "occurrences": 1,
+      "expected_target_by_lineage": "F-072",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": false,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage"
+    },
+    {
+      "finding_id": "F-064",
+      "field": "description",
+      "reference": "F-066",
+      "occurrences": 3,
+      "expected_target_by_lineage": "F-064",
+      "current_reference_exists": true,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage"
+    },
+    {
+      "finding_id": "F-074",
+      "field": "description",
+      "reference": "F-076",
+      "occurrences": 7,
+      "expected_target_by_lineage": "F-074",
+      "current_reference_exists": false,
+      "current_reference_has_same_lineage": false,
+      "self_reference_by_lineage": true,
+      "basis": "unchanged_visible_field_and_unique_exact_source_lineage"
+    }
+  ],
+  "unresolved_references": [
+    {
+      "finding_id": "F-008",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-009",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-010",
+      "field": "description",
+      "reference": "F-003",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-018",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-019",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-022",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-023",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-026",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-027",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-028",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-029",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-030",
+      "field": "description",
+      "reference": "F-026",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-033",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-034",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-038",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-039",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-040",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-048",
+      "field": "reason",
+      "reference": "F-018",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-048",
+      "field": "reason",
+      "reference": "F-020",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-049",
+      "field": "reason",
+      "reference": "F-022",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-051",
+      "field": "reason",
+      "reference": "F-022",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-053",
+      "field": "reason",
+      "reference": "F-019",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-053",
+      "field": "reason",
+      "reference": "F-021",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-055",
+      "field": "reason",
+      "reference": "F-022",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-056",
+      "field": "reason",
+      "reference": "F-018",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-057",
+      "field": "reason",
+      "reference": "F-022",
+      "reason": "target_lineage_missing_or_ambiguous"
+    },
+    {
+      "finding_id": "F-061",
+      "reason": "owner_lineage_missing_or_ambiguous"
+    }
+  ],
+  "limits": [
+    "Exact lineage does not establish prose intent; references may deliberately describe historical IDs.",
+    "Changed prose is not assessed by this conservative check.",
+    "Ambiguous, absent or merged lineage is not guessed.",
+    "No runtime filtering, replacement, defect count or acceptance follows.",
+    "Unresolved references are not automatically errors; this run does not establish precision or general detection recall."
+  ],
+  "sources": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/status/ITP.json",
+      "sha256": "178f994e43a26457023a031e6e035473d771645efc0ad5673e85a2b8c1cd41f9"
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_pre_merge.json",
+      "sha256": "bdbe8ec4189ec74e39ebda459ec1863ff3f96f3a92a35b2ab800d0decb7bdb43"
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    }
+  ],
+  "runtime_changed": false,
+  "production_acceptance": false,
+  "manual_context_crosscheck": [
+    {
+      "finding_id": "F-014",
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valve_claim_adjudication.json",
+      "sha256": "641747f0beb7b73cc8f7ee7616eb381acbff5bf9538f02dccb92ef5acb8da3f2",
+      "assessment": "Matches prior bounded source/lineage review; no runtime correction tested."
+    },
+    {
+      "finding_id": "F-064",
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_temperature_and_volume_claim_adjudication.json",
+      "sha256": "84ade90672fedb392a082c9a3710f34bd36575aa9f8d7e387e11272283bacf2c",
+      "assessment": "Matches prior bounded source/lineage review; no runtime correction tested."
+    },
+    {
+      "finding_id": "F-074",
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_mixed_claim_adjudication.json",
+      "sha256": "7aa740ff96f23e66d067d8f4afee0543d0a73bfba78ac1f75331fde70f36909b",
+      "assessment": "Matches prior bounded source/lineage review; no runtime correction tested."
+    }
+  ],
+  "counts": {
+    "suspected_stale_reference_groups": 3,
+    "occurrences": 11,
+    "wrong_existing_target_occurrences": 4,
+    "missing_target_occurrences": 7,
+    "unresolved_reference_groups": 27
+  }
+}
