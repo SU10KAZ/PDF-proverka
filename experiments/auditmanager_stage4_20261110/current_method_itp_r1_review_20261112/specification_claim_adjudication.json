@@ -1,0 +1,187 @@
+{
+  "version": 1,
+  "scope": "Five specification rows: actual unidentified products distinguished from incomplete auxiliary cells",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "pointer": ""
+    },
+    "reference_ledger": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+      "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-024",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/23"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+        "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "local_record_supported; downstream_consequence_bounded",
+      "supported_claim": "Two cylinder rows combine pipe outer diameter22 with size30x40 or35x40, for2m and23m respectively.",
+      "recommended_disposition": "Retain a local size-designation clarification; establish manufacturer size semantics and actual pipe sections before choosing correction.",
+      "limit": "No installed insulation mismatch, mandatory replacement size or procurement impossibility established.",
+      "reference_section_assessments": [],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-025",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/24"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+        "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "local_record_supported; downstream_consequence_bounded",
+      "supported_claim": "DN325 support row has empty unit and quantity; pipe325x7 length85.1m is separately listed.",
+      "recommended_disposition": "Retain completeness clarification. Check whether supports are counted in another package before requesting a new quantity.",
+      "limit": "Do not infer absent installed supports or derive a count from pipe length alone.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-030:a4e56855f9942b943bff",
+          "assessment": "correct",
+          "details": {
+            "expected": "technical_findings",
+            "actual": {
+              "F-025": "technical_findings"
+            },
+            "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-026",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/25"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+        "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd",
+        "pointer": "/cases/2"
+      },
+      "factual_assessment": "local_record_supported; downstream_consequence_bounded",
+      "supported_claim": "Two source rows identify products only as Решение не найдено (0.4m, no pipe size) and Нет в каталоге (1 piece).",
+      "recommended_disposition": "Retain actual local unidentified-product issue, preserving each row and quantity.",
+      "limit": "Do not infer dimensions from neighboring rows or count unresolved length as a measured procurement shortage.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-027:4828a324071dacb9ae3d",
+          "assessment": "correct",
+          "details": {
+            "expected": "technical_findings",
+            "actual": {
+              "F-026": "technical_findings"
+            },
+            "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+          }
+        },
+        {
+          "target_id": "B-ITP-F-027:fe51c088072cbcf15ec9",
+          "assessment": "correct",
+          "details": {
+            "expected": "technical_findings",
+            "actual": {
+              "F-026": "technical_findings"
+            },
+            "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-027",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/26"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+        "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd",
+        "pointer": "/cases/3"
+      },
+      "factual_assessment": "local_record_supported; downstream_consequence_bounded",
+      "supported_claim": "Same position89 in one table labels DN25 valves118pcs and DN32 valves2pcs, without extra qualifiers.",
+      "recommended_disposition": "Retain the bounded position-to-size ambiguity in the question profile; reconcile with schematic before assigning a new number.",
+      "limit": "No wrong installed valve or correct replacement position established.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-031:d7fa75e76f824fe5d722",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-027": "technical_findings"
+            },
+            "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-028",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/27"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+        "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd",
+        "pointer": "/cases/4"
+      },
+      "factual_assessment": "local_record_supported; downstream_consequence_bounded",
+      "supported_claim": "Twelve cited product-code cells contain placeholders; names, nominal sizes and sometimes standards remain.",
+      "recommended_disposition": "Retain as a bounded clarification and assess identification sufficiency row by row. Do not blanket-label every missing code as a technical inability to specify or procure the item.",
+      "limit": "No universal mandatory manufacturer code established. Entry50/65/125 branches and standardized fittings have different remaining information; treat separately.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-027:0bd4729bc0b05b923141",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-028": "technical_findings",
+              "F-029": "questions"
+            },
+            "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    }
+  ],
+  "control_pair_candidate": {
+    "preserve": "F-026 rows lacking actual product identity and size",
+    "do_not_escalate_automatically": "F-028 standardized named/sized products with code placeholders; F-029 explicitly specified flange type/pressure/size with placeholder notes",
+    "limit": "This is a source-backed comparison of output cases, not a new engineer-adjudicated filter test or permission to suppress every code issue."
+  },
+  "recommendation": "Evaluate missing fields against the information required to identify that specific product and its project connection. Preserve unresolved identity issues; keep editorial placeholders and unsupported procurement consequences separate.",
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}
