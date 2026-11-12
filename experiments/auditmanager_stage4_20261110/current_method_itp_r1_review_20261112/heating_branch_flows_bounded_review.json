@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "scope": "Three bounded heating-branch findings",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "id": "F-052",
+      "assessment": "Section40-40 VFM-2R-100-140 DN100 G74.40/Kv140 confirmed; PZ same selected valve uses74.15. Difference0.25 retained; correct design flow and need to replace valve unproved.",
+      "target": "not assigned in this bounded review",
+      "quote_checks": [
+        {
+          "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+          "quote": "Gот макс = 74,15 м³ / ч,",
+          "line": 2574
+        },
+        {
+          "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+          "quote": "Выбираем клапан «РИДАН» **VFM-2R-100-140**, Kv=140 м³/ч, Ду=100 мм с электроприводом (см. раздел АТМ)",
+          "line": 2578
+        }
+      ],
+      "visible_fields": {
+        "problem": "Расход через клапан отопления первой зоны на разрезе 40-40 не согласован с расчётом подбора в ПЗ.",
+        "description": "Первоначальное описание:\nНа разрезе 40-40 для VFM-2R-100-140 DN100 указан расход 74,40 м³/ч. В подразделе «Система отопления 1-зона» на листе 15 ПЗ для того же клапана принят максимальный расход 74,15 м³/ч. Назначение, марка, диаметр и пропускная способность 140 м³/ч совпадают. Разность расходов составляет 0,25 м³/ч. Подтверждено междокументное несогласование исходного параметра; правильное значение и необходимость изменения клапана не установлены. Отдельное расхождение подстановки 74,12 м³/ч внутри ПЗ уже охвачено F-046.\n\nДополнительная проверка:\nРазрез 40-40 задаёт для VFM-2R-100-140 расход 74,40 м³/ч.\nЗначение непосредственно прочитано в выноске к клапану на приложенном разрезе. Сохранено как графическая сторона расхождения в F-052.\n\nПЗ задаёт максимальный расход 74,15 м³/ч.\nПервичный текст подраздела отопления первой зоны прямо задаёт 74,15 м³/ч и выбирает VFM-2R-100-140 с Kv=140 м³/ч и Ду100. Сохранено как расчётная сторона нового междокументного расхождения в F-052.",
+        "solution": "Установить согласованный расчётный расход через клапан отопления первой зоны, привести разрез 40-40 и ПЗ к этому значению и согласовать соответствующие потери давления.",
+        "report_section": "technical_findings"
+      }
+    },
+    {
+      "id": "F-054",
+      "assessment": "Sections41-41 and42-42 position29 showG10.7,Kv16,deltaP0.446 with no pressure unit. PZ flow9.55 and(9.55/16)^2=0.356bar retained. Output correctly avoids silently adding bar to graphic value.",
+      "target": "ITP40:e4eaac37781fedf2ad41",
+      "quote_checks": [
+        {
+          "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+          "quote": "| 29 | VFM-2R-32-16 \"РИДАН\" | Клапан запорно регулирующий отопления 3, с эл. приводом (см. АТМ); Kvs=16,0 м³/ч, DN32 мм | 1 | 11,7 |  |",
+          "line": 425
+        },
+        {
+          "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+          "quote": "Go/v max = 9,55 м³/ч,",
+          "line": 2614
+        },
+        {
+          "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+          "quote": "Выбираем клапан «РИДАН» **VFM-2R-32-16**, Kv=16 м³/ч, Ду=32 мм с электроприводом (см. раздел АТМ)",
+          "line": 2618
+        },
+        {
+          "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+          "quote": "ΔPклап = ((Gh max)/KvS)² = (9,55/16)² = 0,356 бар;",
+          "line": 2622
+        }
+      ],
+      "visible_fields": {
+        "problem": "Расход через клапан отопления третьей зоны позиции 29 на разрезах не согласован с расчётом ПЗ.",
+        "description": "Первоначальное описание:\nНа разрезах 41-41 и 42-42 для клапана 29 VFM-2R-32-16 DN32 указаны G=10,7 м³/ч, Kv=16,0 м³/ч и ΔР=0,446. На листе 16 ПЗ для того же клапана отопления третьей зоны принят расход 9,55 м³/ч и рассчитаны потери (9,55/16)²=0,356 бар. Экспликация связывает позицию 29 с этим назначением, маркой и диаметром. Разность расходов составляет 1,15 м³/ч. Единица ΔР рядом со значением 0,446 на приложенных разрезах не указана, поэтому прямое сравнение перепадов в барах не используется как самостоятельное доказательство. Несогласование расхода подтверждено независимо от единицы перепада; правильное расчётное значение и необходимость изменения клапана не установлены.\n\nДополнительная проверка:\nРазрез 41-41 задаёт для клапана 29 расход 10,7 м³/ч и ΔР=0,446.\nОбе записи непосредственно прочитаны в выноске «29 VFM-2R-32-16» на разрезе 41-41. Единица ΔР в выноске не указана; утверждение сохранено в буквальном объёме без добавления «бар».\n\nРазрез 42-42 задаёт те же параметры клапана 29.\nОтдельно осмотрена крайняя правая панель: выноска позиции 29 содержит G=10,7 м³/ч, Kv=16,0 м³/ч и ΔР=0,446 без единицы перепада.\n\nПЗ использует 9,55 м³/ч и 0,356 бар для VFM-2R-32-16.\nПодраздел отопления третьей зоны прямо задаёт расход 9,55 м³/ч, выбирает VFM-2R-32-16 и приводит (9,55/16)²=0,356 бар. Экспликация связывает этот клапан с позицией 29. На разрезах для той же позиции указан другой расход без пояснения отдельного режима.",
+        "solution": "Установить согласованный расчётный расход через клапан позиции 29, актуализировать разрезы и ПЗ. Указать единицу перепада давления на разрезах и согласовать потери с принятым расходом.",
+        "report_section": "technical_findings"
+      }
+    },
+    {
+      "id": "F-055",
+      "assessment": "Section23-23 T13/T23 bothQ0.200,80/60C versus same third-zone PZ0.191 retained;0.009difference and4.712percent reproduced. Correct load and design consequences not established.",
+      "target": "ITP40:bbd2b9236034c12aec3c",
+      "quote_checks": [
+        {
+          "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+          "quote": "| 3- зона | +135,83 | 80-60 | 8,4 | 0,191 |",
+          "line": 1935
+        }
+      ],
+      "visible_fields": {
+        "problem": "Тепловая нагрузка отопления третьей зоны на разрезе 23-23 не согласована с ПЗ.",
+        "description": "Первоначальное описание:\nНа разрезе 23-23 в выносках подающего трубопровода Т13 и обратного Т23 отопления третьей зоны указано Q=0,200 Гкал/ч. В таблице «Система отопления» на листе 4 ПЗ для третьей зоны приведено 0,191 Гкал/ч. Температурный график в обоих источниках составляет 80/60 °C. Разность равна 0,009 Гкал/ч, или приблизительно 4,7% относительно значения ПЗ. Подтверждено расхождение опубликованных параметров одной системы; основание различия, правильная нагрузка и необходимость изменения оборудования не установлены.\n\nДополнительная проверка:\nРазрез 23-23 задаёт нагрузку третьей зоны 0,200 Гкал/ч.\nНа приложенном изображении в двух верхних выносках Т13 и Т23 разреза 23-23 непосредственно прочитано Q=0,200 Гкал/ч для отопления третьей зоны.\n\nПЗ задаёт нагрузку отопления третьей зоны 0,191 Гкал/ч.\nСоставное утверждение разделено; ID 2 сохранён за значением ПЗ. Строка третьей зоны в таблице отопления прямо содержит 0,191 Гкал/ч и график 80-60. Назначение, зона и температурный график соответствуют выноскам разреза. Отдельное основание различия нагрузок в предоставленных источниках не раскрыто.\n\nДля третьей зоны на разрезе 23-23 указано 0,200 Гкал/ч.\nЗначение непосредственно прочитано в выносках подающего Т13 и обратного Т23 трубопроводов отопления третьей зоны на приложенном изображении.\n\nДля той же зоны в ПЗ указано 0,191 Гкал/ч.\nТаблица отопления на листе 4 ПЗ прямо задаёт для третьей зоны 0,191 Гкал/ч. Сопоставление основано на совпадении системы, зоны и графика 80/60 °C, а не на прежнем решении о совпадении кандидатов.",
+        "solution": "Согласовать нагрузку отопления третьей зоны на разрезе 23-23 и в ПЗ. Если значения относятся к разным расчётным условиям или учитывают разный запас, явно указать это в документах.",
+        "report_section": "technical_findings"
+      }
+    }
+  ],
+  "graphics": [
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png",
+        "sha256": "7354443aa6ecdf7232110223a7b30b0dd25276027e3006175c728eb1fdc35edd"
+      },
+      "method": "Codex parent direct raster inspection",
+      "observation": "40-40 G74.40,DN100,Kv140."
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+        "sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137"
+      },
+      "method": "Codex parent direct raster inspection",
+      "observation": "41-41/42-42 position29 G10.7,Kv16,deltaP0.446; unit absent in callout. Image inspected during valve review."
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d0a62bc2e56f4d07bb33a73622429881.png",
+        "sha256": "813ec783eeaea997e75b97ece66d75b1bc6508fd8aaf1f02adf4e3dbed719013"
+      },
+      "method": "Codex parent direct raster inspection",
+      "observation": "23-23 T13/T23 Q0.200,G10.70,T80/60; inspected at original resolution."
+    }
+  ],
+  "calculations": {
+    "flow_delta_zone1_m3_h": "0.25",
+    "flow_delta_zone3_m3_h": "1.15",
+    "PZ_loss_bar": "0.356259765625",
+    "load_delta_Gcal_h": "0.009",
+    "load_relative_percent": "4.712041884816753926701570681"
+  },
+  "grouping_assessment": {
+    "ids": [
+      "F-054",
+      "F-055"
+    ],
+    "status": "Two distinct retained aspects of one third-zone regime theme; frozen evaluator requests grouped presentation.",
+    "limit": "Not literal duplicate claims. Do not suppress either flow or load evidence. More output rows is not more independent defects."
+  },
+  "preserve": "Match valve identity and zone before comparing values; retain missing-unit uncertainty; group related aspects without erasing each supporting discrepancy.",
+  "entire_output_reviewed": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0
+}

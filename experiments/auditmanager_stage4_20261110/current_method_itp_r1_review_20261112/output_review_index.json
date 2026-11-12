@@ -2,8 +2,8 @@
   "version": 1,
   "final_sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
   "finding_count": 74,
-  "findings_with_bounded_review": 58,
-  "findings_without_bounded_review": 16,
+  "findings_with_bounded_review": 61,
+  "findings_without_bounded_review": 13,
   "entire_output_reviewed": false,
   "whole_output_precision_finalized": false,
   "quality_score": null,
@@ -466,8 +466,13 @@
     },
     {
       "id": "F-052",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heating_branch_flows_bounded_review.json",
+          "sha256": "f043eba25b4da605f877930d011f347121bed79cfd89aa3e1f6b8028e71cd409"
+        }
+      ]
     },
     {
       "id": "F-053",
@@ -481,13 +486,23 @@
     },
     {
       "id": "F-054",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heating_branch_flows_bounded_review.json",
+          "sha256": "f043eba25b4da605f877930d011f347121bed79cfd89aa3e1f6b8028e71cd409"
+        }
+      ]
     },
     {
       "id": "F-055",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heating_branch_flows_bounded_review.json",
+          "sha256": "f043eba25b4da605f877930d011f347121bed79cfd89aa3e1f6b8028e71cd409"
+        }
+      ]
     },
     {
       "id": "F-056",
