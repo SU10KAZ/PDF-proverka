@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "observed_at_epoch": 1794497447.6495948,
+  "classification": "interrupted_without_terminal_receipt",
+  "collection_process": {
+    "pid": 1699135,
+    "live": false,
+    "reason": "process_absent"
+  },
+  "run_process": {
+    "pid": 1808761,
+    "live": false,
+    "reason": "process_absent"
+  },
+  "collection_state": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/experimental_collection_status.json",
+    "sha256": "7f45009aefbb0197b1a53fa99b037c0e4a7e25ebb0b155e0099c8de545d5cd52"
+  },
+  "run_state": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_inventory/classic_control/status/ITP.json",
+    "sha256": "0d75856665dfe11db9529442e810e7d07c23e020736c96a524fa120649b75781"
+  },
+  "trial": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/experimental_collection_trial.json",
+    "sha256": "8fc6b900edca76cd59b81e5602bc7be5ae84ce18f8c697811ddd3fe3bbc274dc"
+  },
+  "technical_progress": {
+    "discipline": "ITP",
+    "variant": "inventory",
+    "attempt_receipts": 144,
+    "failed_attempt_receipts": 0,
+    "stages": {
+      "text_analysis": {
+        "status": "running"
+      }
+    }
+  },
+  "session_receipt": {
+    "session_id": 81358,
+    "exit_code": 143,
+    "output": ""
+  },
+  "cause": "Not established. Supervisor exit143 observed; subsequently runner disappeared. No user stop inferred.",
+  "observation_sequence": [
+    "Dispatcher absent while runner1808761 was reparented toPID1 and Codex1833008 was live.",
+    "Later both dispatcher and runner absent; audit state remains running without terminal receipt."
+  ],
+  "actions": [
+    "No model resubmission",
+    "No semantic inspection of partial outputs",
+    "Frozen runtime and original run state unchanged"
+  ],
+  "model_calls": 0,
+  "last_request": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_inventory/classic_control/requests/ITP/1794496734175554722/request.json",
+    "sha256": "237e95241009da5667b790fbadb330d0805500f4979450cc236f1c83a7b49b9d"
+  },
+  "remaining_process_check": {
+    "pids": [
+      1833008,
+      1808880,
+      1808881,
+      1808884
+    ],
+    "result": "all absent in ps check"
+  }
+}
