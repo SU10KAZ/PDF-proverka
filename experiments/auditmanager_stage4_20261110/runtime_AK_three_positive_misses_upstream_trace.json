@@ -1,0 +1,277 @@
+{
+  "status": "three_remaining_positive_targets_traced_to_bounded_upstream_records",
+  "source_files": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_probe_20261112/input_analyses/01_blocks_analysis.json",
+      "sha256": "9a964b434b5d03d98b4b9e758677b3d3875ebf9da2d7fe6b9bd70422d5258a5a"
+    },
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_probe_20261112/input_analyses/02_text_analysis.json",
+      "sha256": "d67600ecd4fbe9173f98b2714aeab263c114aefef72b03db57203bea528fae9e"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/runtime_AK_atomic_review_in_progress.json",
+      "sha256": "c50efdba70c5fc3e6bac00a5de6947606a6e95f33cc95ffeb12413153cc2abae"
+    }
+  ],
+  "rows": [
+    {
+      "case": "served_rooms",
+      "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+      "primary_block_pointer": "/block_analyses/5",
+      "candidate_records": [
+        {
+          "pointer": "/block_analyses/5/findings/0",
+          "id": "G-011",
+          "claim": "Диапазоны и количества датчиков давления для ШАУВ-4-К4ПЧ противоречат друг другу. На схеме листа 10 для PDS4 указан диапазон 20–200 Па, а в перечне элементов — 50–500 Па. Перечень содержит один прибор 20–200 Па и три 50–500 Па, тогда как спецификация на листе 2 содержит соответственно три и один.\n\nРекомендация: Согласовать диапазоны PDS1–PDS4 и количества приборов каждого диапазона в функциональной схеме, перечне элементов и спецификации."
+        },
+        {
+          "pointer": "/block_analyses/5/findings/1",
+          "id": "G-012",
+          "claim": "Диапазоны и количества дифференциальных датчиков шкафа ШАУВ-4-К4ПЧ не согласованы. Таблица сигналов листа 10 задаёт для PDS2 и PDS4 диапазон 20–200 Па, для PDS1 и PDS3 — 50–500 Па; перечень элементов предусматривает соответственно 1 и 3 прибора, а спецификация на листе 2 — 3 и 1 прибор.\n\nРекомендация: Согласовать диапазон каждого PDS1–PDS4 и соответствующие количества в таблице сигналов, перечне элементов и спецификации."
+        },
+        {
+          "pointer": "/block_analyses/5/findings/2",
+          "id": "G-013",
+          "claim": "На функциональной схеме, лист 10, нагреватель системы Пм4.1 обозначен символом электрического нагревателя, хотя подключён к системе теплоснабжения 85/60 °C и оснащён насосом М3 и регулирующим клапаном Y3. Обозначение противоречит показанному водяному узлу и условным обозначениям листа.\n\nРекомендация: Заменить символ нагревателя Пм4.1 на приведённое в легенде обозначение водяного нагревателя."
+        },
+        {
+          "pointer": "/block_analyses/5/findings/3",
+          "id": "G-014",
+          "claim": "На функциональной схеме листа 10 сигнал №6 «Электр. воздухонагреватель пуск/стоп» системы П4.1.1 отнесён к дискретным входам DI. Обозначенное управление нагревателем не согласовано с назначенным типом канала.\n\nРекомендация: Уточнить назначение сигнала №6 и согласовать его наименование, тип канала и итоговое количество входов и выходов."
+        },
+        {
+          "pointer": "/block_analyses/5/findings/4",
+          "id": "G-015",
+          "claim": "На функциональной схеме, лист 10, сигнал 6 «Электр. воздухонагреватель пуск/стоп» системы П4.1.1 отнесён к дискретным входам DI. Дискретный вход не обеспечивает выдачу команды пуска/останова нагревателя.\n\nРекомендация: Предусмотреть выход управления электронагревателем и согласовать обозначение сигнала с таблицей входов и выходов шкафа."
+        }
+      ],
+      "deferred_records": [],
+      "gap_search": {
+        "enabled": false,
+        "performed": false,
+        "status": "disabled",
+        "searched_categories": [],
+        "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+        "findings_added": 0,
+        "duplicates_rejected": 0
+      },
+      "retrieval": {
+        "scope": "all_document_vector_text_other_pages",
+        "query_terms": [
+          "П4.1.1",
+          "Пм4.1.1",
+          "автоматизации",
+          "систем",
+          "вентиляции",
+          "для",
+          "помещений",
+          "Пом.ревизий",
+          "коридор",
+          "Мусоросборной",
+          "камеры",
+          "Приведены",
+          "принципиальные",
+          "схемы",
+          "управления",
+          "перечнем",
+          "приборов",
+          "сигналов"
+        ],
+        "candidate_hits": 114,
+        "selected_hits": 5,
+        "selected_pages": [
+          5,
+          6,
+          7,
+          8,
+          95
+        ],
+        "status": "hits"
+      },
+      "text_inventory_status": [
+        {
+          "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+          "status": "needs_data",
+          "object_ids": [
+            "O-05"
+          ],
+          "reason": "Нет растра функциональной схемы."
+        }
+      ],
+      "target_evidence": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F039_served_rooms_conflict.json",
+        "sha256": "c5a07b351f4355a0bceeca4d625d01832f64782fd1432801547cbdf40ed24840"
+      },
+      "proposed_missing_operation": "Compare served-room assignments for the same system between general notes and the functional scheme.",
+      "inference_boundary": "General-note MD page 6 is among retrieved pages; selected-page metadata alone does not prove the exact clause reached the model or was compared.",
+      "stage_localization": "specific operation not represented in addressed-block candidate output; not established as a final-publication suppression",
+      "automatic_new_defect_allowed": false
+    },
+    {
+      "case": "local_cable_balance",
+      "block_id": "blk_1c493988cdf14cee9ad351ef2e706470",
+      "primary_block_pointer": "/block_analyses/20",
+      "candidate_records": [
+        {
+          "pointer": "/block_analyses/20/findings/0",
+          "id": "G-061",
+          "claim": "На схеме внешних подключений ШАУВ-1-К4ПЧ, лист 25, приведены противоречащие друг другу ссылки на проект питающего кабеля: в заголовке ввода указан 13АВ-РД-ЭМ2-ПА, у кабельной линии — 13АВ-РД-ЭМ-К4.\n\nРекомендация: Уточнить раздел, в котором предусмотрен питающий кабель шкафа, и привести обе ссылки к единому обозначению."
+        },
+        {
+          "pointer": "/block_analyses/20/findings/1",
+          "id": "G-062",
+          "claim": "На схеме внешних подключений ШАУВ-1-К4ПЧ, лист 25, указаны разные разделы для одного питающего кабеля: в заголовке — 13АВ-РД-ЭМ2-ПА, возле линии ввода — 13АВ-РД-ЭМ-К4. Общие указания также относят питание шкафов вентиляции к разделу ЭМ2-ПА.\n\nРекомендация: Указать единое корректное обозначение раздела, в котором предусмотрен питающий кабель шкафа."
+        }
+      ],
+      "deferred_records": [],
+      "gap_search": {
+        "enabled": false,
+        "performed": false,
+        "status": "disabled",
+        "searched_categories": [],
+        "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+        "findings_added": 0,
+        "duplicates_rejected": 0
+      },
+      "retrieval": {
+        "scope": "all_document_vector_text_other_pages",
+        "query_terms": [
+          "PDS1-PDS5",
+          "M1-M5",
+          "Y1-Y5",
+          "ШАУВ-1-К4Ч",
+          "электрических",
+          "соединений",
+          "для",
+          "управления",
+          "контроля",
+          "систем",
+          "вентиляции",
+          "пожарной",
+          "сигнализации",
+          "Изображены",
+          "подключения",
+          "датчиков",
+          "перепада",
+          "давления",
+          "электродвигателей",
+          "приводов",
+          "клапанов",
+          "клеммной",
+          "колодке"
+        ],
+        "candidate_hits": 91,
+        "selected_hits": 6,
+        "selected_pages": [
+          5,
+          6,
+          7,
+          8,
+          10,
+          11
+        ],
+        "status": "hits"
+      },
+      "text_inventory_status": [
+        {
+          "block_id": "blk_1c493988cdf14cee9ad351ef2e706470",
+          "status": "needs_data",
+          "object_ids": [
+            "O-02"
+          ],
+          "reason": "Нет растра подключений."
+        }
+      ],
+      "target_evidence": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F053_local_cable_balance.json",
+        "sha256": "f0fe30025610ce7f3d413dec02072e1dd1a2937afe5cd720b3a8737b91bde092"
+      },
+      "proposed_missing_operation": "Extract each local cable segment, group by literal execution/section and scope, sum lengths, compare with same-sheet list; preserve 165/155 conflict and 155/155 negative control.",
+      "inference_boundary": "Current block candidates address supply-document references, not the 165/155 operation. Whole-document generic quantity checks cannot substitute for this local set.",
+      "stage_localization": "specific operation not represented in addressed-block candidate output; not established as a final-publication suppression",
+      "automatic_new_defect_allowed": false
+    },
+    {
+      "case": "drive_segment_identifiers",
+      "block_id": "blk_397f9663589b40bfbde9b898e99e5117",
+      "primary_block_pointer": "/block_analyses/31",
+      "candidate_records": [
+        {
+          "pointer": "/block_analyses/31/findings/0",
+          "id": "G-084",
+          "claim": "На листе 36 ведомость предусматривает 700 м кабеля ППГнг(А)-HF 4×2,5, тогда как сумма длин на схеме составляет 730 м: 2×20 + 2×330 + 2×15. Не учтены 30 м кабелей между шкафом ШАУВ-1-К5АС.ПЧ и двигателями М2, М3.\n\nРекомендация: Увеличить количество кабеля ППГнг(А)-HF 4×2,5 в ведомости до 730 м с учетом двух участков от шкафа преобразователей частоты до двигателей."
+        },
+        {
+          "pointer": "/block_analyses/31/findings/1",
+          "id": "G-085",
+          "claim": "На листе 36 в ведомости указано 700 м кабеля ППГнг(А)-HF 4×2,5 мм², тогда как суммарная длина показанных линий составляет 730 м. Не учтены 30 м двух участков от шкафа частотных преобразователей до двигателей М2 и М3.\n\nРекомендация: Согласовать ведомость со схемой, включив два участка по 15 м и увеличив количество кабеля до 730 м."
+        }
+      ],
+      "deferred_records": [],
+      "gap_search": {
+        "enabled": false,
+        "performed": false,
+        "status": "disabled",
+        "searched_categories": [],
+        "summary": "Поиск новых проблем отключен: gap_search_enabled=false.",
+        "findings_added": 0,
+        "duplicates_rejected": 0
+      },
+      "retrieval": {
+        "scope": "all_document_vector_text_other_pages",
+        "query_terms": [
+          "ШАУВ-1-К5АС.1",
+          "электрических",
+          "соединений",
+          "присоединений",
+          "оборудования",
+          "шкафа",
+          "управления",
+          "включающая",
+          "температурные",
+          "датчики",
+          "давления",
+          "электродвигатели",
+          "приводы"
+        ],
+        "candidate_hits": 20,
+        "selected_hits": 5,
+        "selected_pages": [
+          6,
+          7,
+          94,
+          95,
+          98
+        ],
+        "status": "hits"
+      },
+      "text_inventory_status": [
+        {
+          "block_id": "blk_397f9663589b40bfbde9b898e99e5117",
+          "status": "needs_data",
+          "object_ids": [
+            "O-13"
+          ],
+          "reason": "Нет растра подключений."
+        }
+      ],
+      "target_evidence": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+        "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+      },
+      "proposed_missing_operation": "Check each depicted drive-to-motor segment for an identifier and corresponding journal row separately from the local cable-length balance.",
+      "inference_boundary": "G-084/G-085 detect 730/700 quantity conflict but do not cover segment identification. Relevant journal MD page 80 is absent from recorded other-page selection; other context routes remain unverified.",
+      "stage_localization": "specific operation not represented in addressed-block candidate output; not established as a final-publication suppression",
+      "automatic_new_defect_allowed": false
+    }
+  ],
+  "interpretation": [
+    "Publication reconciliation cannot be credited with recovering candidates that were never represented in its input.",
+    "Disabled gap search is a recorded configuration, not proof that simply enabling it would improve quality.",
+    "No unrecorded model reasoning or whole-document absence is inferred.",
+    "These are DEV-known diagnostics; no evaluator answers have been sent to current audit executors."
+  ],
+  "next_step": "Use source-only object/operation coverage controls for these missing operations after current publication trial; compare supported positive and neighboring negative, then freeze before six-project comparison.",
+  "production_acceptance": false
+}
