@@ -1,0 +1,29 @@
+{
+  "finding_id": "F-004",
+  "status": "bounded_control_passed_three_conflicts_preserved_recommendation_integrated",
+  "candidate_projection_path": "/tmp/auditmanager_publication_purpose_controls_20261112_run/evaluations/publication_purpose_004/publication_projection.json",
+  "candidate_projection_sha256": "46767678eaae753c14c0472977ac8a12b042aa7a424356013048a3ea6cf8d3ad",
+  "baseline_assessment_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F004_assessment.json",
+  "baseline_assessment_sha256": "3337a073ec38cc6b1c901879845128260f80d030290a6d9d961e4aca1ddb54d9",
+  "checks": [
+    "M2 pump versus fan retained.",
+    "M4 fan versus pump retained.",
+    "M5 present on diagram and journal but absent in list retained.",
+    "Recommendation integrated into the same technical statement; no separate recommendation question.",
+    "No inferred simultaneous operating motor count from four drives; physical wiring risk conditional."
+  ],
+  "part_count_comparison": {
+    "baseline_technical": 3,
+    "candidate_technical": 1,
+    "baseline_questions": 1,
+    "candidate_questions": 0,
+    "interpretation": "Complementary claims consolidated; not loss of two technical findings. All three source-backed conflicts retained."
+  },
+  "limits": [
+    "One DEV case only; no general quality or workload improvement proven.",
+    "Same model, changed purpose metadata and instructions together; separate causal contributions unmeasured.",
+    "Final admission and Excel integration not yet executed for this candidate."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
