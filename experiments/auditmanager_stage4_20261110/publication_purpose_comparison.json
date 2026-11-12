@@ -6,7 +6,7 @@
       "matched_claims_and_sources": true,
       "baseline_request_sha256": "56279ee05f6bd155950d1065c00a21a3b90f1dd50dd9a173dc9feeae4759a74d",
       "candidate_request_sha256": "f9b745a24156037b37377e34486a03093cde754b6b236bc7e161bdaae07967c7",
-      "semantic_comparison": "not_completed",
+      "semantic_comparison": "bounded_control_passed_three_conflicts_preserved_recommendation_integrated",
       "status": "structurally_valid_requires_source_review",
       "validation": {
         "finding_id": "F-004",
@@ -37,14 +37,19 @@
         "withdrawn": 0,
         "history_only": 1
       },
-      "part_counts_are_not_defect_counts_or_quality_scores": true
+      "part_counts_are_not_defect_counts_or_quality_scores": true,
+      "semantic_assessment": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/purpose_trial_F004_source_assessment.json",
+        "sha256": "6848935cd41c287dc623abe4e0fc309822f3331fc37869b893a8af415bebd42b"
+      },
+      "final_release_completed": false
     },
     {
       "finding_id": "F-010",
       "matched_claims_and_sources": true,
       "baseline_request_sha256": "c49b081fb92f93a456d3a2cf77162d7804dc27424f6462e552d31a804aee98e8",
       "candidate_request_sha256": "53808c40f66e5a83cc290e17fcc7fce372f9c886472eec7b51693f863cd34422",
-      "semantic_comparison": "not_completed",
+      "semantic_comparison": "routing_control_passed_question_preserved_context_search_not_closed",
       "status": "structurally_valid_requires_source_review",
       "validation": {
         "finding_id": "F-010",
@@ -75,14 +80,19 @@
         "withdrawn": 0,
         "history_only": 0
       },
-      "part_counts_are_not_defect_counts_or_quality_scores": true
+      "part_counts_are_not_defect_counts_or_quality_scores": true,
+      "semantic_assessment": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/purpose_trial_F010_source_assessment.json",
+        "sha256": "68d1c838c08c6a5c75eba1a704cf5ce6e60952a2efe567802c53c2016cc7556c"
+      },
+      "final_release_completed": false
     },
     {
       "finding_id": "F-012",
       "matched_claims_and_sources": true,
       "baseline_request_sha256": "b0e297f5ad14e0de7b2b0ef5332e45a0dc0921a61dd5742b38190436fa2a1cd9",
       "candidate_request_sha256": "13a76fe9e5d1dc6fbd27b7d40035bc79c5a1d6723a655792c631e987b2184e7b",
-      "semantic_comparison": "not_completed",
+      "semantic_comparison": "bounded_control_passed_conflict_and_independent_question_preserved",
       "status": "structurally_valid_requires_source_review",
       "validation": {
         "finding_id": "F-012",
@@ -113,7 +123,12 @@
         "withdrawn": 0,
         "history_only": 0
       },
-      "part_counts_are_not_defect_counts_or_quality_scores": true
+      "part_counts_are_not_defect_counts_or_quality_scores": true,
+      "semantic_assessment": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/purpose_trial_F012_source_assessment.json",
+        "sha256": "12d5f2414af10b79113740a120fa4f036d438ce07068b0345fd45d2793caef59"
+      },
+      "final_release_completed": false
     },
     {
       "finding_id": "F-020",

@@ -47,6 +47,15 @@ def compare():
             item['baseline_part_counts'] = {k: len(old_result[k]) for k in
                 ('technical_findings', 'questions', 'pending', 'withdrawn', 'history_only')}
             item['part_counts_are_not_defect_counts_or_quality_scores'] = True
+            review_path = Path(__file__).resolve().parent / f'purpose_trial_F{fid[2:]}_source_assessment.json'
+            if review_path.exists():
+                review = json.loads(review_path.read_text())
+                if (review.get('finding_id') != fid or
+                        review.get('candidate_projection_sha256') != receipt.get('projection_sha256')):
+                    raise ValueError('Semantic assessment belongs to another candidate')
+                item['semantic_comparison'] = review['status']
+                item['semantic_assessment'] = {'path': str(review_path), 'sha256': sha(review_path)}
+                item['final_release_completed'] = review.get('final_release_completed', False)
         rows.append(item)
     return {'status': 'matched_source_DEV_comparison_in_progress', 'rows': rows,
             'quality_improvement_proven': False, 'production_acceptance': False,
