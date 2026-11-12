@@ -26,20 +26,24 @@ def immutable(path, value):
         write(path, value)
 
 
-def prepare():
-    original = next(f for f in json.loads(REPORT.read_text())['findings'] if f['id'] == 'F-071')
+def prepare(root=ROOT, finding_id='F-071', detail_dir=None):
+    original = next(f for f in json.loads(REPORT.read_text())['findings'] if f['id'] == finding_id)
     finding = deepcopy(original)
     finding['source_evidence_review_status'] = 'pending'
     finding['source_review_requests'] = [{
-        'source_finding_id': 'publication-F071-original',
+        'source_finding_id': 'publication-' + finding_id.replace('-', '') + '-original',
         'source_claim': '\n'.join(str(original.get(k) or '') for k in ('problem', 'description', 'solution', 'risk')),
-        'block_ids': ['blk_127bea47b93f4214ac6430c54b21517a']}]
+        'block_ids': original['source_block_ids']}]
     md = MD.read_text()
-    queue = attach_graphic_receipts(build_source_review_queue([finding], md), md, GRAPHICS)
-    request = prepare_source_review_request(queue, finding, md, max_images=8)
+    queue = build_source_review_queue([finding], md)
+    if detail_dir is not None:
+        queue['_operation_graphic_detail_dir'] = str(detail_dir.resolve())
+    attach_graphic_receipts(queue, md, GRAPHICS)
+    max_images = 16 if detail_dir is not None else 8
+    request = prepare_source_review_request(queue, finding, md, max_images=max_images)
     payload = json.loads(request['messages'][1]['content'])
     assert not payload['unavailable_images'] and not payload['budgeted_text_block_ids']
-    assert len(request['image_paths']) == 1
+    assert request['image_paths']
     manifest = {'report_path': str(REPORT), 'report_sha256': sha(REPORT),
                 'md_path': str(MD), 'md_sha256': sha(MD),
                 'model': 'codex/gpt-6-astra', 'reasoning_effort': 'high',
@@ -49,35 +53,39 @@ def prepare():
                 'images': [{'path': p, 'sha256': sha(Path(p))} for p in request['image_paths']],
                 'request_sha256': hashlib.sha256(json.dumps(request, ensure_ascii=False, sort_keys=True).encode()).hexdigest(),
                 'production_acceptance': False}
-    ROOT.mkdir(exist_ok=True)
+    root.mkdir(exist_ok=True)
     for name, value in [('finding', finding), ('queue', queue), ('request', request), ('manifest', manifest)]:
-        immutable(ROOT / (name + '.json'), value)
-    print('PREPARED', manifest['message_chars'], 'characters, one image', flush=True)
+        immutable(root / (name + '.json'), value)
+    print('PREPARED', manifest['message_chars'], 'characters,', len(request['image_paths']), 'images', flush=True)
     return finding, queue, md, manifest
 
 
-async def main(execute):
-    finding, queue, md, manifest = prepare()
+async def main(execute, root=ROOT, finding_id='F-071', detail_dir=None):
+    finding, queue, md, manifest = prepare(root, finding_id, detail_dir)
     if not execute:
         return
     os.environ['CODEX_TRANSIENT_RETRIES'] = '0'
-    direct = direct_cli_executor('codex/gpt-6-astra', project_id='AK-F071-publication-source-review')
+    direct = direct_cli_executor('codex/gpt-6-astra', project_id='AK-' + finding_id.replace('-', '') + '-publication-source-review')
     async def invoke(request, phase):
         assert sha(REPORT) == manifest['report_sha256'] and sha(MD) == manifest['md_sha256']
         return await direct(request, phase)
-    write(ROOT / 'process.json', {'status': 'running', 'pid': os.getpid(), 'model': manifest['model']})
+    write(root / 'process.json', {'status': 'running', 'pid': os.getpid(), 'model': manifest['model']})
     try:
-        result = await run_source_review_workflow(queue, finding, md, GRAPHICS, ROOT / 'workflow',
-            invoke=invoke, executor_id='direct-codex-gpt-6-astra-high', max_images=8)
+        result = await run_source_review_workflow(queue, finding, md, GRAPHICS, root / 'workflow',
+            invoke=invoke, executor_id='direct-codex-gpt-6-astra-high', max_images=16 if detail_dir else 8)
     except Exception as exc:
-        write(ROOT / 'process.json', {'status': 'failed', 'error': str(exc), 'pid': os.getpid()})
+        write(root / 'process.json', {'status': 'failed', 'error': str(exc), 'pid': os.getpid()})
         raise
-    write(ROOT / 'completion.json', result)
-    write(ROOT / 'process.json', {'status': 'finished', 'result': result['status'], 'pid': os.getpid()})
+    write(root / 'completion.json', result)
+    write(root / 'process.json', {'status': 'finished', 'result': result['status'], 'pid': os.getpid()})
     print('COMPLETE', result['status'], flush=True)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--execute', action='store_true')
-    asyncio.run(main(parser.parse_args().execute))
+    parser.add_argument('--root', type=Path, default=ROOT)
+    parser.add_argument('--finding-id', default='F-071')
+    parser.add_argument('--detail-dir', type=Path)
+    args = parser.parse_args()
+    asyncio.run(main(args.execute, args.root, args.finding_id, args.detail_dir))
