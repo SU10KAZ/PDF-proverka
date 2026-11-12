@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-004",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/3"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/primary_loop_pressure_bounded_review.json",
+        "sha256": "c0d137e428a373af8321ebc5aa853016cefeedb36af9e27f2be0847b79fb5dc1",
+        "pointer": "/cases/0"
+      },
+      "scope": "K1–K8 heating-side pressure",
+      "factual_assessment": "bounded_project_parameter_comparison_supported",
+      "supported_claim": "The eight selection sheets specify design/test 16/22 kgf/cm²; primary AUPD maximum/nominal is 17.4 bar.",
+      "arithmetic": {
+        "design_pressure_bar": "15.690640",
+        "system_minus_design_bar": "1.709360"
+      },
+      "preservation_rule": "Design pressure is not test pressure or flange PN; preserve the separate K8 heated-side comparison.",
+      "physical_limit": "Actual delivered equipment and local port pressures are not established.",
+      "recommended_disposition": "retain_project_parameter_coordination_finding_with_limits",
+      "severity_assessment": "Published parameter discrepancy alone does not independently establish realized critical consequences.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-005",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/4"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/gvs_zone3_pressure_bounded_review.json",
+        "sha256": "a7767b4666b322e80bc5b00b5bf15089cb2b3213d50e04c09beceb529b14deb1",
+        "pointer": "/cases/0"
+      },
+      "scope": "K8 heated-side pressure",
+      "factual_assessment": "bounded_project_parameter_comparison_supported",
+      "supported_claim": "Zone3 questionnaire output head is 174.55 m water; K8 selection w203119581 design limit is 16 kgf/cm².",
+      "arithmetic": {
+        "required_outlet_bar": "17.117507575",
+        "design_limit_bar": "15.690640",
+        "difference_bar": "1.426867575"
+      },
+      "preservation_rule": "Same K8 also appears in F-004, but a different circuit side is compared here. Do not drop this relationship as a same-object duplicate.",
+      "physical_limit": "Conversion uses conventional water-column units; no measured installed operating condition or full hydraulic calculation.",
+      "recommended_disposition": "retain_project_parameter_coordination_finding_with_limits",
+      "severity_assessment": "Published parameter discrepancy alone does not independently establish realized critical consequences.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-006",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/5"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/primary_loop_pressure_bounded_review.json",
+        "sha256": "c0d137e428a373af8321ebc5aa853016cefeedb36af9e27f2be0847b79fb5dc1",
+        "pointer": "/cases/1"
+      },
+      "scope": "K14 primary-loop pump execution",
+      "factual_assessment": "bounded_project_parameter_comparison_supported",
+      "supported_claim": "Article 2786131 and pump model link specification and individual technical sheet; individual maximum16 bar versus system static16.4 and nominal17.4 bar.",
+      "arithmetic": {
+        "static_difference_bar": "0.4",
+        "nominal_difference_bar": "1.4"
+      },
+      "preservation_rule": "Use the selected execution, not a generic model family. Compare pressure basis and circuit identity.",
+      "physical_limit": "System static/nominal values are not directly measured pressures at each pump port.",
+      "recommended_disposition": "retain_project_parameter_coordination_finding_with_limits",
+      "severity_assessment": "Published parameter discrepancy alone does not independently establish realized critical consequences.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-007",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/6"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/gvs_zone3_pressure_bounded_review.json",
+        "sha256": "a7767b4666b322e80bc5b00b5bf15089cb2b3213d50e04c09beceb529b14deb1",
+        "pointer": "/cases/1"
+      },
+      "scope": "K17 GVS3 circulation pump",
+      "factual_assessment": "bounded_project_parameter_comparison_supported",
+      "supported_claim": "Individual HELIX V603-1/16 execution limit16 bar is below conventional pressure corresponding to required output head174.55m.",
+      "arithmetic": {
+        "required_outlet_bar": "17.117507575",
+        "individual_limit_bar": "16",
+        "difference_bar": "1.117507575"
+      },
+      "preservation_rule": "Generic family16/25/30bar alternatives do not override the individual selected execution.",
+      "physical_limit": "Prior schematic review supports circuit connection; exact pump-port pressure, elevation and complete regime losses are not computed here.",
+      "recommended_disposition": "retain_project_parameter_coordination_finding_with_limits",
+      "severity_assessment": "Published parameter discrepancy alone does not independently establish realized critical consequences.",
+      "engineer_utility": "not_newly_measured"
+    }
+  ],
+  "conversion_basis": {
+    "kgf_per_cm2_to_bar": "0.980665",
+    "conventional_m_water_to_bar": "0.0980665",
+    "limit": "Unit conversion, not a fluid-temperature-specific hydraulic calculation."
+  },
+  "limits": [
+    "Preserve relationships, not just equipment IDs, during deduplication.",
+    "F-004 precise schematic-unit comparison remains only partially covered in the frozen reference ledger; this review does not silently upgrade recall.",
+    "No engineer acceptance, full protection calculation or whole-output precision score."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}
