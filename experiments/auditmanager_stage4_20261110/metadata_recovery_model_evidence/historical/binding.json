@@ -1,0 +1,21 @@
+{
+  "kind": "historical",
+  "synthetic": false,
+  "request_sha256": "cfcf19ca8f0a3083a63bef5a49ff0e478b5d5f07446c8e3436a21352834895e3",
+  "md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "images": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_bd26d730d0a84c57900a87e3f5a47cce.png",
+      "sha256": "0e54a039c4ee11183bf9da945c3b15024bd5ac65c6afbfd2519793a0ecb294ec"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "message_chars": 33162,
+  "engineer_answers_supplied": false,
+  "expected_verdict_supplied": false,
+  "known_candidate_supplied": true,
+  "independent_discovery": false,
+  "removed_prior_peer_verdict": true,
+  "automatic_retries": 0
+}

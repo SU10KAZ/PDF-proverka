@@ -1,0 +1,110 @@
+{
+  "findings": [
+    {
+      "id": "F-8933ac72b5983a148e46cf5c-01",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "report_section": "technical_findings",
+      "finding": "В экспликации помещений −1 этажа номер 0.0.2.2 указан для двух разных помещений: венткамеры площадью 43,9 м² и РУ площадью 11,1 м². Ссылка только на этот номер не позволяет однозначно определить помещение.",
+      "location": "Страница 18, лист 15, блок #60, экспликация помещений −1 этажа, раздел «Технические помещения».",
+      "value_found": "0.0.2.2 — Венткамера, 43,9 м², B2; 0.0.2.2 — РУ, 11,1 м², B3.",
+      "recommendation": "Уточнить номера этих помещений в экспликации и проверить соответствующие обозначения на плане и ссылки в электрических решениях.",
+      "norm_quote": null,
+      "source_finding_ids": [
+        "D-8933ac72b5983a148e46cf5c"
+      ],
+      "evidence": [
+        {
+          "block_id": "blk_89d65fba46eb42b3ba462e8ff3151306",
+          "type": "text",
+          "quote": "| 0.0.2.2 | Венткамера | 43,9 | B2 |",
+          "location": "Страница 18, лист 15, блок #60, раздел «Технические помещения», строка венткамеры 43,9 м²."
+        },
+        {
+          "block_id": "blk_89d65fba46eb42b3ba462e8ff3151306",
+          "type": "text",
+          "quote": "| 0.0.2.2 | РУ | 11,1 | B3 |",
+          "location": "Страница 18, лист 15, блок #60, раздел «Технические помещения», строка РУ 11,1 м²."
+        }
+      ],
+      "recovery_semantic_verified": false
+    }
+  ],
+  "candidate_decisions": [
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/0/deferred_findings/0",
+      "source_id": "D-8933ac72b5983a148e46cf5c",
+      "decision": "retained",
+      "reason": "Дублирование номера подтверждено двумя строками авторитетного MD TEXT. Причина исходного отложения internal_metadata_comparison сохранена, но не опровергает противоречие в экспликации проекта. Приложенное изображение просмотрено; текст экспликации по растру не переоценивался. Повторение на другом листе остаётся непроверенным и не включено в finding.",
+      "source_refs": [
+        "blk_89d65fba46eb42b3ba462e8ff3151306",
+        "blk_bd26d730d0a84c57900a87e3f5a47cce"
+      ],
+      "target_finding_ids": [
+        "F-8933ac72b5983a148e46cf5c-01"
+      ],
+      "deferred": true,
+      "gate_reasons": [
+        "internal_metadata_comparison"
+      ],
+      "required_context": [],
+      "subclaims": [
+        {
+          "id": "duplicate_room_number",
+          "claim": "В экспликации −1 этажа номер 0.0.2.2 присвоен венткамере 43,9 м² категории B2 и РУ 11,1 м² категории B3.",
+          "decision": "retained",
+          "reason": "Обе записи непосредственно присутствуют в разделе «Технические помещения» блока #60.",
+          "source_refs": [
+            "blk_89d65fba46eb42b3ba462e8ff3151306"
+          ],
+          "required_source_refs": [],
+          "target_finding_ids": [
+            "F-8933ac72b5983a148e46cf5c-01"
+          ]
+        },
+        {
+          "id": "room_reference_ambiguity",
+          "claim": "По одному номеру 0.0.2.2 нельзя однозначно выбрать помещение из этой экспликации.",
+          "decision": "retained",
+          "reason": "Номер соответствует двум помещениям с разными назначениями и площадями. Это подтверждает неоднозначность номера, но не доказывает ошибку фактического подключения оборудования.",
+          "source_refs": [
+            "blk_89d65fba46eb42b3ba462e8ff3151306"
+          ],
+          "required_source_refs": [],
+          "target_finding_ids": [
+            "F-8933ac72b5983a148e46cf5c-01"
+          ]
+        },
+        {
+          "id": "repetition_on_another_sheet",
+          "claim": "Обе записи с номером 0.0.2.2 повторяются на другом листе.",
+          "decision": "needs_data",
+          "reason": "Предоставлены источники только страницы 18, листа 15. Утверждение детектора о другом листе не является независимым доказательством.",
+          "source_refs": [
+            "blk_89d65fba46eb42b3ba462e8ff3151306"
+          ],
+          "required_source_refs": [],
+          "required_context": [
+            "Авторитетный блок TEXT экспликации другого листа с обеими записями 0.0.2.2; идентификатор отсутствует в переданном контексте."
+          ],
+          "context_queries": [
+            "0.0.2.2",
+            "Экспликация помещений -1 этажа"
+          ],
+          "target_finding_ids": []
+        }
+      ],
+      "context_queries": [
+        "0.0.2.2",
+        "Экспликация помещений -1 этажа"
+      ]
+    }
+  ],
+  "recovery_pending": [],
+  "recovery_link_updates": [],
+  "recovery_addenda_updates": [],
+  "recovery_new_finding_addenda": [],
+  "recovery_parent_target_bindings": [],
+  "recovery_existing_target_ids": []
+}

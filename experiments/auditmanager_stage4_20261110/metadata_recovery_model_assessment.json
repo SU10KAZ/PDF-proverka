@@ -1,0 +1,49 @@
+{
+  "status": "bounded_recovery_semantics_pass_output_classification_not_accepted",
+  "checks": [
+    {
+      "kind": "historical",
+      "synthetic": false,
+      "exact_text_quotes_match": true,
+      "supported_room_duplicate_preserved": true,
+      "other_sheet_claim_pending": true,
+      "internal_markup_excluded_from_finding": true,
+      "model_report_section": "technical_findings",
+      "model_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "duration_ms": 36922,
+      "result_sha256": "127c17e8031acf9dd20f5f3239649962e28a7e1ed1335fe4225b0f7b752ccdcd"
+    },
+    {
+      "kind": "mixed_synthetic",
+      "synthetic": true,
+      "exact_text_quotes_match": true,
+      "supported_room_duplicate_preserved": true,
+      "other_sheet_claim_pending": true,
+      "internal_markup_excluded_from_finding": true,
+      "model_report_section": "technical_findings",
+      "model_severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "duration_ms": 40354,
+      "result_sha256": "44a8a023a703815b66048aa317141eba6e42919ac895a1712b760302e1a5eed9"
+    }
+  ],
+  "source_observation": {
+    "block_id": "blk_89d65fba46eb42b3ba462e8ff3151306",
+    "page": 18,
+    "sheet": 15,
+    "authoritative_text_rows": [
+      "| 0.0.2.2 | Венткамера | 43,9 | B2 |",
+      "| 0.0.2.2 | РУ | 11,1 | B3 |"
+    ]
+  },
+  "conclusion": "Both responses preserve the source-supported room-number discrepancy despite the metadata gate. The synthetic mixed case separately classifies the internal markup correction out of profile. Neither response asserts an actual misconnection.",
+  "remaining": [
+    "Both model outputs choose technical_findings and ЭКСПЛУАТАЦИОННОЕ; fact verification does not establish that output priority/profile. Review under the agreed questions/clarifications policy before release.",
+    "Other-sheet repetition remains needs_data. The synthetic response uses a source description instead of a block ID in required_source_refs; this is not a verified source binding.",
+    "No existing final findings were supplied; no duplicate avoidance or whole-report preservation is established by these requests.",
+    "No old-prompt model comparison was run; do not attribute the result exclusively to the new wording.",
+    "Synthetic mixed candidate is not an engineer-confirmed historical negative control."
+  ],
+  "independent_discovery": false,
+  "production_accepted": false,
+  "stage4_complete": false
+}
