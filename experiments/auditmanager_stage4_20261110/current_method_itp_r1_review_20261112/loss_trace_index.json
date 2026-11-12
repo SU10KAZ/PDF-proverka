@@ -160,8 +160,14 @@
       "target_id": "ITP68_grooved_scope:98fe6084bffb8305b8ed",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/object_budget_pressure_scope_traces.json",
+          "sha256": "dcdd061f97954ed24405e92b2dfd2c07e69b3a954f7f85a186875f531f68fc8f",
+          "pointer": "/cases/1"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -176,8 +182,14 @@
       "target_id": "ITP_F003_main_circuit_components:52cbecb1ef185b3847ce",
       "coverage": "absent",
       "route": "technical",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/object_budget_pressure_scope_traces.json",
+          "sha256": "dcdd061f97954ed24405e92b2dfd2c07e69b3a954f7f85a186875f531f68fc8f",
+          "pointer": "/cases/0"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -346,15 +358,21 @@
       "target_id": "ITP_F004_safety_valve_setpoints:composite:2",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/object_budget_pressure_scope_traces.json",
+          "sha256": "dcdd061f97954ed24405e92b2dfd2c07e69b3a954f7f85a186875f531f68fc8f",
+          "pointer": "/cases/2"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     }
   ],
   "counts": {
     "total": 34,
-    "bounded_trace_recorded": 12,
-    "not_traced": 22
+    "bounded_trace_recorded": 15,
+    "not_traced": 19
   },
   "remaining_requirements": [
     "Finish stage attribution for remaining targets, including missing parts of partly traced compound targets.",

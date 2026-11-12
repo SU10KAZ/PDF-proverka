@@ -1,0 +1,892 @@
+{
+  "version": 1,
+  "scope": "Observed object-operation budget omissions and their bounded relation to three missing targets",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "code": [
+    {
+      "path": "/tmp/auditmanager_current_method_sources_20261112/candidate_d228885f327a/backend/app/pipeline/stages/prepare/object_operation_passes.py",
+      "sha256": "a6b866da065e7db1a63bc460eff0abe83c1fe412d8a3f0edadafec3bb52bac8c",
+      "function": "build_object_operation_passes",
+      "observation": "Default8operationrequests; planner iterates registry in order and appends remaining objects to request_budget backlog. Caller obtains configurable budget fromAUDIT_OBJECT_OPERATION_MAX_REQUESTS."
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_sources_20261112/candidate_d228885f327a/backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+      "sha256": "37fbaa165cffb0ce0c65282644364dde2a79091cc0d3f1295a63f43a842e07b7",
+      "function": "build_codex_targeted_passes call site",
+      "observation": "Default8operationrequests; planner iterates registry in order and appends remaining objects to request_budget backlog. Caller obtains configurable budget fromAUDIT_OBJECT_OPERATION_MAX_REQUESTS."
+    }
+  ],
+  "plan_evidence": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+    "sha256": "ae2e069317858431e1721209d3d2f183e16ceed61e869fbf42bb14653d041de5",
+    "planned_count": 8,
+    "coverage_complete": false,
+    "backlog": [
+      {
+        "object_id": "O-09",
+        "operations": [
+          {
+            "object_id": "O-09",
+            "operation": "dimension_consistency",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+              "blk_f118444d756a43319e1e4a1069dd6cbb",
+              "blk_ca5545c2f2bb4810a870dbaf25ee86db"
+            ],
+            "receipt": {
+              "object_id": "O-09",
+              "operation": "dimension_consistency",
+              "status": "needs_data",
+              "reason": "Нет визуального подтверждения монтажных переходов и фланцев.",
+              "source_refs": [
+                "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+                "blk_f118444d756a43319e1e4a1069dd6cbb"
+              ],
+              "context_queries": [
+                "К8",
+                "К17",
+                "ГВС III-зона"
+              ]
+            }
+          },
+          {
+            "object_id": "O-09",
+            "operation": "calculation_consistency",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+              "blk_f118444d756a43319e1e4a1069dd6cbb",
+              "blk_ca5545c2f2bb4810a870dbaf25ee86db"
+            ],
+            "reason": "missing_receipt"
+          }
+        ],
+        "status": "not_checked",
+        "reason": "request_budget"
+      },
+      {
+        "object_id": "O-10",
+        "operations": [
+          {
+            "object_id": "O-10",
+            "operation": "dimension_consistency",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_11981549aceb463ba84c7c0de619d2fc",
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+              "blk_55ab0b4be112477eb9dec207df68000e",
+              "blk_26b23c5bfabe4917a156a91077b5458d"
+            ],
+            "receipt": {
+              "object_id": "O-10",
+              "operation": "dimension_consistency",
+              "status": "needs_data",
+              "reason": "LVF 800 имеет высоту 2480 мм; фактический монтажный проем, помещение и обслуживание не проверены.",
+              "source_refs": [
+                "blk_26b23c5bfabe4917a156a91077b5458d"
+              ],
+              "context_queries": [
+                "LVF 800",
+                "К21",
+                "Высота помещения ИТП"
+              ]
+            }
+          },
+          {
+            "object_id": "O-10",
+            "operation": "document_links",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_11981549aceb463ba84c7c0de619d2fc",
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+              "blk_55ab0b4be112477eb9dec207df68000e",
+              "blk_26b23c5bfabe4917a156a91077b5458d"
+            ],
+            "receipt": {
+              "object_id": "O-10",
+              "operation": "document_links",
+              "status": "needs_data",
+              "reason": "Давления 17,5/17,9 атм и режим АУПД 16,4/17,4 бар требуют общей пьезометрической схемы и точек отсчета.",
+              "source_refs": [
+                "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+                "blk_26b23c5bfabe4917a156a91077b5458d"
+              ],
+              "context_queries": [
+                "Пьезометрический график",
+                "Греющий контур",
+                "К14",
+                "К21"
+              ]
+            }
+          },
+          {
+            "object_id": "O-10",
+            "operation": "calculation_consistency",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_11981549aceb463ba84c7c0de619d2fc",
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+              "blk_55ab0b4be112477eb9dec207df68000e",
+              "blk_26b23c5bfabe4917a156a91077b5458d"
+            ],
+            "reason": "missing_receipt"
+          }
+        ],
+        "status": "not_checked",
+        "reason": "request_budget"
+      },
+      {
+        "object_id": "O-11",
+        "operations": [
+          {
+            "object_id": "O-11",
+            "operation": "quantity_balance",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_11981549aceb463ba84c7c0de619d2fc",
+              "blk_5c7cb0c7b68c4f78ac019a2e7535195f"
+            ],
+            "receipt": {
+              "object_id": "O-11",
+              "operation": "quantity_balance",
+              "status": "needs_data",
+              "reason": "Спецификация отсылает к ТХ, поэтому отдельные комплексы дозирования нельзя объявить отсутствующими в поставке.",
+              "source_refs": [
+                "blk_11981549aceb463ba84c7c0de619d2fc",
+                "blk_5c7cb0c7b68c4f78ac019a2e7535195f"
+              ],
+              "context_queries": [
+                "АКВАФЛОУ SA 112-376",
+                "АКВАФЛОУ DC SP 6401",
+                "АКВАФЛОУ DC SP 61",
+                "раздел ТХ"
+              ]
+            }
+          },
+          {
+            "object_id": "O-11",
+            "operation": "dimension_consistency",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_11981549aceb463ba84c7c0de619d2fc",
+              "blk_5c7cb0c7b68c4f78ac019a2e7535195f"
+            ],
+            "receipt": {
+              "object_id": "O-11",
+              "operation": "dimension_consistency",
+              "status": "needs_data",
+              "reason": "Габариты и состав поставки ХВП не представлены в первичных технических данных.",
+              "source_refs": [
+                "blk_5c7cb0c7b68c4f78ac019a2e7535195f"
+              ],
+              "context_queries": [
+                "Блочная установка ХВП",
+                "Габаритный чертеж"
+              ]
+            }
+          },
+          {
+            "object_id": "O-11",
+            "operation": "requirement_applicability",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_11981549aceb463ba84c7c0de619d2fc",
+              "blk_5c7cb0c7b68c4f78ac019a2e7535195f"
+            ],
+            "receipt": {
+              "object_id": "O-11",
+              "operation": "requirement_applicability",
+              "status": "needs_data",
+              "reason": "Нет анализа исходной воды, требуемого качества и производительности ХВП.",
+              "source_refs": [
+                "blk_11981549aceb463ba84c7c0de619d2fc"
+              ],
+              "context_queries": [
+                "Анализ воды",
+                "Производительность ХВП",
+                "раздел ТХ"
+              ]
+            }
+          },
+          {
+            "object_id": "O-11",
+            "operation": "document_links",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_11981549aceb463ba84c7c0de619d2fc",
+              "blk_5c7cb0c7b68c4f78ac019a2e7535195f"
+            ],
+            "receipt": {
+              "object_id": "O-11",
+              "operation": "document_links",
+              "status": "needs_data",
+              "reason": "Прямо названный раздел ТХ не приложен; граница поставки остается открытой.",
+              "source_refs": [
+                "blk_5c7cb0c7b68c4f78ac019a2e7535195f"
+              ],
+              "context_queries": [
+                "раздел ТХ"
+              ]
+            }
+          },
+          {
+            "object_id": "O-11",
+            "operation": "calculation_consistency",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_11981549aceb463ba84c7c0de619d2fc",
+              "blk_5c7cb0c7b68c4f78ac019a2e7535195f"
+            ],
+            "reason": "missing_receipt"
+          }
+        ],
+        "status": "not_checked",
+        "reason": "request_budget"
+      },
+      {
+        "object_id": "O-12",
+        "operations": [
+          {
+            "object_id": "O-12",
+            "operation": "identity_across_views",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_acc3bf59f8f447f988de16849e40e9f1",
+              "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+              "blk_a84dc3455457476dadbc35029e2e7ae8",
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+              "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+              "blk_17628e5e5b414088b5c392e63f6f4456",
+              "blk_a7ba21ea8083491389a223015720c9cb",
+              "blk_fd984f8c5d03427497ffd926feaf8ed5",
+              "blk_9e9fdca2261a4324959220546412f377",
+              "blk_20c9372392c34ef08a1e81d99316f0cb",
+              "blk_e46d7b061235453f8917708c1387217c",
+              "blk_ec07216893c540b88b7560c80b87ecd9"
+            ],
+            "receipt": {
+              "object_id": "O-12",
+              "operation": "identity_across_views",
+              "status": "needs_data",
+              "reason": "Агрегированные позиции нельзя распределить по физическим экземплярам без схемы; выявлены повтор позиции 89 и неопределенные изделия.",
+              "source_refs": [
+                "blk_a84dc3455457476dadbc35029e2e7ae8",
+                "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+                "blk_ac52bb88a0f64138a5b5ee4256cba2e7"
+              ],
+              "context_queries": [
+                "Позиция 89",
+                "Решение не найдено",
+                "Нет в каталоге",
+                "Принципиальная схема"
+              ]
+            }
+          },
+          {
+            "object_id": "O-12",
+            "operation": "quantity_balance",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_acc3bf59f8f447f988de16849e40e9f1",
+              "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+              "blk_a84dc3455457476dadbc35029e2e7ae8",
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+              "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+              "blk_17628e5e5b414088b5c392e63f6f4456",
+              "blk_a7ba21ea8083491389a223015720c9cb",
+              "blk_fd984f8c5d03427497ffd926feaf8ed5",
+              "blk_9e9fdca2261a4324959220546412f377",
+              "blk_20c9372392c34ef08a1e81d99316f0cb",
+              "blk_e46d7b061235453f8917708c1387217c",
+              "blk_ec07216893c540b88b7560c80b87ecd9"
+            ],
+            "receipt": {
+              "object_id": "O-12",
+              "operation": "quantity_balance",
+              "status": "needs_data",
+              "reason": "Нет полного графического перечня и оснований норм расхода; вычислены только воспроизводимые текстовые суммы.",
+              "source_refs": [
+                "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+                "blk_ea746747ceeb432db81d3380109e5608"
+              ],
+              "context_queries": [
+                "Приложение №8",
+                "Ведомость объемов",
+                "Спецификация модели"
+              ]
+            }
+          },
+          {
+            "object_id": "O-12",
+            "operation": "requirement_applicability",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_acc3bf59f8f447f988de16849e40e9f1",
+              "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+              "blk_a84dc3455457476dadbc35029e2e7ae8",
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+              "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+              "blk_17628e5e5b414088b5c392e63f6f4456",
+              "blk_a7ba21ea8083491389a223015720c9cb",
+              "blk_fd984f8c5d03427497ffd926feaf8ed5",
+              "blk_9e9fdca2261a4324959220546412f377",
+              "blk_20c9372392c34ef08a1e81d99316f0cb",
+              "blk_e46d7b061235453f8917708c1387217c",
+              "blk_ec07216893c540b88b7560c80b87ecd9"
+            ],
+            "receipt": {
+              "object_id": "O-12",
+              "operation": "requirement_applicability",
+              "status": "needs_data",
+              "reason": "Для арматуры PN16, приборов и воздухоотводчиков требуется принадлежность к конкретному контуру. Для грувлочных деталей требуется отличить водоснабжение от иных систем.",
+              "source_refs": [
+                "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+                "blk_a84dc3455457476dadbc35029e2e7ae8",
+                "blk_5a66eb7fcf4749a8adf723fa6716fca2"
+              ],
+              "context_queries": [
+                "PN16",
+                "Airvent-R",
+                "TM-510P.00",
+                "Dinarm FC",
+                "Схема КИП"
+              ]
+            }
+          },
+          {
+            "object_id": "O-12",
+            "operation": "calculation_consistency",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_acc3bf59f8f447f988de16849e40e9f1",
+              "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+              "blk_a84dc3455457476dadbc35029e2e7ae8",
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+              "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+              "blk_17628e5e5b414088b5c392e63f6f4456",
+              "blk_a7ba21ea8083491389a223015720c9cb",
+              "blk_fd984f8c5d03427497ffd926feaf8ed5",
+              "blk_9e9fdca2261a4324959220546412f377",
+              "blk_20c9372392c34ef08a1e81d99316f0cb",
+              "blk_e46d7b061235453f8917708c1387217c",
+              "blk_ec07216893c540b88b7560c80b87ecd9"
+            ],
+            "reason": "missing_receipt"
+          }
+        ],
+        "status": "not_checked",
+        "reason": "request_budget"
+      },
+      {
+        "object_id": "O-13",
+        "operations": [
+          {
+            "object_id": "O-13",
+            "operation": "identity_across_views",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_67b9571de5e74033b6c491043f8c87d1",
+              "blk_8a446a40473d48d18d60edba74661d9e",
+              "blk_2a57b9d72094420086e4401e9bfbbc9e",
+              "blk_d72c6707066f460bb3eab52b45f256a1"
+            ],
+            "receipt": {
+              "object_id": "O-13",
+              "operation": "identity_across_views",
+              "status": "needs_data",
+              "reason": "Марки шкафов и конкретные исполнения автоматики в предоставленном тексте не раскрыты.",
+              "source_refs": [
+                "blk_67b9571de5e74033b6c491043f8c87d1",
+                "blk_d72c6707066f460bb3eab52b45f256a1"
+              ],
+              "context_queries": [
+                "АТМ",
+                "ЭОМ",
+                "УУТЭ"
+              ]
+            }
+          },
+          {
+            "object_id": "O-13",
+            "operation": "quantity_balance",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_67b9571de5e74033b6c491043f8c87d1",
+              "blk_8a446a40473d48d18d60edba74661d9e",
+              "blk_2a57b9d72094420086e4401e9bfbbc9e",
+              "blk_d72c6707066f460bb3eab52b45f256a1"
+            ],
+            "receipt": {
+              "object_id": "O-13",
+              "operation": "quantity_balance",
+              "status": "needs_data",
+              "reason": "Нельзя сравнить комплектность щитов и приборов без смежных спецификаций.",
+              "source_refs": [
+                "blk_67b9571de5e74033b6c491043f8c87d1"
+              ],
+              "context_queries": [
+                "Спецификация АТМ",
+                "Спецификация УУТЭ",
+                "ВРУ ИТП"
+              ]
+            }
+          },
+          {
+            "object_id": "O-13",
+            "operation": "dimension_consistency",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_67b9571de5e74033b6c491043f8c87d1",
+              "blk_8a446a40473d48d18d60edba74661d9e",
+              "blk_2a57b9d72094420086e4401e9bfbbc9e",
+              "blk_d72c6707066f460bb3eab52b45f256a1"
+            ],
+            "receipt": {
+              "object_id": "O-13",
+              "operation": "dimension_consistency",
+              "status": "needs_data",
+              "reason": "Прямые участки расходомеров и размеры щитов доступны лишь в непроверенных описаниях графики.",
+              "source_refs": [
+                "blk_0103a941fa5a4b0d9141a4149e927bff",
+                "blk_7471e2839fbf42aca0c1f9f94a59bda2"
+              ],
+              "context_queries": [
+                "ВИС.Т",
+                "ПП-200",
+                "Монтажные прямые участки"
+              ]
+            }
+          },
+          {
+            "object_id": "O-13",
+            "operation": "document_links",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_67b9571de5e74033b6c491043f8c87d1",
+              "blk_8a446a40473d48d18d60edba74661d9e",
+              "blk_2a57b9d72094420086e4401e9bfbbc9e",
+              "blk_d72c6707066f460bb3eab52b45f256a1"
+            ],
+            "receipt": {
+              "object_id": "O-13",
+              "operation": "document_links",
+              "status": "needs_data",
+              "reason": "Отдельный альбом учета указан, но не предоставлен; алгоритмы автоматики и электрические защиты требуют соответствующих разделов.",
+              "source_refs": [
+                "blk_67b9571de5e74033b6c491043f8c87d1"
+              ],
+              "context_queries": [
+                "Проект узла учета",
+                "АТМ",
+                "ЭОМ"
+              ]
+            }
+          },
+          {
+            "object_id": "O-13",
+            "operation": "calculation_consistency",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_67b9571de5e74033b6c491043f8c87d1",
+              "blk_8a446a40473d48d18d60edba74661d9e",
+              "blk_2a57b9d72094420086e4401e9bfbbc9e",
+              "blk_d72c6707066f460bb3eab52b45f256a1"
+            ],
+            "reason": "missing_receipt"
+          }
+        ],
+        "status": "not_checked",
+        "reason": "request_budget"
+      },
+      {
+        "object_id": "O-14",
+        "operations": [
+          {
+            "object_id": "O-14",
+            "operation": "quantity_balance",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_8a446a40473d48d18d60edba74661d9e"
+            ],
+            "receipt": {
+              "object_id": "O-14",
+              "operation": "quantity_balance",
+              "status": "needs_data",
+              "reason": "Два насоса указаны в ИТП как учтенные в ВК; фактическую поставку по ВК проверить нельзя.",
+              "source_refs": [
+                "blk_ae35014464b5493f84ca38481c3ffa60"
+              ],
+              "context_queries": [
+                "17а",
+                "Drain TMT 32M113/7,5Ci",
+                "Спецификация ВК"
+              ]
+            }
+          },
+          {
+            "object_id": "O-14",
+            "operation": "dimension_consistency",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_8a446a40473d48d18d60edba74661d9e"
+            ],
+            "receipt": {
+              "object_id": "O-14",
+              "operation": "dimension_consistency",
+              "status": "needs_data",
+              "reason": "ПЗ содержит минимальные размеры приямка, но фактическая геометрия не осмотрена.",
+              "source_refs": [
+                "blk_d348bae526df42fca9f56ba8b87ce79b",
+                "blk_5b07e35a49dd46e4942116281bb13d8f"
+              ],
+              "context_queries": [
+                "Дренажный приямок",
+                "План дренажа"
+              ]
+            }
+          },
+          {
+            "object_id": "O-14",
+            "operation": "requirement_applicability",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_8a446a40473d48d18d60edba74661d9e"
+            ],
+            "receipt": {
+              "object_id": "O-14",
+              "operation": "requirement_applicability",
+              "status": "needs_data",
+              "reason": "Указаны 6 м³/ч, 12 м, 95 °C; нет расчета аварийного притока, противодавления канализации и паспортной характеристики выбранного насоса.",
+              "source_refs": [
+                "blk_ae35014464b5493f84ca38481c3ffa60"
+              ],
+              "context_queries": [
+                "Расчет дренажа",
+                "Drain TMT 32M113/7,5Ci",
+                "Температура стоков"
+              ]
+            }
+          },
+          {
+            "object_id": "O-14",
+            "operation": "calculation_consistency",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_8a446a40473d48d18d60edba74661d9e"
+            ],
+            "reason": "missing_receipt"
+          }
+        ],
+        "status": "not_checked",
+        "reason": "request_budget"
+      }
+    ]
+  },
+  "initial_operation_evidence": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+    "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+    "pointer": "/object_operation_results",
+    "relevant_receipts": [
+      {
+        "object_id": "O-09",
+        "operation": "identity_across_views",
+        "status": "checked",
+        "reason": "К8 связан расчетом w203119581; К17 — назначением ГВС 3-й зоны и полным исполнением /16.",
+        "source_refs": [
+          "blk_ae35014464b5493f84ca38481c3ffa60",
+          "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+          "blk_f118444d756a43319e1e4a1069dd6cbb"
+        ]
+      },
+      {
+        "object_id": "O-09",
+        "operation": "quantity_balance",
+        "status": "checked",
+        "reason": "Два аппарата по 50%, один рабочий и один резервный насос согласованы текстами.",
+        "source_refs": [
+          "blk_ae35014464b5493f84ca38481c3ffa60",
+          "blk_a5c04128f54f404e900b3ee4e3a854ba",
+          "blk_45df5405b31b4f9fb7e5b0f701325e3a"
+        ]
+      },
+      {
+        "object_id": "O-09",
+        "operation": "dimension_consistency",
+        "status": "needs_data",
+        "reason": "Нет визуального подтверждения монтажных переходов и фланцев.",
+        "source_refs": [
+          "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+          "blk_f118444d756a43319e1e4a1069dd6cbb"
+        ],
+        "context_queries": [
+          "К8",
+          "К17",
+          "ГВС III-зона"
+        ]
+      },
+      {
+        "object_id": "O-09",
+        "operation": "requirement_applicability",
+        "status": "checked",
+        "reason": "Пределы давления конкретных аппарата и насоса ниже требуемого давления системы.",
+        "source_refs": [
+          "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+          "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+          "blk_f118444d756a43319e1e4a1069dd6cbb"
+        ]
+      },
+      {
+        "object_id": "O-09",
+        "operation": "document_links",
+        "status": "checked",
+        "reason": "Связаны анкета, ПЗ, спецификация и подборы; общие варианты серии не использованы как подтверждение выбранного исполнения.",
+        "source_refs": [
+          "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+          "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "blk_f118444d756a43319e1e4a1069dd6cbb",
+          "blk_459720729c2742b4942fbc289c8d07bc"
+        ]
+      },
+      {
+        "object_id": "O-10",
+        "operation": "identity_across_views",
+        "status": "checked",
+        "reason": "К14 связан артикулом 2786131, К21 — полной маркой SPL BASIC 2-E-4-21 и назначением.",
+        "source_refs": [
+          "blk_ae35014464b5493f84ca38481c3ffa60",
+          "blk_55ab0b4be112477eb9dec207df68000e",
+          "blk_f4ab5361370f4b7aa105af255166e8eb"
+        ]
+      },
+      {
+        "object_id": "O-10",
+        "operation": "quantity_balance",
+        "status": "checked",
+        "reason": "Три циркуляционных насоса с режимом два рабочих и один резервный согласованы ПЗ и спецификацией. Подбор одного насоса не трактовался как отсутствие второго рабочего.",
+        "source_refs": [
+          "blk_ae35014464b5493f84ca38481c3ffa60",
+          "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "blk_55ab0b4be112477eb9dec207df68000e"
+        ]
+      },
+      {
+        "object_id": "O-10",
+        "operation": "dimension_consistency",
+        "status": "needs_data",
+        "reason": "LVF 800 имеет высоту 2480 мм; фактический монтажный проем, помещение и обслуживание не проверены.",
+        "source_refs": [
+          "blk_26b23c5bfabe4917a156a91077b5458d"
+        ],
+        "context_queries": [
+          "LVF 800",
+          "К21",
+          "Высота помещения ИТП"
+        ]
+      },
+      {
+        "object_id": "O-10",
+        "operation": "requirement_applicability",
+        "status": "checked",
+        "reason": "Максимальное давление 16 бар относится к конкретному насосу; превышение проектным режимом подтверждено текстом.",
+        "source_refs": [
+          "blk_55ab0b4be112477eb9dec207df68000e",
+          "blk_26b23c5bfabe4917a156a91077b5458d"
+        ]
+      },
+      {
+        "object_id": "O-10",
+        "operation": "document_links",
+        "status": "needs_data",
+        "reason": "Давления 17,5/17,9 атм и режим АУПД 16,4/17,4 бар требуют общей пьезометрической схемы и точек отсчета.",
+        "source_refs": [
+          "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "blk_26b23c5bfabe4917a156a91077b5458d"
+        ],
+        "context_queries": [
+          "Пьезометрический график",
+          "Греющий контур",
+          "К14",
+          "К21"
+        ]
+      },
+      {
+        "object_id": "O-12",
+        "operation": "identity_across_views",
+        "status": "needs_data",
+        "reason": "Агрегированные позиции нельзя распределить по физическим экземплярам без схемы; выявлены повтор позиции 89 и неопределенные изделия.",
+        "source_refs": [
+          "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_ac52bb88a0f64138a5b5ee4256cba2e7"
+        ],
+        "context_queries": [
+          "Позиция 89",
+          "Решение не найдено",
+          "Нет в каталоге",
+          "Принципиальная схема"
+        ]
+      },
+      {
+        "object_id": "O-12",
+        "operation": "quantity_balance",
+        "status": "needs_data",
+        "reason": "Нет полного графического перечня и оснований норм расхода; вычислены только воспроизводимые текстовые суммы.",
+        "source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_ea746747ceeb432db81d3380109e5608"
+        ],
+        "context_queries": [
+          "Приложение №8",
+          "Ведомость объемов",
+          "Спецификация модели"
+        ]
+      },
+      {
+        "object_id": "O-12",
+        "operation": "dimension_consistency",
+        "status": "checked",
+        "reason": "Сопоставлены наружные диаметры труб и деталей, размеры цилиндров; установлены несовпадающие размерные ряды и обозначения.",
+        "source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_17628e5e5b414088b5c392e63f6f4456",
+          "blk_ec07216893c540b88b7560c80b87ecd9"
+        ]
+      },
+      {
+        "object_id": "O-12",
+        "operation": "requirement_applicability",
+        "status": "needs_data",
+        "reason": "Для арматуры PN16, приборов и воздухоотводчиков требуется принадлежность к конкретному контуру. Для грувлочных деталей требуется отличить водоснабжение от иных систем.",
+        "source_refs": [
+          "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+          "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "blk_5a66eb7fcf4749a8adf723fa6716fca2"
+        ],
+        "context_queries": [
+          "PN16",
+          "Airvent-R",
+          "TM-510P.00",
+          "Dinarm FC",
+          "Схема КИП"
+        ]
+      },
+      {
+        "object_id": "O-12",
+        "operation": "document_links",
+        "status": "checked",
+        "reason": "Проверены ссылки на УЧТЭ, АТМ, ТХ и ВК; их отсутствие не превращено в отсутствие оборудования.",
+        "source_refs": [
+          "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+          "blk_5c7cb0c7b68c4f78ac019a2e7535195f"
+        ]
+      }
+    ]
+  },
+  "execution_evidence": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+    "pointer": "/object_operation_reports",
+    "stages": [
+      "object_operations_ae5a27bd0dc31028",
+      "object_operations_5b051b292826d72c",
+      "object_operations_e04ccd2df23a392b",
+      "object_operations_90d3ca51cacfd297",
+      "object_operations_924bfbe80c981d48",
+      "object_operations_90848bd21d708014",
+      "object_operations_c88b753b5560a786",
+      "object_operations_ca87bf5029f58a44"
+    ],
+    "limit": "Later candidate recovery can still inspect some same equipment; this omission concerns named object-operation followups only."
+  },
+  "cases": [
+    {
+      "target_id": "ITP_F003_main_circuit_components:52cbecb1ef185b3847ce",
+      "object_ids": [
+        "O-10",
+        "O-12"
+      ],
+      "assessment": "PN16scope was explicitly unresolved inO12requirement_applicability; O10primary-loopdocumentlinks also unresolved. Their followup operations were budget-backlogged. No separately tracked63/96/103pressurecomparison was established.",
+      "causal_limit": "Recorded coverage gap, not counterfactual proof that executing these passes would recover the target."
+    },
+    {
+      "target_id": "ITP68_grooved_scope:98fe6084bffb8305b8ed",
+      "object_ids": [
+        "O-12"
+      ],
+      "assessment": "O12requirement_applicability explicitly asks to distinguish water supply from other systems for grooved fittings. Additional operation was budget-backlogged; clause5.3.1.4scope-to-fitting mapping was not completed.",
+      "causal_limit": "Recorded coverage gap, not counterfactual proof that executing these passes would recover the target."
+    },
+    {
+      "target_id": "ITP_F004_safety_valve_setpoints:composite:2",
+      "object_ids": [
+        "O-09",
+        "O-12"
+      ],
+      "assessment": "O09registry namesK8/K17andcontrolvalve34, notsafetyvalve40. O09calculationoperation and O12armatureidentity/applicabilityoperations were backlogged. This is an opportunity loss, not proof that a specificvalve40/K17candidate was found and suppressed.",
+      "causal_limit": "Recorded coverage gap, not counterfactual proof that executing these passes would recover the target."
+    }
+  ],
+  "recommendation": {
+    "behavior": "Keep finite per-batch request budgets but persist unfinished object/operation obligations and resume them under an explicit totalcost/timebudget. Never declare full coverage while backlog remains. Track pressure-rated armature and protective-device relationships individually, so a broad system check cannot stand in for their checks.",
+    "test": "Compare recovered source-backed findings and false positives, backlog completion, cost and elapsedtime; demonstrate benefit rather than assume largerbudgetis better. Preserve validexistingpressurefindings and prohibit blanketPN16orvalve20barreplacement.",
+    "status": "Proposal only, frozen runtime unchanged"
+  },
+  "runtime_changed": false,
+  "model_calls": 0,
+  "exclusive_root_cause_proven": false
+}
