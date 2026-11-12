@@ -1,0 +1,1004 @@
+{
+  "version": 1,
+  "scope": "Sealed ITP classic_current repeat 1; bounded output burden and routing assessment",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "coverage_ledger": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+      "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+      "pointer": ""
+    }
+  },
+  "counts": {
+    "output_rows": 74,
+    "section_counts": {
+      "questions": 14,
+      "technical_findings": 60
+    },
+    "confirmed_duplicate_pairs": 8,
+    "rows_in_confirmed_duplicate_pairs": 16,
+    "avoidable_extra_rows_in_these_pairs": 8,
+    "row_count_after_only_these_proposed_merges": 66,
+    "reference_targets_with_section_disagreement": 27,
+    "unique_output_rows_with_section_disagreement": 33,
+    "unresolved_visible_reference_occurrences": 7
+  },
+  "duplicate_pairs": [
+    {
+      "ids": [
+        "F-015",
+        "F-068"
+      ],
+      "theme": "К12: 0,55 против 1,5 кВт",
+      "assessment": "Same equipment and conflict. F-068 adds a P2 cross-check, not a distinct defect. Retain it as supporting evidence.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/0"
+      },
+      "rows": [
+        {
+          "id": "F-015",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/14"
+          },
+          "report_section": "technical_findings",
+          "problem": "Мощность насоса отопления ДОО К12 в экспликации не согласована со спецификацией, ПЗ и техническими данными.",
+          "solution": "Согласовать мощность К12 в экспликации с выбранным двигателем номинальной мощностью 1,5 кВт. Проверить соответствие задания на электроснабжение, защиты и преобразователя частоты данным двигателя, включая номинальный ток 3,48 А."
+        },
+        {
+          "id": "F-068",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/67"
+          },
+          "report_section": "technical_findings",
+          "problem": "Противоречивые значения мощности насоса К12",
+          "solution": "Согласовать значение и обозначение мощности К12 в экспликации с техническим листом выбранного исполнения и спецификацией, отдельно указывая номинальную мощность двигателя и P2 рабочей точки."
+        }
+      ],
+      "recommended_disposition": "One review item with combined provenance and preserved distinct subclaims; retain bounded uncertainty. This is an evaluator recommendation, not an edited audit output."
+    },
+    {
+      "ids": [
+        "F-016",
+        "F-066"
+      ],
+      "theme": "К10: 21,29 против 21,91 м при 47,08 м³/ч",
+      "assessment": "Same selected pump, article and operating point. F-066 adds temperature context; retain it without another defect row.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/1"
+      },
+      "rows": [
+        {
+          "id": "F-016",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/15"
+          },
+          "report_section": "technical_findings",
+          "problem": "Напор выбранного насоса отопления второй зоны не согласован между ПЗ, спецификацией и техническим листом.",
+          "solution": "Согласовать напор выбранного исполнения при подаче 47,08 м³/ч и привести ПЗ, спецификацию и технический лист к согласованным данным с учётом принятого режима регулирования и гидравлической увязки."
+        },
+        {
+          "id": "F-066",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/65"
+          },
+          "report_section": "technical_findings",
+          "problem": "Расхождение указанного напора К10 при одинаковой подаче",
+          "solution": "По гидравлическому расчету и принятому режиму регулирования установить проектную рабочую точку К10 и согласовать значения напора в подборе, экспликации и спецификации."
+        }
+      ],
+      "recommended_disposition": "One review item with combined provenance and preserved distinct subclaims; retain bounded uncertainty. This is an evaluator recommendation, not an edited audit output."
+    },
+    {
+      "ids": [
+        "F-040",
+        "F-062"
+      ],
+      "theme": "Пол одного ИТП: -4,900 против -4,450",
+      "assessment": "Same two questionnaire rows. F-040 also distinguishes plan elevation from floor elevation; retain this qualification.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/2"
+      },
+      "rows": [
+        {
+          "id": "F-040",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/39"
+          },
+          "report_section": "technical_findings",
+          "problem": "В одной анкете абонента для пола ИТП указаны две разные отметки.",
+          "solution": "Установить согласованную отметку пола ИТП и систему отсчёта, уточнить назначение отметки −4,000 в наименованиях планов. Проверить, какая отметка принята в расчётах напоров, и согласовать связанные документы."
+        },
+        {
+          "id": "F-062",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/61"
+          },
+          "report_section": "technical_findings",
+          "problem": "В анкете одного ИТП указаны разные отметки пола.",
+          "solution": "Сопоставить обе строки с утвержденной архитектурной отметкой пола ИТП и привести анкету к согласованному значению. Если строки относятся к разным уровням или помещениям, явно обозначить их и систему отсчета."
+        }
+      ],
+      "recommended_disposition": "One review item with combined provenance and preserved distinct subclaims; retain bounded uncertainty. This is an evaluator recommendation, not an edited audit output."
+    },
+    {
+      "ids": [
+        "F-038",
+        "F-063"
+      ],
+      "theme": "Этап 1 комплекта против этапа 2 ТЗ",
+      "assessment": "Same applicability question. Both explicitly avoid asserting that the TZ belongs to an unrelated project.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/3"
+      },
+      "rows": [
+        {
+          "id": "F-038",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/37"
+          },
+          "report_section": "questions",
+          "problem": "На титуле комплекта и титуле приложенного ТЗ указаны разные этапы строительства.",
+          "solution": "Подтвердить применимость приложенного ТЗ к этапу, для которого выпущен комплект, и согласовать реквизиты титульных листов."
+        },
+        {
+          "id": "F-063",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/62"
+          },
+          "report_section": "questions",
+          "problem": "Требуется установить соответствие обозначений этапа в титульных листах и ТЗ.",
+          "solution": "Установить по утвержденному составу этапов применимость ТЗ к данному комплекту. При едином объеме проектирования согласовать реквизиты; при разных объемах явно указать их связь."
+        }
+      ],
+      "recommended_disposition": "One review item with combined provenance and preserved distinct subclaims; retain bounded uncertainty. This is an evaluator recommendation, not an edited audit output."
+    },
+    {
+      "ids": [
+        "F-044",
+        "F-069"
+      ],
+      "theme": "К12: рабочий напор 16,98 против максимального 16,64",
+      "assessment": "Same numerical comparison with unresolved comparability. F-044 is a question, F-069 technical: deduplication must preserve uncertainty rather than select the stronger label.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/4"
+      },
+      "rows": [
+        {
+          "id": "F-044",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/43"
+          },
+          "report_section": "questions",
+          "problem": "Требуется уточнить соотношение рабочего и максимального напоров в техническом листе насоса отопления ДОО.",
+          "solution": "Уточнить у изготовителя смысл и условия определения параметра «Макс. напор». Получить характеристику выбранного насоса с колесом 217 мм при принятой частоте вращения и согласовать её с указанной рабочей точкой."
+        },
+        {
+          "id": "F-069",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/68"
+          },
+          "report_section": "technical_findings",
+          "problem": "Рабочий напор превышает указанное максимальное значение в техническом листе К12",
+          "solution": "Сверить оба значения с характеристикой выбранного исполнения насоса и условиями расчета. Исправить ошибочное значение либо явно указать различающиеся режимы, затем проверить рабочую точку по гидравлическому расчету контура."
+        }
+      ],
+      "recommended_disposition": "One review item with combined provenance and preserved distinct subclaims; retain bounded uncertainty. This is an evaluator recommendation, not an edited audit output."
+    },
+    {
+      "ids": [
+        "F-053",
+        "F-070"
+      ],
+      "theme": "К22: подписи 1000 л против 1500 л в подборе",
+      "assessment": "Same equipment capacity conflict. Preserve additional plan locations; do not infer wrong installed quantity or inadequate tank volume.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_drawing_volumes_bounded_review.json",
+        "sha256": "fd06bdda0f7365c66a0c422cdbdc45c19179ca1219290da36628e097086fffcd",
+        "pointer": ""
+      },
+      "rows": [
+        {
+          "id": "F-053",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/52"
+          },
+          "report_section": "technical_findings",
+          "problem": "Объём бака К22 на разрезе 18-18 не согласован со спецификацией и подбором.",
+          "solution": "Согласовать объём бака К22 в выноске разреза со спецификацией и актуальным расчётом расширительных баков, сохранив однозначное указание объёма единицы и количества баков."
+        },
+        {
+          "id": "F-070",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/69"
+          },
+          "report_section": "technical_findings",
+          "problem": "На чертежах К22 обозначен объемом 1000 л, в подборе и ведомостях — 1500 л на бак.",
+          "solution": "Согласовать обозначения К22 на чертежах с выбранным исполнением. Проверить размещение и монтажный путь для подтвержденных габаритов поставляемых баков."
+        }
+      ],
+      "recommended_disposition": "One review item with combined provenance and preserved distinct subclaims; retain bounded uncertainty. This is an evaluator recommendation, not an edited audit output."
+    },
+    {
+      "ids": [
+        "F-019",
+        "F-071"
+      ],
+      "theme": "Температурный график вентиляции 80/60 против 85/60",
+      "assessment": "Same tank calculation temperature conflict. Preserve exchanger and graphic support without another defect row; tank insufficiency remains unproved.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+        "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6",
+        "pointer": ""
+      },
+      "rows": [
+        {
+          "id": "F-019",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/18"
+          },
+          "report_section": "technical_findings",
+          "problem": "Температурный график в расчёте расширительных баков теплоснабжения вентиляции не согласован с ПЗ и ТЗ.",
+          "solution": "Согласовать подбор с графиком теплоснабжения вентиляции 85/60 °C, уточнить коэффициент расширения и повторить расчёт требуемого объёма. Подтвердить достаточность двух выбранных баков SPL RM 1500 по обновлённому расчёту."
+        },
+        {
+          "id": "F-071",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/70"
+          },
+          "report_section": "technical_findings",
+          "problem": "Температурные исходные данные подбора К22 расходятся с расчетом К5 и подписями ветвей вентиляции.",
+          "solution": "Установить расчетные температурные режимы контура вентиляции и привести исходные данные подбора К22 в соответствие с ними. Повторить проверку расширительного объема с обоснованными коэффициентом расширения и настройками давления."
+        }
+      ],
+      "recommended_disposition": "One review item with combined provenance and preserved distinct subclaims; retain bounded uncertainty. This is an evaluator recommendation, not an edited audit output."
+    },
+    {
+      "ids": [
+        "F-013",
+        "F-072"
+      ],
+      "theme": "Позиция 33: Kvs 4,0 против 40",
+      "assessment": "Same valve capacity conflict. Preserve section 14-14 as additional evidence and retain the designation subclaim in F-013; no automatic physical pressure-loss conclusion.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+        "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896",
+        "pointer": ""
+      },
+      "rows": [
+        {
+          "id": "F-013",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/12"
+          },
+          "report_section": "technical_findings",
+          "problem": "Для клапана ГВС второй зоны позиции 33 не согласованы пропускная способность и обозначение в спецификации, экспликации и расчёте.",
+          "solution": "Однозначно установить требуемые Kvs, марку и соответствующий артикул клапана позиции 33; согласовать спецификацию, экспликацию и расчёт. При изменении принятой пропускной способности пересчитать потери давления."
+        },
+        {
+          "id": "F-072",
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/findings/71"
+          },
+          "report_section": "technical_findings",
+          "problem": "Пропускная способность клапана позиции 33 не согласована с расчетным выбором.",
+          "solution": "Согласовать Kvs позиции 33 с расчетным выбором и подтвержденными данными выбранного изделия; исправить спецификацию либо пересчитать подбор при изменении требуемой характеристики."
+        }
+      ],
+      "recommended_disposition": "One review item with combined provenance and preserved distinct subclaims; retain bounded uncertainty. This is an evaluator recommendation, not an edited audit output."
+    }
+  ],
+  "section_disagreements": [
+    {
+      "target_id": "B-ITP-F-011:f633e04640a9e4e3c71a",
+      "coverage": "full",
+      "finding_ids": [
+        "F-031"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-031": "technical_findings"
+        },
+        "limit": "Content coverage and output-section agreement assessed separately."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/1"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-011:13234a067319a117c786",
+      "coverage": "full",
+      "finding_ids": [
+        "F-032"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-032": "technical_findings"
+        },
+        "limit": "Content coverage and output-section agreement assessed separately."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/3"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-017:05e18fdb07cf5bb1bc8b",
+      "coverage": "full",
+      "finding_ids": [
+        "F-044",
+        "F-069"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-044": "questions",
+          "F-069": "technical_findings"
+        },
+        "limit": "Content coverage and output-section agreement assessed separately."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/11"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-037",
+        "F-061"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-037": "technical_findings",
+          "F-061": "technical_findings"
+        }
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/12"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-020:2052d4e286115c641e7f",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-017"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-017": "technical_findings"
+        },
+        "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/15"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-020:ddebb96399a114f724d6",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-023",
+        "F-034"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-023": "technical_findings",
+          "F-034": "technical_findings"
+        },
+        "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/16"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-021:61e590ad93c41a790803",
+      "coverage": "full",
+      "finding_ids": [
+        "F-022"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-022": "technical_findings"
+        },
+        "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/18"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-021:6dbe9315b20445709a44",
+      "coverage": "full",
+      "finding_ids": [
+        "F-022"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-022": "technical_findings"
+        },
+        "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/19"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-021:21e573255419bee97d92",
+      "coverage": "full",
+      "finding_ids": [
+        "F-022"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-022": "technical_findings"
+        },
+        "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/20"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-021:19069482aa6e7267f73b",
+      "coverage": "full",
+      "finding_ids": [
+        "F-022"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-022": "technical_findings"
+        },
+        "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/21"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-022:8cd785f32b0f2581717f",
+      "coverage": "full",
+      "finding_ids": [
+        "F-064"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-064": "technical_findings"
+        },
+        "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/22"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-023:4c138c58b906579e3ebd",
+      "coverage": "full",
+      "finding_ids": [
+        "F-020",
+        "F-021"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-020": "technical_findings",
+          "F-021": "technical_findings"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/23"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-024:f36bd082707154691153",
+      "coverage": "full",
+      "finding_ids": [
+        "F-018",
+        "F-019",
+        "F-071"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-018": "technical_findings",
+          "F-019": "technical_findings",
+          "F-071": "technical_findings"
+        },
+        "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/24"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-025:c98f6c16f19022b52eb6",
+      "coverage": "full",
+      "finding_ids": [
+        "F-033"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-033": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/26"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-027:0bd4729bc0b05b923141",
+      "coverage": "full",
+      "finding_ids": [
+        "F-028",
+        "F-029"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-028": "technical_findings",
+          "F-029": "questions"
+        },
+        "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/30"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-031:d7fa75e76f824fe5d722",
+      "coverage": "full",
+      "finding_ids": [
+        "F-027"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-027": "technical_findings"
+        },
+        "limit": "Content and route evaluated separately; no additional credit for repeated row or supporting number."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/36"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-038:705f2262875c31478443",
+      "coverage": "full",
+      "finding_ids": [
+        "F-040",
+        "F-062"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-040": "technical_findings",
+          "F-062": "technical_findings"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/40"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
+      "coverage": "full",
+      "finding_ids": [
+        "F-053",
+        "F-070"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-053": "technical_findings",
+          "F-070": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/43"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-042:ecfe1ebab48bd184691d",
+      "coverage": "full",
+      "finding_ids": [
+        "F-048"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-048": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/44"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-044:de24b888831313c4d337",
+      "coverage": "full",
+      "finding_ids": [
+        "F-049",
+        "F-058"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-049": "technical_findings",
+          "F-058": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/45"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-050:5cd9d3d1be70ff9681c3",
+      "coverage": "full",
+      "finding_ids": [
+        "F-059"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-059": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/46"
+      }
+    },
+    {
+      "target_id": "H-ITP-63:7ba4e763f9b6758d0f09",
+      "coverage": "full",
+      "finding_ids": [
+        "F-016",
+        "F-066"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-016": "technical_findings",
+          "F-066": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/48"
+      }
+    },
+    {
+      "target_id": "ITP_F005_test_pressure_scope:88ef772ecba424138f46",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-010"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-010": "technical_findings"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/64"
+      }
+    },
+    {
+      "target_id": "ITP_F006_fuse_instruction:3453d72502ca1458b28c",
+      "coverage": "full",
+      "finding_ids": [
+        "F-011"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-011": "technical_findings"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/65"
+      }
+    },
+    {
+      "target_id": "ITP_F010_GVS_formula:e2d706356b5cbdcedb39",
+      "coverage": "full",
+      "finding_ids": [
+        "F-035"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-035": "technical_findings"
+        },
+        "limit": "Content coverage and output-section agreement assessed separately."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/68"
+      }
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
+      "coverage": "full",
+      "finding_ids": [
+        "F-051"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-051": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/79"
+      }
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:92be8d7a03f9ca816e16",
+      "coverage": "full",
+      "finding_ids": [
+        "F-050"
+      ],
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-050": "technical_findings"
+        },
+        "limit": "Content coverage is distinct from section agreement and grouped presentation."
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+        "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+        "pointer": "/targets/80"
+      }
+    }
+  ],
+  "section_disagreement_finding_ids": [
+    "F-010",
+    "F-011",
+    "F-016",
+    "F-017",
+    "F-018",
+    "F-019",
+    "F-020",
+    "F-021",
+    "F-022",
+    "F-023",
+    "F-027",
+    "F-028",
+    "F-031",
+    "F-032",
+    "F-033",
+    "F-034",
+    "F-035",
+    "F-037",
+    "F-040",
+    "F-048",
+    "F-049",
+    "F-050",
+    "F-051",
+    "F-053",
+    "F-058",
+    "F-059",
+    "F-061",
+    "F-062",
+    "F-064",
+    "F-066",
+    "F-069",
+    "F-070",
+    "F-071"
+  ],
+  "broken_visible_references": [
+    {
+      "finding_id": "F-074",
+      "field": "description",
+      "missing_id": "F-076",
+      "offset": 1948,
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/73/description"
+      }
+    },
+    {
+      "finding_id": "F-074",
+      "field": "description",
+      "missing_id": "F-076",
+      "offset": 2180,
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/73/description"
+      }
+    },
+    {
+      "finding_id": "F-074",
+      "field": "description",
+      "missing_id": "F-076",
+      "offset": 2494,
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/73/description"
+      }
+    },
+    {
+      "finding_id": "F-074",
+      "field": "description",
+      "missing_id": "F-076",
+      "offset": 2882,
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/73/description"
+      }
+    },
+    {
+      "finding_id": "F-074",
+      "field": "description",
+      "missing_id": "F-076",
+      "offset": 3142,
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/73/description"
+      }
+    },
+    {
+      "finding_id": "F-074",
+      "field": "description",
+      "missing_id": "F-076",
+      "offset": 3388,
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/73/description"
+      }
+    },
+    {
+      "finding_id": "F-074",
+      "field": "description",
+      "missing_id": "F-076",
+      "offset": 3719,
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/73/description"
+      }
+    }
+  ],
+  "recommended_behavior": [
+    "Group by physical object, compared property, circuit/regime and claim; merge additional sources without dropping distinct subclaims.",
+    "Keep question/technical routing independent of factual validity. A question must not become a technical defect merely because another detector used a stronger label.",
+    "Verify visible finding references after grouping and renumbering, including description and solution fields."
+  ],
+  "limits": [
+    "Eight repeated rows are a directly observed lower bound, not an exhaustive semantic duplicate estimate.",
+    "66 rows after these eight proposed merges is not 66 independent verified defects; compound claims and additional overlaps remain.",
+    "Reference-section disagreement does not imply technical falsehood and may apply to only part of a compound output row.",
+    "No measured engineer time, whole-output precision, useful unique defect count or causal improvement estimate is available.",
+    "Existing bounded source reviews do not prove every statement in every output row."
+  ],
+  "whole_output_precision_finalized": false,
+  "quality_score": null,
+  "engineer_review_time_seconds": null,
+  "runtime_changed": false,
+  "model_calls": 0,
+  "stage4_complete": false
+}
