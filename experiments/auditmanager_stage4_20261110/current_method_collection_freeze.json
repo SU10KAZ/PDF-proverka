@@ -1,0 +1,11 @@
+{
+  "status": "54_current_method_runs_frozen_not_started",
+  "trial": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/experimental_collection_trial.json",
+    "sha256": "8fc6b900edca76cd59b81e5602bc7be5ae84ce18f8c697811ddd3fe3bbc274dc"
+  },
+  "runs": 54,
+  "model_calls": 0,
+  "stage4_complete": false,
+  "production_acceptance": false
+}
