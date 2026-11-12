@@ -7,8 +7,8 @@
   },
   "summary": {
     "output_rows": 88,
-    "rows_with_some_reviewed_claim": 78,
-    "rows_without_target_or_additional_review": 10,
+    "rows_with_some_reviewed_claim": 80,
+    "rows_without_target_or_additional_review": 8,
     "whole_output_precision_established": false
   },
   "priority_unreviewed_rows": [
@@ -16,12 +16,10 @@
     "F-002",
     "F-004",
     "F-005",
-    "F-026",
     "F-045",
     "F-055",
     "F-058",
-    "F-059",
-    "F-069"
+    "F-059"
   ],
   "rows": [
     {
@@ -614,12 +612,20 @@
       "problem": "Требуется уточнить место учёта поставки термостатов TS1 и TS2 тепловых завес.",
       "report_section": "questions",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch7.json",
+          "sha256": "5ee99df651002a25b2fbda51d6027f3b717a7ac1ae1adbd7e3141b2190614e67",
+          "pointer": "/claims/0",
+          "disposition": "confirmed_narrow_supply_scope_question",
+          "scope": "Narrow documented question, not procurement or physical malfunction."
+        }
+      ],
       "known_review_observations": [],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Confirm final question routing and avoid unsupported consequences or duplicate counting"
     },
     {
       "finding_id": "F-027",
@@ -1573,7 +1579,15 @@
       "problem": "Назначение линии RS-485 не согласовано с обозначениями её клемм на схеме БД-ТЗ1.",
       "report_section": "technical_findings",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch7.json",
+          "sha256": "5ee99df651002a25b2fbda51d6027f3b717a7ac1ae1adbd7e3141b2190614e67",
+          "pointer": "/claims/1",
+          "disposition": "confirmed_narrow_interface_label_question",
+          "scope": "Narrow documented question, not procurement or physical malfunction."
+        }
+      ],
       "known_review_observations": [
         {
           "finding_ids": [
@@ -1586,9 +1600,9 @@
         }
       ],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Confirm final question routing and avoid unsupported consequences or duplicate counting"
     },
     {
       "finding_id": "F-070",
