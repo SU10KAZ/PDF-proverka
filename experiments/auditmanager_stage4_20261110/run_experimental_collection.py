@@ -1,4 +1,5 @@
 """Wait for the frozen historical series, then dispatch independent arms serially."""
+import argparse
 import json
 import os
 from pathlib import Path
@@ -31,16 +32,24 @@ def write(path, value):
     temp.replace(path)
 
 
-def main():
+def main(root=ROOT, baseline_root=None):
+    root = Path(root).resolve()
+    baseline_root = Path(baseline_root).resolve() if baseline_root else root
     from .materialize_trial_inputs import sha
     from .observe_baseline_collection import process
     from .paired_protocol import shared_manifest, verify_shared_protocol, verify_trial_binding
     from .verify_completed_baseline_seals import verify as verify_baseline_seals
-    trial_path = ROOT / 'experimental_collection_trial.json'
+    trial_path = root / 'experimental_collection_trial.json'
     trial = json.loads(trial_path.read_text())
     trial_hash = sha(trial_path)
     bound_keys = ('evaluator', 'acceptance_protocol', 'source_snapshot', 'experimental_decisions',
                   'preflight_checks', 'source_input_checks', 'historical_baseline_trial', 'freeze_script')
+    if 'dispatcher' in trial:
+        bound_keys += ('dispatcher',)
+    if 'profile_disagreements' in trial:
+        bound_keys += ('profile_disagreements',)
+    if trial.get('historical_baseline_root', str(baseline_root)) != str(baseline_root):
+        raise ValueError('Historical baseline root differs from frozen trial')
 
     def validate():
         assert sha(trial_path) == trial_hash
@@ -51,19 +60,19 @@ def main():
         assert subprocess.check_output(['codex', '--version'], text=True).strip() == trial['codex_cli_version']
 
     validate()
-    with (ROOT / 'experimental_collection_started.json').open('x') as f:
+    with (root / 'experimental_collection_started.json').open('x') as f:
         json.dump({'pid': os.getpid(), 'started': time.time(), 'trial_sha256': trial_hash,
                    'runner_sha256': sha(Path(__file__))}, f)
-    path = ROOT / 'experimental_collection_status.json'
+    path = root / 'experimental_collection_status.json'
     state = {'pid': os.getpid(), 'started': time.time(), 'status': 'waiting_for_baseline',
              'trial_sha256': trial_hash, 'runs': []}
     write(path, state)
     source = json.loads(Path(trial['source_snapshot']['path']).read_text())['source_root']
     try:
         while True:
-            if (ROOT / 'STOP_REQUESTED.json').exists() or (ROOT / 'EXPERIMENTAL_STOP_REQUESTED.json').exists():
+            if (root / 'STOP_REQUESTED.json').exists() or (root / 'EXPERIMENTAL_STOP_REQUESTED.json').exists():
                 state['status'] = 'stopped_before_dispatch'; return
-            baseline = json.loads((ROOT / 'baseline_collection_status.json').read_text())
+            baseline = json.loads((baseline_root / 'baseline_collection_status.json').read_text())
             live = process(baseline.get('pid'), 'run_baseline_collection')
             decision = prerequisite(baseline, live['live'])
             state.update(observed_at=time.time(), baseline_process=live,
@@ -72,13 +81,13 @@ def main():
             if decision == 'ready':
                 break
             time.sleep(10)
-        seals = verify_baseline_seals(ROOT)
+        seals = verify_baseline_seals(baseline_root)
         assert len(seals['verified_runs']) == 18
-        write(ROOT / 'experimental_baseline_completion_seals.json', seals)
+        write(root / 'experimental_baseline_completion_seals.json', seals)
         validate()
         state['status'] = 'running'; write(path, state)
         for run in trial['runs']:
-            if (ROOT / 'STOP_REQUESTED.json').exists() or (ROOT / 'EXPERIMENTAL_STOP_REQUESTED.json').exists():
+            if (root / 'STOP_REQUESTED.json').exists() or (root / 'EXPERIMENTAL_STOP_REQUESTED.json').exists():
                 state['status'] = 'stopped'; break
             validate()
             work = Path(run['work']); arm = run['variant']; disc = run['discipline']
@@ -111,4 +120,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--root', type=Path, default=ROOT)
+    parser.add_argument('--baseline-root', type=Path)
+    args = parser.parse_args()
+    main(args.root, args.baseline_root)
