@@ -1,0 +1,18 @@
+{
+  "finding_id": "F-028",
+  "status": "bounded_applicability_question_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_028/publication_projection.json",
+  "projection_sha256": "ee9897b07f327675535bbec51dd208aca01f1c4071cfbcd51ebb2fd476b94c9b",
+  "source_review_path": "experiments/auditmanager_stage1_20261109/decisions/AK_F028_change_register_scope.json",
+  "source_review_sha256": "4d6c40af5a9db18ddf520f1f06842a8cc958439af0f690fd5cf2020d5b19fc05",
+  "checks": [
+    "Change register package versus row designation preserved as applicability question, not proven technical conflict.",
+    "Literal АК-КЗ not silently normalized to АК-К3.",
+    "No extension of ventilation control change to every RS-485 circuit.",
+    "Prior claim that change is approved now explicitly unverified; no evidence of approval supplied."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "final_release_completed": false
+}

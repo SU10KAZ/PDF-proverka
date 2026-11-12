@@ -1,0 +1,19 @@
+{
+  "finding_id": "F-029",
+  "status": "bounded_applicability_question_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_029/publication_projection.json",
+  "projection_sha256": "608349833010e44cf3bbef945153e91c7cfee45bd92d70e3913721b2cc3d86ea",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+  "source_review_sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea",
+  "checks": [
+    "Three support tables each state one base, one hanger, four consoles; summary has 15 bases and 15 consoles.",
+    "No assumed 15 identical four-console installations or 45-console shortage.",
+    "Actionable application-schedule question retained; its observed source discrepancy is split into pending and must remain visible as context when rendered.",
+    "Unlike redundant recommendations attached to established defects, this question requests missing application mapping required for the actual check.",
+    "Search available layout and support application sources before requiring engineer to prepare a new schedule."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "final_release_completed": false
+}
