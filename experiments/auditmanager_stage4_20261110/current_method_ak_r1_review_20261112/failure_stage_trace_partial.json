@@ -1,0 +1,930 @@
+{
+  "status": "bounded_partial_coverage_trace",
+  "run": "ak_r1_classic_current",
+  "runtime_changed": false,
+  "production_changed": false,
+  "traces": [
+    {
+      "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+      "source_candidate": "T-022",
+      "evidence_indices": [
+        0,
+        1,
+        2
+      ],
+      "stage": "question_scope_after_context_review",
+      "established": "Общие ссылкиЭМ2-ПА/ЭМ-КЗ были найдены текстовым этапом. Повторная проверка подтвердила различие и привязкуЭМ2-ПА к шести шкафам, но оставила вопрос границЭМ-КЗ как needs_data. ВидимыйF-083 сохранил другую локальную пару21/24-ГК-К5-ЭМ/13АВ-РД-ЭМ-К5. Общая рекомендация согласовать ссылки не сохраняет все адресные основания исходного вопроса.",
+      "recommendation": "Выпускать согласованный вопрос о распределении комплектов с перечислением проверенных адресов и недоступной границы; не объявлять конфликт одного ввода без доказательства.",
+      "limit": "Не приравнивать различие шифров к отсутствию питания. Эталонная тема составная, её частичное покрытие не означает потерю всех находок о питании."
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+      "source_candidates": [
+        "G-038",
+        "G-039"
+      ],
+      "evidence_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "stage": "initial_candidate_scope_and_verification_scope",
+      "established": "Оба первичных кандидата включаютTS2 функциональной схемы иТС1 перечня/КЖ. Проверка сохраняет именно эти сравнения, дополнительных источников не требует. На внешней схеме блок30 первичные кандидаты касаютсяPDS, силового кабеля иTE, но неTS1 термостата. ИтогF-053 сохраняет исходный конфликт без четвёртой связиTS1 внешней схемы.",
+      "recommendation": "Проверять полноту реестра одного прибора по документам и адресной линии, а не только достаточность уже сформулированной пары. Сохранить полезный конфликтTS2/ТС1 независимо от успеха расширения.",
+      "limit": "В просмотренных этапах удаленияTS1 при объединении не обнаружено. Это ограниченное свидетельство неполного охвата, а не доказательство неверного чтения изображения или отсутствия этой связи во всех внутренних рассуждениях."
+    }
+  ],
+  "extracted_evidence": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "fa3c0992a0a6adaf45009245b46d1f5421d12e8dc104ae85c3f68a15f8751a8b",
+      "pointer": "/text_findings/21",
+      "value": {
+        "id": "T-022",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Общие данные, листы 2–4; реестр отклонений РД от ПД",
+        "finding": "Необходимо уточнить адресные ссылки комплекта: питание шкафов в описании приточных систем отнесено к 13АВ-РД-ЭМ2-ПА, а в разделе электропитания — к 13АВ-РД-ЭМ-КЗ; реестр отклонений данного комплекта содержит обозначение 13АВ-РД-АК-КЗ; описание теплого подпора ссылается на «лист 6 примера РД pdf» и «статью ПС». Следует заменить шаблонные и неоднозначные ссылки точными обозначениями действующих документов. Само распределение работ между АК, ОВ, ЭМ и АПС является нормальной проектной практикой.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_76e892431d7d4c48a09aba49a57b223c",
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_e1d470118a394e9a9e75718113a9b37d"
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_cefea27d8d926636_context.json",
+      "sha256": "fec0d709578f45eb5ee6f3fc35d947baead56f3c6730e6c2745126c3a7819875",
+      "pointer": "/candidate_decisions/0/subclaims/0",
+      "value": {
+        "id": "1",
+        "claim": "Питание шкафов отнесено к 13АВ-РД-ЭМ2-ПА и к 13АВ-РД-ЭМ-КЗ.",
+        "decision": "needs_data",
+        "reason": "Раздел 2.1 прямо указывает ЭМ2-ПА, раздел 8 — ЭМ-КЗ. На всех шести изображениях заголовки вводов питания содержат ссылку на ЭМ2-ПА: для ШАУВ-1–4-К4ПЧ, ШАУВ-1-К5ПЧ и ШАУВ-1-К6ПЧ; на схемах ШАУВ-3-К4ПЧ и ШАУВ-4-К4ПЧ показаны отдельные вводы I и II категорий. На листе 25 подпись вдоль питающей линии дополнительно ссылается на ЭМ-К4. Таким образом, различие ссылок подтверждено и привязка ЭМ2-ПА к конкретным шкафам уточнена. Однако схемы не устанавливают состав потребителей ЭМ-КЗ, отношения между указанными комплектами и границы их работ. Конфликт адресации одного потребителя именно между ЭМ2-ПА и ЭМ-КЗ и требуемая замена ссылки пока не установлены. Отсутствие этих сведений в ограниченной выборке не является опровержением кандидата или самостоятельным проектным дефектом.",
+        "source_refs": [
+          "blk_76e892431d7d4c48a09aba49a57b223c",
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_1c493988cdf14cee9ad351ef2e706470",
+          "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+          "blk_fcd31b6618d34e0f982af6c418e3bf37",
+          "blk_96ed7d88fb23414bb14d93191a89365a",
+          "blk_38e7d6593d7a422393e785455ec02cd6",
+          "blk_b8712be58c8b43f6ac75cfa6420d5479"
+        ],
+        "required_source_refs": [],
+        "required_context": [
+          "Перечни питаемых шкафов и границы проектирования комплектов 13АВ-РД-ЭМ2-ПА и 13АВ-РД-ЭМ-КЗ с привязкой к шкафам рассматриваемого комплекта АК2-ПА.",
+          "Пояснение взаимосвязи ссылок ЭМ2-ПА и ЭМ-К4 у ввода питания ШАУВ-1-К4ПЧ на листе 25."
+        ],
+        "target_finding_ids": [],
+        "context_queries": [
+          "13АВ-РД-ЭМ-КЗ",
+          "13АВ-РД-ЭМ2-ПА",
+          "13АВ-РД-ЭМ-К4",
+          "ШАУВ-2-К4ПЧ",
+          "ШАУВ-3-К4ПЧ",
+          "ШАУВ-4-К4ПЧ"
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+      "pointer": "/findings/82",
+      "value": {
+        "object_id": "О-06",
+        "operation": "document_links",
+        "severity": "medium",
+        "problem": "На листе 42 приведены разные обозначения раздела электропитания.",
+        "description": "У цепи питания БУРР-1М на схеме указан раздел 21/24-ГК-К5-ЭМ, а примечание 2 относит питающие и межблочные кабели к 13АВ-РД-ЭМ-К5. Связь этих обозначений или разделение их области применения не объяснены. Подтверждена локальная несогласованность адресации смежной документации. Наличие ошибки подключения, отсутствие питания и правильный вариант ссылки не установлены. Ссылка на диспетчеризацию 21/24-ГК-К5-АСУД.ИО также требует проверки применимости, но отдельный конфликт для нее не доказан.",
+        "solution": "Проверить действующие документы электропитания и согласовать ссылки листа 42. Если разделы обслуживают разные цепи, явно указать границы их применения.",
+        "page": 46,
+        "sheet": "42",
+        "evidence": [
+          {
+            "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+            "location": "Справа внизу, подпись у цепи питания 220 В.",
+            "quote": "21/24-ГК-К5-ЭМ"
+          },
+          {
+            "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+            "location": "Примечание 2.",
+            "quote": "Питающие и межблочные (между внутренними и наружными блоками) кабели прокладываются по разделу 13АВ-РД-ЭМ-К5;"
+          }
+        ],
+        "report_section": "technical_findings",
+        "operation_semantic_verified": false,
+        "source_finding_ids": [
+          "O-e9e6cc95cea24269bbcdb14b"
+        ],
+        "operation_candidate_lineage": [
+          {
+            "source_finding_id": "O-e9e6cc95cea24269bbcdb14b",
+            "status": "requires_semantic_review",
+            "source_claim": "problem: На листе 42 приведены разные обозначения раздела электропитания.\ndescription: У цепи питания БУРР-1М на схеме указан раздел 21/24-ГК-К5-ЭМ, а примечание 2 относит питающие и межблочные кабели к 13АВ-РД-ЭМ-К5. Связь этих обозначений или разделение их области применения не объяснены. Подтверждена локальная несогласованность адресации смежной документации. Наличие ошибки подключения, отсутствие питания и правильный вариант ссылки не установлены. Ссылка на диспетчеризацию 21/24-ГК-К5-АСУД.ИО также требует проверки применимости, но отдельный конфликт для нее не доказан.\nsolution: Проверить действующие документы электропитания и согласовать ссылки листа 42. Если разделы обслуживают разные цепи, явно указать границы их применения.",
+            "existing_block_ids": [
+              "blk_8de25b2b318647aeac8b3298fe03a98c",
+              "blk_400b84df0f63420ab16fb5c330de54b7"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "id": "F-083",
+        "source_stage": "object_operations_00f8f3860e636e3d",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "norm": null,
+        "norm_quote": null,
+        "quality": {
+          "practicality_score": 84,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "O-e9e6cc95cea24269bbcdb14b",
+            "source_claim": "problem: На листе 42 приведены разные обозначения раздела электропитания.\ndescription: У цепи питания БУРР-1М на схеме указан раздел 21/24-ГК-К5-ЭМ, а примечание 2 относит питающие и межблочные кабели к 13АВ-РД-ЭМ-К5. Связь этих обозначений или разделение их области применения не объяснены. Подтверждена локальная несогласованность адресации смежной документации. Наличие ошибки подключения, отсутствие питания и правильный вариант ссылки не установлены. Ссылка на диспетчеризацию 21/24-ГК-К5-АСУД.ИО также требует проверки применимости, но отдельный конфликт для нее не доказан.\nsolution: Проверить действующие документы электропитания и согласовать ссылки листа 42. Если разделы обслуживают разные цепи, явно указать границы их применения.",
+            "block_ids": [
+              "blk_8de25b2b318647aeac8b3298fe03a98c",
+              "blk_400b84df0f63420ab16fb5c330de54b7"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c",
+      "pointer": "/block_analyses/12/findings/4",
+      "value": {
+        "id": "G-038",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "finding": "Термостат защиты электронагревателя По5.1 на функциональной схеме, лист 17, обозначен TS2, тогда как в перечне приборов этого листа и кабельном журнале указан ТС1. Обозначения одного прибора не согласованы.\n\nРекомендация: Привести обозначение термостата на функциональной схеме, в перечне приборов и кабельном журнале к единой марке.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_66980560083f4bb483d5ce1f9c8156e2",
+        "value_found": "TS 2; ТС1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-038",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:005"
+          ],
+          "confidence": 1.0,
+          "reason": "Одинаковое расхождение марки термостата: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c",
+      "pointer": "/block_analyses/12/findings/5",
+      "value": {
+        "id": "G-039",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "finding": "Термостат защиты электронагревателя По5.1 обозначен на функциональной схеме, лист 17, как TS2, а в перечне приборов того же листа и кабельном журнале — как ТС1. Обозначения одного прибора не согласованы.\n\nРекомендация: Привести обозначение термостата к единой марке на функциональной схеме, в перечне приборов и кабельном журнале.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_66980560083f4bb483d5ce1f9c8156e2",
+        "value_found": "TS 2; ТС1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-039",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:005",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Одинаковое расхождение марки термостата: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c",
+      "pointer": "/block_analyses/30",
+      "value": {
+        "block_id": "blk_065a335469904b2db1640b480b321503",
+        "page": 39,
+        "sheet": "Лист 35",
+        "label": "",
+        "sheet_type": null,
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "not_enriched": false,
+        "coverage_status": "ready",
+        "analysis_status": "analyzed",
+        "context_source": "structured_alia_scheme",
+        "detectors_ok": [
+          "codex/gpt-6-astra",
+          "codex/gpt-6-astra"
+        ],
+        "detectors_failed": [],
+        "summary": "",
+        "key_values_read": [],
+        "evidence_text_refs": [],
+        "findings": [
+          {
+            "id": "G-073",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "Датчик перепада давления на вентиляторе Вос5.1 обозначен PDS5 на схеме внешних подключений, лист 35, и PDS45 в кабельном журнале, лист 19. Обозначения конечного устройства не согласованы.\n\nРекомендация: Привести обозначение датчика перепада давления Вос5.1 в кабельном журнале и на схеме к единой марке.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_065a335469904b2db1640b480b321503",
+            "value_found": "PDS5; PDS45",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-073",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:003",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:006"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение обозначения датчика Вос5.1: PDS5 на схеме и PDS45 в кабельном журнале. Указание кабеля Вос5.1-1 не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-074",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "Для кабеля Вос5.1-1 расходятся обозначения конечного устройства: на схеме внешних подключений, лист 35, указан PDS5, в кабельном журнале, лист 19, — PDS45.\n\nРекомендация: Привести обозначение датчика перепада давления на вентиляторе Вос5.1 к единому значению на схеме и в кабельном журнале.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_065a335469904b2db1640b480b321503",
+            "value_found": "Вос5.1-1: PDS5 на схеме; PDS45 в кабельном журнале.",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-074",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:006",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение обозначения датчика Вос5.1: PDS5 на схеме и PDS45 в кабельном журнале. Указание кабеля Вос5.1-1 не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-075",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "Для кабеля По5.1-9 к электронагревателю системы По5.1 указаны разные количество и сечение жил: на схеме внешних подключений, лист 35, — 3×2,5 мм², в кабельном журнале, лист 19, — 4×4,0 мм².\n\nРекомендация: Согласовать количество и сечение жил кабеля По5.1-9 со схемой питания электронагревателя и привести схему подключений и кабельный журнал к единому решению.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_065a335469904b2db1640b480b321503",
+            "value_found": "По5.1-9: ППГнг(A)-HF 3x2,5; в кабельном журнале — ППГнг(A)-HF 4x4,0.",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-075",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:004",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют расхождение кабеля питания электронагревателя По5.1: 3×2,5 мм² на листе 35 и 4×4,0 мм² в кабельном журнале, лист 19. Указание марки По5.1-9 не меняет сути и объёма проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-076",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "Для питания электронагревателя По5.1 указаны разные кабели: на схеме внешних подключений, лист 35, — 3×2,5 мм², в кабельном журнале, лист 19, — 4×4,0 мм². Число жил и сечение не согласованы.\n\nРекомендация: Уточнить кабель по параметрам и схеме питания электронагревателя и согласовать схему, ведомость кабелей и кабельный журнал.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_065a335469904b2db1640b480b321503",
+            "value_found": "ППГнг(A)-HF 3x2,5; ППГнг(A)-HF 4x4,0",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-076",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:001",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют расхождение кабеля питания электронагревателя По5.1: 3×2,5 мм² на листе 35 и 4×4,0 мм² в кабельном журнале, лист 19. Указание марки По5.1-9 не меняет сути и объёма проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-077",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "Кабель По5.1-1 на схеме внешних подключений шкафа ШАУВ-6-К5ПЧ, лист 35, подключён к датчику TE2, а в кабельном журнале, лист 19, его конечным устройством указан ТЕ1.\n\nРекомендация: Уточнить обозначение датчика, подключаемого кабелем По5.1-1, и согласовать его на схеме и в кабельном журнале.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_065a335469904b2db1640b480b321503",
+            "value_found": "По5.1-1: TE2 на схеме; ТЕ1 в кабельном журнале.",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-077",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:005",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно расхождение обозначения датчика температуры По5.1: TE2 на схеме и ТЕ1 в кабельном журнале. Марка По5.1-1 уточняет идентификацию той же линии.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-078",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "Датчик температуры приточного воздуха По5.1 обозначен TE2 на схеме внешних подключений, лист 35, и ТЕ1 в кабельном журнале, лист 19. Одна линия имеет разные обозначения конечного устройства.\n\nРекомендация: Согласовать позиционное обозначение датчика температуры По5.1 на схеме и в кабельном журнале.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_065a335469904b2db1640b480b321503",
+            "value_found": "TE2; ТЕ1",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-078",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "structured_alia_scheme"
+                }
+              ],
+              "context_source": "structured_alia_scheme"
+            },
+            "comparison_ref": "codex:002",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно расхождение обозначения датчика температуры По5.1: TE2 на схеме и ТЕ1 в кабельном журнале. Марка По5.1-1 уточняет идентификацию той же линии.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          }
+        ],
+        "evidence_gate": {
+          "schema_version": 1,
+          "candidates": 6,
+          "published": 6,
+          "deferred": 0,
+          "min_confidence": 0.8,
+          "max_published_per_block": null,
+          "reason_counts": {}
+        },
+        "deferred_findings": [],
+        "document_retrieval": {
+          "scope": "all_document_vector_text_other_pages",
+          "query_terms": [
+            "ШАУВ-6-К5ПЧ",
+            "TE2",
+            "Фрагмент",
+            "однолинейной",
+            "схемы",
+            "подключения",
+            "контроллера",
+            "датчикам",
+            "электродвигателям",
+            "исполнительным",
+            "механизмам",
+            "Включает",
+            "позиции",
+            "указанием",
+            "кабельных",
+            "трасс",
+            "номеров",
+            "клемм"
+          ],
+          "candidate_hits": 31,
+          "selected_hits": 6,
+          "selected_pages": [
+            5,
+            34,
+            58,
+            77,
+            78,
+            99
+          ],
+          "status": "hits"
+        },
+        "dual_review": {
+          "schema_version": 1,
+          "status": "ok",
+          "reviewer_model": "codex/gpt-6-astra",
+          "relationships": [
+            {
+              "left_ref": "codex:001",
+              "right_ref": "codex:004",
+              "relation": "match",
+              "extends": "none",
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют расхождение кабеля питания электронагревателя По5.1: 3×2,5 мм² на листе 35 и 4×4,0 мм² в кабельном журнале, лист 19. Указание марки По5.1-9 не меняет сути и объёма проблемы."
+            },
+            {
+              "left_ref": "codex:002",
+              "right_ref": "codex:005",
+              "relation": "match",
+              "extends": "none",
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно расхождение обозначения датчика температуры По5.1: TE2 на схеме и ТЕ1 в кабельном журнале. Марка По5.1-1 уточняет идентификацию той же линии."
+            },
+            {
+              "left_ref": "codex:003",
+              "right_ref": "codex:006",
+              "relation": "match",
+              "extends": "none",
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение обозначения датчика Вос5.1: PDS5 на схеме и PDS45 в кабельном журнале. Указание кабеля Вос5.1-1 не является существенным дополнением."
+            }
+          ],
+          "unmatched_refs": [],
+          "counts": {
+            "matches": 3,
+            "extensions": 0,
+            "new": 0,
+            "disputed": 0,
+            "gap_findings": 0
+          },
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "comparison_models": [
+            "codex/gpt-6-astra::leg:1",
+            "codex/gpt-6-astra::leg:2"
+          ]
+        }
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_462b47d52cd1cc17.json",
+      "sha256": "ff7074f57dca6e99e45ca94c37af6629a70df80d55a074cec58feb5cf670a53c",
+      "pointer": "/candidate_decisions/4",
+      "value": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/12/findings/4",
+        "source_id": "G-038",
+        "decision": "retained",
+        "reason": "Изображение показывает TS2 у нагревателя По5.1, перечень — один комплектный термостат ТС1, КЖ — ТС1 в конце По5.1-2. Конфликт номера позиции сохранён в F-055 вместе с G-039. Это техническое расхождение идентификации защитного прибора и подключения; F-053 относится к другой системе Пу5.1.",
+        "source_refs": [
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ],
+        "required_source_refs": [],
+        "target_finding_ids": [
+          "F-055"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "TS2 на функциональной схеме По5.1 расходится с ТС1 в перечне элементов.",
+            "decision": "retained",
+            "reason": "На изображении у электрического нагревателя По5.1 показан TS 2 с сигналом 6 защиты от перегрева. Перечень того же листа содержит один термостат ТС1 комплектно с электронагревателем. Подтверждено расхождение номера 2/1.",
+            "source_refs": [
+              "blk_66980560083f4bb483d5ce1f9c8156e2",
+              "blk_1bbcbe84761b4011af6e39b8fbbc3f3f"
+            ],
+            "required_source_refs": [],
+            "target_finding_ids": [
+              "F-055"
+            ]
+          },
+          {
+            "id": "1.1",
+            "claim": "Обозначение TS2 термостата По5.1 на схеме расходится с ТС1 в конце линии По5.1-2 КЖ.",
+            "decision": "retained",
+            "reason": "КЖ прямо относит По5.1-2 от ШАУВ-6-К5ПЧ к ТС1; функциональная схема того же шкафа и системы показывает TS2. Эта сторона адресного расхождения сохранена в F-055.",
+            "source_refs": [
+              "blk_66980560083f4bb483d5ce1f9c8156e2",
+              "blk_c63456cda51644db9470fb57f29b27de"
+            ],
+            "required_source_refs": [],
+            "target_finding_ids": [
+              "F-055"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_462b47d52cd1cc17.json",
+      "sha256": "ff7074f57dca6e99e45ca94c37af6629a70df80d55a074cec58feb5cf670a53c",
+      "pointer": "/candidate_decisions/5",
+      "value": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/12/findings/5",
+        "source_id": "G-039",
+        "decision": "retained",
+        "reason": "Все стороны сравнения проверены по изображению и исходному MD. Расхождение TS2/ТС1 объединено с G-038 в одном новом замечании F-055. Выбран technical_findings, поскольку затронута идентификация защитного термостата и его кабельного подключения.",
+        "source_refs": [
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ],
+        "required_source_refs": [],
+        "target_finding_ids": [
+          "F-055"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Термостат нагревателя По5.1 обозначен TS2 на схеме и ТС1 в перечне элементов.",
+            "decision": "retained",
+            "reason": "Символ TS 2 над нагревателем и строка одного комплектного термостата ТС1 непосредственно представлены. Конфликт номера позиции сохранён в F-055.",
+            "source_refs": [
+              "blk_66980560083f4bb483d5ce1f9c8156e2",
+              "blk_1bbcbe84761b4011af6e39b8fbbc3f3f"
+            ],
+            "required_source_refs": [],
+            "target_finding_ids": [
+              "F-055"
+            ]
+          },
+          {
+            "id": "1.1",
+            "claim": "Термостат нагревателя По5.1 обозначен TS2 на схеме и ТС1 в кабельном журнале.",
+            "decision": "retained",
+            "reason": "На схеме показан TS2 системы По5.1, а в КЖ строка По5.1-2 от того же шкафа задаёт ТС1. Этот аспект общего конфликта сохранён в F-055; различие латиницы и кириллицы не использовано как самостоятельный дефект.",
+            "source_refs": [
+              "blk_66980560083f4bb483d5ce1f9c8156e2",
+              "blk_c63456cda51644db9470fb57f29b27de"
+            ],
+            "required_source_refs": [],
+            "target_finding_ids": [
+              "F-055"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1",
+      "pointer": "/findings/52",
+      "value": {
+        "id": "F-053",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "problem": "Обозначение термостата По5.1 на функциональной схеме расходится с перечнем элементов и кабельным журналом.",
+        "description": "Первоначальное описание:\nНа функциональной схеме у электронагревателя По5.1 показан TS2, связанный с сигналом 6 защиты от перегрева. Перечень элементов того же листа предусматривает один комплектный термостат ТС1. В КЖ линия По5.1-2 от ШАУВ-6-К5ПЧ имеет конечное устройство ТС1. Подтверждено расхождение номера позиции 2/1 одного защитного прибора; различие алфавитов TS/ТС само по себе не является основанием замечания.\n\nДополнительная проверка:\nTS2 на функциональной схеме По5.1 расходится с ТС1 в перечне элементов.\nНа изображении у электрического нагревателя По5.1 показан TS 2 с сигналом 6 защиты от перегрева. Перечень того же листа содержит один термостат ТС1 комплектно с электронагревателем. Подтверждено расхождение номера 2/1.\n\nТермостат нагревателя По5.1 обозначен TS2 на схеме и ТС1 в перечне элементов.\nСимвол TS 2 над нагревателем и строка одного комплектного термостата ТС1 непосредственно представлены. Конфликт номера позиции сохранён в F-055.",
+        "source": "13АВ-РД-АК2-ПА, лист 17, термостат По5.1 и перечень элементов; 13АВ-РД-АК2-ПА.КЖ, лист 19, строка По5.1-2",
+        "page": 21,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Установить согласованную позицию термостата защиты от перегрева По5.1 и привести к ней функциональную схему, перечень элементов и конечное устройство линии По5.1-2.",
+        "risk": "Разные номера позиции затрудняют однозначное сопоставление защитного термостата с кабельным подключением при монтаже и наладке.",
+        "reason": "Установлен междокументный конфликт обозначения защитного прибора и адреса его подключения в пределах одной системы и шкафа, поэтому выбран technical_findings. F-053 относится к Пу5.1 и другому шкафу и не охватывает По5.1.",
+        "source_finding_ids": [
+          "G-038",
+          "G-039"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+            "type": "graphic",
+            "observation": "Над электрической нагревательной секцией По5.1 расположен символ TS 2. Его линия выведена к номеру 6; колонка 6 таблицы обозначает термостат защиты от перегрева теплообменника. Таблица относится к шкафу ШАУВ-6-К5ПЧ.",
+            "location": "Лист 17, верхняя левая часть, термостат над нагревателем По5.1; нижняя таблица, колонка 6 и строка шкафа"
+          },
+          {
+            "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+            "type": "text",
+            "quote": "| ТС1 | Термостат | 1 | (комплектно с электронагревателем) |",
+            "location": "Страница 21, лист 17, перечень элементов, строка ТС1"
+          },
+          {
+            "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+            "type": "text",
+            "quote": "| По5.1-2 | ШАУВ-6-К5ПЧ | ТС1 | КСПВПГнг(A)-HF | 1x2x0,75 | 10 | труба гофр. | КСПВПГнг(A)-HF 1x2x0,75 | 10 |  |",
+            "location": "Страница 77, КЖ, лист 19, раздел «Системы По5.1, Во5.1 и Вос5.1», строка По5.1-2"
+          }
+        ],
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_462b47d52cd1cc17",
+        "source_block_ids": [
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f"
+        ],
+        "recovery_addendum_base_signature": "54c0710fca41159dfb5aceb5ceae8036c1c57478956f603229bdb45c3a0fd7f5",
+        "recovery_addendum_snapshot_signatures": [
+          "54c0710fca41159dfb5aceb5ceae8036c1c57478956f603229bdb45c3a0fd7f5",
+          "79c984749bc84536394dddfca772f7d62a010287f861dd86ab4deae7fc0efe9d"
+        ],
+        "recovery_original_description": "На функциональной схеме у электронагревателя По5.1 показан TS2, связанный с сигналом 6 защиты от перегрева. Перечень элементов того же листа предусматривает один комплектный термостат ТС1. В КЖ линия По5.1-2 от ШАУВ-6-К5ПЧ имеет конечное устройство ТС1. Подтверждено расхождение номера позиции 2/1 одного защитного прибора; различие алфавитов TS/ТС само по себе не является основанием замечания.",
+        "recovery_addenda": [
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/12/findings/4",
+            "source_id": "G-038",
+            "claim_id": "1",
+            "claim": "TS2 на функциональной схеме По5.1 расходится с ТС1 в перечне элементов.",
+            "reason": "На изображении у электрического нагревателя По5.1 показан TS 2 с сигналом 6 защиты от перегрева. Перечень того же листа содержит один термостат ТС1 комплектно с электронагревателем. Подтверждено расхождение номера 2/1.",
+            "source_refs": [
+              "blk_66980560083f4bb483d5ce1f9c8156e2",
+              "blk_1bbcbe84761b4011af6e39b8fbbc3f3f"
+            ],
+            "source_types": {
+              "blk_66980560083f4bb483d5ce1f9c8156e2": "graphic",
+              "blk_1bbcbe84761b4011af6e39b8fbbc3f3f": "text"
+            },
+            "target_id": "F-055",
+            "target_signature": "54c0710fca41159dfb5aceb5ceae8036c1c57478956f603229bdb45c3a0fd7f5",
+            "semantic_verified": false,
+            "id": "a6ad7f565be54f720f32c595bcbc8e86fc35aa75d8f3817034c374425f475a09",
+            "reported_target_id": "F-055",
+            "reported_target_signature": "54c0710fca41159dfb5aceb5ceae8036c1c57478956f603229bdb45c3a0fd7f5"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/12/findings/5",
+            "source_id": "G-039",
+            "claim_id": "1",
+            "claim": "Термостат нагревателя По5.1 обозначен TS2 на схеме и ТС1 в перечне элементов.",
+            "reason": "Символ TS 2 над нагревателем и строка одного комплектного термостата ТС1 непосредственно представлены. Конфликт номера позиции сохранён в F-055.",
+            "source_refs": [
+              "blk_66980560083f4bb483d5ce1f9c8156e2",
+              "blk_1bbcbe84761b4011af6e39b8fbbc3f3f"
+            ],
+            "source_types": {
+              "blk_66980560083f4bb483d5ce1f9c8156e2": "graphic",
+              "blk_1bbcbe84761b4011af6e39b8fbbc3f3f": "text"
+            },
+            "target_id": "F-055",
+            "target_signature": "54c0710fca41159dfb5aceb5ceae8036c1c57478956f603229bdb45c3a0fd7f5",
+            "semantic_verified": false,
+            "id": "9325a15312566bd6062570c6fa6089a0cc1ca04790c315f3be5ff2a2fa412be7",
+            "reported_target_id": "F-055",
+            "reported_target_signature": "54c0710fca41159dfb5aceb5ceae8036c1c57478956f603229bdb45c3a0fd7f5"
+          }
+        ],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-038",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-039",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Одинаковое расхождение марки термостата: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Одинаковое расхождение марки термостата: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 17",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 72,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      }
+    }
+  ],
+  "evaluation_change": null
+}
