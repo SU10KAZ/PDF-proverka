@@ -1,0 +1,26 @@
+{
+  "finding_id": "F-043",
+  "status": "polarity_conflict_preserved_recommendation_split_requires_consolidation",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_043/publication_projection.json",
+  "projection_sha256": "9ce9320ad44cf1d1dc0e619e2e6cc5e9b4cb65ffad01b482542864c5141ef5f3",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_polarity_and_symbol_review_20261112.json",
+  "source_review_sha256": "98bc26641d8a59e57a1d42f9cf392cfc3452ae061559407d9131073831196fb2",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+      "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+      "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Сохранены обе ветви PDS3/Ва3.1 и PDS4/Ва3.1р: минус на нагнетании слева, плюс на всасывании справа, при ΔP=100 Па.",
+    "Расхождение полярности не превращено в доказанный фактический отказ автоматики.",
+    "Вопрос-рекомендация относится к тому же конфликту и требует присоединения к итоговому замечанию.",
+    "Физическая перестановка импульсных линий не предписана без проверки документации оборудования."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
