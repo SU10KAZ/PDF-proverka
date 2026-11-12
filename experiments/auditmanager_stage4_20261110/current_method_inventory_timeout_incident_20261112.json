@@ -1,0 +1,112 @@
+{
+  "status": "terminal_transport_failure_inspected",
+  "trial_sha256": "8fc6b900edca76cd59b81e5602bc7be5ae84ce18f8c697811ddd3fe3bbc274dc",
+  "failed_slot": {
+    "work": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory",
+    "variant": "inventory",
+    "discipline": "AK",
+    "repeat": 1,
+    "input_manifest_sha256": "32e91738a0338f5021cb4fd73021700930669936f8d4d673d1abc1dc2cfc529f",
+    "status": "terminal",
+    "started": 1794470363.6433477,
+    "pid": 1430492,
+    "exit_code": 1,
+    "finished": 1794476282.2067466,
+    "execution_status": "failed",
+    "status_sha256": "c3ce57aa1a99d3fd6a80c91f3c9bd83aa0bcd038af42862944478b919ee828ff"
+  },
+  "request": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/requests/AK/1794473561216786342/request.json",
+    "sha256": "4200d413fdcb0a48ddf829951148132efc950edaa03a80f72322fc30b70d63dd"
+  },
+  "attempts": [
+    {
+      "timestamp": 1794474461.3155942,
+      "stage": "source_review_object_inventory_000",
+      "model": "codex/gpt-6-astra",
+      "reported_model": "codex/gpt-6-astra",
+      "cost_source": "subscription",
+      "attempt": 1,
+      "is_error": true,
+      "retry_reason": "codex_json_not_found",
+      "next_delay_seconds": 10,
+      "retry_budget_exhausted": false,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0,
+        "duration_ms": 900093
+      }
+    },
+    {
+      "timestamp": 1794475371.4012072,
+      "stage": "source_review_object_inventory_000",
+      "model": "codex/gpt-6-astra",
+      "reported_model": "codex/gpt-6-astra",
+      "cost_source": "subscription",
+      "attempt": 2,
+      "is_error": true,
+      "retry_reason": "codex_json_not_found",
+      "next_delay_seconds": 10,
+      "retry_budget_exhausted": false,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0,
+        "duration_ms": 900077
+      }
+    },
+    {
+      "timestamp": 1794476281.5005515,
+      "stage": "source_review_object_inventory_000",
+      "model": "codex/gpt-6-astra",
+      "reported_model": "codex/gpt-6-astra",
+      "cost_source": "subscription",
+      "attempt": 3,
+      "is_error": true,
+      "retry_reason": "codex_json_not_found",
+      "next_delay_seconds": null,
+      "retry_budget_exhausted": true,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0,
+        "duration_ms": 900090
+      }
+    }
+  ],
+  "responses": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/requests/AK/1794473561216786342/response_1.json",
+      "sha256": "b9a8880bdc693913f3d5c0464d10238574f80548331e2857a8ad2f7e1159e411",
+      "error": "codex_exec_exit_-1; codex_json_not_found"
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/requests/AK/1794473561216786342/response_2.json",
+      "sha256": "4bf6015dc990256f2f798793e50da5a7d711e794d48fffc5ed145663847ec078",
+      "error": "codex_exec_exit_-1; codex_json_not_found"
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/requests/AK/1794473561216786342/response_3.json",
+      "sha256": "96230591990adb9bf0402ceee2cb6ceb9256386233c7110cc9f56b619e6f9115",
+      "error": "codex_exec_exit_-1; codex_json_not_found"
+    }
+  ],
+  "observed": "All three responses contain thread/turn started events only; no substantive model response or JSON. Each ended at approximately900 seconds.",
+  "decision": "Preserve unsuccessful inventory slot and its resource cost. Continue52 untouched frozen slots with unchanged model, algorithm, retry limit and request timeout. No automatic replacement or retry of failed slot.",
+  "comparability_limits": [
+    "Continuation is an orchestration amendment after terminal inspection; initial failure remains in reliability/time accounting.",
+    "Remaining slots retain frozen order, inputs and source capsule.",
+    "Completion of remaining slots cannot be claimed as54 successful audits; failed slot requires separately documented resolution."
+  ],
+  "production_changed": false
+}
