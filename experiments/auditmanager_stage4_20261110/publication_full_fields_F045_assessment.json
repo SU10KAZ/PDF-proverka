@@ -1,0 +1,24 @@
+{
+  "finding_id": "F-045",
+  "status": "unproved_command_error_removed_question_recommendation_split_remains",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_045/publication_projection.json",
+  "projection_sha256": "3cc65b0ec09c171fdddd85ca032c29b391b0563649fac348da1997641b00d490",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+      "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+      "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Непосредственно проверена позиция 17 системы П5.1.3: подпись пуск/стоп, точка DI, пустая DO.",
+    "Как и в F037/F041, эта подпись сама по себе не доказывает выходную команду; техническое обвинение корректно заменено вопросом.",
+    "Второй вопрос — рекомендация к тому же уточнению, отдельного действия/дефекта не добавляет. Объединить при выдаче.",
+    "Фактическая ошибка монтажа и обязательная замена DI на DO не утверждаются."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

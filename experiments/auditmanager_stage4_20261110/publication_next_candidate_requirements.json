@@ -70,6 +70,23 @@
         "Conditional actual procurement risks are not automatic engineer queries"
       ],
       "verification": "Final rendered report must retain explicit question and unresolved evidence status; no universal pending-to-question conversion. Include preservation and workload checks."
+    },
+    {
+      "id": "PUB-07",
+      "behavior": "Before a graphic-symbol defect verdict, independently read the symbol, lines crossing its boundary and same-sheet legend without the candidate wording. Keep model observations untrusted and bind them to the image; reconcile against the image before final admission. Do not equate a connected sensor line with an internal equipment symbol.",
+      "negative_cases": [
+        "F-040: TS1 line repeatedly mistaken for an electric-heater lightning symbol"
+      ],
+      "positive_controls": [
+        "Same sheet F-006: pressure range and quantity conflicts must survive; no whole-image or whole-finding blanket suppression.",
+        "Source-only reading must still recognize the separately depicted electric heater and its legend example."
+      ],
+      "verification": "Two-pass publication F040 running; then verify surviving F006 clauses and final rendering. Repeat on other sheets before general adoption.",
+      "evidence_paths": [
+        "experiments/auditmanager_stage4_20261110/heater_source_reading_assessment.json",
+        "experiments/auditmanager_stage4_20261110/publication_heater_reading_dispatch.json"
+      ],
+      "limits": "Initial source-only shape distinction passed locally; final publication improvement and preserved-positive pair not yet proven."
     }
   ],
   "sealed_queue_modified": false,
