@@ -1316,12 +1316,17 @@
     },
     {
       "target_id": "ITP_F003_main_circuit_components:52cbecb1ef185b3847ce",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pressure_relationship_coverage_gaps.json",
+          "sha256": "ca20a26724aca14324766b54dc722457f0ccedfce84950882739bb2c318b49ff"
+        }
+      ],
+      "reason": "Schematic17.5/17.9kgf/cm2and components63/96/103PN16support source-bound reconciliation. FinalF004/F006cover exchangers/pumps, not these components. PNis not a temperature-dependent allowable pressure curve; local regimes and actual maximum at each component remain uncalculated.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F004_safety_valve_setpoints:d5f708be41c1a1f2266c",
@@ -1631,12 +1636,17 @@
     },
     {
       "target_id": "ITP_F001_heat_exchanger_pressure:composite:1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pressure_relationship_coverage_gaps.json",
+          "sha256": "ca20a26724aca14324766b54dc722457f0ccedfce84950882739bb2c318b49ff"
+        }
+      ],
+      "reason": "K3identity and16kgf/cm2rating appear inF004, but only compared to primary17.4bar. F008compares secondary16.3bar toK11pump16bar. Neither compares K3secondary design15.69064bar with zone3AUPD16.3bar. Shared system/rating numbers do not preserve the missing relationship.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F001_heat_exchanger_pressure:composite:2",
@@ -1663,12 +1673,26 @@
     },
     {
       "target_id": "ITP_F001_heat_exchanger_pressure:composite:3",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pressure_relationship_coverage_gaps.json",
+          "sha256": "ca20a26724aca14324766b54dc722457f0ccedfce84950882739bb2c318b49ff"
+        }
+      ],
+      "reason": "F004linksK1/K3/K8ratings to primary-loop pressure and distinguishes design/test/flange classes. It preserves17.5/17.9as ambiguousPZatm and bases conclusion onAUPD17.4bar. The precise schematic17.5/17.9kgf/cm2comparison is missing; same broad primary-pressure relationship warrants partial rather than absent coverage.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-004": "technical_findings"
+        },
+        "limit": "Correct route does not restore missing source-specific pressure comparison."
+      }
     },
     {
       "target_id": "ITP_F004_safety_valve_setpoints:composite:1",
@@ -1695,12 +1719,17 @@
     },
     {
       "target_id": "ITP_F004_safety_valve_setpoints:composite:2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pressure_relationship_coverage_gaps.json",
+          "sha256": "ca20a26724aca14324766b54dc722457f0ccedfce84950882739bb2c318b49ff"
+        }
+      ],
+      "reason": "Specification40is20bar/GVSzone3; K17individual technical maximum16bar. F007comparesK17toGVShead, whileF009comparesvalve45toK11. Neither preserves valve40/K17comparison or request to establish protection boundaries. Do not infer failed protection of all equipment.",
+      "section_assessment": "not_applicable"
     }
   ],
   "limits": "Incremental target matching.74bounded reviews do not establish complete claim adjudication. Unchecked targets are not misses. Evaluation contract overrides inherited preparation flags; all87 original targets retained. No finalized quality score.",
