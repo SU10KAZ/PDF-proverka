@@ -1,0 +1,31 @@
+{
+  "finding_id": "F-083",
+  "status": "linked_graphic_inspected_identity_unresolved",
+  "source_manifest": "experiments/auditmanager_stage4_20261110/publication_f083_linked_graphic_evidence/manifest.json",
+  "review_route": "Direct visual inspection of GRAPHIC bbox; authoritative MD TEXT read separately, no PDF text extraction or OCR correction.",
+  "observations": [
+    {
+      "source": "GRAPHIC 4EX9-PFA3-NYP, page 16, sheet 12",
+      "fact": "К6.1-А YCJ-RS002 connects through Адаптер1 and Адаптер2 to internal units К6.1 and К6.2.",
+      "limit": "The inspected connection graphic does not assign these units to rooms 6.Т.5 or 6.Т.9."
+    },
+    {
+      "source": "TEXT 7K3W-WQR9-YKH",
+      "fact": "Drawing index names sheet 12 as external connections of split systems К6.1, К6.2."
+    },
+    {
+      "source": "TEXT 9HCN-CCFJ-QAA",
+      "fact": "Room schedule contains 6.Т.5 at 11.20 m² and 6.Т.9 at 8.80 m².",
+      "limit": "Room areas do not establish equipment identity or compatible issue dates."
+    }
+  ],
+  "decision": "Keep the original F-083 pending. Neither a cross-document contradiction nor an obligation to rename К5.3/К5.4 is established by this added source.",
+  "not_proven": [
+    "К6.1/К6.2 are the same physical units as К5.3/К5.4 in the original graphic",
+    "Compared document revisions are mutually applicable",
+    "Short marks must be unique across all room-separated groups"
+  ],
+  "next_evidence_needed": "An equipment location/cable schedule tying both sets of marks to the same room and endpoints, with compatible revision scope.",
+  "stage4_complete": false,
+  "production_acceptance": false
+}

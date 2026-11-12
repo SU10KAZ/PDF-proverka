@@ -1,0 +1,20 @@
+{
+  "md_path": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v003/02_work/document.md",
+  "md_sha256": "82d2c85f40fe752ee18e9657b86e34e05ce65440012f417dfe99805d5676fb93",
+  "pdf_path": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v003/02_work/document.pdf",
+  "pdf_sha256": "c380a5ccaa74d64aa514ee546236cbd9c044ef50617600254b03f3edd2eacf9c",
+  "blocks_sha256": "8e78ac120e194d50a0db94784fa9706eb5a842dc570df84057ce1ade548825f4",
+  "block_id": "4EX9-PFA3-NYP",
+  "page_index_zero_based": 15,
+  "sheet": "12",
+  "graphic_bbox_norm": [
+    0.12812248186946013,
+    0.10655270655270656,
+    0.782030620467365,
+    0.6814814814814815
+  ],
+  "image_path": "/tmp/auditmanager_f083_linked_graphic_20261112/AKK6_sheet12.png",
+  "image_sha256": "a35c85b1b6d6a4eb56d4dc0bbe30ad80f274ab6f78465f23560fe7c0174b4892",
+  "purpose": "Inspect GRAPHIC connections only; no TEXT correction or re-extraction.",
+  "archived_image_path": "experiments/auditmanager_stage4_20261110/publication_f083_linked_graphic_evidence/AKK6_sheet12.png"
+}
