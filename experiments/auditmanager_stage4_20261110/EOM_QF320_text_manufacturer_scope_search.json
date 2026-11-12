@@ -1,0 +1,201 @@
+{
+  "version": 1,
+  "control": "H06-P02",
+  "source": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/document.md",
+    "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+  },
+  "search_scope": {
+    "text_blocks": 123,
+    "graphic_descriptions_included": false,
+    "pdf_text_reextracted": false
+  },
+  "queries": {
+    "manufacturer": {
+      "regex": "DEKraft|EKF|ЭКФ|ДЕКРАФТ",
+      "matched_lines": 34,
+      "hits": [
+        {
+          "block_id": "blk_54ee6784647e49ae86ad9fd46e7082e3",
+          "line": "3. Внутрищитовое оборудование применить DEKraft или EKF."
+        },
+        {
+          "block_id": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "line": "3. Внутрищитовое оборудование применить DEKraft или EKF."
+        },
+        {
+          "block_id": "blk_64d6bb891f7e46e6aab06f1d118e1bea",
+          "line": "1. Щит индивидуального изготовления, корпус (оболочка) щита металлический, навесного (поверхностного) исполнения, со степенью защиты IP31, производителя Dekraft, при необходимости размеры уточнить при сборке."
+        },
+        {
+          "block_id": "blk_300382e5b898475aad209cc62cf68d58",
+          "line": "1. Щит индивидуального изготовления, корпус (оболочка) щита металлический, навесного (поверхностного) исполнения, со степенью защиты IP31, производителя Dekraft, при необходимости размеры уточнить при сборке."
+        },
+        {
+          "block_id": "blk_92045ac5392a45aebd0efac423a43fdf",
+          "line": "1. Щит индивидуального изготовления, корпус (оболочка) щита металлический, навесного (поверхностного) исполнения, со степенью защиты IP31, производителя Dekraft, при необходимости размеры уточнить при сборке."
+        },
+        {
+          "block_id": "blk_9d136cd00b634d6ebfb2c450f4afad8c",
+          "line": "1. Щит индивидуального изготовления, корпус (оболочка) щита металлический, навесного (поверхностного) исполнения, со степенью защиты не менее IP54, аппаратной вместимостью не менее 36 модуля(ей) (один модуль равен 18мм), производителя DEKraft, размеры 520x300x120мм, при необходимости размеры уточнить при сборке."
+        },
+        {
+          "block_id": "blk_9d136cd00b634d6ebfb2c450f4afad8c",
+          "line": "2. Внутрешитовые коммутационные аппараты комплектуется оборудованием производителя DEKraft."
+        },
+        {
+          "block_id": "blk_3e3c5ece56bd4622a52dd2de301562a5",
+          "line": "1. Щит индивидуального изготовления, корпус (оболочка) щита металлический, навесного (поверхностного) исполнения, со степенью защиты не менее IP54, аппаратной вместимостью не менее 36 модуля(ей) (один модуль равен 18мм), производителя DEKraft, размеры 520x300x120мм, при необходимости размеры уточнить при сборке."
+        },
+        {
+          "block_id": "blk_3e3c5ece56bd4622a52dd2de301562a5",
+          "line": "2. Внутрешитовые коммутационные аппараты комплектуется оборудованием производителя DEKraft."
+        },
+        {
+          "block_id": "blk_49e2914a00634fe6869970613f9bc4ca",
+          "line": "1. Щит индивидуального изготовления, корпус (оболочка) щита металлический, навесного (поверхностного) исполнения, со степенью защиты не менее IP54, аппаратной вместимостью не менее 36 модуля(ей) (один модуль равен 18мм), производителя DEKraft, размеры 520x300x120мм, при необходимости размеры уточнить при сборке."
+        },
+        {
+          "block_id": "blk_49e2914a00634fe6869970613f9bc4ca",
+          "line": "2. Внутрешние коммутационные аппараты комплектуются оборудованием производителя DEKraft."
+        },
+        {
+          "block_id": "blk_4638622aac5646e5b61bc689463e15c2",
+          "line": "|  | Вводное распределительное устройство ВРУ-2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | компл. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_4638622aac5646e5b61bc689463e15c2",
+          "line": "|  | Вводное распределительное устройство ВРУ-3 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | компл. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_4638622aac5646e5b61bc689463e15c2",
+          "line": "|  | Вводное распределительное устройство ВРУ-К | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | компл. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_4638622aac5646e5b61bc689463e15c2",
+          "line": "|  | Щит учета электроэнергии навесной ЗЩУЭРН2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 6 |  |  |"
+        },
+        {
+          "block_id": "blk_4638622aac5646e5b61bc689463e15c2",
+          "line": "|  | Щит учета электроэнергии навесной ЗЩУЭРН7 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 3 |  |  |"
+        },
+        {
+          "block_id": "blk_4638622aac5646e5b61bc689463e15c2",
+          "line": "|  | Щит учета электроэнергии навесной 2ЩУЭРН2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 9 |  |  |"
+        },
+        {
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "line": "|  | Щит квартирный учета электроэнергии навесной 3ЩКВ | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 63 |  |  |"
+        },
+        {
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "line": "|  | Щит квартирный учета электроэнергии навесной 2ЩКВ | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 27 |  |  |"
+        },
+        {
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "line": "|  | Щит вентиляции навесной 2ЩРОВ1 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "line": "|  | Щит вентиляции навесной 2ЩРОВ2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "line": "|  | Щит силовой навесной 1.ЩС | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "line": "|  | Щит силовой управляющей компании навесной 1.ЩС-УК | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "line": "|  | Щит рабочего освещения навесной 1.ЩО-1 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "line": "|  | Щит рабочего освещения управляющей компании навесной 1.ЩО-1-УК | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "line": "|  | Щит слаботочных систем навесной 2ЩСС1 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_af87003578d3440a9be734a66a09af90",
+          "line": "|  | Щит вентиляции навесной ЗЩРОВ2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_af87003578d3440a9be734a66a09af90",
+          "line": "|  | Щит аварийного освещения навесной 1ЩАО | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |"
+        },
+        {
+          "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+          "line": "|  | Розетка одноместная с зазем. контактом, с защит. шторками, IP44, 16А, встраиваемая, белая. |  | ATN440146 | DEKraft | шт. | 6 |  |  |"
+        },
+        {
+          "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+          "line": "|  | Рамка однопостовая, белая. |  | ATN440101 | DEKraft | шт. | 6 |  |  |"
+        },
+        {
+          "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+          "line": "|  | Розетка одноместная с зазем. контактом, с защит. шторками, IP20, 16А, встраиваемая, карбон. |  | ATN001043 | DEKraft | шт. | 56 |  | Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF) |"
+        },
+        {
+          "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+          "line": "|  | Рамка однопостовая, карбон. |  | ATN001001 | DEKraft | шт. | 51 |  | Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF) |"
+        },
+        {
+          "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+          "line": "|  | Рамка двухпостовая, карбон. |  | ATN440102 | DEKraft | шт. | 5 |  | Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF) |"
+        },
+        {
+          "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+          "line": "|  | Коробка установочная d65 глубина 60мм подрозетник глубокий по бетону |  |  | DEKraft | шт. | 72 |  |  |"
+        }
+      ]
+    },
+    "device_series": {
+      "regex": "(?:ВА|BA)[ -]?301",
+      "matched_lines": 0,
+      "hits": []
+    },
+    "release_series": {
+      "regex": "(?:РН|RN)[ -]?300",
+      "matched_lines": 0,
+      "hits": []
+    },
+    "catalogue_articles": {
+      "regex": "28002|28003|28022",
+      "matched_lines": 0,
+      "hits": []
+    },
+    "circuit_address": {
+      "regex": "QF3[.,]20|[СC]2320",
+      "matched_lines": 1,
+      "hits": [
+        {
+          "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+          "line": "| C2320 | Фанкойлы квартирных коридоров МОП С2 | 0,40 | 0,40 | 2,0 | 0,90 | 0,44 |"
+        }
+      ]
+    },
+    "release_word": {
+      "regex": "расцепител",
+      "matched_lines": 0,
+      "hits": []
+    }
+  },
+  "assessment": {
+    "assembly_row": "Specification TEXT block blk_4638622aac5646e5b61bc689463e15c2 names DEKraft for the complete VRU-2 assembly. This is relevant manufacturer evidence, but does not fix the breaker/accessory articles or pole count.",
+    "local_note": "TEXT block blk_54ee6784647e49ae86ad9fd46e7082e3 permits DEKraft or EKF for internal equipment. The assembly row does not automatically override that note.",
+    "scope_control": "TEXT block blk_9d136cd00b634d6ebfb2c450f4afad8c requires DEKraft switching equipment for a different ventilation panel; do not transfer that requirement to VRU-2/QF3.20.",
+    "remaining": "The selected QF3.20 and release articles/pole execution remain unresolved. Preserve the addressable question; no incompatibility finding or general filter acceptance."
+  },
+  "limits": [
+    "Literal query absence is bounded to supplied authoritative TEXT and listed expressions; it does not prove absence in drawings, other wording or external fabrication documents.",
+    "Graphic observations remain those of the prior same-version reviews; no new raster interpretation was performed.",
+    "Specification manufacturer of an assembly does not uniquely identify each internal component."
+  ],
+  "stage4_control_closed": false,
+  "runtime_changed": false,
+  "model_calls": 0
+}
