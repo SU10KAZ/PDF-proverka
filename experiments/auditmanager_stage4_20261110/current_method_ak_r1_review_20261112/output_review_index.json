@@ -1,0 +1,2027 @@
+{
+  "status": "complete_output_index_with_explicit_review_gaps",
+  "run": "ak_r1_classic_current",
+  "source": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+  },
+  "summary": {
+    "output_rows": 88,
+    "rows_with_some_reviewed_claim": 72,
+    "rows_without_target_or_additional_review": 16,
+    "whole_output_precision_established": false
+  },
+  "priority_unreviewed_rows": [
+    "F-001",
+    "F-002",
+    "F-004",
+    "F-005",
+    "F-020",
+    "F-021",
+    "F-026",
+    "F-045",
+    "F-055",
+    "F-058",
+    "F-059",
+    "F-069",
+    "F-073",
+    "F-075",
+    "F-082",
+    "F-088"
+  ],
+  "rows": [
+    {
+      "finding_id": "F-001",
+      "output_pointer": "/findings/0",
+      "problem": "Не подтверждено оконечивание линий RS-485 резисторами 120 Ом.",
+      "report_section": "questions",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-002",
+      "output_pointer": "/findings/1",
+      "problem": "Не подтверждено соблюдение ограничения 90 м для стационарных медных линий Ethernet Cat5e.",
+      "report_section": "questions",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-003",
+      "output_pointer": "/findings/2",
+      "problem": "Требуется уточнить обозначение ГОСТ 21.4.08-2013.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_id": "F-003",
+          "issue": "Unnecessary OCR uncertainty despite authoritative TEXT",
+          "evidence": "Description asks to distinguish document error from recognition error, solution asks to compare original.",
+          "limits": "Record as extra burden and source-authority mismatch; core literal reference question remains found."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-004",
+      "output_pointer": "/findings/3",
+      "problem": "Название СП 7.13130.2013 приведено без указания требований пожарной безопасности.",
+      "report_section": "questions",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-005",
+      "output_pointer": "/findings/4",
+      "problem": "Требуется подтвердить применимость ГН 2.2.5.1313-03 к обоим порогам управления вентиляцией автостоянки.",
+      "report_section": "questions",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-006",
+      "output_pointer": "/findings/5",
+      "problem": "Ссылка «ТУ-газ-86» не позволяет однозначно проверить основание высоты установки газоанализаторов.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F029_CO_reference_and_parameter_scope:7267cc07801d121c1339",
+          "coverage": "partial",
+          "section_assessment": "unchecked"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-007",
+      "output_pointer": "/findings/6",
+      "problem": "В указаниях по заземлению требуется уточнить номер главы ПУЭ.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-008",
+      "output_pointer": "/findings/7",
+      "problem": "В перечне функций и рабочем алгоритме защиты калорифера указаны разные контролируемые температуры воздуха.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F026_protection_boolean_condition:04fa5c0cbbedc7704f59",
+          "coverage": "partial",
+          "section_assessment": "unchecked"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_id": "F-008",
+          "issue": "Related issue must not substitute for boolean-condition target",
+          "evidence": "F-008 compares outdoor/post-heater temperature, but does not preserve reverse-water≤20 OR outdoor≤3 and independent sufficiency of outdoor condition.",
+          "limits": "AK_F026 remains unchecked until entire output review; not yet recorded absent."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-009",
+      "output_pointer": "/findings/8",
+      "problem": "В описании управления тёплым подпором и спецификации предусмотрены разные типы датчиков температуры.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F027_sensor_interface_scope:3eb9cafbfcfd6a395bee",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-009",
+            "F-085"
+          ],
+          "issue": "Fifth same-object same-proposition duplicate pair",
+          "evidence": "Same Спрут Т-06 / МВТ3280 NTC10К equipment discrepancy; F-085 adds AI context, and both descriptions explicitly say no new finding required.",
+          "limits": "AI context should be preserved if later merged; no live trial changes."
+        }
+      ],
+      "duplicate_topic_pairs": [
+        [
+          "F-009",
+          "F-085"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-010",
+      "output_pointer": "/findings/9",
+      "problem": "Перечень элементов и спецификация задают разное распределение датчиков давления по диапазонам для ШАУВ-4-К4ПЧ.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK57:a998dcf058f81b7ac194",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-010",
+            "F-043",
+            "F-046",
+            "F-047",
+            "F-049"
+          ],
+          "issue": "Repeated recovery explanations remain in visible description",
+          "implication": "Отдельно оценить дублирующую нагрузку; это не новые независимые дефекты и не потеря подтверждённого факта."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-011",
+      "output_pointer": "/findings/10",
+      "problem": "В перечнях элементов листов 14 и 20 для двух датчиков ТЕ3, ТЕ4 указано количество 1.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+          "coverage": "full",
+          "section_assessment": "incorrect"
+        },
+        {
+          "target_id": "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
+          "coverage": "full",
+          "section_assessment": "incorrect"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_id": "F-011",
+          "issue": "Output-section disagreement with frozen evaluator",
+          "targets": [
+            "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+            "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6"
+          ],
+          "evidence": "Factual quantity conflict fully retained, routed to questions instead of technical. Model rationale: procurement and connections already include both sensors.",
+          "implication": "Record section disagreement without changing frozen evaluator during trial; no defect-recall loss."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-012",
+      "output_pointer": "/findings/11",
+      "problem": "Для ШАУВ-2-К4ПЧ спецификация и перечень элементов задают разное количество датчиков наружного воздуха.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-013",
+      "output_pointer": "/findings/12",
+      "problem": "Для ШАУВ-4-К4ПЧ спецификация предусматривает два накладных датчика температуры, а перечень элементов — один.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-014",
+      "output_pointer": "/findings/13",
+      "problem": "Назначения двигателей М2 и М4 в перечне элементов противоречат функциональной схеме Па3.1/Ва3.1.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
+          "coverage": "full",
+          "section_assessment": "correct"
+        },
+        {
+          "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_id": "F-014",
+          "issue": "Additional claim beyond frozen source scope",
+          "evidence": "Дополнительная проверка называет M4 резервным вытяжным вентилятором; эталон подтверждает назначение вентилятора, но резервность не устанавливает.",
+          "implication": "Narrow motor-purpose conflict matches; reserve-role assertion is not accepted by this match."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-015",
+      "output_pointer": "/findings/14",
+      "problem": "Двигатель М5 системы Па3.1 показан на схеме и подключён по кабельному журналу, но отсутствует в перечне элементов.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-016",
+      "output_pointer": "/findings/15",
+      "problem": "Для линии П4.1.3-9 в кабельном журнале указаны два разных сечения.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-017",
+      "output_pointer": "/findings/16",
+      "problem": "На листах 7–8 кабельного журнала повторены семь маркировок, причём для пяти линий различается распределение длины.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
+          "coverage": "partial",
+          "section_assessment": "unchecked"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "issue": "Repeated cable-set totals not explicitly retained",
+          "finding_ids": [
+            "F-017",
+            "F-018"
+          ],
+          "evidence": "All seven/14 line identities and lengths retained, but no explicit 165/210 m aggregate; scored partial rather than absence.",
+          "limits": "These totals are not proven overpurchase; no filter credit."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-018",
+      "output_pointer": "/findings/17",
+      "problem": "На листах 25 и 26 кабельного журнала повторены одни и те же 14 записей линий.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
+          "coverage": "partial",
+          "section_assessment": "unchecked"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "issue": "Repeated cable-set totals not explicitly retained",
+          "finding_ids": [
+            "F-017",
+            "F-018"
+          ],
+          "evidence": "All seven/14 line identities and lengths retained, but no explicit 165/210 m aggregate; scored partial rather than absence.",
+          "limits": "These totals are not proven overpurchase; no filter credit."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-019",
+      "output_pointer": "/findings/18",
+      "problem": "Для ШАУВ-2-К4ПЧ таблица кабелей и кабельный журнал содержат разные суммарные длины двух марок кабеля 1×2×0,75.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F022_control_cable_balance:d4470ce9730307aed184",
+          "coverage": "full",
+          "section_assessment": "correct"
+        },
+        {
+          "target_id": "AK_F022_control_cable_balance:872ea17b985add42621f",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-020",
+      "output_pointer": "/findings/19",
+      "problem": "Для ШАУВ-4-К5ПЧ суммарное количество кабеля 2×2×0,75 в таблице меньше длины одной соответствующей линии в КЖ.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-020",
+            "F-021"
+          ],
+          "issue": "Superseded uncertainty remains beside resolved recovery context",
+          "evidence": "F-020 initial text says uniqueness of line not established, later complete section says only line. F-021 initial text says 3×2.5 quantity not linked to heater, later graphic establishes this link. Solutions still ask to repeat resolved retrieval.",
+          "implication": "Recovery appendices preserve information but do not reconcile final wording; assess unnecessary engineer work separately."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-021",
+      "output_pointer": "/findings/20",
+      "problem": "В таблице кабелей ШАУВ-6-К5ПЧ отсутствуют предусмотренные кабельным журналом 10 м ППГнг(А)-HF 4×4,0 для По5.1-9.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-020",
+            "F-021"
+          ],
+          "issue": "Superseded uncertainty remains beside resolved recovery context",
+          "evidence": "F-020 initial text says uniqueness of line not established, later complete section says only line. F-021 initial text says 3×2.5 quantity not linked to heater, later graphic establishes this link. Solutions still ask to repeat resolved retrieval.",
+          "implication": "Recovery appendices preserve information but do not reconcile final wording; assess unnecessary engineer work separately."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-022",
+      "output_pointer": "/findings/21",
+      "problem": "В разделе «Кабели и провода» спецификации отсутствует исполнение ППГнг(А)-HF 3×2,5, предусмотренное таблицей кабелей листа 28.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-023",
+      "output_pointer": "/findings/22",
+      "problem": "В разделе 5 общих данных для группы четырёх тепловых завес использованы два набора обозначений.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F011_curtain_connection_scope:0e3aed92411e9239d012",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [
+        [
+          "F-023",
+          "F-077"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-024",
+      "output_pointer": "/findings/23",
+      "problem": "Количество двигателей М3–М6 в перечне элементов не соответствует функциональной схеме завес.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [
+        [
+          "F-024",
+          "F-080"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-025",
+      "output_pointer": "/findings/24",
+      "problem": "Количество регулирующих клапанов Y1, Y2 в перечне элементов не согласовано с двумя клапанами на схеме.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [
+        [
+          "F-025",
+          "F-081"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-026",
+      "output_pointer": "/findings/25",
+      "problem": "Требуется уточнить место учёта поставки термостатов TS1 и TS2 тепловых завес.",
+      "report_section": "questions",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-027",
+      "output_pointer": "/findings/26",
+      "problem": "Перечень элементов и спецификация предусматривают разные исполнения оборудования управления кондиционерами.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-028",
+      "output_pointer": "/findings/27",
+      "problem": "В ведомостях крепления к кровле и спецификации указаны разные марки двойного подвеса.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F023_support_type:58cbd95ce44a50b86573",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-029",
+      "output_pointer": "/findings/28",
+      "problem": "Номер позиции 21.10 повторён у двух разных интерфейсных кабелей.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
+          "coverage": "full",
+          "section_assessment": "incorrect"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_id": "F-029",
+          "issue": "Third full-target output-section disagreement",
+          "evidence": "Duplicate 21.10 retained in questions, evaluator technical; rationale says distinct full marks and quantities already identify the products."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-030",
+      "output_pointer": "/findings/29",
+      "problem": "Для лотка и треугольной кабельной бирки одного изготовителя указано одинаковое обозначение 35341.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-031",
+      "output_pointer": "/findings/30",
+      "problem": "Обозначение подвеса BSD2120 также указано в строке водогазопроводной трубы Ду-32.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-032",
+      "output_pointer": "/findings/31",
+      "problem": "В реестре отклонений комплекта АК2-ПА указан другой шифр раздела — АК-КЗ.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F028_change_register_scope:da80e943594aac429110",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-033",
+      "output_pointer": "/findings/32",
+      "problem": "Описание тёплого подпора содержит ссылки на «пример РД pdf» и «статью ПС» без точных реквизитов.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F033_power_reference_scope:2ec9d727804fc985242e",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-034",
+      "output_pointer": "/findings/33",
+      "problem": "Назначение преобразователей частоты ШАУВ-1-К6АС в спецификации противоречит таблице применимости.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-034",
+            "F-076"
+          ],
+          "issue": "Fourth same-object same-proposition duplicate pair",
+          "evidence": "Both address СО16.2/16.3 Ва4.1/Па4.1 versus Ва5.1/Па5.1 for ШАУВ-1-К6АС; no second independent defect."
+        }
+      ],
+      "duplicate_topic_pairs": [
+        [
+          "F-034",
+          "F-076"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-035",
+      "output_pointer": "/findings/34",
+      "problem": "В перечне элементов листа 20 не заполнено количество термостата ТС2.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-036",
+      "output_pointer": "/findings/35",
+      "problem": "В перечне листа 19 требуется уточнить запись диапазона «SC UZ1 - SC UZ53» при количестве 3.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-037",
+      "output_pointer": "/findings/36",
+      "problem": "Конечное устройство PDS45 линии Вос5.1-1 не согласовано с перечнем элементов обслуживаемых систем.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-038",
+      "output_pointer": "/findings/37",
+      "problem": "В КЖ подключение термостата второй приточной системы отнесено к ТС1, тогда как схема показывает TS2.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-039",
+      "output_pointer": "/findings/38",
+      "problem": "Обозначения преобразователей частоты на схеме не согласованы с перечнем элементов листа 8.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F035_UZ_identity:f588470dec49e00c838c",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-040",
+      "output_pointer": "/findings/39",
+      "problem": "[Объединено 4 замечаний] Функция пуска/останова электронагревателя П4.1.3 показана на дискретном входе DI.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+          "coverage": "full",
+          "section_assessment": "incorrect"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-041",
+      "output_pointer": "/findings/40",
+      "problem": "Сигналы состояния заслонок Y2 и Y3 обозначены как аналоговые выходы AO.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F036_damper_signal_direction:8298b8f671c60e21b030",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-042",
+      "output_pointer": "/findings/41",
+      "problem": "Для PDS3 системы Пкр4.1 на схеме и в перечне элементов указаны разные диапазоны давления.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-043",
+      "output_pointer": "/findings/42",
+      "problem": "Для PDS4 системы Пм4.1 таблица сигналов и перечень элементов задают разные диапазоны давления.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "coverage": "full",
+          "section_assessment": "correct"
+        },
+        {
+          "target_id": "AK57:a998dcf058f81b7ac194",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-010",
+            "F-043",
+            "F-046",
+            "F-047",
+            "F-049"
+          ],
+          "issue": "Repeated recovery explanations remain in visible description",
+          "implication": "Отдельно оценить дублирующую нагрузку; это не новые независимые дефекты и не потеря подтверждённого факта."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-044",
+      "output_pointer": "/findings/43",
+      "problem": "Подписи состояния основного и резервного вентиляторов Ва3.1 перепутаны между каналами 16 и 19.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-044",
+            "F-048"
+          ],
+          "issue": "Rotation qualification not retained",
+          "evidence": "Static equipment labels and opposite state-column labels retained, but possible dynamic main/reserve roles from general instructions are not discussed.",
+          "limits": "Documentary conflict matched; actual controller rotation or wrong indication is not established by this match."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-045",
+      "output_pointer": "/findings/44",
+      "problem": "Полярность отбора давления PDS3 и PDS4 противоположна направлению повышения давления на вытяжных вентиляторах.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-046",
+      "output_pointer": "/findings/45",
+      "problem": "[Объединено 3 замечаний] Для PDS2–PDS4 таблица сигналов и перечень элементов листа 11 задают разные диапазоны давления.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-010",
+            "F-043",
+            "F-046",
+            "F-047",
+            "F-049"
+          ],
+          "issue": "Repeated recovery explanations remain in visible description",
+          "implication": "Отдельно оценить дублирующую нагрузку; это не новые независимые дефекты и не потеря подтверждённого факта."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-047",
+      "output_pointer": "/findings/46",
+      "problem": "Для PDS3 системы Пкр5.1 таблица сигналов задаёт диапазон 20–200 Па, а перечень элементов и спецификация — 50–500 Па.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK57:9851f2c4946bad03af44",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_id": "F-047",
+          "issue": "Stale internal references in visible description",
+          "evidence": "Описание F-047 неоднократно сообщает «сохранено в F-048», но итоговое F-048 посвящено подписям состояния вентиляторов Пн5.1/Вн5.1.",
+          "implication": "Проверить перенумерацию внутренних ссылок после объединения; содержание PDS при этом осталось в F-047."
+        },
+        {
+          "finding_ids": [
+            "F-010",
+            "F-043",
+            "F-046",
+            "F-047",
+            "F-049"
+          ],
+          "issue": "Repeated recovery explanations remain in visible description",
+          "implication": "Отдельно оценить дублирующую нагрузку; это не новые независимые дефекты и не потеря подтверждённого факта."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-048",
+      "output_pointer": "/findings/47",
+      "problem": "Подписи состояния основных и резервных вентиляторов Пн5.1 и Вн5.1 перепутаны.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-044",
+            "F-048"
+          ],
+          "issue": "Rotation qualification not retained",
+          "evidence": "Static equipment labels and opposite state-column labels retained, but possible dynamic main/reserve roles from general instructions are not discussed.",
+          "limits": "Documentary conflict matched; actual controller rotation or wrong indication is not established by this match."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-049",
+      "output_pointer": "/findings/48",
+      "problem": "Обозначения четырёх преобразователей частоты на схеме Пн5.1/Вн5.1 не согласованы с перечнем элементов.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-010",
+            "F-043",
+            "F-046",
+            "F-047",
+            "F-049"
+          ],
+          "issue": "Repeated recovery explanations remain in visible description",
+          "implication": "Отдельно оценить дублирующую нагрузку; это не новые независимые дефекты и не потеря подтверждённого факта."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-050",
+      "output_pointer": "/findings/49",
+      "problem": "Функция пуска/останова электронагревателя Пу5.1 показана на дискретном входе DI.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+          "coverage": "full",
+          "section_assessment": "incorrect"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-051",
+      "output_pointer": "/findings/50",
+      "problem": "Обозначение термостата Пу5.1 на функциональной схеме расходится с перечнем элементов и кабельным журналом.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-052",
+      "output_pointer": "/findings/51",
+      "problem": "Функция пуска/останова электронагревателя По5.1 показана на дискретном входе DI.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+          "coverage": "full",
+          "section_assessment": "incorrect"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-053",
+      "output_pointer": "/findings/52",
+      "problem": "Обозначение термостата По5.1 на функциональной схеме расходится с перечнем элементов и кабельным журналом.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+          "coverage": "partial",
+          "section_assessment": "unchecked"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-054",
+      "output_pointer": "/findings/53",
+      "problem": "Итог DO=10 не соответствует 11 подключениям в таблице сигналов ШАУВ-1-К5АС.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch1.json",
+          "sha256": "c4086f2247ece43a2d13c9881f735db4b3e5dd2418a50c35fdadfe0d079e7401",
+          "pointer": "/claims/0",
+          "disposition": "confirmed_narrow_document_conflict",
+          "scope": "Only the expressly reviewed claims and limits, not automatic validation of every assertion in the original row."
+        }
+      ],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-055",
+      "output_pointer": "/findings/54",
+      "problem": "Полярность отборов давления PDS3 и PDS4 противоположна повышению давления на вентиляторах Ва4.1 и Ва4.1р.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-056",
+      "output_pointer": "/findings/55",
+      "problem": "Итоги DI=10 и DO=5 не соответствуют отметкам в таблице сигналов ШАУВ-3-К6ПЧ.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
+          "coverage": "full",
+          "section_assessment": "correct"
+        },
+        {
+          "target_id": "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-057",
+      "output_pointer": "/findings/56",
+      "problem": "В легенде листа 21 символ водяного нагревателя Пкр6.1 назван секцией электрического нагревателя.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch2.json",
+          "sha256": "6b08e4a8c20e5afa27a4227e337e3f79646785a87e55957a1367288439236c88",
+          "pointer": "/claims/0",
+          "disposition": "mixed_claims_graphic_identity_refuted_rewrite_required",
+          "scope": "Only the expressly reviewed claims and limits, not automatic validation of every assertion in the original row."
+        }
+      ],
+      "known_review_observations": [
+        {
+          "finding_id": "F-057",
+          "issue": "False symbol identity despite correct narrow legend premise",
+          "verification": "Direct graphic view: working heater diamond has no diagonal zigzag present inside legend electric-heater diamond; water circuit 85/60 is shown. TEXT label was not corrected from raster.",
+          "graphic_evidence": {
+            "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-011/images/blk_7785cb8293734c16b18fc1aff53c761f_6471b342ae3c.png",
+            "sha256": "cb77f0ab9fff75ed26cf94abb22776af6fba7da5eda1674d029ae486a62104a0",
+            "block_id": "blk_7785cb8293734c16b18fc1aff53c761f"
+          },
+          "consequence": "Claim that same symbol is repeated in legend and unconditional instruction to rename it are unsupported. Narrow legend-composition question may remain.",
+          "production_acceptance": false
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-058",
+      "output_pointer": "/findings/57",
+      "problem": "Полярность отборов давления PDS3 и PDS4 противоположна повышению давления на вентиляторах Ва5.1 и Ва5.1р.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-059",
+      "output_pointer": "/findings/58",
+      "problem": "Подписи состояния основного и резервного вентиляторов Ва5.1 перепутаны между каналами 16 и 19.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-060",
+      "output_pointer": "/findings/59",
+      "problem": "Обозначение шкафа системы ПД4.1.4 на функциональной схеме не согласовано с кабельным журналом.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+          "coverage": "full",
+          "section_assessment": "incorrect"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-060",
+            "F-062",
+            "F-063"
+          ],
+          "issue": "Three additional section disagreements",
+          "evidence": "All factual addresses retained, but technical_findings versus frozen question targets; physical misconnection remains explicitly unproven."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-061",
+      "output_pointer": "/findings/60",
+      "problem": "Конечные устройства кабелей Пкр5.1-9 и Пкр5.1-13 на схеме внешних подключений не согласованы с кабельным журналом.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F014_motor_endpoint_register:242d00252ded0af6828a",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-062",
+      "output_pointer": "/findings/61",
+      "problem": "На схеме ШАУВ-3-К5ПЧ подключения PDS4 и PDS5 обозначены одинаковыми номерами клемм 23–24 без разграничения колодок.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK14:65ea2c2649999f640c83",
+          "coverage": "partial",
+          "section_assessment": "unchecked"
+        },
+        {
+          "target_id": "AK_F054_F055_terminal_number_scope:62cc730e92af787c8d46",
+          "coverage": "full",
+          "section_assessment": "incorrect"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-060",
+            "F-062",
+            "F-063"
+          ],
+          "issue": "Three additional section disagreements",
+          "evidence": "All factual addresses retained, but technical_findings versus frozen question targets; physical misconnection remains explicitly unproven."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-063",
+      "output_pointer": "/findings/62",
+      "problem": "На схеме ШАУВ-3-К5ПЧ подключения двигателей М1 и М2 обозначены одинаковыми номерами клемм 29–31 без разграничения колодок.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK14:65ea2c2649999f640c83",
+          "coverage": "partial",
+          "section_assessment": "unchecked"
+        },
+        {
+          "target_id": "AK_F054_F055_terminal_number_scope:0fadfeadec26c587750e",
+          "coverage": "full",
+          "section_assessment": "incorrect"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-060",
+            "F-062",
+            "F-063"
+          ],
+          "issue": "Three additional section disagreements",
+          "evidence": "All factual addresses retained, but technical_findings versus frozen question targets; physical misconnection remains explicitly unproven."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-064",
+      "output_pointer": "/findings/63",
+      "problem": "Обозначение привода регулирующего клапана теплоносителя на листе 33 не согласовано с перечнем элементов.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-065",
+      "output_pointer": "/findings/64",
+      "problem": "Циркуляционный насос Пн5.1 обозначен М2 на схеме подключений при позиции М5 в перечне элементов.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+          "coverage": "full",
+          "section_assessment": "correct"
+        },
+        {
+          "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-066",
+      "output_pointer": "/findings/65",
+      "problem": "Для кабеля По5.1-9 схема внешних подключений и кабельный журнал задают разные количество и сечение жил.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-067",
+      "output_pointer": "/findings/66",
+      "problem": "Конечный датчик линии По5.1-1 обозначен TE2 на схеме и ТЕ1 в кабельном журнале.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-068",
+      "output_pointer": "/findings/67",
+      "problem": "Для четырёх линий ШАУВ-1-К6ПЧ схема подключений и кабельный журнал задают разные марки кабеля.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-069",
+      "output_pointer": "/findings/68",
+      "problem": "Назначение линии RS-485 не согласовано с обозначениями её клемм на схеме БД-ТЗ1.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-069",
+            "F-079"
+          ],
+          "issue": "Partially overlapping BD-TZ1 questions",
+          "evidence": "Both RS-485 markings, while F-079 additionally covers three connector groups SQ1/fire/RS-485.",
+          "limits": "Do not drop entire F-079 as a duplicate; additional connector scope needs preservation."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-070",
+      "output_pointer": "/findings/69",
+      "problem": "Для линии СУК2-2 схема подключений и кабельный журнал задают разные обозначения марки кабеля.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch1.json",
+          "sha256": "c4086f2247ece43a2d13c9881f735db4b3e5dd2418a50c35fdadfe0d079e7401",
+          "pointer": "/claims/1",
+          "disposition": "confirmed_narrow_document_conflict",
+          "scope": "Only the expressly reviewed claims and limits, not automatic validation of every assertion in the original row."
+        }
+      ],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-071",
+      "output_pointer": "/findings/70",
+      "problem": "Узел А и примечание 3 листа 50 задают несогласованные решения прохода кабелей через строительную конструкцию.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F061_penetration_detail_scope:5c02072a41acbc8744af",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-072",
+      "output_pointer": "/findings/71",
+      "problem": "[Объединено 2 замечаний] Узел А и примечание 3 листа 52 задают несогласованные решения кабельной проходки.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F061_penetration_detail_scope:5c02072a41acbc8744af",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-073",
+      "output_pointer": "/findings/72",
+      "problem": "Вертикальная размерная цепь установки шкафа на листе 53 противоречива.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-073",
+            "F-075"
+          ],
+          "issue": "Sixth same-object same-proposition duplicate pair",
+          "evidence": "Both sheet53 cabinet installation, same endpoints and1000+1400=2400 versus1800, delta600. No independent discrepancy."
+        }
+      ],
+      "duplicate_topic_pairs": [
+        [
+          "F-073",
+          "F-075"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-074",
+      "output_pointer": "/findings/73",
+      "problem": "Не согласовано обозначение рабочего или резервного назначения двигателя В5.1.2.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch2.json",
+          "sha256": "6b08e4a8c20e5afa27a4227e337e3f79646785a87e55957a1367288439236c88",
+          "pointer": "/claims/1",
+          "disposition": "confirmed_narrow_document_label_conflict",
+          "scope": "Only the expressly reviewed claims and limits, not automatic validation of every assertion in the original row."
+        }
+      ],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-075",
+      "output_pointer": "/findings/74",
+      "problem": "Не замыкается вертикальная размерная цепь установки ШАУВ-1-К6ПЧ.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-073",
+            "F-075"
+          ],
+          "issue": "Sixth same-object same-proposition duplicate pair",
+          "evidence": "Both sheet53 cabinet installation, same endpoints and1000+1400=2400 versus1800, delta600. No independent discrepancy."
+        }
+      ],
+      "duplicate_topic_pairs": [
+        [
+          "F-073",
+          "F-075"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-076",
+      "output_pointer": "/findings/75",
+      "problem": "В СО для ШАУВ-1-К6АС указаны системы другой дымовой зоны.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-034",
+            "F-076"
+          ],
+          "issue": "Fourth same-object same-proposition duplicate pair",
+          "evidence": "Both address СО16.2/16.3 Ва4.1/Па4.1 versus Ва5.1/Па5.1 for ШАУВ-1-К6АС; no second independent defect."
+        }
+      ],
+      "duplicate_topic_pairs": [
+        [
+          "F-034",
+          "F-076"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-077",
+      "output_pointer": "/findings/76",
+      "problem": "Два ряда обозначений завес в общих данных",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F011_curtain_connection_scope:0e3aed92411e9239d012",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [
+        [
+          "F-023",
+          "F-077"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-078",
+      "output_pointer": "/findings/77",
+      "problem": "На плане две группы смесительных узлов не различены обозначениями приборов",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch4.json",
+          "sha256": "b470dcc36d0a4a5ca564fea3b0b4cf9c9f9bc3b1a13fdc88850caa9eebe85764",
+          "pointer": "/claims/0",
+          "disposition": "confirmed_narrow_repeated_labels_and_missing_cross_view_mapping",
+          "scope": "Only the expressly reviewed claims and limits, not automatic validation of every assertion in the original row."
+        }
+      ],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-079",
+      "output_pointer": "/findings/78",
+      "problem": "Неоднозначно обозначены три правых подключения БД-ТЗ1, включая RS-485",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch4.json",
+          "sha256": "b470dcc36d0a4a5ca564fea3b0b4cf9c9f9bc3b1a13fdc88850caa9eebe85764",
+          "pointer": "/claims/1",
+          "disposition": "confirmed_local_connector_identification_question",
+          "scope": "Only the expressly reviewed claims and limits, not automatic validation of every assertion in the original row."
+        }
+      ],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-069",
+            "F-079"
+          ],
+          "issue": "Partially overlapping BD-TZ1 questions",
+          "evidence": "Both RS-485 markings, while F-079 additionally covers three connector groups SQ1/fire/RS-485.",
+          "limits": "Do not drop entire F-079 as a duplicate; additional connector scope needs preservation."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-080",
+      "output_pointer": "/findings/79",
+      "problem": "Количество двигателей M3–M6 в перечне не соответствует собственной функциональной схеме",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [
+        [
+          "F-024",
+          "F-080"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-081",
+      "output_pointer": "/findings/80",
+      "problem": "Четыре регулирующих клапана в перечне не раскрыты двумя позициями на схеме",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [
+        [
+          "F-025",
+          "F-081"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-082",
+      "output_pointer": "/findings/81",
+      "problem": "Для оборудования завес приведены разные ссылки на комплект ОВ",
+      "report_section": "questions",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    },
+    {
+      "finding_id": "F-083",
+      "output_pointer": "/findings/82",
+      "problem": "На листе 42 приведены разные обозначения раздела электропитания.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+          "coverage": "partial",
+          "section_assessment": "unchecked"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-084",
+      "output_pointer": "/findings/83",
+      "problem": "Неоднозначно сформулирована единица применения перечня листа 42.",
+      "report_section": "questions",
+      "target_links": [
+        {
+          "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-085",
+      "output_pointer": "/findings/84",
+      "problem": "Разные исполнения температурного прибора в описании алгоритма и спецификации",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F027_sensor_interface_scope:3eb9cafbfcfd6a395bee",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_ids": [
+            "F-009",
+            "F-085"
+          ],
+          "issue": "Fifth same-object same-proposition duplicate pair",
+          "evidence": "Same Спрут Т-06 / МВТ3280 NTC10К equipment discrepancy; F-085 adds AI context, and both descriptions explicitly say no new finding required.",
+          "limits": "AI context should be preserved if later merged; no live trial changes."
+        }
+      ],
+      "duplicate_topic_pairs": [
+        [
+          "F-009",
+          "F-085"
+        ]
+      ],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-086",
+      "output_pointer": "/findings/85",
+      "problem": "Описание алгоритма и функциональная схема задают разные точки контроля температуры",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch3.json",
+          "sha256": "ef4b76f1f89552226ffbf8763e9497517fb97903e86ee777d3966f831007dad2",
+          "pointer": "/",
+          "disposition": "confirmed_narrow_measurement_location_description_conflict",
+          "scope": "Only the expressly reviewed claims and limits, not automatic validation of every assertion in the original row."
+        }
+      ],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-087",
+      "output_pointer": "/findings/86",
+      "problem": "Для ШАУВ-3-К6ПЧ спецификация предусматривает два канальных датчика температуры, а перечень элементов — один.",
+      "report_section": "technical_findings",
+      "target_links": [
+        {
+          "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
+          "coverage": "full",
+          "section_assessment": "correct"
+        }
+      ],
+      "additional_reviews": [],
+      "known_review_observations": [
+        {
+          "finding_id": "F-087",
+          "issue": "Stale internal ID",
+          "evidence": "Description says preserved in F-093, but final finding ID is F-087 and final list ends at F-088."
+        }
+      ],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": true,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check all extra assertions, qualifications, recommendations and unresolved observations before whole-finding acceptance"
+    },
+    {
+      "finding_id": "F-088",
+      "output_pointer": "/findings/87",
+      "problem": "Сумма пяти отдельных линий кабеля ППГнг(А)-HF 4×4,0 в КЖ превышает количество в спецификации на 10 м.",
+      "report_section": "technical_findings",
+      "target_links": [],
+      "additional_reviews": [],
+      "known_review_observations": [],
+      "duplicate_topic_pairs": [],
+      "has_reviewed_target_or_additional_claim": false,
+      "whole_finding_precision_status": "not_finalized",
+      "next_review_focus": "Check uncovered claim and source evidence"
+    }
+  ],
+  "limits": [
+    "Some reviewed content is not the same as a fully correct finding. All added assertions and recommendations need review.",
+    "One target may map to multiple findings and one finding to multiple targets; do not sum these links as independent defects.",
+    "Duplicate-topic candidates need consolidation preserving useful details; never remove automatically.",
+    "An absent source or unverified norm yields uncertainty, not a false-positive verdict by default."
+  ],
+  "engineer_time_measured": false,
+  "production_changed": false
+}
