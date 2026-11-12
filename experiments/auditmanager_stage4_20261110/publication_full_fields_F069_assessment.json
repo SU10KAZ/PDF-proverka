@@ -1,0 +1,27 @@
+{
+  "finding_id": "F-069",
+  "status": "literal_terminal_repeats_preserved_profile_unresolved_recommendation_split",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_069/publication_projection.json",
+  "projection_sha256": "1017e89139a3356b5cd2e3ca311360104d32affb9c7fd54f36092a69c5d33974",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_connections_review_20261112.json",
+  "source_review_sha256": "e87abd3dfd7817f35d33ef96c4a62fb2abf192217e0e14bdfb8228fd17fc688e",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_f784be4786274e8c84f32d874ed99969.png",
+      "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+      "sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Повторно непосредственно прочитаны PDS4/PDS5:23,24 и M1/M2:29,30,31 в разных графических группах ШАУВ-3-К5ПЧ.",
+    "Примечание 2 об уточнении нумерации не содержит окончательных адресов. Физическое объединение цепей или реальное отсутствие разделения не заявлены.",
+    "Рекомендация согласовать полные адреса относится к исходной неоднозначности и не должна дублировать её отдельным вопросом.",
+    "Фактический состав подтверждён; конфликт оценки профиля AK14/F055 остаётся открытым. Этот контроль не доказывает правильность технического маршрута и не принимает универсальный фильтр повторов."
+  ],
+  "route_acceptance": "unresolved_evaluator_overlap",
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
