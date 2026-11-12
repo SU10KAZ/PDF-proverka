@@ -1,0 +1,10 @@
+{
+  "status": "five_request_packets_identical_after_module_extraction",
+  "original_preparation": "/tmp/auditmanager_publication_editorial_controls_20261112/preparation.json",
+  "local_replay_preparation": "/tmp/publication_candidate_replay_oqanvbf7/prepared/preparation.json",
+  "instruction_sha256": "416f1e8abed5e6761e7993ac77c0aa7c5365c43c13f733e0935e6899fbeb195b",
+  "request_count": 5,
+  "model_calls": 0,
+  "default_instructions_changed": false,
+  "production_acceptance": false
+}
