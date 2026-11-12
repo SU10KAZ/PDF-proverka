@@ -1,0 +1,23 @@
+{
+  "finding_id": "F-030",
+  "status": "graphic_identity_correct_editorial_question_promoted_to_technical",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_030/publication_projection.json",
+  "projection_sha256": "dbbe2f6d13fe25dc6aeafef12e971f13c794f55cf5d99c3bae35306aa3d17265",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_identity_dimension_review_20261112.json",
+  "source_review_sha256": "526bfcc4d9f98abb4d864edcce574d5fdad99ba53601db7ea5062b1434390308",
+  "graphic": {
+    "block_id": "blk_5999641136b84d1c9a5dd129e06ae055",
+    "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_5999641136b84d1c9a5dd129e06ae055.png",
+    "sha256": "cb1c9c5fdf02478799b5474ff55d7f18a9e6d54da46e9ffdc4733bc5ab0f0a80",
+    "directly_viewed": true
+  },
+  "checks": [
+    "Graphic circles SC UZ1/UZ2/UZ3 directly confirmed; authoritative list literal SC UZ1 - SC UZ53 quantity 3 retained.",
+    "No claim of 53 physical drives.",
+    "Stale graphic limitation correctly archived; recommendation supported by actual labels.",
+    "Source facts correct but technical route differs from reviewed editorial question profile; no new substantive installation defect established."
+  ],
+  "required_disposition": "Retain useful designation correction in questions; preserve graphic proof and history, do not suppress observation as false.",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

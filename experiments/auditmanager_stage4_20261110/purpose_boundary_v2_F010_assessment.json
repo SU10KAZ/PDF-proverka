@@ -1,0 +1,21 @@
+{
+  "finding_id": "F-010",
+  "status": "boundary_v2_negative_control_passed",
+  "candidate_projection_path": "/tmp/auditmanager_publication_purpose_boundary_v2_20261112_run/evaluations/publication_purpose_010/publication_projection.json",
+  "candidate_projection_sha256": "a2b1730e4b0564e5354f2ed83e35cfe67bee6de2197d7b7db49da6294d7fe12f",
+  "checks": [
+    "One designation question preserved; no technical conflict invented.",
+    "Actual master/slave error not asserted, no extra physical units inferred.",
+    "Conditional risk attached; normative letter correctness stays unresolved."
+  ],
+  "context_review_reusable": {
+    "path": "experiments/auditmanager_stage4_20261110/purpose_trial_F010_context_review.json",
+    "sha256": "3bf2a67f7ad375cb7a44883f80047afec3a31656d7680719f72b8dc6ab3b2aa6"
+  },
+  "limits": [
+    "Same inputs DEV control; F008 counterpart still required.",
+    "Final release not completed."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
