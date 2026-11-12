@@ -1,0 +1,861 @@
+{
+  "version": 1,
+  "scope": "Sealed ITP classic_current repeat 1; five remaining text-based target traces",
+  "source_md": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+    "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+    "pointer": ""
+  },
+  "actual_text_request": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488929635467502/request.json",
+    "sha256": "65ebc042b48479144dc1011fdd41f6c48b543021c00a94d58c037dac431f16a7",
+    "pointer": ""
+  },
+  "successful_request_evidence": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794488929635467502/attempts.json",
+    "sha256": "f17453ac33235e9e2f8351d72af13956834cad733e06042b5e4a2aa1d999abdf",
+    "pointer": ""
+  },
+  "cases": [
+    {
+      "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
+      "coverage": "absent",
+      "route": "question",
+      "source_lines": [
+        {
+          "line": 1303,
+          "quote": "|  | Труба стальная водогазопроводная оцинкованная, Д=65х4,0 мм | ГОСТ 3262-75 |  |  | м | 78.4 |  |  |",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 1311,
+          "quote": "|  | Трубы стальные электросварные, Д=76х3,5 мм | ГОСТ 10704-91 |  |  | м | 91.2 |  |  |",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 1332,
+          "quote": "|  | Труба стальная оцинкованная водогазопроводная 65х4,5 | ГОСТ 3262-75 |  |  | м | 25.7 |  |  |",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 1378,
+          "quote": "|  | Заглушка под муфту грубллок Ø65 | Dinarm EC | EC076* | ООО \"Огнеборец\" | шт. | 2 |  |  |",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 1401,
+          "quote": "|  | Колено 90° под муфту грубллок Ø65 | Dinarm EL9000 | EL9000C076* | ООО \"Огнеборец\" | шт. | 41 |  |  |",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 1407,
+          "quote": "|  | Муфта гибкая для соединений грубллок Ø65 | Dinarm FC | FC073E* | ООО \"Огнеборец\" | шт. | 289 |  |  |",
+          "present_in_actual_text_request": true
+        }
+      ],
+      "stage_assessment": "The inspected text analysis has a grooved requirement scope check, but it concerns DN25–50 and water-versus-drain applicability, not the FC073 / pipe and fitting interface. No target-specific interface comparison is identified in the inspected chain.",
+      "recommendation": "Create an explicit connection identity check using actual mating ends and manufacturer dimensions. Do not infer outer diameter from article digits or count 289 items as 289 defects.",
+      "navigation_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "",
+          "pattern": "FC073|EC076|EL9000C076",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pointer": "",
+          "pattern": "FC073|EC076|EL9000C076",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pointer": "",
+          "pattern": "FC073|EC076|EL9000C076",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+          "sha256": "ae2e069317858431e1721209d3d2f183e16ceed61e869fbf42bb14653d041de5",
+          "pointer": "",
+          "pattern": "FC073|EC076|EL9000C076",
+          "hits": []
+        }
+      ],
+      "different_scope_check": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/requirement_applicability_checks/12"
+        },
+        "record": {
+          "requirement_id": "R-10",
+          "object_id": "O-12",
+          "applicability": "unknown",
+          "reason": "В спецификации есть грувлочные детали DN25–50, однако принадлежность каждой позиции водопроводу или дренажу не определена. Автоматическое нарушение ТЗ не установлено.",
+          "scope_evidence": [
+            {
+              "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+              "quote": "|  | Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E* | ООО \"Огнеборец\" | шт. | 435 |  |  |"
+            }
+          ],
+          "comparison": "unknown"
+        }
+      }
+    },
+    {
+      "target_id": "ITP72_wall_and_velocity:42140cc8a623c96428fe",
+      "coverage": "absent",
+      "route": "question",
+      "source_lines": [
+        {
+          "line": 1310,
+          "quote": "| \\<варианты> | Трубы стальные электросварные, Д=57х3,5 мм | ГОСТ 10704-91 |  |  | м | 85.6 |  |  |",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 1311,
+          "quote": "|  | Трубы стальные электросварные, Д=76х3,5 мм | ГОСТ 10704-91 |  |  | м | 91.2 |  |  |",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 1312,
+          "quote": "|  | Трубы стальные электросварные, Д=89х3,5 мм | ГОСТ 10704-91 |  |  | м | 52.4 |  |  |",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 2185,
+          "quote": "###### Трубопровод отопления 3-зоны:",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 2191,
+          "quote": "Выбираем трубопровод: Ø76 × 3,0 мм. Δh=13,1 кгс/м² м, v=0,74 м/сек.",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 2197,
+          "quote": "Выбираем трубопровод: Ø89 × 3,0 мм, Δh=5,22 кгс/м² м, v=0,52 м/сек.",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 2199,
+          "quote": "###### Трубопровод отопления ДОО:",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 2213,
+          "quote": "Выбираем трубопровод: Ø57 × 3,0 мм. Δh=9,32 кгс/м² м, v=0,50 м/сек.",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 2219,
+          "quote": "Выбираем трубопровод: Ø57 × 3,0 мм, Δh=9,32 кгс/м² м, v=0,50 м/сек.",
+          "present_in_actual_text_request": true
+        }
+      ],
+      "stage_assessment": "T023 computes velocity with 76x3.0; it does not reconcile calculation wall thickness with the 3.5 specification entries. Same physical pipe sections remain unidentified.",
+      "recommendation": "Check calculation-to-specification pipe mapping by circuit and section before comparing walls. Preserve the valid velocity check separately; no mandatory pipe replacement without identity evidence.",
+      "navigation_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "",
+          "pattern": "толщин.{0,60}стен|стен.{0,60}толщин",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pointer": "",
+          "pattern": "толщин.{0,60}стен|стен.{0,60}толщин",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pointer": "",
+          "pattern": "толщин.{0,60}стен|стен.{0,60}толщин",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+          "sha256": "ae2e069317858431e1721209d3d2f183e16ceed61e869fbf42bb14653d041de5",
+          "pointer": "",
+          "pattern": "толщин.{0,60}стен|стен.{0,60}толщин",
+          "hits": []
+        }
+      ],
+      "neighbor_candidate": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/22"
+        },
+        "record": {
+          "id": "T-023",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "piping",
+          "report_section": "technical_findings",
+          "source": "ПЗ, листы 8–9, расчет трубопроводов",
+          "finding": "Часть скоростей не соответствует указанным объемным расходам и внутренним диаметрам. Для вентиляции на нагреваемой стороне при 61,12 м³/ч и трубе 219×6 мм получается 0,505 м/с вместо 0,66; для подпитки отопления 3-й зоны при 0,90 м³/ч и 76×3 мм — 0,065 м/с вместо 0,12. Одинаковые потери и скорости на греющей и нагреваемой сторонах вентиляции при разных расходах также требуют перерасчета. Требуется явно разграничить массовый и объемный расход и использовать фактические свойства воды.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_155f820c42d94fe282878a3bd85a0ffe",
+            "blk_a203939b21504fa6935b621a29929d7d"
+          ]
+        }
+      }
+    },
+    {
+      "target_id": "ITP_F028_reducer_designations:2f16d360921aab6e9949",
+      "coverage": "absent",
+      "route": "question",
+      "source_lines": [
+        {
+          "line": 1516,
+          "quote": "|  | Переход стальной концентрический, D=40x20 мм | ГОСТ 17378-2001* | Переход К-2-45x20 |  | шт. | 4 |  |  |",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 1518,
+          "quote": "|  | Переход стальной концентрический, D=50x20 мм | ГОСТ 17378-2001* | Переход К-2-57x20 |  | шт. | 4 |  |  |",
+          "present_in_actual_text_request": true
+        }
+      ],
+      "stage_assessment": "T017 and its recovery concern mating outer diameters 48/45, 108/114 and 159/168. They do not establish execution-specific standard-table compliance of the small 20 mm ends.",
+      "recommendation": "Separate designation-versus-applicable-standard checks from mating-interface checks. Verify edition and execution; do not automatically replace 20 with 25.",
+      "navigation_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "",
+          "pattern": "45[×xх]20|57[×xх]20",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pointer": "",
+          "pattern": "45[×xх]20|57[×xх]20",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pointer": "",
+          "pattern": "45[×xх]20|57[×xх]20",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+          "sha256": "ae2e069317858431e1721209d3d2f183e16ceed61e869fbf42bb14653d041de5",
+          "pointer": "",
+          "pattern": "45[×xх]20|57[×xх]20",
+          "hits": []
+        }
+      ],
+      "neighbor_candidate": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/16"
+        },
+        "record": {
+          "id": "T-017",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "piping",
+          "report_section": "technical_findings",
+          "source": "Спецификация, листы 6, 8 и 9",
+          "finding": "В перечне электросварных труб предусмотрены наружные диаметры 48, 108 и 159 мм, а среди соединительных деталей встречаются окончания 45 мм, переход К-2-114×89 и переход К-2-168×76. Соответствующие прямые трубы 45, 114 и 168 мм в перечне отсутствуют. Требуется согласовать исполнения и наружные присоединительные диаметры либо показать переходные узлы. Совпадение условного прохода не подтверждает совместимость сварных соединений.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "blk_17628e5e5b414088b5c392e63f6f4456"
+          ]
+        }
+      },
+      "neighbor_recovery": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+          "pointer": "/candidate_recovery_reports/16"
+        },
+        "stage": "candidate_recovery_88374b5fecdcb2d3",
+        "decisions": [
+          {
+            "origin": "text",
+            "pointer": "/text_findings/16",
+            "decision": "needs_data",
+            "reason": "Спецификация подтверждает наличие перечисленных труб и деталей с различающимися наружными диаметрами. Однако предоставленные листы не устанавливают, какие окончания непосредственно соединяются между собой или с патрубками оборудования. Отсутствие отдельных типоразмеров прямых труб в представленном перечне само по себе не доказывает несовместимость соединений. Требуется привязка деталей к конкретным узлам. Оснований для подтверждённого технического замечания или квалификации вопроса как малозначительной редакционной правки пока нет. Существующие замечания эту проверку не охватывают.",
+            "source_refs": [
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+              "blk_17628e5e5b414088b5c392e63f6f4456"
+            ],
+            "required_source_refs": [],
+            "required_context": [
+              "Монтажные узлы с привязкой деталей с окончаниями 45, 114 и 168 мм к трубам или оборудованию, размерами сопрягаемых окончаний и исполнениями соединений. Идентификаторы этих источников в предоставленном контексте отсутствуют."
+            ],
+            "target_finding_ids": [],
+            "context_queries": [
+              "Отвод 90-2-45",
+              "Переход К-2-114x89",
+              "Переход К-2-168x76",
+              "Д=48х3,5 мм",
+              "Д=108х4,0 мм",
+              "Д=159х4,5 мм"
+            ],
+            "subclaims": [
+              {
+                "id": "1",
+                "claim": "Трубы наружным диаметром 48 мм сопоставлены с окончаниями деталей 45 мм.",
+                "decision": "needs_data",
+                "reason": "На странице 29 указан типоразмер электросварной трубы Д=48х3,5 мм; на странице 31 — Отвод 90-2-45, на странице 32 — переходы К-2-45x20, К-2-45x32, К-2-57x45, К-2-76x45 и К-2-89x45. Прямая электросварная труба 45 мм в представленном перечне не указана. Эти факты подтверждают различие сортамента, но не непосредственное сопряжение окончаний 45 и 48 мм. Для вывода о техническом конфликте нужны конкретные узлы и принятые исполнения соединений.",
+                "source_refs": [
+                  "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+                  "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+                  "blk_17628e5e5b414088b5c392e63f6f4456"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Привязка отводов и переходов с окончаниями 45 мм к сопрягаемым трубам или патрубкам; размеры и конструкция соответствующих соединений."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "Отвод 90-2-45",
+                  "Д=48х3,5 мм"
+                ]
+              },
+              {
+                "id": "2",
+                "claim": "Переход К-2-114×89 сопоставлен с трубой 108 мм; прямая труба 114 мм отсутствует в перечне.",
+                "decision": "needs_data",
+                "reason": "На странице 32 прямо указан Переход К-2-114x89, 6 шт.; на странице 29 предусмотрена электросварная труба Д=108х4,0 мм, а строка прямой трубы 114 мм отсутствует. Однако место применения перехода и присоединяемый к его окончанию 114 мм элемент не установлены. Нельзя исключить присоединение к оборудованию или специальному узлу, поэтому несовместимость с трубой 108 мм пока не доказана и не опровергнута.",
+                "source_refs": [
+                  "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+                  "blk_17628e5e5b414088b5c392e63f6f4456"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Места установки шести переходов К-2-114x89 и размеры сопрягаемых окончаний труб, патрубков оборудования или промежуточных деталей."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "Переход К-2-114x89",
+                  "Д=108х4,0 мм"
+                ]
+              },
+              {
+                "id": "3",
+                "claim": "Переход К-2-168×76 сопоставлен с трубой 159 мм; прямая труба 168 мм отсутствует в перечне.",
+                "decision": "needs_data",
+                "reason": "На странице 32 прямо указан Переход К-2-168x76, 1 шт.; на странице 29 предусмотрена электросварная труба Д=159х4,5 мм, а строка прямой трубы 168 мм отсутствует. Непосредственное соединение перехода с трубой 159 мм источниками не установлено. Без привязки к узлу и размеров ответного элемента нельзя подтвердить несовместимость или необходимость замены перехода.",
+                "source_refs": [
+                  "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+                  "blk_17628e5e5b414088b5c392e63f6f4456"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Место установки перехода К-2-168x76, размер ответного окончания со стороны 168 мм и предусмотренное исполнение соединения."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "Переход К-2-168x76",
+                  "Д=159х4,5 мм"
+                ]
+              }
+            ]
+          }
+        ],
+        "context_status": "no_new_context"
+      }
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
+      "coverage": "absent",
+      "route": "question",
+      "source_lines": [
+        {
+          "line": 244,
+          "quote": "|  | ПРИКАЗ от 24 марта 2003 г. № 115 | Правила технической эксплуатации тепловых энергоустановок |  |",
+          "present_in_actual_text_request": true
+        },
+        {
+          "line": 1893,
+          "quote": "3. «Правила эксплуатации теплопотребляющих установок и тепловых сетей»;",
+          "present_in_actual_text_request": true
+        }
+      ],
+      "stage_assessment": "T027 questions external validity of order 115. The local reconciliation of the PZ title with the identified reference-list document is a different comparison, not retained as a final question.",
+      "recommendation": "Resolve local normative-reference identity before external applicability review. Keep local clarification separate from claims that a rule is invalid or that requisites are absent project-wide.",
+      "navigation_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "",
+          "pattern": "Правила эксплуатации теплопотребляющих|ПРИКАЗ от 24 марта 2003",
+          "hits": [
+            {
+              "pointer": "/normative_refs_found/12/ref",
+              "value": "Правила эксплуатации теплопотребляющих установок и тепловых сетей"
+            }
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pointer": "",
+          "pattern": "Правила эксплуатации теплопотребляющих|ПРИКАЗ от 24 марта 2003",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pointer": "",
+          "pattern": "Правила эксплуатации теплопотребляющих|ПРИКАЗ от 24 марта 2003",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+          "sha256": "ae2e069317858431e1721209d3d2f183e16ceed61e869fbf42bb14653d041de5",
+          "pointer": "",
+          "pattern": "Правила эксплуатации теплопотребляющих|ПРИКАЗ от 24 марта 2003",
+          "hits": []
+        }
+      ],
+      "neighbor_candidate": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/26"
+        },
+        "record": {
+          "id": "T-027",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "normative_refs",
+          "report_section": "questions",
+          "source": "Ведомость ссылочных документов, лист 1; спецификация, листы 10–12",
+          "finding": "Требуется актуализировать ссылки на приказ Минэнерго №115, ГОСТ 12820-80 и ГОСТ 14918-80 с проверкой замен и дат их введения. Для резьбового тройника указан ГОСТ 6948-75, а швеллер назван горячекатаным при ссылке на ГОСТ 8278-83. Следует проверить обозначения и соответствие выбранным изделиям. Официальный статус документов в рамках данного анализа не подтвержден.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_9167c15ea57c423ea6ad708738bb420f",
+            "blk_a7ba21ea8083491389a223015720c9cb",
+            "blk_fd984f8c5d03427497ffd926feaf8ed5",
+            "blk_9e9fdca2261a4324959220546412f377"
+          ]
+        }
+      },
+      "neighbor_recovery": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+          "pointer": "/candidate_recovery_reports/26"
+        },
+        "stage": "candidate_recovery_2f8cb37d7421ec1d",
+        "decisions": [
+          {
+            "origin": "text",
+            "pointer": "/text_findings/26",
+            "decision": "needs_data",
+            "reason": "Все пять записей подтверждены исходным TEXT. Однако сведения о действии документов, переходных положениях и области применения стандартов не предоставлены. Наличие ссылок само по себе не доказывает необходимость их замены. Буквальные записи о тройнике и швеллере подтверждены, но соответствие ссылок изделиям остаётся неустановленным. Существующие замечания не охватывают эти вопросы. До получения недостающих сведений технический дефект или малозначительная редакционная ошибка не подтверждены; обязательная актуализация не назначается.",
+            "source_refs": [
+              "blk_9167c15ea57c423ea6ad708738bb420f",
+              "blk_fd984f8c5d03427497ffd926feaf8ed5",
+              "blk_9e9fdca2261a4324959220546412f377",
+              "blk_a7ba21ea8083491389a223015720c9cb"
+            ],
+            "required_source_refs": [],
+            "required_context": [
+              "Дата выпуска и основания выбора применимой нормативной редакции проекта.",
+              "Официальные сведения о действии приказа №115, ГОСТ 12820-80 и ГОСТ 14918-80, включая замены и переходные положения.",
+              "Область применения ГОСТ 6948-75 и ГОСТ 8278-83, документация на выбранные тройник и швеллер."
+            ],
+            "target_finding_ids": [],
+            "context_queries": [
+              "ПРИКАЗ от 24 марта 2003 г. № 115",
+              "ГОСТ 12820-80",
+              "ГОСТ 14918-80",
+              "ГОСТ 6948-75",
+              "ГОСТ 8278-83",
+              "Дата выпуска"
+            ],
+            "subclaims": [
+              {
+                "id": "1",
+                "claim": "Ссылка на приказ Минэнерго №115 требует проверки актуальности.",
+                "decision": "needs_data",
+                "reason": "На странице 7, листе 1, ведомость содержит «ПРИКАЗ от 24 марта 2003 г. № 115» и наименование правил эксплуатации. Наличие ссылки подтверждено. Дата создания блока не устанавливает дату выпуска проекта; официальные сведения о действии приказа и применимых переходных положениях отсутствуют. Необходимость замены ссылки пока не установлена.",
+                "source_refs": [
+                  "blk_9167c15ea57c423ea6ad708738bb420f"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Дата выпуска проекта и официальные сведения о применимости приказа от 24.03.2003 №115 на соответствующую дату."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "ПРИКАЗ от 24 марта 2003 г. № 115",
+                  "Дата выпуска"
+                ]
+              },
+              {
+                "id": "2",
+                "claim": "Ссылка на ГОСТ 12820-80 требует проверки замены и исполнения фланцев.",
+                "decision": "needs_data",
+                "reason": "На странице 34, листе 11, для плоских приварных фланцев с соединительным выступом Ру 1,6 МПа указан ГОСТ 12820-80*. В других строках приведены фланцы по ГОСТ 33259-2015. Совместное присутствие двух стандартов для разных строк не доказывает ошибку исполнения или обязательность замены ссылки. Нужны сведения о применимости стандартов и соответствии выбранных фланцев присоединениям.",
+                "source_refs": [
+                  "blk_fd984f8c5d03427497ffd926feaf8ed5"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Официальные сведения о замене и переходных положениях ГОСТ 12820-80.",
+                  "Требования к исполнениям и присоединительным размерам указанных плоских фланцев."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "ГОСТ 12820-80",
+                  "ГОСТ 33259-2015",
+                  "Фланец 1-20-16"
+                ]
+              },
+              {
+                "id": "3",
+                "claim": "Ссылка на ГОСТ 14918-80 требует проверки актуальности.",
+                "decision": "needs_data",
+                "reason": "На странице 35, листе 12, строка «Сталь тонколистовая оцинкованная толщиной 0,5мм» содержит ГОСТ 14918-80 и количество 1000 м2. Ссылка подтверждена, но сведений о статусе стандарта, переходных положениях и применимой редакции проекта нет. Возраст обозначения не является достаточным основанием для требования его замены.",
+                "source_refs": [
+                  "blk_9e9fdca2261a4324959220546412f377"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Официальные сведения о действии и замене ГОСТ 14918-80 с условиями применения к предусмотренному оцинкованному листу."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "ГОСТ 14918-80",
+                  "Сталь тонколистовая оцинкованная"
+                ]
+              },
+              {
+                "id": "4",
+                "claim": "Для резьбового тройника указан ГОСТ 6948-75.",
+                "decision": "needs_data",
+                "reason": "Буквальный факт подтверждён: на странице 33, листе 10, для прямого тройника из ковкого чугуна с цилиндрической резьбой без покрытия Ду25 указан ГОСТ 6948-75*. Исправлять эту запись по предполагаемому распознаванию нельзя. Для вывода об ошибочности ссылки необходимы идентификация и область применения указанного стандарта; предполагаемое правильное обозначение источниками не установлено.",
+                "source_refs": [
+                  "blk_a7ba21ea8083491389a223015720c9cb"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Официальное наименование и область применения ГОСТ 6948-75.",
+                  "Документация на выбранный резьбовой тройник Ду25 с обозначением применимого стандарта."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "ГОСТ 6948-75",
+                  "Тройник 25",
+                  "Тройник прямой из ковкого чугуна"
+                ]
+              },
+              {
+                "id": "5",
+                "claim": "Швеллер назван горячекатаным при ссылке на ГОСТ 8278-83.",
+                "decision": "needs_data",
+                "reason": "На странице 35, листе 12, непосредственно приведено «Швеллеры стальные горячекатанные 100x50x5» со ссылкой на ГОСТ 8278-83. Сочетание наименования и ссылки подтверждено. Содержание стандарта и документация на выбранный профиль отсутствуют, поэтому конфликт способа изготовления с сортаментом в пределах предоставленных источников не проверен. Нельзя заранее считать исправление только редакционным: требуется установить, какое исполнение профиля предусмотрено.",
+                "source_refs": [
+                  "blk_9e9fdca2261a4324959220546412f377"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Область применения и сортамент ГОСТ 8278-83.",
+                  "Узлы металлоконструкций или документация на выбранный швеллер 100x50x5, определяющие его исполнение."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "ГОСТ 8278-83",
+                  "100x50x5",
+                  "Швеллеры стальные горячекатанные"
+                ]
+              }
+            ]
+          }
+        ],
+        "context_status": "no_new_context"
+      }
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:2bca6641f93ace5ac5a6",
+      "coverage": "absent",
+      "route": "question",
+      "source_lines": [
+        {
+          "line": 1895,
+          "quote": "4. «Правила учета тепловой энергии и теплоносителя»;",
+          "present_in_actual_text_request": true
+        }
+      ],
+      "stage_assessment": "The normative reference register explicitly records unidentified heat-metering rules due to absent requisites. This observation is not a dedicated T027 subclaim and is not retained as a final question.",
+      "recommendation": "Carry unresolved normative identity observations into tracked verification tasks. Check linked UUTE context before publishing a bounded local clarification; do not claim whole-project absence.",
+      "navigation_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "",
+          "pattern": "Правила учета тепловой энергии|реквизит",
+          "hits": [
+            {
+              "pointer": "/normative_refs_found/13/ref",
+              "value": "Правила учета тепловой энергии и теплоносителя"
+            },
+            {
+              "pointer": "/normative_refs_found/13/note",
+              "value": "Название без реквизитов не позволяет установить конкретные правила."
+            },
+            {
+              "pointer": "/normative_refs_found/14/note",
+              "value": "Отсутствуют реквизиты утверждения."
+            },
+            {
+              "pointer": "/text_findings/27/finding",
+              "value": "В исходных документах не согласованы реквизиты: титул комплекта относится к этапу 1, приложенное ТЗ — к этапу 2; ведомость указывает 12 листов спецификации и 15 листов ПЗ, фактически представлены 15 и 20. В одной анкете отметка пола ИТП одновременно задана −4,900 и −4,450, а ведомость чертежей содержит −4,000. Требуется подтвердить применимость ТЗ и актуализировать состав комплекта и отметку, используемую для гидростатических расчетов."
+            },
+            {
+              "pointer": "/object_operation_results/4/reason",
+              "value": "Сопоставлены титулы, ведомости, ПЗ, анкеты и ТЗ; выявлены несовпадающие реквизиты."
+            },
+            {
+              "pointer": "/object_inventory_coverage/3/reason",
+              "value": "Реквизиты комплекта."
+            },
+            {
+              "pointer": "/object_registry_coverage/operations/4/receipt/reason",
+              "value": "Сопоставлены титулы, ведомости, ПЗ, анкеты и ТЗ; выявлены несовпадающие реквизиты."
+            },
+            {
+              "pointer": "/object_registry_coverage/source_inventory/132/receipt/reason",
+              "value": "Реквизиты комплекта."
+            }
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pointer": "",
+          "pattern": "Правила учета тепловой энергии|реквизит",
+          "hits": []
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pointer": "",
+          "pattern": "Правила учета тепловой энергии|реквизит",
+          "hits": [
+            {
+              "pointer": "/requests/27/candidate/candidate/finding",
+              "value": "В исходных документах не согласованы реквизиты: титул комплекта относится к этапу 1, приложенное ТЗ — к этапу 2; ведомость указывает 12 листов спецификации и 15 листов ПЗ, фактически представлены 15 и 20. В одной анкете отметка пола ИТП одновременно задана −4,900 и −4,450, а ведомость чертежей содержит −4,000. Требуется подтвердить применимость ТЗ и актуализировать состав комплекта и отметку, используемую для гидростатических расчетов."
+            },
+            {
+              "pointer": "/requests/27/candidate_group/0/candidate/finding",
+              "value": "В исходных документах не согласованы реквизиты: титул комплекта относится к этапу 1, приложенное ТЗ — к этапу 2; ведомость указывает 12 листов спецификации и 15 листов ПЗ, фактически представлены 15 и 20. В одной анкете отметка пола ИТП одновременно задана −4,900 и −4,450, а ведомость чертежей содержит −4,000. Требуется подтвердить применимость ТЗ и актуализировать состав комплекта и отметку, используемую для гидростатических расчетов."
+            }
+          ]
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operation_plan.json",
+          "sha256": "ae2e069317858431e1721209d3d2f183e16ceed61e869fbf42bb14653d041de5",
+          "pointer": "",
+          "pattern": "Правила учета тепловой энергии|реквизит",
+          "hits": []
+        }
+      ],
+      "neighbor_candidate": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/26"
+        },
+        "record": {
+          "id": "T-027",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "normative_refs",
+          "report_section": "questions",
+          "source": "Ведомость ссылочных документов, лист 1; спецификация, листы 10–12",
+          "finding": "Требуется актуализировать ссылки на приказ Минэнерго №115, ГОСТ 12820-80 и ГОСТ 14918-80 с проверкой замен и дат их введения. Для резьбового тройника указан ГОСТ 6948-75, а швеллер назван горячекатаным при ссылке на ГОСТ 8278-83. Следует проверить обозначения и соответствие выбранным изделиям. Официальный статус документов в рамках данного анализа не подтвержден.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_9167c15ea57c423ea6ad708738bb420f",
+            "blk_a7ba21ea8083491389a223015720c9cb",
+            "blk_fd984f8c5d03427497ffd926feaf8ed5",
+            "blk_9e9fdca2261a4324959220546412f377"
+          ]
+        }
+      },
+      "neighbor_recovery": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+          "pointer": "/candidate_recovery_reports/26"
+        },
+        "stage": "candidate_recovery_2f8cb37d7421ec1d",
+        "decisions": [
+          {
+            "origin": "text",
+            "pointer": "/text_findings/26",
+            "decision": "needs_data",
+            "reason": "Все пять записей подтверждены исходным TEXT. Однако сведения о действии документов, переходных положениях и области применения стандартов не предоставлены. Наличие ссылок само по себе не доказывает необходимость их замены. Буквальные записи о тройнике и швеллере подтверждены, но соответствие ссылок изделиям остаётся неустановленным. Существующие замечания не охватывают эти вопросы. До получения недостающих сведений технический дефект или малозначительная редакционная ошибка не подтверждены; обязательная актуализация не назначается.",
+            "source_refs": [
+              "blk_9167c15ea57c423ea6ad708738bb420f",
+              "blk_fd984f8c5d03427497ffd926feaf8ed5",
+              "blk_9e9fdca2261a4324959220546412f377",
+              "blk_a7ba21ea8083491389a223015720c9cb"
+            ],
+            "required_source_refs": [],
+            "required_context": [
+              "Дата выпуска и основания выбора применимой нормативной редакции проекта.",
+              "Официальные сведения о действии приказа №115, ГОСТ 12820-80 и ГОСТ 14918-80, включая замены и переходные положения.",
+              "Область применения ГОСТ 6948-75 и ГОСТ 8278-83, документация на выбранные тройник и швеллер."
+            ],
+            "target_finding_ids": [],
+            "context_queries": [
+              "ПРИКАЗ от 24 марта 2003 г. № 115",
+              "ГОСТ 12820-80",
+              "ГОСТ 14918-80",
+              "ГОСТ 6948-75",
+              "ГОСТ 8278-83",
+              "Дата выпуска"
+            ],
+            "subclaims": [
+              {
+                "id": "1",
+                "claim": "Ссылка на приказ Минэнерго №115 требует проверки актуальности.",
+                "decision": "needs_data",
+                "reason": "На странице 7, листе 1, ведомость содержит «ПРИКАЗ от 24 марта 2003 г. № 115» и наименование правил эксплуатации. Наличие ссылки подтверждено. Дата создания блока не устанавливает дату выпуска проекта; официальные сведения о действии приказа и применимых переходных положениях отсутствуют. Необходимость замены ссылки пока не установлена.",
+                "source_refs": [
+                  "blk_9167c15ea57c423ea6ad708738bb420f"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Дата выпуска проекта и официальные сведения о применимости приказа от 24.03.2003 №115 на соответствующую дату."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "ПРИКАЗ от 24 марта 2003 г. № 115",
+                  "Дата выпуска"
+                ]
+              },
+              {
+                "id": "2",
+                "claim": "Ссылка на ГОСТ 12820-80 требует проверки замены и исполнения фланцев.",
+                "decision": "needs_data",
+                "reason": "На странице 34, листе 11, для плоских приварных фланцев с соединительным выступом Ру 1,6 МПа указан ГОСТ 12820-80*. В других строках приведены фланцы по ГОСТ 33259-2015. Совместное присутствие двух стандартов для разных строк не доказывает ошибку исполнения или обязательность замены ссылки. Нужны сведения о применимости стандартов и соответствии выбранных фланцев присоединениям.",
+                "source_refs": [
+                  "blk_fd984f8c5d03427497ffd926feaf8ed5"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Официальные сведения о замене и переходных положениях ГОСТ 12820-80.",
+                  "Требования к исполнениям и присоединительным размерам указанных плоских фланцев."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "ГОСТ 12820-80",
+                  "ГОСТ 33259-2015",
+                  "Фланец 1-20-16"
+                ]
+              },
+              {
+                "id": "3",
+                "claim": "Ссылка на ГОСТ 14918-80 требует проверки актуальности.",
+                "decision": "needs_data",
+                "reason": "На странице 35, листе 12, строка «Сталь тонколистовая оцинкованная толщиной 0,5мм» содержит ГОСТ 14918-80 и количество 1000 м2. Ссылка подтверждена, но сведений о статусе стандарта, переходных положениях и применимой редакции проекта нет. Возраст обозначения не является достаточным основанием для требования его замены.",
+                "source_refs": [
+                  "blk_9e9fdca2261a4324959220546412f377"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Официальные сведения о действии и замене ГОСТ 14918-80 с условиями применения к предусмотренному оцинкованному листу."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "ГОСТ 14918-80",
+                  "Сталь тонколистовая оцинкованная"
+                ]
+              },
+              {
+                "id": "4",
+                "claim": "Для резьбового тройника указан ГОСТ 6948-75.",
+                "decision": "needs_data",
+                "reason": "Буквальный факт подтверждён: на странице 33, листе 10, для прямого тройника из ковкого чугуна с цилиндрической резьбой без покрытия Ду25 указан ГОСТ 6948-75*. Исправлять эту запись по предполагаемому распознаванию нельзя. Для вывода об ошибочности ссылки необходимы идентификация и область применения указанного стандарта; предполагаемое правильное обозначение источниками не установлено.",
+                "source_refs": [
+                  "blk_a7ba21ea8083491389a223015720c9cb"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Официальное наименование и область применения ГОСТ 6948-75.",
+                  "Документация на выбранный резьбовой тройник Ду25 с обозначением применимого стандарта."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "ГОСТ 6948-75",
+                  "Тройник 25",
+                  "Тройник прямой из ковкого чугуна"
+                ]
+              },
+              {
+                "id": "5",
+                "claim": "Швеллер назван горячекатаным при ссылке на ГОСТ 8278-83.",
+                "decision": "needs_data",
+                "reason": "На странице 35, листе 12, непосредственно приведено «Швеллеры стальные горячекатанные 100x50x5» со ссылкой на ГОСТ 8278-83. Сочетание наименования и ссылки подтверждено. Содержание стандарта и документация на выбранный профиль отсутствуют, поэтому конфликт способа изготовления с сортаментом в пределах предоставленных источников не проверен. Нельзя заранее считать исправление только редакционным: требуется установить, какое исполнение профиля предусмотрено.",
+                "source_refs": [
+                  "blk_9e9fdca2261a4324959220546412f377"
+                ],
+                "required_source_refs": [],
+                "required_context": [
+                  "Область применения и сортамент ГОСТ 8278-83.",
+                  "Узлы металлоконструкций или документация на выбранный швеллер 100x50x5, определяющие его исполнение."
+                ],
+                "target_finding_ids": [],
+                "context_queries": [
+                  "ГОСТ 8278-83",
+                  "100x50x5",
+                  "Швеллеры стальные горячекатанные"
+                ]
+              }
+            ]
+          }
+        ],
+        "context_status": "no_new_context"
+      },
+      "detected_registry_observation": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/normative_refs_found/13"
+        },
+        "record": {
+          "ref": "Правила учета тепловой энергии и теплоносителя",
+          "status": "НЕ ИДЕНТИФИЦИРОВАН",
+          "edition": null,
+          "note": "Название без реквизитов не позволяет установить конкретные правила."
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Exact source text in the request proves availability, not model understanding.",
+    "Navigation searches alone are not semantic absence proof; assessment relies on prior bounded output review and inspected neighboring candidate scope.",
+    "Trace evidence does not prove an exclusive root cause or that the proposed correction works.",
+    "No new filter control pair or model test is claimed; historical counterpart validation remains required."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "stage4_complete": false
+}

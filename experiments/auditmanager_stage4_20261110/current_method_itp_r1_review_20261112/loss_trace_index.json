@@ -202,8 +202,14 @@
       "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_text_comparison_loss_traces.json",
+          "sha256": "e84e18a308cbca718d43379f2919194cc3834059753982192f7a5154b89610dc",
+          "pointer": "/cases/0"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -238,8 +244,14 @@
       "target_id": "ITP72_wall_and_velocity:42140cc8a623c96428fe",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_text_comparison_loss_traces.json",
+          "sha256": "e84e18a308cbca718d43379f2919194cc3834059753982192f7a5154b89610dc",
+          "pointer": "/cases/1"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -288,8 +300,14 @@
       "target_id": "ITP_F028_reducer_designations:2f16d360921aab6e9949",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_text_comparison_loss_traces.json",
+          "sha256": "e84e18a308cbca718d43379f2919194cc3834059753982192f7a5154b89610dc",
+          "pointer": "/cases/2"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -338,8 +356,14 @@
       "target_id": "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_text_comparison_loss_traces.json",
+          "sha256": "e84e18a308cbca718d43379f2919194cc3834059753982192f7a5154b89610dc",
+          "pointer": "/cases/3"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -360,8 +384,14 @@
       "target_id": "ITP_F034_mixed_norm_references:2bca6641f93ace5ac5a6",
       "coverage": "absent",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_text_comparison_loss_traces.json",
+          "sha256": "e84e18a308cbca718d43379f2919194cc3834059753982192f7a5154b89610dc",
+          "pointer": "/cases/4"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -410,16 +440,28 @@
       "target_id": "ITP_F001_heat_exchanger_pressure:composite:1",
       "coverage": "absent",
       "route": "technical",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_relationship_loss_traces.json",
+          "sha256": "6faeef867e9556a7ecd824abc3ece3e9f52a013244a0d69415b975b6dd64f58b",
+          "pointer": "/cases/0"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
       "target_id": "ITP_F001_heat_exchanger_pressure:composite:3",
       "coverage": "partial",
       "route": "technical",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_relationship_loss_traces.json",
+          "sha256": "6faeef867e9556a7ecd824abc3ece3e9f52a013244a0d69415b975b6dd64f58b",
+          "pointer": "/cases/1"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -453,11 +495,11 @@
   ],
   "counts": {
     "total": 34,
-    "bounded_trace_recorded": 27,
-    "not_traced": 7
+    "bounded_trace_recorded": 34,
+    "not_traced": 0
   },
   "remaining_requirements": [
-    "Finish stage attribution for remaining targets, including missing parts of partly traced compound targets.",
+    "All 34 missing or partial targets have bounded stage traces; exclusive root causes and successful corrections remain unproven.",
     "Review precision and duplicate/section burden separately from reference coverage.",
     "Compare frozen method arms and repeats; no superiority established."
   ],
