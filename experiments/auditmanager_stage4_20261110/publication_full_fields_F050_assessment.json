@@ -1,0 +1,49 @@
+{
+  "finding_id": "F-050",
+  "status": "unsupported_command_error_removed_conditional_arithmetic_preserved_questions_split",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_050/publication_projection.json",
+  "projection_sha256": "a4fda5f3ef4e9c473b286fdd9cc0933fdd6403dd2d0a5a4f1df09962c954ea61",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png",
+      "sha256": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609",
+      "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "independent_dot_count": {
+    "DI_columns": [
+      2,
+      3,
+      4,
+      6,
+      9,
+      11,
+      13,
+      15,
+      "fire"
+    ],
+    "DO_columns": [
+      1,
+      5,
+      8,
+      10,
+      12,
+      14
+    ],
+    "DI_total": 9,
+    "DO_total": 6
+  },
+  "checks": [
+    "Сигнал 4 имеет точку DI без DO; подпись пуск/стоп не устанавливает направление команды.",
+    "Непосредственный подсчёт точек подтверждает напечатанные DI=9 и DO=6; арифметической ошибки текущей матрицы нет.",
+    "Условные 8/7 верны только при переносе одной точки и неизменности остальных; перенос не предписан без установления функции.",
+    "Второй вопрос содержит производный пересчёт, не самостоятельный дефект; объединить с вопросом о назначении.",
+    "Рекомендация согласования оставлена pending, что требует проверки сохранения в итоговой выдаче.",
+    "Смешанное слово supplied в служебном обосновании не переносить в пользовательский текст."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
