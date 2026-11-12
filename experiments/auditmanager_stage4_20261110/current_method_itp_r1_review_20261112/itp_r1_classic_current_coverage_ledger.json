@@ -8,12 +8,26 @@
   "targets": [
     {
       "target_id": "B-ITP-F-007:0725100843103b391be5",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-012"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/document_identity_bounded_review.json",
+          "sha256": "acabcb3118e4be651e25eb6575709848db4f38a2966a41c70fddbe115daa3fba"
+        }
+      ],
+      "reason": "PZIIversusTZIwith technological reserve retained as document requirement conflict, without actual power reliability or missingVRU claim. F038/F063preserve separate stage applicability question; matching title alone does not resolve it.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-012": "technical_findings"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      }
     },
     {
       "target_id": "B-ITP-F-011:f633e04640a9e4e3c71a",
@@ -451,12 +465,28 @@
     },
     {
       "target_id": "B-ITP-F-023:4c138c58b906579e3ebd",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-020",
+        "F-021"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_bounded_review.json",
+          "sha256": "510f447d4ecd4a3191e94784e99257cff196d0a1b1cd6eed396f6a5adf42e67c"
+        }
+      ],
+      "reason": "BothDOOandventilation2.5minimum/3.0precharge instructions retained. Reconstruction remains conditional, not final247/3810Lrequired equipment. Review separately flags inference used to explain printed152L.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-020": "technical_findings",
+          "F-021": "technical_findings"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      }
     },
     {
       "target_id": "B-ITP-F-024:f36bd082707154691153",
@@ -750,30 +780,76 @@
     },
     {
       "target_id": "B-ITP-F-038:705f2262875c31478443",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-040",
+        "F-062"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ],
+      "reason": "Floor questionnaire-4.900/-4.450 retained; F040also retains plan-title-4.000 with explicit nonidentity to finished floor. Duplicated core disagreement gets one target match.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-040": "technical_findings",
+          "F-062": "technical_findings"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      }
     },
     {
       "target_id": "B-ITP-F-039:20e8e64d70bd0535ad4d",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-039"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/document_identity_bounded_review.json",
+          "sha256": "acabcb3118e4be651e25eb6575709848db4f38a2966a41c70fddbe115daa3fba"
+        }
+      ],
+      "reason": "12/15specification and15/20PZnumbering comparisons retained, without equating max number to sheet count. Visible problem/description/solution omit mandatory .C/.COdesignation discrepancy; source metadata alone is not released claim.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-039": "questions"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      }
     },
     {
       "target_id": "B-ITP-F-040:7f53850450a0df3ef46e",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-038",
+        "F-063"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ],
+      "reason": "Stage1project versus stage2TZ retained with common cadastral/project identity and unresolved applicability; duplicated rows do not multiply coverage.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-038": "questions",
+          "F-063": "questions"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      }
     },
     {
       "target_id": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
@@ -1073,12 +1149,38 @@
     },
     {
       "target_id": "ITP_F002_pump_pressure_selection:63286b8abd3e157f4c25",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-006",
+        "F-008",
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/primary_loop_pressure_bounded_review.json",
+          "sha256": "c0d137e428a373af8321ebc5aa853016cefeedb36af9e27f2be0847b79fb5dc1"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/zone3_pressure_bounded_review.json",
+          "sha256": "a7676224f9566fe295c244b9ddad7fab3d887dcaeb7326c61188d28e06e5059d"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/gvs_zone3_pressure_bounded_review.json",
+          "sha256": "a7767b4666b322e80bc5b00b5bf15089cb2b3213d50e04c09beceb529b14deb1"
+        }
+      ],
+      "reason": "AllK14/K11/K17selected16barratings related to respective17.4/16.3bar system inputs and third-zone174.55m requirement. No exact port pressures inferred. Separate45schematic setting conflict is assessed under its own partially covered target.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-006": "technical_findings",
+          "F-008": "technical_findings",
+          "F-007": "technical_findings"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      }
     },
     {
       "target_id": "ITP_F003_main_circuit_components:52cbecb1ef185b3847ce",
@@ -1100,21 +1202,49 @@
     },
     {
       "target_id": "ITP_F005_test_pressure_scope:88ef772ecba424138f46",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-010"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pressure_unit_and_fuse_bounded_review.json",
+          "sha256": "902b0fca5d89e39aa82ad3dd53bb1ed35c902302cd63dfd4289b611d8dfd0272"
+        }
+      ],
+      "reason": "Literal12.5kg/cmambiguity retained; final focuses on unit and does not retain inquiry about circuit/test-section boundaries. No unsupported new test pressure credited.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-010": "technical_findings"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      }
     },
     {
       "target_id": "ITP_F006_fuse_instruction:3453d72502ca1458b28c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pressure_unit_and_fuse_bounded_review.json",
+          "sha256": "902b0fca5d89e39aa82ad3dd53bb1ed35c902302cd63dfd4289b611d8dfd0272"
+        }
+      ],
+      "reason": "Instruction8.4energized fuse replacement retained; neighbouring general protection acknowledged. Actual block permissibility and particular normative violation unresolved; output technical route differs from question target.",
+      "section_assessment": "incorrect",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-011": "technical_findings"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      }
     },
     {
       "target_id": "ITP_F006_fuse_instruction:427e462f69e3375e880c",
@@ -1313,12 +1443,26 @@
     },
     {
       "target_id": "ITP_F001_heat_exchanger_pressure:composite:2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/gvs_zone3_pressure_bounded_review.json",
+          "sha256": "a7767b4666b322e80bc5b00b5bf15089cb2b3213d50e04c09beceb529b14deb1"
+        }
+      ],
+      "reason": "Calculationw203119581linked toK8;16kgf/cm2design compared with third-zone179.55/174.55m inputs, not conflated with flange/test rating. Actual operating conditions remain unresolved.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "technical_findings",
+        "actual": {
+          "F-005": "technical_findings"
+        },
+        "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+      }
     },
     {
       "target_id": "ITP_F001_heat_exchanger_pressure:composite:3",
