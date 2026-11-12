@@ -162,20 +162,32 @@
     {
       "finding_id": "F-017",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_temperature_and_volume_claim_adjudication.json",
+        "sha256": "84ade90672fedb392a082c9a3710f34bd36575aa9f8d7e387e11272283bacf2c",
+        "pointer": "/finding_adjudications/5"
+      }
     },
     {
       "finding_id": "F-018",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_temperature_and_volume_claim_adjudication.json",
+        "sha256": "84ade90672fedb392a082c9a3710f34bd36575aa9f8d7e387e11272283bacf2c",
+        "pointer": "/finding_adjudications/0"
+      }
     },
     {
       "finding_id": "F-019",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_temperature_and_volume_claim_adjudication.json",
+        "sha256": "84ade90672fedb392a082c9a3710f34bd36575aa9f8d7e387e11272283bacf2c",
+        "pointer": "/finding_adjudications/1"
+      }
     },
     {
       "finding_id": "F-020",
@@ -198,8 +210,12 @@
     {
       "finding_id": "F-023",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_temperature_and_volume_claim_adjudication.json",
+        "sha256": "84ade90672fedb392a082c9a3710f34bd36575aa9f8d7e387e11272283bacf2c",
+        "pointer": "/finding_adjudications/6"
+      }
     },
     {
       "finding_id": "F-024",
@@ -500,14 +516,22 @@
     {
       "finding_id": "F-064",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_temperature_and_volume_claim_adjudication.json",
+        "sha256": "84ade90672fedb392a082c9a3710f34bd36575aa9f8d7e387e11272283bacf2c",
+        "pointer": "/finding_adjudications/7"
+      }
     },
     {
       "finding_id": "F-065",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_temperature_and_volume_claim_adjudication.json",
+        "sha256": "84ade90672fedb392a082c9a3710f34bd36575aa9f8d7e387e11272283bacf2c",
+        "pointer": "/finding_adjudications/2"
+      }
     },
     {
       "finding_id": "F-066",
@@ -522,8 +546,12 @@
     {
       "finding_id": "F-067",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_temperature_and_volume_claim_adjudication.json",
+        "sha256": "84ade90672fedb392a082c9a3710f34bd36575aa9f8d7e387e11272283bacf2c",
+        "pointer": "/finding_adjudications/3"
+      }
     },
     {
       "finding_id": "F-068",
@@ -554,8 +582,12 @@
     {
       "finding_id": "F-071",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_temperature_and_volume_claim_adjudication.json",
+        "sha256": "84ade90672fedb392a082c9a3710f34bd36575aa9f8d7e387e11272283bacf2c",
+        "pointer": "/finding_adjudications/4"
+      }
     },
     {
       "finding_id": "F-072",
@@ -586,8 +618,8 @@
   ],
   "counts": {
     "total": 74,
-    "bounded_claim_adjudication": 33,
-    "source_review_only": 41
+    "bounded_claim_adjudication": 41,
+    "source_review_only": 33
   },
   "limits": [
     "A bounded assessment may find mixed or unresolved claims; it is not a pass count.",

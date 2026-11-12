@@ -1,0 +1,306 @@
+{
+  "version": 1,
+  "scope": "Eight temperature and volume output rows; published-calculation discrepancies distinct from actual useful-capacity failures",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "pointer": ""
+    },
+    "reference_ledger": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+      "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-018",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/17"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+        "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "bounded_published_basis_discrepancy_supported",
+      "supported_claim": "DOO tank80/60 mean70 differs from PZ/TZ/exchanger75/55 mean65.",
+      "recommended_disposition": "Retain temperature-basis clarification; higher selected temperature alone does not prove undersizing.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-024:f36bd082707154691153",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-018": "technical_findings",
+              "F-019": "technical_findings",
+              "F-071": "technical_findings"
+            },
+            "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+          }
+        }
+      ],
+      "limits": "No measured failure, actual tank inadequacy, manufacturer equivalence or universal numerical tolerance established.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-019",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/18"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+        "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "bounded_published_basis_discrepancy_supported",
+      "supported_claim": "Ventilation tank80/60 mean70 differs from PZ/TZ85/60 mean72.5.",
+      "recommended_disposition": "Retain temperature-basis clarification; no shortage of two1500L tanks established without updated calculation.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-024:f36bd082707154691153",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-018": "technical_findings",
+              "F-019": "technical_findings",
+              "F-071": "technical_findings"
+            },
+            "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+          }
+        }
+      ],
+      "limits": "No measured failure, actual tank inadequacy, manufacturer equivalence or universal numerical tolerance established.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-065",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/64"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+        "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6",
+        "pointer": "/cases/2"
+      },
+      "factual_assessment": "bounded_published_basis_discrepancy_supported",
+      "supported_claim": "Zone2 method uses10C initial temperature while supplied expansion table uses0C.",
+      "recommended_disposition": "Retain initial-state reconciliation; do not compute a new exact coefficient from approximate table entries.",
+      "reference_section_assessments": [],
+      "limits": "No measured failure, actual tank inadequacy, manufacturer equivalence or universal numerical tolerance established.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-067",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/66"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+        "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6",
+        "pointer": "/cases/3"
+      },
+      "factual_assessment": "bounded_published_basis_discrepancy_supported",
+      "supported_claim": "Zone3 method10C and supplied table0C have different initial states; printed42.52L and55.3L arithmetic reproduces.",
+      "recommended_disposition": "Retain initial-state clarification; no LVF200 insufficiency conclusion and no subtraction of approximate percentages as exact coefficient.",
+      "reference_section_assessments": [],
+      "limits": "No measured failure, actual tank inadequacy, manufacturer equivalence or universal numerical tolerance established.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-071",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/70"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+        "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6",
+        "pointer": "/cases/4"
+      },
+      "factual_assessment": "bounded_published_basis_discrepancy_supported",
+      "supported_claim": "Same ventilation temperature relationship as F-019, with additional K5 selection and section18-18 evidence.",
+      "recommended_disposition": "Merge into F-019, preserving new sources and temperature-regime limitations.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-024:f36bd082707154691153",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-018": "technical_findings",
+              "F-019": "technical_findings",
+              "F-071": "technical_findings"
+            },
+            "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+          }
+        }
+      ],
+      "limits": "No measured failure, actual tank inadequacy, manufacturer equivalence or universal numerical tolerance established.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-017",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/16"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_volumes_and_loads_bounded_review.json",
+        "sha256": "ed387f5c3ed2543e80050d36d1926a59c7d7579c9212ac1c3302509be0595d1b",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "bounded_published_basis_discrepancy_supported",
+      "supported_claim": "Zone2 selection13016L differs from questionnaire15.2m³; conditional formula gives446.1808L at15.2m³.",
+      "recommended_disposition": "Retain input-volume reconciliation. The50L damper cannot automatically be included or excluded from usable expansion compensation; no whole-system deficit proved.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-020:2052d4e286115c641e7f",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-017": "technical_findings"
+            },
+            "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+          }
+        }
+      ],
+      "limits": "No measured failure, actual tank inadequacy, manufacturer equivalence or universal numerical tolerance established.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-023",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/22"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_volumes_and_loads_bounded_review.json",
+        "sha256": "ed387f5c3ed2543e80050d36d1926a59c7d7579c9212ac1c3302509be0595d1b",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "bounded_published_basis_discrepancy_supported",
+      "supported_claim": "Zone3 selection1883L differs from questionnaire3.7m³ by1.817m³.",
+      "recommended_disposition": "Retain input-volume and scope clarification; do not infer LVF200 insufficiency.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-020:ddebb96399a114f724d6",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-023": "technical_findings",
+              "F-034": "technical_findings"
+            },
+            "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+          }
+        }
+      ],
+      "limits": "No measured failure, actual tank inadequacy, manufacturer equivalence or universal numerical tolerance established.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-064",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/63"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_volumes_and_loads_bounded_review.json",
+        "sha256": "ed387f5c3ed2543e80050d36d1926a59c7d7579c9212ac1c3302509be0595d1b",
+        "pointer": "/cases/3"
+      },
+      "factual_assessment": "bounded_published_basis_discrepancy_supported",
+      "supported_claim": "Selection criterion requires at least computed606.9L; one main LVF600 is specified. Exact printed-input calculation gives606.923304L.",
+      "recommended_disposition": "Retain inconsistency with the published selection criterion; reconcile expansion-temperature basis first. Damper80L is not automatically an extra main vessel, and installed useful capacity is unproved.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-022:8cd785f32b0f2581717f",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-064": "technical_findings"
+            },
+            "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+          }
+        }
+      ],
+      "limits": "No measured failure, actual tank inadequacy, manufacturer equivalence or universal numerical tolerance established.",
+      "engineer_utility": "not_newly_measured"
+    }
+  ],
+  "calculations": {
+    "DOO_means_C": [
+      70,
+      65
+    ],
+    "ventilation_means_C": [
+      70,
+      72.5
+    ],
+    "zone2_volume_difference_m3": "2.184",
+    "zone2_conditional_required_L": "446.1808",
+    "zone3_volume_difference_m3": "1.817",
+    "zone3_printed_expansion_L": "42.51814",
+    "zone3_printed_required_L": "55.273582",
+    "zone1_printed_required_L": "606.923304"
+  },
+  "renumbering_reference_error": {
+    "owner": "F-064",
+    "stale_id": "F-066",
+    "occurrences_in_description": 3,
+    "intended_current_id": "F-064",
+    "pre_merge_evidence": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_pre_merge.json",
+      "sha256": "bdbe8ec4189ec74e39ebda459ec1863ff3f96f3a92a35b2ab800d0decb7bdb43",
+      "pointer": "/findings/65"
+    },
+    "final_owner_evidence": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": "/findings/63"
+    },
+    "same_source_stage": "object_operations_5b051b292826d72c",
+    "same_source_finding_ids": [
+      "O-7f0bf90a07cc483741331845",
+      "T-013"
+    ],
+    "wrong_existing_target_evidence": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": "/findings/65"
+    },
+    "wrong_existing_target_problem": "Расхождение указанного напора К10 при одинаковой подаче",
+    "recommendation": "Remove redundant self-references or render them from stable identity after merge; existence-only checks are insufficient."
+  },
+  "limits": [
+    "Arithmetic follows printed formulas only, not independent validation of vessel-sizing methodology.",
+    "Reference route disagreements remain separate from factual validity.",
+    "No correction to frozen output or evaluation denominator."
+  ],
+  "whole_output_precision_finalized": false,
+  "runtime_changed": false,
+  "model_calls": 0
+}
