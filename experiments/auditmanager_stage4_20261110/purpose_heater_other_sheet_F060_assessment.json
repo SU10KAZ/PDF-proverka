@@ -1,0 +1,21 @@
+{
+  "finding_id": "F-060",
+  "status": "false_equivalence_removed_question_admission_unproven",
+  "projection_path": "/tmp/auditmanager_publication_heater_other_sheet_20261112_run/publication_projection.json",
+  "projection_sha256": "649085ed4b34a013e71999eb1159f99892e87aa314e7e65f29291ae95f869028",
+  "validation_path": "/tmp/auditmanager_publication_heater_other_sheet_20261112_run/publication_validation.json",
+  "checks": [
+    "Same source-only and publication instructions used on second sheet; no F060 expected verdict supplied.",
+    "Technical assertion of identical electric symbol no longer published; trace to TS1 and difference from legend retained.",
+    "Exactly one consolidated question, with recommendation and conditional interpretation combined; equipment and normative limitations remain pending.",
+    "Question is about unresolved legend correspondence, not a confirmed project violation. Context-search exhaustion and independent engineer action not established by this trial; no automatic admission."
+  ],
+  "positive_control": "Earlier F006 trial retained independent pressure quantities on first image; unchanged other-sheet method does not independently prove all positive preservation.",
+  "limits": [
+    "DEV after observed failure; no holdout generalization claim.",
+    "No F060 final admission or Excel tested.",
+    "Raw model observations remain untrusted."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}

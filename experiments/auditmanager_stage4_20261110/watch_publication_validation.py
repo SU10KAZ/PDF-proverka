@@ -28,7 +28,8 @@ def collect(root, output):
     for attempt in successes:
         stage = attempt['stage']
         fid = mapping[stage]
-        receipt_path = output / 'evaluations' / stage / 'publication_validation.json'
+        evaluation_dir = output / 'evaluations' / stage if len(prepared['requests']) > 1 else output
+        receipt_path = evaluation_dir / 'publication_validation.json'
         receipt = json.loads(receipt_path.read_text()) if receipt_path.exists() else None
         if receipt is None or receipt.get('response_sha256') != attempt['response_sha256']:
             receipt = evaluate(root, output, fid)
