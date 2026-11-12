@@ -1,0 +1,21 @@
+{
+  "finding_id": "F-006",
+  "status": "positive_same_image_control_preserved_all_three_distributions",
+  "candidate_projection_path": "/tmp/auditmanager_publication_heater_positive_20261112_run/publication_projection.json",
+  "candidate_projection_sha256": "f45ce47320c44a653fbacd84680a504e059bfa9c0b7dd93f2155fc0ff7bbb89a",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F006_assessment.json",
+  "source_review_sha256": "c0f921b7b3da63731ce0f6622eed600298f0e1639f51027856a944f4f1e2ba06",
+  "checks": [
+    "Сохранены перечень 1/3, спецификация 3/1 и графическая матрица 2/2, общее число четыре.",
+    "Сохранено отдельное расхождение PDS4; ΔP=100 Па не подменяет диапазон таблицы.",
+    "Слово переставлены заменено описанием расхождения без приписывания причины и выбора правильного исполнения.",
+    "Чтение символов нагревателя не используется как основание снять независимое замечание о датчиках.",
+    "Рекомендация сохранена; фактическая непригодность поставленных приборов не утверждается."
+  ],
+  "limits": [
+    "Одна DEV-пара; положительный контроль не доказывает переносимость.",
+    "Риск остаётся pending; итоговый отчёт ещё не проверен."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}

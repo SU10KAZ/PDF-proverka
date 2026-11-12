@@ -1,0 +1,28 @@
+{
+  "status": "partial_negative_improvement_positive_preserved_not_accepted_for_release",
+  "evidence": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/heater_source_reading_assessment.json",
+      "sha256": "11d46a81be1a34e061990a8a22f0b996278ef3ad3455ba56142545394c4f4f42"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/purpose_heater_reading_F040_assessment.json",
+      "sha256": "48c2903c5808476f5444356de870c60eb7f701dfba6b1666b3f9a4f25dda86de"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/purpose_heater_positive_F006_assessment.json",
+      "sha256": "50e06a51dca9811edf0f30bbe974fe6859dd27d0f015dfd42064452caccbf92e"
+    }
+  ],
+  "negative": "F040: false electric-symbol assertion removed, but two replacement questions remain without established engineer value.",
+  "positive": "F006: all source-backed range/quantity disagreements retained on the same image.",
+  "method": "Source-only shape/connectivity reading, then reconciliation with full untrusted reading and original image.",
+  "limits": [
+    "Reading prompt and its use were DEV-selected after an observed failure.",
+    "Same Astra model in both passes; no independent model contribution measurement.",
+    "No whole-image suppression.",
+    "No final admission, six-project comparison or production acceptance."
+  ],
+  "next_action": "Use explicit semantic admission to reject unsupported replacement questions, preserving original thesis and reason; verify final export and repeat graphic controls before broad adoption.",
+  "production_acceptance": false
+}
