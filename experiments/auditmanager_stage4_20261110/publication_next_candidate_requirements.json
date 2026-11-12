@@ -13,7 +13,22 @@
         "F-012 p3 unit-of-application ambiguity",
         "F-010 designation clarification must remain a question"
       ],
-      "verification": "Source-reviewed final rendering and distinct engineer action count; preserve complete input disposition and conditional risks."
+      "verification": "Source-reviewed final rendering and distinct engineer action count; preserve complete input disposition and conditional risks.",
+      "bounded_control_status": "source_reviewed_DEV_controls_pass_opt_in_candidate_not_final_admission",
+      "evidence_paths": [
+        "experiments/auditmanager_stage4_20261110/publication_editorial_controls_summary.json",
+        "experiments/auditmanager_stage4_20261110/publication_candidate_module_replay.json"
+      ],
+      "candidate_symbol": "backend.app.pipeline.stages.findings_merge.publication_reconciliation.EDITORIAL_PROVENANCE_INSTRUCTIONS",
+      "instruction_sha256": "416f1e8abed5e6761e7993ac77c0aa7c5365c43c13f733e0935e6899fbeb195b",
+      "additional_observed_failures": [
+        "F-076 recommendation and conditional risk split into two questions",
+        "F-077 recommendation duplicates scope question"
+      ],
+      "bounded_controls": [
+        "F-061 dependent risk retained in parent",
+        "F-054 count correction retained in parent"
+      ]
     },
     {
       "id": "PUB-02",
@@ -69,7 +84,17 @@
         "F-004/F-012 recommendations are not additional questions",
         "Conditional actual procurement risks are not automatic engineer queries"
       ],
-      "verification": "Final rendered report must retain explicit question and unresolved evidence status; no universal pending-to-question conversion. Include preservation and workload checks."
+      "verification": "Final rendered report must retain explicit question and unresolved evidence status; no universal pending-to-question conversion. Include preservation and workload checks.",
+      "bounded_control_status": "source_reviewed_DEV_controls_pass_opt_in_candidate_not_final_admission",
+      "evidence_paths": [
+        "experiments/auditmanager_stage4_20261110/publication_editorial_controls_summary.json",
+        "experiments/auditmanager_stage4_20261110/publication_candidate_module_replay.json"
+      ],
+      "candidate_symbol": "backend.app.pipeline.stages.findings_merge.publication_reconciliation.EDITORIAL_PROVENANCE_INSTRUCTIONS",
+      "instruction_sha256": "416f1e8abed5e6761e7993ac77c0aa7c5365c43c13f733e0935e6899fbeb195b",
+      "bounded_controls": [
+        "F-057 unresolved signal-purpose question retained without technical promotion"
+      ]
     },
     {
       "id": "PUB-07",
@@ -103,7 +128,18 @@
         "F-053 TS2 in the actual functional diagram versus TS1/ТС1 in wiring and journal remains a genuine project-document discrepancy."
       ],
       "verification": "Prove input provenance and attached-source identity. Revised parent must preserve the actual polarity issue; corrected typo must not become a separate question. Positive control must retain the project discrepancy.",
-      "limits": "Control pair source-reviewed, not engineer-accepted; candidate mechanism and comparative model test pending."
+      "limits": "F062/F053 source-reviewed control pair passed with the opt-in candidate; exact packets reproduced after module extraction. Not engineer acceptance, final publication admission or whole-run improvement. Combined prompt contribution not isolated.",
+      "bounded_control_status": "source_reviewed_DEV_controls_pass_opt_in_candidate_not_final_admission",
+      "evidence_paths": [
+        "experiments/auditmanager_stage4_20261110/publication_editorial_controls_summary.json",
+        "experiments/auditmanager_stage4_20261110/publication_candidate_module_replay.json"
+      ],
+      "candidate_symbol": "backend.app.pipeline.stages.findings_merge.publication_reconciliation.EDITORIAL_PROVENANCE_INSTRUCTIONS",
+      "instruction_sha256": "416f1e8abed5e6761e7993ac77c0aa7c5365c43c13f733e0935e6899fbeb195b",
+      "bounded_controls": [
+        "F-062 audit typo question removed while polarity issue retained",
+        "F-053 genuine project designation conflict preserved"
+      ]
     }
   ],
   "sealed_queue_modified": false,
