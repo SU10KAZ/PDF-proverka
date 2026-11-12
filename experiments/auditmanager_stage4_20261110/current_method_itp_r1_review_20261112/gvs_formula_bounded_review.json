@@ -98,12 +98,18 @@
     "output": "technical_findings",
     "frozen_target": "question",
     "status": "section_disagreement",
-    "eligible_for_run_scoring": false,
-    "limit": "Frozen target explicitly ineligible for run scoring; do not silently add this row to the87-target denominator. Do not count arithmetic hundredths as independent defects."
+    "eligible_for_run_scoring": true,
+    "limit": "Frozen evaluation_contract has authority over historical preparation flags. This question is already included in the87-target full-input ledger. Do not add or remove targets based on legacy eligible_for_run_scoring=false. Arithmetic hundredths are not independent defects."
   },
   "negative_control": "The inlet sum explicitly uses maximum54.05, not mean-flow sum. This premise discrepancy alone does not prove incorrect325x7 inlet or heat exchanger selection. Two parallel50-percent units are not two stages.",
   "entire_output_reviewed": false,
   "quality_score": null,
   "runtime_changed": false,
-  "model_calls": 0
+  "model_calls": 0,
+  "evaluation_correction": {
+    "prior_review_sha256": "46dc9c55163e2f607a425e40ff142f132602ee6b3ba6fb1ad3f90071c0cadfa6",
+    "error": "Misread historical eligible_for_run_scoring=false as current exclusion.",
+    "authority": "evaluator_release_current_methods_20261112.json evaluation_contract.authority and .availability; existing ITP ledger includes ITP_F010_GVS_formula:e2d706356b5cbdcedb39.",
+    "impact": "No finalized metric existed; target remains in original87-target denominator."
+  }
 }
