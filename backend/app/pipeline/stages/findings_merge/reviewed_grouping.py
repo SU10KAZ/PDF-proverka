@@ -6,6 +6,37 @@ from ..findings_verify.source_review_evidence import evidence_digest
 from backend.app.services.findings.report_routing import report_section_key
 
 
+
+def _inherited_scope_lines(decision, member_ids):
+    """Expose reviewed limitations without resolving or endorsing member claims."""
+    review = decision.get('source_review')
+    if review is None:
+        return []
+    if not isinstance(review, dict):
+        raise ValueError('invalid_group_source_review')
+    issues = review.get('inherited_member_issues', [])
+    if not isinstance(issues, list):
+        raise ValueError('invalid_inherited_group_issues')
+    if not issues:
+        return []
+    binding = review.get('binding', {})
+    if (not isinstance(binding, dict) or review.get('action') != 'group'
+            or any(binding.get(k) != decision.get(k) for k in
+                   ('proposal_sha256', 'members_sha256', 'source_md_sha256'))):
+        raise ValueError('stale_group_source_review')
+    lines = ['Ограничения проверки отдельных замечаний:']
+    for issue in issues:
+        if (not isinstance(issue, dict) or not isinstance(issue.get('member_ids'), list)
+                or not issue['member_ids']
+                or any(not isinstance(i, str) or i not in member_ids for i in issue['member_ids'])
+                or len(set(issue['member_ids'])) != len(issue['member_ids'])
+                or not isinstance(issue.get('issue'), str) or not issue['issue'].strip()
+                or not isinstance(issue.get('evidence'), list) or not issue['evidence']):
+            raise ValueError('invalid_inherited_group_issue')
+        lines.append('[' + ', '.join(issue['member_ids']) + '] ' + issue['issue'])
+    return lines + ['']
+
+
 def apply_reviewed_group(document, proposal, decision, source_md):
     """Apply one approved group or preserve the entire document with a refusal.
 
@@ -55,7 +86,7 @@ def apply_reviewed_group(document, proposal, decision, source_md):
         merged['solution']=proposal['common_corrective_action']
         # Explicit member-level text remains visible, not only in a hidden archive.
         labels=dict(problem='Проблема',description='Описание',solution='Решение',risk='Риск',consequence='Последствия',norm='Норма',norm_quote='Цитата нормы',sheet='Лист',page='Страница',location='Место')
-        lines=[]
+        lines=_inherited_scope_lines(decision, member_ids)
         for f in members:
             lines.append(f"[{f['id']}]")
             for key in ('problem','description','solution','risk','consequence','norm','norm_quote','sheet','page','location'):

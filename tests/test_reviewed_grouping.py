@@ -69,3 +69,42 @@ def test_overlapping_groups_never_choose_first_winner(tmp_path):
     r=run_group_admission_phase(tmp_path,md)
     assert r['applied']==0 and r['not_applied']==2 and path.read_bytes()==raw
     assert all(x['reason']=='overlapping_group_proposals' for x in r['receipts'])
+
+
+def with_scope_note(decision):
+    decision['source_review'] = {
+        'action': 'group',
+        'binding': {k: decision[k] for k in ('proposal_sha256','members_sha256','source_md_sha256')},
+        'inherited_member_issues': [{'member_ids': ['A'],
+            'issue': 'Принадлежность схемы к спецификации не подтверждена.',
+            'evidence': [{'type':'text','block_id':'b','quote':'Shared specification'}]}],
+    }
+
+
+def test_inherited_scope_limits_are_visible_without_changing_member_claims():
+    doc,p,d,md=case();with_scope_note(d)
+    out,receipt=apply_reviewed_group(doc,p,d,md)
+    assert receipt['status']=='applied'
+    group=out['findings'][0]
+    note=d['source_review']['inherited_member_issues'][0]['issue']
+    assert note in group['description']
+    assert group['description'].index(note) < group['description'].index('Проблема:')
+    assert group['grouping_original_findings']==doc['findings'][:2]
+    assert group['problem']==p['shared_issue'] and group['solution']==p['common_corrective_action']
+    assert out['findings'][1]==doc['findings'][2]
+    for member in doc['findings'][:2]:
+        for field in ('problem','description','solution','risk','norm'):
+            assert member[field] in group['description']
+
+
+@pytest.mark.parametrize('bad',['foreign_member','stale_source','missing_evidence','duplicate_member','oversize_note'])
+def test_unbound_or_oversize_scope_notes_preserve_separate_findings(bad):
+    doc,p,d,md=case();with_scope_note(d)
+    review=d['source_review'];note=review['inherited_member_issues'][0]
+    if bad=='foreign_member':note['member_ids']=['C']
+    if bad=='stale_source':review['binding']['source_md_sha256']='changed'
+    if bad=='missing_evidence':note['evidence']=[]
+    if bad=='duplicate_member':note['member_ids']=['A','A']
+    if bad=='oversize_note':note['issue']='x'*32768
+    out,receipt=apply_reviewed_group(doc,p,d,md)
+    assert receipt['status']=='not_applied' and out==doc
