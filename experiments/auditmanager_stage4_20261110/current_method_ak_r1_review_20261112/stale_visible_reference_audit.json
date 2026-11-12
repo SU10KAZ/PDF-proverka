@@ -1,0 +1,429 @@
+{
+  "status": "stale_visible_reference_binding_and_code_reproduction",
+  "run": "ak_r1_classic_current",
+  "source": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+  },
+  "code": {
+    "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+    "sha256": "cf1fa5ec01ca73708036ad41cfe7f6a82fd8f3e25a6360b277045cfb2b6e7be3",
+    "function": "renumber_findings_sequentially",
+    "same_as_frozen_capsule": true
+  },
+  "affected_findings": 21,
+  "affected_addenda": 40,
+  "rows": [
+    {
+      "finding_id": "F-044",
+      "addendum_pointer": "/findings/43/recovery_addenda/2",
+      "historical_target_id": "F-045",
+      "historical_reason": "Канал 16 связан с М3 верхнего вентилятора Ва3.1, а таблица называет его состоянием резервного вентилятора. Сохранено в общем F-045.",
+      "current_reference_target_problem": "Полярность отбора давления PDS3 и PDS4 противоположна направлению повышения давления на вытяжных вентиляторах.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-044",
+      "addendum_pointer": "/findings/43/recovery_addenda/3",
+      "historical_target_id": "F-045",
+      "historical_reason": "Канал 19 связан с М4 нижнего вентилятора Ва3.1р, а таблица называет его состоянием основного вентилятора. Сохранено в общем F-045.",
+      "current_reference_target_problem": "Полярность отбора давления PDS3 и PDS4 противоположна направлению повышения давления на вытяжных вентиляторах.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-047",
+      "addendum_pointer": "/findings/46/recovery_addenda/0",
+      "historical_target_id": "F-048",
+      "historical_reason": "Линия PDS3 прослеживается к колонке 12 с диапазоном 20–200 Па. Строка PDS1-PDS3 перечня и позиция 7.3 раздела ШАУВ-2-К5ПЧ задают 50–500 Па. Расхождение сохранено в F-048 без вывода о непригодности прибора.",
+      "current_reference_target_problem": "Подписи состояния основных и резервных вентиляторов Пн5.1 и Вн5.1 перепутаны.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-047",
+      "addendum_pointer": "/findings/46/recovery_addenda/1",
+      "historical_target_id": "F-048",
+      "historical_reason": "Колонка 12 схемы, связанная с PDS3, содержит 20–200 Па; перечень и позиция 7.3 СО предусматривают 50–500 Па. Сохранено в общем F-048 с обоими source_finding_ids. Уставка 50 Па не устраняет различие документированных диапазонов, но не позволяет объявить прибор непригодным.",
+      "current_reference_target_problem": "Подписи состояния основных и резервных вентиляторов Пн5.1 и Вн5.1 перепутаны.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-050",
+      "addendum_pointer": "/findings/49/recovery_addenda/0",
+      "historical_target_id": "F-052",
+      "historical_reason": "В колонке 4 с подписью пуска/останова нагревателя точка находится в DI; отметки DO нет. Это непосредственное основание F-052.",
+      "current_reference_target_problem": "Функция пуска/останова электронагревателя По5.1 показана на дискретном входе DI.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-050",
+      "addendum_pointer": "/findings/49/recovery_addenda/1",
+      "historical_target_id": "F-052",
+      "historical_reason": "В колонке 4 пуска/останова нагревателя точка стоит в DI, строка DO не отмечена. Несогласованность назначения и направления сохранена в F-052.",
+      "current_reference_target_problem": "Функция пуска/останова электронагревателя По5.1 показана на дискретном входе DI.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-051",
+      "addendum_pointer": "/findings/50/recovery_addenda/1",
+      "historical_target_id": "F-053",
+      "historical_reason": "На изображении прочитано TS 2 у нагревателя Пу5.1. Авторитетный MD содержит ТС1 в перечне и в конце линии Пу5.1-2 от ШАУВ-5-К5ПЧ. Этот конфликт сохранён в общем F-053 с обоими поддерживающими source_finding_ids.",
+      "current_reference_target_problem": "Обозначение термостата По5.1 на функциональной схеме расходится с перечнем элементов и кабельным журналом.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-052",
+      "addendum_pointer": "/findings/51/recovery_addenda/1",
+      "historical_target_id": "F-054",
+      "historical_reason": "Колонка 7 «Электр. воздухонагреватель пуск/стоп» отмечена в DI, строка DO этой колонки пуста. F-054 сохраняет несогласованность подписи и направления, без вывода об отсутствии управления во всей установке.",
+      "current_reference_target_problem": "Итог DO=10 не соответствует 11 подключениям в таблице сигналов ШАУВ-1-К5АС.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-053",
+      "addendum_pointer": "/findings/52/recovery_addenda/1",
+      "historical_target_id": "F-055",
+      "historical_reason": "Символ TS 2 над нагревателем и строка одного комплектного термостата ТС1 непосредственно представлены. Конфликт номера позиции сохранён в F-055.",
+      "current_reference_target_problem": "Полярность отборов давления PDS3 и PDS4 противоположна повышению давления на вентиляторах Ва4.1 и Ва4.1р.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-054",
+      "addendum_pointer": "/findings/53/recovery_addenda/0",
+      "historical_target_id": "F-056",
+      "historical_reason": "В строке DO точки стоят под колонками 2, 7, 9, 12, 15, 16, 17, 19, 21, 23 и 27. Их 11, тогда как итоговая графа содержит 10. Противоречие сохранено в F-056.",
+      "current_reference_target_problem": "Итоги DI=10 и DO=5 не соответствуют отметкам в таблице сигналов ШАУВ-3-К6ПЧ.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-054",
+      "addendum_pointer": "/findings/53/recovery_addenda/1",
+      "historical_target_id": "F-056",
+      "historical_reason": "Шесть команд заслонок отмечены в колонках 2, 12, 15, 17, 21, 23; насос — в колонке 7; четыре ПЧ — в колонках 9, 16, 19, 27. Все имеют точки в DO, суммарно 11 при указанном итоге 10. F-056 сохраняет расхождение без вывода о фактической нехватке модулей.",
+      "current_reference_target_problem": "Итоги DI=10 и DO=5 не соответствуют отметкам в таблице сигналов ШАУВ-3-К6ПЧ.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-055",
+      "addendum_pointer": "/findings/54/recovery_addenda/1",
+      "historical_target_id": "F-057",
+      "historical_reason": "Нижняя параллельная ветвь Ва4.1р имеет поток справа налево. У PDS4 положительный отбор показан справа, отрицательный — слева; указано ΔP=100Па. Второе подключение с обратной полярностью сохранено в F-057.",
+      "current_reference_target_problem": "В легенде листа 21 символ водяного нагревателя Пкр6.1 назван секцией электрического нагревателя.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-057",
+      "addendum_pointer": "/findings/56/recovery_addenda/1",
+      "historical_target_id": "F-061",
+      "historical_reason": "Изображение подтверждает водяное подключение и совпадение символа секции с символом легенды; авторитетный MD прямо содержит расшифровку «Нагревательная секция электрического нагревателя». Согласование этой подписи сохранено в F-061.",
+      "current_reference_target_problem": "Конечные устройства кабелей Пкр5.1-9 и Пкр5.1-13 на схеме внешних подключений не согласованы с кабельным журналом.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-060",
+      "addendum_pointer": "/findings/59/recovery_addenda/1",
+      "historical_target_id": "F-065",
+      "historical_reason": "Схема показывает ПД4.1.4, ТЕ1 и шкаф ШУ-ПД4.14; исходный MD листа 35 КЖ связывает ТЕ1 этой системы со ЩУ-ПД4.1.4. Расхождение сохранено в F-065 без выбора правильного обозначения по отсутствующему разделу ЭМ.",
+      "current_reference_target_problem": "Циркуляционный насос Пн5.1 обозначен М2 на схеме подключений при позиции М5 в перечне элементов.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-061",
+      "addendum_pointer": "/findings/60/recovery_addenda/0",
+      "historical_target_id": "F-066",
+      "historical_reason": "На изображении линия Пкр5.1-9 прослеживается от М3 резервного вентилятора к клеммам 23–25 и PE. Строка КЖ того же кабеля от ШАУВ-2-К5ПЧ задаёт конец M2. Расхождение сохранено в F-066.",
+      "current_reference_target_problem": "Для кабеля По5.1-9 схема внешних подключений и кабельный журнал задают разные количество и сечение жил.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-061",
+      "addendum_pointer": "/findings/60/recovery_addenda/2",
+      "historical_target_id": "F-066",
+      "historical_reason": "Колонка резервного вентилятора на схеме обозначена М3 и содержит линию Пкр5.1-9. КЖ указывает для этой линии конец M2. Это конкретное междокументное расхождение подключения сохранено в F-066.",
+      "current_reference_target_problem": "Для кабеля По5.1-9 схема внешних подключений и кабельный журнал задают разные количество и сечение жил.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-061",
+      "addendum_pointer": "/findings/60/recovery_addenda/3",
+      "historical_target_id": "F-066",
+      "historical_reason": "Схема непосредственно связывает Пкр5.1-13 с М2 циркуляционного насоса; строка того же кабеля от того же шкафа содержит конец «МЗ». В F-066 сохранено доказанное различие адресов без подмены буквы З цифрой 3 и без вывода о фактическом подключении к резервному вентилятору.",
+      "current_reference_target_problem": "Для кабеля По5.1-9 схема внешних подключений и кабельный журнал задают разные количество и сечение жил.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-062",
+      "addendum_pointer": "/findings/61/recovery_addenda/0",
+      "historical_target_id": "F-067",
+      "historical_reason": "Отдельные линии П5.1.3-4 от PDS4 и П5.1.1-7 от PDS5 заканчиваются на двух изображённых парах 23–24 без обозначений разных колодок. В F-067 сохранена неоднозначность адресов на схеме, без утверждения о фактическом электрическом объединении сигналов.",
+      "current_reference_target_problem": "Конечный датчик линии По5.1-1 обозначен TE2 на схеме и ТЕ1 в кабельном журнале.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-062",
+      "addendum_pointer": "/findings/61/recovery_addenda/1",
+      "historical_target_id": "F-067",
+      "historical_reason": "В соседних колонках PDS4 и PDS5 показаны отдельные кабели к одинаково пронумерованным парам 23–24 внутри ШАУВ-3-К5ПЧ. Различающих обозначений колодок нет. Этот общий с G-069 конфликт сохранён один раз в F-067 с обоими source_finding_ids.",
+      "current_reference_target_problem": "Конечный датчик линии По5.1-1 обозначен TE2 на схеме и ТЕ1 в кабельном журнале.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-063",
+      "addendum_pointer": "/findings/62/recovery_addenda/0",
+      "historical_target_id": "F-068",
+      "historical_reason": "Линии П5.1.1-8 и П5.1.3-5 от разных двигателей приходят к отдельным группам 29, 30, 31, PE в одном шкафу; различающие обозначения колодок отсутствуют. Самостоятельная неоднозначность силовых адресов сохранена в F-068 без вывода о фактическом объединении цепей.",
+      "current_reference_target_problem": "Для четырёх линий ШАУВ-1-К6ПЧ схема подключений и кабельный журнал задают разные марки кабеля.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-064",
+      "addendum_pointer": "/findings/63/recovery_addenda/0",
+      "historical_target_id": "F-069",
+      "historical_reason": "Обе позиции Y7 непосредственно видны на листе 33. Перечень листа 15 отдельно задаёт Y11 для регулирующего клапана и Y1–Y10 для воздушных заслонок. F-069 сохраняет доказанный конфликт с перечнем, без требования глобально уникальных коротких марок.",
+      "current_reference_target_problem": "Назначение линии RS-485 не согласовано с обозначениями её клемм на схеме БД-ТЗ1.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-065",
+      "addendum_pointer": "/findings/64/recovery_addenda/0",
+      "historical_target_id": "F-070",
+      "historical_reason": "На изображении М2 обозначает вентилятор Пн5.1р и циркуляционный насос Пн5.1. Перечень относит М2 к вентиляторам и задаёт насосу М5. Это локальный и междокументный конфликт идентификации, сохранённый в F-070.",
+      "current_reference_target_problem": "Для линии СУК2-2 схема подключений и кабельный журнал задают разные обозначения марки кабеля.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-065",
+      "addendum_pointer": "/findings/64/recovery_addenda/1",
+      "historical_target_id": "F-070",
+      "historical_reason": "Вторая колонка двигателей вентиляторов и крайняя правая колонка насоса на листе 33 содержат М2. Перечень листа 15 задаёт насосу М5. Общий с G-071 конфликт сохранён один раз в F-070 с обоими source_finding_ids.",
+      "current_reference_target_problem": "Для линии СУК2-2 схема подключений и кабельный журнал задают разные обозначения марки кабеля.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-066",
+      "addendum_pointer": "/findings/65/recovery_addenda/0",
+      "historical_target_id": "F-071",
+      "historical_reason": "На линии По5.1-9 к электронагревателю прочитано 3×2,5; строка того же кабеля в КЖ содержит 4x4,0. Для фиксации документального противоречия параметры нагрузки и защиты не требуются; они необходимы для выбора правильного исполнения. Сохранено в F-071.",
+      "current_reference_target_problem": "Узел А и примечание 3 листа 50 задают несогласованные решения прохода кабелей через строительную конструкцию.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-066",
+      "addendum_pointer": "/findings/65/recovery_addenda/1",
+      "historical_target_id": "F-071",
+      "historical_reason": "Колонка электронагревателя на схеме содержит По5.1-9, ППГнг(А)-HF 3×2,5, L=10м; КЖ задаёт для По5.1-9 к тому же нагревателю ППГнг(A)-HF 4x4,0 длиной 10 м. Прямое расхождение схемы и КЖ сохранено в F-071.",
+      "current_reference_target_problem": "Узел А и примечание 3 листа 50 задают несогласованные решения прохода кабелей через строительную конструкцию.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-067",
+      "addendum_pointer": "/findings/66/recovery_addenda/0",
+      "historical_target_id": "F-072",
+      "historical_reason": "В первой приборной колонке схемы TE2 подключён кабелем По5.1-1 к клеммам 2–3 ШАУВ-6-К5ПЧ. Строка По5.1-1 КЖ от этого же шкафа указывает ТЕ1. Расхождение номера позиции сохранено в F-072.",
+      "current_reference_target_problem": "[Объединено 2 замечаний] Узел А и примечание 3 листа 52 задают несогласованные решения кабельной проходки.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-067",
+      "addendum_pointer": "/findings/66/recovery_addenda/1",
+      "historical_target_id": "F-072",
+      "historical_reason": "Колонка температуры приточного воздуха По5.1 обозначена TE2 и содержит кабель По5.1-1. В исходной строке КЖ этот кабель имеет конец ТЕ1. Подтверждён именно конфликт номера 2/1; он сохранён в F-072 с обоими поддерживающими кандидатами.",
+      "current_reference_target_problem": "[Объединено 2 замечаний] Узел А и примечание 3 листа 52 задают несогласованные решения кабельной проходки.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/0",
+      "historical_target_id": "F-073",
+      "historical_reason": "На схеме линия В6.1.1-4 к ХТ1 подписана КСПВПГнг(А)-HF; строка B6.1.1-4 от того же шкафа к XТ1 содержит КСВПГнг(A)-HF. Размер 1×2×0,75 и длина 30 м совпадают. Расхождение марки сохранено в F-073.",
+      "current_reference_target_problem": "Вертикальная размерная цепь установки шкафа на листе 53 противоречива.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/1",
+      "historical_target_id": "F-073",
+      "historical_reason": "На схеме линия В6.1.2-1 к PDS2 подписана КСПВПГнг(А)-HF; строка B6.1.2-1 от ШАУВ-1-К6ПЧ к PDS2 содержит КСВПГнг(A)-HF. Подтверждено различие марки одной линии, сохранённое в F-073.",
+      "current_reference_target_problem": "Вертикальная размерная цепь установки шкафа на листе 53 противоречива.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/2",
+      "historical_target_id": "F-073",
+      "historical_reason": "На схеме линия В6.1.2-4 к контактной цепи Y2 через ХТ2 подписана КСПВПГнг(А)-HF. Строка B6.1.2-4 от того же шкафа к XТ2 содержит КСВПГнг(A)-HF. Расхождение сохранено в F-073.",
+      "current_reference_target_problem": "Вертикальная размерная цепь установки шкафа на листе 53 противоречива.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/3",
+      "historical_target_id": "F-073",
+      "historical_reason": "На схеме линия В6.1.4-1 к PDS3 подписана КСПВПГнг(А)-HF; строка B6.1.4-1 от того же шкафа к PDS3 содержит КСВПГнг(A)-HF. Различие подтверждено и сохранено в F-073; эквивалентность марок не предполагается.",
+      "current_reference_target_problem": "Вертикальная размерная цепь установки шкафа на листе 53 противоречива.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/4",
+      "historical_target_id": "F-073",
+      "historical_reason": "Подпись линии В6.1.1-4 к ХТ1 на изображении содержит КСПВПГнг(А)-HF; исходная строка B6.1.1-4 КЖ содержит КСВПГнг(A)-HF. Этот же конфликт совместно с G-079 сохранён в F-073.",
+      "current_reference_target_problem": "Вертикальная размерная цепь установки шкафа на листе 53 противоречива.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/5",
+      "historical_target_id": "F-073",
+      "historical_reason": "Для подключения PDS2 схема задаёт КСПВПГнг(А)-HF на линии В6.1.2-1, а КЖ — КСВПГнг(A)-HF в строке B6.1.2-1. Общий шкаф и конечный прибор подтверждают соответствие линий. Сохранено в F-073.",
+      "current_reference_target_problem": "Вертикальная размерная цепь установки шкафа на листе 53 противоречива.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/6",
+      "historical_target_id": "F-073",
+      "historical_reason": "Линия В6.1.2-4 к ХТ2 на изображении подписана КСПВПГнг(А)-HF, тогда как строка B6.1.2-4 КЖ к XТ2 содержит КСВПГнг(A)-HF. Подтверждённое различие сохранено в общем F-073.",
+      "current_reference_target_problem": "Вертикальная размерная цепь установки шкафа на листе 53 противоречива.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-068",
+      "addendum_pointer": "/findings/67/recovery_addenda/7",
+      "historical_target_id": "F-073",
+      "historical_reason": "На схеме В6.1.4-1 к PDS3 указан КСПВПГнг(А)-HF; в строке B6.1.4-1 КЖ к тому же прибору — КСВПГнг(A)-HF. Различие марки сохранено в F-073 без выбора правильного исполнения.",
+      "current_reference_target_problem": "Вертикальная размерная цепь установки шкафа на листе 53 противоречива.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-071",
+      "addendum_pointer": "/findings/70/recovery_addenda/0",
+      "historical_target_id": "F-076",
+      "historical_reason": "На изображении показаны кабели в лотке и заделка FIREFIX; металлические трубы не изображены. Примечание 3 прямо требует труб для проходов через стены и перекрытия. Подтверждено расхождение документированных решений, сохранённое в F-076.",
+      "current_reference_target_problem": "В СО для ШАУВ-1-К6АС указаны системы другой дымовой зоны.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-071",
+      "addendum_pointer": "/findings/70/recovery_addenda/1",
+      "historical_target_id": "F-076",
+      "historical_reason": "Узел показывает проход лотка и кабелей через огнестойкую заделку без обозначенных труб; исходное примечание 3 требует металлических труб. Это общее с G-090 противоречие монтажных указаний сохранено один раз в F-076 с обоими source_finding_ids.",
+      "current_reference_target_problem": "В СО для ШАУВ-1-К6АС указаны системы другой дымовой зоны.",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-073",
+      "addendum_pointer": "/findings/72/recovery_addenda/0",
+      "historical_target_id": "F-078",
+      "historical_reason": "Размеры имеют общие граничные уровни и образуют одну цепь: 1400 + 1000 = 2400 мм, тогда как внешний размер между полом и верхом шкафа равен 1800 мм. Сохранено в F-078 без предположения, какой размер следует исправить.",
+      "current_reference_target_problem": "На плане две группы смесительных узлов не различены обозначениями приборов",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-073",
+      "addendum_pointer": "/findings/72/recovery_addenda/1",
+      "historical_target_id": "F-078",
+      "historical_reason": "Внешний размер 1800 и цепь 1400 + 1000 соединяют одинаковые уровни пола и верха шкафа. Разность 2400 − 1800 = 600 мм подтверждена; это количественное выражение той же проблемы F-078.",
+      "current_reference_target_problem": "На плане две группы смесительных узлов не различены обозначениями приборов",
+      "current_reference_exists": true,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    },
+    {
+      "finding_id": "F-087",
+      "addendum_pointer": "/findings/86/recovery_addenda/0",
+      "historical_target_id": "F-093",
+      "historical_reason": "Заголовок раздела 15 прямо устанавливает ШАУВ-3-К6ПЧ; его продолжение содержит два датчика в позиции 15.7. Изображение листа 21 связывает этот шкаф с Пкр6.1/Вм6.1 и показывает один ТЕ3, которому перечень задаёт количество 1. Буквальная запись «Пкрб.1» в позиции 15.3 не исправлялась: сопоставление основано на обозначении шкафа и проверенной схеме. Назначение второго прибора остаётся предметом согласования, но не препятствует фиксации установленного расхождения документов. Оно сохранено отдельно в F-093, technical_findings, поскольку затрагивает количество поставляемого оборудования.",
+      "current_reference_target_problem": null,
+      "current_reference_exists": false,
+      "disposition": "historical_self_reference_visible_after_renumbering"
+    }
+  ],
+  "local_reproduction": {
+    "before": {
+      "findings": [
+        {
+          "id": "F-009",
+          "description": "Подтверждённая часть сохранена в F-009.",
+          "recovery_addenda": [
+            {
+              "reason": "Сохранено в F-009.",
+              "reported_target_id": "F-009"
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "findings": [
+        {
+          "id": "F-001",
+          "description": "Подтверждённая часть сохранена в F-009.",
+          "recovery_addenda": [
+            {
+              "reason": "Сохранено в F-009.",
+              "reported_target_id": "F-009"
+            }
+          ]
+        }
+      ]
+    },
+    "result": {
+      "renumbered": 1,
+      "total": 1
+    }
+  },
+  "proposed_behavior": "Сохранять происхождение дополнения с устойчивой идентичностью, отдельно от видимого F-ID. При выпуске рендерить адресную ссылку из окончательного отображения идентичностей; старый ID хранить только как provenance. Если ссылка неоднозначна, не переписывать её угадыванием.",
+  "preserve": [
+    "Технический тезис и его доказательства.",
+    "Исторический reported_target_id для трассируемости.",
+    "Настоящие ссылки на другие замечания и идентификаторы из внешних документов."
+  ],
+  "acceptance_cases": [
+    "Все21 адресное описание с найденными40 дополнениями разрешаются в правильную итоговую находку.",
+    "Слияние, расщепление и несколько одинаковых локальных ID не разрешаются простой глобальной заменой.",
+    "Неизвестная ссылка помечается как неразрешённая, а не удаляет замечание."
+  ],
+  "limits": [
+    "Это не40 новых дефектов проекта: это40 фрагментов текста в21 замечании.",
+    "Проверены ссылки с явной связью reported_target_id; остальные F-ID в описаниях требуют отдельного разбора.",
+    "Синтетический тест воспроизводит механизм; реальные ссылки подтверждены отдельно provenance.",
+    "Никаких изменений исходной выдачи, работающей серии или production."
+  ]
+}
