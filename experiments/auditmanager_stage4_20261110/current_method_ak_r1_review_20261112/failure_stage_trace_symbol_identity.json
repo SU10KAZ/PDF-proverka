@@ -1,0 +1,97 @@
+{
+  "status": "bounded_false_graphic_identity_stage_trace",
+  "run": "ak_r1_classic_current",
+  "finding_id": "F-057",
+  "sources": {
+    "primary": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c"
+    },
+    "recovery": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_88631e2c01433c89.json",
+      "sha256": "79f51d2c43fe5cdc85c89e8f005470cb47222eaa5fcbfce8a0aac19fbe2cc3c2"
+    },
+    "request": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/requests/AK/1794467151548670651/request.json",
+      "sha256": "a7abe8df996a94a47ef16d7f6f6e7a640dad1de48dc02d81228cf618c7f5443f"
+    },
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+    },
+    "graphic": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+      "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502"
+    },
+    "source_review": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch2.json",
+      "sha256": "6b08e4a8c20e5afa27a4227e337e3f79646785a87e55957a1367288439236c88"
+    }
+  },
+  "stage_observations": [
+    {
+      "stage": "primary_graphic_detection",
+      "pointer": "/block_analyses/16/findings/2",
+      "other_pointer": "/block_analyses/16/findings/3",
+      "observation": "Both G-052 and G-053 assert that the water-heater symbol is the symbol labelled electric in the legend. Error exists before recovery and final numbering.",
+      "model_legs": [
+        "codex/gpt-6-astra::leg:1",
+        "codex/gpt-6-astra::leg:2"
+      ]
+    },
+    {
+      "stage": "dual_comparison",
+      "pointer": "/block_analyses/16/dual_review/relationships/1",
+      "record": {
+        "left_ref": "codex:002",
+        "right_ref": "codex:004",
+        "relation": "match",
+        "extends": "none",
+        "confidence": 1.0,
+        "reason": "Оба замечания описывают одно противоречие: символ назван секцией электрического нагревателя, хотя показан водяной нагрев с теплоснабжением 85/60 °C, насосом М4 и клапаном Y3."
+      },
+      "interpretation": "The confidence describes agreement of candidates, not independent proof of symbol identity."
+    },
+    {
+      "stage": "candidate_recovery",
+      "pointer": "/candidate_decisions/3/subclaims/0",
+      "record": {
+        "id": "1",
+        "claim": "Символ нагревателя Пкр6.1 назван электрическим при водяном подключении 85/60 °С, М4 и Y3.",
+        "decision": "retained",
+        "reason": "Изображение подтверждает водяное подключение и совпадение символа секции с символом легенды; авторитетный MD прямо содержит расшифровку «Нагревательная секция электрического нагревателя». Согласование этой подписи сохранено в F-061.",
+        "source_refs": [
+          "blk_7785cb8293734c16b18fc1aff53c761f",
+          "blk_e001628ce63040d6889ddffaa66c6c97"
+        ],
+        "required_source_refs": [],
+        "target_finding_ids": [
+          "F-061"
+        ]
+      },
+      "image_was_attached": true,
+      "model": "codex/gpt-6-astra",
+      "interpretation": "Recovery explicitly claims matching symbols despite having the source image; this is not a demonstrated image-absence failure."
+    },
+    {
+      "stage": "final_output",
+      "pointer": "/findings/56",
+      "solution": "Исправить расшифровку символа в легенде на водяной нагреватель и согласовать графическое обозначение с этим назначением.",
+      "report_section": "questions",
+      "interpretation": "Question routing retained the false factual premise and an unconditional corrective instruction."
+    }
+  ],
+  "direct_graphic_review": "Working heater has a curved internal stroke at the right; legend symbol has an angular lightning-like stroke. Literal identity is refuted. This observation does not establish normative equivalence or which legend entry must be changed.",
+  "confirmed_context": [
+    "Water heating circuit, pump and regulating valve are present.",
+    "Authoritative MD contains the electric-heater legend wording; raster was not used to correct TEXT."
+  ],
+  "recommended_behavior": "For a symbol-to-legend contradiction, identify both shapes and their distinguishing details before asserting identity. If identity is unestablished, retain only an addressed question when justified, without an unconditional instruction to relabel.",
+  "control_pair_status": "This is an adverse control; a separately verified useful symbol-identity conflict is still required before adopting a general filter.",
+  "limits": [
+    "No whole-finding precision score or engineer utility decision.",
+    "No blanket suppression of legend questions.",
+    "No change to frozen evaluator, active series, or production.",
+    "This trace establishes propagation, not the exclusive cognitive cause of the model error."
+  ]
+}
