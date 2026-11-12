@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "scope": "Four final questions: factual boundaries and presentation; not whole-output precision",
+  "sources": {
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "pointer": ""
+    },
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "quote_check": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/text_quote_provenance_check.json",
+      "sha256": "4639f6946999dbddcb1dbb71175fe79b56eaac5f68817926720d51cca5a31b77",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-038",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/37"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "report_section",
+        "evidence"
+      ],
+      "source_quotes_checked": [
+        {
+          "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+          "quote": "квартал 3, 2-я очередь, этап 1 (рекламное название Событие 6.2)"
+        },
+        {
+          "block_id": "blk_35ff8683b1cf4be2abdef61740ddda2e",
+          "quote": "«Матвеевское», квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.2), на\nземельном участке с кадастровым номером 77:07:0013002:4706."
+        },
+        {
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "quote": "Проект выполнен на основании Технического задания Заказчика. Приложение 2 к договору подряда № 15-09/25-РД от 15.09.2025"
+        }
+      ],
+      "supported_claims": [
+        "Title stage 1 differs from TZ stage 2.",
+        "Cadastral number and project designation connect the documents; general data explicitly cite the attached TZ contract."
+      ],
+      "unsupported_inference_avoided": "The finding does not assert that the TZ is unrelated or inapplicable.",
+      "decision": "retain_bounded_applicability_question",
+      "remaining_limit": "Actual applicability and correct stage need project-author confirmation; no technical defect inferred.",
+      "factual_assessment": "local_claims_supported",
+      "section_assessment": "questions",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-039",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/38"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "report_section",
+        "evidence"
+      ],
+      "source_quotes_checked": [
+        {
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "quote": "| 1 | ПД-00542664-ИТП.ТМ .С | Спецификация оборудования и материалов | 12 листов |\n| 2 | ПД-00542664-ИТП.ТМ .ПЗ | Пояснительная записка | 15 листов |"
+        },
+        {
+          "block_id": "blk_ec07216893c540b88b7560c80b87ecd9",
+          "quote": "Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 15."
+        },
+        {
+          "block_id": "blk_d19f9dab58774ce3a7eab9ae3d81ed83",
+          "quote": "Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 20"
+        }
+      ],
+      "supported_claims": [
+        "Attachment register states 12 specification sheets and 15 PZ sheets.",
+        "Supplied MD contains specification stamp sheet 15 and PZ stamp sheet 20.",
+        "PZ contents table has blank page-number cells."
+      ],
+      "unsupported_inference_avoided": "The final body expressly does not equate the largest sheet number with a complete physical-sheet count.",
+      "decision": "retain_document_register_question",
+      "remaining_limit": "Specification suffix .C versus .CO is not resolved by this numbering check; whole physical-sheet inventory not certified.",
+      "presentation_correction": "Change repeated subclaim headings saying фактически заявлено 15/20 to представлен лист с номером 15/20, matching the more careful body.",
+      "factual_assessment": "local_claims_supported",
+      "section_assessment": "questions",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-043",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/42"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "report_section",
+        "evidence"
+      ],
+      "source_quotes_checked": [
+        {
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "quote": "| 19.2 | Расширительный мембранный бак V=50л, PN=16бар | RM 580 PN16 |  | SPL | шт. | 1 | 8.00 | подпитка, отопление 2-зона |"
+        },
+        {
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "quote": "| K19.3 | SPL RM 50 16 бар | Демпферная емкость, V=50л, 16 бар | 1 | 17,0 |  |"
+        },
+        {
+          "block_id": "blk_fe2066a9479d4d9e9c215338d4f82621",
+          "quote": "| Демпферный бак | SPL RM 50 16 бар | 1 шт. |"
+        },
+        {
+          "block_id": "blk_5e8d45b076bf429e863f27b16da7b261",
+          "quote": "В документации указана марка приборов, арматуры, приводов, изоляции, оборудования и т.п. для выдачи заданий смежным разделам, не является обязательной и рекомендовано в качестве аналога. Возможна замена на аналогичные с сохранением технических параметров."
+        }
+      ],
+      "supported_claims": [
+        "Specification 19.2 states V=50 L, PN16, designation RM 580 PN16.",
+        "Schedule K19.3 and selection component list state SPL RM 50 16 bar.",
+        "Selection list includes BASIC 2-B-125 and LVF400; properties identify the scoped comparison.",
+        "Specification explicitly permits equivalent products preserving parameters."
+      ],
+      "unsupported_inference_avoided": "No claim that RM580 does not exist, no inferred 580 L capacity, and no automatic procurement substitution.",
+      "decision": "retain_designation_clarification",
+      "remaining_limit": "Manufacturer ordering-code identity is not established; differing listed masses are outside this question.",
+      "presentation_correction": "Remove internal wording Составной исходный подclaim and ID 2 сохранён: retain only source facts and requested clarification.",
+      "factual_assessment": "local_claims_supported",
+      "section_assessment": "questions",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-044",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/43"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "report_section",
+        "evidence"
+      ],
+      "source_quotes_checked": [
+        {
+          "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+          "quote": "| Подача | 4.42 м³/ч |\n| Напор | 16.98 м |"
+        },
+        {
+          "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+          "quote": "| Макс. напор | 16.64 м |"
+        }
+      ],
+      "supported_claims": [
+        "One selected-pump data sheet lists working point 4.42 m³/h at 16.98 m and product maximum head 16.64 m.",
+        "Difference is 0.34 m.",
+        "Same sheet states impeller 217 mm and nominal speed 1434 rpm."
+      ],
+      "unsupported_inference_avoided": "Numerical difference does not prove comparable definitions, missing operating point or pump inadequacy.",
+      "decision": "retain_bounded_parameter_question_with_retrieval_limit",
+      "remaining_limit": "This assessment does not establish whether an available project curve resolves the comparison before asking the manufacturer.",
+      "presentation_correction": "Merge duplicate F-069 while preserving uncertainty; do not let its technical section override the question.",
+      "factual_assessment": "local_claims_supported",
+      "section_assessment": "questions",
+      "engineer_utility": "not_newly_measured"
+    }
+  ],
+  "recommendation": "Preserve source-backed local questions without escalating unresolved technical consequences. Remove internal recovery bookkeeping from user-facing text. Keep retrieval completeness and engineer utility separate from factual correctness.",
+  "limits": [
+    "No updated engineer decision or measured review time.",
+    "Source-backed questions are not independently verified technical defects.",
+    "F-044 context exhaustion remains unproved."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}
