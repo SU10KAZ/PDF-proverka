@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "scope": "Three bounded specification questions not retained in final output",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_id": "B-ITP-F-029:268aafac2624c208753e",
+      "coverage": "absent",
+      "reason": "Two insulation tables lack a dedicated325cylinder row;273x40occurs as2and97m against1.7m of273pipe. Mats50and250m2exist and their allocation is unknown. Ask to reconcile allocation; do not infer missing procurement, prescribe substitution273to325or additional85.1m.",
+      "output_comparison": "F024addresses22mmversus30/35cylinder dimensions only, not273/325allocation.",
+      "quotes": [
+        {
+          "line": 1317,
+          "quote": "|  | Трубы стальные электросварные, Д=273х7,0 мм | ГОСТ 10704-91 |  |  | м | 1.7 |  |  |"
+        },
+        {
+          "line": 1318,
+          "quote": "|  | Трубы стальные электросварные, Д=325х7,0 мм | ГОСТ 10704-91 |  |  | м | 85.1 |  |  |"
+        },
+        {
+          "line": 1776,
+          "quote": "|  | Маты теплоизоляционные негорючие из минеральной ваты, толщина 50мм | WIRED MAT |  | Rockwool (Россия) | м2 | 50 |  | НГ-негорючие |"
+        },
+        {
+          "line": 1816,
+          "quote": "|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 273 273х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 2 |  | НГ-негорючие |"
+        },
+        {
+          "line": 1817,
+          "quote": "|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 273 273х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 97 |  |  |"
+        },
+        {
+          "line": 1819,
+          "quote": "|  | Маты теплоизоляционные негорючие из минеральной ваты, толщина 50мм | WIRED MAT |  | Rockwool (Россия) | м2 | 250 |  | НГ-негорючие |"
+        }
+      ]
+    },
+    {
+      "target_id": "B-ITP-F-030:15e7e0c93d727b6902f9",
+      "coverage": "absent",
+      "reason": "DN273has32support sets against1.7m pipe. Ask to verify allocation and support layout; excess is not established and sets must not be moved toDN325without design evidence.",
+      "output_comparison": "F025covers blankDN325unit/quantity only; it does not retain the separateDN273allocation question.",
+      "quotes": [
+        {
+          "line": 1317,
+          "quote": "|  | Трубы стальные электросварные, Д=273х7,0 мм | ГОСТ 10704-91 |  |  | м | 1.7 |  |  |"
+        },
+        {
+          "line": 1743,
+          "quote": "|  | крепление трубопровода Дн273 (хомут, анкер, шпилька) |  |  |  | компл. | 32 |  |  |"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
+      "coverage": "absent",
+      "reason": "Specification lists289FC073E*couplings in65group and EC076*/EL9000C076*fittings. Keep galvanizedVGP65and welded76pipe types separate; obtain exact manufacturer dimensions/groove and node mapping before asserting incompatibility or replacement.",
+      "output_comparison": "No visible finding covers the coupling/fitting identity question; neither289defects nor blanket groove prohibition is supported.",
+      "quotes": [
+        {
+          "line": 1303,
+          "quote": "|  | Труба стальная водогазопроводная оцинкованная, Д=65х4,0 мм | ГОСТ 3262-75 |  |  | м | 78.4 |  |  |"
+        },
+        {
+          "line": 1311,
+          "quote": "|  | Трубы стальные электросварные, Д=76х3,5 мм | ГОСТ 10704-91 |  |  | м | 91.2 |  |  |"
+        },
+        {
+          "line": 1332,
+          "quote": "|  | Труба стальная оцинкованная водогазопроводная 65х4,5 | ГОСТ 3262-75 |  |  | м | 25.7 |  |  |"
+        },
+        {
+          "line": 1378,
+          "quote": "|  | Заглушка под муфту грубллок Ø65 | Dinarm EC | EC076* | ООО \"Огнеборец\" | шт. | 2 |  |  |"
+        },
+        {
+          "line": 1401,
+          "quote": "|  | Колено 90° под муфту грубллок Ø65 | Dinarm EL9000 | EL9000C076* | ООО \"Огнеборец\" | шт. | 41 |  |  |"
+        },
+        {
+          "line": 1407,
+          "quote": "|  | Муфта гибкая для соединений грубллок Ø65 | Dinarm FC | FC073E* | ООО \"Огнеборец\" | шт. | 289 |  |  |"
+        }
+      ]
+    }
+  ],
+  "table_inventory": {
+    "scope": "Only authoritative TEXT tables onSO14andSO15",
+    "so14_cylinder_sizes": [
+      "22x40",
+      "35x40",
+      "42x40",
+      "48x40",
+      "60x40",
+      "76x40",
+      "89x40"
+    ],
+    "so15_cylinder_sizes": [
+      "22x40",
+      "30x40",
+      "35x40",
+      "42x40",
+      "48x40",
+      "57x40",
+      "76x40",
+      "89x40",
+      "108x40",
+      "133x40",
+      "159x40",
+      "219x40",
+      "273x40",
+      "273x40"
+    ],
+    "missing_325_limit": "No dedicated row in these two tables; not absence from entire project or supply."
+  },
+  "output_review": "All74rows previously bounded-reviewed; inspected relevantF024andF025and searched problem/description/solution/risk for273, couplings,FC073Eand289. Neighbouring findings do not preserve these target relations.",
+  "cause_attribution": "Output omission established; exact earlier failure stage remains untraced.",
+  "runtime_changed": false,
+  "model_calls": 0
+}

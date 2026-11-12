@@ -330,12 +330,17 @@
     },
     {
       "target_id": "B-ITP-F-020:e9f7120697b89e6da747",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/makeup_volume_questions_missing.json",
+          "sha256": "461ded1bec048ad6df816dc10f0a70d70a7c315e6d3ab0396a3df83f628f09da"
+        }
+      ],
+      "reason": "The output uses a selection volume in a different tank calculation but does not preserve the target relation between makeup flow, questionnaire volumes and selection inputs. Retain as a question with conditional volume reconstruction, not a proved hydraulic defect.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "B-ITP-F-020:2052d4e286115c641e7f",
@@ -391,12 +396,17 @@
     },
     {
       "target_id": "B-ITP-F-020:c729cc29afbee39e2ed0",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/makeup_volume_questions_missing.json",
+          "sha256": "461ded1bec048ad6df816dc10f0a70d70a7c315e6d3ab0396a3df83f628f09da"
+        }
+      ],
+      "reason": "The output uses a selection volume in a different tank calculation but does not preserve the target relation between makeup flow, questionnaire volumes and selection inputs. Retain as a question with conditional volume reconstruction, not a proved hydraulic defect.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "B-ITP-F-021:61e590ad93c41a790803",
@@ -719,12 +729,17 @@
     },
     {
       "target_id": "B-ITP-F-029:268aafac2624c208753e",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_allocation_questions_missing.json",
+          "sha256": "f61cc8f38d3cea1be871159904305a0a14456073b30e76ccb2a628ee286493c3"
+        }
+      ],
+      "reason": "Two insulation tables lack a dedicated325cylinder row;273x40occurs as2and97m against1.7m of273pipe. Mats50and250m2exist and their allocation is unknown. Ask to reconcile allocation; do not infer missing procurement, prescribe substitution273to325or additional85.1m. F024addresses22mmversus30/35cylinder dimensions only, not273/325allocation.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "B-ITP-F-030:a4e56855f9942b943bff",
@@ -751,12 +766,17 @@
     },
     {
       "target_id": "B-ITP-F-030:15e7e0c93d727b6902f9",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_allocation_questions_missing.json",
+          "sha256": "f61cc8f38d3cea1be871159904305a0a14456073b30e76ccb2a628ee286493c3"
+        }
+      ],
+      "reason": "DN273has32support sets against1.7m pipe. Ask to verify allocation and support layout; excess is not established and sets must not be moved toDN325without design evidence. F025covers blankDN325unit/quantity only; it does not retain the separateDN273allocation question.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "B-ITP-F-031:20e0a2fe6cdbb065f78a",
@@ -1069,12 +1089,17 @@
     },
     {
       "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_allocation_questions_missing.json",
+          "sha256": "f61cc8f38d3cea1be871159904305a0a14456073b30e76ccb2a628ee286493c3"
+        }
+      ],
+      "reason": "Specification lists289FC073E*couplings in65group and EC076*/EL9000C076*fittings. Keep galvanizedVGP65and welded76pipe types separate; obtain exact manufacturer dimensions/groove and node mapping before asserting incompatibility or replacement. No visible finding covers the coupling/fitting identity question; neither289defects nor blanket groove prohibition is supported.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP40:e4eaac37781fedf2ad41",

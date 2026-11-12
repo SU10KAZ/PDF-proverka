@@ -1,0 +1,160 @@
+{
+  "version": 1,
+  "scope": "Two positive questions about reconciling makeup flow and system-volume inputs, not tank insufficiency",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_id": "B-ITP-F-020:e9f7120697b89e6da747",
+      "system": "Отопление первой зоны",
+      "coverage": "absent",
+      "questionnaire_arithmetic_m3": "24.9255",
+      "questionnaire_terms_m3": [
+        "20.4255",
+        "1.0",
+        "3.5"
+      ],
+      "makeup_m3_h": "6.23",
+      "conditional_implied_volume_m3": "31.15",
+      "selection_volume_m3": "20.676",
+      "quotes": [
+        {
+          "line": 2235,
+          "quote": "Трубопровод подпитки отопления 1-зона:"
+        },
+        {
+          "line": 2237,
+          "quote": "Gподн = 20% Vсист.отопл1 = 6,23 м³ / ч;"
+        },
+        {
+          "line": 2239,
+          "quote": "Выбираем трубопровод: Ø76 × 3,0 мм, Δh=5,57 кгс/м² м, v=0,48 м/сек."
+        },
+        {
+          "line": 5320,
+          "quote": "Система: Отопление 1 зона Дата подбора: 30.06.2026 Шакирова Рената r.shakirova@vodokomfort.ru"
+        },
+        {
+          "line": 5329,
+          "quote": "| Объем системы, Vсистемы | литр | 20676 | расчет |"
+        },
+        {
+          "line": 5951,
+          "quote": "| Объем системы, м³ | 20,4255 |"
+        },
+        {
+          "line": 6018,
+          "quote": "|  | Объем системы, м³ | 1,0 |"
+        },
+        {
+          "line": 6020,
+          "quote": "**Отопление автостоянки Т1.1.2/Т2.1.2**"
+        },
+        {
+          "line": 6036,
+          "quote": "|  | Объем системы, м³ | 3,5 |"
+        }
+      ],
+      "nearby_finding_id": "F-064",
+      "reason": "The output uses a selection volume in a different tank calculation but does not preserve the target relation between makeup flow, questionnaire volumes and selection inputs."
+    },
+    {
+      "target_id": "B-ITP-F-020:c729cc29afbee39e2ed0",
+      "system": "Теплоснабжение вентиляции",
+      "coverage": "absent",
+      "questionnaire_arithmetic_m3": "14.3",
+      "questionnaire_terms_m3": [
+        "1.2",
+        "2.7",
+        "8.6",
+        "1.8"
+      ],
+      "makeup_m3_h": "3.63",
+      "conditional_implied_volume_m3": "18.15",
+      "selection_volume_m3": "27",
+      "quotes": [
+        {
+          "line": 2259,
+          "quote": "Трубопровод подпитки вентиляции:"
+        },
+        {
+          "line": 2261,
+          "quote": "Gподн = 20% Vсист.вент = 3,63 м³ / ч;"
+        },
+        {
+          "line": 2263,
+          "quote": "Выбираем трубопровод: Ø57 × 3,0 мм, Δh=11,0 кгс/м² м, v=0,55 м/сек."
+        },
+        {
+          "line": 5797,
+          "quote": "Система** **другая** Место установки* **Теплоснабжение вентиляции**"
+        },
+        {
+          "line": 5802,
+          "quote": "Объем системы проектный **27000 л**"
+        },
+        {
+          "line": 6081,
+          "quote": "| Объем системы, м³ | 1,2 |"
+        },
+        {
+          "line": 6083,
+          "quote": "**Теплоснабжения коммерческих помещений Т1.4.2/Т2.4.2**"
+        },
+        {
+          "line": 6095,
+          "quote": "| Объем системы, м³ | 2,7 |"
+        },
+        {
+          "line": 6097,
+          "quote": "**Теплоснабжения автостоянки Т1.4.3/Т2.4.3**"
+        },
+        {
+          "line": 6109,
+          "quote": "| Объем системы, м³ | 8,6 |"
+        },
+        {
+          "line": 6137,
+          "quote": "| Объем системы, м³ | 1,8 |"
+        }
+      ],
+      "nearby_finding_id": "F-021",
+      "reason": "The output uses a selection volume in a different tank calculation but does not preserve the target relation between makeup flow, questionnaire volumes and selection inputs."
+    }
+  ],
+  "output_review": {
+    "finding_count": 74,
+    "visible_fields": [
+      "problem",
+      "description",
+      "solution",
+      "risk"
+    ],
+    "basis": "Previous bounded review of all74rows plus focused reread of relevant visible fields. F064uses20676only to check606.9/600tank choice; F021uses27000for precharge/capacity calculation. Neither compares makeup flow with questionnaire/selection volume or requests separation of consumer/ITP/full-loop volumes. A shared number is not a matched relation.",
+    "nearby_unrelated_findings": [
+      "F-021",
+      "F-034",
+      "F-064"
+    ]
+  },
+  "cause_attribution": "Final-output omission established. Detection, extraction, registry, operation execution and suppression stage not yet traced; do not attribute a root cause from string absence.",
+  "limits": [
+    "20% is printed without an explicit time dimension. Reverse volumes assume20percent per hour; they are not established physical volumes.",
+    "Questionnaire sums are arithmetic combinations; complete membership in the same hydraulic circuit still requires confirmation.",
+    "Do not choose a correct volume, assert undersized tanks, or universalize20percent."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0
+}
