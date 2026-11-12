@@ -36,7 +36,15 @@ def build():
                          ('technical_findings', 'questions', 'pending', 'withdrawn', 'history_only')},
                      'engineer_accepted': False, 'production_accepted': False})
     state = json.loads((RUN / 'status.json').read_text())
-    return {'status': 'partial_review_inventory_not_acceptance',
+    expected_ids = {f'F-{i:03}' for i in range(1, 86)}
+    unexpected = seen - expected_ids
+    if unexpected:
+        raise ValueError(f'Unexpected reviewed finding IDs: {sorted(unexpected)}')
+    coverage_complete = seen == expected_ids
+    return {'status': ('complete_review_inventory_not_acceptance' if coverage_complete
+                       else 'partial_review_inventory_not_acceptance'),
+            'review_coverage_complete': coverage_complete,
+            'stage4_complete': False,
             'planned_findings': 85, 'reviewed_distinct_findings': len(rows),
             'unreviewed_finding_ids': [f'F-{i:03}' for i in range(1, 86)
                                        if f'F-{i:03}' not in seen],

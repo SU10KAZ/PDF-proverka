@@ -1,12 +1,14 @@
 {
   "status": "partial_review_inventory_not_acceptance",
+  "review_coverage_complete": false,
+  "stage4_complete": false,
   "planned_findings": 85,
   "reviewed_distinct_findings": 83,
   "unreviewed_finding_ids": [
     "F-084",
     "F-085"
   ],
-  "batch_successful_responses": 82,
+  "batch_successful_responses": 83,
   "batch_status_snapshot": "running",
   "process_liveness_not_inferred_from_status_file": true,
   "selected_followups": [
