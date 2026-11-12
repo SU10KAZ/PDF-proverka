@@ -1,0 +1,23 @@
+{
+  "finding_id": "F-080",
+  "status": "same_endpoints_dimension_conflict_preserved_without_arbitrary_correction",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_080/publication_projection.json",
+  "projection_sha256": "6a351c9d3d8dd53a015c2f5533fd369d748726ec7908384eb0f65393542abae1",
+  "graphics": [
+    {
+      "block_id": "blk_d52bf811660e42b59acdce0038f9fbf0",
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_d52bf811660e42b59acdce0038f9fbf0.png",
+      "sha256": "42c7d8b05562c4c461752bf37d98233d9a519a4530360dd8f160494b4500ce95",
+      "directly_viewed": true
+    }
+  ],
+  "checks": [
+    "Непосредственно просмотрены концы размерных линий: 1400 — высота шкафа, 1000 — от его низа до пола, 1800 — от верха шкафа до того же пола. Суммируются совместимые последовательные участки.",
+    "Расхождение 1400+1000−1800=600 мм воспроизведено моделью. Горизонтальный размер 800 мм не включён в вертикальную цепь.",
+    "Рекомендация согласовать высоту установки, габарит и общий размер сохранена вместе с условным монтажным риском.",
+    "Не назначен правильный размер и не утверждена фактическая ошибка монтажа. Проектные числа не используются как универсальные допуски."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
