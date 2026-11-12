@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "scope": "Four final nonnormative question rows; no overall precision claim",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-029",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/28"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "report_section",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_local_claim_supported",
+      "section_assessment": "questions",
+      "engineer_utility": "not_newly_measured",
+      "supported_claim": "Placeholder appears in elbow position and seven flange note cells; flange type 11, PN16 and diameters are specified.",
+      "decision": "retain_editorial_question",
+      "unsupported_inference_avoided": "Do not classify the flanges as unspecified solely because an additional cell says варианты.",
+      "remaining_limit": "Meaning of the placeholder is not established; this review does not validate standard applicability or procurement completeness."
+    },
+    {
+      "finding_id": "F-030",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/29"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "report_section",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_local_claim_supported",
+      "section_assessment": "questions",
+      "engineer_utility": "not_newly_measured",
+      "supported_claim": "Published 22 pipe lengths sum to 976.9 m and six drainage entries to 159.0 m; separate totals lack explicit units and purpose.",
+      "decision": "retain_summary_label_question",
+      "calculations": [
+        {
+          "row_count": 22,
+          "values_m": [
+            "30.6",
+            "0.5",
+            "32.5",
+            "42.8",
+            "46.7",
+            "91.8",
+            "78.4",
+            "14.7",
+            "6.9",
+            "0.4",
+            "27.8",
+            "9.6",
+            "92.5",
+            "85.6",
+            "91.2",
+            "52.4",
+            "19.7",
+            "69.9",
+            "12.0",
+            "84.1",
+            "1.7",
+            "85.1"
+          ],
+          "sum_m": "976.9"
+        },
+        {
+          "row_count": 6,
+          "values_m": [
+            "34.2",
+            "38.0",
+            "7.9",
+            "52.8",
+            "25.7",
+            "0.4"
+          ],
+          "sum_m": "159.0"
+        }
+      ],
+      "conditional_differences_m": [
+        "0.1",
+        "-0.2"
+      ],
+      "unsupported_inference_avoided": "Do not interpret 2546/199 as metres or infer wrong row lengths from a rounding difference.",
+      "remaining_limit": "Original aggregation before rounding is unavailable; 977.0/158.8 are lengths only conditionally."
+    },
+    {
+      "finding_id": "F-047",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/46"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "report_section",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_local_claim_supported",
+      "section_assessment": "questions",
+      "engineer_utility": "not_newly_measured",
+      "supported_claim": "The PZ total differs from the sum of zone maxima; general data explicitly identify nonuniformity, and the questionnaire assigns 1.081 to the whole building maximum.",
+      "decision": "retain_local_explanation_question",
+      "calculations": {
+        "sum_zone_maxima": "1.286",
+        "total_to_sum_ratio": "0.8405909797822706065318818040"
+      },
+      "unsupported_inference_avoided": "Neither arithmetic error in total nor a universal coefficient 0.8406 follows.",
+      "remaining_limit": "Calculation methodology and necessity of repeating an explanation in this table are not independently adjudicated; usefulness remains distinct from factual truth.",
+      "presentation_correction": "Remove recovery bookkeeping подclaim and ID 2 сохранён from the final description."
+    },
+    {
+      "finding_id": "F-063",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/62"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "report_section",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_local_claim_supported",
+      "section_assessment": "questions",
+      "engineer_utility": "not_newly_measured",
+      "supported_claim": "TZ title and clause 1.1 identify stage 2, while project title identifies stage 1; cadastral number matches.",
+      "decision": "merge_into_F-038_preserving_clause_1_1_source",
+      "unsupported_inference_avoided": "Same cadastral parcel does not establish identical construction-stage scope, nor prove a wrong-project TZ.",
+      "remaining_limit": "No extra independent defect credit for this second row."
+    }
+  ],
+  "limits": [
+    "Reference routes, factual correctness and practical utility remain distinct.",
+    "No universal thresholds derived from project quantities.",
+    "Runtime output, frozen evaluation targets and engineer decisions are unchanged."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}
