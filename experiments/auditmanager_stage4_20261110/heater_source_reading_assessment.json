@@ -1,0 +1,21 @@
+{
+  "status": "bounded_shape_connection_distinction_observed_not_final_publication",
+  "response_path": "/tmp/auditmanager_heater_source_reading_20261112_run/heater_source_reading_attempt_1.json",
+  "response_sha256": "4d9e51229658ca96ba399d8e62c333de77ca88ec5f5020bd73f94aed4c6aaaa1",
+  "request_path": "/tmp/auditmanager_heater_source_reading_20261112/request.json",
+  "request_sha256": "a15f0afff9ead564fcd1acb6945bd07de57da59ca8bf918028f1eb2e09b62633",
+  "source_image_path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_e3e39f8820d7474caa10ab626d2a2c91.png",
+  "source_image_sha256": "5c9cdf1f1635d706791f30152851a62ac7c2e0757c65ed25561084084bba4bc0",
+  "checks": [
+    "Без текста замечания модель различает самостоятельную молнию П4.1.1/легенды и тонкую линию от TS1 в Пм4.1.",
+    "Не объявляет всю нагревательную секцию Пм4.1 тождественной электрическому символу только по пересекающимся штрихам.",
+    "Сохраняет неопределённость отдельных сопряжений тонких линий."
+  ],
+  "limits": [
+    "Проверено ключевое различие для F040; все координаты и периферийные описания ответа не сертифицированы.",
+    "Отдельное чтение ещё не доказывает исправления публикации.",
+    "Тот же DEV-лист; независимая переносимость не проверена."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
