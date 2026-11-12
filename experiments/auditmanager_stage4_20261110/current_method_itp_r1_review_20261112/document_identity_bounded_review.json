@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "scope": "Three bounded document-reference findings",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "id": "F-012",
+      "target": "B-ITP-F-007:0725100843103b391be5",
+      "assessment": "II in PZ versus I with technological redundancy in TZ retained. Does not assert actual absence of redundancy, separate switchboard or metering.",
+      "section": "agrees with technical target",
+      "boundary": "Same site title links documents but does not resolve stage1/2 applicability. F-038/F-063 retain that question elsewhere; F-012 should explicitly cross-reference it before treating TZ as governing. External normative necessity of categoryI and actual electrical reliability not established.",
+      "quote_checks": [
+        {
+          "block_id": "blk_8a446a40473d48d18d60edba74661d9e",
+          "quote": "- подачу напряжения 380/220 в помещение теплового пункта (категория II);",
+          "line": 2759,
+          "evidence_kind": "TEXT"
+        },
+        {
+          "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+          "quote": "5.2.6.1 Центральный (индивидуальный) тепловой пункт и насосные станции запитать по первой категории надежности электроснабжения. В качестве первой категории применить технологическое резервирование. Питание электрооборудования ЦТП (ИТП) предусмотреть от отдельного ВРУ ЦТП (ИТП) с узлом учета электроэнергии.",
+          "line": 7027,
+          "evidence_kind": "TEXT"
+        },
+        {
+          "block_id": "blk_35ff8683b1cf4be2abdef61740ddda2e",
+          "quote": "Многофункциональная комплексная жилая застройка с подземной автостоянкой\n(квартал 3, 2-я очередь, корпус 2)",
+          "line": 6166,
+          "evidence_kind": "TEXT"
+        }
+      ],
+      "visible_fields": {
+        "problem": "Категория электроснабжения ИТП в ПЗ не согласована с техническим заданием.",
+        "description": "Первоначальное описание:\nНа листе 19 ПЗ предписана подача напряжения в помещение теплового пункта по II категории. Пункт 5.2.6.1 ТЗ требует для ИТП первую категорию надежности электроснабжения с технологическим резервированием. Титульный лист ТЗ связывает его с тем же объектом: квартал 3, 2-я очередь, корпус 2, ЖК Событие 6.2. Подтверждено расхождение требований представленных документов. ТЗ также требует отдельное ВРУ ИТП с узлом учета электроэнергии; невыполнение этих требований и отсутствие технологического резервирования по представленным материалам не установлены.\n\nДополнительная проверка:\nПЗ задаёт II категорию, а ТЗ — I категорию электроснабжения ИТП.\nЛист 19 ПЗ и пункт 5.2.6.1 ТЗ прямо задают разные категории. Титульный лист ТЗ подтверждает принадлежность к рассматриваемому объекту. Расхождение сохранено в F-012 как техническое несогласование документов.\n\nТЗ требует технологического резервирования.\nТребование прямо приведено в пункте 5.2.6.1 и сохранено в F-012 как способ обеспечения первой категории по ТЗ. Исходный составной под claim 2 разделен на независимо проверяемые требования. Наличие требования подтверждено; его фактическое выполнение электротехническими решениями здесь не установлено.",
+        "solution": "Согласовать указание категории электроснабжения на листе 19 ПЗ с пунктом 5.2.6.1 ТЗ и решениями электротехнического раздела. При согласовании учесть предусмотренные ТЗ технологическое резервирование, отдельное ВРУ ИТП и узел учета электроэнергии.",
+        "report_section": "technical_findings"
+      }
+    },
+    {
+      "id": "F-039",
+      "target": "B-ITP-F-039:20e8e64d70bd0535ad4d",
+      "assessment": "12 specification/15 PZ count entries versus supplied MD sheet labels15/20 retained. Maximum label is not claimed as actual unique-sheet count.",
+      "section": "agrees with question target",
+      "boundary": "Document codes .C versus .CO are visible in evidence but not explicitly discussed in main description. No missing physical sheet or missing technical solution inferred; stamp labels verified in supplied MD, not independently in PDF.",
+      "quote_checks": [
+        {
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "quote": "| 1 | ПД-00542664-ИТП.ТМ .С | Спецификация оборудования и материалов | 12 листов |\n| 2 | ПД-00542664-ИТП.ТМ .ПЗ | Пояснительная записка | 15 листов |",
+          "line": 250,
+          "evidence_kind": "TEXT"
+        },
+        {
+          "block_id": "blk_ec07216893c540b88b7560c80b87ecd9",
+          "quote": "Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 15.",
+          "line": 1795,
+          "evidence_kind": "supplied_md_stamp_metadata"
+        },
+        {
+          "block_id": "blk_d19f9dab58774ce3a7eab9ae3d81ed83",
+          "quote": "Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 20",
+          "line": 2803,
+          "evidence_kind": "supplied_md_stamp_metadata"
+        }
+      ],
+      "visible_fields": {
+        "problem": "Указанное в ведомости количество листов спецификации и ПЗ не согласовано с нумерацией представленных листов.",
+        "description": "Первоначальное описание:\nВедомость прилагаемых документов указывает 12 листов спецификации и 15 листов ПЗ. В представленном MD имеются лист 15 спецификации и лист 20 ПЗ. Это подтверждает несогласование ведомости с нумерацией приложений, но само по себе не является сплошным подсчётом фактически представленных листов. Вопрос относится к учёту состава комплекта: выявлено расхождение регистрационных сведений, а не отсутствие конкретного технического решения.\n\nДополнительная проверка:\nВедомость указывает 12 листов спецификации, фактически заявлено 15.\nСохранено с ограничением: ведомость прямо задаёт 12 листов, а представленный лист спецификации имеет номер 15. Этого достаточно для вопроса о согласовании ведомости с нумерацией в F-039; точное количество физических листов без сплошного состава не утверждается.\n\nВедомость указывает 15 листов ПЗ, фактически заявлено 20.\nСохранено с ограничением: ведомость задаёт 15 листов, а представлен лист 20 той же ПЗ. Содержание на листе 2 также просмотрено, но не содержит заполненных номеров страниц. В F-039 подтверждено несогласование ведомости с нумерацией, без заявления о сплошном подсчёте 20 физических листов.",
+        "solution": "Сверить фактический состав и нумерацию обоих приложений, после чего актуализировать количество листов в ведомости.",
+        "report_section": "questions"
+      }
+    },
+    {
+      "id": "F-043",
+      "target": "B-ITP-F-031:20e0a2fe6cdbb065f78a",
+      "assessment": "RM580 versus RM50 designation conflict retained while both50litre/16bar parameters are acknowledged. Catalogue existence and actual ordered item not inferred.",
+      "section": "agrees with question target",
+      "boundary": "Permitted equivalents do not choose a corrected model automatically. Resolve designation and confirmed order code if required.",
+      "quote_checks": [
+        {
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "quote": "| 19.2 | Расширительный мембранный бак V=50л, PN=16бар | RM 580 PN16 |  | SPL | шт. | 1 | 8.00 | подпитка, отопление 2-зона |",
+          "line": 1097,
+          "evidence_kind": "TEXT"
+        },
+        {
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "quote": "| K19.3 | SPL RM 50 16 бар | Демпферная емкость, V=50л, 16 бар | 1 | 17,0 |  |",
+          "line": 375,
+          "evidence_kind": "TEXT"
+        },
+        {
+          "block_id": "blk_fe2066a9479d4d9e9c215338d4f82621",
+          "quote": "| Демпферный бак | SPL RM 50 16 бар | 1 шт. |",
+          "line": 5546,
+          "evidence_kind": "TEXT"
+        },
+        {
+          "block_id": "blk_5e8d45b076bf429e863f27b16da7b261",
+          "quote": "В документации указана марка приборов, арматуры, приводов, изоляции, оборудования и т.п. для выдачи заданий смежным разделам, не является обязательной и рекомендовано в качестве аналога. Возможна замена на аналогичные с сохранением технических параметров.",
+          "line": 1116,
+          "evidence_kind": "TEXT"
+        }
+      ],
+      "visible_fields": {
+        "problem": "Требуется согласовать обозначение демпферного бака отопления второй зоны: RM 580 PN16 в спецификации и SPL RM 50 16 бар в экспликации и подборе.",
+        "description": "Первоначальное описание:\nНа листе 2 спецификации позиция 19.2 описана как мембранный бак V=50 л, PN=16 бар, но в графе марки записано RM 580 PN16. В экспликации на листе 2 позиция К19.3 содержит SPL RM 50 16 бар с объёмом 50 л; в составе подобранной установки с блоком SPL BASIC 2-B-125 и основным баком LVF 400 также указан демпферный бак SPL RM 50 16 бар. Подтверждено расхождение обозначений. Вопрос отнесён к уточнению оформления марки: объём и давление в спецификации и экспликации согласованы, а примечание спецификации прямо определяет марки как рекомендуемые аналоги с сохранением технических параметров. Существование или отсутствие исполнения RM 580 по предоставленным материалам не устанавливается.\n\nДополнительная проверка:\nВ спецификации бак 50 л PN16 обозначен RM 580 PN16.\nПозиция 19.2 непосредственно содержит V=50л, PN=16бар и марку RM 580 PN16. Авторитетный MD достаточен для подтверждения записи.\n\nВ экспликации демпферный бак отопления второй зоны обозначен SPL RM 50 16 бар.\nСоставной исходный подclaim разделён по документам; ID 2 сохранён за экспликацией. Строка К19.3 прямо задаёт указанное обозначение, объём 50 л и давление 16 бар. Артикул изготовителя для подтверждения опубликованной записи не требуется.",
+        "solution": "Уточнить корректное обозначение рекомендуемого бака объёмом 50 л на 16 бар и согласовать запись позиции 19.2 с экспликацией и подбором; при необходимости указать подтверждённый изготовителем заказной код.",
+        "report_section": "questions"
+      }
+    }
+  ],
+  "preserve": "Keep count versus numbering distinct; do not infer equipment mismatch from name alone; preserve document-requirement conflicts without upgrading to statutory or actual reliability violations.",
+  "entire_output_reviewed": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0
+}
