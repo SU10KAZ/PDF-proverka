@@ -1,0 +1,20 @@
+{
+  "finding_id": "F-053",
+  "status": "bounded_source_discrepancy_positive_control_pass",
+  "projection_path": "/tmp/auditmanager_publication_editorial_controls_20261112_run/evaluations/publication_purpose_053/publication_projection.json",
+  "projection_sha256": "61579dbb2d9856bbf1859ab85d640486ca823a327fb3e858c5b0e95db17b9a53",
+  "baseline_assessment_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F053_assessment.json",
+  "checks": [
+    "Confirmed actual source disagreement TS2 versus TS1/ТС1 remains technical, not misclassified as an auditor typo.",
+    "System По5.1, cabinet ШАУВ-6-К5ПЧ and cable По5.1-2 preserve the same-object link across four documents.",
+    "Recommendation and conditional identification risk remain in one technical record. Correct replacement number remains unknown; no actual installation error asserted.",
+    "Unverified sheet35 remains internal pending context, not an engineer question or a reason to suppress the technical core."
+  ],
+  "pair_with": "editorial_controls_F062_assessment.json",
+  "limits": [
+    "Both pair outcomes source-reviewed, not independent engineer acceptance or full-run acceptance.",
+    "Remaining three controls must be reviewed before accepting the combined instruction."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}

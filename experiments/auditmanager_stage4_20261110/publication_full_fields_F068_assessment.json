@@ -1,0 +1,28 @@
+{
+  "finding_id": "F-068",
+  "status": "scoped_terminal_address_ambiguity_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_068/publication_projection.json",
+  "projection_sha256": "03372542ac9c95b2fce558d8ebedc2fa50f759686a0855cab8f6685d63b27eb0",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_96ed7d88fb23414bb14d93191a89365a.png",
+      "sha256": "8e69fe04c4bd1743063db50a61e17c1813f8a1214949ff6c8855abc3ed3bf1bb",
+      "directly_viewed": true
+    }
+  ],
+  "authoritative_text": {
+    "path": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+    "block_id": "blk_5dea9af6d2bd4d0ea0674db8bd79f38c",
+    "quote": "2. Нумерацию клемм уточнить у завода-изготовителя."
+  },
+  "checks": [
+    "Непосредственно проверены нижние группы M1: 29,30,PE и M2:29,30,31,PE в контуре одного шкафа. У этих групп нет отдельного обозначения клеммника.",
+    "Повторные номера рассматриваются только в пределах показанного шкафа и неполной адресации, не как универсальный запрет повторов между клеммниками.",
+    "Примечание требует уточнить адресацию, но не предоставляет окончательные адреса. Модель сохранила выбор между согласованием нумерации и указанием отдельных клеммников.",
+    "Рекомендация и условный риск в одной записи; фактическое неправильное соединение не утверждается."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
