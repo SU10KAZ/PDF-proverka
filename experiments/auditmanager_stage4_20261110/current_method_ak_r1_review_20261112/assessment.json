@@ -84,5 +84,10 @@
     "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
   },
   "production_changed": false,
-  "filter_credit": false
+  "filter_credit": false,
+  "workload_proxy_report": {
+    "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/output_workload_proxies.json",
+    "sha256": "1e6ee086830e0260f33a76e11a4e20d75b415b2c0a8e5ec7c28b6613e618a742",
+    "engineer_time_measured": false
+  }
 }

@@ -1,0 +1,1616 @@
+{
+  "status": "sealed_output_workload_proxies_not_engineer_time",
+  "run": "ak_r1_classic_current",
+  "source": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+  },
+  "scope": "Raw final JSON fields problem/description/solution; excludes risk, norms, source quotations, metadata and any rendered Excel formatting. Character counts use Unicode code points, not bytes or model tokens.",
+  "summary": {
+    "findings": 88,
+    "sections": {
+      "questions": 20,
+      "technical_findings": 68
+    },
+    "visible_characters": 139780,
+    "findings_with_recovery_addenda": 71,
+    "recovery_addenda_total": 191,
+    "findings_with_repeated_exact_recovery_claim_labels": 13,
+    "findings_with_missing_final_id_references": 3,
+    "confirmed_duplicate_topic_pairs": 6
+  },
+  "confirmed_duplicate_topic_pairs": [
+    [
+      "F-023",
+      "F-077"
+    ],
+    [
+      "F-024",
+      "F-080"
+    ],
+    [
+      "F-025",
+      "F-081"
+    ],
+    [
+      "F-034",
+      "F-076"
+    ],
+    [
+      "F-009",
+      "F-085"
+    ],
+    [
+      "F-073",
+      "F-075"
+    ]
+  ],
+  "missing_reference_cases": [
+    {
+      "finding_id": "F-009",
+      "missing_ids": [
+        "F-091"
+      ]
+    },
+    {
+      "finding_id": "F-085",
+      "missing_ids": [
+        "F-091"
+      ]
+    },
+    {
+      "finding_id": "F-087",
+      "missing_ids": [
+        "F-093"
+      ]
+    }
+  ],
+  "manually_confirmed_wrong_existing_reference": {
+    "finding_id": "F-047",
+    "reported_reference": "F-048",
+    "reason": "F-047 describes PDS3 range mismatch, while final F-048 concerns fan-state labels. See existing review_notes for direct reading evidence."
+  },
+  "rows": [
+    {
+      "finding_id": "F-001",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 61,
+        "description": 312,
+        "solution": 191
+      },
+      "visible_characters": 564,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-002",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 89,
+        "description": 341,
+        "solution": 267
+      },
+      "visible_characters": 697,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-003",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 49,
+        "description": 862,
+        "solution": 131
+      },
+      "visible_characters": 1042,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-003"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-004",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 81,
+        "description": 329,
+        "solution": 75
+      },
+      "visible_characters": 485,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-005",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 103,
+        "description": 1728,
+        "solution": 204
+      },
+      "visible_characters": 2035,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "Пороги СО 20 и 100 мг/м³ обоснованы ГН 2.2.5.1313-03 без подтверждённой применимости.",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-005"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-006",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 97,
+        "description": 1485,
+        "solution": 174
+      },
+      "visible_characters": 1756,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "Высота 1,5 м обоснована неидентифицированной ссылкой «ТУ-газ-86».",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-006"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-007",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 61,
+        "description": 819,
+        "solution": 108
+      },
+      "visible_characters": 988,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-008",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 106,
+        "description": 1459,
+        "solution": 195
+      },
+      "visible_characters": 1760,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "Защита по воздуху после калорифера сопоставлена с запуском прогрева по наружной температуре ≤3 °С.",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-008"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-009",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 100,
+        "description": 1440,
+        "solution": 200
+      },
+      "visible_characters": 1740,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "Спрут Т-06 в описании тёплого подпора расходится с шестью МВТ 3280, NTC10К в СО.",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-009",
+        "F-091"
+      ],
+      "references_to_missing_final_ids": [
+        "F-091"
+      ]
+    },
+    {
+      "finding_id": "F-010",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 110,
+        "description": 1876,
+        "solution": 159
+      },
+      "visible_characters": 2145,
+      "description_paragraphs": 5,
+      "recovery_addenda_count": 4,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-010"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-011",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 84,
+        "description": 3306,
+        "solution": 162
+      },
+      "visible_characters": 3552,
+      "description_paragraphs": 9,
+      "recovery_addenda_count": 8,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-011"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-012",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 102,
+        "description": 1415,
+        "solution": 188
+      },
+      "visible_characters": 1705,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "ШАУВ-2-К4ПЧ: позиции 2.5 и 2.7 по одному наружному датчику при одном ТЕ1.",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-012"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-013",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 108,
+        "description": 1357,
+        "solution": 137
+      },
+      "visible_characters": 1602,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "ШАУВ-4-К4ПЧ: два накладных датчика в СО при одном ТЕ2 в перечне.",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-010",
+        "F-013"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-014",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 96,
+        "description": 1977,
+        "solution": 152
+      },
+      "visible_characters": 2225,
+      "description_paragraphs": 7,
+      "recovery_addenda_count": 6,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-014"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-015",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 114,
+        "description": 1367,
+        "solution": 191
+      },
+      "visible_characters": 1672,
+      "description_paragraphs": 4,
+      "recovery_addenda_count": 3,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-015"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-016",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 66,
+        "description": 907,
+        "solution": 182
+      },
+      "visible_characters": 1155,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-016"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-017",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 114,
+        "description": 1549,
+        "solution": 168
+      },
+      "visible_characters": 1831,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-017"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-018",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 77,
+        "description": 1543,
+        "solution": 180
+      },
+      "visible_characters": 1800,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-018",
+        "F-038"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-019",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 110,
+        "description": 3297,
+        "solution": 183
+      },
+      "visible_characters": 3590,
+      "description_paragraphs": 6,
+      "recovery_addenda_count": 5,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-019"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-020",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 109,
+        "description": 1749,
+        "solution": 152
+      },
+      "visible_characters": 2010,
+      "description_paragraphs": 4,
+      "recovery_addenda_count": 3,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "Пн5.1.-10: КСПЭВПГнг(А)-HF 2×2×0,75 длиной 35 м, включая 30+5 м, против 15 м в таблице ШАУВ-4-К5ПЧ.",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-020"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-021",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 112,
+        "description": 2169,
+        "solution": 218
+      },
+      "visible_characters": 2499,
+      "description_paragraphs": 4,
+      "recovery_addenda_count": 3,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-021",
+        "F-071"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-022",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 126,
+        "description": 1237,
+        "solution": 224
+      },
+      "visible_characters": 1587,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-023",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 95,
+        "description": 1013,
+        "solution": 173
+      },
+      "visible_characters": 1281,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-024",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 92,
+        "description": 1411,
+        "solution": 185
+      },
+      "visible_characters": 1688,
+      "description_paragraphs": 4,
+      "recovery_addenda_count": 3,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-024"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-025",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 102,
+        "description": 1657,
+        "solution": 208
+      },
+      "visible_characters": 1967,
+      "description_paragraphs": 4,
+      "recovery_addenda_count": 3,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-025"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-026",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 77,
+        "description": 1423,
+        "solution": 180
+      },
+      "visible_characters": 1680,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "Два RAK-TW.5000S-H, TS1 и TS2, указаны в перечне, но не раскрыты в разделе 17 СО.",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-026"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-027",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 107,
+        "description": 1772,
+        "solution": 246
+      },
+      "visible_characters": 2125,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "БУРР-1М с двумя БИС-1М и радиоканалом на листе 42 расходится с тремя Haier TD0027170RU и шестью адаптерами в СО.",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-027"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-028",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 85,
+        "description": 2292,
+        "solution": 163
+      },
+      "visible_characters": 2540,
+      "description_paragraphs": 5,
+      "recovery_addenda_count": 4,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "В ведомостях листов 48, 50 и 53 указан BSD4120, а в СО для 15 плит — BSD2120.",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-028"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-029",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 64,
+        "description": 695,
+        "solution": 79
+      },
+      "visible_characters": 838,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-022",
+        "F-029"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-030",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 97,
+        "description": 992,
+        "solution": 109
+      },
+      "visible_characters": 1198,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-030"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-031",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 81,
+        "description": 1201,
+        "solution": 163
+      },
+      "visible_characters": 1445,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-028",
+        "F-031"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-032",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 73,
+        "description": 1197,
+        "solution": 187
+      },
+      "visible_characters": 1457,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "Реестр отклонений комплекта АК2-ПА содержит шифр 13АВ-РД-АК-КЗ.",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-032"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-033",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 96,
+        "description": 2110,
+        "solution": 168
+      },
+      "visible_characters": 2374,
+      "description_paragraphs": 5,
+      "recovery_addenda_count": 4,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "Описание тёплого подпора ссылается на «лист 6 примера РД pdf».",
+          "occurrences": 2
+        },
+        {
+          "claim": "Описание тёплого подпора содержит нераскрытую ссылку «статья ПС».",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-033"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-034",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 97,
+        "description": 2942,
+        "solution": 207
+      },
+      "visible_characters": 3246,
+      "description_paragraphs": 7,
+      "recovery_addenda_count": 6,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-034"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-035",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 68,
+        "description": 774,
+        "solution": 107
+      },
+      "visible_characters": 949,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-011",
+        "F-035"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-036",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 91,
+        "description": 1648,
+        "solution": 144
+      },
+      "visible_characters": 1883,
+      "description_paragraphs": 4,
+      "recovery_addenda_count": 3,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-036"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-037",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 98,
+        "description": 2083,
+        "solution": 118
+      },
+      "visible_characters": 2299,
+      "description_paragraphs": 6,
+      "recovery_addenda_count": 5,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-037"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-038",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 100,
+        "description": 2189,
+        "solution": 170
+      },
+      "visible_characters": 2459,
+      "description_paragraphs": 4,
+      "recovery_addenda_count": 3,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-018",
+        "F-038"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-039",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 90,
+        "description": 1132,
+        "solution": 154
+      },
+      "visible_characters": 1376,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-039"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-040",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 106,
+        "description": 5642,
+        "solution": 231
+      },
+      "visible_characters": 5979,
+      "description_paragraphs": 10,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-040",
+        "F-044",
+        "F-049",
+        "F-059"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-041",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 71,
+        "description": 1468,
+        "solution": 218
+      },
+      "visible_characters": 1757,
+      "description_paragraphs": 5,
+      "recovery_addenda_count": 4,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-041"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-042",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 89,
+        "description": 1204,
+        "solution": 209
+      },
+      "visible_characters": 1502,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-043",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 94,
+        "description": 1237,
+        "solution": 161
+      },
+      "visible_characters": 1492,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-010",
+        "F-043"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-044",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 94,
+        "description": 1115,
+        "solution": 123
+      },
+      "visible_characters": 1332,
+      "description_paragraphs": 5,
+      "recovery_addenda_count": 4,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-045"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-045",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 110,
+        "description": 861,
+        "solution": 156
+      },
+      "visible_characters": 1127,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-046",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 119,
+        "description": 5512,
+        "solution": 148
+      },
+      "visible_characters": 5779,
+      "description_paragraphs": 16,
+      "recovery_addenda_count": 6,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-058"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-047",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 116,
+        "description": 1748,
+        "solution": 177
+      },
+      "visible_characters": 2041,
+      "description_paragraphs": 4,
+      "recovery_addenda_count": 3,
+      "repeated_exact_claim_labels": [
+        {
+          "claim": "PDS3 Пкр5.1: схема задаёт 20–200 Па, перечень и СО 7.3 — 50–500 Па.",
+          "occurrences": 2
+        }
+      ],
+      "internal_references": [
+        "F-048"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-048",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 77,
+        "description": 1582,
+        "solution": 138
+      },
+      "visible_characters": 1797,
+      "description_paragraphs": 9,
+      "recovery_addenda_count": 8,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-049",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 102,
+        "description": 1091,
+        "solution": 136
+      },
+      "visible_characters": 1329,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-050",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 80,
+        "description": 805,
+        "solution": 204
+      },
+      "visible_characters": 1089,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-052"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-051",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 106,
+        "description": 1154,
+        "solution": 164
+      },
+      "visible_characters": 1424,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-053"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-052",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 80,
+        "description": 859,
+        "solution": 210
+      },
+      "visible_characters": 1149,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-054"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-053",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 106,
+        "description": 961,
+        "solution": 164
+      },
+      "visible_characters": 1231,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-055"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-054",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 75,
+        "description": 927,
+        "solution": 142
+      },
+      "visible_characters": 1144,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-056"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-055",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 105,
+        "description": 876,
+        "solution": 140
+      },
+      "visible_characters": 1121,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-057"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-056",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 76,
+        "description": 962,
+        "solution": 180
+      },
+      "visible_characters": 1218,
+      "description_paragraphs": 5,
+      "recovery_addenda_count": 4,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-057",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 96,
+        "description": 1054,
+        "solution": 120
+      },
+      "visible_characters": 1270,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-061"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-058",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 105,
+        "description": 783,
+        "solution": 140
+      },
+      "visible_characters": 1028,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-059",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 94,
+        "description": 1006,
+        "solution": 114
+      },
+      "visible_characters": 1214,
+      "description_paragraphs": 5,
+      "recovery_addenda_count": 4,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-060",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 94,
+        "description": 930,
+        "solution": 155
+      },
+      "visible_characters": 1179,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-065"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-061",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 114,
+        "description": 2260,
+        "solution": 206
+      },
+      "visible_characters": 2580,
+      "description_paragraphs": 6,
+      "recovery_addenda_count": 5,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-066"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-062",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 115,
+        "description": 1119,
+        "solution": 136
+      },
+      "visible_characters": 1370,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-067"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-063",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 122,
+        "description": 777,
+        "solution": 126
+      },
+      "visible_characters": 1025,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-068"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-064",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 104,
+        "description": 833,
+        "solution": 194
+      },
+      "visible_characters": 1131,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-069"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-065",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 96,
+        "description": 1149,
+        "solution": 185
+      },
+      "visible_characters": 1430,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-070"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-066",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 103,
+        "description": 2006,
+        "solution": 148
+      },
+      "visible_characters": 2257,
+      "description_paragraphs": 5,
+      "recovery_addenda_count": 4,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-021",
+        "F-071"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-067",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 79,
+        "description": 918,
+        "solution": 142
+      },
+      "visible_characters": 1139,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-072"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-068",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 94,
+        "description": 2498,
+        "solution": 135
+      },
+      "visible_characters": 2727,
+      "description_paragraphs": 9,
+      "recovery_addenda_count": 8,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-073"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-069",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 80,
+        "description": 919,
+        "solution": 159
+      },
+      "visible_characters": 1158,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-070",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 93,
+        "description": 947,
+        "solution": 127
+      },
+      "visible_characters": 1167,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-071",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 109,
+        "description": 1220,
+        "solution": 142
+      },
+      "visible_characters": 1471,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-076"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-072",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 106,
+        "description": 2945,
+        "solution": 127
+      },
+      "visible_characters": 3178,
+      "description_paragraphs": 5,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-073",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 70,
+        "description": 1007,
+        "solution": 131
+      },
+      "visible_characters": 1208,
+      "description_paragraphs": 3,
+      "recovery_addenda_count": 2,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-078"
+      ],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-074",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 79,
+        "description": 555,
+        "solution": 194
+      },
+      "visible_characters": 828,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-075",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 64,
+        "description": 406,
+        "solution": 133
+      },
+      "visible_characters": 603,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-076",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 57,
+        "description": 337,
+        "solution": 218
+      },
+      "visible_characters": 612,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-077",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 41,
+        "description": 248,
+        "solution": 98
+      },
+      "visible_characters": 387,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-078",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 74,
+        "description": 354,
+        "solution": 136
+      },
+      "visible_characters": 564,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-079",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 69,
+        "description": 587,
+        "solution": 175
+      },
+      "visible_characters": 831,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-080",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 87,
+        "description": 322,
+        "solution": 156
+      },
+      "visible_characters": 565,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-081",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 74,
+        "description": 414,
+        "solution": 164
+      },
+      "visible_characters": 652,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-082",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 61,
+        "description": 354,
+        "solution": 136
+      },
+      "visible_characters": 551,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-083",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 64,
+        "description": 493,
+        "solution": 151
+      },
+      "visible_characters": 708,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-084",
+      "report_section": "questions",
+      "characters_by_field": {
+        "problem": 64,
+        "description": 455,
+        "solution": 131
+      },
+      "visible_characters": 650,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-085",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 76,
+        "description": 1065,
+        "solution": 190
+      },
+      "visible_characters": 1331,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-009",
+        "F-091"
+      ],
+      "references_to_missing_final_ids": [
+        "F-091"
+      ]
+    },
+    {
+      "finding_id": "F-086",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 82,
+        "description": 481,
+        "solution": 147
+      },
+      "visible_characters": 710,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    },
+    {
+      "finding_id": "F-087",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 108,
+        "description": 1320,
+        "solution": 175
+      },
+      "visible_characters": 1603,
+      "description_paragraphs": 2,
+      "recovery_addenda_count": 1,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [
+        "F-093"
+      ],
+      "references_to_missing_final_ids": [
+        "F-093"
+      ]
+    },
+    {
+      "finding_id": "F-088",
+      "report_section": "technical_findings",
+      "characters_by_field": {
+        "problem": 101,
+        "description": 633,
+        "solution": 163
+      },
+      "visible_characters": 897,
+      "description_paragraphs": 1,
+      "recovery_addenda_count": 0,
+      "repeated_exact_claim_labels": [],
+      "internal_references": [],
+      "references_to_missing_final_ids": []
+    }
+  ],
+  "limits": [
+    "These are workload proxies, not measured engineer minutes, usefulness, precision or monetary cost.",
+    "Six duplicate topic pairs do not authorize dropping one row per pair: preserve distinct evidence and all useful subclaims when combining.",
+    "Repeated claim labels may accompany evolving verification; they flag wording to reconcile, not automatic duplicate findings.",
+    "The missing-ID scan is only a lower bound: existing IDs may refer to the wrong final finding after renumbering.",
+    "No reading speed assumption or page-count conversion is used.",
+    "Twenty questions are not automatically low value; judge against frozen targets and source evidence."
+  ],
+  "recommended_checks": [
+    "Rebuild internal cross-references after final grouping/renumbering and verify target identity, not just ID existence.",
+    "Generate a concise final statement from the preserved claims and their current verdicts; keep verification history in an audit appendix rather than repeated visible prose.",
+    "Compare these identical proxies across all sealed variants; measure engineer time separately when available."
+  ],
+  "production_changed": false
+}
