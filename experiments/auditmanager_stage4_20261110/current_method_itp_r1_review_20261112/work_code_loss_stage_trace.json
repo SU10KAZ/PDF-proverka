@@ -1,0 +1,905 @@
+{
+  "version": 1,
+  "target_id": "H-ITP-64:0a12321728e29d5b1832",
+  "candidate_id": "T-035",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "trace": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+      "pointer": "/text_findings/34",
+      "observation": {
+        "id": "T-035",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Спецификация, листы 1–15; ТЗ, пункт 5.18.3.1",
+        "finding": "В предоставленных таблицах спецификации отсутствует предусмотренная ТЗ колонка «Код работ» по РСР/локальной смете. Требуется уточнить, выполнено ли это требование в согласованной сводной спецификации, либо дополнить спецификацию комплекта.",
+        "norm": "Техническое задание, пункт 5.18.3.1",
+        "norm_quote": "В спецификации РД должна быть включена колонка «Код работ» по РСР/локальной смете.",
+        "related_block_ids": [
+          "blk_ae35014464b5493f84ca38481c3ffa60",
+          "blk_ea746747ceeb432db81d3380109e5608"
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+      "pointer": "/requirement_registry/10",
+      "observation": {
+        "id": "R-11",
+        "source_kind": "project_requirement",
+        "document": "Техническое задание, пункт 5.18.3.1",
+        "revision": "Приложение 2 к договору от 15.09.2025",
+        "requirement_text": "В спецификации должна быть колонка «Код работ»",
+        "scope": "Спецификации рабочей документации",
+        "stage": "Рабочая документация",
+        "execution": "По РСР/локальной смете",
+        "exceptions": "Не указаны",
+        "source_evidence": [
+          {
+            "block_id": "blk_ea746747ceeb432db81d3380109e5608",
+            "quote": "В спецификации РД должна быть включена колонка «Код работ» по РСР/локальной смете."
+          }
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+      "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+      "pointer": "/candidate_decisions/34",
+      "observation": {
+        "origin": "text",
+        "input_file": "02_text_analysis.json",
+        "pointer": "/text_findings/34",
+        "candidate_id": "T-035",
+        "original_severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "decision": "needs_data",
+        "reason": "Нужны полный комплект спецификации, применимое ТЗ и сведения о сводной спецификации.",
+        "source_refs": [],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "В спецификации отсутствует колонка «Код работ», требуемая пунктом 5.18.3.1 ТЗ.",
+            "decision": "needs_data",
+            "reason": "Переданный заголовок одной таблицы не подтверждает отсутствие колонки во всём комплекте или согласованном сводном документе.",
+            "source_refs": [],
+            "required_source_refs": [
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_ea746747ceeb432db81d3380109e5608",
+              "blk_35ff8683b1cf4be2abdef61740ddda2e"
+            ],
+            "target_finding_ids": []
+          }
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+      "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+      "pointer": "/requests/34",
+      "observation": {
+        "selected_md_pages": [
+          24,
+          114,
+          166
+        ],
+        "missing_or_budgeted_md_pages": [],
+        "context_complete": false
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_7267f73c86bfe765.json",
+      "sha256": "b4702259570bf984faeb98477109d5ebdd331ff452297fd00fd01141bc93a6f6",
+      "pointer": "/candidate_decisions/0",
+      "observation": {
+        "origin": "text",
+        "pointer": "/text_findings/34",
+        "decision": "needs_data",
+        "reason": "Пункт 5.18.3.1 ТЗ прямо требует колонку «Код работ». В предоставленной таблице листа 1 этой колонки нет; «Код изделия» имеет другое назначение. Однако листы 2–15 и согласованные сводные спецификации не представлены, поэтому утверждение об отсутствии колонки во всей спецификации остаётся неподтверждённым. Существующие замечания этот вопрос не охватывают.",
+        "source_refs": [
+          "blk_ae35014464b5493f84ca38481c3ffa60",
+          "blk_ea746747ceeb432db81d3380109e5608",
+          "blk_35ff8683b1cf4be2abdef61740ddda2e"
+        ],
+        "required_source_refs": [],
+        "target_finding_ids": [],
+        "context_queries": [
+          "ПД-00542664-ИТП.ТМ.СО",
+          "Код работ",
+          "сводные спецификации",
+          "Приложении №5",
+          "РСР/локальной смете"
+        ],
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "В спецификации отсутствует колонка «Код работ», требуемая пунктом 5.18.3.1 ТЗ.",
+            "decision": "needs_data",
+            "reason": "Подтверждены требование ТЗ и отсутствие колонки на листе 1. Для проверки заявленного охвата листов 1–15 необходимы остальные таблицы и сведения о согласованном составе спецификаций. Пункт 5.18.1.1 отдельно предусматривает сводные спецификации, но не устанавливает, что они заменяют выполнение пункта 5.18.3.1 в томе РД. До получения контекста общий вывод не публикуется ни как технический дефект, ни как подтверждённая редакционная недоработка.",
+            "source_refs": [
+              "blk_ae35014464b5493f84ca38481c3ffa60",
+              "blk_ea746747ceeb432db81d3380109e5608",
+              "blk_35ff8683b1cf4be2abdef61740ddda2e"
+            ],
+            "required_source_refs": [],
+            "required_context": [
+              "Полные таблицы листов 2–15 спецификации ПД-00542664-ИТП.ТМ.СО с заголовками граф.",
+              "Согласованные сводные спецификации соответствующего раздела РД и документы, определяющие выполнение требования о кодах работ."
+            ],
+            "target_finding_ids": [],
+            "context_queries": [
+              "ПД-00542664-ИТП.ТМ.СО",
+              "Код работ",
+              "сводные спецификации",
+              "Приложении №5",
+              "РСР/локальной смете"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": "/candidate_recovery_reports/34",
+      "observation": {
+        "stage": "candidate_recovery_7267f73c86bfe765",
+        "context_retrieval": {
+          "status": "no_new_context",
+          "search": {
+            "hits": [],
+            "backlog": [],
+            "query_hit_counts": {
+              "ПД-00542664-ИТП.ТМ.СО": 1,
+              "Код работ": 1,
+              "сводные спецификации": 1,
+              "Приложении №5": 1,
+              "РСР/локальной смете": 1
+            },
+            "rejected_queries": [],
+            "deferred_queries": [],
+            "already_supplied": [
+              {
+                "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+                "kind": "TEXT",
+                "page": 24,
+                "queries": [
+                  "ПД-00542664-ИТП.ТМ.СО"
+                ],
+                "query_match_kinds": {
+                  "ПД-00542664-ИТП.ТМ.СО": "metadata_token"
+                },
+                "start_line": 1053,
+                "source_provenance": {
+                  "code": "ПД-00542664-ИТП.ТМ.СО",
+                  "stage": "Р",
+                  "sheet": "1.",
+                  "revisions": "Не указано"
+                },
+                "reference_applicability_verified": false
+              },
+              {
+                "block_id": "blk_ea746747ceeb432db81d3380109e5608",
+                "kind": "TEXT",
+                "page": 166,
+                "queries": [
+                  "Код работ",
+                  "сводные спецификации",
+                  "Приложении №5",
+                  "РСР/локальной смете"
+                ],
+                "query_match_kinds": {
+                  "Код работ": "body_token",
+                  "сводные спецификации": "body_token",
+                  "Приложении №5": "body_token",
+                  "РСР/локальной смете": "body_token"
+                },
+                "start_line": 7335,
+                "source_provenance": {},
+                "reference_applicability_verified": false
+              }
+            ],
+            "absence_proven": false,
+            "sheet_lookup_enabled": false,
+            "boundary": "Literal MD search, numeric dimension typography navigation and optional same-version sheet lookup; navigation does not prove identity or equivalent execution. Zero matches do not establish absence."
+          }
+        }
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_coverage.json",
+      "sha256": "e1349f70b4cb37f6a4a1d9b9f3e39836e2c0cad5616bd3b1cc9fe1609ba0024f",
+      "pointer": "/candidates/34",
+      "observation": {
+        "origin": "text",
+        "pointer": "/text_findings/34",
+        "candidate": {
+          "id": "T-035",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "documentation",
+          "report_section": "questions",
+          "source": "Спецификация, листы 1–15; ТЗ, пункт 5.18.3.1",
+          "finding": "В предоставленных таблицах спецификации отсутствует предусмотренная ТЗ колонка «Код работ» по РСР/локальной смете. Требуется уточнить, выполнено ли это требование в согласованной сводной спецификации, либо дополнить спецификацию комплекта.",
+          "norm": "Техническое задание, пункт 5.18.3.1",
+          "norm_quote": "В спецификации РД должна быть включена колонка «Код работ» по РСР/локальной смете.",
+          "related_block_ids": [
+            "blk_ae35014464b5493f84ca38481c3ffa60",
+            "blk_ea746747ceeb432db81d3380109e5608"
+          ]
+        },
+        "source_id": "T-035",
+        "linked_findings": [],
+        "semantic_preservation_verified": false,
+        "status": "unlinked_requires_trace"
+      }
+    }
+  ],
+  "request_receipt": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794493211127182587/request.json",
+    "sha256": "521a3d971dfb96315fc6ea5cf0d1dd1de17df885ac12457dba2217b3b334c5b2",
+    "attempts_path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794493211127182587/attempts.json",
+    "attempts_sha256": "41bede9deac96d7d3602967fc689f69ba6835401be135f6fa87a47882b4ca80d",
+    "stage": "candidate_recovery_7267f73c86bfe765",
+    "model": "codex/gpt-6-astra",
+    "reasoning_effort": "high",
+    "successful_attempts": 1
+  },
+  "verified_failure_stage": "Context retrieval after a detected question was deferred at merge and recovery. Literal document-code spelling returned only already supplied sources, leaving full-header inspection unperformed.",
+  "not_failure_causes": [
+    "Candidate was found and registered as a question; not initial detection failure.",
+    "Recovery request executed successfully; not missing request or model timeout.",
+    "context_complete=false is hardcoded packet boundary, not proof that recovery was skipped.",
+    "Actual search has emptybacklog; original failure is not a token-budget omission. Alternate navigation reveals a separate continuation budget issue."
+  ],
+  "offline_replay": {
+    "code_path": "/tmp/auditmanager_current_method_sources_20261112/candidate_d228885f327a/backend/app/pipeline/stages/prepare/recovery_context.py",
+    "code_sha256": "841c10967cf078349cad8814f329afa47a6b5bb986fed3ddb6ad67325440d440",
+    "function": "search_md_context",
+    "original": {
+      "hits": [],
+      "backlog": [],
+      "query_hit_counts": {
+        "ПД-00542664-ИТП.ТМ.СО": 1,
+        "Код работ": 1,
+        "сводные спецификации": 1,
+        "Приложении №5": 1,
+        "РСР/локальной смете": 1
+      },
+      "rejected_queries": [],
+      "deferred_queries": [],
+      "already_supplied": [
+        {
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "kind": "TEXT",
+          "page": 24,
+          "queries": [
+            "ПД-00542664-ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664-ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1053,
+          "source_provenance": {
+            "code": "ПД-00542664-ИТП.ТМ.СО",
+            "stage": "Р",
+            "sheet": "1.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_ea746747ceeb432db81d3380109e5608",
+          "kind": "TEXT",
+          "page": 166,
+          "queries": [
+            "Код работ",
+            "сводные спецификации",
+            "Приложении №5",
+            "РСР/локальной смете"
+          ],
+          "query_match_kinds": {
+            "Код работ": "body_token",
+            "сводные спецификации": "body_token",
+            "Приложении №5": "body_token",
+            "РСР/локальной смете": "body_token"
+          },
+          "start_line": 7335,
+          "source_provenance": {},
+          "reference_applicability_verified": false
+        }
+      ],
+      "absence_proven": false,
+      "sheet_lookup_enabled": false,
+      "boundary": "Literal MD search, numeric dimension typography navigation and optional same-version sheet lookup; navigation does not prove identity or equivalent execution. Zero matches do not establish absence."
+    },
+    "alternate_exact_source_query": "ПД-00542664 - ИТП.ТМ.СО",
+    "alternate": {
+      "hits": [
+        {
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "kind": "TEXT",
+          "page": 25,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1086,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "2.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_5e8d45b076bf429e863f27b16da7b261",
+          "kind": "TEXT",
+          "page": 25,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1108,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "2.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "kind": "TEXT",
+          "page": 26,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1120,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "3.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_e65f4bff781945f19da5a4ec2919b764",
+          "kind": "TEXT",
+          "page": 26,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1156,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "3.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+          "kind": "TEXT",
+          "page": 27,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1168,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "4.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_f249587fe98945f7a1c5d30e102aaa68",
+          "kind": "TEXT",
+          "page": 27,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1213,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "4.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "kind": "TEXT",
+          "page": 28,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1225,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "5.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_29a310ba9cf94b72b83f0944dfb47467",
+          "kind": "TEXT",
+          "page": 28,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1272,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "5.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "kind": "TEXT",
+          "page": 29,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1284,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "6.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_d0ef4dbea56d4b74b97a10119fbee223",
+          "kind": "TEXT",
+          "page": 29,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1339,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "6.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "kind": "TEXT",
+          "page": 30,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1351,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "7.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        },
+        {
+          "block_id": "blk_4f09992bf47245e9a6f8a27ddda67b86",
+          "kind": "TEXT",
+          "page": 30,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1409,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "7.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false
+        }
+      ],
+      "backlog": [
+        {
+          "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+          "kind": "TEXT",
+          "page": 31,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1421,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "8.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_4dfd856534c74306be925eff2ea7088a",
+          "kind": "TEXT",
+          "page": 31,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1479,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "8.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "kind": "TEXT",
+          "page": 32,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1491,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "9.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_50817e980a4149c59c8eeee7c97151cd",
+          "kind": "TEXT",
+          "page": 32,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1544,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "9.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_a7ba21ea8083491389a223015720c9cb",
+          "kind": "TEXT",
+          "page": 33,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1556,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "10.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_68c0bbe2863c496d8bf491bcdc947351",
+          "kind": "TEXT",
+          "page": 33,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1600,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "10.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_fd984f8c5d03427497ffd926feaf8ed5",
+          "kind": "TEXT",
+          "page": 34,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1612,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "11.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_033ce4c4cbae41368d96485419afe95a",
+          "kind": "TEXT",
+          "page": 34,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1658,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "11.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_9e9fdca2261a4324959220546412f377",
+          "kind": "TEXT",
+          "page": 35,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1670,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "12.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_f409d1ebb4764f25aa0c123ad7fd22e9",
+          "kind": "TEXT",
+          "page": 35,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1693,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "12.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_20c9372392c34ef08a1e81d99316f0cb",
+          "kind": "TEXT",
+          "page": 36,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1705,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "13.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_0f2c128d5315431d8f7e8c956be02e12",
+          "kind": "TEXT",
+          "page": 36,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1747,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "13.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_e46d7b061235453f8917708c1387217c",
+          "kind": "TEXT",
+          "page": 37,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1759,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "14.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_bd870d5f6f914b7581a69d60e4ae8e72",
+          "kind": "TEXT",
+          "page": 37,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1779,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "14.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_ec07216893c540b88b7560c80b87ecd9",
+          "kind": "TEXT",
+          "page": 38,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1791,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "15.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        },
+        {
+          "block_id": "blk_3103f97afa7b43bb91b4360de787e6a2",
+          "kind": "TEXT",
+          "page": 38,
+          "queries": [
+            "ПД-00542664 - ИТП.ТМ.СО"
+          ],
+          "query_match_kinds": {
+            "ПД-00542664 - ИТП.ТМ.СО": "metadata_token"
+          },
+          "start_line": 1822,
+          "source_provenance": {
+            "code": "ПД-00542664 - ИТП.ТМ.СО",
+            "stage": "Не указано",
+            "sheet": "15.",
+            "revisions": "Не указано"
+          },
+          "reference_applicability_verified": false,
+          "reason": "context_budget"
+        }
+      ],
+      "query_hit_counts": {
+        "ПД-00542664 - ИТП.ТМ.СО": 28
+      },
+      "rejected_queries": [],
+      "deferred_queries": [],
+      "already_supplied": [],
+      "absence_proven": false,
+      "sheet_lookup_enabled": false,
+      "boundary": "Literal MD search, numeric dimension typography navigation and optional same-version sheet lookup; navigation does not prove identity or equivalent execution. Zero matches do not establish absence."
+    },
+    "boundary": "Alternate is diagnostic from actual source metadata; no frozen runtime edit or new model request. No claim that code variants prove same document/version."
+  },
+  "recommendation": {
+    "behavior": "Resolve document-code typography as navigation candidates while retaining original code, stage, revision, sheet and source identity. Enumerate requested table headers across matching same-version pages, continue bounded backlog until reviewed or explicitly unavailable. Do not equate zero new literal matches with completed context review.",
+    "preserve": "Do not publish global absence or unsupported defect while scope is uninspected. After actual bounded review retain supported local question and clearly separate unknown external consolidated specifications.",
+    "control_pair": "Positive: source-backed work-code clarification must survive after all15localheadersreview. Negative: different revision/stage or optional externalExcelmust not be treated as proof of missing column in every delivered document. The latter needs an independently verified control before acceptance.",
+    "status": "candidate recommendation; not implemented or experimentally accepted"
+  },
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_stage_complete": false
+}
