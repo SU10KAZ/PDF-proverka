@@ -1,0 +1,21 @@
+{
+  "finding_id": "F-038",
+  "status": "document_conflict_route_not_restored_context_followup_required",
+  "candidate_projection_path": "/tmp/auditmanager_publication_signal_pair_20261112_run/evaluations/publication_purpose_038/publication_projection.json",
+  "candidate_projection_sha256": "90a867bfeb231feecd8b8d19523891af010fe82c3a332ee9f0005f5c415b5dad",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F038_assessment.json",
+  "source_review_sha256": "f582ef78c0f96a32278e690bc0a82200f2b0b8cfad843525d0bed5b63d37fa54",
+  "checks": [
+    "Факты состояния 0–100% и AO сохранены, но модель вновь считает технический конфликт недоказанным из-за неизвестной фактической функции.",
+    "Полезное содержание не исчезло: оно находится в вопросе. Это различие маршрутизации, не полный пропуск находки.",
+    "Отсутствие обратной связи, ошибка подключения и необходимость отдельных входов обоснованно не объявлены установленными.",
+    "Для технического конфликта документации правильное исправление может оставаться неизвестным; значимость и профиль требуют отдельного решения."
+  ],
+  "limits": [
+    "Улучшение маршрутизации на этой паре не доказано.",
+    "Пара DEV, без установленного инженерного решения по текущей формулировке.",
+    "Найден дополнительный источник подключений, который не входил в завершённые запросы."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
