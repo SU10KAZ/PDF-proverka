@@ -1,5 +1,5 @@
 {
-  "status": "requirement_audit_in_progress",
+  "status": "all_seven_hypotheses_audited_acceptance_gaps_explicit",
   "basis": "experiments/auditmanager_stage3_20261110/selected_hypotheses.json",
   "hypotheses": [
     {
@@ -367,12 +367,132 @@
         "Полные составные контроли ИТП, финальное сохранение КМ и спорная идентичность остаются открыты."
       ],
       "complete": false
+    },
+    {
+      "hypothesis": "H06",
+      "status": "requirement_quote_contract_and_bounded_catalogue_questions_evidenced",
+      "code": [
+        {
+          "path": "backend/app/pipeline/stages/text_analysis/requirement_checks.py",
+          "sha256": "8f2b2c06ee41e868037ec4c427f6403400e949d22bbd100da342b7ab0394d1da"
+        },
+        {
+          "path": "backend/app/pipeline/stages/text_analysis/runner.py",
+          "sha256": "3f9b71c25de54a18d92a8e673b55baf514f895c97087a6fd9eb5bc92edcb9694"
+        },
+        {
+          "path": "backend/app/pipeline/stages/prepare/object_operation_passes.py",
+          "sha256": "a6b866da065e7db1a63bc460eff0abe83c1fe412d8a3f0edadafec3bb52bac8c"
+        }
+      ],
+      "observed_mechanisms": [
+        "reconcile_requirement_checks требует уникальную пару объекта/требования, документ, редакцию, область, стадию, исполнение, исключения и буквальные цитаты TEXT. Unknown остаётся needs_data; нормативный кандидат требует отдельного norm_resolver.",
+        "Реальный runner записывает результат и SHA исходного MD. reported_applies не означает semantic_verified; полнота покрытия не подтверждается."
+      ],
+      "live_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/ITP_requirement_claude_assessment.json",
+          "sha256": "85d28e59caa328dbad64b4c2db9ce84b16b1cd51bee6cb5d1636b31f31244d84"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/EOM_manufacturer_applicability_assessment.json",
+          "sha256": "a83de192bcc044cde9c8fa52983f6a4b549f7a3c7e6c298712ead8a5761240d4"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/EOM_shunt_identity_negative_pair.json",
+          "sha256": "05b8365fc77f5c8d0a2f8c0cb3948bd30c4f8481963804de5436e6a62ea3dd3c"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AR_rope_reviewed_question_replay.json",
+          "sha256": "082a087710f6e6e64f5b720fcc538818e31f07613f74e4a43942ea569c4abbe7"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AR_rope_strength_inference_pair.json",
+          "sha256": "10cc61643020de795274e88c208d0ba720cce53c3f34d3baa2488de79fc4ec6e"
+        }
+      ],
+      "control_interpretation": [
+        "ИТП: 819 — сумма четырёх строк, не число нарушений. Отрицательный контроль области пройден, но условные технические строки Claude не допущены; полезный положительный applicability-контроль ещё не закрыт этим пилотом.",
+        "ЭОМ: ВА301 не устанавливает 1P; конкретный изготовитель/артикул QF3.20 не установлен. QF3.17 другого ВРУ не подменяет предмет проверки. Сохранён адресный вопрос.",
+        "АР: после добора связанных комплектов сохранён вопрос о соответствии канатного узла ОГН-4. Декоративная пластина не доказывает ни недостаточность, ни достаточность. В ограниченном replay сохранены 24 исходные строки, но итоговая редактура и общая интеграция не закрыты."
+      ],
+      "limits": [
+        "Проверка цитат не сертифицирует применимость или физическую совместимость.",
+        "Положительное обнаружение применимого нарушения ИТП не доказано отрицательным контролем 819.",
+        "Каталожная политика независимого сравнения и финальная выдача требуют последующих этапов."
+      ],
+      "complete": false
+    },
+    {
+      "hypothesis": "H07",
+      "status": "metadata_subject_narrowing_prescan_candidate_and_question_controls_evidenced",
+      "code": [
+        {
+          "path": "backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py",
+          "sha256": "cea617cb89944cbec5a11ca8363d01816aa49121d68c5d7a1f183b8c1f61f189"
+        },
+        {
+          "path": "backend/app/pipeline/stages/text_analysis/md_prescan.py",
+          "sha256": "b9f9e7b422698579f069879d2c109a5dc694f1fa5aec6b585b1fdd008990031b"
+        },
+        {
+          "path": "backend/app/pipeline/stages/findings_verify/source_review_admission.py",
+          "sha256": "b434304a75faa8212e6155b409053e7299cf387df88b9743d313552c553b5e70"
+        },
+        {
+          "path": "backend/app/pipeline/stages/findings_merge/publication_reconciliation.py",
+          "sha256": "4f443fb4278c3ab39fa7b5f5591e2edcafdc81441efca1c8d8e4819a91ae90fb"
+        }
+      ],
+      "observed_mechanisms": [
+        "gate_findings применяет metadata regex к finding/recommendation, исключив evidence_quote. Это эвристика предмета претензии, не полная смысловая классификация.",
+        "Для air_curtain_u_designation auto_publish=False: prescan записывает запрос проверки и не выдаёт переименование по совпадению слов. Другие правила prescan могут сохранять автоматическое поведение.",
+        "Экспериментальный publication-кандидат разделяет технические тезисы, вопросы, pending и служебную историю; его проекция сама по себе не доказывает окончательную выдачу."
+      ],
+      "live_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/metadata_gate_candidate_replay.json",
+          "sha256": "3ce1063beaac5f7c58aa9e06eab91a9bcac6f9b1b0957c94af927f30ea02832c"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/prescan_curtain_candidate_replay.json",
+          "sha256": "e7d4c095f28b5536fa40179265139820060d4874dc7c51937c01f4b699f8bd69"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/EOM_prescan_recovery_assessment.json",
+          "sha256": "68442b9b84fd6d4408ae58ec9ac86517da9a46a1debbb3796874d1d5d74f173f"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/publication_identity_scope_summary.json",
+          "sha256": "61c68bbf57706ca6e8ccbf4aed02012ded8850e878130afbd26a080a6e863d10"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AR_roof_reviewed_question_assessment.json",
+          "sha256": "5173664ad3899ed326ea73e749053b582c6dd4fecd68c79b7821f6ac4b739696"
+        }
+      ],
+      "control_interpretation": [
+        "Исторический ЭОМ-кандидат больше не подавляется только из-за слов о контексте в цитате; тот же смысл уже найден другим детектором, поэтому прирост уникальных находок не заявлен.",
+        "Отрицательные metadata-примеры синтетические: инженерная историческая пара отсутствует, широкое подавление не обосновано.",
+        "Prescan ЭОМ сохранил 49 строк и не выдал автоматического переименования; неразрешённая связь текстовых марок остаётся неопределённой.",
+        "Четыре DEV-контроля identity scope сохраняют два технических конфликта и два вопроса без недоказанного глобального требования уникальности.",
+        "АР условный вопрос прошёл проверку и экспорт; наличие вопроса не подтверждает физический дефект."
+      ],
+      "limits": [
+        "Общий all-parts путь publication→окончательная выдача ещё не подтверждён.",
+        "Нет независимой исторической отрицательной пары для широкого metadata-фильтра.",
+        "Полнота, нагрузка вопросов и переносимость требуют замороженного сравнения."
+      ],
+      "complete": false
     }
   ],
-  "not_yet_audited": [
-    "H06",
-    "H07"
-  ],
+  "not_yet_audited": [],
   "stage4_complete": false,
-  "production_acceptance": false
+  "production_acceptance": false,
+  "local_verification": {
+    "command": "python -m pytest -q tests/test_requirement_checks.py tests/test_stage01_evidence_context.py tests/test_text_analysis_md_prescan.py tests/test_calculation_consistency.py tests/test_object_balance.py",
+    "result": "33 passed in 0.83s",
+    "scope": "Contract and regression tests, not whole-project semantic acceptance",
+    "source_commit": "01502de1"
+  }
 }
