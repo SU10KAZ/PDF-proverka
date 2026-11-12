@@ -1,0 +1,34 @@
+{
+  "status": "prepared_four_DEV_controls_not_accepted",
+  "preparation_path": "/tmp/auditmanager_publication_identity_scope_20261112/preparation.json",
+  "preparation_sha256": "f94d91c1524f0f00c60a7e0061bef1e1e43c33de160977968ae1f6464c262553",
+  "instruction_sha256": "a65ce5e68f8cd7130b29ccac2e324bdbc7feb0d6601aac69288c3acebd1e917b",
+  "requests": [
+    {
+      "finding_id": "F-082",
+      "images": 10,
+      "chars": 17468,
+      "request_sha256": "8d66dbaeb524de1afff344b36897e9720bc9b095518fa3359b87706aeffa7368"
+    },
+    {
+      "finding_id": "F-083",
+      "images": 10,
+      "chars": 12984,
+      "request_sha256": "a919462f6c17d2c7c1568a5f23b1fddaf59560c677f376216caf45b5d8915dbe"
+    },
+    {
+      "finding_id": "F-085",
+      "images": 15,
+      "chars": 21517,
+      "request_sha256": "68b4bbbd43764950fcc61aad8ed711d3bbdc362cddb03f4caa9ec0460266817a"
+    },
+    {
+      "finding_id": "F-071",
+      "images": 1,
+      "chars": 8832,
+      "request_sha256": "4e27513534a4383bfcb9740ff97c13c334f74afbf8c30ee2c8952d657655542f"
+    }
+  ],
+  "validation": "18 publication tests passed; all input claim units, TEXT, image hashes and attachment mappings preserved; previous editorial instruction hash unchanged.",
+  "production_acceptance": false
+}

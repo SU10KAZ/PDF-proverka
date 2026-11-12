@@ -160,6 +160,25 @@ question; never infer its direction from a label alone.
 '''
 
 
+# Opt-in identity-domain candidate; requires source-reviewed paired controls.
+IDENTITY_SCOPE_INSTRUCTIONS = EDITORIAL_PROVENANCE_INSTRUCTIONS + '''
+Separate a repeated short label from a conflict in the complete identification
+scheme. Distinct physical objects, separate rooms or separate controllers prove
+that observations concern different objects; they do not alone prove that the
+short labels must be globally unique. Establish the relevant identification domain
+(room, assembly, cabinet, system or document set) and whether contextual qualifiers
+already distinguish the objects before calling repeated labels a technical collision.
+If that domain is unresolved, preserve the literal repetition and the uncertainty;
+a source-grounded clarification may be appropriate, but do not assert definite
+ambiguity or mandatory renaming. Earlier technical routing is not proof of scope.
+Conversely, do not dismiss a concrete cross-document address disagreement for the
+same traced endpoint, or an established local position collision, merely because
+labels may repeat in other domains. Preserve the supported conflict and its exact
+locations without guessing a replacement label. Apply this to the evidence, not
+as a blanket filter for repeated marks or as a demand for a universal naming rule.
+'''
+
+
 def reconcile_publication(finding, packet, response):
     """Validate a complete disposition and return an isolated publication view.
 

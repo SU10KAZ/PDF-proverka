@@ -6,16 +6,17 @@ import json
 from pathlib import Path
 
 from backend.app.pipeline.stages.findings_merge.publication_reconciliation import (
-    build_packet, fingerprint, EDITORIAL_PROVENANCE_INSTRUCTIONS,
+    build_packet, fingerprint, EDITORIAL_PROVENANCE_INSTRUCTIONS, IDENTITY_SCOPE_INSTRUCTIONS,
 )
 from .run_primary_text_runtime_probe import sha, write
 from .run_runtime_probe_recovery import verify_packet
 
 
-def prepare(output):
+def prepare(output, *, scope_candidate=False):
+    instructions = IDENTITY_SCOPE_INSTRUCTIONS if scope_candidate else EDITORIAL_PROVENANCE_INSTRUCTIONS
     parents = [
         (Path('/tmp/auditmanager_publication_complete_graphic_details_20261112/preparation.json'), ['F-082', 'F-083']),
-        (Path('/tmp/auditmanager_publication_remaining84_20261112/preparation.json'), ['F-085']),
+        (Path('/tmp/auditmanager_publication_remaining84_20261112/preparation.json'), ['F-085', 'F-071'] if scope_candidate else ['F-085']),
     ]
     result = None
     requests = []
@@ -31,7 +32,7 @@ def prepare(output):
             result = {'sources': deepcopy(sources), 'requests': requests, 'parent_preparations': [],
                       'history_supplied': False, 'engineer_answers_supplied': False,
                       'coordinator_review_supplied': False,
-                      'selection': 'Three DEV identity controls with unchanged complete graphical context; existing editorial candidate, no reference answers. Original purpose is untrusted.',
+                      'selection': 'DEV identity controls with unchanged source context; no reference answers. Original purpose is untrusted.',
                       'dispatched': False, 'production_acceptance': False}
         elif result['sources'] != sources:
             raise ValueError('Mixed source versions')
@@ -49,7 +50,7 @@ def prepare(output):
             envelope.update(packet=packet, packet_sha256=fingerprint(packet))
             request['stage'] = f'publication_identity_{fid[2:]}'
             request['messages'] = [
-                {'role': 'system', 'content': EDITORIAL_PROVENANCE_INSTRUCTIONS},
+                {'role': 'system', 'content': instructions},
                 {'role': 'user', 'content': json.dumps(envelope, ensure_ascii=False)},
             ]
             assert request['image_hashes'] == old_request['image_hashes']
@@ -59,7 +60,7 @@ def prepare(output):
                    'baseline_request_path': row['path'], 'baseline_request_sha256': row['sha256']}
             verify_packet(new)
             requests.append(new)
-    result['candidate_instruction_sha256'] = hashlib.sha256(EDITORIAL_PROVENANCE_INSTRUCTIONS.encode()).hexdigest()
+    result['candidate_instruction_sha256'] = hashlib.sha256(instructions.encode()).hexdigest()
     result['preparer_sha256'] = sha(Path(__file__))
     write(output / 'preparation.json', result)
     return result
@@ -68,6 +69,7 @@ def prepare(output):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path)
+    parser.add_argument('--scope-candidate', action='store_true')
     args = parser.parse_args()
-    result = prepare(args.output.resolve())
+    result = prepare(args.output.resolve(), scope_candidate=args.scope_candidate)
     print(json.dumps({'packets': len(result['requests']), 'instruction_sha256': result['candidate_instruction_sha256']}, ensure_ascii=False))
