@@ -470,26 +470,42 @@
     {
       "finding_id": "F-049",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/graphic_load_and_flow_claim_adjudication.json",
+        "sha256": "bbe0d24ea9ee0283d00217be5bb3208858bb8ab542999cc63a4d2ecef263952c",
+        "pointer": "/finding_adjudications/0"
+      }
     },
     {
       "finding_id": "F-050",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/graphic_load_and_flow_claim_adjudication.json",
+        "sha256": "bbe0d24ea9ee0283d00217be5bb3208858bb8ab542999cc63a4d2ecef263952c",
+        "pointer": "/finding_adjudications/1"
+      }
     },
     {
       "finding_id": "F-051",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/graphic_load_and_flow_claim_adjudication.json",
+        "sha256": "bbe0d24ea9ee0283d00217be5bb3208858bb8ab542999cc63a4d2ecef263952c",
+        "pointer": "/finding_adjudications/2"
+      }
     },
     {
       "finding_id": "F-052",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/graphic_load_and_flow_claim_adjudication.json",
+        "sha256": "bbe0d24ea9ee0283d00217be5bb3208858bb8ab542999cc63a4d2ecef263952c",
+        "pointer": "/finding_adjudications/3"
+      }
     },
     {
       "finding_id": "F-053",
@@ -504,32 +520,52 @@
     {
       "finding_id": "F-054",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/graphic_load_and_flow_claim_adjudication.json",
+        "sha256": "bbe0d24ea9ee0283d00217be5bb3208858bb8ab542999cc63a4d2ecef263952c",
+        "pointer": "/finding_adjudications/4"
+      }
     },
     {
       "finding_id": "F-055",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/graphic_load_and_flow_claim_adjudication.json",
+        "sha256": "bbe0d24ea9ee0283d00217be5bb3208858bb8ab542999cc63a4d2ecef263952c",
+        "pointer": "/finding_adjudications/5"
+      }
     },
     {
       "finding_id": "F-056",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/graphic_load_and_flow_claim_adjudication.json",
+        "sha256": "bbe0d24ea9ee0283d00217be5bb3208858bb8ab542999cc63a4d2ecef263952c",
+        "pointer": "/finding_adjudications/6"
+      }
     },
     {
       "finding_id": "F-057",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/graphic_load_and_flow_claim_adjudication.json",
+        "sha256": "bbe0d24ea9ee0283d00217be5bb3208858bb8ab542999cc63a4d2ecef263952c",
+        "pointer": "/finding_adjudications/7"
+      }
     },
     {
       "finding_id": "F-058",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/graphic_load_and_flow_claim_adjudication.json",
+        "sha256": "bbe0d24ea9ee0283d00217be5bb3208858bb8ab542999cc63a4d2ecef263952c",
+        "pointer": "/finding_adjudications/8"
+      }
     },
     {
       "finding_id": "F-059",
@@ -686,8 +722,8 @@
   ],
   "counts": {
     "total": 74,
-    "bounded_claim_adjudication": 58,
-    "source_review_only": 16
+    "bounded_claim_adjudication": 67,
+    "source_review_only": 7
   },
   "limits": [
     "A bounded assessment may find mixed or unresolved claims; it is not a pass count.",

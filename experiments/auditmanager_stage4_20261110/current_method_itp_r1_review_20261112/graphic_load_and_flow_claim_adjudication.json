@@ -1,0 +1,300 @@
+{
+  "version": 1,
+  "scope": "Nine graphic load/flow/temperature findings using verified prior direct inspections",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "pointer": ""
+    },
+    "reference_ledger": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+      "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-049",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/48"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/inlet_parameters_bounded_review.json",
+        "sha256": "0894f79dbbf0fae99ff5f780fcdd1eee4ac818d7593f3c8acba90b83ece5722f",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "published_graphic_text_difference_supported; regime_explanation_unresolved",
+      "supported_claim": "Inlet load5.205 on sections1/2 and axonometry versus PZ total5.229.",
+      "checked_difference": "0.024",
+      "recommended_disposition": "retain_bounded_parameter_clarification_with_source_locations",
+      "limit": "Same inlet; repeated locations support one load issue. Correct load and equipment consequences unproved.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-044:de24b888831313c4d337",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-049": "technical_findings",
+              "F-058": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "presentation_correction": "Remove source_finding_ids/ID-preservation bookkeeping from user-facing prose when present; preserve provenance in structured evidence.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-050",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/49"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_labels_bounded_review.json",
+        "sha256": "cbb345dcab45ba26b5a96ecf0a03ac2303e2a7d9d661d513b60c58ae22110b6f",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "published_graphic_text_difference_supported; regime_explanation_unresolved",
+      "supported_claim": "GVS1 section7-7 labels50% apparatus0.403; K6 schedule0.419 and selection0.4186 per apparatus.",
+      "checked_difference": "0.0156",
+      "recommended_disposition": "retain_bounded_parameter_clarification_with_source_locations",
+      "limit": "Preserve50% basis and reserve distinction. Published characteristic differs; no undersizing verdict.",
+      "reference_section_assessments": [
+        {
+          "target_id": "ITP_heat_exchanger_labels:92be8d7a03f9ca816e16",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-050": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "presentation_correction": "Remove source_finding_ids/ID-preservation bookkeeping from user-facing prose when present; preserve provenance in structured evidence.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-051",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/50"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_labels_bounded_review.json",
+        "sha256": "cbb345dcab45ba26b5a96ecf0a03ac2303e2a7d9d661d513b60c58ae22110b6f",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "published_graphic_text_difference_supported; regime_explanation_unresolved",
+      "supported_claim": "Heating2 section10-10 labels100% apparatus1.005 versus K2 schedule/selection1.012.",
+      "checked_difference": "0.007",
+      "recommended_disposition": "retain_bounded_parameter_clarification_with_source_locations",
+      "limit": "Last graphic digit5 was directly verified; no inference from navigation uncertainty or automatic reserve rule.",
+      "reference_section_assessments": [
+        {
+          "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-051": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "presentation_correction": "Remove source_finding_ids/ID-preservation bookkeeping from user-facing prose when present; preserve provenance in structured evidence.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-052",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/51"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heating_branch_flows_bounded_review.json",
+        "sha256": "f043eba25b4da605f877930d011f347121bed79cfd89aa3e1f6b8028e71cd409",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "published_graphic_text_difference_supported; regime_explanation_unresolved",
+      "supported_claim": "Section40-40 VFM-2R-100-140 DN100 flow74.40 versus same selected valve PZ74.15.",
+      "checked_difference": "0.25",
+      "recommended_disposition": "retain_bounded_parameter_clarification_with_source_locations",
+      "limit": "Separate drawing-to-PZ relationship from F-046 within-PZ substitution74.12; no mandatory valve replacement.",
+      "reference_section_assessments": [],
+      "presentation_correction": "Remove source_finding_ids/ID-preservation bookkeeping from user-facing prose when present; preserve provenance in structured evidence.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-054",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/53"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heating_branch_flows_bounded_review.json",
+        "sha256": "f043eba25b4da605f877930d011f347121bed79cfd89aa3e1f6b8028e71cd409",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "published_graphic_text_difference_supported; regime_explanation_unresolved",
+      "supported_claim": "Both sections41/42 position29 show10.7m³/h, Kv16 and deltaP0.446 without a pressure unit; PZ flow9.55.",
+      "checked_difference": "1.15",
+      "recommended_disposition": "retain_bounded_parameter_clarification_with_source_locations",
+      "limit": "Compare flow1.15m³/h difference; do not silently add bar to graphic deltaP or count both views as independent defects.",
+      "reference_section_assessments": [
+        {
+          "target_id": "ITP40:e4eaac37781fedf2ad41",
+          "assessment": "correct",
+          "details": {
+            "expected": "technical_findings",
+            "actual": {
+              "F-054": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "presentation_correction": "Remove source_finding_ids/ID-preservation bookkeeping from user-facing prose when present; preserve provenance in structured evidence.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-055",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/54"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heating_branch_flows_bounded_review.json",
+        "sha256": "f043eba25b4da605f877930d011f347121bed79cfd89aa3e1f6b8028e71cd409",
+        "pointer": "/cases/2"
+      },
+      "factual_assessment": "published_graphic_text_difference_supported; regime_explanation_unresolved",
+      "supported_claim": "Section23-23 T13/T23 heating3 load0.200 versus PZ0.191 with80/60 basis.",
+      "checked_difference": "0.009",
+      "recommended_disposition": "retain_bounded_parameter_clarification_with_source_locations",
+      "limit": "Different published loads; correct load, reserve and equipment consequences remain unresolved.",
+      "reference_section_assessments": [
+        {
+          "target_id": "ITP40:bbd2b9236034c12aec3c",
+          "assessment": "correct",
+          "details": {
+            "expected": "technical_findings",
+            "actual": {
+              "F-055": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "presentation_correction": "Remove source_finding_ids/ID-preservation bookkeeping from user-facing prose when present; preserve provenance in structured evidence.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-056",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/55"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_labels_bounded_review.json",
+        "sha256": "cbb345dcab45ba26b5a96ecf0a03ac2303e2a7d9d661d513b60c58ae22110b6f",
+        "pointer": "/cases/3"
+      },
+      "factual_assessment": "published_graphic_text_difference_supported; regime_explanation_unresolved",
+      "supported_claim": "Section26-26 DOO T14/T24 temperatures80/60 versus exchanger selection75/55; TZ corroborates75/55.",
+      "checked_difference": "5 C per line",
+      "recommended_disposition": "retain_bounded_parameter_clarification_with_source_locations",
+      "limit": "The local selection-to-drawing discrepancy survives unresolved TZ-stage applicability. Do not infer installed supply temperatures.",
+      "reference_section_assessments": [],
+      "presentation_correction": "Remove source_finding_ids/ID-preservation bookkeeping from user-facing prose when present; preserve provenance in structured evidence.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-057",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/56"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_labels_bounded_review.json",
+        "sha256": "cbb345dcab45ba26b5a96ecf0a03ac2303e2a7d9d661d513b60c58ae22110b6f",
+        "pointer": "/cases/2"
+      },
+      "factual_assessment": "published_graphic_text_difference_supported; regime_explanation_unresolved",
+      "supported_claim": "Sections29/30 heating3 apparatus100% load0.246 versus K3 schedule0.220 and exact selection0.21965.",
+      "checked_difference": "0.026",
+      "recommended_disposition": "retain_bounded_parameter_clarification_with_source_locations",
+      "limit": "Two views are manifestations. Preserve apparatus-vs-system load and reserve basis; no chosen-equipment inadequacy.",
+      "reference_section_assessments": [],
+      "presentation_correction": "Remove source_finding_ids/ID-preservation bookkeeping from user-facing prose when present; preserve provenance in structured evidence.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-058",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/57"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/inlet_parameters_bounded_review.json",
+        "sha256": "0894f79dbbf0fae99ff5f780fcdd1eee4ac818d7593f3c8acba90b83ece5722f",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "published_graphic_text_difference_supported; regime_explanation_unresolved",
+      "supported_claim": "Axonometry inlet T1/T2 flow260.25 versus PZ261.50, same325x7 inlet and90/70 regime.",
+      "checked_difference": "1.25",
+      "recommended_disposition": "retain_bounded_parameter_clarification_with_source_locations",
+      "limit": "Flow and load are different relations on the same inlet. No actual measured flow or wrong diameter established.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-044:de24b888831313c4d337",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-049": "technical_findings",
+              "F-058": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "presentation_correction": "Remove source_finding_ids/ID-preservation bookkeeping from user-facing prose when present; preserve provenance in structured evidence.",
+      "engineer_utility": "not_newly_measured"
+    }
+  ],
+  "additional_arithmetic": {
+    "PZ_total_Gcal_h": "5.229",
+    "zone3_relative_load_difference_percent": "4.712041884816753926701570681",
+    "K3_selection_Gcal_h": "0.21965",
+    "K6_selection_Gcal_h": "0.4186"
+  },
+  "limits": [
+    "Source hash validation is not a new full graphic inspection. Prior raster observations provide graphic support.",
+    "Published differences do not prove equal physical operating states, actual deficits or required equipment changes.",
+    "Reference question-routing disagreements remain distinct from factual truth."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}
