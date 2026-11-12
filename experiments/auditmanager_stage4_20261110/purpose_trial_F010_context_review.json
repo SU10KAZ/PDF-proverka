@@ -1,0 +1,42 @@
+{
+  "finding_id": "F-010",
+  "status": "requested_local_diagrams_reviewed_question_narrowed",
+  "trigger_projection_path": "/tmp/auditmanager_publication_purpose_controls_20261112_run/evaluations/publication_purpose_010/publication_projection.json",
+  "trigger_projection_sha256": "e624109ce679f794d4dd51751ba48d44838e151c845d61a4776c4c06a8c86b82",
+  "source_md_path": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "text_evidence": {
+    "block_id": "blk_1afb9b9bff5242cca6f364f218b96506",
+    "start": 149706,
+    "end": 150662,
+    "sha256": "d0c10651d1475ccd85e3b7936a768cdedf3fe9f3fcfbef89fe540d524550019b",
+    "literal": "У4.3, У4.4, У4.5, У4.6 – Тепловая завеса"
+  },
+  "graphics": [
+    {
+      "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+      "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+      "directly_viewed": true,
+      "detail": "original"
+    },
+    {
+      "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+      "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "observations": [
+    "Sheet 23 graphic explicitly labels four curtains У4.3–У4.6 and lower control blocks У4.3 (Ведущий), У4.4/У4.5/У4.6 (Ведомый).",
+    "Sheet 41 external connections labels four curtain boards У4.3–У4.6; local cable marks У4-1…У4-6 are cable identifiers, not six curtain units.",
+    "No explicit У1→У4.3 etc correspondence table was found in these two drawings. This is a bounded search, not project-wide absence proof."
+  ],
+  "disposition": "Retain only an editorial/source clarification to reconcile initial У1–У4 naming with consistently specified У4.3–У4.6. Do not ask for established master/slave roles or infer extra curtains.",
+  "proposed_question": "В начале пункта 5 используются обозначения У1–У4, далее в этом пункте и на схемах листов 23 и 41 — У4.3–У4.6. Согласовать обозначения в описании либо явно указать их соответствие.",
+  "retrieval_authority": "coordinator local source review following model request; autonomous retrieval not proved",
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "final_release_completed": false
+}
