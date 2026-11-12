@@ -1,0 +1,16 @@
+{
+  "status": "reference_freshness_only",
+  "checked": 82,
+  "mismatches": [
+    {
+      "hypothesis": "H01",
+      "group": "code",
+      "path": "backend/app/pipeline/stages/prepare/candidate_recovery.py",
+      "recorded_sha256": "a12350ff573cd93933265a962c44dda83d5334f46492408316732072cf8a9a32",
+      "current_sha256": "174e35616568cf815fe5431aeb16e7fa4263bfe153df1f16cffe1bf8b3a7f437",
+      "matches": false
+    }
+  ],
+  "semantic_completion_proven": false,
+  "note": "Snapshot taken before the current audit was refreshed; mismatch records the previous hash and is not a current failure."
+}

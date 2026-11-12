@@ -6,6 +6,7 @@ from pathlib import Path
 
 from backend.app.pipeline.stages.findings_merge.candidate_coverage import build_candidate_coverage
 from backend.app.pipeline.stages.findings_merge.subclaim_coverage import pending_subclaims
+from backend.app.pipeline.stages.findings_verify.source_review_profile import OUTPUT_PROFILE
 from backend.app.pipeline.stages.block_context.contract import resolve_blocks_dir
 from backend.app.pipeline.stages.prepare.graph_builder import build_block_page_index
 
@@ -165,6 +166,7 @@ For duplicate decisions, provide target_finding_ids: the exact IDs of ALL existi
 findings preserving the candidate atoms, and explain the mapping in reason. Never
 add a duplicate finding. Do not infer a target ID from its numbering.
 '''
+        instructions += '\n' + OUTPUT_PROFILE + '\n'
         passes.append(CodexTargetedPass(stage=f'candidate_recovery_{key}',
             output_filename=f'03_candidate_recovery_{key}.json',
             messages=[{'role': 'system', 'content': instructions},

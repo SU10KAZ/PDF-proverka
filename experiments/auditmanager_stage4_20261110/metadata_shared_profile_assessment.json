@@ -1,0 +1,28 @@
+{
+  "status": "shared_profile_bounded_pair_pass",
+  "checks": [
+    {
+      "kind": "historical",
+      "same_user_packet_and_images": true,
+      "exact_quotes_verified": true,
+      "scope_reason": "Подтверждена локальная коллизия полного номера помещения внутри одного раздела одной экспликации. Это техническое противоречие идентификации помещений различного назначения, а не повтор короткой марки оборудования в разных областях нумерации. Оснований считать его только редакционным замечанием нет. Ошибка фактического подключения оборудования не установлена.",
+      "duration_ms": 45272
+    },
+    {
+      "kind": "mixed_synthetic",
+      "same_user_packet_and_images": true,
+      "exact_quotes_verified": true,
+      "scope_reason": "Подтверждена локальная коллизия полного номера помещения внутри одного раздела одной экспликации. Различаются назначение, площадь и категория помещений; отдельные области нумерации для этих строк не обозначены. Это противоречие проектной идентификации, а не исправление внутренней разметки и не подтверждённая малозначительная редакционная ошибка. Ошибочное подключение оборудования по представленным данным не установлено.",
+      "duration_ms": 43752
+    }
+  ],
+  "interpretation": "Shared output policy now reaches recovery as well as adjudication/final check. Both responses retain the local discrepancy and justify the report section by the common room schedule. No actual electrical misconnection is asserted. The synthetic internal-markup request is excluded, and unverified other-sheet repetition remains pending.",
+  "limits": [
+    "Model section reasoning is supported by the two local schedule rows; operational severity is not independently accepted.",
+    "This does not prove final de-duplication against existing F-024, whole-report preservation, engineer acceptance, or general improvement.",
+    "No production release or completed stage4 acceptance follows."
+  ],
+  "tests": "38 passed in 1.21s",
+  "stage4_complete": false,
+  "production_accepted": false
+}

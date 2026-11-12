@@ -92,7 +92,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--kind', choices=['historical', 'mixed_synthetic'], required=True)
     parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--root', type=Path, default=ROOT)
     args = parser.parse_args()
+    ROOT = args.root
     if args.execute:
         asyncio.run(execute(args.kind))
     else:

@@ -1,0 +1,17 @@
+{
+  "status": "prepared_before_response_review",
+  "comparison": "Same user message, same images, same Astra/high configuration; system instruction additionally uses shared OUTPUT_PROFILE.",
+  "criteria": [
+    "Preserve source-established discrepancy or explicitly justify missing identity scope; no refutation from metadata wording.",
+    "Separate internal markup corrections from project findings.",
+    "Do not assert an actual electrical misconnection from a duplicate number.",
+    "Explain report profile with case-specific reasons; no forced questions route solely because actual harm is not proven.",
+    "Preserve unresolved other-sheet repetition as pending."
+  ],
+  "tests": "38 passed in 1.21s: candidate_recovery, source_review_workflow, source_review_final_check, subclaim_coverage",
+  "limitations": [
+    "Known-case DEV comparison, not blind discovery.",
+    "One response per configuration does not establish statistical improvement."
+  ],
+  "stage4_complete": false
+}

@@ -192,3 +192,5 @@ def test_mixed_metadata_candidate_survives_gate_to_source_recovery(tmp_path, mon
     assert packet['existing_findings'] == base['findings']
     assert json.loads((tmp_path / '03_findings.json').read_text()) == base
     assert '_evidence_gate' not in original
+    from backend.app.pipeline.stages.findings_verify.source_review_profile import OUTPUT_PROFILE
+    assert OUTPUT_PROFILE in request.messages[0]['content']
