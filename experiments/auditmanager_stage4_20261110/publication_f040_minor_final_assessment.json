@@ -1,0 +1,33 @@
+{
+  "finding_id": "F-040",
+  "status": "bounded_final_admission_and_excel_passed",
+  "receipt_path": "/tmp/auditmanager_publication_f040_minor_20261112/receipt.json",
+  "receipt_sha256": "2a8981024221feb5280d55d6c888003fc45890fe9f2c1bd4280a2db9711d2f35",
+  "output_path": "/tmp/auditmanager_publication_f040_minor_20261112/output_preview.json",
+  "output_sha256": "e6039be8ebebac02968e1bdae147146b1e09f425b6258835addf35a8b260b70c",
+  "excel_path": "/tmp/auditmanager_publication_f040_minor_20261112/bounded_control.xlsx",
+  "excel_sha256": "0fb92d56dfe1bad06fb59f7f1e9f66e1663966bc156635262bc251251e41e49e",
+  "visible_unique_ids": 85,
+  "other_84_findings_identical": true,
+  "positive_F006_unchanged": true,
+  "F040_excel_row": 83,
+  "F040_excel_section": "Вопросы и уточнения",
+  "checks": {
+    "source_support": "pass",
+    "quantities_and_scope": "pass",
+    "original_clause_preservation": "pass",
+    "uncertainty_and_consequences": "pass",
+    "profile_and_norms": "pass",
+    "peer_overlap": "pass",
+    "final_citations": "pass"
+  },
+  "source_review": "Coordinator directly viewed graphic and reviewed final-check observations; local central-stroke difference supports only minor editorial issue, not electric equipment identity.",
+  "limits": [
+    "One coordinator-revised DEV case, not autonomous end-to-end discovery or six-project acceptance.",
+    "Other 84 records preserved, not certified correct.",
+    "Earlier total deferral was overly broad; source uncertainty and minor confirmed issue must remain separate.",
+    "Excel reopened and cell/section contents verified; visual layout not separately rendered."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
