@@ -1,0 +1,590 @@
+{
+  "source": {
+    "path": "experiments/auditmanager_stage3_20261110/selected_hypotheses.json",
+    "sha256": "abcaf4eabc93ca675418ab8cb6feed5d5c628128bf51ffcb7bd9cab6820508b7"
+  },
+  "rows": [
+    {
+      "id": "H01-P01",
+      "original_requirement": "АК G075/G076: один подтверждённый конфликт размерной цепи должен дойти до выдачи одним замечанием.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/H01_dimension_chain_release_assessment.json",
+          "sha256": "0dd4b78293d1eac40574126d68c84ab4999730ce584031f84efa782db89c5f57"
+        }
+      ],
+      "boundary": "One dimension-chain finding reaches final Excel; not whole-project recall.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H01-P02",
+      "original_requirement": "ЭОМ F001/F030/F032: сохранить релевантные источники и уточнённый смысл эталонного вопроса.",
+      "outcome": "partial_profile_disputed",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_current_profile_evidence/assessment.json",
+          "sha256": "2f9f1430fc0e67e855efb2e5d92fc0df101be7a5a4fdbcb0b8cab73d51265292"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_F032_output_replay.json",
+          "sha256": "d5063f39edd4db71c21ff006e5f20d3c74bf317be2a06c4a18122e834a52b1a7"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_F001_F030_current_profile_disagreement.json",
+          "sha256": "ff34bb0d04fdbf0206cf30ba7c1c0863128906183cf97de1381a6dbd957b56a4"
+        }
+      ],
+      "boundary": "Facts retained; automatic question routing differs from the original locally assigned label. No separate engineer section decision.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H01-N01",
+      "original_requirement": "Несуществующий sourceID не получает случайное доказательство.",
+      "outcome": "contract_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/stage4_current_gate_tests.json",
+          "sha256": "a2563f51464d714eb3f60491f84ddd694aa0a3788fa50ba6464a6684e89ca453"
+        }
+      ],
+      "boundary": "Unknown references rejected by contract tests; existence of a reference is not truth.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H01-N02",
+      "original_requirement": "Существующий блок не доказывает истинность тезиса; тяжесть автоматически не восстанавливать.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/stage4_current_gate_tests.json",
+          "sha256": "a2563f51464d714eb3f60491f84ddd694aa0a3788fa50ba6464a6684e89ca453"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_identity_adjudication_pair_assessment.json",
+          "sha256": "01e2aa444027d84269447d6552f0f9ae7dae93c92d0fba4241ba4ab17225e548"
+        }
+      ],
+      "boundary": "Source and severity require separate review; no general semantic certification.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H01-N03",
+      "original_requirement": "AK T004/T008/T017 и ITP T016: уже сохранённые смыслы не выпускать повторно.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/H01_duplicate_controls_assessment.json",
+          "sha256": "57db9e1be352420d12a50b0eff835e98103adbe417d4ac2e43bc0e6fe366df32"
+        }
+      ],
+      "boundary": "Four original duplicates exercised against current recovery and merge; no new duplicate rows.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H02-P01",
+      "original_requirement": "АР: запрос верхней кровли должен обратиться к уже имеющемуся плану.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_deferred_summary.json",
+          "sha256": "c522ee90b92f5081544f7cd8fe73bf007f02f372ef93cde9730be17848907011"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_question_output_replay.json",
+          "sha256": "50903d365382302a2b23640b71d7bfc52600029045dadc5e580c905ba5e32722"
+        }
+      ],
+      "boundary": "Existing upper-roof plan retrieved; conditional question retained.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H02-P02",
+      "original_requirement": "КМ: запрос границ деталиОГМ11 должен сохраниться.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_node_navigation_summary.json",
+          "sha256": "140c5bc9626725128a06506893db410c6c315d0025d311729bb3bf6c5b42b597"
+        }
+      ],
+      "boundary": "Required node located; unresolved applicability and detail boundaries preserved.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H02-N01",
+      "original_requirement": "Третий аэратор не объявлять лишним без полного подсчёта.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_question_output_replay.json",
+          "sha256": "50903d365382302a2b23640b71d7bfc52600029045dadc5e580c905ba5e32722"
+        }
+      ],
+      "boundary": "No unsupported categorical removal of the third aerator.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H02-N02",
+      "original_requirement": "3100/2900 не считать доказанной ошибкой до установления границ детали.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_node_navigation_summary.json",
+          "sha256": "140c5bc9626725128a06506893db410c6c315d0025d311729bb3bf6c5b42b597"
+        }
+      ],
+      "boundary": "3100/2900 remains unresolved rather than a confirmed dimension defect.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H03-P01",
+      "original_requirement": "АК: проверить все пять шкафов эталонной темы, сохранить адреса при объединении.",
+      "outcome": "partial_manual_grouping",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_five_cabinet_control_status.json",
+          "sha256": "b003f08a2173196332fd9415a5f04aa87ceaa7f5ed8c387393b2f1031f7674f1"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_systemic_output_replay.json",
+          "sha256": "bcc2a56fb0ee96edb88811e74c23d2ecdb162eaea742825ab1216d099ca3c175"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/grouping_scope_pair_evidence/assessment.json",
+          "sha256": "3ebb75427881c7191b774f4f34d5d061ac665aea635407b66b8984082a6b3fcd"
+        }
+      ],
+      "boundary": "Five addresses checked and retained in local replay. Automatic grouping is not accepted and stays disabled.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H03-P02",
+      "original_requirement": "ЭОМ: различить отдельные блоки с одинаковой моделью и повторным позиционнымID.",
+      "outcome": "inconclusive_identity",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_instance_identity_validated.json",
+          "sha256": "4f1cfc5937967d446d40e4e16e8a6df1d4a5cf7888d911b84face560dee51e64"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_identity_question_output_replay.json",
+          "sha256": "93adbc383fe9aff5a504f9f8037967225fd9992b0460639433da1b4740c4dfad"
+        }
+      ],
+      "boundary": "Repeated K3.2.406 labels established; distinct physical targets not resolved.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H03-P03",
+      "original_requirement": "АР: запросить назначение немаркированных зон.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_region_operation_status.json",
+          "sha256": "c656d3924707fdc0369bcb497c79e5f4e58066ea616b8547b3980bb21ad42e17"
+        }
+      ],
+      "boundary": "Six location-bound regions receive context requests; not six established defects.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H03-N01",
+      "original_requirement": "Повторный вид не новый экземпляр. ОбщиеPE/N не коллизия автоматически.",
+      "outcome": "partial_no_general_filter",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_terminal_graphic_assessment.json",
+          "sha256": "6a11bd24fbd15f83ef77f8acee156f4262432cc3875a8b74f1bdb066901888b0"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/stage4_current_gate_tests.json",
+          "sha256": "a2563f51464d714eb3f60491f84ddd694aa0a3788fa50ba6464a6684e89ca453"
+        }
+      ],
+      "boundary": "Overlapping tiles do not add instances. PE/N historical negative pair unconfirmed; no broad terminal suppression.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H03-N02",
+      "original_requirement": "Одинаковая модель разных блоков допустима.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_instance_identity_validated.json",
+          "sha256": "4f1cfc5937967d446d40e4e16e8a6df1d4a5cf7888d911b84face560dee51e64"
+        }
+      ],
+      "boundary": "Same model alone not treated as conflicting identity.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H03-N03",
+      "original_requirement": "Нет отдельной подтверждённой исторической отрицательной пары для общего фильтра клемм; сначала диагностический режим без подавления.",
+      "outcome": "explicit_no_filter_limit",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/stage4_hypothesis_current_audit.json",
+          "sha256": "0d1c07f1ce47fe2794c7a7fdc01f41ff3ae98258cecf4b0bfdca8f72e50f375d"
+        }
+      ],
+      "boundary": "No engineer-confirmed historical negative pair for a general terminal filter.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H04-P01",
+      "original_requirement": "ЭОМ: FRHF5×35 двух линий не закрывается строкойHF5×35.",
+      "outcome": "partial_applicability_unresolved",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_f050_stamp_evidence/assessment.json",
+          "sha256": "bf12b5f43773742b7c9b3907280a54f365d66c18bbe0467dcae1242523be380a"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_f051_released_evidence/assessment.json",
+          "sha256": "7fcb7a8738a41881633bce70b3bab162b8105310beedfbd0765c154bedee1daf"
+        }
+      ],
+      "boundary": "Literal cable execution facts retained; scheme/specification applicability remains unresolved for F050.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H04-P02",
+      "original_requirement": "ЭОМ: активныеС2326/С2327 должны сопоставляться сРП3.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_model_extracted_balance_control.json",
+          "sha256": "399336dd4802c01dd227bc7ab2762a7d7ee33411054c9f8cf0280284d27bbcf8"
+        }
+      ],
+      "boundary": "Active C2326/C2327 compared with all24 RP3 rows; aggregation is not excluded.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H04-P03",
+      "original_requirement": "КМ: сохранять повторыОГМ22/25 и вопрос о сомнительных количествах.",
+      "outcome": "partial_profile_and_identity",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_preservation_verification.json",
+          "sha256": "41591ae0cd9cac959168cd9fc35e712d84e0510ab4eee937e1c007c048c73b4a"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_complete_literal_quantity_trace.json",
+          "sha256": "aafdc71602181f6735d6f9d724f3c421eac55bb202a706449236c67fb3286ea7"
+        }
+      ],
+      "boundary": "Repeated OGM22/25 and conditional quantities retained; exact OGM26/25 correspondence and profile remain unresolved.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H04-N01",
+      "original_requirement": "ЭОМ: С2325/С2328 — резерв, не пропущенные рабочие нагрузки.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_model_extracted_balance_control.json",
+          "sha256": "399336dd4802c01dd227bc7ab2762a7d7ee33411054c9f8cf0280284d27bbcf8"
+        }
+      ],
+      "boundary": "C2325/C2328 treated as reserve, not omitted active loads.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H04-N02",
+      "original_requirement": "160м двух линий не факт недопоставки; не увеличивать мощность без исключения агрегирования.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_model_extracted_balance_control.json",
+          "sha256": "399336dd4802c01dd227bc7ab2762a7d7ee33411054c9f8cf0280284d27bbcf8"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_f050_stamp_evidence/assessment.json",
+          "sha256": "bf12b5f43773742b7c9b3907280a54f365d66c18bbe0467dcae1242523be380a"
+        }
+      ],
+      "boundary": "No mandatory160m procurement or4kW addition inferred from missing separate rows.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H04-N03",
+      "original_requirement": "КМ:228 анкеров остаются условным расчётом.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_complete_literal_quantity_trace.json",
+          "sha256": "aafdc71602181f6735d6f9d724f3c421eac55bb202a706449236c67fb3286ea7"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_preservation_verification.json",
+          "sha256": "41591ae0cd9cac959168cd9fc35e712d84e0510ab4eee937e1c007c048c73b4a"
+        }
+      ],
+      "boundary": "172 known anchors;228/40 remain conditional on unknown OGM21/24 counts.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H05-P01",
+      "original_requirement": "КМ: одна площадкаОГМ20 с−2.350/−2.500.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_OGM20_geometry_assessment.json",
+          "sha256": "14f4c184719ed453ca7d793150bca3b3beb2bb2b88920368df94090413107963"
+        }
+      ],
+      "boundary": "Same landing -2.350/-2.500 conflict retained; correct elevation and final release remain unverified.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H05-P02",
+      "original_requirement": "ИТП: расходы ветвейГВС сопоставить с режимомК15; толщины3/3.5 связать с теми же участками.",
+      "outcome": "partial_pipe_mapping_unresolved",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_GVS_current_preservation_verification.json",
+          "sha256": "46b2538a9a656dd3976d91de586fdab9e73d29419d028544084e019b9c388301"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_t312_released_evidence/assessment.json",
+          "sha256": "e985614fafdc21cd6af039733fdaee1316cd3fbe8ee0c880cc1ac4f525f44eb7"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_H72_independent_mapping_search.json",
+          "sha256": "cef257cb007b56ebeaffffb8b4629fc84e76b369422db6fa2eea7a979dbb64c2"
+        }
+      ],
+      "boundary": "Supply/circulation discrepancies and K15 context preserved; same-pipe3/3.5 mapping still unknown. Neither hydraulic failure nor pump inadequacy established.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H05-P03",
+      "original_requirement": "АР: остаток75мм на угловом участке сопоставить с проектным диапазоном опор.",
+      "outcome": "bounded_question_only",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_reviewed_question_assessment.json",
+          "sha256": "5173664ad3899ed326ea73e749053b582c6dd4fecd68c79b7821f6ac4b739696"
+        }
+      ],
+      "boundary": "Conditional comparison retained as question; point elevations are not asserted support heights.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H05-N01",
+      "original_requirement": "КМ F014: разные последовательные марши не одна деталь.",
+      "outcome": "disputed_reference_excluded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
+          "sha256": "2f020949deeefd91560b3344f3b55e53db956760ac1861c6d8da3bec19589ece"
+        }
+      ],
+      "boundary": "Prior refutation explanation for F014 contradicted by source. Neither original defect nor refutation established; no filter credit.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H05-N02",
+      "original_requirement": "КМ:3240 не доказанная полная развёртка гнутого поручня.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_handrail_claim_check_assessment.json",
+          "sha256": "7bb4eb71f493fe7a1d56baefb0332a1ff791a39633f19d5be07bf5cbd9c1ff4b"
+        }
+      ],
+      "boundary": "3240 is not accepted as proven full spatial development.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H05-N03",
+      "original_requirement": "АР: отметки у воронки не высоты всех опор.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_reviewed_question_assessment.json",
+          "sha256": "5173664ad3899ed326ea73e749053b582c6dd4fecd68c79b7821f6ac4b739696"
+        }
+      ],
+      "boundary": "Drain elevations not generalized to every support.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H06-P01",
+      "original_requirement": "ИТП: областьТЗ5.3.1.4 сопоставить с муфтами, не объявлять819 нарушений.",
+      "outcome": "bounded_scope_only",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_requirement_claude_assessment.json",
+          "sha256": "85d28e59caa328dbad64b4c2db9ce84b16b1cd51bee6cb5d1636b31f31244d84"
+        }
+      ],
+      "boundary": "819 is row quantity sum, not violation count. Conditional model findings not admitted as proven defects.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H06-P02",
+      "original_requirement": "ЭОМ: совместимость расцепителя сQF3.20 проверить по конкретному изготовителю.",
+      "outcome": "inconclusive_execution",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_manufacturer_applicability_assessment.json",
+          "sha256": "a83de192bcc044cde9c8fa52983f6a4b549f7a3c7e6c298712ead8a5761240d4"
+        }
+      ],
+      "boundary": "Manufacturer/article for actual QF3.20 unresolved; preserve addressable question, not incompatibility.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H06-P03",
+      "original_requirement": "АР: запросить расчёт функции крепления каната по существующей ссылкеКМ8.",
+      "outcome": "bounded_question_only",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_rope_current_release_assessment.json",
+          "sha256": "6645455be314bded9931ea1b036a1a5d7ae8b6d2c2a05de3d2bca354d7061783"
+        }
+      ],
+      "boundary": "Automatic question and final Excel verified; applicable KM8/KM9.2 calculation remains unavailable.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H06-N01",
+      "original_requirement": "ВА-301 само по себе не1P; QF3.17 не переносить в тезисQF3.20.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_shunt_identity_negative_pair.json",
+          "sha256": "05b8365fc77f5c8d0a2f8c0cb3948bd30c4f8481963804de5436e6a62ea3dd3c"
+        }
+      ],
+      "boundary": "QF3.17 and QF3.20 scopes kept separate; series designation alone does not establish poles.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H06-N02",
+      "original_requirement": "ВГП65×4 и электросварная76×3.5 — разные трубы.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_pipe_distinct_materials_assessment.json",
+          "sha256": "4a0b7b1a361f9177faf925df44e46f0f4ad41645ff080a561eb44dfcfa637275"
+        }
+      ],
+      "boundary": "VGP65x4 and electric-welded76x3.5 not silently identified.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H06-N03",
+      "original_requirement": "Декоративная пластина не доказывает недостаточную прочность.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_rope_strength_inference_pair.json",
+          "sha256": "10cc61643020de795274e88c208d0ba720cce53c3f34d3baa2488de79fc4ec6e"
+        }
+      ],
+      "boundary": "Decorative label establishes neither inadequate strength nor adequacy.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H07-P01",
+      "original_requirement": "ЭОМ: повтор номера помещения не подавлять из-за слов«переданный контекст».",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/metadata_shared_profile_assessment.json",
+          "sha256": "8ff9f10fcc0fe1d9c7914093566746ae893f14f3ade3c321be2707465597cc8d"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/metadata_gate_candidate_replay.json",
+          "sha256": "3ce1063beaac5f7c58aa9e06eab91a9bcac6f9b1b0957c94af927f30ea02832c"
+        }
+      ],
+      "boundary": "Project room discrepancy preserved despite context wording; not a new unique finding if already reported.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H07-P02",
+      "original_requirement": "АК/ЭОМ: совет переименовать завесу требует конкретного основания.",
+      "outcome": "bounded_verified",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/prescan_curtain_candidate_replay.json",
+          "sha256": "e7d4c095f28b5536fa40179265139820060d4874dc7c51937c01f4b699f8bd69"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_prescan_recovery_assessment.json",
+          "sha256": "68442b9b84fd6d4408ae58ec9ac86517da9a46a1debbb3796874d1d5d74f173f"
+        }
+      ],
+      "boundary": "Prescan emits a review request, not automatic renaming; limited context stays pending.",
+      "original_requirement_fully_proven": true
+    },
+    {
+      "id": "H07-N01",
+      "original_requirement": "Настоящая претензия к внутренней разметке не становится проектным замечанием.",
+      "outcome": "synthetic_control_only",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/metadata_shared_profile_assessment.json",
+          "sha256": "8ff9f10fcc0fe1d9c7914093566746ae893f14f3ade3c321be2707465597cc8d"
+        }
+      ],
+      "boundary": "Mixed synthetic request excludes internal markup correction while retaining project discrepancy.",
+      "original_requirement_fully_proven": false
+    },
+    {
+      "id": "H07-N02",
+      "original_requirement": "Синтетические варианты metadata replay не независимая историческая контрольная пара. До получения пары запретить широкое автоматическое подавление.",
+      "outcome": "explicit_no_filter_limit",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/metadata_shared_profile_assessment.json",
+          "sha256": "8ff9f10fcc0fe1d9c7914093566746ae893f14f3ade3c321be2707465597cc8d"
+        }
+      ],
+      "boundary": "Synthetic variant is not an independent historical pair; no broad suppression accepted.",
+      "original_requirement_fully_proven": true
+    }
+  ],
+  "original_controls": 37,
+  "outcomes": {
+    "bounded_verified": 21,
+    "partial_profile_disputed": 1,
+    "contract_verified": 1,
+    "partial_manual_grouping": 1,
+    "inconclusive_identity": 1,
+    "partial_no_general_filter": 1,
+    "explicit_no_filter_limit": 2,
+    "partial_applicability_unresolved": 1,
+    "partial_profile_and_identity": 1,
+    "partial_pipe_mapping_unresolved": 1,
+    "bounded_question_only": 2,
+    "disputed_reference_excluded": 1,
+    "bounded_scope_only": 1,
+    "inconclusive_execution": 1,
+    "synthetic_control_only": 1
+  },
+  "unproven_original_controls": [
+    "H01-P02",
+    "H03-P01",
+    "H03-P02",
+    "H03-N01",
+    "H04-P01",
+    "H04-P03",
+    "H05-P02",
+    "H05-P03",
+    "H05-N01",
+    "H06-P01",
+    "H06-P02",
+    "H06-P03",
+    "H07-N01"
+  ],
+  "stage4_complete": false,
+  "production_acceptance": false,
+  "interpretation": "All37 controls accounted for. Tested is not passed; partial, synthetic and disputed controls remain unproven. Bounded pass does not establish full-project improvement.",
+  "next_action": "Decide method eligibility from these outcomes before freezing the next candidate; retain all unresolved source obligations and original benchmark provenance. Do not repeat calls merely to obtain desired labels."
+}

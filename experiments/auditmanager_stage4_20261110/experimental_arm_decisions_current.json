@@ -1,0 +1,92 @@
+{
+  "status": "current_methods_eligible_for_separate_measurement_combination_held",
+  "previous_decision": {
+    "path": "experiments/auditmanager_stage4_20261110/experimental_arm_decisions_v2.json",
+    "sha256": "1c35a350cac2ea1b80e4f27fe15d18ceb9055ece691ae8f88d02e47bbda8d9a9"
+  },
+  "bindings": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/stage4_original_control_matrix.json",
+      "sha256": "942a58a148f50b95e45da81ca461004749430bb341442920b89ac61b12822413"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/stage4_current_gate_tests.json",
+      "sha256": "a2563f51464d714eb3f60491f84ddd694aa0a3788fa50ba6464a6684e89ca453"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/paired_runner.py",
+      "sha256": "9a3bf8e5229a0676d7d2744079f2a00f31c3e6a31366d407da11dc7d50a173d9"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/primary_text_method_wiring_assessment.json",
+      "sha256": "5566b7f1b4fa2526eb009371f0d4caa01675499ed58e948cbd49b2031b7f57dd"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/EOM_F001_F030_current_profile_disagreement.json",
+      "sha256": "ff34bb0d04fdbf0206cf30ba7c1c0863128906183cf97de1381a6dbd957b56a4"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/grouping_scope_pair_evidence/assessment.json",
+      "sha256": "3ebb75427881c7191b774f4f34d5d061ac665aea635407b66b8984082a6b3fcd"
+    }
+  ],
+  "arms": {
+    "classic_current": {
+      "decision": "eligible_for_reference_measurement",
+      "purpose": "Measure common candidate foundation with both optional families off; compare with historical classic."
+    },
+    "inventory": {
+      "decision": "eligible_for_experimental_measurement_only",
+      "purpose": "Measure inventory, dependent operations and context retrieval as one bundle against classic_current. No claim of isolated H01-H07 effects."
+    },
+    "source_review": {
+      "decision": "eligible_for_experimental_measurement_only",
+      "purpose": "Measure primary TEXT handoff + source review + independent release check against classic_current. This is a method bundle, not isolated verifier attribution."
+    },
+    "candidate": {
+      "decision": "held",
+      "purpose": "Combined arm requires accepted constituent methods; successful preflight is insufficient."
+    }
+  },
+  "original_control_count": 37,
+  "unproven_controls": [
+    "H01-P02",
+    "H03-P01",
+    "H03-P02",
+    "H03-N01",
+    "H04-P01",
+    "H04-P03",
+    "H05-P02",
+    "H05-P03",
+    "H05-N01",
+    "H06-P01",
+    "H06-P02",
+    "H06-P03",
+    "H07-N01"
+  ],
+  "runtime_limits": {
+    "automatic_grouping": "disabled; negative control inconclusive",
+    "terminal_filter": "No general PE/N or repeated-number suppression accepted. AUDIT_OBJECT_TERMINAL_DISPOSITION means end-of-search disposition, not electrical terminal filtering.",
+    "source_review": "Current arm includes primary TEXT handoff plus source review and final check; treat this as a bundle.",
+    "unresolved_context": "Pending is not refuted; exclude missing-source removal from filter-success credit.",
+    "report_section": "F001/F030/F032 section disagreement remains explicit; independent factual/overclaim scoring continues. No expected answers supplied to executors."
+  },
+  "dispatch_prerequisites": [
+    "Export a fresh committed runtime snapshot; prior candidate snapshot predates current corrections.",
+    "Use current corrected six-project source package, not old unstarted layout inputs.",
+    "Freeze shared executor, variant configuration, evaluator, acceptance criteria and input hashes before new model calls.",
+    "Do not resume the stopped obsolete54-run series. Preserve its outputs as development evidence.",
+    "Run only separated methods until constituents pass; combination remains held."
+  ],
+  "stage4_complete": false,
+  "full_method_acceptance": false,
+  "new_model_calls": 0,
+  "runnable_trial_created": false,
+  "remaining_owner": {
+    "stage4": "Resolve executable failures exposed by separate method tests; retain explicit unavailable/disputed source controls.",
+    "stage5": "Measure model quality and cost under the frozen configuration.",
+    "stage6": "Verify all retained clauses, unresolved obligations and questions through complete report issuance.",
+    "stage7": "Six-project regression plus independent new-project transfer.",
+    "stage8": "Production only after all acceptance and release gates."
+  }
+}
