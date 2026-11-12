@@ -192,20 +192,32 @@
     {
       "finding_id": "F-020",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_load_and_flow_claim_adjudication.json",
+        "sha256": "466cf57ec4a627ae306ba020a46c990e942c7aa301ed6952a4d05b133df2e273",
+        "pointer": "/finding_adjudications/0"
+      }
     },
     {
       "finding_id": "F-021",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_load_and_flow_claim_adjudication.json",
+        "sha256": "466cf57ec4a627ae306ba020a46c990e942c7aa301ed6952a4d05b133df2e273",
+        "pointer": "/finding_adjudications/1"
+      }
     },
     {
       "finding_id": "F-022",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_load_and_flow_claim_adjudication.json",
+        "sha256": "466cf57ec4a627ae306ba020a46c990e942c7aa301ed6952a4d05b133df2e273",
+        "pointer": "/finding_adjudications/2"
+      }
     },
     {
       "finding_id": "F-023",
@@ -270,26 +282,42 @@
     {
       "finding_id": "F-031",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_load_and_flow_claim_adjudication.json",
+        "sha256": "466cf57ec4a627ae306ba020a46c990e942c7aa301ed6952a4d05b133df2e273",
+        "pointer": "/finding_adjudications/3"
+      }
     },
     {
       "finding_id": "F-032",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_load_and_flow_claim_adjudication.json",
+        "sha256": "466cf57ec4a627ae306ba020a46c990e942c7aa301ed6952a4d05b133df2e273",
+        "pointer": "/finding_adjudications/4"
+      }
     },
     {
       "finding_id": "F-033",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_load_and_flow_claim_adjudication.json",
+        "sha256": "466cf57ec4a627ae306ba020a46c990e942c7aa301ed6952a4d05b133df2e273",
+        "pointer": "/finding_adjudications/5"
+      }
     },
     {
       "finding_id": "F-034",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_load_and_flow_claim_adjudication.json",
+        "sha256": "466cf57ec4a627ae306ba020a46c990e942c7aa301ed6952a4d05b133df2e273",
+        "pointer": "/finding_adjudications/6"
+      }
     },
     {
       "finding_id": "F-035",
@@ -618,8 +646,8 @@
   ],
   "counts": {
     "total": 74,
-    "bounded_claim_adjudication": 41,
-    "source_review_only": 33
+    "bounded_claim_adjudication": 48,
+    "source_review_only": 26
   },
   "limits": [
     "A bounded assessment may find mixed or unresolved claims; it is not a pass count.",

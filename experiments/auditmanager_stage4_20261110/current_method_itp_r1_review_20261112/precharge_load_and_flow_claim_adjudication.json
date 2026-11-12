@@ -1,0 +1,294 @@
+{
+  "version": 1,
+  "scope": "Seven calculation rows; local arithmetic separated from model assumptions and real equipment adequacy",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "pointer": ""
+    },
+    "reference_ledger": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+      "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-020",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/19"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_bounded_review.json",
+        "sha256": "510f447d4ecd4a3191e94784e99257cff196d0a1b1cd6eed396f6a5adf42e67c",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "bounded_calculation_discrepancy_with_stated_reconstruction_limits",
+      "supported_claim": "Printed minimum2.5bar and gas charge3bar differ. Conditional acceptance at max3.8bar gives1/6 and246.901365L from unrounded expansion.",
+      "recommended_disposition": "Preserve pressure-basis reconciliation, not an instruction to replace200L with247L. Explicitly label reconstruction: source prints coefficient0.3 and expansion33L, whose literal formula yields137.5L, not152L.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-023:4c138c58b906579e3ebd",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-020": "technical_findings",
+              "F-021": "technical_findings"
+            },
+            "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-021",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/20"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_bounded_review.json",
+        "sha256": "510f447d4ecd4a3191e94784e99257cff196d0a1b1cd6eed396f6a5adf42e67c",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "bounded_calculation_discrepancy_with_stated_reconstruction_limits",
+      "supported_claim": "At max4bar, the printed coefficient0.3 corresponds to minimum2.5bar; conditional gas-charge3bar fraction is0.2 and volume3810.20625L.",
+      "recommended_disposition": "Preserve conditional comparison; actual useful capacity of two1500L tanks requires pressure reference, filling and temperature reconciliation.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-023:4c138c58b906579e3ebd",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-020": "technical_findings",
+              "F-021": "technical_findings"
+            },
+            "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-022",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/21"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_volumes_and_loads_bounded_review.json",
+        "sha256": "ed387f5c3ed2543e80050d36d1926a59c7d7579c9212ac1c3302509be0595d1b",
+        "pointer": "/cases/2"
+      },
+      "factual_assessment": "bounded_calculation_discrepancy_with_stated_reconstruction_limits",
+      "supported_claim": "Four same-circuit published load differences retained:0.629,0.005,0.078,0.023Gcal/h.",
+      "recommended_disposition": "Keep all four as grouped input clarifications; no mandatory control-unit replacement. Volume and load are different properties, not automatic duplicates.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-021:61e590ad93c41a790803",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-022": "technical_findings"
+            },
+            "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+          }
+        },
+        {
+          "target_id": "B-ITP-F-021:6dbe9315b20445709a44",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-022": "technical_findings"
+            },
+            "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+          }
+        },
+        {
+          "target_id": "B-ITP-F-021:21e573255419bee97d92",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-022": "technical_findings"
+            },
+            "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+          }
+        },
+        {
+          "target_id": "B-ITP-F-021:19069482aa6e7267f73b",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-022": "technical_findings"
+            },
+            "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-031",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/30"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/arithmetic_bounded_review.json",
+        "sha256": "0c3815a1ed98768b8bbc2f16e6ba671b138598541383b80faf944b8ef6089282",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "bounded_calculation_discrepancy_with_stated_reconstruction_limits",
+      "supported_claim": "Zone2 substitution0.016 yields2.08, while2.21 corresponds to0.017. Untruncated flows are4.3766667,2.275,0.845.",
+      "recommended_disposition": "Retain arithmetic/input clarification. A selected operating-point flow4.31 is not a maximum pump capacity; no pump inadequacy inference.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-011:f633e04640a9e4e3c71a",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-031": "technical_findings"
+            },
+            "limit": "Content coverage and output-section agreement assessed separately."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-032",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/31"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/arithmetic_bounded_review.json",
+        "sha256": "0c3815a1ed98768b8bbc2f16e6ba671b138598541383b80faf944b8ef6089282",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "bounded_calculation_discrepancy_with_stated_reconstruction_limits",
+      "supported_claim": "The local formula multiplies heat-flow Q in Gcal/h by dimensionless1.5 but labels the result water flow.",
+      "recommended_disposition": "Retain dimensional clarification. Intended formula is unresolved; do not silently substitute G for Q.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-011:13234a067319a117c786",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-032": "technical_findings"
+            },
+            "limit": "Content coverage and output-section agreement assessed separately."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-033",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/32"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/hydraulics_and_gvs_load_bounded_review.json",
+        "sha256": "7d0cd0aa62edff8553e6dfddf090e1a211f411ec8f5c2e60053efb5c4dd75bf8",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "bounded_calculation_discrepancy_with_stated_reconstruction_limits",
+      "supported_claim": "At ID207mm and Q61.12m³/h velocity is0.504487m/s; Q76.40 gives0.630609m/s. Both printed0.66 values are not consistent with these distinct flows.",
+      "recommended_disposition": "Retain discrepancy; correct three-decimal rounding to0.504 or use0.5045. Do not infer pressure-loss error or pipe replacement without their own checks. Remove internal source-claim ID bookkeeping.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-025:c98f6c16f19022b52eb6",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-033": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-034",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/33"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/hydraulics_and_gvs_load_bounded_review.json",
+        "sha256": "7d0cd0aa62edff8553e6dfddf090e1a211f411ec8f5c2e60053efb5c4dd75bf8",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "bounded_calculation_discrepancy_with_stated_reconstruction_limits",
+      "supported_claim": "Q0.90m³/h and ID70mm give0.064961m/s versus printed0.12.",
+      "recommended_disposition": "Retain bounded calculation clarification; do not infer required pipe replacement or resolve the separate same-section wall-thickness identity question.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-020:ddebb96399a114f724d6",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-023": "technical_findings",
+              "F-034": "technical_findings"
+            },
+            "limit": "Section mismatch is separate from content coverage; no universal technical falsehood inferred."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    }
+  ],
+  "recomputed_values": {
+    "DOO_literal_rounded_volume_L": "137.5",
+    "DOO_reconstructed_original_fraction": "0.2708333333333333333333333333",
+    "DOO_conditional_fraction": "0.1666666666666666666666666667",
+    "DOO_conditional_volume_L": "246.9013650000000000000000000",
+    "vent_conditional_volume_L": "3810.20625",
+    "circulation_flows_m3h": [
+      "4.376666666666666666666666667",
+      "2.27500",
+      "0.84500"
+    ],
+    "zone2_literal_substitution": "2.0800",
+    "vent_secondary_velocity_ms": 0.5044873403905001,
+    "vent_primary_velocity_ms": 0.6306091754881253,
+    "makeup_velocity_ms": 0.06496120126199809
+  },
+  "limits": [
+    "Reconstruction of ambiguous or rounded source formula is inference, not a directly printed fact.",
+    "No universal reserve factor, permissible error threshold or precharge rule adopted.",
+    "Pressure locations, system scope, filling and fluid conditions remain relevant unresolved inputs.",
+    "The physical formulas are used only to reproduce explicitly bounded project comparisons; whole-system validation not claimed."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}
