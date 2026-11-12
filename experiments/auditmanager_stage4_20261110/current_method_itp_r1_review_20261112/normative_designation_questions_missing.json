@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "scope": "Five missing bounded questions on designations and normative references",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_id": "ITP_F028_reducer_designations:2f16d360921aab6e9949",
+      "coverage": "absent",
+      "reason": "SOprints45x20and57x20. Viewed original standard table2shows45with25/32/38and57starting25. Output has no designation question;F028placeholder question does not cover it. Current amendments, complete designations and project-applicable edition remain unresolved; no automatic20to25replacement.",
+      "quotes": [
+        {
+          "line": 1516,
+          "quote": "|  | Переход стальной концентрический, D=40x20 мм | ГОСТ 17378-2001* | Переход К-2-45x20 |  | шт. | 4 |  |  |"
+        },
+        {
+          "line": 1518,
+          "quote": "|  | Переход стальной концентрический, D=50x20 мм | ГОСТ 17378-2001* | Переход К-2-57x20 |  | шт. | 4 |  |  |"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP_F028_reducer_designations:fab751f2686c38838e0b",
+      "coverage": "absent",
+      "reason": "SOprints114x89and168x76while pipe list includes108x4.0and159x4.5. Final does not ask to identify actual mating elements. Direct adjacency is not established and impossible installation is not proved.",
+      "quotes": [
+        {
+          "line": 1313,
+          "quote": "|  | Трубы стальные электросварные, Д=108х4,0 мм | ГОСТ 10704-91 |  |  | м | 19.7 |  |  |"
+        },
+        {
+          "line": 1315,
+          "quote": "|  | Трубы стальные электросварные, Д=159х4,5 мм | ГОСТ 10704-91 |  |  | м | 12.0 |  |  |"
+        },
+        {
+          "line": 1529,
+          "quote": "|  | Переход стальной концентрический, D=100x80 мм | ГОСТ 17378-2001* | Переход К-2-114x89 |  | шт. | 6 |  |  |"
+        },
+        {
+          "line": 1533,
+          "quote": "|  | Переход стальной концентрический, D=150x65 мм | ГОСТ 17378-2001* | Переход К-2-168x76 |  | шт. | 1 |  |  |"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP_F032_channel_standard_scope:8edf0d0f42a81f234dc5",
+      "coverage": "absent",
+      "reason": "Project calls100x50x5channel hot-rolled but cites8278-83; official title/scope is roll-formed equal channel, whose feedstock can be hot-rolled. No corresponding final question. Profile designation requires reconciliation; mass/strength error not established.",
+      "quotes": [
+        {
+          "line": 1680,
+          "quote": "|  | Швеллеры стальные горячекатанные 100x50x5 | ГОСТ 8278-83 |  |  | м. пог | 59.90 | 6.97 | 417.47 |"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP_F033_replaced_product_standards:3f903a601969ba823079",
+      "coverage": "absent",
+      "reason": "SOreferences12820-80flanges and14918-80sheet. Official cards show replacement by33259-2015and14918-2020respectively. No final question reconciles these references. Applicable contractual edition/product characteristics and replacement necessity are not established by status alone.",
+      "quotes": [
+        {
+          "line": 1634,
+          "quote": "|  | Фланец стальной плоский приварной с соединительным выступом Рy 1,6 МПа, Д=20мм | ГОСТ 12820-80* | Фланец 1-20-16 |  | шт. | 2 |  |  |"
+        },
+        {
+          "line": 1687,
+          "quote": "|  | Сталь тонколистовая оцинкованная толщиной 0,5мм | ГОСТ 14918-80 |  |  | м2 | 1000 |  | трубюопроводы , тройники ... |"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:5c96f17d8af25d1ba443",
+      "coverage": "absent",
+      "reason": "Reference list cites order115. Order511paragraph2expressly repeals115from2025-09-01;paragraph3same effective date. No final question reconciles reference. Project normative basis/issue date and technical consequences remain unresolved; export header is not calendar rule.",
+      "quotes": [
+        {
+          "line": 244,
+          "quote": "|  | ПРИКАЗ от 24 марта 2003 г. № 115 | Правила технической эксплуатации тепловых энергоустановок |  |"
+        }
+      ]
+    }
+  ],
+  "external_sources": [
+    {
+      "url": "https://www.zaar.ru/gosty/gost-17378-2001.pdf",
+      "accessed": "2026-11-12",
+      "support": "Непосредственно просмотрена таблица:DN40,D45 имеетD1=25/32/38; началоDN50,D57 имеетD1=25. СтолбцыDN,D,D1 разделены. Это проверка текста стандарта, не торгового пересказа; актуальная редакция со всеми изменениями не установлена.",
+      "verification": "Reopened this turn; relevant title/scope/replacement fields or decreeparagraphs2-3read. For17378tablelocalmatchingPDFandimageviewed.",
+      "limit": "No proof of project-wide noncompliance or required replacement."
+    },
+    {
+      "url": "https://protect.gost.ru/gost/details/0fc80304-935d-46d2-9b0a-4f4716dfdbd0",
+      "accessed": "2026-11-12",
+      "support": "Официальная карточка относит стандарт к гнутому равнополочному профилю. Изготовление выполняется профилегибочным оборудованием; исходная рулонная сталь может быть как холоднокатаной, так и горячекатаной. Это различает тип профиля и тип заготовки.",
+      "verification": "Reopened this turn; relevant title/scope/replacement fields or decreeparagraphs2-3read. For17378tablelocalmatchingPDFandimageviewed.",
+      "limit": "No proof of project-wide noncompliance or required replacement."
+    },
+    {
+      "url": "https://protect.gost.ru/gost/details/66ebf93e-1d81-4202-b092-e10a05ad5c1d",
+      "accessed": "2026-11-12",
+      "support": "Карточка ГОСТ33259-2015 включает12820-80 в список заменяемых; дата введения01.04.2016, приказ443-ст от26.05.2015.",
+      "verification": "Reopened this turn; relevant title/scope/replacement fields or decreeparagraphs2-3read. For17378tablelocalmatchingPDFandimageviewed.",
+      "limit": "No proof of project-wide noncompliance or required replacement."
+    },
+    {
+      "url": "https://protect.gost.ru/gost/details/fb93ae06-e51e-4319-a768-ddb23cc46f4a",
+      "accessed": "2026-11-12",
+      "support": "Карточка14918-80 имеет статус Заменен и указывает14918-2020 как заменяющий.",
+      "verification": "Reopened this turn; relevant title/scope/replacement fields or decreeparagraphs2-3read. For17378tablelocalmatchingPDFandimageviewed.",
+      "limit": "No proof of project-wide noncompliance or required replacement."
+    },
+    {
+      "url": "https://www.mos.ru/upload/documents/files/4171/Prikazot14_05_2025N511ObytverjdeniiPraviltehnicheskoieksplyataciiobektovteplosnabjeniyai_Tekst.pdf",
+      "accessed": "2026-11-12",
+      "support": "Текст приказа511 на государственном портале: отмена115 с01.09.2025, вступление511 той же датой; область включает тепловые пункты. Служебная шапка выгрузки «Документ в силу не вступил» отражает состояние выгрузки и не заменяет календарные положения акта.",
+      "verification": "Reopened this turn; relevant title/scope/replacement fields or decreeparagraphs2-3read. For17378tablelocalmatchingPDFandimageviewed.",
+      "limit": "No proof of project-wide noncompliance or required replacement."
+    }
+  ],
+  "raster_evidence": {
+    "pdf": {
+      "path": "/tmp/gost17378.pdf",
+      "sha256": "e946ae36767b69c38f6f6803f9200d24ae891bfcb0956591f338fadb908a30f0"
+    },
+    "image": {
+      "path": "/tmp/gost17378_page7.png",
+      "sha256": "e6c47c101685a1bb8b1caae218a0db95b83eb7c3439dcb2a947e425b749df47b"
+    },
+    "method": "Direct local raster inspection after web screenshot cache-miss;PDF7printed5table2",
+    "limit": "Original edition copy; no current-amendment applicability claim."
+  },
+  "output_review": "All74rows bounded-reviewed; visible problem/description/solution/risk searched and related F028placeholder wording reread. F001-F003other normative questions do not cover these references.",
+  "cause_attribution": "Final absence established; no attribution to detection/operation/filter stage yet.",
+  "runtime_changed": false,
+  "model_calls": 0
+}

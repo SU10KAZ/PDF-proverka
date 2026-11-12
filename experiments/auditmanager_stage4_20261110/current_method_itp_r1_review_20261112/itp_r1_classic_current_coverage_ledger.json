@@ -1451,39 +1451,59 @@
     },
     {
       "target_id": "ITP_F028_reducer_designations:2f16d360921aab6e9949",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/normative_designation_questions_missing.json",
+          "sha256": "71c634076ed1cc86e1730a5d74584f82676ec6e094e3733d4972b5d432b70083"
+        }
+      ],
+      "reason": "SOprints45x20and57x20. Viewed original standard table2shows45with25/32/38and57starting25. Output has no designation question;F028placeholder question does not cover it. Current amendments, complete designations and project-applicable edition remain unresolved; no automatic20to25replacement.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F028_reducer_designations:fab751f2686c38838e0b",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/normative_designation_questions_missing.json",
+          "sha256": "71c634076ed1cc86e1730a5d74584f82676ec6e094e3733d4972b5d432b70083"
+        }
+      ],
+      "reason": "SOprints114x89and168x76while pipe list includes108x4.0and159x4.5. Final does not ask to identify actual mating elements. Direct adjacency is not established and impossible installation is not proved.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F032_channel_standard_scope:8edf0d0f42a81f234dc5",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/normative_designation_questions_missing.json",
+          "sha256": "71c634076ed1cc86e1730a5d74584f82676ec6e094e3733d4972b5d432b70083"
+        }
+      ],
+      "reason": "Project calls100x50x5channel hot-rolled but cites8278-83; official title/scope is roll-formed equal channel, whose feedstock can be hot-rolled. No corresponding final question. Profile designation requires reconciliation; mass/strength error not established.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F033_replaced_product_standards:3f903a601969ba823079",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/normative_designation_questions_missing.json",
+          "sha256": "71c634076ed1cc86e1730a5d74584f82676ec6e094e3733d4972b5d432b70083"
+        }
+      ],
+      "reason": "SOreferences12820-80flanges and14918-80sheet. Official cards show replacement by33259-2015and14918-2020respectively. No final question reconciles these references. Applicable contractual edition/product characteristics and replacement necessity are not established by status alone.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
@@ -1501,12 +1521,17 @@
     },
     {
       "target_id": "ITP_F034_mixed_norm_references:5c96f17d8af25d1ba443",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/normative_designation_questions_missing.json",
+          "sha256": "71c634076ed1cc86e1730a5d74584f82676ec6e094e3733d4972b5d432b70083"
+        }
+      ],
+      "reason": "Reference list cites order115. Order511paragraph2expressly repeals115from2025-09-01;paragraph3same effective date. No final question reconciles reference. Project normative basis/issue date and technical consequences remain unresolved; export header is not calendar rule.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F034_mixed_norm_references:2bca6641f93ace5ac5a6",
