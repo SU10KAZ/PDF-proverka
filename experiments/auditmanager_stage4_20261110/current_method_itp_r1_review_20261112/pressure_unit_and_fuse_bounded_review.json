@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "scope": "Bounded review of two completed ITP classic r1 findings; no whole-output scoring",
+  "sources": {
+    "findings": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "terminal_status": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/status/ITP.json",
+      "sha256": "178f994e43a26457023a031e6e035473d771645efc0ad5673e85a2b8c1cd41f9"
+    },
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "reviewer": "Codex parent, manual semantic review",
+  "entire_output_reviewed": false,
+  "quality_score": null,
+  "model_calls": 0,
+  "cases": [
+    {
+      "finding_id": "F-010",
+      "target_id": "ITP_F005_test_pressure_scope:88ef772ecba424138f46",
+      "source_lines": [
+        264
+      ],
+      "source_quote": "Монтаж и пуск в эксплуатацию провести в соответствии со СП 74.13330.2023 \"Тепловые сети\", СНиП 3.05.03-85 \"Правила производства и приемки работ\", СНиП 12-03-2001 Часть 1. \"Безопасность труда в строительстве. Общие требования,\" СНиП 12-04-2002 Часть 2. \"Безопасность труда в строительстве. Строительное производство\". По окончании монтажных работ трубопроводы промываются водой и испытываются пробным давлением 12,5 кг/см. Длительность испытаний определяется временем, необходимым для осмотра трубопровода, но не менее 10 мин.",
+      "fact_verdict": "supported_unit_ambiguity",
+      "coverage": "partial_in_this_finding_only",
+      "coverage_reason": "F-010 preserves the literal 12,5 кг/см and asks to confirm unit and numerical value for tested sections. It does not explicitly retain the absence of circuit boundaries or coordinate inlet/internal circuit test parameters. Whole-output absence is not established.",
+      "section_assessment": "disagreement: evaluator question; output technical_findings",
+      "limits": "No conclusion that test pressure is insufficient; no assumed replacement of кг/см by кгс/см². Section disagreement is not technical falsity.",
+      "workload_observation": "Description repeats the same unit claim in two recovery addenda.",
+      "reviewed_visible_fields": {
+        "problem": "В монтажном указании пробное давление задано с некорректной единицей «кг/см».",
+        "description": "Первоначальное описание:\nНа листе 1 для испытания трубопроводов указано «12,5 кг/см». Запись массы на единицу длины не обозначает давление. Авторитетный MD подтверждает именно эту запись; заменять её на кгс/см² предположительно нельзя. Неоднозначность относится непосредственно к параметру проведения испытаний, поэтому замечание является техническим, а не малозначительной редакционной правкой.\n\nДополнительная проверка:\nЕдиница испытательного давления записана как «кг/см».\nЗапись непосредственно подтверждена авторитетным TEXT. Дополнительная проверка распознавания по изображению не требуется. F-010 сохраняет дефект задания единицы давления; он отнесён к technical_findings, поскольку запись определяет параметр выполнения опрессовки и её исправление требует подтверждения подразумеваемой физической величины, а не только оформления текста.\n\nЕдиница испытательного давления записана как «кг/см».\nПервичный авторитетный TEXT непосредственно содержит: «По окончании монтажных работ трубопроводы промываются водой и испытываются пробным давлением 12,5 кг/см.» Проверка распознавания по изображению не требуется. F-010 полностью сохраняет этот дефект в том же монтажном указании. Технический профиль обоснован тем, что некорректная размерность препятствует однозначному заданию параметра опрессовки; исправление требует подтверждения единицы и соответствующего числового значения. F-003 касается нормативных ссылок и не является дубликатом данного утверждения.",
+        "solution": "Указать однозначную единицу пробного давления и подтвердить соответствующее ей числовое значение для испытываемых участков.",
+        "report_section": "technical_findings",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "evidence": [
+          {
+            "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+            "type": "text",
+            "quote": "По окончании монтажных работ трубопроводы промываются водой и испытываются пробным давлением 12,5 кг/см.",
+            "location": "Страница 7, лист 1 «Общие данные», раздел «Указания по монтажу», первый абзац."
+          }
+        ]
+      }
+    },
+    {
+      "finding_id": "F-011",
+      "target_id": "ITP_F006_fuse_instruction:3453d72502ca1458b28c",
+      "negative_target_id": "ITP_F006_fuse_instruction:427e462f69e3375e880c",
+      "source_lines": [
+        2687,
+        2689,
+        2691,
+        2693,
+        2695
+      ],
+      "source_quotes": [
+        {
+          "line": 2687,
+          "text": "8.2 Перед началом работ при монтаже оборудования в щите необходимо изучить расположение в изделии элементов и кабелей, находящихся под высоким напряжением."
+        },
+        {
+          "line": 2689,
+          "text": "8.3 Прокладку и разделение кабелей, а также присоединение их к колодкам необходимо производить только при отключенном напряжении питания."
+        },
+        {
+          "line": 2691,
+          "text": "8.4 Замена предохранителей в блоках питания выполнять при включенном питании."
+        },
+        {
+          "line": 2693,
+          "text": "8.5 К работам по установке, профилактике и ремонту оборудования допускаются лица, прошедшие специальный инструктаж и сдавшие экзамен по технике безопасности."
+        },
+        {
+          "line": 2695,
+          "text": "8.6 Для защиты человека от поражения электрическим током выполнено защитное заземление насосов и всех щитов."
+        }
+      ],
+      "fact_verdict": "supported_literal_instruction_and_presence_of_general_protection",
+      "coverage": "narrow_positive_fact_retained",
+      "negative_claim_in_this_finding": "not_repeated: description explicitly acknowledges general safety rules, briefing and grounding",
+      "section_assessment": "disagreement: evaluator question; output technical_findings",
+      "severity_assessment": "critical label is not established by this bounded source review; evaluator expressly leaves criticality and PUE violation unverified",
+      "limits": "Finding itself qualifies that a specific regulatory violation and permissibility for the particular power supply are unestablished. No universal ban on all energized fuse replacement inferred. This review does not adjudicate equipment-specific safe operating procedure or whole-output negative coverage.",
+      "reviewed_visible_fields": {
+        "problem": "Пункт 8.4 ПЗ безусловно предписывает заменять предохранители в блоках питания при включённом питании.",
+        "description": "Первоначальное описание:\nВ разделе «Указание мер безопасности» прямо указана замена предохранителей при включённом питании. Пункт не ограничивает это указание определёнными аппаратами или режимами, не предусматривает снятие нагрузки и конкретные меры защиты при такой операции. Соседние пункты содержат общие требования соблюдать правила безопасности, проходить инструктаж и выполнять заземление, но не устанавливают условия выполнения именно этой операции. Подтверждён дефект проектной инструкции по обслуживанию; нарушение конкретного пункта нормативного документа и допустимость операции для конкретного исполнения блока питания отдельно не установлены.\n\nДополнительная проверка:\nПункт 8.4 предписывает замену предохранителей при включённом питании без необходимых условий безопасности.\nУказание непосредственно подтверждено пунктом 8.4. В представленном разделе отсутствуют специальные условия замены при включённом питании; общие требования пунктов 8.1–8.6 их не раскрывают. Подтверждена недостаточность безусловной инструкции, а не запрет любой замены под напряжением независимо от конструкции аппарата.",
+        "solution": "Исключить безусловное предписание замены при включённом питании. Установить безопасный порядок замены с отключением питания и проверкой отсутствия напряжения; если предусматривается специальный допустимый режим замены под напряжением, обосновать его применимость и явно указать условия и меры защиты по действующим правилам и руководству изготовителя.",
+        "report_section": "technical_findings",
+        "severity": "КРИТИЧЕСКОЕ",
+        "evidence": [
+          {
+            "block_id": "blk_67b9571de5e74033b6c491043f8c87d1",
+            "type": "text",
+            "quote": "8.4 Замена предохранителей в блоках питания выполнять при включенном питании.",
+            "location": "Страница 55, ПЗ, лист 17, раздел 7 «Указание мер безопасности», пункт 8.4."
+          },
+          {
+            "block_id": "blk_67b9571de5e74033b6c491043f8c87d1",
+            "type": "text",
+            "quote": "8.1 При выполнении работ, связанных с установкой, профилактикой и ремонтом оборудования должны соблюдаться действующие правила техники безопасности при эксплуатации электроустановок.",
+            "location": "Страница 55, ПЗ, лист 17, раздел 7 «Указание мер безопасности», пункт 8.1."
+          }
+        ]
+      }
+    }
+  ],
+  "next_action": "Read remaining visible findings and match all 87 targets before assigning run coverage or absence. Preserve section and severity disagreements separately from factual detection."
+}
