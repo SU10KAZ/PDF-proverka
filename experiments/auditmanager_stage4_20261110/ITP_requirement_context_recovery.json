@@ -1,0 +1,253 @@
+{
+  "status": "known_fragment_context_recovered_locally",
+  "cases": [
+    {
+      "finding_id": "F-02",
+      "query_origin": "Local query derived from the original model request; not demonstrated autonomous model query selection.",
+      "queries": [
+        "ТЕХНИЧЕСКОЕ ЗАДАНИЕ"
+      ],
+      "receipt": {
+        "hits": [
+          {
+            "block_id": "blk_35ff8683b1cf4be2abdef61740ddda2e",
+            "kind": "TEXT",
+            "page": 114,
+            "queries": [
+              "ТЕХНИЧЕСКОЕ ЗАДАНИЕ"
+            ],
+            "query_match_kinds": {
+              "ТЕХНИЧЕСКОЕ ЗАДАНИЕ": "body_token"
+            },
+            "start_line": 6149,
+            "source_provenance": {},
+            "reference_applicability_verified": false
+          },
+          {
+            "block_id": "blk_189ff01fc18544709772f3d8f536ccf1",
+            "kind": "TEXT",
+            "page": 141,
+            "queries": [
+              "ТЕХНИЧЕСКОЕ ЗАДАНИЕ"
+            ],
+            "query_match_kinds": {
+              "ТЕХНИЧЕСКОЕ ЗАДАНИЕ": "body_token"
+            },
+            "start_line": 6808,
+            "source_provenance": {},
+            "reference_applicability_verified": false
+          },
+          {
+            "block_id": "blk_e1e2be1d9e0645f08019e35b2264ae3c",
+            "kind": "TEXT",
+            "page": 167,
+            "queries": [
+              "ТЕХНИЧЕСКОЕ ЗАДАНИЕ"
+            ],
+            "query_match_kinds": {
+              "ТЕХНИЧЕСКОЕ ЗАДАНИЕ": "body_token"
+            },
+            "start_line": 7348,
+            "source_provenance": {},
+            "reference_applicability_verified": false
+          }
+        ],
+        "backlog": [],
+        "query_hit_counts": {
+          "ТЕХНИЧЕСКОЕ ЗАДАНИЕ": 3
+        },
+        "rejected_queries": [],
+        "deferred_queries": [],
+        "already_supplied": [],
+        "absence_proven": false,
+        "sheet_lookup_enabled": false,
+        "boundary": "Literal MD search, numeric dimension typography navigation and optional same-version sheet lookup; navigation does not prove identity or equivalent execution. Zero matches do not establish absence.",
+        "added_block_ids": [
+          "blk_35ff8683b1cf4be2abdef61740ddda2e",
+          "blk_189ff01fc18544709772f3d8f536ccf1",
+          "blk_e1e2be1d9e0645f08019e35b2264ae3c"
+        ],
+        "rejected_ambiguous_block_ids": []
+      },
+      "assertions": {
+        "title_retrieved": true,
+        "contract_reference_retrieved": true,
+        "site_identity_retrieved": true,
+        "governing_revision_verified": false
+      },
+      "disposition": "Title, contract reference, RD stage and site identity retrieved; current governing revision, approval and exact linkage remain unverified. Do not claim the full document has no title or project identity.",
+      "artifacts": {
+        "/tmp/auditmanager_itp_requirement_context_recovery_20261112/F-02/original_model_finding.json": "1fa9c47928c8ec4553171f91a0d4f05e4a57b232ffdcf3967c41154020666f65",
+        "/tmp/auditmanager_itp_requirement_context_recovery_20261112/F-02/expanded_queue.json": "d3b88ae210fdbd4145cfdd99cedcd8dadf97db9e03630430a65a60e652cbfecc"
+      }
+    },
+    {
+      "finding_id": "F-03",
+      "query_origin": "Local query derived from the original model request; not demonstrated autonomous model query selection.",
+      "queries": [
+        "5.5",
+        "5.4.1.9"
+      ],
+      "receipt": {
+        "hits": [
+          {
+            "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+            "kind": "IMAGE",
+            "page": 23,
+            "queries": [
+              "5.5"
+            ],
+            "query_match_kinds": {
+              "5.5": "body_token"
+            },
+            "start_line": 1035,
+            "source_provenance": {
+              "code": "ПД-00542664-ИТП.ТМ",
+              "stage": "Р",
+              "sheet": "14",
+              "revisions": "Не указано"
+            },
+            "reference_applicability_verified": false
+          },
+          {
+            "block_id": "blk_73e3f1efd1d4473c97a1f58ff8a20fe0",
+            "kind": "TEXT",
+            "page": 136,
+            "queries": [
+              "5.5"
+            ],
+            "query_match_kinds": {
+              "5.5": "body_token"
+            },
+            "start_line": 6673,
+            "source_provenance": {},
+            "reference_applicability_verified": false
+          },
+          {
+            "block_id": "blk_184c20aee54f47c886699ace0847e486",
+            "kind": "TEXT",
+            "page": 144,
+            "queries": [
+              "5.5"
+            ],
+            "query_match_kinds": {
+              "5.5": "body_token"
+            },
+            "start_line": 6863,
+            "source_provenance": {},
+            "reference_applicability_verified": false
+          },
+          {
+            "block_id": "blk_fba6f821ad1d450ebfbc5fc330bbc2b2",
+            "kind": "TEXT",
+            "page": 153,
+            "queries": [
+              "5.5"
+            ],
+            "query_match_kinds": {
+              "5.5": "body_token"
+            },
+            "start_line": 7064,
+            "source_provenance": {},
+            "reference_applicability_verified": false
+          },
+          {
+            "block_id": "blk_f8a0fda6c9be4e8287fa10e1870e1e77",
+            "kind": "TEXT",
+            "page": 154,
+            "queries": [
+              "5.5"
+            ],
+            "query_match_kinds": {
+              "5.5": "body_token"
+            },
+            "start_line": 7077,
+            "source_provenance": {},
+            "reference_applicability_verified": false
+          },
+          {
+            "block_id": "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+            "kind": "TEXT",
+            "page": 27,
+            "queries": [
+              "5.5"
+            ],
+            "query_match_kinds": {
+              "5.5": "substring"
+            },
+            "start_line": 1168,
+            "source_provenance": {
+              "code": "ПД-00542664 - ИТП.ТМ.СО",
+              "stage": "Не указано",
+              "sheet": "4.",
+              "revisions": "Не указано"
+            },
+            "reference_applicability_verified": false
+          }
+        ],
+        "backlog": [],
+        "query_hit_counts": {
+          "5.5": 7,
+          "5.4.1.9": 1
+        },
+        "rejected_queries": [],
+        "deferred_queries": [],
+        "already_supplied": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "kind": "TEXT",
+            "page": 152,
+            "queries": [
+              "5.5",
+              "5.4.1.9"
+            ],
+            "query_match_kinds": {
+              "5.5": "body_token",
+              "5.4.1.9": "body_token"
+            },
+            "start_line": 7050,
+            "source_provenance": {},
+            "reference_applicability_verified": false
+          }
+        ],
+        "absence_proven": false,
+        "sheet_lookup_enabled": false,
+        "boundary": "Literal MD search, numeric dimension typography navigation and optional same-version sheet lookup; navigation does not prove identity or equivalent execution. Zero matches do not establish absence.",
+        "added_block_ids": [
+          "blk_06029d59a01b4b779037ffcee1ae5260",
+          "blk_73e3f1efd1d4473c97a1f58ff8a20fe0",
+          "blk_184c20aee54f47c886699ace0847e486",
+          "blk_fba6f821ad1d450ebfbc5fc330bbc2b2",
+          "blk_f8a0fda6c9be4e8287fa10e1870e1e77",
+          "blk_7471e2839fbf42aca0c1f9f94a59bda2"
+        ],
+        "rejected_ambiguous_block_ids": []
+      },
+      "assertions": {
+        "heating_section_continuation_retrieved": true,
+        "next_section_boundary_retrieved": true,
+        "coupling_requirement_applicability_verified": false
+      },
+      "disposition": "Section 5.5 continuation retrieved through the start of 5.6. Re-review against existing source instead of asking an engineer to provide it. This does not map coupling rows to systems or establish a technical defect.",
+      "artifacts": {
+        "/tmp/auditmanager_itp_requirement_context_recovery_20261112/F-03/original_model_finding.json": "932d8b5650ea598b9ea42c46b9f656d7d6ef83157940961f98db0775e1197ad9",
+        "/tmp/auditmanager_itp_requirement_context_recovery_20261112/F-03/expanded_queue.json": "50f47e0983a865fb0b1aa868cea92e592ee0d74fdfeebfe475d927ba38400d94"
+      }
+    }
+  ],
+  "new_model_calls": 0,
+  "source": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/02_work/document.md",
+    "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+  },
+  "original_model_result_sha256": "26fffd1a337f69e7d911c68d8de3ecd107e22f8d0a85262f0b98c3d2b5b5dd08",
+  "stage4_control_closed": false,
+  "production_acceptance": false,
+  "evaluator_modified": false,
+  "remaining": [
+    "Semantic re-review with recovered context; original model questions remain immutable.",
+    "Match actual coupling rows to applicable systems/materials and diameter convention.",
+    "819 remains a quantity sum, not a proven violation count."
+  ],
+  "method": "Before emitting a question for missing requirements, search the authoritative whole-document TEXT for the named heading and its continuation. Preserve remaining applicability uncertainty."
+}
