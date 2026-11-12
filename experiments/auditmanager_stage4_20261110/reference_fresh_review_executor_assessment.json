@@ -1,0 +1,24 @@
+{
+  "status": "executor_tested_with_simulated_responses",
+  "tests_passed": 17,
+  "model_calls": 0,
+  "production_acceptance": false,
+  "stage4_control_closed": false,
+  "automatic_release": false,
+  "frozen_trial_changed": false,
+  "prepared_selection_pilot_changed": false,
+  "command_after_pilot": "python -m experiments.auditmanager_stage4_20261110.run_reference_fresh_review --pilot-root /tmp/auditmanager_ar_reference_retention_candidate_v002_20261112 --output /tmp/auditmanager_ar_reference_fresh_review_20261112 --execute",
+  "checks": [
+    "Records request, attempt, response and hash bindings.",
+    "Refuses dispatch during active comparison.",
+    "Interrupted attempts are not automatically repeated.",
+    "Changed source or saved response is rejected.",
+    "Missing references hold the candidate.",
+    "Normal admission still checks all claim reviews."
+  ],
+  "remaining": [
+    "Run source selection/repair after current comparison.",
+    "Review actual fresh adjudication; simulated responses do not prove model quality.",
+    "Complete final release and Excel retention against all original useful findings."
+  ]
+}
