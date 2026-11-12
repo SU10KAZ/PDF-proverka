@@ -1,0 +1,62 @@
+{
+  "status": "five_matched_source_DEV_controls_reviewed_with_remaining_integration_limits",
+  "system_prompt_sha256": "ee41b7d6a48ae2a9e990db73c262677af81e5d3a13797c6a1953db1103ffc191",
+  "rows": [
+    {
+      "finding_id": "F-004",
+      "request_sha256": "60e46c8c5587e00fc2554ed606aee2a231d74598138a40876e7715acfd17a957",
+      "matched_claims_sources_and_images": true,
+      "assessment_path": "experiments/auditmanager_stage4_20261110/purpose_remaining_v2_F004_assessment.json",
+      "assessment_sha256": "e1f8ee1866dee9fa6e784b5d0e360d3089ba990631b89982c67cf404ca533f7c",
+      "status": "bounded_core_and_recommendation_control_passed_final_risk_visibility_open"
+    },
+    {
+      "finding_id": "F-008",
+      "request_sha256": "412ef54edf37c2715e1b6253af79f9c4ec51b79bcd85831316cce992d4b641a0",
+      "matched_claims_sources_and_images": true,
+      "assessment_path": "experiments/auditmanager_stage4_20261110/purpose_boundary_v2_F008_assessment.json",
+      "assessment_sha256": "ec49b0f5d08f6921e87122d41fd97b9db9743731d3f82603d9cafb5c564caf23",
+      "status": "boundary_v2_positive_control_passed_three_document_conflicts_restored"
+    },
+    {
+      "finding_id": "F-010",
+      "request_sha256": "ca9828064418686044ca67e2d68f0872fc375ec1a47a78a9cd853f61f65a649c",
+      "matched_claims_sources_and_images": true,
+      "assessment_path": "experiments/auditmanager_stage4_20261110/purpose_boundary_v2_F010_assessment.json",
+      "assessment_sha256": "80421ee9ef8c66fbf7dbe5a49d7697c8d1d742d3f807ed7fcbcd9f56c0176134",
+      "status": "boundary_v2_negative_control_passed"
+    },
+    {
+      "finding_id": "F-012",
+      "request_sha256": "ee201a0388e66af8feb5fdce3413552ef87afcb55d7fcf1181abb6ef46c36c60",
+      "matched_claims_sources_and_images": true,
+      "assessment_path": "experiments/auditmanager_stage4_20261110/purpose_remaining_v2_F012_assessment.json",
+      "assessment_sha256": "9065b5d6247e772f264df5895ac02b91efa8d9b988d1a0c126dffdd20216a179",
+      "status": "bounded_core_preserved_additional_question_requires_context_review"
+    },
+    {
+      "finding_id": "F-020",
+      "request_sha256": "79c9e3e0db7ce9f0f92798d3bee0ae6084239f47a39284921f13a26bda42ad31",
+      "matched_claims_sources_and_images": true,
+      "assessment_path": "experiments/auditmanager_stage4_20261110/purpose_remaining_v2_F020_assessment.json",
+      "assessment_sha256": "fe48743fc4a62e728539395a3883928253c896a6009c2096ded473cfeaa0d32d",
+      "status": "question_visibility_control_passed_context_search_still_required"
+    }
+  ],
+  "conclusions": [
+    "F008 quantity conflicts retained despite prior question routing; F010 designation question not promoted to technical.",
+    "F004 retains three conflicts in one statement without separate recommendation question.",
+    "F012 retains technical conflict and unit clarification, adds adapter/power clarification requiring context search. No overall question-count reduction proven.",
+    "F020 actionable question visible without asserting regulatory violation; context search still required before engineer handoff."
+  ],
+  "remaining_gates": [
+    "Preserve conditional risks and full input accounting through final admission.",
+    "Retrieve available context before publishing unresolved questions.",
+    "Verify actual report/Excel output, not only model projection.",
+    "Complete all 85 source reviews and atomic rescore.",
+    "Six-project frozen comparison and new-project transfer remain uncompleted."
+  ],
+  "engineer_acceptance_claimed": false,
+  "general_quality_improvement_proven": false,
+  "production_acceptance": false
+}

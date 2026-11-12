@@ -1,0 +1,21 @@
+{
+  "finding_id": "F-020",
+  "status": "question_visibility_control_passed_context_search_still_required",
+  "candidate_projection_path": "/tmp/auditmanager_publication_purpose_remaining_v2_20261112_run/evaluations/publication_purpose_020/publication_projection.json",
+  "candidate_projection_sha256": "ce4790e2b1f0fb610cd6b49cfc0c2b2beb40dab39ec9f83e10344e7d1a6aa25e",
+  "source_review": {
+    "path": "experiments/auditmanager_stage4_20261110/runtime_AK_smoke_control_cable_question_review_20261112.json",
+    "sha256": "3b5db66d3aff64e437958dd7d728bc14b11fe682339d6d01dfb9a629f2dc3822"
+  },
+  "checks": [
+    "Сохранён один вопрос о конструкции и времени работы шести температурных линий, без утверждения нарушения.",
+    "Сумма 45+35+105+105+65+65 = 420 м; общие ПВХ-материалы не приписаны всем шести линиям.",
+    "Установленная функция управления подогревом не запрашивается повторно как неизвестная.",
+    "Применимость нормы оставлена внутренней неподтверждённой задачей.",
+    "В ответе прямо предусмотрен поиск проектных решений перед направлением вопроса инженеру; такой поиск этим ответом не выполнен."
+  ],
+  "engineer_decision": null,
+  "normative_compliance_verified": false,
+  "production_acceptance": false,
+  "final_release_completed": false
+}
