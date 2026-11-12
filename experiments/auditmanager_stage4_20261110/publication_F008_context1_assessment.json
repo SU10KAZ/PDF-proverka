@@ -1,0 +1,34 @@
+{
+  "finding_id": "F-008",
+  "status": "three_quantity_conflicts_source_supported_after_table_heading_retrieval",
+  "projection_path": "/tmp/auditmanager_publication_F008_context1_20261112_run/publication_projection.json",
+  "projection_sha256": "823f380e4abffdd03635725425c61b198b2ea43f503608212e3ec05c5ac54489",
+  "validation_path": "/tmp/auditmanager_publication_F008_context1_20261112_run/publication_validation.json",
+  "validation_sha256": "83756f3b626fa756434aa30d23f779abbc28cb3d1502c36b21e36269b524abc1",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+  "source_review_sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea",
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "verified_authoritative_md_spans": 10,
+  "checks": [
+    "Group 2 positions 2.5 and 2.7 each quantity 1 versus one TE1; systems tied by group 2.2 note.",
+    "Group 4 position 4.8 quantity 2 versus one TE2; group 4.2/4.3 identify systems.",
+    "Adjacent group 15 heading establishes cabinet for continued position 15.7 quantity 2 versus one TE3; group 15.2 identifies Вм6.1, present in list heading.",
+    "Literal Пкрб.1 is not silently normalized or used as independent identity evidence.",
+    "Recommendation remains attached to document conflicts; no separate recommendation question.",
+    "Actual overdelivery and absence of explanations throughout project remain unproved."
+  ],
+  "comparison_to_first_response": {
+    "confirmed_quantity_conflicts_before": 2,
+    "confirmed_quantity_conflicts_after": 3,
+    "new_project_defects_claimed": false,
+    "cause": "Source packet omitted adjacent table group heading; model requested missing identity context."
+  },
+  "proposed_generic_behavior": "Include same-version group heading and applicability notes with continued specification rows; unresolved identity remains explicit if continuity cannot be established.",
+  "limitations": [
+    "Coordinator retrieved the adjacent source block from model request; autonomous context retrieval is not yet demonstrated.",
+    "Three supported parts are not three newly discovered findings and must be reconciled with original finding and atomic coverage."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
