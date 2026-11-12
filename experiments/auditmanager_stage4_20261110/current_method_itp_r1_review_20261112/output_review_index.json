@@ -2,8 +2,8 @@
   "version": 1,
   "final_sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
   "finding_count": 74,
-  "findings_with_bounded_review": 50,
-  "findings_without_bounded_review": 24,
+  "findings_with_bounded_review": 53,
+  "findings_without_bounded_review": 21,
   "entire_output_reviewed": false,
   "whole_output_precision_finalized": false,
   "quality_score": null,
@@ -431,8 +431,13 @@
     },
     {
       "id": "F-048",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_drawing_volumes_bounded_review.json",
+          "sha256": "fd06bdda0f7365c66a0c422cdbdc45c19179ca1219290da36628e097086fffcd"
+        }
+      ]
     },
     {
       "id": "F-049",
@@ -456,8 +461,13 @@
     },
     {
       "id": "F-053",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_drawing_volumes_bounded_review.json",
+          "sha256": "fd06bdda0f7365c66a0c422cdbdc45c19179ca1219290da36628e097086fffcd"
+        }
+      ]
     },
     {
       "id": "F-054",
@@ -591,8 +601,13 @@
     },
     {
       "id": "F-070",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_drawing_volumes_bounded_review.json",
+          "sha256": "fd06bdda0f7365c66a0c422cdbdc45c19179ca1219290da36628e097086fffcd"
+        }
+      ]
     },
     {
       "id": "F-071",

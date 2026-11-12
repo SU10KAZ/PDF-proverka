@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "scope": "Three bounded tank-volume findings with graphic inspection; not full output scoring",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "id": "F-048",
+      "target": "B-ITP-F-042:ecfe1ebab48bd184691d",
+      "assessment": "K23 plan100L versus schedule/spec200L retained. Both sheet4 and drainage14 callouts inspected; no installed quantity or actual tank inadequacy inferred.",
+      "section": "disagreement: frozen target question, output technical",
+      "quote_checks": [
+        {
+          "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+          "quote": "| K23 | SPL RM 200л 10 бар | Бак расширительный V=200л, 10 бар | 1 | 17,2 |  |",
+          "line": 416
+        },
+        {
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "quote": "| 23 | Расширительный мембранный бак V=200л, PN=10бар | RM 200 PN10 | SPL800200 | SPL | шт. | 1 | 34.00 | подпитка, отопления |",
+          "line": 1105
+        }
+      ],
+      "visible_fields": {
+        "problem": "Объём бака К23 на плане не согласован с экспликацией и спецификацией.",
+        "description": "Первоначальное описание:\nНа плане ИТП, лист 4, выноска к баку К23 содержит «бак ДОО 100л». В экспликации на листе 2.1 для К23 указан расширительный бак SPL RM 200л 10 бар с объёмом V=200л. Спецификация, лист 2, также задаёт для позиции 23 объём 200 л. Подтверждено расхождение объёма одной позиции: 100 и 200 л. Правильный расчётный объём и достаточность ёмкости по этим источникам не установлены.\n\nДополнительная проверка:\nНа плане, лист 4, бак К23 обозначен объёмом 100 л.\nВ правой части основного помещения ИТП прочитана выноска «К23 бак ДОО 100л», связанная с круглым символом бака. Это непосредственно подтверждает указанное на плане значение.\n\nВ экспликации, лист 2.1, тот же бак имеет объём 200 л.\nСтрока К23 экспликации прямо содержит SPL RM 200л и V=200л; позиция 23 спецификации дополнительно подтверждает 200 л. Связь с планом установлена по обозначению К23. Значение противоречит выноске 100 л и сохранено в F-048.\n\nНа плане дренажа листа 14 К23 подписан объёмом 100 л.\nНа приложенном изображении в правой части основного помещения, над аппаратами К4 и слева от насосов К12, непосредственно прочитана выноска «К23 бак ДОО 100л». Это дополнительное графическое подтверждение проблемы F-048 на листе 14.\n\nЭкспликация листа 2.1 задаёт для К23 200 л.\nПервичная строка К23 содержит «SPL RM 200л 10 бар» и «Бак расширительный V=200л, 10 бар». Подбор отопления ДОО на странице 106 также предусматривает один SPL RM 200. Значение экспликации уже охвачено F-048; достаточность выбранной ёмкости этим сравнением не устанавливается.\n\nК23 на плане дренажа имеет подпись 100 л.\nВ правой части приложенного плана, над аппаратами К4 и слева от группы К12, прочитана выноска «К23 бак ДОО 100л». Это дополнительное графическое подтверждение F-048 на листе 14, общее с G-029.\n\nК23 в экспликации имеет объём 200 л.\nСтрока К23 первичной экспликации содержит обозначение SPL RM 200л 10 бар и характеристику V=200л. Эта сторона расхождения уже сохранена в F-048.",
+        "solution": "Установить расчётный объём бака К23 и согласовать выноску на плане, экспликацию и спецификацию.",
+        "report_section": "technical_findings"
+      }
+    },
+    {
+      "id": "F-053",
+      "target": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
+      "assessment": "K22 section/drainage1000L versus1500L per tank retained, two specified tanks kept separate from number of drawing callouts.",
+      "section": "disagreement: frozen target question, output technical",
+      "quote_checks": [
+        {
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "quote": "| 22 | Расширительный мембранный бак V=1500л, PN=10бар | RM 1500 PN10 | SPL801500 | SPL | шт. | 2 | 252.00 | подпитка вентиляции |",
+          "line": 1104
+        },
+        {
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "quote": "**Vбака = (1,25 x Vрасш.) : Kзап. = 2540 л** **2 шт. SPL RM 1500 л 10 бар**",
+          "line": 5829
+        }
+      ],
+      "visible_fields": {
+        "problem": "Объём бака К22 на разрезе 18-18 не согласован со спецификацией и подбором.",
+        "description": "Первоначальное описание:\nНа разрезе 18-18 бак К22 с позиционной выноской 22 подписан «бак теплоснабжения 1000л». Позиция 22 спецификации задаёт расширительный мембранный бак RM 1500 PN10 объёмом 1500 л, количеством 2 шт. Подбор теплоснабжения вентиляции также предусматривает два бака SPL RM 1500 по 1500 л. Расхождение объёма единицы оборудования составляет 500 л. Подтверждено несогласование документов; суммарная установленная ёмкость и фактический дефицит по одному разрезу не устанавливаются.\n\nДополнительная проверка:\nРазрез 18-18 содержит подпись бака К22 объёмом 1000 л.\nПодпись «К22 бак теплоснабжения 1000л» непосредственно прочитана у вертикального бака в правой части разреза; над ним видна позиционная выноска 22.\n\nСпецификация позиции 22 задаёт 1500 л.\nСтрока 22 прямо содержит V=1500л и количество 2 шт. Подбор вентиляции независимо подтверждает два бака по 1500 л. Это характеристика единицы оборудования, а не установленная величина общего дефицита.\n\nК22 на разрезе 18-18 обозначен как бак 1000 л.\nНа приложенном изображении непосредственно прочитана подпись 1000л у К22; позиционная выноска 22 связывает бак со строкой спецификации.\n\nПозиция 22 спецификации содержит RM 1500 PN10 объёмом 1500 л.\nАвторитетная таблица прямо задаёт RM 1500 PN10, V=1500л и количество 2 шт.\n\nНа плане дренажа листа 14 К22 подписан объёмом 1000 л.\nВ нижней левой части приложенного плана, справа от ряда шкафов автоматики, непосредственно прочитана подпись «К22 бак теплоснабжения 1000л». Лист 14 добавляет место проявления уже сохранённого в F-053 расхождения.\n\nВ экспликации листа 2.1 для К22 указано 1500 л.\nПервичная строка К22 прямо содержит «SPL RM 1500л 10 бар», «Бак расширительный V=1500л, 10 бар» и количество 2. Подбор теплоснабжения вентиляции подтверждает два бака по 1500 л. Экспликация дополняет доказательства F-053; число выносок на плане не используется для определения количества физических баков.\n\nК22 на плане дренажа имеет подпись 1000 л.\nНа изображении листа 14 в нижней левой части плана, рядом со шкафами автоматики, прочитана подпись «К22 бак теплоснабжения 1000л». Наблюдение дополняет F-053 совместно с G-030, не образуя отдельного дефекта.\n\nК22 в экспликации имеет объём 1500 л.\nСтрока К22 авторитетной экспликации прямо задаёт V=1500л и количество 2. Это дополнительный первичный источник для стороны 1500 л в F-053. Объём единицы не смешивается с суммарной ёмкостью установки.",
+        "solution": "Согласовать объём бака К22 в выноске разреза со спецификацией и актуальным расчётом расширительных баков, сохранив однозначное указание объёма единицы и количества баков.",
+        "report_section": "technical_findings"
+      }
+    },
+    {
+      "id": "F-070",
+      "target": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
+      "assessment": "Same K22 core conflict asF-053, with extra equipment plan source. This is a duplicate final row, not an additional independent defect. No dimensional access or foundation mismatch proved.",
+      "section": "disagreement: frozen target question, output technical",
+      "quote_checks": [],
+      "visible_fields": {
+        "problem": "На чертежах К22 обозначен объемом 1000 л, в подборе и ведомостях — 1500 л на бак.",
+        "description": "На плане листа 3 в нижней левой части возле двух изображений баков, справа на разрезе 18-18 листа 9 и в зоне оснований К22 на листе 14 указано 1000 л. Экспликация К22, спецификация позиции 22 и расчет предусматривают два RM 1500. Установлено расхождение номинального объема оборудования; несоответствие фактических габаритов оснований, проемов или количества установленных баков не доказано.",
+        "solution": "Согласовать обозначения К22 на чертежах с выбранным исполнением. Проверить размещение и монтажный путь для подтвержденных габаритов поставляемых баков.",
+        "report_section": "technical_findings"
+      }
+    }
+  ],
+  "graphic_observations": [
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_61cbeb249f9e4bba8d0a30f6b4b3b79c.png",
+        "sha256": "9a098a71fc26249d70777e78f9bfe35539f7b32844d48bfdd8221ca2e51012c1"
+      },
+      "observation": "Sheet4: K23 callout in right-hand DOO group states100L.",
+      "method": "Codex parent direct image inspection"
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+        "sha256": "99f0948dd8e59ee31f68b9f79a58131e5fa3a0fc63e5fdfcb0a541f00871bb8c"
+      },
+      "observation": "Sheet14 drainage: K23 right-hand callout100L and K22 lower-left callout1000L.",
+      "method": "Codex parent direct image inspection"
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cc80e7962a094791b984d8fb5391e886.png",
+        "sha256": "df5eab1b75e59001cf78cb3cded3596c55d5726badde250c456889c012e1a3b3"
+      },
+      "observation": "Sheet3 equipment plan: K22 lower-left callout1000L; K23 right-hand callout100L.",
+      "method": "Codex parent direct image inspection"
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_27af51f0cd26488ea08ffa55589b0c3e.png",
+        "sha256": "9ae3ec6ff303ff8f3b6317bd8cfa1b49ab22653581184818e10d9f0393bf4c7a"
+      },
+      "observation": "Section18-18 right-hand K22 label1000L, inspected earlier in temperature review.",
+      "method": "Codex parent direct image inspection"
+    }
+  ],
+  "extra_text": [
+    {
+      "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+      "lines": [
+        "| K22 | SPL RM 1500л 10 бар | Бак расширительный V=1500л, 10 бар | 2 | 240,0 |  |",
+        "| K23 | SPL RM 200л 10 бар | Бак расширительный V=200л, 10 бар | 1 | 17,2 |  |"
+      ]
+    },
+    {
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "lines": [
+        "**Vбака = (1,25 x Vрасш.) : Kзап. = 2540 л** **2 шт. SPL RM 1500 л 10 бар**",
+        "| SPL RM 1500 | 1500 | 10 | 4 | 960 | 2380 | 2\" | внутр. | нижнее | есть | 252,0 |"
+      ]
+    }
+  ],
+  "duplicate_pair": {
+    "ids": [
+      "F-053",
+      "F-070"
+    ],
+    "same_object": "K22",
+    "same_property": "unit volume1000/1500L",
+    "recommendation": "Merge manifestations and sources, preserve two-tank quantity and unresolved actual adequacy."
+  },
+  "preserve": "Do not infer physical tank count from repeated views. Unit volume, number of tanks, total capacity and adequacy are separate claims. K23 is a distinct object and must remain distinct from K22.",
+  "entire_output_reviewed": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0
+}
