@@ -63,4 +63,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     result = prepare(args.destination.resolve())
     print(json.dumps([{'finding_id': r['finding_id'], 'path': r['path'],
-                       'images': r['images']} for r in result['requests']], ensure_ascii=False))
+                       'images': len(verify_packet(r)['image_hashes'])} for r in result['requests']], ensure_ascii=False))
