@@ -1,0 +1,36 @@
+{
+  "finding_id": "F-032",
+  "status": "same_line_sensor_address_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_032/publication_projection.json",
+  "projection_sha256": "08ee22c6796fd2b31c50c7996b4789ec48110bde6f45e6d0b03d99ec4316b53f",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_po51_cable_and_sensor_address_review_20261112.json",
+  "source_review_sha256": "14e9b7332000d8725586695ebd97ebd0ec2e81942228ce6ab12d0ea640da4a06",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_66980560083f4bb483d5ce1f9c8156e2.png",
+      "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+      "sha256": "dabee90e19aaa31be7c58c1521a95a878bacbb4d195f4173824eddcca53e435c",
+      "directly_viewed": true,
+      "detail": "original",
+      "view_provenance": "Images directly viewed in this thread during F-053 identity review; reused unchanged."
+    },
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+      "block_id": "blk_065a335469904b2db1640b480b321503",
+      "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+      "directly_viewed": true,
+      "detail": "original",
+      "view_provenance": "Images directly viewed in this thread during F-053 identity review; reused unchanged."
+    }
+  ],
+  "checks": [
+    "Literal PDS45 journal preserved, not corrected as OCR.",
+    "Functional image shows PDS5 on Вос5.1 fan; connection diagram previously directly checked links PDS5 to Вос5.1-1 and 14/15.",
+    "Same-line identity established from connections, not typographic similarity alone.",
+    "One technical conflict retained with recommendation and conditional risk; no additional physical device required.",
+    "Resolved graphic limitation moved to history, original source record remains."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

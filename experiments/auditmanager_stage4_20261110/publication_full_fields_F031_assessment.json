@@ -1,0 +1,26 @@
+{
+  "finding_id": "F-031",
+  "status": "bundled_sensor_question_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_031/publication_projection.json",
+  "projection_sha256": "0aa7e6829ef90a3757c6b1e4ed4dffb3c27a2992acf669a35f2d155a420c4ac2",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_identity_dimension_review_20261112.json",
+  "source_review_sha256": "526bfcc4d9f98abb4d864edcce574d5fdad99ba53601db7ea5062b1434390308",
+  "graphics": [
+    {
+      "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+      "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+      "directly_viewed": true
+    }
+  ],
+  "checks": [
+    "ТС1 explicitly capillary qty1; ТС2 thermostat supplied with heater has blank quantity; specification has one capillary relay.",
+    "Graphic TS1/TS2 belong to distinct systems and connect to 13–14/15–16; these connections are not missing.",
+    "Two drawn devices do not establish two separately supplied capillary relays; no false shortage.",
+    "Different constructive execution not proven for ТС2; source only specifies bundled supply.",
+    "Clarification remains question; no proven incomplete protection asserted."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
