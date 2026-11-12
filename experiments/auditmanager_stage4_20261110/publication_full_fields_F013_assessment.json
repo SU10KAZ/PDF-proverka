@@ -1,0 +1,40 @@
+{
+  "finding_id": "F-013",
+  "status": "false_package_reference_absence_removed_scope_limits_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_013_tiles/publication_projection.json",
+  "projection_sha256": "3a27adb11d2bbc22b6e324caac28402c00ccc61b894586aa1b21a07c76259c82",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_CO_package_boundary_regression.json",
+  "source_review_sha256": "ee76a10d814cbb36f150f9e115eb0a311515baac7dace67d76453b8383c98698",
+  "checks": [
+    "Group 5.1–5.18 diagram explicitly refers to book 1 AK1-PA.",
+    "Full-plan tile row1/column1 explicitly labels STG-3-I-5.2 with AK1-PA reference.",
+    "X3 loop2 connection is depicted; absent-scheme limitation is superseded.",
+    "61 versus 43 arithmetic retained without inferring shortage of 18 or universal scope mismatch."
+  ],
+  "limits": [
+    "Full supply/work responsibility in adjacent AK1-PA remains unverified.",
+    "Positive conflict control F-085 in this series still awaits collection/review; broader filter acceptance not established."
+  ],
+  "counts": {
+    "technical_findings": 0,
+    "questions": 0,
+    "withdrawn": 1,
+    "pending": 4,
+    "history_only": 1
+  },
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "directly_reviewed_images": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_206d5fa1055148c5b12414a2919fbe84.png",
+      "sha256": "1eaedbf298530a27e8b5092fe8efae5bd4fec55ffa7c76ff671356830fe811b0",
+      "detail": "original"
+    },
+    {
+      "path": "/tmp/auditmanager_sheet54_full_graphic_tiles_20261112/detail_tile_6.png",
+      "sha256": "691cb135fb2b8a7a31dfe00f1a15ae0374433185b217932e908b09ee8d64e43b",
+      "detail": "original"
+    }
+  ]
+}

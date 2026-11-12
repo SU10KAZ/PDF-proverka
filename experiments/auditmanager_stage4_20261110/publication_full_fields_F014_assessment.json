@@ -1,0 +1,29 @@
+{
+  "finding_id": "F-014",
+  "status": "calculated_length_conflicts_preserved_wording_correction_separate",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_014/publication_projection.json",
+  "projection_sha256": "8595cd35febb6d2184d4deacaf6bca0590ed4297cfa5b44f483cc2992ef4e5e5",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_cable_segment_totals_source_review_20261112.json",
+  "source_review_sha256": "9ad092d7df9cc45ceb7418337721bf30b811f89dba67f6cb55eba9cc30c93fe0",
+  "checks": [
+    "Unshielded 8x15=120 versus 50 retained.",
+    "Shielded 20+15+15=50 versus 105 retained.",
+    "70m and 55m differences kept within local cable execution scope.",
+    "Withdrawal corrects only wording that totals are printed on the drawing; calculations remain supported."
+  ],
+  "limits": [
+    "Do not count the wording-only withdrawal as removal of a false project defect.",
+    "Actual procurement shortage/excess and authoritative revision priority remain unknown.",
+    "Useful reconciliation recommendation is placed in pending together with a broader specification limitation; final rendering must preserve its supported part."
+  ],
+  "counts": {
+    "technical_findings": 1,
+    "questions": 0,
+    "withdrawn": 1,
+    "pending": 3,
+    "history_only": 1
+  },
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

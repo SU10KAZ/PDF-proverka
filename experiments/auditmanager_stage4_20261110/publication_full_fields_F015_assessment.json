@@ -1,0 +1,27 @@
+{
+  "finding_id": "F-015",
+  "status": "source_supported_single_line_length_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_015/publication_projection.json",
+  "projection_sha256": "6dc86c8f71ab1875a95f1eb81d83d028a04fd9ad6ab39ef6311793aa72be6d52",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_control_logic_source_review_20261112.json",
+  "source_review_sha256": "c4f6dd51c155a4fced854d4de0f7b0db0f28f482d0e009cbb0e1105dfa965362",
+  "checks": [
+    "Journal Pn5.1.-10 to XT1 gives 35m of shielded 2x2x0.75.",
+    "Local sheet33 list gives 15m, difference20m.",
+    "Added source graphic for F-003 also directly shows Pn5.1-10 to XT1; no physical installation inference.",
+    "Recommendation and conditional risk retained within one technical part; no extra engineer question."
+  ],
+  "limits": [
+    "No claim that summary specification is wrong or actual delivery shortage is established."
+  ],
+  "counts": {
+    "technical_findings": 1,
+    "questions": 0,
+    "withdrawn": 0,
+    "pending": 0,
+    "history_only": 0
+  },
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
