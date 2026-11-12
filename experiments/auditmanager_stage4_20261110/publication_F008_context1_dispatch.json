@@ -1,0 +1,10 @@
+{
+  "status_at_observation": "running",
+  "pid": 1059142,
+  "model": "codex/gpt-6-astra",
+  "run_directory": "/tmp/auditmanager_publication_F008_context1_20261112_run",
+  "preparation_path": "/tmp/auditmanager_publication_F008_context1_20261112/preparation.json",
+  "preparation_sha256": "fd77f65f6eed825c2bc0bf165151f9fc0f8e8ca35f3d770d481dccf6c3b5b22a",
+  "production_acceptance": false,
+  "main_queue_unchanged": true
+}

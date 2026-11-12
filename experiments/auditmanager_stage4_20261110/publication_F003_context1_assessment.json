@@ -1,0 +1,65 @@
+{
+  "finding_id": "F-003",
+  "status": "three_system_document_conflicts_restored_after_requested_context",
+  "validation": {
+    "finding_id": "F-003",
+    "request_sha256": "762dd5cf880c6d38adbb2ce5f13019b2b1bb92604ccc8781c6b22e9d589967c0",
+    "response_sha256": "2dded64314a687015ebfabc8256a20d93eae12872e22ec042b980107c68d64c8",
+    "selection": "DEV-known F-003 context continuation using model requested connection diagrams; coordinator conclusions and engineer answers omitted.",
+    "semantic_verified": false,
+    "production_acceptance": false,
+    "status": "structurally_valid_requires_source_review",
+    "review_scope": "claim_fields",
+    "unreviewed_claim_fields": [],
+    "part_counts_not_finding_counts": true,
+    "projection_path": "/tmp/auditmanager_publication_F003_context1_20261112_run/publication_projection.json",
+    "projection_sha256": "14cfd68d882b0babd868d471698ddee2e8618b5b3c81f5b3e5bc3d06f16d7f44",
+    "counts": {
+      "technical_findings": 4,
+      "questions": 0,
+      "withdrawn": 0,
+      "pending": 2,
+      "history_only": 2
+    }
+  },
+  "duration_ms": 235072,
+  "parent_response": {
+    "path": "/tmp/auditmanager_publication_remaining84_20261112_run/publication_reconciliation_003_attempt_1.json",
+    "sha256": "3e09a4469106fc228604ff639dc7defe02c3d6651cb1167891a84010a51c52bd"
+  },
+  "additional_sources": [
+    {
+      "block_id": "blk_fcd31b6618d34e0f982af6c418e3bf37",
+      "prepared_md_stamp_for_navigation": "> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 27 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-3-К4ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+      "image_sha256": "7265169d198c15255584b261cce1dbc1517006493ca16c6a463b4607bc01325f"
+    },
+    {
+      "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+      "prepared_md_stamp_for_navigation": "> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 33 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Шкаф автоматики и управления ШАУВ-4-К5ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано",
+      "image_sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba"
+    }
+  ],
+  "source_review_authority": "coordinator_not_engineer_acceptance",
+  "checks": [
+    "Pkr4.1-13 directly connects to pump M3 in added diagram, journal says M2.",
+    "Pkr4.1-9 connects to reserve fan M2 in diagram and journal; this consistent line is not declared defective.",
+    "Pkr5.1-9 graphic M3 versus journal M2 preserved.",
+    "Pkr5.1-13 graphic pump M2 versus literal journal МЗ preserved without OCR correction to M3.",
+    "Pn5.1-21 directly reaches pump column: external diagram M2, functional/list M5, journal M1; no arbitrary correct replacement selected.",
+    "Actual installation risk remains conditional and glyph identity remains unresolved."
+  ],
+  "bounded_control_pair": {
+    "positive": "Pkr4.1-13: graphic M3 versus journal M2",
+    "negative": "Pkr4.1-9: M2 in both sources",
+    "engineer_confirmed_pair": false,
+    "evidence_type": "primary source same-operation control"
+  },
+  "retrieval_cause": "Original linked-source packet lacked two connection diagrams despite their availability in the same source MD. Model requested them; source navigation supplied them.",
+  "remaining": [
+    "Pn5.1 pump designation overlaps original F-071; cross-finding consolidation remains unverified.",
+    "Four technical parts are not four newly independent defects.",
+    "Current source continuation selected by coordinator from model request; not proof of autonomous end-to-end discovery."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
