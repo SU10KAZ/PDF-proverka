@@ -1,0 +1,18 @@
+{
+  "finding_id": "F-001",
+  "status": "source_supported_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_001/publication_projection.json",
+  "projection_sha256": "b5d1f839d46dcbd6f9b062aa907dc50f27e8db1c22ca289f2709cc23a9d29df0",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_text_findings_source_review_20261112.json",
+  "source_review_sha256": "81e583b420abb071f88f36272799c7d45afe8981a319d69f05d32d7c5a224c8c",
+  "checks": [
+    "Both journal rows preserve same cable mark and different 4x2.5/4x4.0 sections, 15m.",
+    "The list is not falsely treated as proving the correct design.",
+    "Recommendation remains to reconcile after calculation, not arbitrarily choose a section.",
+    "Possible ordering ambiguity remains conditional.",
+    "Number of physical lines remains unresolved, not automatically counted as two."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

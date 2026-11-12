@@ -1,0 +1,16 @@
+{
+  "status_at_observation": "running",
+  "pid": 1040340,
+  "session_id": 19512,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "run_directory": "/tmp/auditmanager_publication_remaining84_20261112_run",
+  "preparation_path": "/tmp/auditmanager_publication_remaining84_20261112/preparation.json",
+  "preparation_sha256": "cf18a999e6cf032fc09b58ac7a3f65dca62a2a309040d97c8143077f935c505b",
+  "planned_requests": 84,
+  "completed_at_observation": 1,
+  "reuse_completed_finding": "F-006",
+  "local_validation_script": "experiments/auditmanager_stage4_20261110/watch_publication_validation.py",
+  "production_acceptance": false,
+  "batch_evaluator_smoke_check": "Completed F-006 accepted from synthetic running multi-request state; unfinished F-001 rejected; no model calls."
+}
