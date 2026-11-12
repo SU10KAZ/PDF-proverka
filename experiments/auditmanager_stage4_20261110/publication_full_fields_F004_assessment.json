@@ -1,0 +1,28 @@
+{
+  "finding_id": "F-004",
+  "status": "three_motor_identity_conflicts_preserved_recommendation_question_needs_consolidation",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_004/publication_projection.json",
+  "projection_sha256": "485286cec52d78999506e58cb6a21490fd038f216e1aca99a0b34da82e0d2c60",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_motor_roles_and_intercabinet_address_review_20261112.json",
+  "source_review_sha256": "e87abf3fed2242eb7549b48cbb4dd4116f1e7c9e6f77a1e20a554eb217b142b8",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+      "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+      "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "M2 is pump on graphic but fan in list; M4 is fan on graphic but pump in list; M5 graphic and journal present but absent from list.",
+    "Roles verified directly on functional graphic; cable cross-section not used to infer role.",
+    "Four drives do not prove simultaneous operating motor count.",
+    "Correct design and physical installation remain unverified; three supported parts do not imply three independent original findings.",
+    "Recommendation question should attach to conflict; source-backed designation conflicts must remain even while final equipment selection is unknown."
+  ],
+  "raw_offset_repair": "Four numerical input offsets corrected only by unique exact quotes; no source or claim wording repair.",
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

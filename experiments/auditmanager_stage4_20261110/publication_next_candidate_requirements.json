@@ -1,0 +1,55 @@
+{
+  "status": "observed_requirements_for_next_candidate_not_applied_to_sealed_run",
+  "changes": [
+    {
+      "id": "PUB-01",
+      "behavior": "Keep recommendations and conditional risks attached to their parent supported conflict. A separate question requires an independent unresolved design decision, not merely a request to fix the same conflict.",
+      "negative_cases": [
+        "F-004 recommendation question",
+        "F-005 recommendation/risk questions",
+        "F-012 p4 recommendation question"
+      ],
+      "positive_controls": [
+        "F-012 p3 unit-of-application ambiguity",
+        "F-010 designation clarification must remain a question"
+      ],
+      "verification": "Source-reviewed final rendering and distinct engineer action count; preserve complete input disposition and conditional risks."
+    },
+    {
+      "id": "PUB-02",
+      "behavior": "Before deferring identity of a continued table row, retrieve same-version group heading and applicability notes. Do not infer group solely from position number.",
+      "positive_cases": [
+        "F-008 group 15 heading restores third quantity conflict"
+      ],
+      "negative_controls": [
+        "Do not normalize Пкрб.1 to Пкр6.1 as sole identity proof"
+      ],
+      "verification": "End-to-end source-only context request; no coordinator-selected answer supplied; preserve original wrong-heading or unresolved-scope controls."
+    },
+    {
+      "id": "PUB-03",
+      "behavior": "Resolve missing context using original sources linked to other candidates sharing an object, keeping document version and line identity. Never use another model verdict as primary evidence.",
+      "positive_cases": [
+        "F-017/F-018 shared 10 m heater line"
+      ],
+      "negative_controls": [
+        "Distinct П4.1.1-4 20 m line must not merge or establish combined procurement shortage"
+      ],
+      "verification": "Execute cross-finding retrieval and source revalidation before final output; preserve cable disagreement after object identity resolved."
+    },
+    {
+      "id": "PUB-04",
+      "behavior": "A source-backed observation is not automatically a technical defect. Preserve profile classification unless new evidence establishes a substantive defect.",
+      "negative_cases": [
+        "F-010 question promoted to technical without new defect basis"
+      ],
+      "positive_controls": [
+        "F-008 confirmed quantity conflicts should route technical"
+      ],
+      "verification": "Explicit semantic admission plus separate content truth and profile usefulness decisions."
+    }
+  ],
+  "sealed_queue_modified": false,
+  "implementation_complete": false,
+  "production_acceptance": false
+}
