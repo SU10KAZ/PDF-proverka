@@ -1,0 +1,20 @@
+{
+  "finding_id": "F-021",
+  "status": "normative_uncertainty_preserved_question_visibility_unresolved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_021/publication_projection.json",
+  "projection_sha256": "6989f5808cca2503487caa27dff77c4355a3d56fbc071c93a6d80cfe8b0c3ad3",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_normative_reference_evidence_limits_20261112.json",
+  "source_review_sha256": "fc82f48454a8241f9e5a0e32d3486a913c0bc54e2c0bfee62306ac322e2c208f",
+  "checks": [
+    "Project warning and emergency thresholds 20/100 mg/m3 and reference ГН 2.2.5.1313-03 quoted correctly.",
+    "No unsupported conclusion that reference has expired; previous model analysis is not normative evidence.",
+    "Emergency threshold not equated with permissible continuous exposure.",
+    "No automatic replacement by СанПиН or new threshold prescribed."
+  ],
+  "routing_issue": "All five substantive dispositions are pending; existing limited question about normative justification is absent from questions. Preserve one bounded clarification after explicit source-search/admission review, not five separate engineer queries.",
+  "review_scope": "Published-claim evidence assessment only; official normative status and applicability were not verified.",
+  "normative_compliance_verified": false,
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
