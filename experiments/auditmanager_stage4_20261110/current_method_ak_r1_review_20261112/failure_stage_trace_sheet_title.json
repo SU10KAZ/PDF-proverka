@@ -1,0 +1,349 @@
+{
+  "status": "bounded_sheet_title_input_availability_trace",
+  "run": "ak_r1_classic_current",
+  "target_id": "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
+  "stage": "available_sheet_metadata_not_compared_in_observed_outputs",
+  "established": [
+    "Оба первичных графических запроса содержат строку контекста SHEET с Пл3.1/Вк3.1/Всу3.1. Отсутствием названия в пакете этот пропуск не объясняется.",
+    "Графический результат листа16 анализирует Пу5.1, команду электронагревателя и термостат TS2/ТС1, но не выдаёт вопрос названия листа.",
+    "Текстовый реестр графического блока отмечает «Растр не предоставлен». Это ограничение его собственного контекста, а не отсутствие графического анализа всего аудита."
+  ],
+  "recommendation": "Сопоставлять записанное название листа с ведомостью и идентичностью систем на схеме отдельной операцией. Не считать общий анализ графики доказательством выполнения проверки названия. Не переносить локальное отсутствие растра на весь запуск.",
+  "control_pair": {
+    "preserve": "Адресный вопрос несогласованного названия листа16 в подготовленных метаданных.",
+    "do_not_assert": "Подмена всей схемы, неверный монтаж или самостоятельная визуальная проверка полного штампа: доступная схема по системам согласована с ведомостью.",
+    "independent_engineer_validated_pair": false
+  },
+  "limits": [
+    "Проверены входные запросы и сохранённые результаты. Внутренние рассуждения модели недоступны; единственная причина пропуска не установлена.",
+    "Полный физический штамп здесь не перечитывался; граница доказательства — подготовленные метаданные и сохранённая исходная карточка.",
+    "Полезные замечания к сигналам и термостату следует сохранить."
+  ],
+  "evidence": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/requests/AK/1794461223531993433/request.json",
+      "sha256": "6d7b41fc6a684bc853f456f67109810218041e7682fab6c6218a518d1f7e82cd",
+      "title_excerpts": [
+        {
+          "message_index": 1,
+          "excerpt": "[SHEET] Приточная система Пл3.1, вытяжные системы Вк3.1, Всу3.1. Функциональная схема автоматизации\n> **Created:** 2026-09-28 07:28:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/4yMS8alg0HWImVMDXDiD)\n> **S"
+        }
+      ],
+      "image_hashes": {
+        "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609"
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/requests/AK/1794461223529041065/request.json",
+      "sha256": "6d7b41fc6a684bc853f456f67109810218041e7682fab6c6218a518d1f7e82cd",
+      "title_excerpts": [
+        {
+          "message_index": 1,
+          "excerpt": "[SHEET] Приточная система Пл3.1, вытяжные системы Вк3.1, Всу3.1. Функциональная схема автоматизации\n> **Created:** 2026-09-28 07:28:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/4yMS8alg0HWImVMDXDiD)\n> **S"
+        }
+      ],
+      "image_hashes": {
+        "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609"
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/01_blocks_analysis.json",
+      "sha256": "9af2cd2cc3fc5f56e10296137de8b17ae30884534e36e1924328d0df2fd48e5c",
+      "pointer": "/block_analyses/11",
+      "value": {
+        "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+        "page": 20,
+        "sheet": "Лист 16",
+        "label": "",
+        "sheet_type": null,
+        "unreadable_text": false,
+        "unreadable_details": null,
+        "not_enriched": false,
+        "coverage_status": "ready",
+        "analysis_status": "analyzed",
+        "context_source": "raw_vector",
+        "detectors_ok": [
+          "codex/gpt-6-astra",
+          "codex/gpt-6-astra"
+        ],
+        "detectors_failed": [],
+        "summary": "",
+        "key_values_read": [],
+        "evidence_text_refs": [],
+        "findings": [
+          {
+            "id": "G-031",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "На функциональной схеме Пу5.1 сигнал 4 «Электр. воздухонагреватель пуск/стоп» отнесён к дискретным входам DI. Команда управления нагревателем ошибочно обозначена как входной сигнал.\n\nРекомендация: Отнести команду пуска/останова электронагревателя к DO и скорректировать количество сигналов шкафа ШАУВ-5-К5ПЧ.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_6995cff7e34a4a41b99ec565101c4e02",
+            "value_found": "Электр. воздухонагреватель пуск/стоп",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-031",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "raw_vector"
+                }
+              ],
+              "context_source": "raw_vector"
+            },
+            "comparison_ref": "codex:003",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочное отнесение команды «Электр. воздухонагреватель пуск/стоп» Пу5.1 к DI вместо DO; детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-032",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "Термостат защиты от перегрева Пу5.1 на функциональной схеме, лист 16, обозначен TS2, а в перечне приборов и кабельном журнале — ТС1. Позиционные номера одного прибора не согласованы.\n\nРекомендация: Унифицировать обозначение термостата на функциональной схеме, в перечне приборов и кабельном журнале.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_6995cff7e34a4a41b99ec565101c4e02",
+            "value_found": "TS 2; ТС1; Пу5.1-2",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-032",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "raw_vector"
+                }
+              ],
+              "context_source": "raw_vector"
+            },
+            "comparison_ref": "codex:002",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение обозначений термостата: TS2 на схеме и ТС1 в перечне приборов и кабельном журнале. Разная оценка серьёзности не меняет существа проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          },
+          {
+            "id": "G-033",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "На функциональной схеме, лист 16, сигнал «Электр. воздухонагреватель пуск/стоп» системы Пу5.1 подключён к дискретному входу DI. Указанное назначение пуск/стоп не соответствует входному типу канала: команда управления нагревателем через него не выдаётся.\n\nРекомендация: Предусмотреть для команды пуск/стоп нагревателя выходной канал и согласовать таблицу сигналов с подключениями шкафа.",
+            "norm": null,
+            "norm_quote": null,
+            "block_evidence": "blk_6995cff7e34a4a41b99ec565101c4e02",
+            "value_found": "Электр. воздухонагреватель пуск/стоп; DI 9; DO 6",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-033",
+                  "mode": "independent",
+                  "detected_at": "2026-11-12T05:22:08.147683+00:00",
+                  "context_source": "raw_vector"
+                }
+              ],
+              "context_source": "raw_vector"
+            },
+            "comparison_ref": "codex:001",
+            "detector_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочное отнесение команды «Электр. воздухонагреватель пуск/стоп» Пу5.1 к DI вместо DO; детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          }
+        ],
+        "evidence_gate": {
+          "schema_version": 1,
+          "candidates": 4,
+          "published": 3,
+          "deferred": 1,
+          "min_confidence": 0.8,
+          "max_published_per_block": null,
+          "reason_counts": {
+            "block_duplicate": 1
+          }
+        },
+        "deferred_findings": [
+          {
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+            "category": "documentation",
+            "finding": "Термостат защиты электронагревателя Пу5.1 на функциональной схеме обозначен TS2, а в перечне приборов и кабельном журнале — ТС1. Позиционный номер одного прибора не согласован между документами.",
+            "norm_quote": null,
+            "value_found": "TS 2; ТС1",
+            "recommendation": "Привести обозначение термостата на функциональной схеме, в перечне приборов и кабельном журнале к единой позиции.",
+            "claim_type": "contradiction",
+            "problem_class": "instrument_tag_mismatch",
+            "affected_entity": "Термостат защиты от перегрева электронагревателя Пу5.1",
+            "evidence_quote": "На схеме у нагревателя указано «TS 2»; в перечне приборов — «ТС1 | Термостат»; в кабельном журнале, лист 18, — «Пу5.1-2 | ШАУВ-5-К5ПЧ | ТС1».",
+            "evidence_kind": "document_retrieval",
+            "context_status": "sufficient",
+            "confidence": 0.98,
+            "counterevidence_checked": true,
+            "required_context": [],
+            "_detector_model": "codex/gpt-6-astra",
+            "_detector_comparison_id": "codex/gpt-6-astra::leg:2",
+            "_detector_run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+            "_detector_ref": "codex:004",
+            "_comparison": {
+              "schema_version": 1,
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение обозначений термостата: TS2 на схеме и ТС1 в перечне приборов и кабельном журнале. Разная оценка серьёзности не меняет существа проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            "_evidence_gate": {
+              "status": "deferred",
+              "reasons": [
+                "block_duplicate"
+              ]
+            }
+          }
+        ],
+        "document_retrieval": {
+          "scope": "all_document_vector_text_other_pages",
+          "query_terms": [
+            "Пу5.1",
+            "Вы5.1",
+            "Всy5.1",
+            "ШАУВ-5-К5ПЧ",
+            "Фрагмент",
+            "содержит",
+            "схему",
+            "автоматизации",
+            "вентиляционных",
+            "систем",
+            "таблицу",
+            "сигналов",
+            "управления",
+            "для",
+            "шкафа"
+          ],
+          "candidate_hits": 108,
+          "selected_hits": 5,
+          "selected_pages": [
+            5,
+            6,
+            76,
+            98
+          ],
+          "status": "hits"
+        },
+        "dual_review": {
+          "schema_version": 1,
+          "status": "ok",
+          "reviewer_model": "codex/gpt-6-astra",
+          "relationships": [
+            {
+              "left_ref": "codex:001",
+              "right_ref": "codex:003",
+              "relation": "match",
+              "extends": "none",
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочное отнесение команды «Электр. воздухонагреватель пуск/стоп» Пу5.1 к DI вместо DO; детализация эквивалентна."
+            },
+            {
+              "left_ref": "codex:002",
+              "right_ref": "codex:004",
+              "relation": "match",
+              "extends": "none",
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение обозначений термостата: TS2 на схеме и ТС1 в перечне приборов и кабельном журнале. Разная оценка серьёзности не меняет существа проблемы."
+            }
+          ],
+          "unmatched_refs": [],
+          "counts": {
+            "matches": 2,
+            "extensions": 0,
+            "new": 0,
+            "disputed": 0,
+            "gap_findings": 0
+          },
+          "gap_search": {
+            "enabled": false,
+            "performed": false,
+            "status": "disabled",
+            "searched_categories": [],
+            "summary": "Поиск новых проблем отключён: gap_search_enabled=false.",
+            "findings_added": 0,
+            "duplicates_rejected": 0
+          },
+          "comparison_models": [
+            "codex/gpt-6-astra::leg:1",
+            "codex/gpt-6-astra::leg:2"
+          ]
+        }
+      }
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "fa3c0992a0a6adaf45009245b46d1f5421d12e8dc104ae85c3f68a15f8751a8b",
+      "pointer": "/object_inventory_coverage/56",
+      "value": {
+        "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+        "status": "needs_data",
+        "object_ids": [
+          "О-03"
+        ],
+        "reason": "Растр не предоставлен."
+      }
+    }
+  ],
+  "runtime_changed": false,
+  "production_changed": false,
+  "frozen_evaluator_changed": false,
+  "engineer_decision": null
+}

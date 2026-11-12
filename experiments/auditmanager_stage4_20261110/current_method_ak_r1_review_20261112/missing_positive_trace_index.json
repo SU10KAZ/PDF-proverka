@@ -7,8 +7,8 @@
   },
   "summary": {
     "missing_or_partial_positive_atoms": 22,
-    "bounded_stage_evidence_available": 13,
-    "cause_not_established": 9
+    "bounded_stage_evidence_available": 14,
+    "cause_not_established": 8
   },
   "rows": [
     {
@@ -239,9 +239,17 @@
       "target_id": "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
       "coverage": "absent",
       "coverage_reason_snapshot": "Не сохранён вопрос названия листа16 в Stamp MD:Пл3.1/Вк3.1/Всу3.1 против ведомости и схемы Пу5.1/Ву5.1/Всу5.1. Иные конфликты обозначений систем не покрывают этот лист. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Проверить, передавалось ли название Stamp листа16 на анализ и сопоставлялось ли оно с ведомостью/объектами схемы."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_sheet_title.json",
+          "sha256": "58d328f553fc72525f1185d5726b738358c7cdbacb973edf8ddd5e8c9c927707",
+          "pointer": "",
+          "observed_stage": "available_sheet_metadata_not_compared_in_observed_outputs",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     },
     {
       "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
