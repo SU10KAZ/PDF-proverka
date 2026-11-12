@@ -1,0 +1,45 @@
+{
+  "status": "existing_admission_route_verified_adapter_still_missing",
+  "evidence": [
+    {
+      "path": "backend/app/pipeline/stages/findings_verify/source_review_admission.py",
+      "sha256": "b434304a75faa8212e6155b409053e7299cf387df88b9743d313552c553b5e70"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_verify/source_review_release_workflow.py",
+      "sha256": "7634054b779804224d3628692ca804413af6db818154b721405a761edfc61968"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/publication_reconciliation.py",
+      "sha256": "e7887464db4d6e9c2df8079dce7b796303b7e6ed5b312f186ae08a67e1f84feb"
+    },
+    {
+      "path": "backend/app/pipeline/stages/report/generate_excel_report.py",
+      "sha256": "1b8a2b557dad416c649d1c1c1166496055b81f78d7e7f6f09aee53e0e57309b1"
+    },
+    {
+      "path": "tests/test_source_review_admission.py",
+      "sha256": "57ae70520f462efdf3eb66eb10482fa123fb85aa1e4b620e7623815d3ec43017"
+    }
+  ],
+  "findings": [
+    "Publication reconcile_publication routes needs_data to pending only; not a semantic admission.",
+    "Admission _check_decision permits explicit question with unresolved defect basis after context search and engineer action justification.",
+    "apply_review_admissions preserves needs_data verdict and original in history, routes approved question separately.",
+    "build_project_sheet emits questions after technical findings, preserving IDs.",
+    "run_final_release_check binds proposed final wording to sources and performs admission only after release_candidate result."
+  ],
+  "new_control": "test_actionable_unresolved_question_survives_excel_without_supported_verdict",
+  "test_result": {
+    "command": "python -m pytest tests/test_source_review_admission.py tests/test_publication_reconciliation.py -q",
+    "passed": 63
+  },
+  "required_integration": "Translate reviewed publication parts into explicit source-review decisions and final wording, retain exact source bindings and full input accounting, run existing final-release checks. Do not substitute raw model outcome for semantic review.",
+  "not_proved": [
+    "F020 actual final release",
+    "Automatic adapter for all 85 findings",
+    "Production pipeline integration",
+    "Six-project comparison acceptance"
+  ],
+  "production_acceptance": false
+}

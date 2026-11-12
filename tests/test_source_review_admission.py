@@ -292,3 +292,36 @@ def test_final_citation_rebinding_is_atomic_and_preserves_history():
     entries[0]['decision']['final_evidence_refs'][0]['evidence_index']=99
     unchanged,receipts=apply_review_admissions(doc,entries,md)
     assert unchanged==original and receipts[0]['status']=='not_applied'
+
+
+def test_actionable_unresolved_question_survives_excel_without_supported_verdict():
+    """F020 control: visible clarification is distinct from a proven violation."""
+    doc, entries, md = case('question', 'needs_data')
+    original = deepcopy(doc)
+    decision = entries[0]['decision']
+    decision.update(
+        approved_fields={'problem': 'Clarify applicable requirement',
+                         'description': 'Function established; required duration remains unknown.',
+                         'solution': 'Confirm duration and applicable construction.'},
+        final_wording_verified=True, context_search_completed=True,
+        engineer_action_required=True, question_basis='actionable_source_ambiguity',
+        context_search_boundary={'scope': 'Supplied source package',
+                                 'actual_review': 'Function and listed construction compared',
+                                 'limitations': 'Required duration is not specified'},
+        decision_affected='Select construction for the required operating duration.')
+    out, receipts = apply_review_admissions(doc, entries, md)
+    assert receipts[0]['status'] == 'applied'
+    assert doc == original
+    assert out['findings'][1] == original['findings'][1]
+    assert out['findings'][0]['report_section'] == 'questions'
+    assert out['source_review_history'][0]['decision']['claim_reviews'][0]['verdict'] == 'needs_data'
+    assert out['source_review_history'][0]['original_finding'] == original['findings'][0]
+    wb = Workbook()
+    build_project_sheet(wb, {'project_id': 'test', 'sheet_name': 'test', 'findings_json': out})
+    rows = list(wb['test'].values)
+    assert any('Вопросы и уточнения' in row for row in rows)
+    id_col = next(i for i, (key, *_) in enumerate(PROJ_COLUMNS) if key == 'finding_id')
+    ids = [row[id_col] for row in rows]
+    assert ids.count('F1') == 1 and ids.count('F2') == 1
+    assert ids.index('F2') < ids.index('F1')
+    assert any(decision['approved_fields']['description'] in row for row in rows)
