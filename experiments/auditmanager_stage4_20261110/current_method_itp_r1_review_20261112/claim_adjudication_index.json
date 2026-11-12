@@ -142,14 +142,22 @@
     {
       "finding_id": "F-015",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pump_and_floor_claim_adjudication.json",
+        "sha256": "1880ed6e1f1b043c19e64a73e3aa5a8ac77a1dadfadadb47e58bf006dca34dc6",
+        "pointer": "/finding_adjudications/0"
+      }
     },
     {
       "finding_id": "F-016",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pump_and_floor_claim_adjudication.json",
+        "sha256": "1880ed6e1f1b043c19e64a73e3aa5a8ac77a1dadfadadb47e58bf006dca34dc6",
+        "pointer": "/finding_adjudications/1"
+      }
     },
     {
       "finding_id": "F-017",
@@ -308,8 +316,12 @@
     {
       "finding_id": "F-040",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pump_and_floor_claim_adjudication.json",
+        "sha256": "1880ed6e1f1b043c19e64a73e3aa5a8ac77a1dadfadadb47e58bf006dca34dc6",
+        "pointer": "/finding_adjudications/5"
+      }
     },
     {
       "finding_id": "F-041",
@@ -468,8 +480,12 @@
     {
       "finding_id": "F-062",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pump_and_floor_claim_adjudication.json",
+        "sha256": "1880ed6e1f1b043c19e64a73e3aa5a8ac77a1dadfadadb47e58bf006dca34dc6",
+        "pointer": "/finding_adjudications/6"
+      }
     },
     {
       "finding_id": "F-063",
@@ -496,8 +512,12 @@
     {
       "finding_id": "F-066",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pump_and_floor_claim_adjudication.json",
+        "sha256": "1880ed6e1f1b043c19e64a73e3aa5a8ac77a1dadfadadb47e58bf006dca34dc6",
+        "pointer": "/finding_adjudications/2"
+      }
     },
     {
       "finding_id": "F-067",
@@ -508,14 +528,22 @@
     {
       "finding_id": "F-068",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pump_and_floor_claim_adjudication.json",
+        "sha256": "1880ed6e1f1b043c19e64a73e3aa5a8ac77a1dadfadadb47e58bf006dca34dc6",
+        "pointer": "/finding_adjudications/3"
+      }
     },
     {
       "finding_id": "F-069",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pump_and_floor_claim_adjudication.json",
+        "sha256": "1880ed6e1f1b043c19e64a73e3aa5a8ac77a1dadfadadb47e58bf006dca34dc6",
+        "pointer": "/finding_adjudications/4"
+      }
     },
     {
       "finding_id": "F-070",
@@ -558,8 +586,8 @@
   ],
   "counts": {
     "total": 74,
-    "bounded_claim_adjudication": 26,
-    "source_review_only": 48
+    "bounded_claim_adjudication": 33,
+    "source_review_only": 41
   },
   "limits": [
     "A bounded assessment may find mixed or unresolved claims; it is not a pass count.",

@@ -1,0 +1,316 @@
+{
+  "version": 1,
+  "scope": "Seven pump and floor output rows; same-claim duplicates distinguished from independent properties",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "pointer": ""
+    },
+    "reference_ledger": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+      "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+      "pointer": ""
+    },
+    "K12_graphic_context": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/k12_graphic_context_review.json",
+      "sha256": "d7796408b169ebdc5f0b6f5890445991081875d3546559b6678dd7721090cf7d",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-015",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/14"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/0"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_local_published_claim_supported",
+      "supported_claim": "K12 nominal power differs: schedule0.55kW versus specification/PZ/individual sheet1.5kW; article2786053 and duty establish the matched execution.",
+      "recommended_disposition": "retain_bounded_parameter_coordination",
+      "limit": "P2=0.74kW is a different property; actual installed motor, protection and drive selection are not proved wrong.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-016:6f0370becae84fed440d",
+          "assessment": "correct",
+          "details": {
+            "expected": "technical_findings",
+            "actual": {
+              "F-015": "technical_findings",
+              "F-068": "technical_findings"
+            },
+            "limit": "Content coverage and output-section agreement assessed separately."
+          }
+        }
+      ],
+      "severity_assessment": "Document differences alone do not prove realized operating failures.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-016",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/15"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/1"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_local_published_claim_supported",
+      "supported_claim": "K10 documents match article2786092 and Q47.08; head21.29m differs from individual working-point21.91m by0.62m.",
+      "recommended_disposition": "retain_bounded_parameter_coordination",
+      "limit": "Do not substitute requested45m³/h/20m for actual selected point or infer pump inadequacy. Regulation and temperature basis still matter.",
+      "reference_section_assessments": [
+        {
+          "target_id": "H-ITP-63:7ba4e763f9b6758d0f09",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-016": "technical_findings",
+              "F-066": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "severity_assessment": "Document differences alone do not prove realized operating failures.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-066",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/65"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/1"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_local_published_claim_supported",
+      "supported_claim": "Same K10 head relationship as F-016; adds water20C context.",
+      "recommended_disposition": "merge_into_F-016_preserving_regime_context",
+      "limit": "No additional independent defect for the added source/regime detail.",
+      "reference_section_assessments": [
+        {
+          "target_id": "H-ITP-63:7ba4e763f9b6758d0f09",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-016": "technical_findings",
+              "F-066": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "severity_assessment": "Document differences alone do not prove realized operating failures.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-068",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/67"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/0"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_local_published_claim_supported",
+      "supported_claim": "Same K12 nominal-power inconsistency as F-015; P2 arithmetic gives0.7432639kW using the stated20C water point.",
+      "recommended_disposition": "merge_into_F-015_preserving_calculation",
+      "limit": "Nominal motor power, shaft power and electrical input are different. Do not infer an actually installed0.55kW motor.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-016:6f0370becae84fed440d",
+          "assessment": "correct",
+          "details": {
+            "expected": "technical_findings",
+            "actual": {
+              "F-015": "technical_findings",
+              "F-068": "technical_findings"
+            },
+            "limit": "Content coverage and output-section agreement assessed separately."
+          }
+        }
+      ],
+      "severity_assessment": "Document differences alone do not prove realized operating failures.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-069",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/68"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/4"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_local_published_claim_supported",
+      "supported_claim": "Same-sheet16.98m working head versus16.64m maximum is a0.34m numerical difference; conditions remain unresolved.",
+      "recommended_disposition": "merge_into_F-044_as_question",
+      "limit": "Replace categorical contradiction with a parameter-comparability question. Technical routing must not override the uncertainty already retained in F-044.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-017:05e18fdb07cf5bb1bc8b",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-044": "questions",
+              "F-069": "technical_findings"
+            },
+            "limit": "Content coverage and output-section agreement assessed separately."
+          }
+        }
+      ],
+      "severity_assessment": "Document differences alone do not prove realized operating failures.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-040",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/39"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/2"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_local_published_claim_supported",
+      "supported_claim": "Same questionnaire labels floor levels-4.900 and-4.450; difference0.450m. Plan titles-4.000 are separate evidence, not established as another floor level.",
+      "recommended_disposition": "retain_local_level_question_per_reference_route",
+      "limit": "No chosen correct floor, wrong hydraulic result or third-floor-value defect proved. Final technical routing differs from the frozen question route.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-038:705f2262875c31478443",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-040": "technical_findings",
+              "F-062": "technical_findings"
+            },
+            "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+          }
+        }
+      ],
+      "severity_assessment": "Document differences alone do not prove realized operating failures.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-062",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/61"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3",
+        "pointer": "/pairs/2"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_local_published_claim_supported",
+      "supported_claim": "Repeats the same two questionnaire floor rows from F-040.",
+      "recommended_disposition": "merge_into_F-040_preserving_local_scope",
+      "limit": "No extra independent defect; preserve the distinction between floor elevation and plan-title elevation.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-038:705f2262875c31478443",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-040": "technical_findings",
+              "F-062": "technical_findings"
+            },
+            "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+          }
+        }
+      ],
+      "severity_assessment": "Document differences alone do not prove realized operating failures.",
+      "engineer_utility": "not_newly_measured"
+    }
+  ],
+  "calculations": {
+    "K12_shaft_power_kW": "0.743263863673821922796795339",
+    "basis": "rho998.31kg/m³,g9.80665m/s²,Q4.42m³/h,H16.98m,eta27.46%; individual sheet water20C",
+    "K10_head_difference_m": "0.62",
+    "K12_head_difference_m": "0.34",
+    "floor_difference_m": "0.450"
+  },
+  "limits": [
+    "This assessment confirms local claims, not whole-row technical severity or practical utility.",
+    "Manufacturer maximum-head conditions remain unresolved.",
+    "Duplicate merges are recommended only; frozen output is unchanged."
+  ],
+  "whole_output_precision_finalized": false,
+  "runtime_changed": false,
+  "model_calls": 0
+}
