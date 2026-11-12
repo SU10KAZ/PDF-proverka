@@ -15,10 +15,13 @@ def prepare(destination, selected_ids=None):
     followup = Path('/tmp/auditmanager_publication_F008_context1_20261112/preparation.json')
     parents = [(base, ['F-004', 'F-010', 'F-012', 'F-020']), (followup, ['F-008'])]
     if selected_ids is not None:
-        allowed = {fid for _, ids in parents for fid in ids}
-        if not selected_ids or not set(selected_ids) <= allowed:
+        available = {r['finding_id'] for r in json.loads(base.read_text())['requests']}
+        allowed = available | {'F-008'}
+        if (not selected_ids or len(set(selected_ids)) != len(selected_ids)
+                or not set(selected_ids) <= allowed):
             raise ValueError('Unknown or empty control selection')
-        parents = [(path, [fid for fid in ids if fid in selected_ids]) for path, ids in parents]
+        parents = [(base, [fid for fid in selected_ids if fid != 'F-008']),
+                   (followup, [fid for fid in selected_ids if fid == 'F-008'])]
     destination.mkdir(parents=True, exist_ok=False)
     result = None
     requests = []
