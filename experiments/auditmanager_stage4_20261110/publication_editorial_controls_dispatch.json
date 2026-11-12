@@ -1,0 +1,34 @@
+{
+  "preparation_path": "/tmp/auditmanager_publication_editorial_controls_20261112/preparation.json",
+  "preparation_sha256": "9c2c277d725e8b5f946ddd5e4fc8600e714d73f3452a1b95ecd65e32f303b53d",
+  "output_dir": "/tmp/auditmanager_publication_editorial_controls_20261112_run",
+  "exec_session_id": 2327,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "controls": [
+    {
+      "finding_id": "F-062",
+      "criterion": "Retain polarity conflict and correct Ва5.1р in current wording; no extra engineer question about auditor typo."
+    },
+    {
+      "finding_id": "F-053",
+      "criterion": "Preserve actual TS2 versus TS1/ТС1 source disagreement, not treat as an auditor typo."
+    },
+    {
+      "finding_id": "F-061",
+      "criterion": "Preserve range discrepancy and conditional risk; no extra question asking whether risk could happen."
+    },
+    {
+      "finding_id": "F-057",
+      "criterion": "Keep actionable uncertainty over signal17 DI/DO as a question; do not promote to command error or suppress because unresolved."
+    },
+    {
+      "finding_id": "F-054",
+      "criterion": "Preserve 11 DO dots versus printed10, recommendation and conditional risk without implying installed module shortage."
+    }
+  ],
+  "scope": "Combined purpose-aware and editorial-provenance candidate compared with existing v2 outputs. Separate causal contribution of each prompt component is not measured. Primary text, images, input claim units and source limits preserved.",
+  "history_or_engineer_answers_supplied": false,
+  "selection_is_DEV_not_blind": true,
+  "production_acceptance": false
+}
