@@ -1,0 +1,28 @@
+{
+  "finding_id": "F-016",
+  "status": "quantity_conflicts_and_different_segment_lengths_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_016/publication_projection.json",
+  "projection_sha256": "9e0e0764d9b592fe671de6234f920bf967ddc64837ca6ae11dd32e0fdf67da5d",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_cable_segment_totals_source_review_20261112.json",
+  "source_review_sha256": "9ad092d7df9cc45ceb7418337721bf30b811f89dba67f6cb55eba9cc30c93fe0",
+  "graphics": [
+    {
+      "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_cd9d763d198246859c3df42c18b5c3d8.png",
+      "sha256": "05e8996615a803ac8aeeb4c80430160eb8954f89bc42940d73a0c5613da7b8d0",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "3x1.5 sum 2*20+5*120=640 versus 620; 4x2.5 sum 2*20+2*120+2*15=310 versus 290.",
+    "Graphic shows 120 m between cabinets and 15 m to motors M3/M4; journal reverses these allocations. Equal totals do not establish route agreement.",
+    "Both quantity conflict and route allocation conflict retained in one supported part.",
+    "Recommendation is pending because summary specification unavailable; supported local reconciliation must remain in final output.",
+    "No physical shortage established; service note moved to history."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "final_output_integration_verified": false
+}
