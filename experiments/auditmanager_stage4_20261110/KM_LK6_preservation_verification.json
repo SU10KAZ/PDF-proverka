@@ -1,0 +1,35 @@
+{
+  "status": "bounded_existing_output_and_local_admission_verified",
+  "candidate_sha256": "f8f113db4120c936cdf2510ed285ca2ec7a207ed1c42c15f1607c47bd88f14df",
+  "local_admission_receipts": [
+    {
+      "finding_id": "KM-LK6-anchor-quantity",
+      "status": "applied",
+      "action": "revise"
+    }
+  ],
+  "output_sha256": "bb21e2c0a0d714967a3d66e60aeca91008981372e031c279754cbd8eb7bafe3b",
+  "xlsx_sha256": "58d8acdfc691e438979dd09c7f77cf8899cd1562c99b087a16c91b4c6f4d8201",
+  "findings": 26,
+  "other_than_F005_unchanged": 25,
+  "exported_once": [
+    "F-005",
+    "F-017"
+  ],
+  "lineage_review": {
+    "quantity_basis": "F-005 preserves 172 known anchors and conditional 228/40, plus separately reviewed plate claims.",
+    "marking_basis": "F-017 already retains OGM26 missing from the specification; no additional row required for that shared basis.",
+    "unresolved_new_detail": "The proposed exact OGM26-to-OGM25 physical correspondence is not certified by unchanged F-017."
+  },
+  "limits": [
+    "Coordinator-known case mapping; not an autonomous semantic merge.",
+    "Unchanged rows demonstrate preservation, not source correctness.",
+    "Local candidate admission is not final release of that candidate.",
+    "F005 profile disagreement remains held under benchmark_errata.json."
+  ],
+  "new_findings_claimed": 0,
+  "new_model_calls": 0,
+  "stage4_complete": false,
+  "production_acceptance": false,
+  "verification_script_sha256": "d8d5d228ca666cdd05e6eea7916be3ecb1522dbbb663efa9e2ef8841d5cf58c2"
+}
