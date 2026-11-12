@@ -40,6 +40,41 @@ def recovery_progress(base):
             'limits': 'File presence for the current saved plan, not acceptance or full-audit completion.'}
 
 
+def source_review_progress(base):
+    """Expose queue/status counts only; never return finding propositions."""
+    manifest = read(base/'input_manifest.json')
+    if not isinstance(manifest, list) or len(manifest) != 1:
+        return {'status': 'input_manifest_unavailable'}
+    output = Path(manifest[0]['output_dir'])
+    queue_path = output/'03_source_review_queue.json'
+    if not queue_path.exists():
+        return {'status': 'not_planned'}
+    queue = read(queue_path)
+    packets = queue.get('packets', [])
+    pending = sum(p.get('status') == 'pending' for p in packets)
+    if queue.get('pending_count') != pending:
+        return {'status': 'queue_count_inconsistent'}
+    protocol = read(base/'protocol.json')
+    budget = protocol.get('method_config', {}).get('source_review_max_findings')
+    if type(budget) is not int or budget < 1:
+        return {'status': 'finding_budget_unavailable', 'pending_packets': pending}
+    candidates = read(output/'03_source_review_candidates.json')
+    reports = candidates.get('reports', [])
+    ids = [r.get('finding_id') for r in reports]
+    planned = min(pending, budget)
+    if len(ids) != len(set(ids)) or len(reports) > planned:
+        return {'status': 'report_count_inconsistent'}
+    return {
+        'status': candidates.get('status', 'not_started'),
+        'pending_packets': pending, 'budget': budget, 'planned_workflows': planned,
+        'recorded_reports': len(reports), 'remaining_without_report': planned-len(reports),
+        'outside_budget': pending-planned,
+        'report_status_counts': dict(Counter(r.get('status', 'unknown') for r in reports)),
+        'semantic_results_read': False,
+        'limits': 'Reports can be ready, rejected, incomplete or cancelled; counts are not engineering acceptance. Remaining work may require multiple model calls.',
+    }
+
+
 def observe(root=ROOT):
     trial = read(root/'experimental_collection_trial.json')
     state = read(root/'experimental_collection_status.json')
@@ -64,6 +99,7 @@ def observe(root=ROOT):
             'process': process(run.get('pid'), 'paired_runner'),
             'block_progress': status.get('block_progress'), 'stages': status.get('stages', {}),
             'candidate_recovery_progress': recovery_progress(base),
+            'source_review_progress': source_review_progress(base),
             'request_records_created': len(folders), 'attempt_receipts': len(attempts),
             'failed_attempt_receipts': sum(a.get('is_error') is True for a in attempts),
             'reported_models': sorted({str(a.get('reported_model') or a.get('model') or 'unknown') for a in attempts}),
