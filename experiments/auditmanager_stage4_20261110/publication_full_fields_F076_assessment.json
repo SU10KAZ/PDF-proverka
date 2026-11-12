@@ -1,0 +1,25 @@
+{
+  "finding_id": "F-076",
+  "status": "graphic_omission_preserved_but_recommendation_and_risk_fragmented",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_076/publication_projection.json",
+  "projection_sha256": "09aeb686f959355d665f677e2ddec8db15f724320b95fd023f294a431068ae76",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+      "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+      "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "authoritative_md_spans": [],
+  "checks": [
+    "Повторный просмотр: M1 и M2 имеют L/N/PE и 1/2/3, кабель У4-2 указан 3×1,5, у блока на этой линии показаны только 1/2. Отдельный PE ввода блока не изображает подключение третьей жилы У4-2.",
+    "Технический тезис корректно ограничен полнотой схемы. Фактическое отсутствие заземления не объявлено подтверждённым.",
+    "Рекомендация и условный риск необоснованно разнесены в две строки вопросов. Их нужно сохранить при техническом тезисе; три части не являются тремя независимыми замечаниями.",
+    "Связь с листом 41 оставлена непроверенной. Итоговый выпуск этим разбором не подтверждён."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

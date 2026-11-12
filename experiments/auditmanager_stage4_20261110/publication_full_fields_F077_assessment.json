@@ -1,0 +1,32 @@
+{
+  "finding_id": "F-077",
+  "status": "scope_question_preserved_with_duplicate_recommendation",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_077/publication_projection.json",
+  "projection_sha256": "b15eb8e870eda3c7479d16785d337fcc15b258bc2e0e7721e2ef83f82bf6411d",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+      "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+      "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "authoritative_md_spans": [
+    {
+      "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+      "start": 236534,
+      "end": 237394,
+      "sha256": "d8348da7180e2f736b7c8b57339c50f4c09ae768499d969d17e44b553d226909"
+    }
+  ],
+  "checks": [
+    "Непосредственно просмотрена ссылка 21/24-ГК-К5-ЭМ у питания БУРР-1М; авторитетный TEXT примечания 2 содержит 13АВ-РД-ЭМ-К5 с пояснением о внутренних/наружных блоках.",
+    "Общая применимость к одной цепи не установлена; категорическое техническое противоречие не публикуется.",
+    "Две строки вопросов описывают один вопрос об области действия. Рекомендацию нужно объединить с вопросом, сохранив условие применимости.",
+    "Наличие неизвестного не доказывает необходимость вопроса инженеру до поиска связанного контекста. Полнота поиска и финальная выдача здесь не проверены."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
