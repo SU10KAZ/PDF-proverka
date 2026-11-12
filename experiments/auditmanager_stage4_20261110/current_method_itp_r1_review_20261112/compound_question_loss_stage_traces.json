@@ -1,0 +1,807 @@
+{
+  "version": 1,
+  "scope": "Eight missing control targets traced to five detected compound candidates",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_ids": [
+        "B-ITP-F-020:e9f7120697b89e6da747",
+        "B-ITP-F-020:c729cc29afbee39e2ed0"
+      ],
+      "candidate_id": "T-016",
+      "assessment": "Volume discrepancy and missing volumecomposition detected; recovery and onecontextfollowup remainneeds_data. This traces questionnaire/selection portion only: makeup-flow comparison was not inT016and must be traced separately. Unknown hydraulic boundaries correctly prevent asserting undersized/oversized tanks; bounded question retention still incomplete.",
+      "detection": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/15"
+        },
+        "candidate": {
+          "id": "T-016",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "documentation",
+          "report_section": "questions",
+          "source": "Подборы АУПД, страницы 94, 97, 100, 103; анкеты, страницы 110–113; ПЗ, листы 5 и 9",
+          "finding": "Подборы АУПД используют нагрузки греющего контура 5,858 Гкал/ч и отопительных зон 1,488/0,958/0,214 Гкал/ч, тогда как ПЗ использует 5,229 и 1,483/0,880/0,191 Гкал/ч. Объем 3-й зоны в подборе 1,883 м³ отличается от 3,7 м³ анкеты; для 1-й зоны не объяснено включение аренды и автостоянки в объем 20,676 м³. Для вентиляции принято 27 м³ при сумме объемов потребителей анкеты 14,3 м³. Требуется ведомость состава объемов с учетом трубопроводов ИТП и актуальной редакции нагрузок; уменьшение или увеличение оборудования только по этим разностям не обосновано.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_26b23c5bfabe4917a156a91077b5458d",
+            "blk_b4fb33513ca44182af058d09c8ab2dbb",
+            "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+            "blk_c25d98d5cc6e4b05a83580352fea374b",
+            "blk_32601a7d4ca34927972f1c398ca5621f",
+            "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+            "blk_950ad44af3d645539b95e38ddad3a8e0",
+            "blk_ee2f019eb36f4a43afab4649bd118c31",
+            "blk_72bd74f01146432880a289b071f70238"
+          ]
+        }
+      },
+      "merge": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pointer": "/candidate_decisions/15"
+        },
+        "decision": "needs_data"
+      },
+      "recovery_plan": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pointer": "/requests/15"
+        },
+        "selected_md_pages": [
+          42,
+          43,
+          94,
+          97,
+          100,
+          103,
+          107,
+          110,
+          111,
+          112,
+          113
+        ],
+        "missing_or_budgeted_md_pages": [],
+        "attached_image_block_ids_in_order": []
+      },
+      "recovery_reports": [
+        {
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/candidate_recovery_reports/15"
+          },
+          "stage": "candidate_recovery_9a9e1fae49e22db9",
+          "context_status": "scheduled",
+          "query_hit_counts": {
+            "Отопление 1 зона": 2,
+            "Т1.1.1/Т2.1.1": 1,
+            "Т1.1.2/Т2.1.2": 1,
+            "Объем системы": 10,
+            "трубопроводы ИТП": 0,
+            "Теплоснабжение вентиляции": 2
+          },
+          "claims": [
+            {
+              "id": "6",
+              "claim": "Для объёма первой зоны 20,676 м³ не раскрыто включение аренды и автостоянки.",
+              "decision": "needs_data",
+              "reason": "Подбор содержит общий объём 20676 л без расшифровки. Анкетные таблицы содержат 20,4255 м³, 1,0 м³ для коммерческих помещений и 3,5 м³ для автостоянки. ПЗ объединяет соответствующие нагрузки в расчёте первой зоны, однако состав именно объёма АУПД и гидравлические границы его обслуживания не представлены. Заголовок первой таблицы страницы 110 также находится за пределами фрагмента. Нельзя утверждать отсутствие учёта потребителей во всём проекте или требовать изменения бака.",
+              "source_refs": [
+                "blk_b4fb33513ca44182af058d09c8ab2dbb",
+                "blk_32601a7d4ca34927972f1c398ca5621f",
+                "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+                "blk_3050f16afc994b889498a2535ea14a52",
+                "blk_cc70e063642d457fa0a38b30b1a1a51f"
+              ],
+              "required_source_refs": [],
+              "required_context": [
+                "Начало анкетного раздела, продолжающегося первой таблицей страницы 110.",
+                "Расшифровка объёма 20676 л и границы системы, обслуживаемой АУПД первой зоны, с учётом аренды, автостоянки и трубопроводов ИТП."
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "Отопление 1 зона",
+                "Т1.1.1/Т2.1.1",
+                "Т1.1.2/Т2.1.2",
+                "Объем системы",
+                "трубопроводы ИТП"
+              ]
+            },
+            {
+              "id": "7",
+              "claim": "Объём вентиляции 27 м³ отличается от суммы потребителей 14,3 м³.",
+              "decision": "needs_data",
+              "reason": "В подборе подтверждены 27000 л; сумма четырёх объёмов анкеты составляет 1,2 + 2,7 + 8,6 + 1,8 = 14,3 м³. Разность 12,7 м³ арифметически подтверждается, однако сравниваются полный проектный объём в подборе и объёмы перечисленных потребителей. Без состава оборудования, соединительных трубопроводов и границ подсчёта это не доказывает технического несогласования или избыточности баков. F-019 и F-021 рассматривают другие параметры и не закрывают этот вопрос.",
+              "source_refs": [
+                "blk_72bd74f01146432880a289b071f70238",
+                "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+                "blk_950ad44af3d645539b95e38ddad3a8e0",
+                "blk_ee2f019eb36f4a43afab4649bd118c31"
+              ],
+              "required_source_refs": [],
+              "required_context": [
+                "Расшифровка проектного объёма 27000 л теплоснабжения вентиляции с выделением потребителей, оборудования и трубопроводов ИТП.",
+                "Границы учёта объёмов в анкетах систем Т1.4.1–Т1.4.4."
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "Теплоснабжение вентиляции",
+                "Объем системы",
+                "трубопроводы ИТП"
+              ]
+            }
+          ]
+        },
+        {
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/candidate_recovery_reports/58"
+          },
+          "stage": "candidate_recovery_9a9e1fae49e22db9_context",
+          "context_status": "followup_limit",
+          "query_hit_counts": null,
+          "claims": [
+            {
+              "id": "6",
+              "claim": "Для объёма первой зоны 20,676 м³ не раскрыто включение аренды и автостоянки.",
+              "decision": "needs_data",
+              "reason": "В подборе указаны 20676 л без состава объёма. Анкетные таблицы содержат 20,4255 м³, 1,0 м³ для коммерческих помещений и 3,5 м³ для автостоянки; заголовок первой таблицы страницы 110 не предоставлен. ПЗ объединяет соответствующие тепловые нагрузки, но это не устанавливает гидравлические границы обслуживания АУПД. Дополнительная спецификация подтверждает установку первой зоны и её баки, однако не раскрывает состав 20676 л. Отсутствие учёта аренды и автостоянки во всём проекте не доказано; F-066 о соответствии основного бака опубликованному расчёту этот вопрос не закрывает.",
+              "source_refs": [
+                "blk_b4fb33513ca44182af058d09c8ab2dbb",
+                "blk_32601a7d4ca34927972f1c398ca5621f",
+                "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+                "blk_3050f16afc994b889498a2535ea14a52",
+                "blk_cc70e063642d457fa0a38b30b1a1a51f",
+                "blk_ae35014464b5493f84ca38481c3ffa60"
+              ],
+              "required_source_refs": [],
+              "required_context": [
+                "Начало анкетного раздела, продолжающегося первой таблицей страницы 110.",
+                "Расшифровка объёма 20676 л и границы системы, обслуживаемой АУПД первой зоны, с учётом аренды, автостоянки и трубопроводов ИТП."
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "Характеристика системы отопления 1",
+                "20676",
+                "Т1.1.1/Т2.1.1",
+                "Т1.1.2/Т2.1.2",
+                "Система: Отопление 1 зона"
+              ]
+            },
+            {
+              "id": "7",
+              "claim": "Объём вентиляции 27 м³ отличается от суммы потребителей 14,3 м³.",
+              "decision": "needs_data",
+              "reason": "Подбор задаёт проектный объём 27000 л. Анкеты четырёх систем теплоснабжения содержат 1,2 + 2,7 + 8,6 + 1,8 = 14,3 м³; численная разность равна 12,7 м³. Однако состав полного объёма подбора и границы анкетных объёмов не раскрыты. Дополнительное ТЗ устанавливает температурный график и независимое присоединение, но не объясняет объём; подбор ДОО относится к другой системе. Поэтому техническое несогласование или избыточность баков не установлены. F-019 и F-021 касаются температуры и зарядки газа и не закрывают этот вопрос. Результаты поиска не доказывают отсутствия расшифровки в проекте.",
+              "source_refs": [
+                "blk_72bd74f01146432880a289b071f70238",
+                "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+                "blk_950ad44af3d645539b95e38ddad3a8e0",
+                "blk_ee2f019eb36f4a43afab4649bd118c31",
+                "blk_dc124e4fb56849bbba6c4e2db3e948e3",
+                "blk_7e913f6c32cb4db7aa9d9b8688b6e979"
+              ],
+              "required_source_refs": [],
+              "required_context": [
+                "Расшифровка проектного объёма 27000 л теплоснабжения вентиляции с выделением потребителей, оборудования и трубопроводов ИТП.",
+                "Границы учёта объёмов в анкетах систем Т1.4.1–Т1.4.4."
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "27000",
+                "Т1.4.1/Т2.4.1",
+                "Т1.4.2/Т2.4.2",
+                "Т1.4.3/Т2.4.3",
+                "Т1.4.4/Т2.4.4",
+                "Объем системы проектный"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target_ids": [
+        "ITP_F028_reducer_designations:fab751f2686c38838e0b"
+      ],
+      "candidate_id": "T-017",
+      "assessment": "Reducer/pipe-size discrepancy detected. Recovery confirms literal sizes but lacks actual mating-element identity. Search returns only already supplied rows. Do not infer impossible installation; next step is node/connection traversal, not re-searching the same article names.",
+      "detection": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/16"
+        },
+        "candidate": {
+          "id": "T-017",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "piping",
+          "report_section": "technical_findings",
+          "source": "Спецификация, листы 6, 8 и 9",
+          "finding": "В перечне электросварных труб предусмотрены наружные диаметры 48, 108 и 159 мм, а среди соединительных деталей встречаются окончания 45 мм, переход К-2-114×89 и переход К-2-168×76. Соответствующие прямые трубы 45, 114 и 168 мм в перечне отсутствуют. Требуется согласовать исполнения и наружные присоединительные диаметры либо показать переходные узлы. Совпадение условного прохода не подтверждает совместимость сварных соединений.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "blk_17628e5e5b414088b5c392e63f6f4456"
+          ]
+        }
+      },
+      "merge": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pointer": "/candidate_decisions/16"
+        },
+        "decision": "needs_data"
+      },
+      "recovery_plan": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pointer": "/requests/16"
+        },
+        "selected_md_pages": [
+          29,
+          31,
+          32
+        ],
+        "missing_or_budgeted_md_pages": [],
+        "attached_image_block_ids_in_order": []
+      },
+      "recovery_reports": [
+        {
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/candidate_recovery_reports/16"
+          },
+          "stage": "candidate_recovery_88374b5fecdcb2d3",
+          "context_status": "no_new_context",
+          "query_hit_counts": {
+            "Отвод 90-2-45": 1,
+            "Переход К-2-114x89": 1,
+            "Переход К-2-168x76": 1,
+            "Д=48х3,5 мм": 1,
+            "Д=108х4,0 мм": 1,
+            "Д=159х4,5 мм": 1
+          },
+          "claims": [
+            {
+              "id": "2",
+              "claim": "Переход К-2-114×89 сопоставлен с трубой 108 мм; прямая труба 114 мм отсутствует в перечне.",
+              "decision": "needs_data",
+              "reason": "На странице 32 прямо указан Переход К-2-114x89, 6 шт.; на странице 29 предусмотрена электросварная труба Д=108х4,0 мм, а строка прямой трубы 114 мм отсутствует. Однако место применения перехода и присоединяемый к его окончанию 114 мм элемент не установлены. Нельзя исключить присоединение к оборудованию или специальному узлу, поэтому несовместимость с трубой 108 мм пока не доказана и не опровергнута.",
+              "source_refs": [
+                "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+                "blk_17628e5e5b414088b5c392e63f6f4456"
+              ],
+              "required_source_refs": [],
+              "required_context": [
+                "Места установки шести переходов К-2-114x89 и размеры сопрягаемых окончаний труб, патрубков оборудования или промежуточных деталей."
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "Переход К-2-114x89",
+                "Д=108х4,0 мм"
+              ]
+            },
+            {
+              "id": "3",
+              "claim": "Переход К-2-168×76 сопоставлен с трубой 159 мм; прямая труба 168 мм отсутствует в перечне.",
+              "decision": "needs_data",
+              "reason": "На странице 32 прямо указан Переход К-2-168x76, 1 шт.; на странице 29 предусмотрена электросварная труба Д=159х4,5 мм, а строка прямой трубы 168 мм отсутствует. Непосредственное соединение перехода с трубой 159 мм источниками не установлено. Без привязки к узлу и размеров ответного элемента нельзя подтвердить несовместимость или необходимость замены перехода.",
+              "source_refs": [
+                "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+                "blk_17628e5e5b414088b5c392e63f6f4456"
+              ],
+              "required_source_refs": [],
+              "required_context": [
+                "Место установки перехода К-2-168x76, размер ответного окончания со стороны 168 мм и предусмотренное исполнение соединения."
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "Переход К-2-168x76",
+                "Д=159х4,5 мм"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target_ids": [
+        "B-ITP-F-029:268aafac2624c208753e"
+      ],
+      "candidate_id": "T-018",
+      "assessment": "Missing dedicated325cylinder row and duplicated273quantities detected; recovery retains unrelated22/30/35conflict while deferring allocation of cylinders/mats. Onecontextfollowup reaches limit without allocation proof. Preserve validF024; do not replace273with325or declare material shortage.",
+      "detection": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/17"
+        },
+        "candidate": {
+          "id": "T-018",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "piping",
+          "report_section": "technical_findings",
+          "source": "Спецификация, листы 6 и 15; ПЗ, лист 19",
+          "finding": "Для электросварных труб предусмотрено 85,1 м трубы 325×7 мм, но в перечне цилиндров нет размера для наружного диаметра 325 мм. Вместо него имеются две строки 273×40 длиной 2 и 97 м. Дополнительно строки с обозначениями 30×40 и 35×40 названы цилиндрами для Днар 22. Требуется устранить противоречия размеров и определить способ изоляции трубы 325 мм. Наличие 250 м² матов не позволяет автоматически установить дефицит материала или его количество без ведомости распределения.",
+          "norm": "ПЗ, раздел 13 «Изоляция и окраска трубопроводов»",
+          "norm_quote": "Тепловой изоляции подлежат все трубопроводы и арматура ИТП.",
+          "related_block_ids": [
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "blk_ec07216893c540b88b7560c80b87ecd9",
+            "blk_8a446a40473d48d18d60edba74661d9e"
+          ]
+        }
+      },
+      "merge": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pointer": "/candidate_decisions/17"
+        },
+        "decision": "needs_data"
+      },
+      "recovery_plan": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pointer": "/requests/17"
+        },
+        "selected_md_pages": [
+          29,
+          37,
+          38,
+          57
+        ],
+        "missing_or_budgeted_md_pages": [],
+        "attached_image_block_ids_in_order": []
+      },
+      "recovery_reports": [
+        {
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/candidate_recovery_reports/17"
+          },
+          "stage": "candidate_recovery_3c36b3b81f0cc320",
+          "context_status": "scheduled",
+          "query_hit_counts": {
+            "325х7,0": 7,
+            "WIRED MAT": 2,
+            "ведомость теплоизоляции": 0,
+            "Изоляция и окраска трубопроводов": 2,
+            "273х40": 1,
+            "изоляция трубопроводов": 0
+          },
+          "claims": [
+            {
+              "id": "1",
+              "claim": "Для 85,1 м трубы 325×7 мм не указан соответствующий размер цилиндров.",
+              "decision": "needs_data",
+              "reason": "Лист 6 подтверждает 85,1 м трубы 325х7,0; в перечне цилиндров листа 15 размер 325 отсутствует. Однако там же предусмотрены 250 м² матов, а ПЗ называет цилиндры основным материалом, не устанавливая их исключительное применение. Для вывода о дефекте необходимо найти решение изоляции трубы 325 мм. Отсутствие изоляции и дефицит материала не доказаны.",
+              "source_refs": [
+                "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+                "blk_ec07216893c540b88b7560c80b87ecd9",
+                "blk_8a446a40473d48d18d60edba74661d9e"
+              ],
+              "required_source_refs": [],
+              "required_context": "Решение изоляции труб наружным диаметром 325 мм и распределение цилиндров и матов по участкам; идентификаторы этих источников в предоставленном контексте отсутствуют.",
+              "context_queries": [
+                "325х7,0",
+                "WIRED MAT",
+                "ведомость теплоизоляции",
+                "Изоляция и окраска трубопроводов"
+              ],
+              "target_finding_ids": []
+            },
+            {
+              "id": "2",
+              "claim": "Две строки цилиндров 273×40 имеют длины 2 и 97 м.",
+              "decision": "needs_data",
+              "reason": "Обе строки непосредственно подтверждены листом 15. Сам повтор типоразмера не устанавливает ошибку или замену строки для диаметра 325 мм. Назначение двух количеств не раскрыто; требуется привязка к изолируемым участкам. Подтверждённый повтор сохранён как контекст, а предполагаемый дефект остаётся нерешённым.",
+              "source_refs": [
+                "blk_ec07216893c540b88b7560c80b87ecd9"
+              ],
+              "required_source_refs": [],
+              "required_context": "Расшифровка назначения строк цилиндров 273х40 количеством 2 и 97 м; идентификатор источника не предоставлен.",
+              "context_queries": [
+                "273х40",
+                "ведомость теплоизоляции",
+                "изоляция трубопроводов"
+              ],
+              "target_finding_ids": []
+            },
+            {
+              "id": "5",
+              "claim": "250 м² матов могут относиться к части трубопроводов; их распределение неизвестно.",
+              "decision": "needs_data",
+              "reason": "Лист 15 подтверждает 250 м² матов WIRED MAT толщиной 50 мм в разделе изоляции электросварных труб; лист 14 отдельно содержит 50 м² матов для раздела оцинкованных труб. Распределение 250 м² между участками и другими изолируемыми элементами в представленных источниках отсутствует. Возможность использования этих матов для трубы 325 мм, достаточность количества и дефицит остаются неустановленными.",
+              "source_refs": [
+                "blk_ec07216893c540b88b7560c80b87ecd9",
+                "blk_e46d7b061235453f8917708c1387217c",
+                "blk_8a446a40473d48d18d60edba74661d9e"
+              ],
+              "required_source_refs": [],
+              "required_context": "Ведомость распределения матов WIRED MAT толщиной 50 мм по трубопроводам, арматуре и оборудованию с расчётом площади; идентификатор источника не предоставлен.",
+              "context_queries": [
+                "WIRED MAT",
+                "ведомость теплоизоляции",
+                "изоляция трубопроводов",
+                "Изоляция и окраска трубопроводов"
+              ],
+              "target_finding_ids": []
+            }
+          ]
+        },
+        {
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/candidate_recovery_reports/59"
+          },
+          "stage": "candidate_recovery_3c36b3b81f0cc320_context",
+          "context_status": "followup_limit",
+          "query_hit_counts": null,
+          "claims": [
+            {
+              "id": "1",
+              "claim": "Для 85,1 м трубы 325×7 мм не указан соответствующий размер цилиндров.",
+              "decision": "needs_data",
+              "reason": "Лист 6 подтверждает 85,1 м трубы 325х7,0, а перечень цилиндров листа 15 не содержит размера 325. ПЗ предусматривает цилиндры как основной материал, но не устанавливает исключительность их применения; спецификация также содержит маты. Осмотренные план, разрезы и аксонометрии подтверждают ввод Ø325×7,0, но не определяют материал его изоляции. Факт отсутствия строки цилиндров подтверждён; вывод об ошибке решения, отсутствии изоляции или дефиците материала остаётся недоказанным.",
+              "source_refs": [
+                "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+                "blk_ec07216893c540b88b7560c80b87ecd9",
+                "blk_8a446a40473d48d18d60edba74661d9e",
+                "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+                "blk_049ee88c136045da9910995a4c44a1e8",
+                "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+                "blk_871a2c95697d4a93adb86dd3e2456614",
+                "blk_bd55e9b9fbff4d0886c6084a326ec05e",
+                "blk_94b58ecf5d404f7d90c272d267eb2e48"
+              ],
+              "required_source_refs": [],
+              "required_context": "Конструкция изоляции труб Ø325 мм с указанием материала, толщины и привязки к количествам спецификации; идентификатор источника неизвестен.",
+              "context_queries": [
+                "325х7,0",
+                "WIRED MAT",
+                "ведомость теплоизоляции",
+                "Изоляция и окраска трубопроводов"
+              ],
+              "target_finding_ids": []
+            },
+            {
+              "id": "2",
+              "claim": "Две строки цилиндров 273×40 имеют длины 2 и 97 м.",
+              "decision": "needs_data",
+              "reason": "Обе строки непосредственно присутствуют на листе 15. Повтор типоразмера подтверждён, но назначение количеств не раскрыто. Дополнительные источники не связывают строку 97 м с трубой Ø325 мм и не доказывают ошибочную замену размера. Нельзя предписать исправление 273 на 325 только по сопоставлению количеств.",
+              "source_refs": [
+                "blk_ec07216893c540b88b7560c80b87ecd9",
+                "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+              ],
+              "required_source_refs": [],
+              "required_context": "Привязка каждой строки цилиндров 273х40 количеством 2 и 97 м к изолируемым трубопроводам; идентификатор источника неизвестен.",
+              "context_queries": [
+                "273х40",
+                "ведомость теплоизоляции",
+                "изоляция трубопроводов"
+              ],
+              "target_finding_ids": []
+            },
+            {
+              "id": "5",
+              "claim": "250 м² матов могут относиться к части трубопроводов; их распределение неизвестно.",
+              "decision": "needs_data",
+              "reason": "Лист 15 непосредственно задаёт 250 м² WIRED MAT толщиной 50 мм в разделе изоляции электросварных труб; лист 14 отдельно задаёт 50 м² для оцинкованных труб. ПЗ требует изолировать трубопроводы и арматуру. Распределение 250 м² между конкретными участками и элементами в предоставленном контексте не установлено. Результаты поиска и просмотренные изображения этого пробела не закрывают; достаточность материала и его применение для Ø325 мм не определены.",
+              "source_refs": [
+                "blk_ec07216893c540b88b7560c80b87ecd9",
+                "blk_e46d7b061235453f8917708c1387217c",
+                "blk_8a446a40473d48d18d60edba74661d9e"
+              ],
+              "required_source_refs": [],
+              "required_context": "Ведомость распределения матов WIRED MAT толщиной 50 мм по трубопроводам и арматуре с расчётом площади; идентификатор источника неизвестен.",
+              "context_queries": [
+                "WIRED MAT",
+                "ведомость теплоизоляции",
+                "изоляция трубопроводов",
+                "Изоляция и окраска трубопроводов"
+              ],
+              "target_finding_ids": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target_ids": [
+        "ITP_F032_channel_standard_scope:8edf0d0f42a81f234dc5",
+        "ITP_F033_replaced_product_standards:3f903a601969ba823079",
+        "ITP_F034_mixed_norm_references:5c96f17d8af25d1ba443"
+      ],
+      "candidate_id": "T-027",
+      "assessment": "Normative candidates detected; official status/scope not in supplied projectcontext. Literal search withinMDreturns no new context and cannot establish external standard content. Independent evaluator later verified primary sources; run itself did not. This is an unresolved external-source verification path, not proved technical falsity.",
+      "detection": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/26"
+        },
+        "candidate": {
+          "id": "T-027",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "normative_refs",
+          "report_section": "questions",
+          "source": "Ведомость ссылочных документов, лист 1; спецификация, листы 10–12",
+          "finding": "Требуется актуализировать ссылки на приказ Минэнерго №115, ГОСТ 12820-80 и ГОСТ 14918-80 с проверкой замен и дат их введения. Для резьбового тройника указан ГОСТ 6948-75, а швеллер назван горячекатаным при ссылке на ГОСТ 8278-83. Следует проверить обозначения и соответствие выбранным изделиям. Официальный статус документов в рамках данного анализа не подтвержден.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_9167c15ea57c423ea6ad708738bb420f",
+            "blk_a7ba21ea8083491389a223015720c9cb",
+            "blk_fd984f8c5d03427497ffd926feaf8ed5",
+            "blk_9e9fdca2261a4324959220546412f377"
+          ]
+        }
+      },
+      "merge": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pointer": "/candidate_decisions/26"
+        },
+        "decision": "needs_data"
+      },
+      "recovery_plan": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pointer": "/requests/26"
+        },
+        "selected_md_pages": [
+          7,
+          33,
+          34,
+          35
+        ],
+        "missing_or_budgeted_md_pages": [],
+        "attached_image_block_ids_in_order": []
+      },
+      "recovery_reports": [
+        {
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/candidate_recovery_reports/26"
+          },
+          "stage": "candidate_recovery_2f8cb37d7421ec1d",
+          "context_status": "no_new_context",
+          "query_hit_counts": {
+            "ПРИКАЗ от 24 марта 2003 г. № 115": 1,
+            "ГОСТ 12820-80": 1,
+            "ГОСТ 14918-80": 1,
+            "ГОСТ 6948-75": 1,
+            "ГОСТ 8278-83": 1,
+            "Дата выпуска": 0
+          },
+          "claims": [
+            {
+              "id": "1",
+              "claim": "Ссылка на приказ Минэнерго №115 требует проверки актуальности.",
+              "decision": "needs_data",
+              "reason": "На странице 7, листе 1, ведомость содержит «ПРИКАЗ от 24 марта 2003 г. № 115» и наименование правил эксплуатации. Наличие ссылки подтверждено. Дата создания блока не устанавливает дату выпуска проекта; официальные сведения о действии приказа и применимых переходных положениях отсутствуют. Необходимость замены ссылки пока не установлена.",
+              "source_refs": [
+                "blk_9167c15ea57c423ea6ad708738bb420f"
+              ],
+              "required_source_refs": [],
+              "required_context": [
+                "Дата выпуска проекта и официальные сведения о применимости приказа от 24.03.2003 №115 на соответствующую дату."
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "ПРИКАЗ от 24 марта 2003 г. № 115",
+                "Дата выпуска"
+              ]
+            },
+            {
+              "id": "2",
+              "claim": "Ссылка на ГОСТ 12820-80 требует проверки замены и исполнения фланцев.",
+              "decision": "needs_data",
+              "reason": "На странице 34, листе 11, для плоских приварных фланцев с соединительным выступом Ру 1,6 МПа указан ГОСТ 12820-80*. В других строках приведены фланцы по ГОСТ 33259-2015. Совместное присутствие двух стандартов для разных строк не доказывает ошибку исполнения или обязательность замены ссылки. Нужны сведения о применимости стандартов и соответствии выбранных фланцев присоединениям.",
+              "source_refs": [
+                "blk_fd984f8c5d03427497ffd926feaf8ed5"
+              ],
+              "required_source_refs": [],
+              "required_context": [
+                "Официальные сведения о замене и переходных положениях ГОСТ 12820-80.",
+                "Требования к исполнениям и присоединительным размерам указанных плоских фланцев."
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "ГОСТ 12820-80",
+                "ГОСТ 33259-2015",
+                "Фланец 1-20-16"
+              ]
+            },
+            {
+              "id": "3",
+              "claim": "Ссылка на ГОСТ 14918-80 требует проверки актуальности.",
+              "decision": "needs_data",
+              "reason": "На странице 35, листе 12, строка «Сталь тонколистовая оцинкованная толщиной 0,5мм» содержит ГОСТ 14918-80 и количество 1000 м2. Ссылка подтверждена, но сведений о статусе стандарта, переходных положениях и применимой редакции проекта нет. Возраст обозначения не является достаточным основанием для требования его замены.",
+              "source_refs": [
+                "blk_9e9fdca2261a4324959220546412f377"
+              ],
+              "required_source_refs": [],
+              "required_context": [
+                "Официальные сведения о действии и замене ГОСТ 14918-80 с условиями применения к предусмотренному оцинкованному листу."
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "ГОСТ 14918-80",
+                "Сталь тонколистовая оцинкованная"
+              ]
+            },
+            {
+              "id": "5",
+              "claim": "Швеллер назван горячекатаным при ссылке на ГОСТ 8278-83.",
+              "decision": "needs_data",
+              "reason": "На странице 35, листе 12, непосредственно приведено «Швеллеры стальные горячекатанные 100x50x5» со ссылкой на ГОСТ 8278-83. Сочетание наименования и ссылки подтверждено. Содержание стандарта и документация на выбранный профиль отсутствуют, поэтому конфликт способа изготовления с сортаментом в пределах предоставленных источников не проверен. Нельзя заранее считать исправление только редакционным: требуется установить, какое исполнение профиля предусмотрено.",
+              "source_refs": [
+                "blk_9e9fdca2261a4324959220546412f377"
+              ],
+              "required_source_refs": [],
+              "required_context": [
+                "Область применения и сортамент ГОСТ 8278-83.",
+                "Узлы металлоконструкций или документация на выбранный швеллер 100x50x5, определяющие его исполнение."
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "ГОСТ 8278-83",
+                "100x50x5",
+                "Швеллеры стальные горячекатанные"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target_ids": [
+        "ITP_F036_gauge_range_allocation:450cb0a7d585250b421e"
+      ],
+      "candidate_id": "T-034",
+      "assessment": "Gauge quantities/ranges detected; recovery reports inability to read reliable location mapping at supplied scale. Literal search returns no new context. The report is evidence of incomplete operation, not independent proof that graphic mapping is impossible. Need targeted crops and terminal-to-instrument mapping; no blanket175wronggauges or3missinggauges claim.",
+      "detection": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/33"
+        },
+        "candidate": {
+          "id": "T-034",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "automation",
+          "report_section": "questions",
+          "source": "Спецификация, лист 5, позиции 111–118; ПЗ, лист 17",
+          "finding": "В спецификации большинство манометров имеет диапазон 0–1,6 МПа, а автоматические воздухоотводчики — допустимое давление 10 бар. В проекте присутствуют контуры с более высокими давлениями. Требуется адресная привязка этих позиций к контурам и проверка диапазонов и допустимых давлений. По агрегированным количествам нельзя утверждать, что все такие приборы установлены в недопустимых условиях, или выводить дефицит по разнице 179 манометров и 182 отборных устройств.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_a84dc3455457476dadbc35029e2e7ae8",
+            "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+            "blk_67b9571de5e74033b6c491043f8c87d1"
+          ]
+        }
+      },
+      "merge": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+          "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+          "pointer": "/candidate_decisions/33"
+        },
+        "decision": "needs_data"
+      },
+      "recovery_plan": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_plan.json",
+          "sha256": "ccd3f6141578f4c41155cc042793dd85dd11785f0eca78dbcc2be7ae0f1d6db8",
+          "pointer": "/requests/33"
+        },
+        "selected_md_pages": [
+          8,
+          28,
+          41,
+          55
+        ],
+        "missing_or_budgeted_md_pages": [],
+        "attached_image_block_ids_in_order": [
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ]
+      },
+      "recovery_reports": [
+        {
+          "evidence": {
+            "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+            "pointer": "/candidate_recovery_reports/33"
+          },
+          "stage": "candidate_recovery_6aaf6774a54afa60",
+          "context_status": "no_new_context",
+          "query_hit_counts": {
+            "TM-510P.00": 1,
+            "Airvent-R": 1,
+            "065B8323R": 1,
+            "BVR-DR": 1,
+            "ЗКЧ-46-70": 1,
+            "схема КИП": 0
+          },
+          "claims": [
+            {
+              "id": "1",
+              "claim": "Большинство манометров имеет диапазон 0–1,6 МПа при наличии контуров с более высоким давлением.",
+              "decision": "needs_data",
+              "reason": "Фактическая предпосылка подтверждена: позиция 112 содержит 175 манометров 0–1,6 МПа, позиция 111 — четыре манометра 0–2,5 МПа; ПЗ задаёт давления источника 17,5/17,9 атм. Однако это не устанавливает, какие манометры подключены к участкам повышенного давления. На просмотренной схеме имеются приборные ответвления у магистралей и оборудования, но надёжная адресная проверка их позиций в представленном масштабе невозможна. Лист 17 ПЗ такой привязки не содержит.",
+              "source_refs": [
+                "blk_a84dc3455457476dadbc35029e2e7ae8",
+                "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+                "blk_67b9571de5e74033b6c491043f8c87d1",
+                "blk_0103a941fa5a4b0d9141a4149e927bff"
+              ],
+              "required_source_refs": [
+                "blk_0103a941fa5a4b0d9141a4149e927bff"
+              ],
+              "target_finding_ids": [],
+              "context_queries": [
+                "TM-510P.00",
+                "0..1,6 МПа",
+                "0..2,5 МПа",
+                "схема КИП"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "recommendation": {
+    "behavior": "Separate discovery, source retrieval, identity mapping, substantive comparison and publication for each subclaim. Route missing external standard facts to primary-source verification; route missing graphic identities to targeted image/context retrieval. Preserve unresolved obligations through bounded continuation. Publish a bounded question only when its factual core and useful engineer decision are established after actual source review.",
+    "negative_controls": [
+      "Do not equate differently scoped consumer/full-loop volumes.",
+      "Do not infer incompatibility from nominally different pipe and fitting dimensions without actual mating relation.",
+      "Do not infer missing insulation from absent cylinder row when mats are listed.",
+      "Do not replace all old standards solely from their age.",
+      "Do not treat counts175or179minus182as number of incorrect or missing gauges."
+    ],
+    "status": "Proposed behavior only; no implementation or acceptance claim."
+  },
+  "limits": [
+    "Statusneeds_datais not a technical refutation or evidence of successful filtering.",
+    "Searchno_new_contextis bounded by query and available corpus, not proof of project-wide absence.",
+    "Some withholding is justified by incomplete evidence; improvement must complete verification rather than force publication.",
+    "No benchmark answers were sent to audit executors."
+  ]
+}
