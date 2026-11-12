@@ -1,0 +1,17 @@
+{
+  "status": "source_verified_control_not_implemented",
+  "positive_case": "F-018 pending 10 m 3x2.5 identity can be resolved by source graphic already supplied to F-017",
+  "source_graphic_block": "blk_065a335469904b2db1640b480b321503",
+  "identity_keys": [
+    "same project/version",
+    "ШАУВ-6-К5ПЧ",
+    "По5.1-9",
+    "10 m",
+    "3x2.5 graphic"
+  ],
+  "required_behavior": "Before final publication, match unresolved object context against source references of other reviewed candidates; retrieve original evidence and revalidate applicability. Do not treat another model conclusion as source evidence.",
+  "negative_control": "F-018 П4.1.1-4 is a different 20 m line and cabinet; same cable section must not merge the two lines or establish a 30 m procurement shortage.",
+  "additional_preservation": "Keep journal 4x4.0 versus graphic 3x2.5 conflict for По5.1-9 after resolving identity; identity resolution does not settle correct cable selection.",
+  "independent_engineer_pair": false,
+  "production_acceptance": false
+}

@@ -1,0 +1,17 @@
+{
+  "finding_id": "F-018",
+  "status": "supported_specification_omission_cross_finding_context_pending",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_018/publication_projection.json",
+  "projection_sha256": "d926b635449cdf27d71551edba9ea320ca52d8c0606e1b61942e1a55675c80dd",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_three_core_cable_specification_review_20261112.json",
+  "source_review_sha256": "872322fb78b2cbb16626ba48d751beaa5f17255bc8109b42fcdd04a08bd1baca",
+  "checks": [
+    "3x2.5 absent in supplied complete section 21 and in available specification TEXT search scope.",
+    "Positive line П4.1.1-4 and local list retain 20 m; no normalization of НФ/HF or forced 4x2.5 replacement.",
+    "Pending 10 m cable identity is a packet scope limitation: F017 graphic establishes По5.1-9 heater identity. Cross-finding source context must be reconciled before final output."
+  ],
+  "graphics": [],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

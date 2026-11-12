@@ -1,0 +1,26 @@
+{
+  "finding_id": "F-017",
+  "status": "supported_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_017/publication_projection.json",
+  "projection_sha256": "e63db33fab4fb191da1ab9480a695cfeb9c2bb97502d0c2996616d0ac5dc69aa",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_po51_cable_and_sensor_address_review_20261112.json",
+  "source_review_sha256": "14e9b7332000d8725586695ebd97ebd0ec2e81942228ce6ab12d0ea640da4a06",
+  "checks": [
+    "Journal По5.1-9 is 4x4.0 10 m; graphic same line is 3x2.5 10 m at 34,35,PE.",
+    "Local list has 3x2.5 and no 4x4.0; no arbitrary correct cable chosen.",
+    "Stale unverified graphic caveat moved to history after actual graphic confirmation."
+  ],
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+      "block_id": "blk_065a335469904b2db1640b480b321503",
+      "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+      "directly_viewed": true,
+      "detail": "original",
+      "view_provenance": "Images directly viewed in this thread during F-053 identity review; reused unchanged."
+    }
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
