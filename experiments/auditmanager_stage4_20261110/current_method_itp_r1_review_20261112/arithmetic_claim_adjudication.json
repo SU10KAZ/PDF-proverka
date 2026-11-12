@@ -1,0 +1,208 @@
+{
+  "version": 1,
+  "scope": "Three final question rows reviewed against printed formulas; four additional exploratory arithmetic omissions",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "pointer": ""
+    },
+    "prior_review": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/arithmetic_bounded_review.json",
+      "sha256": "0c3815a1ed98768b8bbc2f16e6ba671b138598541383b80faf944b8ef6089282",
+      "pointer": ""
+    },
+    "quote_check": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/text_quote_provenance_check.json",
+      "sha256": "4639f6946999dbddcb1dbb71175fe79b56eaac5f68817926720d51cca5a31b77",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-045",
+      "finding_evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/44"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "report_section",
+        "evidence"
+      ],
+      "factual_claim_assessment": "supported_as_local_arithmetic_or_input_inconsistency",
+      "arithmetic_checks": [
+        {
+          "expression": "44 / sqrt(0.5)",
+          "result": 62.22539674441618,
+          "selected_Kv": 88
+        },
+        {
+          "expression": "9.55 / sqrt(0.5)",
+          "result": 13.505739520663058,
+          "selected_Kv": 16
+        }
+      ],
+      "object_and_regime_scope": "Named subsection and printed formula only; not actual operating-point or valve-authority validation.",
+      "technical_consequence_assessment": "No incorrect equipment-selection conclusion asserted or established.",
+      "route_assessment": "questions appropriate for the bounded correction; no universal significance tolerance inferred.",
+      "recommended_disposition": "retain_as_question",
+      "engineer_utility": "not_newly_measured",
+      "presentation_issue": "Repeated explanatory subclaims can be shortened without removing provenance."
+    },
+    {
+      "finding_id": "F-046",
+      "finding_evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/45"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "report_section",
+        "evidence"
+      ],
+      "factual_claim_assessment": "supported_as_local_arithmetic_or_input_inconsistency",
+      "arithmetic_checks": [
+        {
+          "expression": "(9.05/16)^2",
+          "result": 0.31993164062500007,
+          "absolute_difference_from_printed_input": 0.0021246093749999195,
+          "relative_difference_percent": 0.6640822929702748
+        },
+        {
+          "expression": "(74.15/140)^2",
+          "result": 0.28052155612244906,
+          "absolute_difference_from_printed_input": 0.00022694387755106682,
+          "relative_difference_percent": 0.08090069108699964
+        }
+      ],
+      "object_and_regime_scope": "Named subsection and printed formula only; not actual operating-point or valve-authority validation.",
+      "technical_consequence_assessment": "No incorrect equipment-selection conclusion asserted or established.",
+      "route_assessment": "questions appropriate for the bounded correction; no universal significance tolerance inferred.",
+      "recommended_disposition": "retain_as_question",
+      "engineer_utility": "not_newly_measured",
+      "presentation_issue": "Repeated explanatory subclaims can be shortened without removing provenance."
+    },
+    {
+      "finding_id": "F-073",
+      "finding_evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/72"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "report_section",
+        "evidence"
+      ],
+      "factual_claim_assessment": "supported_as_local_arithmetic_or_input_inconsistency",
+      "arithmetic_checks": [
+        {
+          "expression": "18.85 / sqrt(0.5)",
+          "result": 26.657925650732842,
+          "selected_Kv": 40
+        }
+      ],
+      "object_and_regime_scope": "Named subsection and printed formula only; not actual operating-point or valve-authority validation.",
+      "technical_consequence_assessment": "No incorrect equipment-selection conclusion asserted or established.",
+      "route_assessment": "questions appropriate for the bounded correction; no universal significance tolerance inferred.",
+      "recommended_disposition": "retain_as_question",
+      "engineer_utility": "not_newly_measured",
+      "presentation_issue": null
+    }
+  ],
+  "additional_observations": [
+    {
+      "scope": "ГВС 1-зона",
+      "source_lines": [
+        {
+          "line": 2524,
+          "quote": "Kв кэр = 36,40/√0,5 = 51,26 (м³ / ч);"
+        }
+      ],
+      "expression": "36,40/√0,5 = 51,26",
+      "recomputed_result": 51.47737367038066,
+      "rounded_two_decimals": 51.48,
+      "selected_Kv": 52,
+      "recomputed_below_selected_Kv": true,
+      "printed_result_literal_hits_in_visible_output": [],
+      "assessment": "Additional local arithmetic inconsistency. Does not establish incorrect selection or valve authority. Related flow findings are not coverage of this division.",
+      "evaluation_status": "post_run_exploratory_observation_not_added_to_frozen_targets"
+    },
+    {
+      "scope": "ГВС 3-зона",
+      "source_lines": [
+        {
+          "line": 2560,
+          "quote": "Kv кэп = 9,05/√0,5 = 12,75 (м³ / ч);"
+        }
+      ],
+      "expression": "9,05/√0,5 = 12,75",
+      "recomputed_result": 12.79863273947651,
+      "rounded_two_decimals": 12.8,
+      "selected_Kv": 16,
+      "recomputed_below_selected_Kv": true,
+      "printed_result_literal_hits_in_visible_output": [],
+      "assessment": "Additional local arithmetic inconsistency. Does not establish incorrect selection or valve authority. Related flow findings are not coverage of this division.",
+      "evaluation_status": "post_run_exploratory_observation_not_added_to_frozen_targets"
+    },
+    {
+      "scope": "Отопление 1-зона",
+      "source_lines": [
+        {
+          "line": 2576,
+          "quote": "Kv кэп = 74,15/√0,5 = 104,43 (м³ / ч);"
+        }
+      ],
+      "expression": "74,15/√0,5 = 104,43",
+      "recomputed_result": 104.863935649965,
+      "rounded_two_decimals": 104.86,
+      "selected_Kv": 140,
+      "recomputed_below_selected_Kv": true,
+      "printed_result_literal_hits_in_visible_output": [],
+      "assessment": "Additional local arithmetic inconsistency. Does not establish incorrect selection or valve authority. Related flow findings are not coverage of this division.",
+      "evaluation_status": "post_run_exploratory_observation_not_added_to_frozen_targets"
+    },
+    {
+      "scope": "Отопление ДОО",
+      "source_lines": [
+        {
+          "line": 2632,
+          "quote": "Kv кэр = 3,35/√0,5 = 4,72 (м³ / ч);"
+        }
+      ],
+      "expression": "3,35/√0,5 = 4,72",
+      "recomputed_result": 4.737615433949868,
+      "rounded_two_decimals": 4.74,
+      "selected_Kv": 6.3,
+      "recomputed_below_selected_Kv": true,
+      "printed_result_literal_hits_in_visible_output": [],
+      "assessment": "Additional local arithmetic inconsistency. Does not establish incorrect selection or valve authority. Related flow findings are not coverage of this division.",
+      "evaluation_status": "post_run_exploratory_observation_not_added_to_frozen_targets"
+    }
+  ],
+  "control_behavior": "Retain a bounded arithmetic clarification; reject the unsupported jump from a corrected division to wrong valve selection. This is a proposed logical control, not a newly measured model result.",
+  "recommendation": "Enumerate all occurrences of each selected arithmetic operation with per-expression results; do not treat a few discovered arithmetic errors as coverage of the entire calculation. Keep small corrections in questions.",
+  "limits": [
+    "Three scoped decisions do not finalize precision for the other 71 rows.",
+    "Reference recall denominator is unchanged; exploratory additions cannot improve frozen benchmark scores.",
+    "No engineer acceptance, time reduction, universal tolerance or model improvement is claimed.",
+    "Printed formula arithmetic is checked; applicability of the design formula itself is outside this assessment."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}
