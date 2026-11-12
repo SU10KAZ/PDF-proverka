@@ -1,0 +1,25 @@
+{
+  "finding_id": "F-071",
+  "status": "scope_candidate_preserves_positive_control_with_limits",
+  "projection": {
+    "path": "/tmp/auditmanager_publication_identity_scope_20261112_run/evaluations/publication_identity_071/publication_projection.json",
+    "sha256": "a4a9b751ea0dfd88579467f38c8b8b7268533d5168b9e0be1b5450129b89b2d0"
+  },
+  "instruction_sha256": "a65ce5e68f8cd7130b29ccac2e324bdbc7feb0d6601aac69288c3acebd1e917b",
+  "checks": [
+    "Повторно просмотрены графические фрагменты вентилятора Пн5.1р и насоса Пн5.1: оба имеют M2, отдельные подключения и разные силовые выводы.",
+    "Сохранён локальный конфликт позиции одной схемы шкафа; отсутствует требование глобальной уникальности марки. Риск условный.",
+    "Неподтверждённое резервное назначение вынесено отдельно в pending и не подавило подтверждённую часть; служебная история исключена.",
+    "F003 и F071 имеют дополняющие основания; совпадение объекта не является основанием снять одно из них."
+  ],
+  "source_review_basis": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_F003_F071_peer_basis_review.json",
+    "sha256": "140ee2ca8bb9f6029b64641775370c6e0ea71d75c55441d1ccd3806218fd0e3b"
+  },
+  "limits": [
+    "Coordinator source review of selected DEV case, not engineer acceptance or final report replay.",
+    "A preserved positive does not establish whole-project recall or transfer."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}

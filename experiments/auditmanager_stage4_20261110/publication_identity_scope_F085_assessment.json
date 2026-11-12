@@ -1,0 +1,24 @@
+{
+  "finding_id": "F-085",
+  "status": "scope_candidate_preserves_positive_control_with_limits",
+  "projection": {
+    "path": "/tmp/auditmanager_publication_identity_scope_20261112_run/evaluations/publication_identity_085/publication_projection.json",
+    "sha256": "9b9048472283440342ef1dd92de02c6e302dce207c28f4d56a9d64c16911724c"
+  },
+  "instruction_sha256": "a65ce5e68f8cd7130b29ccac2e324bdbc7feb0d6601aac69288c3acebd1e917b",
+  "checks": [
+    "Сохранён конкретный конфликт адреса БПС-3.13 между планом и журналом, а не общее требование уникальности марки.",
+    "Повторно просмотрен графический тайл 7: возле 597 стоит адрес 1.13 при БПС-3.13. Все пять буквальных TEXT цитат результата найдены в авторитетном MD.",
+    "Адрес исправляется на 3.13; буквальное З в MD не изменяется. Схема подключения не объявлена проверенной; фактическая ошибка монтажа не утверждается."
+  ],
+  "source_review_basis": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_identity_controls_F085_assessment.json",
+    "sha256": "0fa074666766f1069a9a8aae8b6bfb93d138f460ab7a0a658abd39f318cbdf58"
+  },
+  "limits": [
+    "Coordinator source review of selected DEV case, not engineer acceptance or final report replay.",
+    "A preserved positive does not establish whole-project recall or transfer."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}

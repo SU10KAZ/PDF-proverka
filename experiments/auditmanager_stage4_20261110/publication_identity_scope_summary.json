@@ -1,0 +1,44 @@
+{
+  "status": "four_selected_dev_controls_pass_bounded_scope",
+  "run": {
+    "path": "/tmp/auditmanager_publication_identity_scope_20261112_run/status.json",
+    "sha256": "e6e779011fb5e8023f0fc9df575ef4a1f8692690ebc4fb2e83e6d71c84204bcb"
+  },
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "completed_packets": 4,
+  "control_assessments": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/publication_identity_scope_F082_assessment.json",
+      "sha256": "f77a398d17f179073b91e60d9e6c027dabc91c3d1b998e197136f66e8551380c"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/publication_identity_scope_F083_assessment.json",
+      "sha256": "29ef10bf644c51c8947823102165cc0389afb14269b7b40ce5b40df3ce9c8a77"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/publication_identity_scope_F085_assessment.json",
+      "sha256": "b25368b151ec886780769c816f0eb7f11434e85403be537ccc4283764f4ec28d"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/publication_identity_scope_F071_assessment.json",
+      "sha256": "3fd5f245dbba1fd59e36bb6b0bfd49f85ea63ae07a08e9c8ba4f5a0366de606a"
+    }
+  ],
+  "behavior": "Unknown identification domain preserves observed repetition as a question; an evidenced cross-document endpoint mismatch or local same-scheme position collision remains a technical finding.",
+  "negative_controls": [
+    "F082: possible context-qualified pult labels, preserve question",
+    "F083: room-qualified identity unresolved, remove unsupported mandatory renaming"
+  ],
+  "positive_controls": [
+    "F085: plan/journal endpoint mismatch preserved",
+    "F071: local M2 position collision preserved despite unresolved reserve qualifier"
+  ],
+  "limits": [
+    "DEV controls selected after observing failures; not blind validation.",
+    "No whole-project recall, final Excel propagation, resource acceptance or production acceptance demonstrated."
+  ],
+  "next_gate": "Finish H04-H07 requirement audit and preserve publication parts through final output before frozen comparison.",
+  "stage4_complete": false,
+  "production_acceptance": false
+}
