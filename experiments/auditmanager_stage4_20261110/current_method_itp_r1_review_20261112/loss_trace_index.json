@@ -38,6 +38,11 @@
           "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/compound_question_loss_stage_traces.json",
           "sha256": "9d6c3e6b59c63c0978ca253b39062e7a549722d6e5825e7fee6eeacb20a0b95d",
           "pointer": "/cases/0"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/makeup_volume_operation_loss_traces.json",
+          "sha256": "a87a7af02e3692d91c691ba672f45af71cbc1fd2fe357db1632f75f4edb7db6c",
+          "pointer": "/cases/0"
         }
       ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
@@ -46,16 +51,28 @@
       "target_id": "B-ITP-F-020:2052d4e286115c641e7f",
       "coverage": "partial",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/makeup_volume_operation_loss_traces.json",
+          "sha256": "a87a7af02e3692d91c691ba672f45af71cbc1fd2fe357db1632f75f4edb7db6c",
+          "pointer": "/cases/1"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
       "target_id": "B-ITP-F-020:ddebb96399a114f724d6",
       "coverage": "partial",
       "route": "question",
-      "trace_status": "not_traced",
-      "trace_evidence": [],
+      "trace_status": "bounded_trace_recorded",
+      "trace_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/makeup_volume_operation_loss_traces.json",
+          "sha256": "a87a7af02e3692d91c691ba672f45af71cbc1fd2fe357db1632f75f4edb7db6c",
+          "pointer": "/cases/2"
+        }
+      ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
     },
     {
@@ -68,6 +85,11 @@
           "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/compound_question_loss_stage_traces.json",
           "sha256": "9d6c3e6b59c63c0978ca253b39062e7a549722d6e5825e7fee6eeacb20a0b95d",
           "pointer": "/cases/0"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/makeup_volume_operation_loss_traces.json",
+          "sha256": "a87a7af02e3692d91c691ba672f45af71cbc1fd2fe357db1632f75f4edb7db6c",
+          "pointer": "/cases/3"
         }
       ],
       "limit": "Bounded trace is not proof of an exclusive root cause or successful correction."
@@ -389,8 +411,8 @@
   ],
   "counts": {
     "total": 34,
-    "bounded_trace_recorded": 18,
-    "not_traced": 16
+    "bounded_trace_recorded": 20,
+    "not_traced": 14
   },
   "remaining_requirements": [
     "Finish stage attribution for remaining targets, including missing parts of partly traced compound targets.",

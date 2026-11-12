@@ -1,0 +1,439 @@
+{
+  "version": 1,
+  "scope": "Missing makeup-to-volume comparison across four systems; completes bounded trace for makeup portion of volume targets",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "read_numbers_evidence": {
+    "evidence": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+      "pointer": "/arithmetic_verification/3"
+    },
+    "record": {
+      "source_refs": [
+        "blk_cc70e063642d457fa0a38b30b1a1a51f",
+        "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+        "blk_a203939b21504fa6935b621a29929d7d"
+      ],
+      "calculation": "По принятой в ПЗ приближенной формуле: 1,527×1000/20=76,35, а не 76,40; 1,527×1000/25=61,08, а не 61,12. 5,229×1000/20=261,45 м³/ч; сумма напечатанных расходов с 76,40 равна 261,50. Подпитка: 6,23+3,66+0,90+0,28+3,63=14,70 м³/ч.",
+      "result": "Суммы напечатанных расходов подтверждены. Незначительные расхождения вентиляции согласуются с использованием прежней нагрузки 1,528, но основание необходимо уточнить. Формула без плотности дает приближенный объемный расход."
+    }
+  },
+  "candidate_evidence": [
+    {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+        "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+        "pointer": "/text_findings/11"
+      },
+      "candidate": {
+        "id": "T-012",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "source": "Расчет АУПД отопления 2-й зоны, страница 100; анкета абонента, страница 110",
+        "finding": "АУПД 2-й зоны подобрана на объем системы 13,016 м³, тогда как анкета той же зоны задает 15,2 м³. По приведенной в подборе формуле с коэффициентом расширения 2,258% и запасом 1,3 для 15,2 м³ требуется 446,16 л вместо выбранных 400 л. Требуется согласовать объем обслуживаемой системы и повторить подбор; отличие нельзя устранить округлением.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+          "blk_32601a7d4ca34927972f1c398ca5621f",
+          "blk_fe2066a9479d4d9e9c215338d4f82621"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+        "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+        "pointer": "/text_findings/15"
+      },
+      "candidate": {
+        "id": "T-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "questions",
+        "source": "Подборы АУПД, страницы 94, 97, 100, 103; анкеты, страницы 110–113; ПЗ, листы 5 и 9",
+        "finding": "Подборы АУПД используют нагрузки греющего контура 5,858 Гкал/ч и отопительных зон 1,488/0,958/0,214 Гкал/ч, тогда как ПЗ использует 5,229 и 1,483/0,880/0,191 Гкал/ч. Объем 3-й зоны в подборе 1,883 м³ отличается от 3,7 м³ анкеты; для 1-й зоны не объяснено включение аренды и автостоянки в объем 20,676 м³. Для вентиляции принято 27 м³ при сумме объемов потребителей анкеты 14,3 м³. Требуется ведомость состава объемов с учетом трубопроводов ИТП и актуальной редакции нагрузок; уменьшение или увеличение оборудования только по этим разностям не обосновано.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_26b23c5bfabe4917a156a91077b5458d",
+          "blk_b4fb33513ca44182af058d09c8ab2dbb",
+          "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+          "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "blk_32601a7d4ca34927972f1c398ca5621f",
+          "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+          "blk_950ad44af3d645539b95e38ddad3a8e0",
+          "blk_ee2f019eb36f4a43afab4649bd118c31",
+          "blk_72bd74f01146432880a289b071f70238"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+        "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+        "pointer": "/text_findings/22"
+      },
+      "candidate": {
+        "id": "T-023",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "piping",
+        "report_section": "technical_findings",
+        "source": "ПЗ, листы 8–9, расчет трубопроводов",
+        "finding": "Часть скоростей не соответствует указанным объемным расходам и внутренним диаметрам. Для вентиляции на нагреваемой стороне при 61,12 м³/ч и трубе 219×6 мм получается 0,505 м/с вместо 0,66; для подпитки отопления 3-й зоны при 0,90 м³/ч и 76×3 мм — 0,065 м/с вместо 0,12. Одинаковые потери и скорости на греющей и нагреваемой сторонах вентиляции при разных расходах также требуют перерасчета. Требуется явно разграничить массовый и объемный расход и использовать фактические свойства воды.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_155f820c42d94fe282878a3bd85a0ffe",
+          "blk_a203939b21504fa6935b621a29929d7d"
+        ]
+      }
+    }
+  ],
+  "recovery_evidence": [
+    {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/candidate_recovery_reports/11"
+      },
+      "stage": "candidate_recovery_df3ea701371d5379",
+      "subclaims": [
+        {
+          "id": "1",
+          "claim": "Для второй зоны указаны объёмы 13,016 м³ в подборе и 15,2 м³ в анкете.",
+          "decision": "retained",
+          "reason": "Подбор прямо назван «Отопление 2 зона» и содержит 13016 л; раздел анкеты «Характеристика системы отопления 2-й зоны жилья. Т1.2/Т2.2» содержит 15,2 м³. Разница 2,184 м³ подтверждает несогласование представленных документов. Уточнение актуального объёма требуется для исправления расчёта, но не отменяет установленного расхождения.",
+          "source_refs": [
+            "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+            "blk_32601a7d4ca34927972f1c398ca5621f"
+          ],
+          "required_source_refs": [],
+          "target_finding_ids": [
+            "F-017"
+          ]
+        },
+        {
+          "id": "2",
+          "claim": "При 15,2 м³, расширении 2,258% и множителе 1,3 расчётный объём по формуле подбора составляет около 446,18 л против выбранного основного бака LVF 400.",
+          "decision": "retained",
+          "reason": "Сохранено с арифметическим уточнением: 15200 × 2,258 / 100 × 1,3 = 446,1808 л, а не 446,16 л. Формула, коэффициент и выбранный основной бак подтверждены источниками. Это условный пересчёт при принятии объёма анкеты. Он превышает 400 л на 46,18 л, однако не устанавливает дефицит суммарной полезной ёмкости: дополнительно предусмотрен демпферный бак SPL RM 50, условия участия которого в компенсации расширения не раскрыты.",
+          "source_refs": [
+            "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+            "blk_32601a7d4ca34927972f1c398ca5621f",
+            "blk_fe2066a9479d4d9e9c215338d4f82621"
+          ],
+          "required_source_refs": [],
+          "target_finding_ids": [
+            "F-017"
+          ]
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/candidate_recovery_reports/15"
+      },
+      "stage": "candidate_recovery_9a9e1fae49e22db9",
+      "subclaims": [
+        {
+          "id": "5",
+          "claim": "Объём третьей зоны в подборе 1,883 м³ отличается от 3,7 м³ в анкете.",
+          "decision": "retained",
+          "reason": "Источники прямо относятся к отоплению третьей зоны и задают 1883 л и 3,7 м³. Разность 1,817 м³ подтверждена. Уточнение составляющих необходимо для согласования значения, но не отменяет документального расхождения. Это технический параметр расчёта расширения, а не редакционная правка; недостаточность выбранного бака не утверждается.",
+          "source_refs": [
+            "blk_c25d98d5cc6e4b05a83580352fea374b",
+            "blk_32601a7d4ca34927972f1c398ca5621f"
+          ],
+          "required_source_refs": [],
+          "target_finding_ids": [
+            "F-023"
+          ]
+        },
+        {
+          "id": "6",
+          "claim": "Для объёма первой зоны 20,676 м³ не раскрыто включение аренды и автостоянки.",
+          "decision": "needs_data",
+          "reason": "Подбор содержит общий объём 20676 л без расшифровки. Анкетные таблицы содержат 20,4255 м³, 1,0 м³ для коммерческих помещений и 3,5 м³ для автостоянки. ПЗ объединяет соответствующие нагрузки в расчёте первой зоны, однако состав именно объёма АУПД и гидравлические границы его обслуживания не представлены. Заголовок первой таблицы страницы 110 также находится за пределами фрагмента. Нельзя утверждать отсутствие учёта потребителей во всём проекте или требовать изменения бака.",
+          "source_refs": [
+            "blk_b4fb33513ca44182af058d09c8ab2dbb",
+            "blk_32601a7d4ca34927972f1c398ca5621f",
+            "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+            "blk_3050f16afc994b889498a2535ea14a52",
+            "blk_cc70e063642d457fa0a38b30b1a1a51f"
+          ],
+          "required_source_refs": [],
+          "required_context": [
+            "Начало анкетного раздела, продолжающегося первой таблицей страницы 110.",
+            "Расшифровка объёма 20676 л и границы системы, обслуживаемой АУПД первой зоны, с учётом аренды, автостоянки и трубопроводов ИТП."
+          ],
+          "target_finding_ids": [],
+          "context_queries": [
+            "Отопление 1 зона",
+            "Т1.1.1/Т2.1.1",
+            "Т1.1.2/Т2.1.2",
+            "Объем системы",
+            "трубопроводы ИТП"
+          ]
+        },
+        {
+          "id": "7",
+          "claim": "Объём вентиляции 27 м³ отличается от суммы потребителей 14,3 м³.",
+          "decision": "needs_data",
+          "reason": "В подборе подтверждены 27000 л; сумма четырёх объёмов анкеты составляет 1,2 + 2,7 + 8,6 + 1,8 = 14,3 м³. Разность 12,7 м³ арифметически подтверждается, однако сравниваются полный проектный объём в подборе и объёмы перечисленных потребителей. Без состава оборудования, соединительных трубопроводов и границ подсчёта это не доказывает технического несогласования или избыточности баков. F-019 и F-021 рассматривают другие параметры и не закрывают этот вопрос.",
+          "source_refs": [
+            "blk_72bd74f01146432880a289b071f70238",
+            "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+            "blk_950ad44af3d645539b95e38ddad3a8e0",
+            "blk_ee2f019eb36f4a43afab4649bd118c31"
+          ],
+          "required_source_refs": [],
+          "required_context": [
+            "Расшифровка проектного объёма 27000 л теплоснабжения вентиляции с выделением потребителей, оборудования и трубопроводов ИТП.",
+            "Границы учёта объёмов в анкетах систем Т1.4.1–Т1.4.4."
+          ],
+          "target_finding_ids": [],
+          "context_queries": [
+            "Теплоснабжение вентиляции",
+            "Объем системы",
+            "трубопроводы ИТП"
+          ]
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/candidate_recovery_reports/22"
+      },
+      "stage": "candidate_recovery_342a0881d2479b9e",
+      "subclaims": [
+        {
+          "id": "2",
+          "claim": "Для подпитки третьей зоны 0,90 м³/ч и 76×3 мм скорость около 0,065 м/с отличается от 0,12 м/с.",
+          "decision": "retained",
+          "reason": "Подраздел подпитки третьей зоны непосредственно содержит расход, размер трубы и скорость. При внутреннем диаметре 0,070 м результат равен 4×0,90/(3600×π×0,070²)≈0,065 м/с. Данных листа 9 достаточно; несогласование сохранено в F-034.",
+          "source_refs": [
+            "blk_a203939b21504fa6935b621a29929d7d"
+          ],
+          "required_source_refs": [],
+          "target_finding_ids": [
+            "F-034"
+          ]
+        }
+      ]
+    }
+  ],
+  "later_operations": [
+    {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operations_e04ccd2df23a392b.json",
+        "sha256": "6d5088230627e7959e9635ad2031fcdcb449f0f8a96611954473fa8845a628d0",
+        "pointer": "/object_operation_results/1"
+      },
+      "record": {
+        "object_id": "O-03",
+        "operation": "calculation_consistency",
+        "status": "needs_data",
+        "reason": "Проверены доступные подстановки расчета АУПД и сопоставлены параметры К10. Расчет по напечатанному коэффициенту расширения дает результат, немного отличающийся от указанного; точность исходного коэффициента не раскрыта, поэтому арифметическая ошибка не установлена. Подтверждены локальное расхождение начальной температуры в методике и диаграмме расширения, а также различие напора К10 между подбором и ведомостями. Для завершения проверки нужны исходный тепловой и гидравлический расчет отопления 2-й зоны, обоснование объема системы 13016 л, точное значение коэффициента расширения и согласованный режим подбора насоса. Расход теплообменника 50,58 т/ч нельзя непосредственно сравнивать с подачей насоса 47,08 м³/ч: плотность 998,31 кг/м³ в подборе относится к воде при 20 °C, тогда как холодная сторона теплообменника работает при 60–80 °C. Один насос резервный; суммировать подачи двух насосов оснований нет. Недостаточность насоса или бака не установлена.",
+        "source_refs": [
+          "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+          "blk_fe2066a9479d4d9e9c215338d4f82621",
+          "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+          "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+          "blk_1601889b50624245a5c590ad23d87175",
+          "blk_ae35014464b5493f84ca38481c3ffa60"
+        ],
+        "calculation_checks": [
+          {
+            "expression": "(80 + 60) / 2 = 70",
+            "result": "70",
+            "unit": "°C",
+            "basis": "Средняя температура отопления 2-й зоны по температурам подачи и обратной линии в расчете АУПД; соответствует указанному значению.",
+            "source_refs": [
+              "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0"
+            ]
+          },
+          {
+            "expression": "13016 × 2,258 / 100 = 293,90128",
+            "result": "293,90128; в источнике 293,88",
+            "unit": "л",
+            "basis": "Условная проверка по напечатанным исходным данным. Коэффициент трактуется как процент согласно формуле и методике. Его неокругленное значение и применимость к нагреву от 10 °C требуют уточнения.",
+            "source_refs": [
+              "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+              "blk_fe2066a9479d4d9e9c215338d4f82621"
+            ]
+          },
+          {
+            "expression": "293,88 × 1,3 = 382,044; 400 − 382,044 = 17,956",
+            "result": "382,044, или 382,0 при округлении до десятых; превышение выбранного объема 17,956",
+            "unit": "л",
+            "basis": "Подстановка именно промежуточного объема расширения, указанного источником. LVF 400 удовлетворяет приведенному в нем условию объема при этих исходных данных; применимость коэффициента расширения остается неразрешенной.",
+            "source_refs": [
+              "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0"
+            ]
+          },
+          {
+            "expression": "11,5 + 1 = 12,5",
+            "result": "12,5",
+            "unit": "бар",
+            "basis": "Расчет давления АУПД по статическому давлению и добавке, прямо заданным источником. Арифметика соответствует указанному результату; исходное статическое давление независимо не проверено.",
+            "source_refs": [
+              "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0"
+            ]
+          },
+          {
+            "expression": "0,958 × 1,15 = 1,1017; 1,1017 − 1,012 = 0,0897",
+            "result": "1,1017; отличие от нагрузки К2 составляет 0,0897",
+            "unit": "Гкал/ч",
+            "basis": "Условное сопоставление мощности системы из подбора АУПД с заявленным для К2 запасом 15 %. Общность исходной нагрузки, расчетного режима и редакции данных не установлена; нарушение запаса не подтверждено.",
+            "source_refs": [
+              "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+              "blk_1601889b50624245a5c590ad23d87175",
+              "blk_48b334bf03ad483c8e1f72d701f4fc3e"
+            ]
+          }
+        ],
+        "context_queries": [
+          "Отопление 2 зона",
+          "13016",
+          "Коэффициент расширения",
+          "0,958",
+          "w203119577",
+          "IL 50/140-4/2"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_object_operations_90d3ca51cacfd297.json",
+        "sha256": "a239e16d01cfedc48020c49a60dd770a6f3d8881a099f367b13ef3c9e92087e5",
+        "pointer": "/object_operation_results/1"
+      },
+      "record": {
+        "object_id": "O-04",
+        "operation": "calculation_consistency",
+        "status": "needs_data",
+        "reason": "Проверены арифметика подбора основного бака, средняя температура, расчет давления и перевод нагрузки К3. Значения 42,52 и 55,3 л воспроизводятся с указанным округлением. При этом выявлено локальное несогласование температурной базы коэффициента расширения: методика задает нагрев от 10 °C, а приложенная диаграмма — от 0 °C. Полная проверка теплового и гидравлического балансов остается незавершенной. Требуются исходная нагрузка отопления 3-й зоны и основание 15 % запаса К3, расчет потерь давления и расхода К11, расчет клапана 29 и диаграмма выбора блока АУПД. Расход теплообменника 10,98 т/ч нельзя напрямую сопоставлять с подачей насоса 12,42 м³/ч; плотность 998,31 кг/м³ дана для подбора насоса при 20 °C и не установлена для рабочего режима 80/60 °C. Один насос К11 резервный, поэтому подачи двух насосов не суммировались.",
+        "source_refs": [
+          "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "blk_c8ae2497225a4902b681920a732f0a68",
+          "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "blk_1601889b50624245a5c590ad23d87175",
+          "blk_0b2352f4797f4c28a80ed1702b4009a9",
+          "blk_ae35014464b5493f84ca38481c3ffa60"
+        ],
+        "calculation_checks": [
+          {
+            "expression": "(80 + 60) / 2",
+            "result": "70",
+            "unit": "°C",
+            "basis": "Средняя температура системы отопления 3-й зоны по принятой в подборе АУПД формуле; совпадает с исходной таблицей.",
+            "source_refs": [
+              "blk_c25d98d5cc6e4b05a83580352fea374b"
+            ]
+          },
+          {
+            "expression": "1883 × 2,258 / 100",
+            "result": "42,51814 ≈ 42,52",
+            "unit": "л",
+            "basis": "Арифметика объема расширения по приведенным объему системы и коэффициенту. Применимость коэффициента к нагреву от 10 °C не подтверждена: приложенная диаграмма имеет базу 0 °C.",
+            "source_refs": [
+              "blk_c25d98d5cc6e4b05a83580352fea374b",
+              "blk_c8ae2497225a4902b681920a732f0a68"
+            ]
+          },
+          {
+            "expression": "42,51814 × 1,3; 42,52 × 1,3",
+            "result": "55,273582; 55,276; оба результата округляются до 55,3",
+            "unit": "л",
+            "basis": "Расчет основного бака АУПД с коэффициентом 1,3 из источника: отдельно использованы неокругленный результат предыдущей подстановки и опубликованный округленный объем. Температурная база исходного коэффициента расширения остается несогласованной.",
+            "source_refs": [
+              "blk_c25d98d5cc6e4b05a83580352fea374b"
+            ]
+          },
+          {
+            "expression": "15,3 + 1",
+            "result": "16,3",
+            "unit": "бар",
+            "basis": "Давление системы по формуле подбора АУПД. Арифметика верна; происхождение статического давления и распределение давления по оборудованию этой подстановкой не проверены.",
+            "source_refs": [
+              "blk_c25d98d5cc6e4b05a83580352fea374b"
+            ]
+          },
+          {
+            "expression": "219650 / 1000000",
+            "result": "0,21965 ≈ 0,220",
+            "unit": "Гкал/ч",
+            "basis": "Нагрузка одного теплообменника К3 по расчету w203119578 соответствует округленному значению экспликации. Это не проверяет заявленный запас 15 % относительно исходной нагрузки системы.",
+            "source_refs": [
+              "blk_58a0b41fc3a54ac5aae17d756528384d",
+              "blk_1601889b50624245a5c590ad23d87175"
+            ]
+          }
+        ],
+        "context_queries": [
+          "Отопление 3 зона",
+          "w203119578",
+          "с 15 % запасом по нагрузке",
+          "IL 40/140-2,2/2-R",
+          "VFM-2R-32-16",
+          "диаграмме 2"
+        ],
+        "missing_context": "Расчетная нагрузка и режимы работы К3 с основанием запаса; тепловой и гидравлический расчет контура с физическими свойствами воды; расчет клапана 29; диаграмма 2 и исходные высотные отметки для выбора АУПД."
+      }
+    }
+  ],
+  "cases": [
+    {
+      "target_id": "B-ITP-F-020:e9f7120697b89e6da747",
+      "traced_part": "Missing makeup-flow-to-volume relationship; no claim of complete root cause for all related volume questions.",
+      "outcome": "read_inputs_but_missing_comparison_operation"
+    },
+    {
+      "target_id": "B-ITP-F-020:2052d4e286115c641e7f",
+      "traced_part": "Missing makeup-flow-to-volume relationship; no claim of complete root cause for all related volume questions.",
+      "outcome": "read_inputs_but_missing_comparison_operation"
+    },
+    {
+      "target_id": "B-ITP-F-020:ddebb96399a114f724d6",
+      "traced_part": "Missing makeup-flow-to-volume relationship; no claim of complete root cause for all related volume questions.",
+      "outcome": "read_inputs_but_missing_comparison_operation"
+    },
+    {
+      "target_id": "B-ITP-F-020:c729cc29afbee39e2ed0",
+      "traced_part": "Missing makeup-flow-to-volume relationship; no claim of complete root cause for all related volume questions.",
+      "outcome": "read_inputs_but_missing_comparison_operation"
+    }
+  ],
+  "assessment": "The arithmetic record proves makeup numbers reached the text stage. Candidates separate tankvolume/selection from makeupvelocity. Recovery preserves those candidate relationships but never introduces conditional makeupvolume comparison. Recorded latercalculationoperations address tanks,pumps,temperatures,not the missing makeupvolume relation. No evidence that merge removed a previously formed makeupvolume question.",
+  "recommendation": {
+    "behavior": "Enumerate related published inputs for each identified circuit and explicitly check consistency of makeup basis, consumer volume, full-loop volume and tankselectioninputs. Preserve conditional conversion if coefficient time dimension is unspecified; request actual scope before asserting a hydraulic defect. Track this operation independently of velocity and tankcapacity checks.",
+    "preserve": [
+      "ExistingF017/F023volumecomparisons",
+      "F034velocitycomparison",
+      "F064tank-selectionarithmetic"
+    ],
+    "negative_control": "Do not treat20%as universal design rule or inferred18.3/4.5/31.15/18.15as proved physicalvolumes; do not declare inadequate equipment from mixed volume scopes.",
+    "status": "Unimplemented candidate behavior; no claim of improved live outcome."
+  },
+  "runtime_changed": false,
+  "model_calls": 0
+}
