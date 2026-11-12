@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "scope": "Three available TEXT questions absent from final visible report",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_id": "B-ITP-F-035:4868f82f52227408ecc1",
+      "coverage": "absent",
+      "reason": "Wording up toDN125/aboveDN150does not assignDN150; both copied instructions retain gap. No technical inability or mandatory diameter inferred.",
+      "quotes": [
+        {
+          "line": 913,
+          "quote": "- -в низших точках всех трубопроводов для слива воды (спускники)-dy= 25мм на трубопроводы до Ду125,"
+        },
+        {
+          "line": 914,
+          "quote": "dy= 25мм на трубопроводы свыше Ду150"
+        },
+        {
+          "line": 950,
+          "quote": "- -в низших точках всех трубопроводов для слива воды (спускники)-dy= 25мм на трубопроводы до Ду125,"
+        },
+        {
+          "line": 951,
+          "quote": "dy= 25мм на трубопроводы свыше Ду150"
+        }
+      ]
+    },
+    {
+      "target_id": "B-ITP-F-035:6e663d7b02b8e032a0c2",
+      "coverage": "absent",
+      "reason": "Floor and drain slopes printed0.01mm; clarification of dimensional notation supported. Correct construction slope not assigned.",
+      "quotes": [
+        {
+          "line": 2777,
+          "quote": "1. Уклон пола 0,01 мм."
+        },
+        {
+          "line": 2781,
+          "quote": "3. Общий сливной трубопровод установить у нулевой отметки пола с уклоном 0,01 мм."
+        }
+      ]
+    },
+    {
+      "target_id": "B-ITP-F-027:7853566af8288ba9432d",
+      "coverage": "absent",
+      "reason": "Filter is identified by DN300modelandarticle082X4073R,2units, while mass is placeholder. Missing mass does not make product itself unidentified.",
+      "quotes": [
+        {
+          "line": 1190,
+          "quote": "| 63 | Фильтр сетчатый Ридан-ФСФ фланцевый PN16, Tтах=200С, DN 300 | РИДАН-ФСФ 01.16.300 | 082X4073R | Ридан | шт. | 2 | \\<варианты> |  |"
+        }
+      ]
+    }
+  ],
+  "output_inspection": "All74findings have bounded reviews; focused visible-field search and semantic review found no matching question. Generic placeholder findingsF026/F028/F029 do not cover identifiedDN300filter mass.",
+  "trace_limit": "Early registry mentions slopes/drains; no matching question found by initial navigation in base findings/recovery or operation plans. Exact failure stage not yet established.",
+  "runtime_changed": false,
+  "model_calls": 0,
+  "early_inventory_observation": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+    "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+    "pointer": "/object_inventory_coverage/39/reason",
+    "text": "Уклоны, спуски, воздушники и площадка обслуживания.",
+    "limit": "Inventory mention is not execution proof for slope-dimension or diameter-range checks."
+  }
+}

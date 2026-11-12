@@ -705,12 +705,17 @@
     },
     {
       "target_id": "B-ITP-F-027:7853566af8288ba9432d",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/text_questions_missing_from_output.json",
+          "sha256": "5ac65a4282180badb0833fd377a00ab819bca4930e94e0779e587a2e16310f9b"
+        }
+      ],
+      "reason": "Filter is identified by DN300modelandarticle082X4073R,2units, while mass is placeholder. Missing mass does not make product itself unidentified. No corresponding question in final output.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "B-ITP-F-029:268aafac2624c208753e",
@@ -801,21 +806,31 @@
     },
     {
       "target_id": "B-ITP-F-035:4868f82f52227408ecc1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/text_questions_missing_from_output.json",
+          "sha256": "5ac65a4282180badb0833fd377a00ab819bca4930e94e0779e587a2e16310f9b"
+        }
+      ],
+      "reason": "Wording up toDN125/aboveDN150does not assignDN150; both copied instructions retain gap. No technical inability or mandatory diameter inferred. No corresponding question in final output.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "B-ITP-F-035:6e663d7b02b8e032a0c2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/text_questions_missing_from_output.json",
+          "sha256": "5ac65a4282180badb0833fd377a00ab819bca4930e94e0779e587a2e16310f9b"
+        }
+      ],
+      "reason": "Floor and drain slopes printed0.01mm; clarification of dimensional notation supported. Correct construction slope not assigned. No corresponding question in final output.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "B-ITP-F-037:8139bf7df3bbe04da245",
