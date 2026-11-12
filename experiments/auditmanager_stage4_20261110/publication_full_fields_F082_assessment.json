@@ -1,0 +1,47 @@
+{
+  "finding_id": "F-082",
+  "status": "question_preserved_literal_repeat_unresolved_due_to_unsupplied_detail",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_082/publication_projection.json",
+  "projection_sha256": "4b7fdf94a3c67eb3532060605f19e31e0721ccfbb777b5ef1f93daceb0a4fb8c",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/detail_tile_0.png",
+      "sha256": "196e110a08c546487d43b4181e2b14f28f142c935e73ef998e1c4a58da5bf5b8",
+      "block_id": "blk_0792816c162c469289b461843d2c307b",
+      "directly_viewed": true,
+      "detail": "original",
+      "manifest_path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/manifest.json",
+      "manifest_sha256": "7c5e918d277e164cb72075ffbc7b4dcdb69eb042c790192a96c99328a1f268cc"
+    }
+  ],
+  "authoritative_md_spans": [
+    {
+      "block_id": "blk_e7af9d2de9a4471daa970c45845957e5",
+      "start": 45025,
+      "end": 48296,
+      "sha256": "eea7175ba2ede6f18ea35e509483befc94533de5d5c2e7621b8db63862b3d6c6"
+    }
+  ],
+  "request_binding": {
+    "path": "/tmp/auditmanager_publication_full_fields_AK_20261112/publication_reconciliation_082.json",
+    "sha256": "727b2574f1505303b22cead49ecce0b04f319d64d51ee115d476922ee7178c08",
+    "image_hashes": {
+      "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_0792816c162c469289b461843d2c307b.png": "7cc18f2b25f7f7ba5728daf368eee0eefb4e43aa9549e2c6ab2497ca080e7769"
+    },
+    "whole_image_pixels": [
+      8247,
+      3265
+    ],
+    "readable_tile_supplied_to_model": false
+  },
+  "checks": [
+    "В просмотренном detail_tile_0 корпуса 1 шесть верхних и пять нижних пар завеса–пульт. Все одиннадцать пультов подписаны ПУ-У1.1; повтор не возникает из сложения перекрывающихся деталей.",
+    "Модель не повысила вопрос до технического нарушения и убрала внутренние ссылки/историю увеличений из пользовательского вопроса. Это полезное поведение.",
+    "Модель оставила повтор подписи непроверенным. Запрос содержит только общий исходный рисунок 8247×3265, без читаемого tile0; наблюдение координатора не является доказательством успешного чтения моделью. Точная внутренняя причина чтения не установлена.",
+    "Необходимо выполнить источник-ориентированный добор читаемой графики, затем проверить область уникальности и ответственный комплект. Нельзя автоматически выпускать вопрос о читаемости или считать всё замечание ложным.",
+    "Легенда определяет ПУ-Уп как пульт управления тепловыми завесами, но не устанавливает глобальную уникальность и ответственность АК2-ПА за корпус 1. Ошибка физического подключения не доказана."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
