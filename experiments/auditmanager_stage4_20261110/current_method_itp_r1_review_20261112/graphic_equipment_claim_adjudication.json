@@ -1,0 +1,180 @@
+{
+  "version": 1,
+  "scope": "Five drawing-derived equipment/foundation rows, using prior direct graphic inspections with verified source hashes",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "reference_ledger": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+      "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-048",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/47"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_drawing_volumes_bounded_review.json",
+        "sha256": "fd06bdda0f7365c66a0c422cdbdc45c19179ca1219290da36628e097086fffcd",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "bounded_graphic_and_text_relationship_supported",
+      "supported_claim": "K23 matched by mark and DOO scope: plans say100L; schedule/specification and tank selection say200L.",
+      "recommended_disposition": "Retain drawing-to-schedule clarification with all source locations.",
+      "physical_limit": "Correct required capacity, number installed and actual insufficiency are unproved.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-042:ecfe1ebab48bd184691d",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-048": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-053",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/52"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_drawing_volumes_bounded_review.json",
+        "sha256": "fd06bdda0f7365c66a0c422cdbdc45c19179ca1219290da36628e097086fffcd",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "bounded_graphic_and_text_relationship_supported",
+      "supported_claim": "K22 callout1000L differs from1500L per vessel in specification/selection; quantity2 is explicitly separate.",
+      "recommended_disposition": "Retain one cross-document volume item; preserve per-unit quantity distinction.",
+      "physical_limit": "Do not convert callout count into physical tank count or claim total capacity shortage.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-053": "technical_findings",
+              "F-070": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-070",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/69"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_drawing_volumes_bounded_review.json",
+        "sha256": "fd06bdda0f7365c66a0c422cdbdc45c19179ca1219290da36628e097086fffcd",
+        "pointer": "/cases/2"
+      },
+      "factual_assessment": "bounded_graphic_and_text_relationship_supported",
+      "supported_claim": "Same K22 volume relationship as F-053, with additional plan evidence.",
+      "recommended_disposition": "Merge into F-053 without dropping new drawing locations.",
+      "physical_limit": "Dimensional foundation mismatch, insufficient passage or wrong installed quantity are not established.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-053": "technical_findings",
+              "F-070": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-059",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/58"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/masses_bounded_review.json",
+        "sha256": "5ce64bb8d107d8fed175b9b05be6845ca784c94770fdc41030d5fe9b7370b02c",
+        "pointer": "/cases/2"
+      },
+      "factual_assessment": "bounded_graphic_and_text_relationship_supported",
+      "supported_claim": "Same LVF400 callout lists dry91kg and with-piping60kg; authoritative note includes coolant in the latter.",
+      "recommended_disposition": "Retain internal mass-basis contradiction; verify actual masses before checking foundation loads.",
+      "physical_limit": "31kg reversal is a document inconsistency, not a calculated foundation strength failure.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-050:5cd9d3d1be70ff9681c3",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-059": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-060",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/59"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/foundation_dimension_bounded_review.json",
+        "sha256": "452b67c20371bbf15c8cf1e471f9911de4545f37e69718f36018726b7f293fe1",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "bounded_graphic_and_text_relationship_supported",
+      "supported_claim": "Leader600x600x150(h) and dimension lines500x500 address the same square foundation near axesG10₂–G11₂.",
+      "recommended_disposition": "Retain local dimension discrepancy and ask to coordinate with selected tank support geometry.",
+      "physical_limit": "No scale-based measurement, second-foundation conflation, chosen correct dimension or strength conclusion.",
+      "reference_section_assessments": [],
+      "engineer_utility": "not_newly_measured"
+    }
+  ],
+  "verified_differences": {
+    "K23_per_vessel_L": 100,
+    "K22_per_vessel_L": 500,
+    "LVF400_mass_reversal_kg": 31,
+    "same_foundation_length_and_width_mm": [
+      100,
+      100
+    ]
+  },
+  "limits": [
+    "Physical failure, design adequacy and installed inventory not established by inconsistent annotations.",
+    "All prior cited file hashes checked; this step does not claim new exhaustive graphic inspection.",
+    "Reference question-routing disagreements remain separate from factual truth."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}
