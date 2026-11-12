@@ -1,0 +1,27 @@
+{
+  "finding_id": "F-046",
+  "status": "speed_command_matrix_gap_preserved_without_forcing_analog_module",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_046/publication_projection.json",
+  "projection_sha256": "79686cd97df7d6d33d85800de5b5b538b2ccae1da4d735d659fded977a4eb5a3",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+  "source_review_sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+      "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+      "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "В колонке 10 SC UZ1 заявлено 0–100%, но отмечены DI/DO, без AO.",
+    "Строка AO содержит две точки — 7 и 18; сравнение с SC UZ2 в 18 сохранено.",
+    "Вывод ограничен непоказанным способом задания скорости, не объявляет отсутствие физического канала или отказ ПЧ.",
+    "Допускается другой явно показанный способ управления; обязательное добавление AO/модуля не предписано.",
+    "Рекомендация соединена с техническим замечанием; условный риск остаётся pending до итоговой интеграции."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
