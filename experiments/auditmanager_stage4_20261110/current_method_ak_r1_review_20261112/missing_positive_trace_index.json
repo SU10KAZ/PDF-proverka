@@ -7,8 +7,8 @@
   },
   "summary": {
     "missing_or_partial_positive_atoms": 22,
-    "bounded_stage_evidence_available": 15,
-    "cause_not_established": 7
+    "bounded_stage_evidence_available": 16,
+    "cause_not_established": 6
   },
   "rows": [
     {
@@ -271,9 +271,17 @@
       "target_id": "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",
       "coverage": "absent",
       "coverage_reason_snapshot": "Нет вопроса о легенде PDS листа11, ограниченной вентилятором при наличии PDS1 фильтра. F-042/043/046/047 о диапазонах и F-057 о символе калорифера не покрывают этот редакционный атом. Доступность необходимых исходников проверена; полный просмотр выдачи зафиксирован отдельно. Причина потери на этапе конвейера пока не установлена.",
-      "trace_status": "cause_not_established",
-      "trace_references": [],
-      "next_action": "Проследить первичный разбор легенды PDS и её область применения к фильтру PDS1; не подменять проверкой диапазонов."
+      "trace_status": "bounded_stage_evidence_available",
+      "trace_references": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_pressure_legend.json",
+          "sha256": "d4d66adae23c00be621773d072dd1016bcf83fb58b992895a418fec4fe6de838",
+          "pointer": "",
+          "observed_stage": "available_legend_scope_not_compared_in_initial_outputs",
+          "causality": "bounded_evidence_not_exclusive_cause"
+        }
+      ],
+      "next_action": "Сопоставить тот же атом с завершёнными inventory/source_review и повторами; проверить сохранение полезного тезиса и отрицательную границу."
     },
     {
       "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
