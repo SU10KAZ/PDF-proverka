@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "scope": "One bounded graphic finding; no full-output quality claim",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "graphic": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_981b77a31c254f73aa67261d897a2987.png",
+      "sha256": "3cb700af6b7c1b3c41c11860f02195a7927e36c84a4e7a027629c4995c1c6aed"
+    }
+  },
+  "cases": [
+    {
+      "id": "F-060",
+      "method": "Codex parent direct raster inspection of the frozen graphic block",
+      "observation": "Small square at left wall immediately above axisG11_2 and below2200x900AUPDfoundation: leader from600x600x150(h)tank-foundation callout points to that square; horizontal dimension above is500 and vertical dimension right is500. Both dimension endpoints correspond to the same outline.",
+      "assessment": "Same-object contradictory annotations confirmed;100mm difference each direction. Not two different foundations or drawing-scale measurement.",
+      "visible_fields": {
+        "problem": "На плане противоречат друг другу размеры фундамента бака у левой стены между осями Г10₂–Г11₂.",
+        "description": "Первоначальное описание:\nВыноска к квадратному фундаменту задаёт 600×600×150(h) мм, тогда как размерные линии того же контура показывают 500 мм по горизонтали и 500 мм по вертикали. Расхождение составляет 100 мм в каждом направлении. Правильный размер основания и его соответствие опорной части бака по представленному плану не установлены.\n\nДополнительная проверка:\nУ левой стены между осями Г10₂–Г11₂ выноска фундамента бака задаёт 600×600×150 мм.\nНа изображении прочитана выноска «фундамент бака 600х600*150(h)»; её линия относится к квадратному основанию непосредственно выше оси Г11₂.\n\nРазмерные линии того же фундамента задают 500×500 мм.\nГоризонтальная размерная линия над квадратом и вертикальная справа от него содержат значения 500. Их границы соответствуют сторонам того же основания, к которому направлена выноска 600×600×150(h).",
+        "solution": "Уточнить габариты фундамента по опорной части выбранного бака и согласовать выноску с размерными линиями.",
+        "report_section": "technical_findings",
+        "evidence": [
+          {
+            "block_id": "blk_981b77a31c254f73aa67261d897a2987",
+            "type": "graphic",
+            "quote": "Выноска «фундамент бака 600х600*150(h)» слева от помещения направлена к небольшому квадратному основанию у левой стены. Над этим квадратом указан горизонтальный размер 500, справа — вертикальный размер 500; размерные линии относятся к сторонам того же контура.",
+            "location": "Страница 21, лист 12, план фундаментов: у левой стены между осями Г10₂–Г11₂, непосредственно выше оси Г11₂ и ниже прямоугольного фундамента АУПД 2200×900."
+          }
+        ]
+      },
+      "limits": "Correct foundation size, tank support dimensions, design adequacy and installed construction are unestablished. No benchmark target assigned by keyword-only match; no historical engineer utility decision inferred."
+    }
+  ],
+  "preserve": "Trace leader and dimension endpoints to the same object before comparing numbers. Preserve discrepancy without choosing an unsupported correct size.",
+  "entire_output_reviewed": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0
+}

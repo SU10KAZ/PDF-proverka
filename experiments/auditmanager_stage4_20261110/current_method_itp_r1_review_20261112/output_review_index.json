@@ -2,8 +2,8 @@
   "version": 1,
   "final_sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
   "finding_count": 74,
-  "findings_with_bounded_review": 53,
-  "findings_without_bounded_review": 21,
+  "findings_with_bounded_review": 54,
+  "findings_without_bounded_review": 20,
   "entire_output_reviewed": false,
   "whole_output_precision_finalized": false,
   "quality_score": null,
@@ -506,8 +506,13 @@
     },
     {
       "id": "F-060",
-      "status": "not_yet_reviewed",
-      "evidence": []
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/foundation_dimension_bounded_review.json",
+          "sha256": "452b67c20371bbf15c8cf1e471f9911de4545f37e69718f36018726b7f293fe1"
+        }
+      ]
     },
     {
       "id": "F-061",
