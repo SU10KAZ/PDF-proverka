@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "scope": "Eight negative controls in sealed ITP classic r1 visible output",
+  "final": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+  },
+  "visible_fields": [
+    "problem",
+    "description",
+    "solution",
+    "risk",
+    "reason"
+  ],
+  "finding_count": 74,
+  "cases": [
+    {
+      "target_id": "B-ITP-F-011:cddfdb106afa191e3b80",
+      "false_claim_repeated": false,
+      "related_finding_ids": [
+        "F-031"
+      ],
+      "reason": "F031compares unrounded recalculation and second-zone substitution; does not assert4.29/0.78fail from printed0.033/0.006. Those printed substitutions are arithmetically correct.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/arithmetic_bounded_review.json",
+        "sha256": "0c3815a1ed98768b8bbc2f16e6ba671b138598541383b80faf944b8ef6089282"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-016:364c279f5f1b89fa2aee",
+      "false_claim_repeated": false,
+      "related_finding_ids": [
+        "F-015",
+        "F-068"
+      ],
+      "reason": "Nominal motor1.5kW and working-pointP2=0.74kW explicitly distinct; no identity conflation released.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+        "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-019:7e4bf6b3afd2b736df6c",
+      "false_claim_repeated": false,
+      "related_finding_ids": [
+        "F-037"
+      ],
+      "reason": "Manufacturer provisional mass caveat explicitly retained; no final structural design mass asserted.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/masses_bounded_review.json",
+        "sha256": "5ce64bb8d107d8fed175b9b05be6845ca784c94770fdc41030d5fe9b7370b02c"
+      }
+    },
+    {
+      "target_id": "B-ITP-F-024:97a3c95e2b1698d996d0",
+      "false_claim_repeated": false,
+      "related_finding_ids": [
+        "F-018",
+        "F-019",
+        "F-071"
+      ],
+      "reason": "DOOselection80/60is higher than75/55; ventilation80/60lower than85/60. Output does not claim both are underestimated.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+        "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6"
+      }
+    },
+    {
+      "target_id": "ITP44_GVS_maxima:2ad6745f21c33bf142fc",
+      "false_claim_repeated": false,
+      "related_finding_ids": [
+        "F-047"
+      ],
+      "reason": "F047explicitly recognizes1.081in questionnaire/general data and nonuniformity role; does not claim total absent or prove arithmetic error from sum1.286alone.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/hydraulics_and_gvs_load_bounded_review.json",
+        "sha256": "7d0cd0aa62edff8553e6dfddf090e1a211f411ec8f5c2e60053efb5c4dd75bf8"
+      }
+    },
+    {
+      "target_id": "ITP_F004_safety_valve_setpoints:d5f708be41c1a1f2266c",
+      "false_claim_repeated": false,
+      "related_finding_ids": [
+        "F-009"
+      ],
+      "reason": "F00920bar is attributed to specification, not schematic45. No final claim that schematic also says20. Own evaluator misreading corrected separately; absence of this false claim does not restore missing scheme16/spec20positive comparison.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/zone3_pressure_bounded_review.json",
+        "sha256": "a7676224f9566fe295c244b9ddad7fab3d887dcaeb7326c61188d28e06e5059d"
+      }
+    },
+    {
+      "target_id": "ITP_F006_fuse_instruction:427e462f69e3375e880c",
+      "false_claim_repeated": false,
+      "related_finding_ids": [
+        "F-011"
+      ],
+      "reason": "F011acknowledges general safety provisions and limits its concern to energized fuse operation; no claim whole safety section lacks protection.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pressure_unit_and_fuse_bounded_review.json",
+        "sha256": "902b0fca5d89e39aa82ad3dd53bb1ed35c902302cd63dfd4289b611d8dfd0272"
+      }
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:d9eb099d20a94bca22e2",
+      "false_claim_repeated": false,
+      "related_finding_ids": [
+        "F-050",
+        "F-051"
+      ],
+      "reason": "Output explicitly retains15percent margin and50percent split where applicable; no project-wide absence of margin claimed.",
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/heat_exchanger_labels_bounded_review.json",
+        "sha256": "cbb345dcab45ba26b5a96ecf0a03ac2303e2a7d9d661d513b60c58ae22110b6f"
+      }
+    }
+  ],
+  "method": "Parent semantic review of relevant output with source-bound reviews; text searches used for navigation, not as sole proof.",
+  "filter_effectiveness_proven": false,
+  "limit": "False thesis not repeated is an output observation. Candidate arrival and correct removal at a filter are not traced; no causal improvement claim."
+}

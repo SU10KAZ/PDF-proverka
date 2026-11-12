@@ -54,12 +54,22 @@
     },
     {
       "target_id": "B-ITP-F-011:cddfdb106afa191e3b80",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/negative_output_observations.json",
+          "sha256": "bfef022b3748c8ef487a758fa55bb300d49fd0313f7ea4c21567fc09cb9b9714"
+        }
+      ],
+      "reason": "F031compares unrounded recalculation and second-zone substitution; does not assert4.29/0.78fail from printed0.033/0.006. Those printed substitutions are arithmetically correct.",
+      "section_assessment": "not_applicable",
+      "related_finding_ids": [
+        "F-031"
+      ],
+      "filter_effectiveness_proven": false,
+      "filter_trace_status": "not_yet_traced"
     },
     {
       "target_id": "B-ITP-F-011:13234a067319a117c786",
@@ -228,12 +238,23 @@
     },
     {
       "target_id": "B-ITP-F-016:364c279f5f1b89fa2aee",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/negative_output_observations.json",
+          "sha256": "bfef022b3748c8ef487a758fa55bb300d49fd0313f7ea4c21567fc09cb9b9714"
+        }
+      ],
+      "reason": "Nominal motor1.5kW and working-pointP2=0.74kW explicitly distinct; no identity conflation released.",
+      "section_assessment": "not_applicable",
+      "related_finding_ids": [
+        "F-015",
+        "F-068"
+      ],
+      "filter_effectiveness_proven": false,
+      "filter_trace_status": "not_yet_traced"
     },
     {
       "target_id": "B-ITP-F-017:05e18fdb07cf5bb1bc8b",
@@ -271,12 +292,22 @@
     },
     {
       "target_id": "B-ITP-F-019:7e4bf6b3afd2b736df6c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/negative_output_observations.json",
+          "sha256": "bfef022b3748c8ef487a758fa55bb300d49fd0313f7ea4c21567fc09cb9b9714"
+        }
+      ],
+      "reason": "Manufacturer provisional mass caveat explicitly retained; no final structural design mass asserted.",
+      "section_assessment": "not_applicable",
+      "related_finding_ids": [
+        "F-037"
+      ],
+      "filter_effectiveness_proven": false,
+      "filter_trace_status": "not_yet_traced"
     },
     {
       "target_id": "B-ITP-F-020:e9f7120697b89e6da747",
@@ -517,12 +548,24 @@
     },
     {
       "target_id": "B-ITP-F-024:97a3c95e2b1698d996d0",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/negative_output_observations.json",
+          "sha256": "bfef022b3748c8ef487a758fa55bb300d49fd0313f7ea4c21567fc09cb9b9714"
+        }
+      ],
+      "reason": "DOOselection80/60is higher than75/55; ventilation80/60lower than85/60. Output does not claim both are underestimated.",
+      "section_assessment": "not_applicable",
+      "related_finding_ids": [
+        "F-018",
+        "F-019",
+        "F-071"
+      ],
+      "filter_effectiveness_proven": false,
+      "filter_trace_status": "not_yet_traced"
     },
     {
       "target_id": "B-ITP-F-025:c98f6c16f19022b52eb6",
@@ -1086,12 +1129,22 @@
     },
     {
       "target_id": "ITP44_GVS_maxima:2ad6745f21c33bf142fc",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/negative_output_observations.json",
+          "sha256": "bfef022b3748c8ef487a758fa55bb300d49fd0313f7ea4c21567fc09cb9b9714"
+        }
+      ],
+      "reason": "F047explicitly recognizes1.081in questionnaire/general data and nonuniformity role; does not claim total absent or prove arithmetic error from sum1.286alone.",
+      "section_assessment": "not_applicable",
+      "related_finding_ids": [
+        "F-047"
+      ],
+      "filter_effectiveness_proven": false,
+      "filter_trace_status": "not_yet_traced"
     },
     {
       "target_id": "ITP58_GVS_branch_flows:f563ab4150d33b1acce3",
@@ -1193,12 +1246,22 @@
     },
     {
       "target_id": "ITP_F004_safety_valve_setpoints:d5f708be41c1a1f2266c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/negative_output_observations.json",
+          "sha256": "bfef022b3748c8ef487a758fa55bb300d49fd0313f7ea4c21567fc09cb9b9714"
+        }
+      ],
+      "reason": "F00920bar is attributed to specification, not schematic45. No final claim that schematic also says20. Own evaluator misreading corrected separately; absence of this false claim does not restore missing scheme16/spec20positive comparison.",
+      "section_assessment": "not_applicable",
+      "related_finding_ids": [
+        "F-009"
+      ],
+      "filter_effectiveness_proven": false,
+      "filter_trace_status": "not_yet_traced"
     },
     {
       "target_id": "ITP_F005_test_pressure_scope:88ef772ecba424138f46",
@@ -1248,12 +1311,22 @@
     },
     {
       "target_id": "ITP_F006_fuse_instruction:427e462f69e3375e880c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/negative_output_observations.json",
+          "sha256": "bfef022b3748c8ef487a758fa55bb300d49fd0313f7ea4c21567fc09cb9b9714"
+        }
+      ],
+      "reason": "F011acknowledges general safety provisions and limits its concern to energized fuse operation; no claim whole safety section lacks protection.",
+      "section_assessment": "not_applicable",
+      "related_finding_ids": [
+        "F-011"
+      ],
+      "filter_effectiveness_proven": false,
+      "filter_trace_status": "not_yet_traced"
     },
     {
       "target_id": "ITP_F009_GVS_inlet_temperature:06cdf2a18fcf30aafead",
@@ -1370,12 +1443,23 @@
     },
     {
       "target_id": "ITP_heat_exchanger_labels:d9eb099d20a94bca22e2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/negative_output_observations.json",
+          "sha256": "bfef022b3748c8ef487a758fa55bb300d49fd0313f7ea4c21567fc09cb9b9714"
+        }
+      ],
+      "reason": "Output explicitly retains15percent margin and50percent split where applicable; no project-wide absence of margin claimed.",
+      "section_assessment": "not_applicable",
+      "related_finding_ids": [
+        "F-050",
+        "F-051"
+      ],
+      "filter_effectiveness_proven": false,
+      "filter_trace_status": "not_yet_traced"
     },
     {
       "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
