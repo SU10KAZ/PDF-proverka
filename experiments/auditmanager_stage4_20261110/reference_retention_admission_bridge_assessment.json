@@ -1,0 +1,27 @@
+{
+  "status": "selection_to_fresh_adjudication_bridge_prepared",
+  "tests_passed": 10,
+  "model_calls": 0,
+  "prepared_root": "/tmp/auditmanager_ar_reference_retention_candidate_v002_20261112",
+  "previous_prepared_root_preserved": true,
+  "automatic_release": false,
+  "automatic_selection_measured": false,
+  "stage4_control_closed": false,
+  "production_acceptance": false,
+  "checks": [
+    "Exact unique claim/evidence binding required.",
+    "Missing or duplicate citation returns source_review_required without an adjudication request.",
+    "Original response and source version are bound.",
+    "Repaired fields go to fresh semantic adjudication; prior final_wording_verified is not reused."
+  ],
+  "remaining": [
+    "Run the prepared source-selection/repair pilot after comparison completion.",
+    "Dispatch and validate fresh semantic adjudication; do not admit an unresolved or silently reduced selection.",
+    "Check final release and Excel retention against preserved original findings."
+  ],
+  "files": {
+    "reference_retention_admission_bridge.py": "7ed5c1217800d35e839ed3e749226ddbaf0588e63b5a2f587baed3d80c8167fc",
+    "run_ar_reference_retention_candidate.py": "e52b3d22cf38b222492ccc5141c8521c42ea63b0133ce09dd7ca3b6375c699af",
+    "test_reference_retention_admission_bridge.py": "52c5a695eb759000ebfb286be49bd0cd5e8cab66580dbaed35fe7012340f4326"
+  }
+}

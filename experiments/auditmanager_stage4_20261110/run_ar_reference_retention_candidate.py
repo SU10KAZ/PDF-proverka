@@ -6,13 +6,14 @@ import json
 import os
 from pathlib import Path
 from .reference_retention_workflow import selection_request, run_reference_retention
+from .reference_retention_admission_bridge import prepare_reference_adjudication
 from .run_itp_pipe_operations import immutable
 from .observe_current_method_collection import observe
 from backend.app.pipeline.stages.findings_verify.source_review_workflow import direct_cli_executor
 from backend.app.pipeline.stages.findings_verify.source_review_evidence import evidence_digest
 
 BASE = Path(__file__).resolve().parent
-DEFAULT_ROOT = Path('/tmp/auditmanager_ar_reference_retention_candidate_20261112')
+DEFAULT_ROOT = Path('/tmp/auditmanager_ar_reference_retention_candidate_v002_20261112')
 
 
 def prepare(root):
@@ -23,7 +24,7 @@ def prepare(root):
     entry = json.loads(candidate.read_text())['entry']
     fields, response, md = entry['decision']['approved_fields'], entry['response'], bundle['md']
     request = selection_request(fields, response, md)
-    inputs = [source, candidate, Path(__file__), BASE/'reference_retention_workflow.py', BASE/'reference_retention_candidate.py']
+    inputs = [source, candidate, Path(__file__), BASE/'reference_retention_workflow.py', BASE/'reference_retention_candidate.py', BASE/'reference_retention_admission_bridge.py', BASE/'ar_rope_current_release_evidence/adjudication/request.json']
     binding = {'model': 'codex/gpt-6-astra', 'reasoning_effort': 'high',
         'maximum_new_calls': 2, 'automatic_retries': 0, 'known_source_control': True,
         'prior_model_review_supplied': True, 'engineer_answers_supplied': False,
@@ -71,6 +72,12 @@ async def main(root, execute):
         return result['json_data']
     result = await run_reference_retention(fields, response, md, invoke=invoke)
     immutable(root/'candidate_result.json', result)
+    if result['status'] in ('candidate_requires_semantic_review', 'literal_retention_verified'):
+        entry = json.loads((BASE/'ar_rope_current_release_evidence/adjudication/candidate.json').read_text())['entry']
+        prior_request = json.loads((BASE/'ar_rope_current_release_evidence/adjudication/request.json').read_text())
+        bridge = prepare_reference_adjudication(prior_request, entry, result, md)
+        immutable(root/'fresh_adjudication_preparation.json', bridge)
+        print(json.dumps({'fresh_adjudication_status': bridge['status'], 'dispatched': False}), flush=True)
     print(json.dumps({'status': result['status'], 'semantic_acceptance': False, 'automatic_release': False}), flush=True)
 
 
