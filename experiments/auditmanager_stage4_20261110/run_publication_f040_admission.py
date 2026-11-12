@@ -1,4 +1,4 @@
-"""Run one source-bound final check on the prepared local F040 edit."""
+"""Run one source-bound final check on a prepared local publication edit."""
 import argparse
 import asyncio
 import json
@@ -19,6 +19,7 @@ async def run(root):
     assert sha(root / 'entry.json') == manifest['entry_sha256']
     assert sha(root / 'request.json') == manifest['request_sha256']
     entry = json.loads((root / 'entry.json').read_text())
+    finding_id = entry['response']['finding_id']
     document = json.loads((root / 'input_document.json').read_text())
     md = Path(manifest['source_md_path']).read_text()
     assert prepare_final_check(entry, document, md)['request'] == json.loads((root / 'request.json').read_text())
@@ -28,7 +29,7 @@ async def run(root):
           'model': 'codex/gpt-6-astra', 'production_acceptance': False})
     try:
         after, receipt = await run_final_release_check(entry, document, md, root / 'workflow',
-            invoke=direct_cli_executor('codex/gpt-6-astra', project_id='AK-F040-publication-final-check'),
+            invoke=direct_cli_executor('codex/gpt-6-astra', project_id=f'AK-{finding_id}-publication-final-check'),
             executor_id='codex/gpt-6-astra:high:publication-final-check-v1')
     except Exception as exc:
         write(root / 'process.json', {'pid': os.getpid(), 'status': 'failed',
