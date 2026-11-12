@@ -6,6 +6,19 @@ from .observe_baseline_collection import process, read
 from .score_atomic_review import prepare, sha
 
 
+def execution_classification(record, seal, live):
+    """A failed execution is not an empty successful audit or an unstarted slot."""
+    if live is not False:
+        return 'running_or_unverified'
+    code = record.get('exit_code')
+    if (record.get('status') == 'terminal' and type(code) is int and code != 0
+            and seal.get('status') == 'failed'):
+        return 'terminal_failed'
+    if code == 0 and seal.get('status') == 'completed_unadjudicated':
+        return 'terminal_completed'
+    return 'no_verified_terminal_completion'
+
+
 def build(root, destination):
     root, destination = root.resolve(), destination.resolve()
     if destination.is_relative_to(root) or root.is_relative_to(destination):
@@ -16,16 +29,24 @@ def build(root, destination):
     assert sha(evaluator) == trial['evaluator']['sha256']
     collection = read(root/'experimental_collection_status.json')
     records = {r['work']: r for r in collection.get('runs', [])}
-    entries, pending = [], []
+    entries, pending, failures = [], [], []
     for run in trial['runs']:
         identity = {k:run[k] for k in ('discipline', 'variant', 'repeat')}
         record = records.get(run['work'], {})
         base = Path(run['work'])/'classic_control'
         seal_path = base/'status'/(run['discipline']+'.json')
         seal = read(seal_path)
-        if (record.get('exit_code') != 0 or seal.get('status') != 'completed_unadjudicated'
-                or process(record.get('pid'), 'paired_runner')['live'] is not False):
-            pending.append(identity | {'reason': 'no_verified_terminal_completion'})
+        classification = execution_classification(
+            record, seal, process(record.get('pid'), 'paired_runner')['live'])
+        if classification != 'terminal_completed':
+            pending.append(identity | {'reason': classification})
+            if classification == 'terminal_failed':
+                assert sha(seal_path) == record['status_sha256']
+                failures.append(identity | {
+                    'seal_path': str(seal_path), 'seal_sha256': sha(seal_path),
+                    'exit_code': record['exit_code'],
+                    'quality_score': None, 'count_as_empty_output': False,
+                })
             continue
         assert sha(seal_path) == record['status_sha256']
         protocol_path = base/'protocol.json'
@@ -65,10 +86,11 @@ def build(root, destination):
         })
     return {'status': 'evaluation_preparation_not_quality_acceptance',
         'trial_sha256': sha(trial_path), 'evaluator_sha256': sha(evaluator),
-        'entries': entries, 'pending': pending, 'model_calls': 0,
+        'entries': entries, 'pending': pending, 'execution_failures': failures, 'model_calls': 0,
         'production_acceptance': False,
         'limits': ['Only terminal, hash-verified outputs opened; existing reviews preserved.',
                    'Unchecked targets are not misses. Semantic adjudication remains required.',
+                   'Execution failures retain null quality scores and must enter reliability/cost accounting.',
                    'No evaluator or history written into independent audit inputs.',
                    'Novel findings, unsupported additions, retention and engineer workload need separate assessment.']}
 

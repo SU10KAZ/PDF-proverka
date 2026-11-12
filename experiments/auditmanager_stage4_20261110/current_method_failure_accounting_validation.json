@@ -1,0 +1,28 @@
+{
+  "status": "failure_accounting_verified",
+  "preparation_status": {
+    "path": "/tmp/auditmanager_current_method_evaluation_20261112/preparation_status.json",
+    "sha256": "abfebcab197a11d1c13b17680af83c060b06c2eaf8a031253ea6d48b22c4dfce"
+  },
+  "completed_evaluable_runs": 1,
+  "verified_execution_failures": [
+    {
+      "discipline": "AK",
+      "variant": "inventory",
+      "repeat": 1,
+      "seal_path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_inventory/classic_control/status/AK.json",
+      "seal_sha256": "c3ce57aa1a99d3fd6a80c91f3c9bd83aa0bcd038af42862944478b919ee828ff",
+      "exit_code": 1,
+      "quality_score": null,
+      "count_as_empty_output": false
+    }
+  ],
+  "other_pending_slots": 52,
+  "tests_passed": 5,
+  "semantic_scores_changed": false,
+  "audit_inputs_changed": false,
+  "limits": [
+    "Snapshot at this check, not final collection status.",
+    "Failure quality is unknown; reliability and all failed request durations must remain in comparison."
+  ]
+}
