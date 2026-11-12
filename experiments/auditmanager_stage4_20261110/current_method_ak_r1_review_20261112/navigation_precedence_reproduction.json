@@ -1,0 +1,107 @@
+{
+  "status": "reproduced_navigation_precedence_defect",
+  "run": "ak_r1_classic_current",
+  "sources": [
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+    },
+    {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/document_graph.json",
+      "sha256": "c10bba68a5f2320bbf1daf29056586c904f5999f9ad0ba9a8da419c830368dd4"
+    }
+  ],
+  "code": [
+    {
+      "path": "backend/app/pipeline/stages/prepare/graph_builder.py",
+      "sha256": "2986b5a62cfe0ccc81507b4313698bd9eaf912328a81985728c90bc8988cb63f",
+      "capsule_path": "/tmp/auditmanager_current_method_sources_20261112/candidate_d228885f327a/backend/app/pipeline/stages/prepare/graph_builder.py",
+      "same_as_capsule": true,
+      "function": "resolve_finding_sheet_label"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+      "sha256": "cf1fa5ec01ca73708036ad41cfe7f6a82fd8f3e25a6360b277045cfb2b6e7be3",
+      "capsule_path": "/tmp/auditmanager_current_method_sources_20261112/candidate_d228885f327a/backend/app/pipeline/stages/findings_merge/runner.py",
+      "same_as_capsule": true,
+      "function": "sheet backfill calls resolve_finding_sheet_label"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_review/deterministic_corrector.py",
+      "sha256": "7a0fdc4e50a16cc370de0b3cbcd469170992d9e4a36880744e1ab6185e214672",
+      "capsule_path": "/tmp/auditmanager_current_method_sources_20261112/candidate_d228885f327a/backend/app/pipeline/stages/findings_review/deterministic_corrector.py",
+      "same_as_capsule": true,
+      "function": "correct_findings / _fix_page_sheet"
+    }
+  ],
+  "local_reproduction": [
+    {
+      "finding_id": "F-003",
+      "stored_page": 4,
+      "stored_sheet": null,
+      "actual_function_result": null,
+      "diagnostic_page_removed_result": "Лист 2",
+      "source_block_pages": [
+        6
+      ]
+    },
+    {
+      "finding_id": "F-004",
+      "stored_page": 4,
+      "stored_sheet": null,
+      "actual_function_result": null,
+      "diagnostic_page_removed_result": "Лист 2",
+      "source_block_pages": [
+        6
+      ]
+    },
+    {
+      "finding_id": "F-005",
+      "stored_page": 4,
+      "stored_sheet": null,
+      "actual_function_result": null,
+      "diagnostic_page_removed_result": "Лист 4",
+      "source_block_pages": [
+        8
+      ]
+    },
+    {
+      "finding_id": "F-006",
+      "stored_page": 4,
+      "stored_sheet": null,
+      "actual_function_result": null,
+      "diagnostic_page_removed_result": "Лист 4",
+      "source_block_pages": [
+        8
+      ]
+    },
+    {
+      "finding_id": "F-007",
+      "stored_page": 4,
+      "stored_sheet": null,
+      "actual_function_result": null,
+      "diagnostic_page_removed_result": "Лист 4",
+      "source_block_pages": [
+        8
+      ]
+    }
+  ],
+  "established": [
+    "resolve_finding_sheet_label uses nonempty finding.page before referenced-block pages. Unmapped page4 yields no sheet and prevents the fallback.",
+    "The five frozen findings retain page4 and sheet null, while cited blocks map to pages6/8 and sheets2/4.",
+    "Removing page only in a diagnostic copy allows the existing resolver to recover the expected sheet.",
+    "A separate corrector exists but correct_findings skips absent/pass reviews and invokes page repair only for page_mismatch. Presence of a correction function is not proof it repaired these outputs."
+  ],
+  "proposed_behavior": "Before release, reconcile page/sheet with validated referenced block identities, preserving distinct PDF-page and drawing-sheet fields. Resolve conflicting sources explicitly; do not silently choose a page or remove a valid finding.",
+  "acceptance_cases": [
+    "These five real cases recover sheets2/4 and pages6/8 without changing factual claims.",
+    "Already-correct pages remain correct.",
+    "Multi-page evidence retains all relevant sources.",
+    "Conflicting block identities and missing graph data produce explicit unresolved navigation, not invented location."
+  ],
+  "limits": [
+    "No UI click or Excel hyperlink tested here. Proven effect is resolver result and frozen finding fields.",
+    "Diagnostic removal is not a proposed blanket deletion of all page fields.",
+    "Live capsule, frozen outputs, evaluator and production unchanged."
+  ]
+}
