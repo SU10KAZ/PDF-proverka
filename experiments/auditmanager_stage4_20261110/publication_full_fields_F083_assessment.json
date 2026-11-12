@@ -1,0 +1,63 @@
+{
+  "finding_id": "F-083",
+  "status": "scope_question_retained_literal_source_facts_not_recovered_from_whole_graphic",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_083/publication_projection.json",
+  "projection_sha256": "db216b1f84f6c565341d790d098a2a51139c8cb5efa6acca0e30ddf517dfc24a",
+  "graphics": [
+    {
+      "block_id": "blk_0792816c162c469289b461843d2c307b",
+      "page_index": 8,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        3483.373331174254,
+        1132.2883895397185,
+        4967.785542502999,
+        2366.4509620666504
+      ],
+      "grid_row": 1,
+      "grid_column": 3,
+      "path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/detail_tile_8.png",
+      "width": 1901,
+      "height": 1580,
+      "sha256": "cd01fb581da93f8dae790715b593d398809221e3b5436eb6ea3ca5eeb673058a"
+    },
+    {
+      "block_id": "blk_0792816c162c469289b461843d2c307b",
+      "page_index": 8,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        4670.90310023725,
+        1132.2883895397185,
+        6006.874090433121,
+        2366.4509620666504
+      ],
+      "grid_row": 1,
+      "grid_column": 4,
+      "path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/detail_tile_9.png",
+      "width": 1711,
+      "height": 1580,
+      "sha256": "d71e372e1b9aca64a85fb03d5062f1de08d2f61ed0520dd2bb9c0aece72a778c"
+    }
+  ],
+  "request_binding": {
+    "path": "/tmp/auditmanager_publication_full_fields_AK_20261112/publication_reconciliation_083.json",
+    "sha256": "36ef980ea34e109fd8e6f78cdd68fbe636a89b5c43a9120665b9dc6c7243bce0",
+    "image_hashes": {
+      "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_0792816c162c469289b461843d2c307b.png": "7cc18f2b25f7f7ba5728daf368eee0eefb4e43aa9549e2c6ab2497ca080e7769"
+    },
+    "whole_image_pixels": [
+      8247,
+      3265
+    ]
+  },
+  "checks": [
+    "Повторно просмотрены tile8 и tile9: К5.3/К5.4 в трёх самостоятельных рамках помещений 5.Т.1, 6.Т.5 и 6.Т.9, каждая с отдельным БУРР. Это не один объект в перекрывающихся деталях.",
+    "Модель сохраняет вопрос сверки с комплектами ОВ/АК и не объявляет технический конфликт только по совпадению коротких марок.",
+    "Фактическое повторение марок модель оставляет pending, имея только общий рисунок. Доступные читаемые детали не входили в запрос; нужен повтор с полным графическим контекстом без контрольного ответа.",
+    "Условный риск остаётся отдельной pending-частью; при финальной редактуре он должен сохраняться как условие вопроса, а не становиться новым дефектом или отдельной задачей инженеру.",
+    "Граница уникальности и адресный конфликт не установлены. Это не основание подавлять положительный контроль F085, где есть сопоставление выносок с кабельным журналом."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
