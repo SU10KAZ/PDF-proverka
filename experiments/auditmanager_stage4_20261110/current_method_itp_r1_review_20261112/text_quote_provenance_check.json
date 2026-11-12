@@ -1,0 +1,2623 @@
+{
+  "version": 1,
+  "scope": "Exact quote provenance only; sealed output",
+  "sources": {
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    }
+  },
+  "method": "Case-sensitive literal substring in addressed MD block; whitespace-only matches reported separately. No punctuation, units, numeric or OCR correction.",
+  "parsed_blocks": 210,
+  "finding_count": 74,
+  "evidence_count": 323,
+  "counts": {
+    "no_quote": 37,
+    "graphic_not_text_check": 39,
+    "exact": 247
+  },
+  "rows": [
+    {
+      "finding_id": "F-001",
+      "pointer": "/findings/0/evidence/0",
+      "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-001",
+      "pointer": "/findings/0/evidence/1",
+      "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-002",
+      "pointer": "/findings/1/evidence/0",
+      "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-002",
+      "pointer": "/findings/1/evidence/1",
+      "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-002",
+      "pointer": "/findings/1/evidence/2",
+      "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-003",
+      "pointer": "/findings/2/evidence/0",
+      "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/0",
+      "block_id": "blk_26b23c5bfabe4917a156a91077b5458d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9a6c2e10a8ec809cb49c4ad091acdb8851a14138cf98cf45690a88a9d8a12db3"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/1",
+      "block_id": "blk_26b23c5bfabe4917a156a91077b5458d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "778ab7ee3513e39e1d267b37ebb7ccc06747b6362d3d63ca15acc2364d49ec51"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/2",
+      "block_id": "blk_176aff361f9542daa86a2daecc090272",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2bdbcae1feed6f9d2c360358a5d8c9eecddb811d10a5baf79765d44b4854edd5"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/3",
+      "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2bdbcae1feed6f9d2c360358a5d8c9eecddb811d10a5baf79765d44b4854edd5"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/4",
+      "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2bdbcae1feed6f9d2c360358a5d8c9eecddb811d10a5baf79765d44b4854edd5"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/5",
+      "block_id": "blk_7e1be6cad926466483206d5c758dd238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2bdbcae1feed6f9d2c360358a5d8c9eecddb811d10a5baf79765d44b4854edd5"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/6",
+      "block_id": "blk_20a7f89489d543c5b30e8822dd2999c2",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2bdbcae1feed6f9d2c360358a5d8c9eecddb811d10a5baf79765d44b4854edd5"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/7",
+      "block_id": "blk_df17c007b7cf4eef8eca49f51580a275",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2bdbcae1feed6f9d2c360358a5d8c9eecddb811d10a5baf79765d44b4854edd5"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/8",
+      "block_id": "blk_7963858ada7a4aa2bd63ef6009ec7b6f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2bdbcae1feed6f9d2c360358a5d8c9eecddb811d10a5baf79765d44b4854edd5"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/9",
+      "block_id": "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2bdbcae1feed6f9d2c360358a5d8c9eecddb811d10a5baf79765d44b4854edd5"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/10",
+      "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "7f36e0188bf6e6e54a008024cb958533d021c0fa7754bb1632a107e226b25b0e"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/11",
+      "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "27a4ad7b83e050a802c9b2863a16837ed7e8fd7c927508253f89ee6656b8f835"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/12",
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "44932fcf8431be24c5db405dd274cdf67d130d814a5b32fdfe5775409d7c406e"
+    },
+    {
+      "finding_id": "F-004",
+      "pointer": "/findings/3/evidence/13",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "33c506aed795087eaab29af7100ea4ce6455edf364aa350f30c7ec9ef36dc32e"
+    },
+    {
+      "finding_id": "F-005",
+      "pointer": "/findings/4/evidence/0",
+      "block_id": "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "831cd495898ae772db1a21579e161feb753a075f1b9310f7d4fd4739acd51106"
+    },
+    {
+      "finding_id": "F-005",
+      "pointer": "/findings/4/evidence/1",
+      "block_id": "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2bdbcae1feed6f9d2c360358a5d8c9eecddb811d10a5baf79765d44b4854edd5"
+    },
+    {
+      "finding_id": "F-005",
+      "pointer": "/findings/4/evidence/2",
+      "block_id": "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2a6ce1d02a2d423c10e9b2b96076249e260afa4af7e7ddbcd7a596824344ed43"
+    },
+    {
+      "finding_id": "F-005",
+      "pointer": "/findings/4/evidence/3",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "8389c4ae2abc2b56d6c852b2420790b406eb7b309b0c3215ccd7ae72f2d80c03"
+    },
+    {
+      "finding_id": "F-005",
+      "pointer": "/findings/4/evidence/4",
+      "block_id": "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "ae94c7344eabbd188d2bb0994d88dc427acb90e367dce3bc3c02c73713b0da55"
+    },
+    {
+      "finding_id": "F-005",
+      "pointer": "/findings/4/evidence/5",
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "a8827a4bb1db7823c4e19a9499f0ba2c472c2f415912d6ec6351e842defd7333"
+    },
+    {
+      "finding_id": "F-005",
+      "pointer": "/findings/4/evidence/6",
+      "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-005",
+      "pointer": "/findings/4/evidence/7",
+      "block_id": "blk_7e1be6cad926466483206d5c758dd238",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-005",
+      "pointer": "/findings/4/evidence/8",
+      "block_id": "blk_df17c007b7cf4eef8eca49f51580a275",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-005",
+      "pointer": "/findings/4/evidence/9",
+      "block_id": "blk_7963858ada7a4aa2bd63ef6009ec7b6f",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-006",
+      "pointer": "/findings/5/evidence/0",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "93d2cab7871cfb96b2b791565e0098b3421b30c029419def32bccf6746592487"
+    },
+    {
+      "finding_id": "F-006",
+      "pointer": "/findings/5/evidence/1",
+      "block_id": "blk_55ab0b4be112477eb9dec207df68000e",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "ef2b424682b46ade6b15d68deb2a60811781e84005e9e450861279e9e52f53ec"
+    },
+    {
+      "finding_id": "F-006",
+      "pointer": "/findings/5/evidence/2",
+      "block_id": "blk_55ab0b4be112477eb9dec207df68000e",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "5bb90097ab05a1903b9e000648ac3e6ad8bfc59f767c7b40f534660d8a2da327"
+    },
+    {
+      "finding_id": "F-006",
+      "pointer": "/findings/5/evidence/3",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0b2877a38a16d83b068d87d01ee82a21aa58d0a4ca0d970f53d91283a056f370"
+    },
+    {
+      "finding_id": "F-006",
+      "pointer": "/findings/5/evidence/4",
+      "block_id": "blk_26b23c5bfabe4917a156a91077b5458d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2077045082d973bf4e7c561117f791f2d10210994aee32f9f4d41b3581c16f67"
+    },
+    {
+      "finding_id": "F-006",
+      "pointer": "/findings/5/evidence/5",
+      "block_id": "blk_26b23c5bfabe4917a156a91077b5458d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "778ab7ee3513e39e1d267b37ebb7ccc06747b6362d3d63ca15acc2364d49ec51"
+    },
+    {
+      "finding_id": "F-006",
+      "pointer": "/findings/5/evidence/6",
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "df3975f88abe0a4c893837e5ede744ac2087bf224fa96faa150b7b45621a9f29"
+    },
+    {
+      "finding_id": "F-006",
+      "pointer": "/findings/5/evidence/7",
+      "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "771d88e032962a415e61cec8582f37ef47a73d0ed8244a39017714a578677acd"
+    },
+    {
+      "finding_id": "F-007",
+      "pointer": "/findings/6/evidence/0",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "167e5d03bbc9275ccbf01fc4ccc628dc5da0a4f5aa5abec820495f3157da0558"
+    },
+    {
+      "finding_id": "F-007",
+      "pointer": "/findings/6/evidence/1",
+      "block_id": "blk_f118444d756a43319e1e4a1069dd6cbb",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "ef2b424682b46ade6b15d68deb2a60811781e84005e9e450861279e9e52f53ec"
+    },
+    {
+      "finding_id": "F-007",
+      "pointer": "/findings/6/evidence/2",
+      "block_id": "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "831cd495898ae772db1a21579e161feb753a075f1b9310f7d4fd4739acd51106"
+    },
+    {
+      "finding_id": "F-007",
+      "pointer": "/findings/6/evidence/3",
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "3d1c2e7d580c05d525995bd29c26ebac2331b419cc87a38c19ada541af1d9d8d"
+    },
+    {
+      "finding_id": "F-007",
+      "pointer": "/findings/6/evidence/4",
+      "block_id": "blk_459720729c2742b4942fbc289c8d07bc",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "5414c41868be3ff18510fa7b49b1ba0ce828fa2b8e8754b41a1f96c097619426"
+    },
+    {
+      "finding_id": "F-008",
+      "pointer": "/findings/7/evidence/0",
+      "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "ef2b424682b46ade6b15d68deb2a60811781e84005e9e450861279e9e52f53ec"
+    },
+    {
+      "finding_id": "F-008",
+      "pointer": "/findings/7/evidence/1",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9d3dec082f9346dbfc499c6bc754354eb5cae7b72116083cb48a38a39b0c7a5e"
+    },
+    {
+      "finding_id": "F-008",
+      "pointer": "/findings/7/evidence/2",
+      "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "c7ebffb3948e5e9472283c6d0867b1cf7e4498f03c5ea00047f661fc550038e9"
+    },
+    {
+      "finding_id": "F-008",
+      "pointer": "/findings/7/evidence/3",
+      "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "70fc96e55cece70f1d0dbbfc3f5f0af39a90d25b421f0f830cfd10513bb668ed"
+    },
+    {
+      "finding_id": "F-008",
+      "pointer": "/findings/7/evidence/4",
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "d180a479f69252f89722db1a04d48c2bb1d2d05cbfe8f6e6465dc329d494c08d"
+    },
+    {
+      "finding_id": "F-009",
+      "pointer": "/findings/8/evidence/0",
+      "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "dbdc0a37bed9fef4c66ca5d1f320ccb73a544e4e27ae4fc4dacdc75ab428a1e8"
+    },
+    {
+      "finding_id": "F-009",
+      "pointer": "/findings/8/evidence/1",
+      "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "ef2b424682b46ade6b15d68deb2a60811781e84005e9e450861279e9e52f53ec"
+    },
+    {
+      "finding_id": "F-009",
+      "pointer": "/findings/8/evidence/2",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9d3dec082f9346dbfc499c6bc754354eb5cae7b72116083cb48a38a39b0c7a5e"
+    },
+    {
+      "finding_id": "F-010",
+      "pointer": "/findings/9/evidence/0",
+      "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9c155c641183abb5371ecf45a02cc7ef9c55afe25fd2458f4affabe694b7bfde"
+    },
+    {
+      "finding_id": "F-011",
+      "pointer": "/findings/10/evidence/0",
+      "block_id": "blk_67b9571de5e74033b6c491043f8c87d1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "1bab905c80b4e4ec1542f692d5450bfb8ddc78fe8d4f0ad986f41d0d244ad748"
+    },
+    {
+      "finding_id": "F-011",
+      "pointer": "/findings/10/evidence/1",
+      "block_id": "blk_67b9571de5e74033b6c491043f8c87d1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "daa156416eaecf27aad3d19717a94b880ebb2dc68e9d6233141dde9c53233cc2"
+    },
+    {
+      "finding_id": "F-012",
+      "pointer": "/findings/11/evidence/0",
+      "block_id": "blk_8a446a40473d48d18d60edba74661d9e",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "dd35ebf645807f29f48de18fef2ac1e4ba3ee38b72d0bc9b61375cf5d5f29856"
+    },
+    {
+      "finding_id": "F-012",
+      "pointer": "/findings/11/evidence/1",
+      "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "d34220efa40e53f3bf0ab02fbed35dfd31ac23cd7dcc9ed7218741ad6879a62c"
+    },
+    {
+      "finding_id": "F-012",
+      "pointer": "/findings/11/evidence/2",
+      "block_id": "blk_35ff8683b1cf4be2abdef61740ddda2e",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9d667083c93a4edd978e87d2d8fafee0861171dc21df0dea52d4ee253f689821"
+    },
+    {
+      "finding_id": "F-013",
+      "pointer": "/findings/12/evidence/0",
+      "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "cbab552dc366e134e7d29f5d102d82baf690a27c313ece6f66dabcab79d02129"
+    },
+    {
+      "finding_id": "F-013",
+      "pointer": "/findings/12/evidence/1",
+      "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "5781ae89ee3f960c77d25c3727548b2d9b129a431d5a0f8ae1749347a54d7f27"
+    },
+    {
+      "finding_id": "F-013",
+      "pointer": "/findings/12/evidence/2",
+      "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "321cc3cf41bc43b3645502f681b845860f0b44f083300e08d1d16aa757d3ecb9"
+    },
+    {
+      "finding_id": "F-013",
+      "pointer": "/findings/12/evidence/3",
+      "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "d3e09b2f464162e52d7991d3de3a32b2cbd9a22fc36abf9d79e0deb266693775"
+    },
+    {
+      "finding_id": "F-013",
+      "pointer": "/findings/12/evidence/4",
+      "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "8fcf2ab6e550940c35a66ca866c0d1d731cbb119408afa4fe9ca384ff490e62e"
+    },
+    {
+      "finding_id": "F-014",
+      "pointer": "/findings/13/evidence/0",
+      "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "bc3b496224bcbb4849f6e27befab6f3a86f04039b842a98c3d8bd49f4cf95ab1"
+    },
+    {
+      "finding_id": "F-014",
+      "pointer": "/findings/13/evidence/1",
+      "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "54095e019c04222feaf1c638b5d07cfd110492f026854f465915d6ea71bd8161"
+    },
+    {
+      "finding_id": "F-014",
+      "pointer": "/findings/13/evidence/2",
+      "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "5781ae89ee3f960c77d25c3727548b2d9b129a431d5a0f8ae1749347a54d7f27"
+    },
+    {
+      "finding_id": "F-014",
+      "pointer": "/findings/13/evidence/3",
+      "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "cbab552dc366e134e7d29f5d102d82baf690a27c313ece6f66dabcab79d02129"
+    },
+    {
+      "finding_id": "F-014",
+      "pointer": "/findings/13/evidence/4",
+      "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "bd3f05f67743566624b7384ab56c1443014b3abf89c74c9010ccdea29eb68088"
+    },
+    {
+      "finding_id": "F-014",
+      "pointer": "/findings/13/evidence/5",
+      "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "dfa93aeffcdab1d5952c07a610069da48a74e1754c1e6eca93822d5f44c248e8"
+    },
+    {
+      "finding_id": "F-015",
+      "pointer": "/findings/14/evidence/0",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "75bc926adb24402df6760148153f704cdbafb705f076ee86f3974862dde54caf"
+    },
+    {
+      "finding_id": "F-015",
+      "pointer": "/findings/14/evidence/1",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2e17530937391b905b9a4e9b793c10b2c4478d63366d17066ded74055820f963"
+    },
+    {
+      "finding_id": "F-015",
+      "pointer": "/findings/14/evidence/2",
+      "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9cd5df847b22694a2436af6ceda91cd2d19daf6391c798b0328f2347f0465e12"
+    },
+    {
+      "finding_id": "F-015",
+      "pointer": "/findings/14/evidence/3",
+      "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "c0bfd2dd0cd79cb3f670785386487b6251d44d428e2c5d465b17ce2bba653119"
+    },
+    {
+      "finding_id": "F-015",
+      "pointer": "/findings/14/evidence/4",
+      "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "d4e866766c4f56e6caf3d16d50f8e0b1527664aadaa981c69c1a8f4a7bc10ef1"
+    },
+    {
+      "finding_id": "F-015",
+      "pointer": "/findings/14/evidence/5",
+      "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "c1ecac0dc0af76cb6c8ca3504b42ee93035a49610ba62d96035b6a8393743177"
+    },
+    {
+      "finding_id": "F-016",
+      "pointer": "/findings/15/evidence/0",
+      "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0c41452cf2408b8989e0bea575b8ac663a90160b6b62c0900e0007042354e35d"
+    },
+    {
+      "finding_id": "F-016",
+      "pointer": "/findings/15/evidence/1",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "bdbbbf0a539c7d630be8a71bc6ac68ac4096233e823ec24072c593df18f70f3e"
+    },
+    {
+      "finding_id": "F-016",
+      "pointer": "/findings/15/evidence/2",
+      "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0fe3b14a84ded91f831924c3324dcc8dcd771d13b77213ca962a295d023b436a"
+    },
+    {
+      "finding_id": "F-016",
+      "pointer": "/findings/15/evidence/3",
+      "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "31ca44f66e3d11269e04dc59884b8a73d277ec2b462977c6c2269a62b1305c25"
+    },
+    {
+      "finding_id": "F-016",
+      "pointer": "/findings/15/evidence/4",
+      "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "b4e14d0af7b142f24fec5dbcc51b36e041a6eb598303f36d511304ef54ee1445"
+    },
+    {
+      "finding_id": "F-016",
+      "pointer": "/findings/15/evidence/5",
+      "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "c55c725548cf2697993460b680a6defe1d454bd5af4f1047e06598c6ce751e4f"
+    },
+    {
+      "finding_id": "F-016",
+      "pointer": "/findings/15/evidence/6",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-017",
+      "pointer": "/findings/16/evidence/0",
+      "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "ab6984920106eab27c4c846e57a3178ebae58cb623715852f94417b7f5e51f70"
+    },
+    {
+      "finding_id": "F-017",
+      "pointer": "/findings/16/evidence/1",
+      "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "e557b173bf6c735f570efe41a5dbe8a66be143dca805f5bda3b17af0d1e4f547"
+    },
+    {
+      "finding_id": "F-017",
+      "pointer": "/findings/16/evidence/2",
+      "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "cf2b6ed51ffa1243b56cb1c0256b762b025dc48413d96fbc77e1f2d8cd4813b2"
+    },
+    {
+      "finding_id": "F-017",
+      "pointer": "/findings/16/evidence/3",
+      "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9818923752ca94f49581d944462905733f015d366a57df22dd605f47f20c15be"
+    },
+    {
+      "finding_id": "F-017",
+      "pointer": "/findings/16/evidence/4",
+      "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "513f4792b3d1e006ed720dfaca54ec2be5ee8d03e7859c4864b8886d7ea0bfe7"
+    },
+    {
+      "finding_id": "F-017",
+      "pointer": "/findings/16/evidence/5",
+      "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "f26043b8ee0a67f0c95af407dd3ed34e2bf586cc3f5031ade3ed3e3a5aa4ec6d"
+    },
+    {
+      "finding_id": "F-017",
+      "pointer": "/findings/16/evidence/6",
+      "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "5dad76eae5efe833059277b648a99c6a223a35cf2e15763384b63686c62ee0fe"
+    },
+    {
+      "finding_id": "F-017",
+      "pointer": "/findings/16/evidence/7",
+      "block_id": "blk_fe2066a9479d4d9e9c215338d4f82621",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0602debb8ab87a517521681d8e5d7bec9e513459b5ae5ad412c6f51310fab373"
+    },
+    {
+      "finding_id": "F-017",
+      "pointer": "/findings/16/evidence/8",
+      "block_id": "blk_fe2066a9479d4d9e9c215338d4f82621",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "636fb0667373acd5d82c1c40893dae94b4b30f6658a97591d2ad687370732edd"
+    },
+    {
+      "finding_id": "F-018",
+      "pointer": "/findings/17/evidence/0",
+      "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9aa8c334e5a5b4318827d9ba79b00fffb878a0d4d5b0ea2018a4e8f4f26acc0d"
+    },
+    {
+      "finding_id": "F-018",
+      "pointer": "/findings/17/evidence/1",
+      "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "68935218ed6eb362cea24e2268ac2d498378226155e1886d043fe554a64521af"
+    },
+    {
+      "finding_id": "F-018",
+      "pointer": "/findings/17/evidence/2",
+      "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "dddcbb8aadc135945f7471897854d330c499e78ffe4daf65e01d12bb2e55eaf4"
+    },
+    {
+      "finding_id": "F-018",
+      "pointer": "/findings/17/evidence/3",
+      "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "3f2481e69544bb0bd73b835108f97f2c46394898031463ad102a9f62adb19daa"
+    },
+    {
+      "finding_id": "F-018",
+      "pointer": "/findings/17/evidence/4",
+      "block_id": "blk_7e1be6cad926466483206d5c758dd238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "fb077a281b23eeaa023ce9a02c3fe5eb1eeae00312404c1d5ffada6d2f3a00d0"
+    },
+    {
+      "finding_id": "F-018",
+      "pointer": "/findings/17/evidence/5",
+      "block_id": "blk_fba6f821ad1d450ebfbc5fc330bbc2b2",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "b6474c33f9a1a53f12449b6f313cc61de531faff122a90e96d536be1367566c5"
+    },
+    {
+      "finding_id": "F-019",
+      "pointer": "/findings/18/evidence/0",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "643456436ab57ae667a6f55154638f33b0b0f8f57e65edf762655235bf7372cd"
+    },
+    {
+      "finding_id": "F-019",
+      "pointer": "/findings/18/evidence/1",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "68935218ed6eb362cea24e2268ac2d498378226155e1886d043fe554a64521af"
+    },
+    {
+      "finding_id": "F-019",
+      "pointer": "/findings/18/evidence/2",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "dddcbb8aadc135945f7471897854d330c499e78ffe4daf65e01d12bb2e55eaf4"
+    },
+    {
+      "finding_id": "F-019",
+      "pointer": "/findings/18/evidence/3",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "66dc6f40262e27f9b7c9c44db3a37439f4ecb6a028672c473fd3650e431c6d7d"
+    },
+    {
+      "finding_id": "F-019",
+      "pointer": "/findings/18/evidence/4",
+      "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "ab8a62f3a540e859c5849470c8c8097080e95b7e06998592ee6c524c66445097"
+    },
+    {
+      "finding_id": "F-019",
+      "pointer": "/findings/18/evidence/5",
+      "block_id": "blk_fba6f821ad1d450ebfbc5fc330bbc2b2",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "d31333f03885e2463417f8692fbbc3b73015a1efa139c4da84ae907177689d59"
+    },
+    {
+      "finding_id": "F-020",
+      "pointer": "/findings/19/evidence/0",
+      "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "cb0e5083845ddd2d40bc6b6a5adde758126d2a3a32ef713a043581774d5b57b0"
+    },
+    {
+      "finding_id": "F-020",
+      "pointer": "/findings/19/evidence/1",
+      "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "dddcbb8aadc135945f7471897854d330c499e78ffe4daf65e01d12bb2e55eaf4"
+    },
+    {
+      "finding_id": "F-020",
+      "pointer": "/findings/19/evidence/2",
+      "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "6c41ef207cf28b752ff5471a787af3c1801ecd6c366c981a3815209fa3789ccf"
+    },
+    {
+      "finding_id": "F-020",
+      "pointer": "/findings/19/evidence/3",
+      "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "00c0c7cda7c250f17a0f642d284818194f6a0fafaa78a9aa9ba6839a0c0eae53"
+    },
+    {
+      "finding_id": "F-021",
+      "pointer": "/findings/20/evidence/0",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "18f1847344d022b8a153b3ac69bce38acb454276f92d7fe0437b8dd4a4d40018"
+    },
+    {
+      "finding_id": "F-021",
+      "pointer": "/findings/20/evidence/1",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "dddcbb8aadc135945f7471897854d330c499e78ffe4daf65e01d12bb2e55eaf4"
+    },
+    {
+      "finding_id": "F-021",
+      "pointer": "/findings/20/evidence/2",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "bd5ad7c34c69cfc86b611c08adc71fdfc766edec23d202f56f9798829cb5517b"
+    },
+    {
+      "finding_id": "F-021",
+      "pointer": "/findings/20/evidence/3",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "66dc6f40262e27f9b7c9c44db3a37439f4ecb6a028672c473fd3650e431c6d7d"
+    },
+    {
+      "finding_id": "F-021",
+      "pointer": "/findings/20/evidence/4",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "00c0c7cda7c250f17a0f642d284818194f6a0fafaa78a9aa9ba6839a0c0eae53"
+    },
+    {
+      "finding_id": "F-022",
+      "pointer": "/findings/21/evidence/0",
+      "block_id": "blk_26b23c5bfabe4917a156a91077b5458d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "755ba0058be6a5e7b2e69acd22a2d0d935255c985010486d8f4c09d3e686bd91"
+    },
+    {
+      "finding_id": "F-022",
+      "pointer": "/findings/21/evidence/1",
+      "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "cfa61289d26975185e0d36fa20804576d3434d04c9c53242d4c68329fd919fac"
+    },
+    {
+      "finding_id": "F-022",
+      "pointer": "/findings/21/evidence/2",
+      "block_id": "blk_b4fb33513ca44182af058d09c8ab2dbb",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "5a8eb4d706178bca27e9acfd295810d6f872abf8dc2fc8c2aabf1b8348ad6c9b"
+    },
+    {
+      "finding_id": "F-022",
+      "pointer": "/findings/21/evidence/3",
+      "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "f4d8b27666e9350f17ec72838686d1653c5ff8adb1a49abf45cd36a164f1ed0e"
+    },
+    {
+      "finding_id": "F-022",
+      "pointer": "/findings/21/evidence/4",
+      "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "1e0ac01f3dfc552644066c6b4cc2957a5f81119361e38338dc21f216eb721f0d"
+    },
+    {
+      "finding_id": "F-022",
+      "pointer": "/findings/21/evidence/5",
+      "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "48c2e2000120434b1d6d462cd9122ddbd97116f5d862169d81547a5189034953"
+    },
+    {
+      "finding_id": "F-022",
+      "pointer": "/findings/21/evidence/6",
+      "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "ed1c4b156e8b4df46694c750b65617de74c31a3dd316c5179e555b424c25defe"
+    },
+    {
+      "finding_id": "F-022",
+      "pointer": "/findings/21/evidence/7",
+      "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "bbceda34d8507dc545195d3b4c90d16e7f4939704c76acf45eec3e54f5d9f425"
+    },
+    {
+      "finding_id": "F-022",
+      "pointer": "/findings/21/evidence/8",
+      "block_id": "blk_26b23c5bfabe4917a156a91077b5458d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "6bfac037406fc21fc740bfafba694dbb60ea1b5ab91f9167786c4ca5bc831dc8"
+    },
+    {
+      "finding_id": "F-022",
+      "pointer": "/findings/21/evidence/9",
+      "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-023",
+      "pointer": "/findings/22/evidence/0",
+      "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9d765a3642c2fa10baff8df357717899d53d0400b0eb1a53669ca1ab7cea07a5"
+    },
+    {
+      "finding_id": "F-023",
+      "pointer": "/findings/22/evidence/1",
+      "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "cdab692abbcc15e7ce8b6e401f60883e17e67a59cade6fc9a3fd6dfb0a833602"
+    },
+    {
+      "finding_id": "F-023",
+      "pointer": "/findings/22/evidence/2",
+      "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "277a6342d9b36e232692b38788b97eac77f13193664101d622ee95fba195c130"
+    },
+    {
+      "finding_id": "F-023",
+      "pointer": "/findings/22/evidence/3",
+      "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "fd1f3ee18196961f70a61bcf0393374fb3d3f24379715b38e247199823b5cd9a"
+    },
+    {
+      "finding_id": "F-024",
+      "pointer": "/findings/23/evidence/0",
+      "block_id": "blk_ec07216893c540b88b7560c80b87ecd9",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "dafac95eaf369b48909aad3e4a14f52b74a9c5c0cb8114b8695662cce62ca050"
+    },
+    {
+      "finding_id": "F-024",
+      "pointer": "/findings/23/evidence/1",
+      "block_id": "blk_ec07216893c540b88b7560c80b87ecd9",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "19f60e030f6eab5c9913b704fb4ad6474e7ff6986cfbebeb5423ec830b0e66b4"
+    },
+    {
+      "finding_id": "F-025",
+      "pointer": "/findings/24/evidence/0",
+      "block_id": "blk_20c9372392c34ef08a1e81d99316f0cb",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "bbf6b04b4b64ed7fbddc8e0e75acdca8422c677145ff6c2b19e5e18249b5960e"
+    },
+    {
+      "finding_id": "F-025",
+      "pointer": "/findings/24/evidence/1",
+      "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "30ce5602a15db02bf4dca251ced6f72c8ab7cc1f153f683f1381f474733f7522"
+    },
+    {
+      "finding_id": "F-026",
+      "pointer": "/findings/25/evidence/0",
+      "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "41b101c68fdaef6bca9cc7eb6d265223293eab7eb14c7e474111721aeee7128e"
+    },
+    {
+      "finding_id": "F-026",
+      "pointer": "/findings/25/evidence/1",
+      "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "e63c45afa74c42d7a1569d2c3f941062bb93064c42180895980a59f3d8437a0c"
+    },
+    {
+      "finding_id": "F-027",
+      "pointer": "/findings/26/evidence/0",
+      "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "feac34d1f5ebff97d2cc96c82d75be450aff40073fecf45633f8f090eae5eed1"
+    },
+    {
+      "finding_id": "F-027",
+      "pointer": "/findings/26/evidence/1",
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/0",
+      "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "eb8715c61a5c74741cd3f0aa729ef557c57bbe7a42b007dce1bec774b5e4efb8"
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/1",
+      "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "d65a51f25612c1720df9ea25b9dc31c1978f4d0d72374cd828d825c72c56fd6b"
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/2",
+      "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "94cdea12836d0155be04df5ddc7f9262c4ee18b1fe3ec57e0b7bb3d9f2019d55"
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/3",
+      "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "592fd02270a66828d42ca4ab52cc8e768351f048f2bb473bb1ae5298880b6375"
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/4",
+      "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "54a35a0eedae6762db9abeaf96cc4277b5bd814306ccf70db7636c700439c45f"
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/5",
+      "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "34156cd593339c70895e1a374cdf18f09a19998f9b4fffbc6ac97d14f7750b79"
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/6",
+      "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9255cee3c6f4fd630fc82ae3a04e9fc49d2ca22e8ab12f9ddfc160fccb113931"
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/7",
+      "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "4d4631107c4176857edd94f030781e57b69c426610ea0747ecc1f588261d45e2"
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/8",
+      "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "c75410b2a4a1bf697d11344bbe4d1fbcb3370c6473f93b84cb000acc1ccaea8e"
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/9",
+      "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "d819d2d0f3734b69ab6642391be8b5cbfd5bcfb60c3afea27d1c667ba80e77ba"
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/10",
+      "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "5ceb70d5897d6a7a343cfa58555a9aafde910ed09df27bbe81877b5c7d969455"
+    },
+    {
+      "finding_id": "F-028",
+      "pointer": "/findings/27/evidence/11",
+      "block_id": "blk_a7ba21ea8083491389a223015720c9cb",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "1edb62079271b8d36a44698931a9f8188d35b9c518ecd5c18682f51f535b4e52"
+    },
+    {
+      "finding_id": "F-029",
+      "pointer": "/findings/28/evidence/0",
+      "block_id": "blk_fd984f8c5d03427497ffd926feaf8ed5",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "d35e1e29b0fc47bfb2e04ba5040e06849844599a06b50e36f159c30ca1efdf17"
+    },
+    {
+      "finding_id": "F-029",
+      "pointer": "/findings/28/evidence/1",
+      "block_id": "blk_fd984f8c5d03427497ffd926feaf8ed5",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "b30c5bd49abad5f217f02319eec3b6d9a170c39ca60bf4c9e841e9a72a6944e7"
+    },
+    {
+      "finding_id": "F-029",
+      "pointer": "/findings/28/evidence/2",
+      "block_id": "blk_fd984f8c5d03427497ffd926feaf8ed5",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "368fc2171fe3dbc14d45351320693d2f7fcc3a88932af69cb8c663e00adcf783"
+    },
+    {
+      "finding_id": "F-030",
+      "pointer": "/findings/29/evidence/0",
+      "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "46b68f5a8422758ed279054e3a2cac44d28353103f1a6e82e197ebc7d085781f"
+    },
+    {
+      "finding_id": "F-030",
+      "pointer": "/findings/29/evidence/1",
+      "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "1e5338e229dd1d99cb33052c898f3d34ec5078b6a78401e2fbf7444b2ca5cf08"
+    },
+    {
+      "finding_id": "F-031",
+      "pointer": "/findings/30/evidence/0",
+      "block_id": "blk_fed30df45d124919a8b7cc13253733b1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0709529789a8d36ff4c443b16bcd0815f48df4949b95385221d404ecd5a28f71"
+    },
+    {
+      "finding_id": "F-031",
+      "pointer": "/findings/30/evidence/1",
+      "block_id": "blk_fed30df45d124919a8b7cc13253733b1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "fbe5a8867181b122399ba000b3edb9568b75f74aeab24191154a363a12e9f25b"
+    },
+    {
+      "finding_id": "F-031",
+      "pointer": "/findings/30/evidence/2",
+      "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "10b7ac3c7515e9f5ada6d4ce5b7630dd6b31456a9924f501abecd1d83d111eed"
+    },
+    {
+      "finding_id": "F-031",
+      "pointer": "/findings/30/evidence/3",
+      "block_id": "blk_d6b45a98c27d4511b7ae8ddfb1668ebc",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "4e42307e3b7b854d6b1f1c2f29ee6b66b7928ab4040c243e8154a0a65077a30d"
+    },
+    {
+      "finding_id": "F-032",
+      "pointer": "/findings/31/evidence/0",
+      "block_id": "blk_fed30df45d124919a8b7cc13253733b1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "a92e8d1f22f61a1e4f2f2c505501223656b6956f82617f72fae11612306f2428"
+    },
+    {
+      "finding_id": "F-032",
+      "pointer": "/findings/31/evidence/1",
+      "block_id": "blk_fed30df45d124919a8b7cc13253733b1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "52806dc3deef3472560b012396b664431a87efbe0dcba79d2c5b7e02f6351437"
+    },
+    {
+      "finding_id": "F-033",
+      "pointer": "/findings/32/evidence/0",
+      "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "29d9f00de2f69af77c3158dcd57e324f506f0eedca1c2dfebb65f8184e879f51"
+    },
+    {
+      "finding_id": "F-033",
+      "pointer": "/findings/32/evidence/1",
+      "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "ffc32ecb4acc779bb910117b1645e064e6e2c2e94d08250969834498868d6072"
+    },
+    {
+      "finding_id": "F-034",
+      "pointer": "/findings/33/evidence/0",
+      "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "174617dfca0cee1444b5560eef969c5f0fa0337975ed982886964c9254ed8536"
+    },
+    {
+      "finding_id": "F-035",
+      "pointer": "/findings/34/evidence/0",
+      "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "12ec9e02279285a4e0e0062be06a0206ef6e2f77940822574e8e3cf607f48ae5"
+    },
+    {
+      "finding_id": "F-035",
+      "pointer": "/findings/34/evidence/1",
+      "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "6fdb40631571f990d3b973649bb3014371ff0777c794179ccaee753f5854feb6"
+    },
+    {
+      "finding_id": "F-035",
+      "pointer": "/findings/34/evidence/2",
+      "block_id": "blk_a5c04128f54f404e900b3ee4e3a854ba",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "06b3216478b38cdcbe5869a0b2148f07741f5653de3032c39e45327504102db1"
+    },
+    {
+      "finding_id": "F-035",
+      "pointer": "/findings/34/evidence/3",
+      "block_id": "blk_dc124e4fb56849bbba6c4e2db3e948e3",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "eb95605e8b7ac175baec9049e37156ae1a173ae49690acdad09e4cdea2607b57"
+    },
+    {
+      "finding_id": "F-035",
+      "pointer": "/findings/34/evidence/4",
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "7b8bce78eb18cb95a5ec90620c837a803b01a77edc05dc261f93891b3a071f73"
+    },
+    {
+      "finding_id": "F-035",
+      "pointer": "/findings/34/evidence/5",
+      "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "c64dc483eab65f805c752f3d5fea7c7a1b9deb95948740e807a117ead89ac800"
+    },
+    {
+      "finding_id": "F-035",
+      "pointer": "/findings/34/evidence/6",
+      "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-036",
+      "pointer": "/findings/35/evidence/0",
+      "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9dada606357e07e08270b7dc1bc23dc34986d251bfacefb985a50a00bc7c6b8f"
+    },
+    {
+      "finding_id": "F-036",
+      "pointer": "/findings/35/evidence/1",
+      "block_id": "blk_4de04f93b8b745ceb034696663bfcc58",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "1eac15a4c3053b12a112fae017ae5c8a4632aa45799d80116c26d9d49e878b2d"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/0",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "c453675c891b9abfde36a46531bebc7503e9d7529e95860e248961e9911f5399"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/1",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "14f40f13a092ecd56c3768f62d6e8242b2983cc6d5391fecf059ce7055d7838a"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/2",
+      "block_id": "blk_176aff361f9542daa86a2daecc090272",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "e76adad312758a8818125e7e691ddfbcfc8e2df5ac3786afb9bad3ef3e65cbfb"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/3",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0b2877a38a16d83b068d87d01ee82a21aa58d0a4ca0d970f53d91283a056f370"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/4",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "93d2cab7871cfb96b2b791565e0098b3421b30c029419def32bccf6746592487"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/5",
+      "block_id": "blk_55ab0b4be112477eb9dec207df68000e",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "4ab4a3cf14b9ebb48820a2c1cd5a0d58f3059a85a411b174ed560609772cc434"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/6",
+      "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "f5bb0d1064016225cc80012208427e9a6057d9611a027da5637af8103ff632ef"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/7",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2a7e70c19a3d56ca2340d1a9ab6558fef9fc0004ec969353f79ffddd519efd4d"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/8",
+      "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "c0447cf604b581243e766b6f4989855ad1b2566c96b265565fbee7d25be4b5f2"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/9",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "f3d4abcb289bbdbfefb8b7ea18ed7a5bc35ce9ca500b640b8624a562d73715f6"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/10",
+      "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "d5c7ce0d1e2b51a89812f370cd7894fa8095299b820964d85414bb46126363dc"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/11",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "44b74081cb4c81b3ea99cdacb2f1a9262e1cfab053a33475bfeecc6b450d28b2"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/12",
+      "block_id": "blk_7e1be6cad926466483206d5c758dd238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "ca11969a48033885bdcd55a0d6fe6419f9a78de51aaffbb37ac63141e0f48904"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/13",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "06c874b5413eba499f438f9f1bc3628f00c4725cdbc7d390c444a9f8fc46c9f9"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/14",
+      "block_id": "blk_df17c007b7cf4eef8eca49f51580a275",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0c0f032039258766d85159eeeb0c88900d444ec3d803b693396ad3cdfd44cad0"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/15",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "25ca9f6e957ef190f1a789e011ee6b11e726ac7cd3d763aa5e86e5ed6282a77c"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/16",
+      "block_id": "blk_1e6fe11b842145b1aa65e9aa7b7c47d7",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "d9350d98dbb5ab7f4d6f51fce6ba1838ddf92457cf016a21123f6e69ed4a0193"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/17",
+      "block_id": "blk_176aff361f9542daa86a2daecc090272",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "e09479d64d3c4c72fa9bb75551269d8f5f31613d8a6effe57575aa570c51a65d"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/18",
+      "block_id": "blk_03477e8997474e0c9053d3984e2d5488",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "a9ea3973909ef7512a6f7b217edfa81c29af5739b61cdad603dfb66fc66d2058"
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/19",
+      "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/20",
+      "block_id": "blk_20a7f89489d543c5b30e8822dd2999c2",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-037",
+      "pointer": "/findings/36/evidence/21",
+      "block_id": "blk_7963858ada7a4aa2bd63ef6009ec7b6f",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-038",
+      "pointer": "/findings/37/evidence/0",
+      "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "74b1bdf91d8cd7fbf85cac8d3c2139c88d4ece97fb302f98a571ae8b8736854b"
+    },
+    {
+      "finding_id": "F-038",
+      "pointer": "/findings/37/evidence/1",
+      "block_id": "blk_35ff8683b1cf4be2abdef61740ddda2e",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "f68f2ce6e02c0823bd5137d23bb465a1b195945b456f4ee032df190430816d76"
+    },
+    {
+      "finding_id": "F-038",
+      "pointer": "/findings/37/evidence/2",
+      "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "d8539777119cb21f801c6b6a614fda17774ce9cc20ec77ffc2900da661de8a4f"
+    },
+    {
+      "finding_id": "F-039",
+      "pointer": "/findings/38/evidence/0",
+      "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9006b66a3143942ae93aac40bd35058a4a5903b7db84233d48cf9068c551be65"
+    },
+    {
+      "finding_id": "F-039",
+      "pointer": "/findings/38/evidence/1",
+      "block_id": "blk_ec07216893c540b88b7560c80b87ecd9",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "22ea494ae0c86e0d5a924345a103672375ae735591e68e64f5725dbb196ba067"
+    },
+    {
+      "finding_id": "F-039",
+      "pointer": "/findings/38/evidence/2",
+      "block_id": "blk_d19f9dab58774ce3a7eab9ae3d81ed83",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "fa933b7032474c35c2803be346c78d02a5200e13eb6541e54a9c20cf3b9f04ae"
+    },
+    {
+      "finding_id": "F-039",
+      "pointer": "/findings/38/evidence/3",
+      "block_id": "blk_feee01fd29cb41ff8e97cb7d2a902eb1",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-040",
+      "pointer": "/findings/39/evidence/0",
+      "block_id": "blk_4de04f93b8b745ceb034696663bfcc58",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "dbcb8955592f026430769be9941c2968ec630e5a0e06f69f00c2ff0a01ccfb9d"
+    },
+    {
+      "finding_id": "F-040",
+      "pointer": "/findings/39/evidence/1",
+      "block_id": "blk_4de04f93b8b745ceb034696663bfcc58",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "5c5845899b69c9e0c105925aa7b1e9befab091a157d62b46066edf98d67fe4a7"
+    },
+    {
+      "finding_id": "F-040",
+      "pointer": "/findings/39/evidence/2",
+      "block_id": "blk_90da5d0d361c48008030c2bf87767ced",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "391d1a216f26f9826b44f026b167efc90e04a847e37152a051ee88c9d3faa01f"
+    },
+    {
+      "finding_id": "F-040",
+      "pointer": "/findings/39/evidence/3",
+      "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-041",
+      "pointer": "/findings/40/evidence/0",
+      "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "f8eacd3b3a40732e551dd10292d462e392225a37a0a64fd4e84a231edfcba262"
+    },
+    {
+      "finding_id": "F-041",
+      "pointer": "/findings/40/evidence/1",
+      "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "a1661a123a7b69d062e33686906083999cb7a7e96de12c6a930184b08c1a01d4"
+    },
+    {
+      "finding_id": "F-041",
+      "pointer": "/findings/40/evidence/2",
+      "block_id": "blk_e65f4bff781945f19da5a4ec2919b764",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "297d0b7416e03dc2016642c3e6c4e2043e662f57a88518d45c03f8e98c365084"
+    },
+    {
+      "finding_id": "F-041",
+      "pointer": "/findings/40/evidence/3",
+      "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-042",
+      "pointer": "/findings/41/evidence/0",
+      "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0d2acd1c8cc3d270c5510d52b5f68d9428c4167cce17ae0d8039eb78d0ab9259"
+    },
+    {
+      "finding_id": "F-042",
+      "pointer": "/findings/41/evidence/1",
+      "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "3194c411a425037697a52b9015271342804b2d93f0458d990f84d3f410726d72"
+    },
+    {
+      "finding_id": "F-042",
+      "pointer": "/findings/41/evidence/2",
+      "block_id": "blk_e65f4bff781945f19da5a4ec2919b764",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "297d0b7416e03dc2016642c3e6c4e2043e662f57a88518d45c03f8e98c365084"
+    },
+    {
+      "finding_id": "F-043",
+      "pointer": "/findings/42/evidence/0",
+      "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "baa0e5e2fabd76bc7c1ec763ec0dcf39bc940f83f57d1b1937ac37e64a91e925"
+    },
+    {
+      "finding_id": "F-043",
+      "pointer": "/findings/42/evidence/1",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "c52ac361b0571e39434051f2bd1efa70630fe0c39e2ee48ccc2c270b628fc94f"
+    },
+    {
+      "finding_id": "F-043",
+      "pointer": "/findings/42/evidence/2",
+      "block_id": "blk_fe2066a9479d4d9e9c215338d4f82621",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "636fb0667373acd5d82c1c40893dae94b4b30f6658a97591d2ad687370732edd"
+    },
+    {
+      "finding_id": "F-043",
+      "pointer": "/findings/42/evidence/3",
+      "block_id": "blk_5e8d45b076bf429e863f27b16da7b261",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "f1a6e6e20bfa3d6cc4565e475871cba1b08a03bf1217f0b8496a44fd689c18e7"
+    },
+    {
+      "finding_id": "F-044",
+      "pointer": "/findings/43/evidence/0",
+      "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "a245c94da52322336ac4a436446b2a8be93b903919f65e09d9c734ef86eeeab2"
+    },
+    {
+      "finding_id": "F-044",
+      "pointer": "/findings/43/evidence/1",
+      "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "7ba9cbe418355d4b7ce3ff9b7147742b0188cee89d128af2fd309c72ea94beb6"
+    },
+    {
+      "finding_id": "F-045",
+      "pointer": "/findings/44/evidence/0",
+      "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "c5a112032b03131a0a8613efb0427634d000c966d82131c5d4aad087682c204b"
+    },
+    {
+      "finding_id": "F-045",
+      "pointer": "/findings/44/evidence/1",
+      "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "98f2e62f6c428614b8dd3abd2b3cd6a15cddcea0ac556e80b47909dd48b694bd"
+    },
+    {
+      "finding_id": "F-045",
+      "pointer": "/findings/44/evidence/2",
+      "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "a3711c2068fec497e9281bda2cd4b5963556f82cf3fc054760bfd657f3d37e72"
+    },
+    {
+      "finding_id": "F-045",
+      "pointer": "/findings/44/evidence/3",
+      "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0f6afa7c50121aec0e3b16f94b9cf3693f929898d693877de0d88cb5ee54d6e8"
+    },
+    {
+      "finding_id": "F-046",
+      "pointer": "/findings/45/evidence/0",
+      "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "7770c760f25ab5f222e678c10da7e7f3e775abe3d07ffe83bfe1ba19e838ff8f"
+    },
+    {
+      "finding_id": "F-046",
+      "pointer": "/findings/45/evidence/1",
+      "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "5e96f9ea2596e7cb75b9a3c49e7096fb2d736a5409dea6fee52955ffb9d022bb"
+    },
+    {
+      "finding_id": "F-046",
+      "pointer": "/findings/45/evidence/2",
+      "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "35c899b9d6b698fe44806670d7e13ea1cff1cef470923a9fb2d73cb9b686cecb"
+    },
+    {
+      "finding_id": "F-046",
+      "pointer": "/findings/45/evidence/3",
+      "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "a7890f0ff267a065bbaed5aed62b56e5d662b56f524f0da1f01f121da22afc8c"
+    },
+    {
+      "finding_id": "F-047",
+      "pointer": "/findings/46/evidence/0",
+      "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "51d647b94097b2201ea6eb37f8972af6957e1511676caa031f104114a512cd7e"
+    },
+    {
+      "finding_id": "F-047",
+      "pointer": "/findings/46/evidence/1",
+      "block_id": "blk_095853a82158483ab52761fde61dd652",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0548dd071d51de97fd228b39449ba71792861daa26b1d8b73ca3b3521f35fd0a"
+    },
+    {
+      "finding_id": "F-047",
+      "pointer": "/findings/46/evidence/2",
+      "block_id": "blk_095853a82158483ab52761fde61dd652",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "cc8e44b0e5522c7ddca9cb0cec18727247be3d072fd5c68aad189317c4f9d421"
+    },
+    {
+      "finding_id": "F-047",
+      "pointer": "/findings/46/evidence/3",
+      "block_id": "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "735119c6d73bb8b147b77527d8aabddd42665cf0fd9144dd1e486903db1e6da0"
+    },
+    {
+      "finding_id": "F-048",
+      "pointer": "/findings/47/evidence/0",
+      "block_id": "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "7dac9cce15eec86f41202249a7ce34f1d29eda0e75e3f800deb7e3c7a3aa0186"
+    },
+    {
+      "finding_id": "F-048",
+      "pointer": "/findings/47/evidence/1",
+      "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "6b5b7fe83d632a31371c5c8b62bb28ce87e6fe4191da4f1980320e20208d7a7c"
+    },
+    {
+      "finding_id": "F-048",
+      "pointer": "/findings/47/evidence/2",
+      "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "482c36830381a310e3314dbb395491e1536a896864f6ce57bff08650b6349133"
+    },
+    {
+      "finding_id": "F-048",
+      "pointer": "/findings/47/evidence/3",
+      "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-048",
+      "pointer": "/findings/47/evidence/4",
+      "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-049",
+      "pointer": "/findings/48/evidence/0",
+      "block_id": "blk_871a2c95697d4a93adb86dd3e2456614",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "82494fcb8f581d392b3cd38afa15db13ff05b37c5f180995838b1144799f7ad7"
+    },
+    {
+      "finding_id": "F-049",
+      "pointer": "/findings/48/evidence/1",
+      "block_id": "blk_871a2c95697d4a93adb86dd3e2456614",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "50dd538d915752162a2df8a2ab036d26ac22ae6149e3cd89030c8fc8ff60853b"
+    },
+    {
+      "finding_id": "F-049",
+      "pointer": "/findings/48/evidence/2",
+      "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "cfa61289d26975185e0d36fa20804576d3434d04c9c53242d4c68329fd919fac"
+    },
+    {
+      "finding_id": "F-049",
+      "pointer": "/findings/48/evidence/3",
+      "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-050",
+      "pointer": "/findings/49/evidence/0",
+      "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "fbadb0d39bf7a31bf51e38c90962751411bdf39511d87b9704f00cfe6a42a7af"
+    },
+    {
+      "finding_id": "F-050",
+      "pointer": "/findings/49/evidence/1",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "6a40f6578e3981e4517cf79c91dc64db007d7effe2f9862f030fbc891bc48aa9"
+    },
+    {
+      "finding_id": "F-050",
+      "pointer": "/findings/49/evidence/2",
+      "block_id": "blk_a5c04128f54f404e900b3ee4e3a854ba",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "3bdab71baa1bcf2956cec72a700b766b0119b618dfaa973018858a7c1e47d6be"
+    },
+    {
+      "finding_id": "F-050",
+      "pointer": "/findings/49/evidence/3",
+      "block_id": "blk_a5c04128f54f404e900b3ee4e3a854ba",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "dcc598faca096027812b2286db1f3374dec9a91fe2f7ae004112adeff765fcb1"
+    },
+    {
+      "finding_id": "F-050",
+      "pointer": "/findings/49/evidence/4",
+      "block_id": "blk_df17c007b7cf4eef8eca49f51580a275",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2f354fb1db0be3390fc74392e7c0be4f7742ca5b9be51b319e8942e338afa81a"
+    },
+    {
+      "finding_id": "F-051",
+      "pointer": "/findings/50/evidence/0",
+      "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "2b5f6ff590b89599c161252c879c97cfff64865139646488804cde3e8fddca75"
+    },
+    {
+      "finding_id": "F-051",
+      "pointer": "/findings/50/evidence/1",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9c0073e5ce24c53a9823722e726c0f53d680c95f6fc71c628a870a8da19ea9fb"
+    },
+    {
+      "finding_id": "F-051",
+      "pointer": "/findings/50/evidence/2",
+      "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "b9e64104c8225e01aad0884d5c48ef015b7660441425575e0aa19ab322404085"
+    },
+    {
+      "finding_id": "F-052",
+      "pointer": "/findings/51/evidence/0",
+      "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "581b015c8cde6cff911c1025841e920d8f22a860ecbe294d90638165ca2ba403"
+    },
+    {
+      "finding_id": "F-052",
+      "pointer": "/findings/51/evidence/1",
+      "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "35c899b9d6b698fe44806670d7e13ea1cff1cef470923a9fb2d73cb9b686cecb"
+    },
+    {
+      "finding_id": "F-052",
+      "pointer": "/findings/51/evidence/2",
+      "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "de4e3695c58d74f75f2222b76a3a286ece0680a99ff681e9f69371948fba7087"
+    },
+    {
+      "finding_id": "F-053",
+      "pointer": "/findings/52/evidence/0",
+      "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "b69f292525768c75c5d0e4ec38f5ed3109e71d67eb6fefe7a00ff938e1bae7b7"
+    },
+    {
+      "finding_id": "F-053",
+      "pointer": "/findings/52/evidence/1",
+      "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "78afa6c045df7a1141730d25c72e9b9b5c1840f46d55da15a4cc5655aff0305d"
+    },
+    {
+      "finding_id": "F-053",
+      "pointer": "/findings/52/evidence/2",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "66dc6f40262e27f9b7c9c44db3a37439f4ecb6a028672c473fd3650e431c6d7d"
+    },
+    {
+      "finding_id": "F-053",
+      "pointer": "/findings/52/evidence/3",
+      "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-053",
+      "pointer": "/findings/52/evidence/4",
+      "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-054",
+      "pointer": "/findings/53/evidence/0",
+      "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "45db37b57c889e19351795d11089338f5647bc72857a4550d4e69a88c6b941c7"
+    },
+    {
+      "finding_id": "F-054",
+      "pointer": "/findings/53/evidence/1",
+      "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "1c881f62bae091416528dee11fa63037763345985ccda21739175b930de7f4d8"
+    },
+    {
+      "finding_id": "F-054",
+      "pointer": "/findings/53/evidence/2",
+      "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2a785b94d36d6197b7a9b72802183b278ab3f9aa88607a872819d85588057607"
+    },
+    {
+      "finding_id": "F-054",
+      "pointer": "/findings/53/evidence/3",
+      "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "c905ccca426390631a2d148c3f968e66d97915c952c0863fc979ce33f5e88ede"
+    },
+    {
+      "finding_id": "F-054",
+      "pointer": "/findings/53/evidence/4",
+      "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0f6afa7c50121aec0e3b16f94b9cf3693f929898d693877de0d88cb5ee54d6e8"
+    },
+    {
+      "finding_id": "F-054",
+      "pointer": "/findings/53/evidence/5",
+      "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "8873a3b1e11255e5e5f74b2da8c45a3f568f9bba4aff8cfd54053c16f877221d"
+    },
+    {
+      "finding_id": "F-055",
+      "pointer": "/findings/54/evidence/0",
+      "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "c0004ca24601d857bb8307535d412143e14a971a0308ae3d66e7b8b8f78e3ed5"
+    },
+    {
+      "finding_id": "F-055",
+      "pointer": "/findings/54/evidence/1",
+      "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "bbceda34d8507dc545195d3b4c90d16e7f4939704c76acf45eec3e54f5d9f425"
+    },
+    {
+      "finding_id": "F-056",
+      "pointer": "/findings/55/evidence/0",
+      "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "1715e574a789151518a39783e70aca91bc8e58d36d85384293e4c38e9ccbde6b"
+    },
+    {
+      "finding_id": "F-056",
+      "pointer": "/findings/55/evidence/1",
+      "block_id": "blk_7e1be6cad926466483206d5c758dd238",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "fb077a281b23eeaa023ce9a02c3fe5eb1eeae00312404c1d5ffada6d2f3a00d0"
+    },
+    {
+      "finding_id": "F-056",
+      "pointer": "/findings/55/evidence/2",
+      "block_id": "blk_fba6f821ad1d450ebfbc5fc330bbc2b2",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "b6474c33f9a1a53f12449b6f313cc61de531faff122a90e96d536be1367566c5"
+    },
+    {
+      "finding_id": "F-056",
+      "pointer": "/findings/55/evidence/3",
+      "block_id": "blk_35ff8683b1cf4be2abdef61740ddda2e",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-057",
+      "pointer": "/findings/56/evidence/0",
+      "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "63afd06ff5e69e423500473cdf05ec1139ed12d1378c6dcf2ffaf7328e8cf41d"
+    },
+    {
+      "finding_id": "F-057",
+      "pointer": "/findings/56/evidence/1",
+      "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "a7d27ac2e0425a35e512489eef0aee22f46290420156e8734efdd32438f0e63c"
+    },
+    {
+      "finding_id": "F-057",
+      "pointer": "/findings/56/evidence/2",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "4b98b845e4859fc75b35abef27fcafc70bdf1554581dca85e1cd99e9131c6a65"
+    },
+    {
+      "finding_id": "F-057",
+      "pointer": "/findings/56/evidence/3",
+      "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "061c86035fe093bc270bc2ad59727d3419c480d8b2c3d946d1ecdcbb6afcd7c2"
+    },
+    {
+      "finding_id": "F-058",
+      "pointer": "/findings/57/evidence/0",
+      "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "f54194357a9d7a0237ed16dbdb6cbb468e939cb4496be1f10c9f709cc197b4b2"
+    },
+    {
+      "finding_id": "F-058",
+      "pointer": "/findings/57/evidence/1",
+      "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "800d2fa37333ed7d0a076b6d93dbc2e9929ea67d16fd1b6b332d758df8217faa"
+    },
+    {
+      "finding_id": "F-058",
+      "pointer": "/findings/57/evidence/2",
+      "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "a9b41402d4c708f2b5951b8bef09cbcee43316dfd5528bdef460fb6e93aea5ea"
+    },
+    {
+      "finding_id": "F-058",
+      "pointer": "/findings/57/evidence/3",
+      "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "05a808ce5919ceaf6c2d7ca7d54758e90b269cc51f3cac9ede21419a8c457830"
+    },
+    {
+      "finding_id": "F-059",
+      "pointer": "/findings/58/evidence/0",
+      "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "989949ad66b7614ba9d5c0a12a1d0c03b10ba88cde072458890eca64d723bcd8"
+    },
+    {
+      "finding_id": "F-059",
+      "pointer": "/findings/58/evidence/1",
+      "block_id": "blk_03477e8997474e0c9053d3984e2d5488",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "a9ea3973909ef7512a6f7b217edfa81c29af5739b61cdad603dfb66fc66d2058"
+    },
+    {
+      "finding_id": "F-060",
+      "pointer": "/findings/59/evidence/0",
+      "block_id": "blk_981b77a31c254f73aa67261d897a2987",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "c16fcf2ade61f06a106c9aaeb86d09d55d4f6bcdbe85c81e3ff7e3b930cfa0e4"
+    },
+    {
+      "finding_id": "F-061",
+      "pointer": "/findings/60/evidence/0",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "183bb1d27c797523678ed51b1907563ee3dbc56f46b1d4812c31da6e67437ba4"
+    },
+    {
+      "finding_id": "F-061",
+      "pointer": "/findings/60/evidence/1",
+      "block_id": "blk_432d08b6de194751ae756f627e3e5bb8",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9a2b3cba3c8dc98cfdf6e62a3d75e444aeaf6846d9f0e43077ea897267df32fa"
+    },
+    {
+      "finding_id": "F-061",
+      "pointer": "/findings/60/evidence/2",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "6e4dcd36e56a5b7dd66560d8c02a781a9c0ace3a7cdda98cb9dc37906d9f9866"
+    },
+    {
+      "finding_id": "F-061",
+      "pointer": "/findings/60/evidence/3",
+      "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "fbd9455fe4d70261ab2bcca80630aa7fc7f8321d77a0a2679f6a78386d15d2f7"
+    },
+    {
+      "finding_id": "F-061",
+      "pointer": "/findings/60/evidence/4",
+      "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0c41452cf2408b8989e0bea575b8ac663a90160b6b62c0900e0007042354e35d"
+    },
+    {
+      "finding_id": "F-061",
+      "pointer": "/findings/60/evidence/5",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9d3dec082f9346dbfc499c6bc754354eb5cae7b72116083cb48a38a39b0c7a5e"
+    },
+    {
+      "finding_id": "F-061",
+      "pointer": "/findings/60/evidence/6",
+      "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "7062d9b78b9ed635833c9a44e5f2b1f52a23d5f6e0960c5984a6aa01d7999341"
+    },
+    {
+      "finding_id": "F-062",
+      "pointer": "/findings/61/evidence/0",
+      "block_id": "blk_4de04f93b8b745ceb034696663bfcc58",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "9e42852476b750edb9fc787efc266e0eb342faecbffbbb11bce938fdd1477cba"
+    },
+    {
+      "finding_id": "F-062",
+      "pointer": "/findings/61/evidence/1",
+      "block_id": "blk_4de04f93b8b745ceb034696663bfcc58",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "072d7b55552b48b7f39e38ea2c1207336b7c664b2c03905c7c2a2ae1d28db891"
+    },
+    {
+      "finding_id": "F-063",
+      "pointer": "/findings/62/evidence/0",
+      "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "bc2f01c42952a91b007e1b03bbbd452cea695f2f9f35849ed835e9d722c31bdb"
+    },
+    {
+      "finding_id": "F-063",
+      "pointer": "/findings/62/evidence/1",
+      "block_id": "blk_35ff8683b1cf4be2abdef61740ddda2e",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "641b7c396363783c14217b47f260be4b239b2c2c01126d6115c603d8c306f178"
+    },
+    {
+      "finding_id": "F-063",
+      "pointer": "/findings/62/evidence/2",
+      "block_id": "blk_f508344fc15b43cc99862e7da6625d25",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "42acd5f567773c8821e35e9061f3633c9429ac7e7a657c0aa0903f1ac68b6556"
+    },
+    {
+      "finding_id": "F-064",
+      "pointer": "/findings/63/evidence/0",
+      "block_id": "blk_b4fb33513ca44182af058d09c8ab2dbb",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "e49c574f93bc4c5448a322c87d6f34f217d5c54eb3eef259b889d3a5ce890b1f"
+    },
+    {
+      "finding_id": "F-064",
+      "pointer": "/findings/63/evidence/1",
+      "block_id": "blk_b4fb33513ca44182af058d09c8ab2dbb",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "2cf3a3bde43faccfb7c5dc572d0f1edfe05367189d094b6c666feea965efead0"
+    },
+    {
+      "finding_id": "F-064",
+      "pointer": "/findings/63/evidence/2",
+      "block_id": "blk_b4fb33513ca44182af058d09c8ab2dbb",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-064",
+      "pointer": "/findings/63/evidence/3",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "e4ef1b9a77ede7822e79a35265a5588f60e235478289eb1b1b8f8012e0f677b9"
+    },
+    {
+      "finding_id": "F-064",
+      "pointer": "/findings/63/evidence/4",
+      "block_id": "blk_b45c5d1f31c948e092289923f6558a2f",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-064",
+      "pointer": "/findings/63/evidence/5",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-065",
+      "pointer": "/findings/64/evidence/0",
+      "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-065",
+      "pointer": "/findings/64/evidence/1",
+      "block_id": "blk_fe2066a9479d4d9e9c215338d4f82621",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-066",
+      "pointer": "/findings/65/evidence/0",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-066",
+      "pointer": "/findings/65/evidence/1",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-066",
+      "pointer": "/findings/65/evidence/2",
+      "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-067",
+      "pointer": "/findings/66/evidence/0",
+      "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "4140fa659d470a64f4fb63b27f02e3faede795261b523103201e7f9e665cee97"
+    },
+    {
+      "finding_id": "F-067",
+      "pointer": "/findings/66/evidence/1",
+      "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-067",
+      "pointer": "/findings/66/evidence/2",
+      "block_id": "blk_c8ae2497225a4902b681920a732f0a68",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "7ecb4d811b3e0129553d931525646fcda9ef86cbcb39a926ebd47a3cca7d136c"
+    },
+    {
+      "finding_id": "F-067",
+      "pointer": "/findings/66/evidence/3",
+      "block_id": "blk_c8ae2497225a4902b681920a732f0a68",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-068",
+      "pointer": "/findings/67/evidence/0",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-068",
+      "pointer": "/findings/67/evidence/1",
+      "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-068",
+      "pointer": "/findings/67/evidence/2",
+      "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-069",
+      "pointer": "/findings/68/evidence/0",
+      "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-070",
+      "pointer": "/findings/69/evidence/0",
+      "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-070",
+      "pointer": "/findings/69/evidence/1",
+      "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-070",
+      "pointer": "/findings/69/evidence/2",
+      "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-070",
+      "pointer": "/findings/69/evidence/3",
+      "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-070",
+      "pointer": "/findings/69/evidence/4",
+      "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-070",
+      "pointer": "/findings/69/evidence/5",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-071",
+      "pointer": "/findings/70/evidence/0",
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-071",
+      "pointer": "/findings/70/evidence/1",
+      "block_id": "blk_20a7f89489d543c5b30e8822dd2999c2",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-071",
+      "pointer": "/findings/70/evidence/2",
+      "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-072",
+      "pointer": "/findings/71/evidence/0",
+      "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "0e19a3a50c3795dabd63937f577e745266df28af2feb77ef14e919fea734d9b4"
+    },
+    {
+      "finding_id": "F-072",
+      "pointer": "/findings/71/evidence/1",
+      "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "1fc8b6500fcedb9091d94dc0efb9d245a5f6964dc78178ac063b571cbfb33718"
+    },
+    {
+      "finding_id": "F-072",
+      "pointer": "/findings/71/evidence/2",
+      "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+      "block_kind": "TEXT",
+      "status": "no_quote",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-072",
+      "pointer": "/findings/71/evidence/3",
+      "block_id": "blk_b236e8ad38084811b7ae15386e293de5",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": null
+    },
+    {
+      "finding_id": "F-072",
+      "pointer": "/findings/71/evidence/4",
+      "block_id": "blk_e65f4bff781945f19da5a4ec2919b764",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "297d0b7416e03dc2016642c3e6c4e2043e662f57a88518d45c03f8e98c365084"
+    },
+    {
+      "finding_id": "F-073",
+      "pointer": "/findings/72/evidence/0",
+      "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+      "block_kind": "TEXT",
+      "status": "exact",
+      "quote_sha256": "7b9c3f6a8711f3bc00e084e43620373616f1d2b2eff1aff02d8bb8c14e74a249"
+    },
+    {
+      "finding_id": "F-074",
+      "pointer": "/findings/73/evidence/0",
+      "block_id": "blk_8e4e78d833774d1094ea7fc72932c0ff",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "8d0d5d4890824cdf9c6d713c4636e6fd314a1ac99d26c79a8989f19eed32bfe5"
+    },
+    {
+      "finding_id": "F-074",
+      "pointer": "/findings/73/evidence/1",
+      "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "942781bb5c9885bc0e620ca967323606d513d1a7e5bb258e643282a7e2b4fcf6"
+    },
+    {
+      "finding_id": "F-074",
+      "pointer": "/findings/73/evidence/2",
+      "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+      "block_kind": "IMAGE",
+      "status": "graphic_not_text_check",
+      "quote_sha256": "b2ec4c0597dc179cfc3fb1b7b44462a2b63ace3ef9270b2cd9cd9168dcba4376"
+    }
+  ],
+  "limits": [
+    "Matching a quote does not prove object identity, applicability, arithmetic, interpretation, severity or completeness.",
+    "Graphics are excluded from textual corroboration; their summaries are not treated as evidence.",
+    "A source reference without a quote is not an error by itself and requires separate claim review.",
+    "This does not validate locations written in prose or visible finding-to-finding references."
+  ],
+  "whole_output_precision_finalized": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0,
+  "checker": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/verify_text_evidence.py",
+    "sha256": "07ad8158d8d6b29836cb3498f3ed848e1d21ce01daebf1807193f94ffec6bf22"
+  }
+}
