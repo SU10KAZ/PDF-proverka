@@ -1,0 +1,21 @@
+{
+  "finding_id": "F-083",
+  "status": "existing_candidate_repeats_unsupported_identity_conflict_and_drops_scope_uncertainty",
+  "projection_path": "/tmp/auditmanager_publication_identity_controls_20261112_v1_run/evaluations/publication_identity_083/publication_projection.json",
+  "projection_sha256": "ab897d3780688aa70253f732c8e055ce70182afc0b22c19a677550c5052c5b37",
+  "same_context_baseline": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_complete_tiles_F083_assessment.json",
+    "sha256": "02dec49d0b049f6719a65b26f8dc0e2781ba4840599511cd84ee0afd3844bd5e"
+  },
+  "candidate_instruction_sha256": "416f1e8abed5e6761e7993ac77c0aa7c5365c43c13f733e0935e6899fbeb195b",
+  "checks": [
+    "Повтор трёх пар К5.3/К5.4 прочитан верно и совпадает с просмотренными tile8/tile9.",
+    "Вывод «повторение марок создаёт неоднозначность» категоричен, хотя состав полного идентификатора и область уникальности не установлены. Отдельные рамки помещений и собственные БУРР доказывают разные объекты, но не коллизию полных адресов.",
+    "В отличие от предыдущего ответа не осталось явного pending об области адресации. Условность физического риска не исправляет категорическое необоснованное основание.",
+    "Сохранение прежнего technical_findings ошибочно принимается как приемлемая классификация; исходный раздел не является эталоном.",
+    "Нельзя вводить общий запрет на повторы марок: положительный контроль F085 связывает разные позиции с конкретными адресами КЖ."
+  ],
+  "required_change": "Before classifying repeated short labels as a technical collision, establish the identification domain or demonstrate conflicting source references within that domain. Distinct objects alone do not establish a collision; keep unresolved applicability and source-backed clarification.",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

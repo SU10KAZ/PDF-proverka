@@ -140,6 +140,23 @@
         "F-062 audit typo question removed while polarity issue retained",
         "F-053 genuine project designation conflict preserved"
       ]
+    },
+    {
+      "id": "PUB-09",
+      "behavior": "Before classifying repeated short labels as a technical collision, establish the identification domain or demonstrate conflicting source references within that domain. Distinct objects alone do not establish a collision; keep unresolved applicability and source-backed clarification.",
+      "negative_cases": [
+        "F083: three room-scoped groups with repeated short labels; full addressing domain unverified."
+      ],
+      "positive_controls": [
+        "F085: two independently traced detector positions disagree with specific cable-journal endpoints.",
+        "F071: duplicate local motor position designations in one cabinet must not be silently suppressed."
+      ],
+      "evidence_paths": [
+        "experiments/auditmanager_stage4_20261110/publication_identity_controls_F083_assessment.json",
+        "experiments/auditmanager_stage4_20261110/publication_complete_tiles_summary.json"
+      ],
+      "verification": "Same-context model controls followed by source review; verify literal fact preservation, scope status, technical/question routing and final output. No blanket repeated-label filter.",
+      "limits": "Existing editorial candidate failed F083; no acceptance for new identity rule yet."
     }
   ],
   "sealed_queue_modified": false,
