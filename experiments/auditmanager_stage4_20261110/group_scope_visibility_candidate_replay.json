@@ -1,0 +1,31 @@
+{
+  "status": "offline_visibility_replay_passed",
+  "cases": [
+    {
+      "case": "AK_00",
+      "members_preserved": 5,
+      "scope_notes_visible_in_excel": 1,
+      "source": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/grouping_scope_pair_evidence/AK_00/output_preview.json",
+      "source_sha256": "717521a7bee17ad615abefae43c0ff8173adebbbb6213ba90d6cbe3fbc212685",
+      "output": "/tmp/auditmanager_group_scope_visibility_candidate_20261112/AK_00/candidate_report.xlsx",
+      "output_sha256": "054c6a77a201deca3ee434b663dc874f9bfa0725dcadec7f4bff2f1d55bc72e8"
+    },
+    {
+      "case": "EOM_01",
+      "members_preserved": 2,
+      "scope_notes_visible_in_excel": 1,
+      "source": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/grouping_scope_pair_evidence/EOM_01/output_preview.json",
+      "source_sha256": "577a7d1a88def9fea1e6764d64c75ccf0b7bd6783d71abc2410c5dea3abb0802",
+      "output": "/tmp/auditmanager_group_scope_visibility_candidate_20261112/EOM_01/candidate_report.xlsx",
+      "output_sha256": "3e84c224c8cffc0be227e6e25528d83c9ce2210e94f7fcb1ad5813f4d1d42c9c"
+    }
+  ],
+  "new_model_calls": 0,
+  "runtime_integrated": false,
+  "automatic_grouping_enabled": false,
+  "production_acceptance": false,
+  "negative_control_confirmed": false,
+  "stage4_control_closed": false,
+  "boundary": "Presentation preserves recorded source-review limits. It does not establish member identity, validate the EOM common heading, resolve 3/З or ЭОМ/ЗОМ, or prove grouping reduces engineer workload.",
+  "next_action": "Assess the EOM common heading independently of visible caveats; do not enable grouping until a genuine negative control establishes rejection of unsupported common scope."
+}
