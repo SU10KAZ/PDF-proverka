@@ -1,0 +1,19 @@
+{
+  "finding_id": "F-057",
+  "status": "bounded_actionable_signal_question_preserved",
+  "projection_path": "/tmp/auditmanager_publication_editorial_controls_20261112_run/evaluations/publication_purpose_057/publication_projection.json",
+  "projection_sha256": "c3811b5c48a1a4b18081bf3eb201f5f0c834326ebeeabab7d0966d49d8b1576e",
+  "baseline_assessment_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F057_assessment.json",
+  "checks": [
+    "Signal17 DI/noDO and printedDO5 retained as observations; пуск/стоп not treated as proof of an output command.",
+    "One useful signal-purpose question preserved; recommendation and conditional risk combined, rather than separate engineer questions.",
+    "No mandatory extra DO or assertion of actual installed control failure. Internal limitation about assembled cabinet retained separately.",
+    "Paired with F061: eliminating a question about a possible consequence did not suppress a distinct question about actual signal function."
+  ],
+  "limits": [
+    "Passed bounded source-preservation control, not proof that all available context has been searched or final question admission is justified.",
+    "Last count-preservation control F054 remains pending."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
