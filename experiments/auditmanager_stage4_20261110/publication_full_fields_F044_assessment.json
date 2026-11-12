@@ -1,0 +1,35 @@
+{
+  "finding_id": "F-044",
+  "status": "range_conflict_and_resolved_specification_link_preserved_recommendation_split",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_044/publication_projection.json",
+  "projection_sha256": "e6be46350aaa0b61d5b600737abc4f22f8f09750d2ca9d52b953e52e04a3c894",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_roof_pressure_range_chain_review_20261112.json",
+  "source_review_sha256": "f7a140f0fd24d687080af2365abe6e2c844b84a8c9e83fe9b375576e44b7a9fe",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+      "block_id": "blk_4e142b330766407099c7d561f0a8eb6a",
+      "sha256": "4abaff5efb5a1c9a6466cb37fc407035b9aa2c5cb6afe3a9dfa885c05c4aff01",
+      "directly_viewed": true,
+      "detail": "original"
+    },
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_c0ed6bca935843c18344796377677f2f.png",
+      "block_id": "blk_c0ed6bca935843c18344796377677f2f",
+      "sha256": "f26dd1d18d31cb5990d87ed8aabf21c5f613e4d999eba6691f469af00408ab5c",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "20–200 Па в колонке 12 против 50–500 Па в перечне и позиции 7.3 сохранены.",
+    "Привязка позиции 7.3 к Пкр5.1 обоснована общим шкафом и соседней позицией 7.2, без выдуманного буквального PDS3 в строке спецификации.",
+    "Схема подключения PDS3 линией Пкр5.1-7 к клеммам 17–18 сохранена.",
+    "50 Па входит в оба диапазона; непригодность прибора и требование замены не утверждаются.",
+    "Старая необходимость ещё проверить позицию 7.3 устранена, потому что источник уже получен.",
+    "Вопрос выбора диапазона — рекомендация к тому же конфликту; объединить в итоговой выдаче."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
