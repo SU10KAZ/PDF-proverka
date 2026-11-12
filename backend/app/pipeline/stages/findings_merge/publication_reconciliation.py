@@ -23,7 +23,7 @@ def build_packet(finding, text_sources, graphic_refs=(), *, contract_version=2):
     Text source values are authoritative MD blocks; graphic refs must name
     images actually attached by the caller, not just known in a source index.
     """
-    if contract_version not in (1, 2):
+    if contract_version not in (1, 2, 3):
         raise InvalidPublication('unknown_contract_version')
     if not isinstance(finding.get('id'), str) or not finding['id']:
         raise InvalidPublication('missing_finding_id')
@@ -34,7 +34,7 @@ def build_packet(finding, text_sources, graphic_refs=(), *, contract_version=2):
             raise InvalidPublication('invalid_original_text')
         if value:
             units.append({'id': field, 'text': value})
-    if contract_version == 2:
+    if contract_version >= 2:
         for field in ('solution', 'risk', 'norm', 'norm_quote', 'candidate_norm_references'):
             value = finding.get(field)
             if value is None or value == '' or value == [] or value == {}:
@@ -66,8 +66,13 @@ def build_packet(finding, text_sources, graphic_refs=(), *, contract_version=2):
     packet = {'finding_id': finding['id'], 'finding_sha256': fingerprint(finding),
             'input_units': units, 'text_sources': deepcopy(text_sources),
             'attached_graphic_refs': list(dict.fromkeys(graphic_refs))}
-    if contract_version == 2:
-        packet['contract_version'] = 2
+    if contract_version >= 2:
+        packet['contract_version'] = contract_version
+    if contract_version == 3:
+        packet['finding_purpose'] = {key: deepcopy(finding.get(key)) for key in
+                                     ('report_section', 'question_basis', 'profile_reason',
+                                      'engineer_action_required')}
+        packet['purpose_is_prior_classification_not_evidence'] = True
     return packet
 
 
@@ -113,6 +118,21 @@ publication, not independent acceptance. Do not invent sources or norm quotation
 '''
 
 
+PURPOSE_AWARE_INSTRUCTIONS = INSTRUCTIONS + '''
+The optional finding_purpose records the original report routing and reason, not
+source evidence or an engineer verdict. Evaluate factual support and usefulness
+separately. A literal source observation alone does not justify promoting an
+existing clarification into a technical defect; identify a substantive defect
+basis before proposing that change. Conversely, retain a confirmed technical
+conflict even when the correct replacement design is unknown.
+Keep a recommendation to fix the same conflict with that conflict, not as an
+additional question. An actionable source ambiguity can remain a question with
+its unresolved conclusion explicitly stated; do not hide it solely because a
+normative or design conclusion is unverified. Missing context available in the
+project remains an internal retrieval obligation, not automatically a question
+for the engineer. Do not convert all needs_data parts into questions.
+'''
+
 def reconcile_publication(finding, packet, response):
     """Validate a complete disposition and return an isolated publication view.
 
@@ -139,7 +159,7 @@ def reconcile_publication(finding, packet, response):
               'history_only': [], 'part_counts_not_finding_counts': True,
               'archive': deepcopy(finding), 'packet_sha256': fingerprint(packet),
               'semantic_verified': False, 'candidate_coverage_updated': False,
-              'review_scope': 'claim_fields' if packet.get('contract_version') == 2 else 'description_only_legacy',
+              'review_scope': 'claim_fields' if packet.get('contract_version', 1) >= 2 else 'description_only_legacy',
               'unreviewed_claim_fields': [k for k in ('solution', 'risk', 'norm', 'norm_quote', 'candidate_norm_references')
                                          if finding.get(k) and k not in units]}
     for part in parts:

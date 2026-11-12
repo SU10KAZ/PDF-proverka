@@ -169,3 +169,24 @@ def test_rebinding_rejects_ambiguous_quotes_and_does_not_fill_omitted_claims():
     response['parts'][0]['input_spans'][0].update(start=1, end=5, quote='same')
     with pytest.raises(InvalidPublication, match='not_uniquely_located'):
         rebind_unique_input_quotes(packet, response)
+
+
+def test_opt_in_purpose_context_is_bound_without_changing_existing_packets():
+    finding, _, response = example()
+    finding.update(report_section='questions', question_basis='minor_confirmed',
+                   profile_reason='Editorial scope', engineer_action_required=True)
+    legacy = build_packet(finding, {'t': 'Schedule range 50–500; quantity 3.'}, ['g'])
+    assert legacy['contract_version'] == 2 and 'finding_purpose' not in legacy
+    packet = build_packet(finding, legacy['text_sources'], ['g'], contract_version=3)
+    assert packet['finding_purpose']['report_section'] == 'questions'
+    assert packet['purpose_is_prior_classification_not_evidence'] is True
+    assert packet['input_units'] == legacy['input_units']
+    response['packet_sha256'] = fingerprint(packet)
+    projection = reconcile_publication(finding, packet, response)
+    assert projection['review_scope'] == 'claim_fields'
+    # Structural validity never certifies the model's routing or semantic judgment.
+    assert projection['semantic_verified'] is False
+    packet['finding_purpose']['report_section'] = 'technical_findings'
+    response['packet_sha256'] = fingerprint(packet)
+    with pytest.raises(InvalidPublication, match='packet_input_changed'):
+        reconcile_publication(finding, packet, response)
