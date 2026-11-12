@@ -1,0 +1,34 @@
+{
+  "finding_id": "F-053",
+  "status": "thermostat_conflict_preserved_stale_journal_caveat_removed",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_053/publication_projection.json",
+  "projection_sha256": "99237cdcfa4dc34aec820d051b39d6d3036d56cba7e64a3b6285155ec7aba061",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_thermostat_identity_chain_review_20261112.json",
+  "source_review_sha256": "0c315567a1401eb63a2985cdd27e1810746f5f510579e3b7c1016dd0f64007a5",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_66980560083f4bb483d5ce1f9c8156e2.png",
+      "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+      "sha256": "dabee90e19aaa31be7c58c1521a95a878bacbb4d195f4173824eddcca53e435c",
+      "directly_viewed": true,
+      "detail": "original"
+    },
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+      "block_id": "blk_065a335469904b2db1640b480b321503",
+      "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Повторно просмотрены обе схемы: TS2 у нагревателя По5.1 и TS1 на линии По5.1-2 к клеммам 4–5 шкафа ШАУВ-6-К5ПЧ.",
+    "Проверены исходные TEXT перечня и журнала; номер 1 связан с тем же термостатом. Конфликт 2/1 сохранён, правильный номер не выдуман.",
+    "Повторные добавления объединены; устаревшее требование проверить журнал заменено согласованием уже проверенной адресации.",
+    "Неподтверждённый номер листа 35 не является основанием скрывать подтверждённый конфликт.",
+    "Условный риск остаётся pending: при выпуске связать его с замечанием, не выдавать за случившуюся ошибку монтажа."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

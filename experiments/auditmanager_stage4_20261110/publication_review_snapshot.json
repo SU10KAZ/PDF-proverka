@@ -1,9 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 52,
+  "reviewed_distinct_findings": 53,
   "unreviewed_finding_ids": [
-    "F-053",
     "F-054",
     "F-055",
     "F-056",
@@ -37,7 +36,7 @@
     "F-084",
     "F-085"
   ],
-  "batch_successful_responses": 51,
+  "batch_successful_responses": 55,
   "batch_status_snapshot": "running",
   "process_liveness_not_inferred_from_status_file": true,
   "selected_followups": [
@@ -926,6 +925,23 @@
         "pending": 2,
         "withdrawn": 0,
         "history_only": 0
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-053",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F053_assessment.json",
+      "assessment_sha256": "795c7e35db550521a68ef05361619b28a81a858cd76658ad715e59ca8d647895",
+      "status": "thermostat_conflict_preserved_stale_journal_caveat_removed",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_053/publication_projection.json",
+      "projection_sha256": "99237cdcfa4dc34aec820d051b39d6d3036d56cba7e64a3b6285155ec7aba061",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 0,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 2
       },
       "engineer_accepted": false,
       "production_accepted": false

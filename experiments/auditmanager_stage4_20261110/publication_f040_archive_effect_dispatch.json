@@ -1,0 +1,22 @@
+{
+  "source_report_path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+  "source_report_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "source_md_path": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "entry_sha256": "fa7b76c656fcefe14db1ac2de58c16fb1ac8a028f795ead1e1fec3968dff0988",
+  "request_sha256": "56b7e2c2f9378719a3f720b67d5b51b059528e2b71db8140cf659bd2e8247b52",
+  "decision_origin": "explicit_coordinator_review_not_model_response",
+  "original_85_findings_preserved_in_sealed_report": true,
+  "other_84_findings_identical_in_local_preview": true,
+  "target_retained_in_pending_archive": true,
+  "source_only_observation_attached": true,
+  "final_model_check_completed": false,
+  "production_acceptance": false,
+  "run_root": "/tmp/auditmanager_publication_f040_archive_effect_20261112",
+  "process_path": "/tmp/auditmanager_publication_f040_archive_effect_20261112/process.json",
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "change_under_test": "Actual archive effect and distinction between deferral and refutation exposed to final checker; supported-core guard retained.",
+  "tests": "67 passed: graphic_observation_handoff, source_review_final_check, source_review_admission",
+  "completed": false
+}
