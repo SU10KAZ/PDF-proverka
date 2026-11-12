@@ -1,0 +1,46 @@
+{
+  "finding_id": "F-005",
+  "status": "source_supported_core_preserved_question_fragmentation_not_accepted",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_005/publication_projection.json",
+  "projection_sha256": "faccd85892a71bfd03bec8d54188d7db01deb30e3078990f975f20a1e3f5c8a8",
+  "request_path": "/tmp/auditmanager_publication_full_fields_AK_20261112/publication_reconciliation_005.json",
+  "request_sha256": "01090622005259539b16d767cf64f59b9cb8313565602d2a68ecfb7558896c3a",
+  "graphic_direct_review": {
+    "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_397f9663589b40bfbde9b898e99e5117.png",
+    "sha256": "96df1986c5929c97c62369499fd26e3a7eb38071d3066a995f0aff8684fc9893",
+    "detail": "original"
+  },
+  "checks": {
+    "three_intercabinet_mark_conflicts_explicit": true,
+    "330m_segments_are_intercabinet_not_motor_segments": true,
+    "two_15m_motor_segments_visible": true,
+    "10m_journal_rows_not_arbitrarily_mapped_to_15m_segments": true,
+    "obsolete_graphic_context_limit_removed": true
+  },
+  "atomic_coverage_note": {
+    "target_id": "AK100_F015_drive_cable_graph:efafe11e28c59a6064d1",
+    "previous": "partial",
+    "new_observation": "All three graphic marks and journal counterparts are now stated explicitly. Candidate for improved atomic coverage; base score is unchanged pending full rescore."
+  },
+  "unrecovered_themes": [
+    "Missing individual marks on drive-to-M2/M3 segments not emitted.",
+    "No conclusion establishing missing individual journal rows for those motor segments."
+  ],
+  "publication_issue": {
+    "type": "recommendation_and_risk_routed_as_separate_questions",
+    "question_parts": 2,
+    "reason": "Both parts derive from the existing technical conflict or its unresolved scope; independent actionable engineer questions are not established. Preserve their text with the parent rather than claiming two extra useful findings.",
+    "automatic_rewrite_performed": false
+  },
+  "counts": {
+    "technical_findings": 1,
+    "questions": 2,
+    "withdrawn": 1,
+    "pending": 1,
+    "history_only": 1
+  },
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "semantic_acceptance": "technical core source-supported; whole publication requires routing cleanup"
+}
