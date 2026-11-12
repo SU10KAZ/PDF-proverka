@@ -1,0 +1,386 @@
+{
+  "status": "two_additional_output_claims_source_verified_not_trial_acceptance",
+  "run": "ak_r1_classic_current",
+  "final": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+  },
+  "new_relative_to": "Frozen atomic target ledger; not a claim that no historical workbook ever contained this issue.",
+  "claims": [
+    {
+      "finding_id": "F-054",
+      "source_finding": {
+        "id": "F-054",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "problem": "Итог DO=10 не соответствует 11 подключениям в таблице сигналов ШАУВ-1-К5АС.",
+        "description": "Первоначальное описание:\nВ строке DO отмечены колонки 2, 7, 9, 12, 15, 16, 17, 19, 21, 23 и 27 — всего 11 подключений. Они соответствуют шести воздушным заслонкам, насосу теплоносителя и четырём преобразователям частоты. В итоговой графе указано 10. Подтверждено внутреннее количественное противоречие таблицы; фактическая нехватка аппаратных выходов шкафа не установлена.\n\nДополнительная проверка:\nШАУВ-1-К5АС: итог DO=10 при 11 отмеченных подключениях.\nВ строке DO точки стоят под колонками 2, 7, 9, 12, 15, 16, 17, 19, 21, 23 и 27. Их 11, тогда как итоговая графа содержит 10. Противоречие сохранено в F-056.\n\nШесть заслонок, насос и четыре ПЧ дают 11 DO против итога 10.\nШесть команд заслонок отмечены в колонках 2, 12, 15, 17, 21, 23; насос — в колонке 7; четыре ПЧ — в колонках 9, 16, 19, 27. Все имеют точки в DO, суммарно 11 при указанном итоге 10. F-056 сохраняет расхождение без вывода о фактической нехватке модулей.",
+        "source": "13АВ-РД-АК2-ПА, лист 18, функциональная схема Па4.1/Ва4.1, таблица сигналов ШАУВ-1-К5АС, строка DO",
+        "page": 22,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Согласовать итог DO с 11 отмеченными подключениями и проверить соответствие принятого состава выходных модулей согласованной таблице сигналов.",
+        "risk": "Использование заниженного итога при подборе или проверке модулей может привести к недостаточному учёту выходных каналов.",
+        "reason": "Расхождение касается количества каналов управления шестью заслонками, насосом и четырьмя ПЧ, поэтому относится к technical_findings. Подтверждения, что ошибочна только справочная цифра при согласованном аппаратном составе, нет. G-040 и G-041 описывают одну проблему и объединены.",
+        "source_finding_ids": [
+          "G-040",
+          "G-041"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+            "type": "graphic",
+            "observation": "Слева в нижней матрице указано «DO 10». В этой строке видны 11 чёрных точек под колонками 2, 7, 9, 12, 15, 16, 17, 19, 21, 23 и 27.",
+            "location": "Лист 18, нижняя таблица ШАУВ-1-К5АС, строка DO"
+          },
+          {
+            "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+            "type": "graphic",
+            "observation": "Колонки 2, 12, 15, 17, 21 и 23 подписаны как управление воздушными заслонками; колонка 7 — управление насосом теплоносителя. В колонках 9, 16, 19 и 27 указано управление ПЧ и показаны соответственно SC UZ1, SC UZ2, SC UZ3 и SC UZ4; каждая из этих колонок отмечена в DO.",
+            "location": "Лист 18, подписи колонок таблицы сигналов, строки приборов и DO"
+          }
+        ],
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_c51a95d91fea1908",
+        "source_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9"
+        ],
+        "recovery_addendum_base_signature": "7c83069140488ab6a97062ac2eb6a609ed651f423938209cbd358bc3654fa53c",
+        "recovery_addendum_snapshot_signatures": [
+          "7c83069140488ab6a97062ac2eb6a609ed651f423938209cbd358bc3654fa53c",
+          "430a4c10f2434158658a83b0872eab31f10d5c11150c132d101fcfe80150aca1"
+        ],
+        "recovery_original_description": "В строке DO отмечены колонки 2, 7, 9, 12, 15, 16, 17, 19, 21, 23 и 27 — всего 11 подключений. Они соответствуют шести воздушным заслонкам, насосу теплоносителя и четырём преобразователям частоты. В итоговой графе указано 10. Подтверждено внутреннее количественное противоречие таблицы; фактическая нехватка аппаратных выходов шкафа не установлена.",
+        "recovery_addenda": [
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/13/findings/0",
+            "source_id": "G-040",
+            "claim_id": "1",
+            "claim": "ШАУВ-1-К5АС: итог DO=10 при 11 отмеченных подключениях.",
+            "reason": "В строке DO точки стоят под колонками 2, 7, 9, 12, 15, 16, 17, 19, 21, 23 и 27. Их 11, тогда как итоговая графа содержит 10. Противоречие сохранено в F-056.",
+            "source_refs": [
+              "blk_560cb89105bd46158749d4d59c9e52f9"
+            ],
+            "source_types": {
+              "blk_560cb89105bd46158749d4d59c9e52f9": "graphic"
+            },
+            "target_id": "F-056",
+            "target_signature": "7c83069140488ab6a97062ac2eb6a609ed651f423938209cbd358bc3654fa53c",
+            "semantic_verified": false,
+            "id": "1c92d4a62ecabc2b3a0e90bca709bad638e5a2187032742e07ae6f6e19f36593",
+            "reported_target_id": "F-056",
+            "reported_target_signature": "7c83069140488ab6a97062ac2eb6a609ed651f423938209cbd358bc3654fa53c"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/13/findings/1",
+            "source_id": "G-041",
+            "claim_id": "1",
+            "claim": "Шесть заслонок, насос и четыре ПЧ дают 11 DO против итога 10.",
+            "reason": "Шесть команд заслонок отмечены в колонках 2, 12, 15, 17, 21, 23; насос — в колонке 7; четыре ПЧ — в колонках 9, 16, 19, 27. Все имеют точки в DO, суммарно 11 при указанном итоге 10. F-056 сохраняет расхождение без вывода о фактической нехватке модулей.",
+            "source_refs": [
+              "blk_560cb89105bd46158749d4d59c9e52f9"
+            ],
+            "source_types": {
+              "blk_560cb89105bd46158749d4d59c9e52f9": "graphic"
+            },
+            "target_id": "F-056",
+            "target_signature": "7c83069140488ab6a97062ac2eb6a609ed651f423938209cbd358bc3654fa53c",
+            "semantic_verified": false,
+            "id": "dea35ab7852284122b0145b0b1f9844a1577405b7e1aaacbe0b30e3e8cb4ab6a",
+            "reported_target_id": "F-056",
+            "reported_target_signature": "7c83069140488ab6a97062ac2eb6a609ed651f423938209cbd358bc3654fa53c"
+          }
+        ],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-040",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-041",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на заниженный итог DO шкафа ШАУВ-1-К5АС: указано 10 при 11 подключениях. Перечисление потребителей справа поясняет тот же подсчёт.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на заниженный итог DO шкафа ШАУВ-1-К5АС: указано 10 при 11 подключениях. Перечисление потребителей справа поясняет тот же подсчёт.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 18",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 58,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "output_pointer": "/findings/53",
+      "graphic": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+        "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+        "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+        "directly_viewed": true
+      },
+      "authoritative_md": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+        "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+      },
+      "technical_status": "confirmed_narrow_document_conflict",
+      "engineer_utility": "not_assessed",
+      "engineering_decision": null,
+      "independent_discovery": false,
+      "verification_method": "Primary assistant viewed original graphic block and bound text quotes to authoritative MD; no PDF text correction.",
+      "confirmed": {
+        "printed_DO_total": 10,
+        "observed_DO_columns": [
+          2,
+          7,
+          9,
+          12,
+          15,
+          16,
+          17,
+          19,
+          21,
+          23,
+          27
+        ],
+        "observed_total": 11,
+        "grouping": {
+          "damper_commands": [
+            2,
+            12,
+            15,
+            17,
+            21,
+            23
+          ],
+          "pump": [
+            7
+          ],
+          "VFD": [
+            9,
+            16,
+            19,
+            27
+          ]
+        }
+      },
+      "limits": [
+        "Проверена только строкаDO данного шкафа; остальные итоги этим не проверены.",
+        "Нехватка модулей, физический отказ и необходимость дополнительной закупки не установлены.",
+        "В тексте есть устаревшая ссылкаF-056 вместо текущегоF-054; она не отменяет подтверждённый арифметический факт."
+      ]
+    },
+    {
+      "finding_id": "F-070",
+      "source_finding": {
+        "id": "F-070",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "report_section": "technical_findings",
+        "problem": "Для линии СУК2-2 схема подключений и кабельный журнал задают разные обозначения марки кабеля.",
+        "description": "Первоначальное описание:\nНа схеме листа 43 линия СУК2-2 к коробке КК1-СКЗ подписана КСПВПГнг(А)-HF 1×2×0,75, L=210 м. В строке СУК2-2 кабельного журнала листа 32 от СУ-К32 до КК1-СКЗ указано КСПВПнг(А)-НФ 1x2x0,75 длиной 210 м. Обозначения различаются наличием буквы «Г» и написанием суффикса HF/НФ. Буквальная запись MD сохранена. Подтверждено расхождение указаний для одной линии; правильная марка и эквивалентность исполнений не установлены.\n\nДополнительная проверка:\nСУК2-2 от СУ-КЗ2 до КК1-СКЗ длиной 210 м: КСПВПГнг(А)-HF на схеме против КСПВПнг(А)-НФ в КЖ.\nНа изображении у СУК2-2 указана марка КСПВПГнг(А)-HF и длина 210 м; исходный MD строки СУК2-2 содержит КСПВПнг(А)-НФ, тот же размер и длину. Различие наличия «Г» и суффиксов HF/НФ подтверждено без исправления MD и без предположения об эквивалентности. Начало трассы в авторитетном MD записано «СУ-К32», поэтому в замечании использована именно эта запись вместо «СУ-КЗ2» из кандидата.",
+        "source": "13АВ-РД-АК2-ПА, лист 43, линия СУК2-2 к КК1-СКЗ; 13АВ-РД-АК2-ПА.КЖ, лист 32, строка СУК2-2",
+        "page": 47,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Установить принятое исполнение кабеля СУК2-2 и согласовать полное обозначение марки на схеме подключений и в кабельном журнале.",
+        "risk": "Разные обозначения марки допускают неоднозначный выбор кабеля при комплектовании и монтаже.",
+        "reason": "Выбран technical_findings: расходится обозначение технического исполнения кабеля конкретной линии. Совпадение размера и длины не устанавливает эквивалентность марок или исключительно редакционный характер различия. F-073 касается других линий и другого шкафа; существующие замечания СУК2-2 не охватывают.",
+        "source_finding_ids": [
+          "G-089"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_5868e672efb546cba18c0598fe98f61d",
+            "type": "graphic",
+            "observation": "В правой части схемы линия с обозначением СУК2-2 проходит от реле «ПОРОГ2» к коробке КК1-СКЗ. Рядом с ней вертикально указаны КСПВПГнг(А)-HF, 1×2×0,75 и L=210м.",
+            "location": "Лист 43, правая часть, участок между реле «ПОРОГ2» и коробкой КК1-СКЗ, вертикальная подпись слева от линии СУК2-2"
+          },
+          {
+            "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+            "type": "text",
+            "quote": "| СУК2-2 | СУ-К32 | КК1-СКЗ | КСПВПнг(А)-НФ | 1x2x0,75 | 210 | лоток 100х100, лоток 200х100, труба гофр., труба водогазопроводн ая | КСПВПнг(А)-НФ 1x2x0,75 | 90/110/5 /5 |  |",
+            "location": "Страница 90, КЖ, лист 32, последняя строка таблицы, СУК2-2"
+          }
+        ],
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_b7ab7179416fd637",
+        "source_block_ids": [
+          "blk_5868e672efb546cba18c0598fe98f61d",
+          "blk_7b41b193ccad4f559ba654a2248576d5"
+        ],
+        "recovery_addendum_base_signature": "3d01f07c1ca628ecf6840351ab50c07bd4a77381435abf0c3b803b4a970549d2",
+        "recovery_addendum_snapshot_signatures": [
+          "3d01f07c1ca628ecf6840351ab50c07bd4a77381435abf0c3b803b4a970549d2"
+        ],
+        "recovery_original_description": "На схеме листа 43 линия СУК2-2 к коробке КК1-СКЗ подписана КСПВПГнг(А)-HF 1×2×0,75, L=210 м. В строке СУК2-2 кабельного журнала листа 32 от СУ-К32 до КК1-СКЗ указано КСПВПнг(А)-НФ 1x2x0,75 длиной 210 м. Обозначения различаются наличием буквы «Г» и написанием суффикса HF/НФ. Буквальная запись MD сохранена. Подтверждено расхождение указаний для одной линии; правильная марка и эквивалентность исполнений не установлены.",
+        "recovery_addenda": [
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/40/findings/0",
+            "source_id": "G-089",
+            "claim_id": "1",
+            "claim": "СУК2-2 от СУ-КЗ2 до КК1-СКЗ длиной 210 м: КСПВПГнг(А)-HF на схеме против КСПВПнг(А)-НФ в КЖ.",
+            "reason": "На изображении у СУК2-2 указана марка КСПВПГнг(А)-HF и длина 210 м; исходный MD строки СУК2-2 содержит КСПВПнг(А)-НФ, тот же размер и длину. Различие наличия «Г» и суффиксов HF/НФ подтверждено без исправления MD и без предположения об эквивалентности. Начало трассы в авторитетном MD записано «СУ-К32», поэтому в замечании использована именно эта запись вместо «СУ-КЗ2» из кандидата.",
+            "source_refs": [
+              "blk_5868e672efb546cba18c0598fe98f61d",
+              "blk_7b41b193ccad4f559ba654a2248576d5"
+            ],
+            "source_types": {
+              "blk_5868e672efb546cba18c0598fe98f61d": "graphic",
+              "blk_7b41b193ccad4f559ba654a2248576d5": "text"
+            },
+            "target_id": "F-075",
+            "target_signature": "3d01f07c1ca628ecf6840351ab50c07bd4a77381435abf0c3b803b4a970549d2",
+            "semantic_verified": false,
+            "id": "6c2f8dbc16790edd6017e5acbdfb2362ca909fdd1a30e355140c35e001cccabe",
+            "reported_target_id": "F-075",
+            "reported_target_signature": "3d01f07c1ca628ecf6840351ab50c07bd4a77381435abf0c3b803b4a970549d2"
+          }
+        ],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-089",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 43",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 80,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "output_pointer": "/findings/69",
+      "graphic": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5868e672efb546cba18c0598fe98f61d.png",
+        "sha256": "1428ed30db27649e2aa5c393d0c769ba31a861c8a8a6425a39aca84ce43b4547",
+        "block_id": "blk_5868e672efb546cba18c0598fe98f61d",
+        "directly_viewed": true
+      },
+      "authoritative_md": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+        "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+      },
+      "technical_status": "confirmed_narrow_document_conflict",
+      "engineer_utility": "not_assessed",
+      "engineering_decision": null,
+      "independent_discovery": false,
+      "verification_method": "Primary assistant viewed original graphic block and bound text quotes to authoritative MD; no PDF text correction.",
+      "confirmed": {
+        "line": "СУК2-2",
+        "diagram_brand": "КСПВПГнг(А)-HF",
+        "MD_brand": "КСПВПнг(А)-НФ",
+        "size": "1x2x0,75",
+        "length_m": 210,
+        "diagram_destination": "КК1-СКЗ",
+        "MD_origin_literal": "СУ-К32",
+        "relation": "Одна маркированная линия от релеПОРОГ2 блока питания/сигнализации кКК1-СКЗ; совпадают марка линии, оконечная коробка, размер и длина."
+      },
+      "limits": [
+        "БуквальныйTEXT КЖ не исправляется по растру.",
+        "Конструктивная эквивалентность марок, корректная закупочная марка и фактическая поставка не установлены.",
+        "В дополнительной формулировке остаётсяСУ-КЗ2, хотя основной текст правильно сохраняетMD СУ-К32; история проверки требует редакционного согласования."
+      ]
+    }
+  ],
+  "limits": [
+    "These two verified findings do not establish whole-output precision. Other novel and additional assertions remain under review.",
+    "No new cases added to the frozen evaluator during collection. Count separately when comparing all sealed outputs.",
+    "No engineering acceptance or measured review time inferred."
+  ],
+  "production_changed": false
+}
