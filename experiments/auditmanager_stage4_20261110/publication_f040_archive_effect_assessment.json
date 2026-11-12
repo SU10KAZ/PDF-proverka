@@ -1,0 +1,20 @@
+{
+  "finding_id": "F-040",
+  "status": "response_rejected_binding_mismatch",
+  "request_path": "/tmp/auditmanager_publication_f040_archive_effect_20261112/workflow/request.json",
+  "request_sha256": "56b7e2c2f9378719a3f720b67d5b51b059528e2b71db8140cf659bd2e8247b52",
+  "response_path": "/tmp/auditmanager_publication_f040_archive_effect_20261112/workflow/result.json",
+  "response_sha256": "8d40d3f1acaef6dea111b825571c3f80bb982f2166b54630ad5023aed89b0dce",
+  "expected_binding": "8bc7133b2fe69bc8cdb45f6de8ea233f90391df3f56fa85ca9cbdaf2b33be743",
+  "returned_binding": "8bc7133b2fe69bc8cdb45f6de8ea233f90391df3f56fa85ca85ca9cbdaf2b33be743",
+  "raw_response_unchanged": true,
+  "response_admitted": false,
+  "observations": [
+    "Model response now explicitly distinguishes temporary archive from suppression, but still argues for a limited symbol-formatting question.",
+    "Returned binding duplicates a substring and fails validation. Semantic content is diagnostic only; no validated hold or release receipt exists.",
+    "No manual hash repair and no retry just to obtain a preferred verdict. Preserve residual graphic disagreement for separate source review."
+  ],
+  "next_action": "Continue full output review; independently settle residual central-stroke difference and editorial usefulness before proposing a different final edit.",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

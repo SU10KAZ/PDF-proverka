@@ -26,9 +26,15 @@ async def run(root):
     os.environ['CODEX_TRANSIENT_RETRIES'] = '0'
     write(root / 'process.json', {'pid': os.getpid(), 'status': 'running',
           'model': 'codex/gpt-6-astra', 'production_acceptance': False})
-    after, receipt = await run_final_release_check(entry, document, md, root / 'workflow',
-        invoke=direct_cli_executor('codex/gpt-6-astra', project_id='AK-F040-publication-final-check'),
-        executor_id='codex/gpt-6-astra:high:publication-final-check-v1')
+    try:
+        after, receipt = await run_final_release_check(entry, document, md, root / 'workflow',
+            invoke=direct_cli_executor('codex/gpt-6-astra', project_id='AK-F040-publication-final-check'),
+            executor_id='codex/gpt-6-astra:high:publication-final-check-v1')
+    except Exception as exc:
+        write(root / 'process.json', {'pid': os.getpid(), 'status': 'failed',
+              'error_type': type(exc).__name__, 'error': str(exc),
+              'result_applied': False, 'production_acceptance': False})
+        raise
     write(root / 'output_preview.json', after)
     write(root / 'receipt.json', receipt)
     write(root / 'process.json', {'pid': os.getpid(), 'status': 'finished',
