@@ -1,0 +1,33 @@
+{
+  "finding_id": "F-027",
+  "status": "cabinet_system_address_conflict_preserved_with_graphic_context",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_027_tiles/publication_projection.json",
+  "projection_sha256": "f9344921e4ba3bdc5bc17f90a4cbc335594752f70b74b0a563d08c6838452ffa",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_final_plan_details_source_review_20261112.json",
+  "source_review_sha256": "de3b35dde00c390db66e5a90b18c869150f7659cc8533199f3b9a1931ba1cb9d",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_sheet54_full_graphic_tiles_20261112/detail_tile_10.png",
+      "sha256": "c67cde503f77ea9928ccbb7bbbbabd841e1d5933ec3166f44b451ab88d06fcd4",
+      "block_id": "blk_f42735b18cb140928c3d9f29d2891ae2",
+      "directly_viewed": true,
+      "detail": "original",
+      "manifest_path": "/tmp/auditmanager_sheet54_full_graphic_tiles_20261112/manifest.json",
+      "manifest_sha256": "4da91e0d6291b463a6a8a83115b931181917524073b5b4200963b4035bc00f63"
+    }
+  ],
+  "checks": [
+    "Specification group 16 К6АС names Ва4.1/Па4.1 while applicability table assigns Па5.1/Ва5.1.",
+    "Connection sheet 40 previously directly viewed and current full-plan tile 2:0 directly checked: К6АС with Па5.1/Ва5.1 cable groups.",
+    "Plan cable range confirms cabinet/system identity, not all routing details or power sizing.",
+    "No relocation or motor-drive power reassignment inferred.",
+    "Recommendation and conditional risk retained together; stale graphic limitation archived only for checked identity."
+  ],
+  "limits": [
+    "Model statement that all 16 images were inspected is self-report, not independently measurable coverage.",
+    "Coordinator checked cited tile and cited connection diagram, not all 15 plan tiles for this finding."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
