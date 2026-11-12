@@ -1,0 +1,164 @@
+{
+  "status": "current_snapshot_and_corrected_inputs_preflight_passed",
+  "source_snapshot": {
+    "path": "experiments/auditmanager_stage4_20261110/current_candidate_snapshot_provenance.json",
+    "sha256": "7dbdb9296606070f8085edf8a8905493f29d033d2be215c867772a09569255bb"
+  },
+  "input_package": {
+    "path": "experiments/auditmanager_stage4_20261110/six_corrected_source_input_package.json",
+    "sha256": "fa0fff534db89db29b371c7496a9af91081f69228b8c2a7cb3c51ba6ecbe5109"
+  },
+  "runtime_files_verified": 990,
+  "arms": [
+    {
+      "variant": "classic_current",
+      "preflight_path": "/tmp/auditmanager_current_method_preflight_20261112/classic_current/transport_preflight.json",
+      "sha256": "064d657b0449a33f43f5dc69b53327ebfa7bf7c36f3a751993890d477ed42256",
+      "backend_imports_verified": 65,
+      "method_config": {},
+      "context_option_keys": [],
+      "environment": {
+        "STAGE01_CLAUDE_LEG_ENABLED": "false",
+        "STAGE01_THIRD_LEG_ENABLED": "false",
+        "STAGE01_CODEX_ONLY_LEG_MODELS": "codex/gpt-6-astra,codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_LEG_EFFORT": "high",
+        "STAGE01_CODEX_ONLY_JUDGE_MODEL": "codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_JUDGE_EFFORT": "high",
+        "STAGE01_NEIGHBOR_COORD_TEXT_ENABLED": "false",
+        "MD_MIRROR_RECONCILE_ENABLED": "false",
+        "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false",
+        "AUDIT_MERGE_PRIMARY_TEXT": "0",
+        "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": "0",
+        "AUDIT_OBJECT_GRAPHIC_DETAILS": "0",
+        "AUDIT_OBJECT_TERMINAL_DISPOSITION": "0",
+        "AUDIT_OBJECT_OPERATION_MAX_REQUESTS": "8"
+      }
+    },
+    {
+      "variant": "inventory",
+      "preflight_path": "/tmp/auditmanager_current_method_preflight_20261112/inventory/transport_preflight.json",
+      "sha256": "8b2d952ebc621d7fd8f7e7b05f6819039c0b80e7057e8bdaf61e94edeff7563d",
+      "backend_imports_verified": 80,
+      "method_config": {
+        "inventory_max_packets": 128,
+        "inventory_max_source_chars": 60000,
+        "inventory_max_images": 4
+      },
+      "context_option_keys": [
+        "inventory_executor_id",
+        "inventory_invoke",
+        "inventory_max_images",
+        "inventory_max_packets",
+        "inventory_max_source_chars"
+      ],
+      "environment": {
+        "STAGE01_CLAUDE_LEG_ENABLED": "false",
+        "STAGE01_THIRD_LEG_ENABLED": "false",
+        "STAGE01_CODEX_ONLY_LEG_MODELS": "codex/gpt-6-astra,codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_LEG_EFFORT": "high",
+        "STAGE01_CODEX_ONLY_JUDGE_MODEL": "codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_JUDGE_EFFORT": "high",
+        "STAGE01_NEIGHBOR_COORD_TEXT_ENABLED": "false",
+        "MD_MIRROR_RECONCILE_ENABLED": "false",
+        "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false",
+        "AUDIT_MERGE_PRIMARY_TEXT": "0",
+        "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": "1",
+        "AUDIT_OBJECT_GRAPHIC_DETAILS": "1",
+        "AUDIT_OBJECT_TERMINAL_DISPOSITION": "1",
+        "AUDIT_OBJECT_OPERATION_MAX_REQUESTS": "128"
+      }
+    },
+    {
+      "variant": "source_review",
+      "preflight_path": "/tmp/auditmanager_current_method_preflight_20261112/source_review/transport_preflight.json",
+      "sha256": "fe5a4190ae8197f4b989e3b6e1de43807bf5a27e5a18642ac1d6c2a6f097f363",
+      "backend_imports_verified": 80,
+      "method_config": {
+        "source_review_max_findings": 256,
+        "source_review_auto_graphic_regions": true,
+        "source_final_check_max_findings": 256,
+        "source_final_check_complete_citations": true
+      },
+      "context_option_keys": [
+        "source_final_check_complete_citations",
+        "source_final_check_executor_id",
+        "source_final_check_invoke",
+        "source_final_check_max_findings",
+        "source_review_auto_graphic_regions",
+        "source_review_executor_id",
+        "source_review_invoke",
+        "source_review_max_findings"
+      ],
+      "environment": {
+        "STAGE01_CLAUDE_LEG_ENABLED": "false",
+        "STAGE01_THIRD_LEG_ENABLED": "false",
+        "STAGE01_CODEX_ONLY_LEG_MODELS": "codex/gpt-6-astra,codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_LEG_EFFORT": "high",
+        "STAGE01_CODEX_ONLY_JUDGE_MODEL": "codex/gpt-6-astra",
+        "STAGE01_CODEX_ONLY_JUDGE_EFFORT": "high",
+        "STAGE01_NEIGHBOR_COORD_TEXT_ENABLED": "false",
+        "MD_MIRROR_RECONCILE_ENABLED": "false",
+        "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "false",
+        "AUDIT_MERGE_PRIMARY_TEXT": "1",
+        "AUDIT_OBJECT_CONTEXT_FOLLOWUPS": "0",
+        "AUDIT_OBJECT_GRAPHIC_DETAILS": "0",
+        "AUDIT_OBJECT_TERMINAL_DISPOSITION": "0",
+        "AUDIT_OBJECT_OPERATION_MAX_REQUESTS": "8"
+      }
+    }
+  ],
+  "projects": [
+    {
+      "discipline": "AK",
+      "files_verified": 75,
+      "inventory_packets": 21,
+      "input_coverage_complete": true,
+      "semantic_inventory_complete": false
+    },
+    {
+      "discipline": "ITP",
+      "files_verified": 53,
+      "inventory_packets": 15,
+      "input_coverage_complete": true,
+      "semantic_inventory_complete": false
+    },
+    {
+      "discipline": "AR",
+      "files_verified": 47,
+      "inventory_packets": 11,
+      "input_coverage_complete": true,
+      "semantic_inventory_complete": false
+    },
+    {
+      "discipline": "KM",
+      "files_verified": 59,
+      "inventory_packets": 14,
+      "input_coverage_complete": true,
+      "semantic_inventory_complete": false
+    },
+    {
+      "discipline": "VK",
+      "files_verified": 40,
+      "inventory_packets": 9,
+      "input_coverage_complete": true,
+      "semantic_inventory_complete": false
+    },
+    {
+      "discipline": "EOM",
+      "files_verified": 90,
+      "inventory_packets": 23,
+      "input_coverage_complete": true,
+      "semantic_inventory_complete": false
+    }
+  ],
+  "model_calls": 0,
+  "trial_frozen": false,
+  "dispatch_ready": false,
+  "stage4_complete": false,
+  "production_acceptance": false,
+  "remaining": [
+    "Freeze new evaluator/shared executor and run protocols against this snapshot and input package.",
+    "Retain method eligibility limits; no combined candidate or automatic grouping.",
+    "Do not compare timings with overlapped historical pilots as if workloads were equal."
+  ]
+}
