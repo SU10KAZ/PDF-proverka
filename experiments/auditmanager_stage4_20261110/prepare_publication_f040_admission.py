@@ -9,10 +9,11 @@ from backend.app.pipeline.stages.findings_verify.source_review_graphics import a
 from backend.app.pipeline.stages.findings_verify.source_review_evidence import evidence_digest
 from backend.app.pipeline.stages.findings_verify.source_review_final_check import prepare_final_check
 from backend.app.pipeline.stages.findings_verify.source_review_admission import apply_review_admissions
+from backend.app.pipeline.stages.findings_verify.graphic_observation_handoff import bind_observation
 from .run_primary_text_runtime_probe import sha, write
 
 
-def prepare(root):
+def prepare(root, observation_request=None, observation_response=None):
     report = Path('/tmp/auditmanager_runtime_recovered_findings_20261112.json')
     source = Path('/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md')
     graphics = Path('/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100')
@@ -31,6 +32,11 @@ def prepare(root):
     # runs; the coordinator also viewed it directly. This is not a new model receipt.
     image['attached_to_model'] = True
     image['visually_reviewed'] = True
+    if (observation_request is None) != (observation_response is None):
+        raise ValueError('both_observation_files_required')
+    if observation_request is not None:
+        queue['source_only_graphic_observations'] = [
+            bind_observation(observation_request, observation_response, bid)]
     def evidence(box, observation):
         return {'type': 'image', 'block_id': bid, 'image_sha256': image['sha256'],
                 'bbox_norm_xyxy': box, 'observation': observation}
@@ -83,6 +89,7 @@ def prepare(root):
         'original_85_findings_preserved_in_sealed_report': True,
         'other_84_findings_identical_in_local_preview': True,
         'target_retained_in_pending_archive': True,
+        'source_only_observation_attached': observation_request is not None,
         'final_model_check_completed': False, 'production_acceptance': False}
     write(root / 'preparation.json', manifest)
     return manifest
@@ -91,4 +98,7 @@ def prepare(root):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('root', type=Path)
-    print(json.dumps(prepare(parser.parse_args().root.resolve()), ensure_ascii=False))
+    parser.add_argument('--observation-request', type=Path)
+    parser.add_argument('--observation-response', type=Path)
+    args = parser.parse_args()
+    print(json.dumps(prepare(args.root.resolve(), args.observation_request, args.observation_response), ensure_ascii=False))

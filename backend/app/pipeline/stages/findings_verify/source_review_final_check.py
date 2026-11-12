@@ -11,6 +11,7 @@ from .source_review_evidence import evidence_digest
 from .source_review_request import prepare_source_review_request
 from .source_review_results import validate_source_review
 from .source_review_profile import OUTPUT_PROFILE
+from .graphic_observation_handoff import checked_observations, HANDOFF_INSTRUCTIONS, SOURCE_ONLY_INSTRUCTIONS
 
 CHECKS = ('source_support', 'quantities_and_scope', 'original_clause_preservation',
           'uncertainty_and_consequences', 'profile_and_norms', 'peer_overlap', 'final_citations')
@@ -29,7 +30,9 @@ Return one JSON object: finding_id, binding_sha256 (copy), decision (release/hol
 
 
 def final_check_policy_digest():
-    return evidence_digest(final_check_instructions())
+    return evidence_digest({'instructions': final_check_instructions(),
+                            'optional_graphic_handoff': HANDOFF_INSTRUCTIONS,
+                            'source_only_policy': SOURCE_ONLY_INSTRUCTIONS})
 
 
 def prepare_final_check(entry, document, md):
@@ -55,6 +58,11 @@ def prepare_final_check(entry, document, md):
                  'context_search_boundary','source_catalogue','source_origins')},
              'required_checks':list(CHECKS)}
     instruction=final_check_instructions()
+    observations = checked_observations(entry['queue'].get('source_only_graphic_observations', []),
+                                        source['image_bindings'])
+    if observations:
+        payload['independent_graphic_observations_untrusted'] = observations
+        instruction += HANDOFF_INSTRUCTIONS
     request={'messages':[{'role':'system','content':instruction},{'role':'user','content':json.dumps(payload,ensure_ascii=False)}],
              'image_paths':source['image_paths'],'image_bindings':source['image_bindings']}
     return {'request':request,'binding':binding,'finding_id':fid}
