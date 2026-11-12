@@ -122,14 +122,22 @@
     {
       "finding_id": "F-013",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valve_claim_adjudication.json",
+        "sha256": "641747f0beb7b73cc8f7ee7616eb381acbff5bf9538f02dccb92ef5acb8da3f2",
+        "pointer": "/finding_adjudications/0"
+      }
     },
     {
       "finding_id": "F-014",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valve_claim_adjudication.json",
+        "sha256": "641747f0beb7b73cc8f7ee7616eb381acbff5bf9538f02dccb92ef5acb8da3f2",
+        "pointer": "/finding_adjudications/1"
+      }
     },
     {
       "finding_id": "F-015",
@@ -306,14 +314,22 @@
     {
       "finding_id": "F-041",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valve_claim_adjudication.json",
+        "sha256": "641747f0beb7b73cc8f7ee7616eb381acbff5bf9538f02dccb92ef5acb8da3f2",
+        "pointer": "/finding_adjudications/2"
+      }
     },
     {
       "finding_id": "F-042",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valve_claim_adjudication.json",
+        "sha256": "641747f0beb7b73cc8f7ee7616eb381acbff5bf9538f02dccb92ef5acb8da3f2",
+        "pointer": "/finding_adjudications/3"
+      }
     },
     {
       "finding_id": "F-043",
@@ -516,8 +532,12 @@
     {
       "finding_id": "F-072",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valve_claim_adjudication.json",
+        "sha256": "641747f0beb7b73cc8f7ee7616eb381acbff5bf9538f02dccb92ef5acb8da3f2",
+        "pointer": "/finding_adjudications/4"
+      }
     },
     {
       "finding_id": "F-073",
@@ -538,8 +558,8 @@
   ],
   "counts": {
     "total": 74,
-    "bounded_claim_adjudication": 21,
-    "source_review_only": 53
+    "bounded_claim_adjudication": 26,
+    "source_review_only": 48
   },
   "limits": [
     "A bounded assessment may find mixed or unresolved claims; it is not a pass count.",

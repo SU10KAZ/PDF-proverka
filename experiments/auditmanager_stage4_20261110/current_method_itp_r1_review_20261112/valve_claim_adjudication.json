@@ -1,0 +1,203 @@
+{
+  "version": 1,
+  "scope": "Five valve output rows and one directly traced semantic reference error",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "pre_merge": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_pre_merge.json",
+      "sha256": "bdbe8ec4189ec74e39ebda459ec1863ff3f96f3a92a35b2ab800d0decb7bdb43",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-013",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/12"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+        "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896",
+        "pointer": "/cases/0"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_document_comparison_supported",
+      "supported_claim": "Same position33, GVS2, DN50 has Kvs4 in specification versus40 in schedule/calculation, and different designation strings.",
+      "recommended_disposition": "Retain document coordination; manufacturer article-to-execution mapping remains unproved.",
+      "physical_or_counting_limit": "conditional_project_formula_not_actual_operating_loss",
+      "severity_assessment": "Not independently inferred from document difference alone.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-014",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/13"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+        "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896",
+        "pointer": "/cases/1"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_document_comparison_supported",
+      "supported_claim": "Positions32/33/34 match by number, duty and diameter; schedule PN25 versus specification PN16.",
+      "recommended_disposition": "Retain pressure-class comparisons separately from position33 capacity; local pressure/temperature suitability is not established.",
+      "physical_or_counting_limit": "same_equipment_different_property_not_duplicate",
+      "severity_assessment": "Not independently inferred from document difference alone.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-041",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/40"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+        "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896",
+        "pointer": "/cases/2"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_document_comparison_supported",
+      "supported_claim": "Position30 DOO valve has DN25 in schedule versus DN20 in PZ and directly reviewed section24-24.",
+      "recommended_disposition": "Retain dimensional reconciliation; do not choose final correct diameter solely from mark text or majority of sources.",
+      "physical_or_counting_limit": "local_dimension_conflict_not_installed_mismatch",
+      "severity_assessment": "Not independently inferred from document difference alone.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-042",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/41"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+        "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896",
+        "pointer": "/cases/3"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_document_comparison_supported",
+      "supported_claim": "Position35 has EV220WR/Kv8 in schedule and EV220В/Kvs6.3 in specification; both are DN20 normally closed,16bar.",
+      "recommended_disposition": "Retain published-parameter clarification. Preserve distinct Kv/Kvs labels and require manufacturer equivalence evidence; generic analogue permission does not resolve conflicting entries.",
+      "physical_or_counting_limit": "equivalence_unresolved_not_proved_wrong_product",
+      "severity_assessment": "Not independently inferred from document difference alone.",
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-072",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/71"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/valves_bounded_review.json",
+        "sha256": "cf2e6cbe1ef6aa7f50a090bed4839286632791e366c1253195e70c86a8803896",
+        "pointer": "/cases/4"
+      },
+      "reviewed_fields": [
+        "problem",
+        "description",
+        "solution",
+        "evidence"
+      ],
+      "factual_assessment": "bounded_document_comparison_supported",
+      "supported_claim": "Repeats position33 capacity conflict from F-013 and adds section14-14 evidence.",
+      "recommended_disposition": "Merge into F-013, preserving new graphic support and designation subclaim; do not count another independent defect.",
+      "physical_or_counting_limit": "duplicate_core_claim",
+      "severity_assessment": "Not independently inferred from document difference alone.",
+      "engineer_utility": "not_newly_measured"
+    }
+  ],
+  "arithmetic": {
+    "basis": "same stated Q=18.85, project formula (Q/Kvs)^2; conditional comparison",
+    "loss_at_4": "22.20765625",
+    "loss_at_40": "0.2220765625",
+    "ratio": "100"
+  },
+  "renumbering_reference_error": {
+    "owner": "F-014",
+    "field": "description",
+    "evidence": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": "/findings/13/description"
+    },
+    "incorrect_visible_target": "F-074",
+    "correct_final_target": "F-072",
+    "old_target": {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_pre_merge.json",
+        "sha256": "bdbe8ec4189ec74e39ebda459ec1863ff3f96f3a92a35b2ab800d0decb7bdb43",
+        "pointer": "/findings/73"
+      },
+      "problem": "Пропускная способность клапана позиции 33 не согласована с расчетным выбором.",
+      "source_stage": "object_operations_ca87bf5029f58a44",
+      "source_finding_ids": [
+        "O-65512fbcc5f743b7f9afe0fc"
+      ]
+    },
+    "same_target_after_merge": {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/71"
+      },
+      "problem": "Пропускная способность клапана позиции 33 не согласована с расчетным выбором.",
+      "source_stage": "object_operations_ca87bf5029f58a44",
+      "source_finding_ids": [
+        "O-65512fbcc5f743b7f9afe0fc"
+      ]
+    },
+    "wrong_but_existing_target": {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/73"
+      },
+      "problem": "Тепловые нагрузки в подписях парных трубопроводов отопления Т111 и Т211 не согласованы."
+    },
+    "assessment": "Visible prose retained a pre-merge display ID; existence-only validation would pass while linking to a different finding.",
+    "recommended_behavior": "Track referenced finding identity through merge/renumbering and render display IDs afterward. Validate target identity as well as existence; do not regex-rewrite ambiguous numbers without provenance.",
+    "runtime_changed": false
+  },
+  "limits": [
+    "No actual valve operating loss, installed execution or manufacturer equivalence established.",
+    "Position36 missing from the wider historical designation target remains missing; no recall upgrade.",
+    "Semantic reference failure is one verified case, not an exhaustive link audit."
+  ],
+  "whole_output_precision_finalized": false,
+  "runtime_changed": false,
+  "model_calls": 0
+}
