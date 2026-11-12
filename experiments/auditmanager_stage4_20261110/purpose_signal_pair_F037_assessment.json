@@ -1,0 +1,19 @@
+{
+  "finding_id": "F-037",
+  "status": "negative_control_passed_question_preserved_no_forced_DO",
+  "candidate_projection_path": "/tmp/auditmanager_publication_signal_pair_20261112_run/evaluations/publication_purpose_037/publication_projection.json",
+  "candidate_projection_sha256": "0b60a293ba606133cfd26565baf881b80b277c0c1b006541e47cf526ef19549a",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F037_assessment.json",
+  "source_review_sha256": "5d8f4af4005c9d99da80e4dafd598ee13b9778ea14996c425e3c76ea708568c9",
+  "checks": [
+    "Подпись пуск/стоп и точка DI сохранены; отсутствие DO не объявлено самостоятельным доказательством ошибки.",
+    "Вопрос содержит альтернативы команды и входа состояния, без обязательного переноса на DO.",
+    "Рекомендация и условный риск связаны с одним вопросом; внутренний поиск электрической схемы остаётся необходимым."
+  ],
+  "limits": [
+    "Контроль DEV; второй участник пары F038 ещё требует оценки.",
+    "Поиск контекста и окончательная выдача этим ответом не завершены."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}

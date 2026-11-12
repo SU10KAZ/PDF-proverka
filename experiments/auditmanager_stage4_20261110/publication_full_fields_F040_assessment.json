@@ -1,0 +1,27 @@
+{
+  "finding_id": "F-040",
+  "status": "false_electric_heater_symbol_interpretation_repeated",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_040/publication_projection.json",
+  "projection_sha256": "d8229bf40e9243851f9febfdcc2eadb0a730f7f553d46df59b06e2e7d548b6f6",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_recovery_G011_G013_source_review.json",
+  "source_review_sha256": "1d65bff3f2f37f47485dc4950afdf668b790255145e572e8ad7912386381a852",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_e3e39f8820d7474caa10ab626d2a2c91.png",
+      "sha256": "5c9cdf1f1635d706791f30152851a62ac7c2e0757c65ed25561084084bba4bc0",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Повторно просмотрен тот же первичный графический фрагмент: волнистая линия нагревателя Пм4.1 продолжается от TS1.",
+    "На соседней системе П4.1.1 и в легенде электрический нагреватель имеет отдельный угловой знак молнии, отличный от линии TS1.",
+    "Модель повторяет неподтверждённую идентификацию электрического символа как установленный конфликт.",
+    "Вопрос о замене символа опирается на ту же ошибочную предпосылку; его нельзя сохранять только потому, что он сформулирован условно.",
+    "Снять конкретный тезис об электрическом символе, не объявляя всю графику соответствующей всем требованиям."
+  ],
+  "required_next_mechanism": "Read symbol and connected lines independently of the candidate; compare same-sheet legend and an explicit counterpart. Literal text transcription alone does not verify shape or connectivity.",
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
