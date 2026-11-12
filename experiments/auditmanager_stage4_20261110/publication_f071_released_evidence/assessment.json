@@ -1,0 +1,28 @@
+{
+  "status": "source_review_final_check_and_delivery_export_passed_bounded_case",
+  "finding_id": "F-071",
+  "other_findings_unchanged": 84,
+  "exported_findings": 85,
+  "pending_reserve_role_retained": true,
+  "f003_complementary_basis_preserved": true,
+  "model": "codex/gpt-6-astra",
+  "known_dev_control_not_blind": true,
+  "limits": [
+    "Part-to-final mapping is explicit coordinator review, not autonomous grouping.",
+    "One case does not establish whole-project improvement or engineering acceptance."
+  ],
+  "files": {
+    "03_findings.json": "5e0e5c6608ba7e1007b529deccb74353edcfe7cdab5348aa902eff2555d07591",
+    "delivery_receipt.json": "25dee4f84e54cc2776174c702c7d7d80e3c4a0bc3ef87bd788a1a914a8468635",
+    "entry.json": "7a812242c2c76f07c45771d8324bb9184e91facf128059d031230de06a73cbf6",
+    "final_request.json": "c43d61f526ba9b4af3dafeecd319a4625957d9fe4915b730ad277602b9d74791",
+    "final_result.json": "0af1baa41df64c9e38daafae916c9502c1c5756a90f168d5a87798b67ceacbeb",
+    "preparation.json": "ecee81f9dcc60beaa09fa9dcb1a13b9dca6543a3ce3f0d95550a82e1b60bce3c",
+    "receipt.json": "914787a27425a65d2b394b99669d159e7757405657f042d3d813e5d808af2363",
+    "report.xlsx": "7f9f1bd3debb0bb34b881e7a7452c0480bf4200a6ec32db66dfe13b40733db13",
+    "source_candidate.json": "2f7e8f2279653712ccefbc4a9c51a1c2c63938b4890aa75689a08bcdf6d88762",
+    "source_manifest.json": "8fd11307e8be9942bbb3efcd2c41f4d910140d40bd31a7b76abf444e031beab7"
+  },
+  "stage4_complete": false,
+  "production_acceptance": false
+}
