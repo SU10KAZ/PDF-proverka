@@ -1,0 +1,150 @@
+{
+  "status": "two_network_questions_bounded_source_review",
+  "run": "ak_r1_classic_current",
+  "final": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+  },
+  "input_manifest": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/input_manifest.json",
+    "sha256": "5d82b075c7965f98df3d3a76ace89cd5153bc5bcf704cbc76e9185edf1eb0ae2",
+    "png_file_count": 70
+  },
+  "claims": [
+    {
+      "finding_id": "F-001",
+      "output_pointer": "/findings/0",
+      "source_finding": {
+        "id": "F-001",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "coordination",
+        "report_section": "questions",
+        "problem": "Не подтверждено оконечивание линий RS-485 резисторами 120 Ом.",
+        "description": "В строке 826 указан интерфейс RS-485 кабелем КСПВПГнг(А)-HF 1×2×0,75 со ссылкой на 13АВ-РД-АК2-ПА, книгу 2. В представленном фрагменте отсутствуют сведения об оконечных резисторах 120 Ом и включении встроенных терминаторов. Изображения схем не приложены, поэтому отсутствие терминаторов в проекте не установлено.",
+        "page": 9,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Проверить схемы книги 2 и руководства оборудования; показать два физических конца каждого сегмента RS-485 и установку резисторов 120 Ом либо включение соответствующих встроенных терминаторов.",
+        "risk": "Если необходимое согласование линии не предусмотрено, возможны отражения сигнала и неустойчивая связь.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e7af9d2de9a4471daa970c45845957e5",
+            "page": 9,
+            "md_lines": "строки 811–826"
+          }
+        ],
+        "source_stage": "alia_ss_lowcurrent_audit",
+        "sheet": "Лист 5",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 70,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "disposition": "source_reference_confirmed_defect_unestablished_context_search_needed",
+      "source_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_e7af9d2de9a4471daa970c45845957e5",
+          "quote": "|  | - интерфейс RS-485, КСПВПГнг(A)-HF 1x2x0,75, учено 1ЗAB-РД-АК2-ПА книга 2. |",
+          "method": "Authoritative prepared TEXT"
+        }
+      ],
+      "observations": [
+        "В легенде действительно указан интерфейс и ссылка на книгу 2.",
+        "Вывод сам оговаривает отсутствие доказанного дефекта. Конкретные концы сегмента, оборудование либо измеренная избыточная длина не названы.",
+        "Наличие технологии в легенде само по себе не доказывает её неправильную реализацию.",
+        "Фраза «Изображения схем не приложены» не должна трактоваться как отсутствие графики во всём аудите: входной манифест содержит графические PNG. Наличие конкретной схемы оконечивания этим не доказано."
+      ],
+      "limits": [
+        "Паспортные требования и применимость численных ограничений к конкретному оборудованию здесь не проверены; числа не утверждены как универсальные правила.",
+        "Отсутствие сведений в этом блоке не равнозначно отсутствию сведений в полном комплекте. Полнота книги 2 по одной ссылке не установлена.",
+        "Инженерная полезность общего вопроса не подтверждена. Это не технически опровергнутое замечание и не доказательство успешного фильтра."
+      ],
+      "recommended_behavior": "Сначала адресно найти схему сегмента, длину и оборудование по ссылке на книгу 2. При недоступности сохранить ограничение покрытия проверки; выпускать инженерный вопрос с конкретной привязкой и недостающими данными, а не безадресное требование перепроверить всю сеть.",
+      "engineer_decision": null,
+      "engineering_utility": "not_assessed",
+      "independent_discovery": false,
+      "whole_finding_precision": "not_finalized"
+    },
+    {
+      "finding_id": "F-002",
+      "output_pointer": "/findings/1",
+      "source_finding": {
+        "id": "F-002",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "coordination",
+        "report_section": "questions",
+        "problem": "Не подтверждено соблюдение ограничения 90 м для стационарных медных линий Ethernet Cat5e.",
+        "description": "Строка 822 предусматривает Ethernet по F/UTP Cat5e ZH нг(А)-FRHF 4×2×0,52 с учётом в книге 2. Здесь указан F/UTP, а не U/UTP; экранирование само по себе не увеличивает допустимую длину стандартной стационарной линии. Длины участков и размещение активного оборудования в предоставленном фрагменте не приведены. Превышение 90 м не установлено.",
+        "page": 9,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "По планам и кабельному журналу книги 2 проверить длину каждой стационарной линии Cat5e до 90 м и полный канал с коммутационными шнурами до 100 м для выбранного Ethernet-интерфейса. При превышении предусмотреть промежуточное активное оборудование или оптическую линию.",
+        "risk": "При превышении допустимой длины возможны ошибки передачи и потеря связи с системой диспетчеризации.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e7af9d2de9a4471daa970c45845957e5",
+            "page": 9,
+            "md_lines": "строки 820–826"
+          }
+        ],
+        "source_stage": "alia_ss_lowcurrent_audit",
+        "sheet": "Лист 5",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 50,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "disposition": "source_reference_confirmed_defect_unestablished_context_search_needed",
+      "source_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_e7af9d2de9a4471daa970c45845957e5",
+          "quote": "|  | - линия Ethernet F/UTP Cat5e ZH нг(A)-FRHF 4x2x0,52, учено 1ЗAB-РД-АК2-ПА книга 2; |",
+          "method": "Authoritative prepared TEXT"
+        }
+      ],
+      "observations": [
+        "В легенде действительно указан интерфейс и ссылка на книгу 2.",
+        "Вывод сам оговаривает отсутствие доказанного дефекта. Конкретные концы сегмента, оборудование либо измеренная избыточная длина не названы.",
+        "Наличие технологии в легенде само по себе не доказывает её неправильную реализацию."
+      ],
+      "limits": [
+        "Паспортные требования и применимость численных ограничений к конкретному оборудованию здесь не проверены; числа не утверждены как универсальные правила.",
+        "Отсутствие сведений в этом блоке не равнозначно отсутствию сведений в полном комплекте. Полнота книги 2 по одной ссылке не установлена.",
+        "Инженерная полезность общего вопроса не подтверждена. Это не технически опровергнутое замечание и не доказательство успешного фильтра."
+      ],
+      "recommended_behavior": "Сначала адресно найти схему сегмента, длину и оборудование по ссылке на книгу 2. При недоступности сохранить ограничение покрытия проверки; выпускать инженерный вопрос с конкретной привязкой и недостающими данными, а не безадресное требование перепроверить всю сеть.",
+      "engineer_decision": null,
+      "engineering_utility": "not_assessed",
+      "independent_discovery": false,
+      "whole_finding_precision": "not_finalized"
+    }
+  ],
+  "limits": [
+    "No external device requirements verified.",
+    "No frozen evaluator, runtime capsule or production changes.",
+    "Review coverage is not factual precision or engineer approval."
+  ]
+}

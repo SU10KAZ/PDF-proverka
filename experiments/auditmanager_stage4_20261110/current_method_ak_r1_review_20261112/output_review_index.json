@@ -7,13 +7,11 @@
   },
   "summary": {
     "output_rows": 88,
-    "rows_with_some_reviewed_claim": 84,
-    "rows_without_target_or_additional_review": 4,
+    "rows_with_some_reviewed_claim": 86,
+    "rows_without_target_or_additional_review": 2,
     "whole_output_precision_established": false
   },
   "priority_unreviewed_rows": [
-    "F-001",
-    "F-002",
     "F-004",
     "F-005"
   ],
@@ -24,12 +22,20 @@
       "problem": "Не подтверждено оконечивание линий RS-485 резисторами 120 Ом.",
       "report_section": "questions",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch9.json",
+          "sha256": "14bcf3927f085962fc69eba567f1beea05665430d64542200dbbaa597c46913f",
+          "pointer": "/claims/0",
+          "disposition": "source_reference_confirmed_defect_unestablished_context_search_needed",
+          "scope": "Project reference verified; equipment requirements and actual defect remain unestablished."
+        }
+      ],
       "known_review_observations": [],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Addressed context search and applicable device requirements; establish utility before accepting generic network question."
     },
     {
       "finding_id": "F-002",
@@ -37,12 +43,20 @@
       "problem": "Не подтверждено соблюдение ограничения 90 м для стационарных медных линий Ethernet Cat5e.",
       "report_section": "questions",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch9.json",
+          "sha256": "14bcf3927f085962fc69eba567f1beea05665430d64542200dbbaa597c46913f",
+          "pointer": "/claims/1",
+          "disposition": "source_reference_confirmed_defect_unestablished_context_search_needed",
+          "scope": "Project reference verified; equipment requirements and actual defect remain unestablished."
+        }
+      ],
       "known_review_observations": [],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Addressed context search and applicable device requirements; establish utility before accepting generic network question."
     },
     {
       "finding_id": "F-003",
