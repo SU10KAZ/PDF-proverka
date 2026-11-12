@@ -1,0 +1,66 @@
+{
+  "scope": "F071 source review, adjudication and final check only; earlier discovery/publication runs excluded",
+  "saved_responses": 3,
+  "usage": {
+    "input_tokens": 99425,
+    "output_tokens": 7118,
+    "cached_tokens": 20480,
+    "reasoning_tokens": 876,
+    "duration_ms": 200690
+  },
+  "records": [
+    {
+      "phase": "00_review",
+      "response_path": "/tmp/auditmanager_publication_f071_source_review_20261112/workflow/00_review/result.json",
+      "response_sha256": "968120a81b92a38526331e667ee1734e425738afcb30a0e0abfa76797132f812",
+      "request_sha256": "e83077e300efff518285e1a254d5fcd37efa723101cb6bfac4c9ce0f1426c456",
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 13845,
+      "output_tokens": 2743,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 448,
+      "duration_ms": 80749,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "phase": "05_adjudication",
+      "response_path": "/tmp/auditmanager_publication_f071_source_review_20261112/workflow/05_adjudication/result.json",
+      "response_sha256": "bb36c4d8eb7227d442fe2d96cc44111e05d077f505e4f7f384a8f36e50310763",
+      "request_sha256": "eb8b028e4a10e394c4d88dc14137ad5cc0381407fe31808085f70065212a4487",
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 16770,
+      "output_tokens": 1972,
+      "cached_tokens": 10240,
+      "reasoning_tokens": 259,
+      "duration_ms": 59295,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    },
+    {
+      "phase": "final_check",
+      "response_path": "/tmp/auditmanager_publication_f071_final_check_20261112/workflow/result.json",
+      "response_sha256": "0af1baa41df64c9e38daafae916c9502c1c5756a90f168d5a87798b67ceacbeb",
+      "request_sha256": "c43d61f526ba9b4af3dafeecd319a4625957d9fe4915b730ad277602b9d74791",
+      "model": "codex/gpt-6-astra",
+      "admission_status": "applied",
+      "transport_success": true,
+      "input_tokens": 68810,
+      "output_tokens": 2403,
+      "cached_tokens": 0,
+      "reasoning_tokens": 169,
+      "duration_ms": 60646,
+      "reported_cost_usd": 0.0,
+      "cost_source": "subscription"
+    }
+  ],
+  "monetary_cost_known": false,
+  "subscription_quota_fraction": null,
+  "limits": [
+    "Cached tokens are a subset of input; reasoning is reported separately, not added to output.",
+    "Sum of saved request durations is not full user elapsed time.",
+    "Subscription cost_usd=0 does not mean inference has no resource cost.",
+    "Do not add these response paths again in broader totals."
+  ],
+  "production_acceptance": false
+}
