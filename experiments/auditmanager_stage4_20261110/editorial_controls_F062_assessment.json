@@ -1,0 +1,17 @@
+{
+  "finding_id": "F-062",
+  "status": "bounded_auditor_typo_control_pass_other_controls_pending",
+  "projection_path": "/tmp/auditmanager_publication_editorial_controls_20261112_run/evaluations/publication_purpose_062/publication_projection.json",
+  "projection_sha256": "6d29dc000dcdb8d2b6347c5a304cbcbd55564d23909130d4b46c76adb701e35c",
+  "baseline_assessment_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F062_assessment.json",
+  "checks": [
+    "Actual source identifies PDS4 on Ва5.1р; typo in audit addendum corrected in wording and recorded in reason.",
+    "One technical finding, zero questions, no separate engineer workload for an audit-input correction.",
+    "PDS3 and PDS4 polarity conflict retained; consequence explicitly conditional, actual failure not asserted.",
+    "Recommendation names correction of the drawn scheme, not an instruction to rewire installed equipment blindly.",
+    "This passes only the negative auditor-typo control. Actual source-discrepancy positive control F053 and other three controls still pending."
+  ],
+  "scope": "Source graphics and input addendum were directly reviewed before this candidate; model result reviewed against those exact sources. No engineer acceptance inferred.",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
