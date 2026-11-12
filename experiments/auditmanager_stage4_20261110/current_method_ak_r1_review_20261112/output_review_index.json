@@ -7,19 +7,15 @@
   },
   "summary": {
     "output_rows": 88,
-    "rows_with_some_reviewed_claim": 80,
-    "rows_without_target_or_additional_review": 8,
+    "rows_with_some_reviewed_claim": 84,
+    "rows_without_target_or_additional_review": 4,
     "whole_output_precision_established": false
   },
   "priority_unreviewed_rows": [
     "F-001",
     "F-002",
     "F-004",
-    "F-005",
-    "F-045",
-    "F-055",
-    "F-058",
-    "F-059"
+    "F-005"
   ],
   "rows": [
     {
@@ -1022,12 +1018,20 @@
       "problem": "Полярность отбора давления PDS3 и PDS4 противоположна направлению повышения давления на вытяжных вентиляторах.",
       "report_section": "technical_findings",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch8.json",
+          "sha256": "70158211196abd19e13ff2b9e00673d8520323f43fc4cb6316f368fc402fa55b",
+          "pointer": "/claims/0",
+          "disposition": "confirmed_drawn_pressure_polarity_only",
+          "scope": "Drawn evidence and role qualification only; no actual malfunction proven."
+        }
+      ],
       "known_review_observations": [],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Retain bounded source claim; assess remaining consequences, role semantics and engineering utility before whole-finding acceptance."
     },
     {
       "finding_id": "F-046",
@@ -1260,12 +1264,20 @@
       "problem": "Полярность отборов давления PDS3 и PDS4 противоположна повышению давления на вентиляторах Ва4.1 и Ва4.1р.",
       "report_section": "technical_findings",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch8.json",
+          "sha256": "70158211196abd19e13ff2b9e00673d8520323f43fc4cb6316f368fc402fa55b",
+          "pointer": "/claims/1",
+          "disposition": "confirmed_drawn_pressure_polarity_only",
+          "scope": "Drawn evidence and role qualification only; no actual malfunction proven."
+        }
+      ],
       "known_review_observations": [],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Retain bounded source claim; assess remaining consequences, role semantics and engineering utility before whole-finding acceptance."
     },
     {
       "finding_id": "F-056",
@@ -1337,12 +1349,20 @@
       "problem": "Полярность отборов давления PDS3 и PDS4 противоположна повышению давления на вентиляторах Ва5.1 и Ва5.1р.",
       "report_section": "technical_findings",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch8.json",
+          "sha256": "70158211196abd19e13ff2b9e00673d8520323f43fc4cb6316f368fc402fa55b",
+          "pointer": "/claims/2",
+          "disposition": "confirmed_drawn_pressure_polarity_only",
+          "scope": "Drawn evidence and role qualification only; no actual malfunction proven."
+        }
+      ],
       "known_review_observations": [],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Retain bounded source claim; assess remaining consequences, role semantics and engineering utility before whole-finding acceptance."
     },
     {
       "finding_id": "F-059",
@@ -1350,12 +1370,20 @@
       "problem": "Подписи состояния основного и резервного вентиляторов Ва5.1 перепутаны между каналами 16 и 19.",
       "report_section": "technical_findings",
       "target_links": [],
-      "additional_reviews": [],
+      "additional_reviews": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch8.json",
+          "sha256": "70158211196abd19e13ff2b9e00673d8520323f43fc4cb6316f368fc402fa55b",
+          "pointer": "/claims/3",
+          "disposition": "confirmed_channel_labels_with_unresolved_role_semantics",
+          "scope": "Drawn evidence and role qualification only; no actual malfunction proven."
+        }
+      ],
       "known_review_observations": [],
       "duplicate_topic_pairs": [],
-      "has_reviewed_target_or_additional_claim": false,
+      "has_reviewed_target_or_additional_claim": true,
       "whole_finding_precision_status": "not_finalized",
-      "next_review_focus": "Check uncovered claim and source evidence"
+      "next_review_focus": "Retain bounded source claim; assess remaining consequences, role semantics and engineering utility before whole-finding acceptance."
     },
     {
       "finding_id": "F-060",

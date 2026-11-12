@@ -1,0 +1,740 @@
+{
+  "status": "four_more_output_rows_bounded_review",
+  "run": "ak_r1_classic_current",
+  "final": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+  },
+  "claims": [
+    {
+      "finding_id": "F-045",
+      "output_pointer": "/findings/44",
+      "source_finding": {
+        "id": "F-045",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "dispatch",
+        "report_section": "technical_findings",
+        "problem": "Полярность отбора давления PDS3 и PDS4 противоположна направлению повышения давления на вытяжных вентиляторах.",
+        "description": "Первоначальное описание:\nВоздух в вытяжной схеме движется от автостоянки справа к выбросу слева. У обоих вентиляторов Ва3.1 и Ва3.1р положительный вход дифференциального реле показан справа, на стороне всасывания, а отрицательный — слева, на стороне нагнетания. При указанной положительной уставке ΔP=100 Па такая схема задаёт обратный знак контролируемого перепада.\n\nДополнительная проверка:\nУ PDS3 Ва3.1 «+» подключён к всасыванию, «−» к выбросу при уставке 100 Па.\nПри потоке справа налево линия «+» PDS3 находится перед вентилятором, а линия «−» — после него, на стороне выброса. На схеме указана положительная уставка ΔP=100Па.\n\nУ PDS4 Ва3.1р «+» подключён к всасыванию, «−» к выбросу при уставке 100 Па.\nНижняя параллельная ветвь имеет тот же поток справа налево. У PDS4 положительный отбор показан справа от Ва3.1р, отрицательный слева; указано ΔP=100Па.",
+        "source": "Лист 11, правая часть функциональной схемы, отборы давления PDS3 и PDS4",
+        "page": 15,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Согласовать полярность отборов с направлением потока: положительные входы PDS3 и PDS4 подключить к стороне нагнетания, отрицательные — к стороне всасывания.",
+        "risk": "При выполнении подключений по показанной полярности положительная уставка может не достигаться, что приведёт к неверному контролю работы вентиляторов.",
+        "reason": "На изображении одновременно установлены направление потока, точки отбора, знаки входов и положительная уставка. Это техническое противоречие подключения измерительных цепей, относящееся к technical_findings.",
+        "source_finding_ids": [
+          "G-016"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+            "type": "graphic",
+            "observation": "Вытяжная схема соединяет автостоянку справа с обозначенным слева «Выбросом»; стрелки направлены влево. У PDS3 над Ва3.1 знак «−» стоит на линии отбора слева от вентилятора, знак «+» — на линии справа. Между ними указано ΔP=100Па.",
+            "location": "Лист 11, верхняя правая часть, вентилятор Ва3.1 и PDS3; границы вытяжного воздуховода"
+          },
+          {
+            "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+            "type": "graphic",
+            "observation": "Вентилятор Ва3.1р включён параллельно Ва3.1 между теми же правым входом от автостоянки и левым выходом к выбросу. У PDS4 отрицательная линия отбора подключена слева от Ва3.1р, положительная — справа; указано ΔP=100Па.",
+            "location": "Лист 11, правая часть, нижняя ветвь Ва3.1р и PDS4"
+          }
+        ],
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_407d3adbc528e7bc",
+        "source_block_ids": [
+          "blk_2aeda93ede5444ebb33f638cd45586f2"
+        ],
+        "recovery_addendum_base_signature": "54167361b49df3c9e06d0c5628a3a2955350c2b9b7111deb81b34cfd9b493b08",
+        "recovery_addendum_snapshot_signatures": [
+          "54167361b49df3c9e06d0c5628a3a2955350c2b9b7111deb81b34cfd9b493b08",
+          "c4053e2ffc13b921c8e745d6d058f9cff255202c3934260d467160f3777a8b81"
+        ],
+        "recovery_original_description": "Воздух в вытяжной схеме движется от автостоянки справа к выбросу слева. У обоих вентиляторов Ва3.1 и Ва3.1р положительный вход дифференциального реле показан справа, на стороне всасывания, а отрицательный — слева, на стороне нагнетания. При указанной положительной уставке ΔP=100 Па такая схема задаёт обратный знак контролируемого перепада.",
+        "recovery_addenda": [
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/6/findings/4",
+            "source_id": "G-016",
+            "claim_id": "1",
+            "claim": "У PDS3 Ва3.1 «+» подключён к всасыванию, «−» к выбросу при уставке 100 Па.",
+            "reason": "При потоке справа налево линия «+» PDS3 находится перед вентилятором, а линия «−» — после него, на стороне выброса. На схеме указана положительная уставка ΔP=100Па.",
+            "source_refs": [
+              "blk_2aeda93ede5444ebb33f638cd45586f2"
+            ],
+            "source_types": {
+              "blk_2aeda93ede5444ebb33f638cd45586f2": "graphic"
+            },
+            "target_id": "F-046",
+            "target_signature": "54167361b49df3c9e06d0c5628a3a2955350c2b9b7111deb81b34cfd9b493b08",
+            "semantic_verified": false,
+            "id": "b5c54a90bc93f654762abca5a62ca52719877e6d20cf3b5c4994ae89545a7b02",
+            "reported_target_id": "F-046",
+            "reported_target_signature": "54167361b49df3c9e06d0c5628a3a2955350c2b9b7111deb81b34cfd9b493b08"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/6/findings/4",
+            "source_id": "G-016",
+            "claim_id": "2",
+            "claim": "У PDS4 Ва3.1р «+» подключён к всасыванию, «−» к выбросу при уставке 100 Па.",
+            "reason": "Нижняя параллельная ветвь имеет тот же поток справа налево. У PDS4 положительный отбор показан справа от Ва3.1р, отрицательный слева; указано ΔP=100Па.",
+            "source_refs": [
+              "blk_2aeda93ede5444ebb33f638cd45586f2"
+            ],
+            "source_types": {
+              "blk_2aeda93ede5444ebb33f638cd45586f2": "graphic"
+            },
+            "target_id": "F-046",
+            "target_signature": "54167361b49df3c9e06d0c5628a3a2955350c2b9b7111deb81b34cfd9b493b08",
+            "semantic_verified": false,
+            "id": "a37fee2937c80c0a791a9bfbeb9efae89d33817cee9735c3897a186697938aa9",
+            "reported_target_id": "F-046",
+            "reported_target_signature": "54167361b49df3c9e06d0c5628a3a2955350c2b9b7111deb81b34cfd9b493b08"
+          }
+        ],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 11",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 52,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+          "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "sheet": 11,
+          "method": "Direct original-resolution graphic inspection; no OCR correction of TEXT"
+        }
+      ],
+      "engineer_decision": null,
+      "engineering_utility": "not_assessed",
+      "independent_discovery": false,
+      "whole_finding_precision": "not_finalized",
+      "disposition": "confirmed_drawn_pressure_polarity_only",
+      "observations": [
+        "Вытяжной тракт показан от автостоянки справа к выбросу слева. Обе параллельные ветви проходят через соответствующий вентилятор.",
+        "У обоих PDS3/PDS4 знак минус стоит на левом отборе, плюс на правом. Между ними указано ΔP=100Па.",
+        "Это подтверждает графическую предпосылку замечания: положительный вход показан со стороны входа воздуха в вентилятор, отрицательный со стороны выхода."
+      ],
+      "limits": [
+        "Не проверены фактический монтаж, паспорт прибора, логика контактов, программная инверсия и наладка. Нельзя считать реальную неработоспособность установленной.",
+        "Примечание листа допускает уточнение предельных рабочих значений при ПНР; число 100 Па не превращается в универсальный допуск.",
+        "Рекомендация относится к согласованию полярности на документации. Общее физическое объяснение не подменяет проверку конкретного прибора."
+      ],
+      "recommended_behavior": "Сохранить адресное замечание к знакам отборов на данном листе; последствия формулировать условно, не заявлять доказанный отказ системы."
+    },
+    {
+      "finding_id": "F-055",
+      "output_pointer": "/findings/54",
+      "source_finding": {
+        "id": "F-055",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "dispatch",
+        "report_section": "technical_findings",
+        "problem": "Полярность отборов давления PDS3 и PDS4 противоположна повышению давления на вентиляторах Ва4.1 и Ва4.1р.",
+        "description": "Первоначальное описание:\nВытяжной поток направлен от автостоянки справа к выбросу слева. У PDS3 и PDS4 положительные входы подключены справа от вентиляторов, на стороне всасывания, отрицательные — слева, на стороне нагнетания. При показанной уставке ΔP=100 Па подключение задаёт обратный знак контролируемого перепада.\n\nДополнительная проверка:\nPDS3 Ва4.1 подключён «+» к всасыванию, «−» к нагнетанию при 100 Па.\nПоток идёт от автостоянки справа к выбросу слева. Положительный отбор PDS3 показан справа от Ва4.1, отрицательный — слева; уставка ΔP=100Па положительна. Это задаёт обратный знак перепада.\n\nPDS4 Ва4.1р подключён «+» к всасыванию, «−» к нагнетанию при 100 Па.\nНижняя параллельная ветвь Ва4.1р имеет поток справа налево. У PDS4 положительный отбор показан справа, отрицательный — слева; указано ΔP=100Па. Второе подключение с обратной полярностью сохранено в F-057.",
+        "source": "13АВ-РД-АК2-ПА, лист 18, правая часть функциональной схемы, Ва4.1/Ва4.1р, PDS3 и PDS4",
+        "page": 22,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Согласовать полярность отборов с направлением потока: положительные входы PDS3 и PDS4 подключить к нагнетанию, отрицательные — к всасыванию.",
+        "risk": "При подключении по схеме положительная уставка может не достигаться, что приведёт к неверному контролю работы вентиляторов.",
+        "reason": "Изображение показывает направление потока, точки отбора, знаки входов и положительную уставку. Это техническое противоречие подключения измерительных цепей. F-046 относится к Ва3.1/Ва3.1р на листе 11 и данное место не охватывает.",
+        "source_finding_ids": [
+          "G-042"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+            "type": "graphic",
+            "observation": "Вытяжная схема соединяет автостоянку справа с «Выбросом» слева; стрелки направлены влево. У PDS3 над Ва4.1 знак «−» стоит на линии отбора слева от вентилятора, знак «+» — на линии справа; указано ΔP=100Па.",
+            "location": "Лист 18, верхняя правая часть, Ва4.1 и PDS3, вход и выход вытяжной схемы"
+          },
+          {
+            "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+            "type": "graphic",
+            "observation": "Ва4.1р включён параллельно Ва4.1 между правым входом от автостоянки и левым выходом к выбросу. У PDS4 отрицательный отбор подключён слева от вентилятора, положительный — справа; указано ΔP=100Па.",
+            "location": "Лист 18, правая часть, нижняя ветвь Ва4.1р и PDS4"
+          }
+        ],
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_c51a95d91fea1908",
+        "source_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9"
+        ],
+        "recovery_addendum_base_signature": "1ff5f8ced7d99bfba2b388c66400592f2a791cc0825e0eede642f7775b86401b",
+        "recovery_addendum_snapshot_signatures": [
+          "1ff5f8ced7d99bfba2b388c66400592f2a791cc0825e0eede642f7775b86401b",
+          "7ba14065386e82de9ad05a8c7a85f8eaf6025e19be3611b40b8c6b8450328f6a"
+        ],
+        "recovery_original_description": "Вытяжной поток направлен от автостоянки справа к выбросу слева. У PDS3 и PDS4 положительные входы подключены справа от вентиляторов, на стороне всасывания, отрицательные — слева, на стороне нагнетания. При показанной уставке ΔP=100 Па подключение задаёт обратный знак контролируемого перепада.",
+        "recovery_addenda": [
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/13/findings/2",
+            "source_id": "G-042",
+            "claim_id": "1",
+            "claim": "PDS3 Ва4.1 подключён «+» к всасыванию, «−» к нагнетанию при 100 Па.",
+            "reason": "Поток идёт от автостоянки справа к выбросу слева. Положительный отбор PDS3 показан справа от Ва4.1, отрицательный — слева; уставка ΔP=100Па положительна. Это задаёт обратный знак перепада.",
+            "source_refs": [
+              "blk_560cb89105bd46158749d4d59c9e52f9"
+            ],
+            "source_types": {
+              "blk_560cb89105bd46158749d4d59c9e52f9": "graphic"
+            },
+            "target_id": "F-057",
+            "target_signature": "1ff5f8ced7d99bfba2b388c66400592f2a791cc0825e0eede642f7775b86401b",
+            "semantic_verified": false,
+            "id": "e42f4f85cb708a590b35b01b24c71baea4cf5b7a204890430cd840d68828e3cb",
+            "reported_target_id": "F-057",
+            "reported_target_signature": "1ff5f8ced7d99bfba2b388c66400592f2a791cc0825e0eede642f7775b86401b"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/13/findings/2",
+            "source_id": "G-042",
+            "claim_id": "2",
+            "claim": "PDS4 Ва4.1р подключён «+» к всасыванию, «−» к нагнетанию при 100 Па.",
+            "reason": "Нижняя параллельная ветвь Ва4.1р имеет поток справа налево. У PDS4 положительный отбор показан справа, отрицательный — слева; указано ΔP=100Па. Второе подключение с обратной полярностью сохранено в F-057.",
+            "source_refs": [
+              "blk_560cb89105bd46158749d4d59c9e52f9"
+            ],
+            "source_types": {
+              "blk_560cb89105bd46158749d4d59c9e52f9": "graphic"
+            },
+            "target_id": "F-057",
+            "target_signature": "1ff5f8ced7d99bfba2b388c66400592f2a791cc0825e0eede642f7775b86401b",
+            "semantic_verified": false,
+            "id": "1fcf4c60a3c4949ee48923bac444abdfedfd89fb15342beca31cb9fbb7cd9065",
+            "reported_target_id": "F-057",
+            "reported_target_signature": "1ff5f8ced7d99bfba2b388c66400592f2a791cc0825e0eede642f7775b86401b"
+          }
+        ],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-042",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 18",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 52,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+          "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+          "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+          "sheet": 18,
+          "method": "Direct original-resolution graphic inspection; no OCR correction of TEXT"
+        }
+      ],
+      "engineer_decision": null,
+      "engineering_utility": "not_assessed",
+      "independent_discovery": false,
+      "whole_finding_precision": "not_finalized",
+      "disposition": "confirmed_drawn_pressure_polarity_only",
+      "observations": [
+        "Вытяжной тракт показан от автостоянки справа к выбросу слева. Обе параллельные ветви проходят через соответствующий вентилятор.",
+        "У обоих PDS3/PDS4 знак минус стоит на левом отборе, плюс на правом. Между ними указано ΔP=100Па.",
+        "Это подтверждает графическую предпосылку замечания: положительный вход показан со стороны входа воздуха в вентилятор, отрицательный со стороны выхода."
+      ],
+      "limits": [
+        "Не проверены фактический монтаж, паспорт прибора, логика контактов, программная инверсия и наладка. Нельзя считать реальную неработоспособность установленной.",
+        "Примечание листа допускает уточнение предельных рабочих значений при ПНР; число 100 Па не превращается в универсальный допуск.",
+        "Рекомендация относится к согласованию полярности на документации. Общее физическое объяснение не подменяет проверку конкретного прибора."
+      ],
+      "recommended_behavior": "Сохранить адресное замечание к знакам отборов на данном листе; последствия формулировать условно, не заявлять доказанный отказ системы."
+    },
+    {
+      "finding_id": "F-058",
+      "output_pointer": "/findings/57",
+      "source_finding": {
+        "id": "F-058",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "dispatch",
+        "report_section": "technical_findings",
+        "problem": "Полярность отборов давления PDS3 и PDS4 противоположна повышению давления на вентиляторах Ва5.1 и Ва5.1р.",
+        "description": "Первоначальное описание:\nВытяжной поток направлен от автостоянки справа к выбросу слева. У PDS3 и PDS4 входы «−» подключены слева от вентиляторов, на стороне нагнетания, а входы «+» — справа, на стороне всасывания. При обозначенной положительной уставке ΔP=100 Па такое подключение задаёт обратный знак контролируемого перепада.\n\nДополнительная проверка:\nPDS3 Ва5.1 подключён «−» к выбросу и «+» к всасыванию при уставке 100 Па.\nПоток направлен справа налево к выбросу. Отрицательный отбор PDS3 находится слева от Ва5.1, положительный — справа; указано ΔP=100Па.\n\nPDS4 Ва5.1р подключён «−» к выбросу и «+» к всасыванию при уставке 100 Па.\nНижняя параллельная ветвь имеет поток справа налево. Отрицательный отбор PDS4 показан слева от Ва5.1р, положительный — справа; указано ΔP=100Па.",
+        "source": "13АВ-РД-АК2-ПА, лист 22, правая часть функциональной схемы, Ва5.1/Ва5.1р, PDS3 и PDS4",
+        "page": 26,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Согласовать полярность отборов с направлением потока: положительные входы PDS3 и PDS4 подключить к нагнетанию, отрицательные — к всасыванию.",
+        "risk": "При подключении по показанной схеме положительная уставка может не достигаться, что приведёт к неверному контролю работы вентиляторов.",
+        "reason": "Изображение непосредственно показывает направление потока, точки отбора, знаки входов и положительную уставку. Это техническое противоречие подключения измерительных цепей. F-046 и F-057 относятся к другим системам и листам.",
+        "source_finding_ids": [
+          "G-054"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "type": "graphic",
+            "observation": "Вытяжной воздуховод соединяет автостоянку справа с обозначенным слева «Выбросом»; стрелки направлены влево. У PDS3 над Ва5.1 отрицательный отбор подключён слева от вентилятора, положительный — справа; указано ΔP=100Па.",
+            "location": "Лист 22, верхняя правая часть, вентилятор Ва5.1 и PDS3, границы вытяжного воздуховода"
+          },
+          {
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "type": "graphic",
+            "observation": "Ва5.1р включён параллельно Ва5.1 между правым входом от автостоянки и левым выходом к выбросу. У PDS4 знак «−» показан на левом отборе, знак «+» — на правом; указано ΔP=100Па.",
+            "location": "Лист 22, правая часть, нижняя ветвь Ва5.1р и PDS4"
+          }
+        ],
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_fca4ddc4d2607995",
+        "source_block_ids": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "recovery_addendum_base_signature": "f67b2e59f1df63ab15c73af5b66b159625ce9165ab2eea9079c45b6db8d44948",
+        "recovery_addendum_snapshot_signatures": [
+          "f67b2e59f1df63ab15c73af5b66b159625ce9165ab2eea9079c45b6db8d44948",
+          "12039e24ab2bdc6c48bbc2d969b0099d502b899ed3fe866d0a5cf7e8bb271fa0"
+        ],
+        "recovery_original_description": "Вытяжной поток направлен от автостоянки справа к выбросу слева. У PDS3 и PDS4 входы «−» подключены слева от вентиляторов, на стороне нагнетания, а входы «+» — справа, на стороне всасывания. При обозначенной положительной уставке ΔP=100 Па такое подключение задаёт обратный знак контролируемого перепада.",
+        "recovery_addenda": [
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/17/findings/0",
+            "source_id": "G-054",
+            "claim_id": "1",
+            "claim": "PDS3 Ва5.1 подключён «−» к выбросу и «+» к всасыванию при уставке 100 Па.",
+            "reason": "Поток направлен справа налево к выбросу. Отрицательный отбор PDS3 находится слева от Ва5.1, положительный — справа; указано ΔP=100Па.",
+            "source_refs": [
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+            ],
+            "source_types": {
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8": "graphic"
+            },
+            "target_id": "F-062",
+            "target_signature": "f67b2e59f1df63ab15c73af5b66b159625ce9165ab2eea9079c45b6db8d44948",
+            "semantic_verified": false,
+            "id": "461150928355b6775f55732583d49d00c311e35558296316945bc5110ada2ac0",
+            "reported_target_id": "F-062",
+            "reported_target_signature": "f67b2e59f1df63ab15c73af5b66b159625ce9165ab2eea9079c45b6db8d44948"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/17/findings/0",
+            "source_id": "G-054",
+            "claim_id": "2",
+            "claim": "PDS4 Ва5.1р подключён «−» к выбросу и «+» к всасыванию при уставке 100 Па.",
+            "reason": "Нижняя параллельная ветвь имеет поток справа налево. Отрицательный отбор PDS4 показан слева от Ва5.1р, положительный — справа; указано ΔP=100Па.",
+            "source_refs": [
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+            ],
+            "source_types": {
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8": "graphic"
+            },
+            "target_id": "F-062",
+            "target_signature": "f67b2e59f1df63ab15c73af5b66b159625ce9165ab2eea9079c45b6db8d44948",
+            "semantic_verified": false,
+            "id": "3bc64bf6b2b9a71c87f6d996f833ef8199a753a5e587f4d30e1a7a61f2994cfe",
+            "reported_target_id": "F-062",
+            "reported_target_signature": "f67b2e59f1df63ab15c73af5b66b159625ce9165ab2eea9079c45b6db8d44948"
+          }
+        ],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-054",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 22",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 52,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "sheet": 22,
+          "method": "Direct original-resolution graphic inspection; no OCR correction of TEXT"
+        }
+      ],
+      "engineer_decision": null,
+      "engineering_utility": "not_assessed",
+      "independent_discovery": false,
+      "whole_finding_precision": "not_finalized",
+      "disposition": "confirmed_drawn_pressure_polarity_only",
+      "observations": [
+        "Вытяжной тракт показан от автостоянки справа к выбросу слева. Обе параллельные ветви проходят через соответствующий вентилятор.",
+        "У обоих PDS3/PDS4 знак минус стоит на левом отборе, плюс на правом. Между ними указано ΔP=100Па.",
+        "Это подтверждает графическую предпосылку замечания: положительный вход показан со стороны входа воздуха в вентилятор, отрицательный со стороны выхода."
+      ],
+      "limits": [
+        "Не проверены фактический монтаж, паспорт прибора, логика контактов, программная инверсия и наладка. Нельзя считать реальную неработоспособность установленной.",
+        "Примечание листа допускает уточнение предельных рабочих значений при ПНР; число 100 Па не превращается в универсальный допуск.",
+        "Рекомендация относится к согласованию полярности на документации. Общее физическое объяснение не подменяет проверку конкретного прибора."
+      ],
+      "recommended_behavior": "Сохранить адресное замечание к знакам отборов на данном листе; последствия формулировать условно, не заявлять доказанный отказ системы."
+    },
+    {
+      "finding_id": "F-059",
+      "output_pointer": "/findings/58",
+      "source_finding": {
+        "id": "F-059",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "dispatch",
+        "report_section": "technical_findings",
+        "problem": "Подписи состояния основного и резервного вентиляторов Ва5.1 перепутаны между каналами 16 и 19.",
+        "description": "Первоначальное описание:\nЛиния 16 связана с двигателем М2 вентилятора Ва5.1, но соответствующая колонка таблицы подписана как состояние резервного вентилятора. Линия 19 связана с М3 вентилятора Ва5.1р, но подписана как состояние основного. Подтверждено противоречие адресного назначения сигналов внутри одного листа.\n\nДополнительная проверка:\nЛиния 16 от М2 основного Ва5.1 подписана резервным вентилятором.\nЛиния М2 вентилятора Ва5.1 выведена к номеру 16; колонка 16 названа состоянием резервного вентилятора.\n\nЛиния 19 от М3 резервного Ва5.1р подписана основным вентилятором.\nМ3 вентилятора Ва5.1р связан с номером 19; колонка 19 названа состоянием основного вентилятора.\n\nКанал 16 от М2 Ва5.1 назван резервным.\nЛиния М2 верхнего вентилятора Ва5.1 приходит к номеру 16; соответствующая колонка подписана состоянием резервного вентилятора.\n\nКанал 19 от М3 Ва5.1р назван основным.\nЛиния М3 нижнего вентилятора Ва5.1р приходит к номеру 19; соответствующая колонка подписана состоянием основного вентилятора.",
+        "source": "13АВ-РД-АК2-ПА, лист 22, функциональная схема Ва5.1/Ва5.1р и таблица сигналов, колонки 16 и 19",
+        "page": 26,
+        "norm": null,
+        "norm_quote": null,
+        "solution": "Согласовать подписи каналов 16 и 19 с подключёнными двигателями и назначением основного и резервного вентиляторов.",
+        "risk": "Противоречащие подписи допускают неверную привязку индикации работы и аварии основного и резервного вентиляторов.",
+        "reason": "Расхождение определяет адрес сигналов работы и аварии конкретных двигателей, поэтому относится к technical_findings. G-055 и G-058 объединены как одна проблема. F-045 и F-050 относятся к другим системам.",
+        "source_finding_ids": [
+          "G-055",
+          "G-058"
+        ],
+        "evidence": [
+          {
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "type": "graphic",
+            "observation": "От М2 верхнего вентилятора Ва5.1 линия связи проходит влево и вниз к номеру 16. Колонка 16 таблицы подписана «Состояние рез. вентилятора (работа/авария)».",
+            "location": "Лист 22, верхняя правая часть, М2; нижняя таблица, колонка 16"
+          },
+          {
+            "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+            "type": "graphic",
+            "observation": "М3 нижнего вентилятора Ва5.1р связан с линией 19. Колонка 19 таблицы подписана «Состояние осн. вентилятора (работа/авария)».",
+            "location": "Лист 22, нижняя ветвь вытяжной схемы, М3; таблица сигналов, колонка 19"
+          }
+        ],
+        "recovery_semantic_verified": false,
+        "source_stage": "candidate_recovery_fca4ddc4d2607995",
+        "source_block_ids": [
+          "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+        ],
+        "recovery_addendum_base_signature": "7827d1f7115c4bfa81868dc62f6f5f4f0d208a27168f963d57bea0954ff6820a",
+        "recovery_addendum_snapshot_signatures": [
+          "7827d1f7115c4bfa81868dc62f6f5f4f0d208a27168f963d57bea0954ff6820a",
+          "c03c536f251108a3df94bf62c352b8505397a83c71c6dbe941f80604a7dd1b8c",
+          "59d8efad4e53800ac54f55f843dfdc495d28744fcea250bd72109b403f21aa9d",
+          "534bfe98b0dc92bfbc9a261eb7a3a884ddd1c63ecad92b3df561c7c63dec4ec7"
+        ],
+        "recovery_original_description": "Линия 16 связана с двигателем М2 вентилятора Ва5.1, но соответствующая колонка таблицы подписана как состояние резервного вентилятора. Линия 19 связана с М3 вентилятора Ва5.1р, но подписана как состояние основного. Подтверждено противоречие адресного назначения сигналов внутри одного листа.",
+        "recovery_addenda": [
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/17/findings/1",
+            "source_id": "G-055",
+            "claim_id": "1",
+            "claim": "Линия 16 от М2 основного Ва5.1 подписана резервным вентилятором.",
+            "reason": "Линия М2 вентилятора Ва5.1 выведена к номеру 16; колонка 16 названа состоянием резервного вентилятора.",
+            "source_refs": [
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+            ],
+            "source_types": {
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8": "graphic"
+            },
+            "target_id": "F-063",
+            "target_signature": "7827d1f7115c4bfa81868dc62f6f5f4f0d208a27168f963d57bea0954ff6820a",
+            "semantic_verified": false,
+            "id": "f2db7b256a89c17d8310dc43ca3056226c4f6ada6680e8bce450897df56cc62d",
+            "reported_target_id": "F-063",
+            "reported_target_signature": "7827d1f7115c4bfa81868dc62f6f5f4f0d208a27168f963d57bea0954ff6820a"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/17/findings/1",
+            "source_id": "G-055",
+            "claim_id": "2",
+            "claim": "Линия 19 от М3 резервного Ва5.1р подписана основным вентилятором.",
+            "reason": "М3 вентилятора Ва5.1р связан с номером 19; колонка 19 названа состоянием основного вентилятора.",
+            "source_refs": [
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+            ],
+            "source_types": {
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8": "graphic"
+            },
+            "target_id": "F-063",
+            "target_signature": "7827d1f7115c4bfa81868dc62f6f5f4f0d208a27168f963d57bea0954ff6820a",
+            "semantic_verified": false,
+            "id": "cd79b8249cfaedfabbbfe99bb4148d3cbeeff626655044a32eca990086139473",
+            "reported_target_id": "F-063",
+            "reported_target_signature": "7827d1f7115c4bfa81868dc62f6f5f4f0d208a27168f963d57bea0954ff6820a"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/17/findings/4",
+            "source_id": "G-058",
+            "claim_id": "1",
+            "claim": "Канал 16 от М2 Ва5.1 назван резервным.",
+            "reason": "Линия М2 верхнего вентилятора Ва5.1 приходит к номеру 16; соответствующая колонка подписана состоянием резервного вентилятора.",
+            "source_refs": [
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+            ],
+            "source_types": {
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8": "graphic"
+            },
+            "target_id": "F-063",
+            "target_signature": "7827d1f7115c4bfa81868dc62f6f5f4f0d208a27168f963d57bea0954ff6820a",
+            "semantic_verified": false,
+            "id": "1dcd26adf5d87955c9c65bef797d5681d1be47165f770525a879f644b2190cc6",
+            "reported_target_id": "F-063",
+            "reported_target_signature": "7827d1f7115c4bfa81868dc62f6f5f4f0d208a27168f963d57bea0954ff6820a"
+          },
+          {
+            "origin": "graphic",
+            "pointer": "/block_analyses/17/findings/4",
+            "source_id": "G-058",
+            "claim_id": "2",
+            "claim": "Канал 19 от М3 Ва5.1р назван основным.",
+            "reason": "Линия М3 нижнего вентилятора Ва5.1р приходит к номеру 19; соответствующая колонка подписана состоянием основного вентилятора.",
+            "source_refs": [
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+            ],
+            "source_types": {
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8": "graphic"
+            },
+            "target_id": "F-063",
+            "target_signature": "7827d1f7115c4bfa81868dc62f6f5f4f0d208a27168f963d57bea0954ff6820a",
+            "semantic_verified": false,
+            "id": "7e2e5d6cd97c044182411c9ec700862c841687874ea3f8a882ecb5665075e540",
+            "reported_target_id": "F-063",
+            "reported_target_signature": "7827d1f7115c4bfa81868dc62f6f5f4f0d208a27168f963d57bea0954ff6820a"
+          }
+        ],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-055",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261112T052208Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-058",
+              "mode": "independent",
+              "detected_at": "2026-11-12T05:22:08.147683+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на перестановку подписей каналов 16 и 19: М2 (Ва5.1) назван резервным, а М3 (Ва5.1р) — основным.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на перестановку подписей каналов 16 и 19: М2 (Ва5.1) назван резервным, а М3 (Ва5.1р) — основным.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "sheet": "Лист 22",
+        "candidate_norm_references": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 68,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_evidence": [
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+          "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+          "block_id": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+          "sheet": 22,
+          "method": "Direct original-resolution graphic inspection; no OCR correction of TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f30f5e10b54f415392e7e149a87dae24",
+          "quote": "Для уравравнивания времени наработки происходит замена рабочего и резервного вентилятора с заданной периодичностью.",
+          "method": "Authoritative prepared TEXT"
+        }
+      ],
+      "engineer_decision": null,
+      "engineering_utility": "not_assessed",
+      "independent_discovery": false,
+      "whole_finding_precision": "not_finalized",
+      "disposition": "confirmed_channel_labels_with_unresolved_role_semantics",
+      "observations": [
+        "На листе 22 М2 вентилятора Ва5.1 соединён с каналом 16; подпись колонки 16 — состояние резервного вентилятора.",
+        "М3 вентилятора Ва5.1р соединён с каналом 19; подпись колонки 19 — состояние основного вентилятора.",
+        "Общие данные предусматривают периодическую смену рабочего и резервного вентилятора. Итоговое замечание не обсуждает эту оговорку."
+      ],
+      "limits": [
+        "Обозначение с суффиксом р и подписи каналов создают адресный вопрос, но не доказывают постоянную роль каждого двигателя.",
+        "Не установлено, относятся подписи к физическим адресам или переключаемым логическим ролям; программа контроллера не проверена.",
+        "Категорическое утверждение, что подписи перепутаны, сильнее доказанной адресной неоднозначности."
+      ],
+      "recommended_behavior": "Уточнить соответствие физических каналов 16/19 и сменяемых ролей; сохранить в вопросах и уточнениях до установления семантики. Не менять подписи автоматически."
+    }
+  ],
+  "limits": [
+    "Not trial acceptance or engineer approval.",
+    "Frozen evaluator, audit inputs and production unchanged.",
+    "Review of selected claims does not finalize whole-output precision."
+  ]
+}
