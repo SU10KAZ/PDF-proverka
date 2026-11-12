@@ -1,0 +1,33 @@
+{
+  "finding_id": "F-070",
+  "status": "same_actuator_cable_prefix_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_070/publication_projection.json",
+  "projection_sha256": "aaee4e7d01a52bd327f479941219b8c6a4c61d82ae996d4219259c69dcb24f3b",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+      "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+      "directly_viewed": true
+    },
+    {
+      "path": "/tmp/ak_F070_Y4_inspection.png",
+      "sha256": "53c716e5840ad1d2cca06a8d6c37cbf7f7ea5d21a903a1ed3f9eac3d482d3bbd",
+      "source_pixel_crop": [
+        2080,
+        0,
+        2320,
+        740
+      ],
+      "directly_viewed": true
+    }
+  ],
+  "checks": [
+    "Прослежена колонка Y4 воздушного клапана Пн5.1: питание через ХТ5 имеет Пн5.1-17, контакты S1–S3 через ту же ХТ5 — Ва3.1-18.",
+    "Несоответствие префикса сохранено с привязкой к одному приводу; новая правильная марка не назначена автоматически.",
+    "Согласование с журналом оставлено проверкой, расхождение с самим журналом не объявлено уже доказанным.",
+    "Фактическая ошибка маркировки или монтажа не утверждается; условный риск при выдаче должен оставаться связанным с основным замечанием."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

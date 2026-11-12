@@ -1,9 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 69,
+  "reviewed_distinct_findings": 70,
   "unreviewed_finding_ids": [
-    "F-070",
     "F-071",
     "F-072",
     "F-073",
@@ -20,7 +19,7 @@
     "F-084",
     "F-085"
   ],
-  "batch_successful_responses": 68,
+  "batch_successful_responses": 69,
   "batch_status_snapshot": "running",
   "process_liveness_not_inferred_from_status_file": true,
   "selected_followups": [
@@ -1198,6 +1197,23 @@
         "pending": 2,
         "withdrawn": 0,
         "history_only": 1
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-070",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F070_assessment.json",
+      "assessment_sha256": "f50b95052f1ecd027a2c9ef5600fd4d129c796ded868ffa7839c9f3a798845c0",
+      "status": "same_actuator_cable_prefix_conflict_preserved",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_070/publication_projection.json",
+      "projection_sha256": "aaee4e7d01a52bd327f479941219b8c6a4c61d82ae996d4219259c69dcb24f3b",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 1,
+        "questions": 0,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 0
       },
       "engineer_accepted": false,
       "production_accepted": false
