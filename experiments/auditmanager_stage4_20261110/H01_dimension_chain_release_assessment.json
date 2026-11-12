@@ -1,0 +1,30 @@
+{
+  "status": "original_H01_dimension_chain_control_reaches_release_and_excel",
+  "finding_id": "F-080",
+  "source_graphic_sha256": "42c7d8b05562c4c461752bf37d98233d9a519a4530360dd8f160494b4500ce95",
+  "source_observation": "Directly viewed:1400 cabinet height,1000 cabinet bottom to floor,1800 cabinet top to same floor.1400+1000-1800=600;800 horizontal size excluded.",
+  "model_phases": [
+    "source_review",
+    "adjudication",
+    "independent_final_check"
+  ],
+  "checks": {
+    "technical_core_retained": true,
+    "correct_design_value_not_invented": true,
+    "old_F036_service_reference_removed": true,
+    "one_finding_for_source_block": true,
+    "other_findings_unchanged": 84,
+    "exported_unique_ids": 85
+  },
+  "limits": [
+    "Known DEV control, not independent discovery.",
+    "Final severity СУЩЕСТВЕННОЕ is not independently engineer-rated.",
+    "No whole-report claim accounting, comparative improvement or production acceptance follows."
+  ],
+  "evidence": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_f080_released_evidence/assessment.json",
+    "sha256": "e0d37f8f4142fc6fc3876d1203e456a2272e054d134a25753b1868e407758988"
+  },
+  "stage4_complete": false,
+  "production_accepted": false
+}

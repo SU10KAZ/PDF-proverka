@@ -1,0 +1,20 @@
+{
+  "report_path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+  "report_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "md_path": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+  "md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "known_candidate_control": true,
+  "engineer_answers_supplied": false,
+  "publication_verdict_or_coordinator_assessment_supplied": false,
+  "message_chars": 7483,
+  "images": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_d52bf811660e42b59acdce0038f9fbf0.png",
+      "sha256": "42c7d8b05562c4c461752bf37d98233d9a519a4530360dd8f160494b4500ce95"
+    }
+  ],
+  "request_sha256": "33ff880b17b8961da973d9146721e05e5a36e9ca3a08299b9a4a4d654c7b863c",
+  "production_acceptance": false
+}

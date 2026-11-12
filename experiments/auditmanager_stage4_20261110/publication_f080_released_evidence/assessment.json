@@ -1,0 +1,25 @@
+{
+  "status": "source_and_final_check_release_export_verified_bounded_control",
+  "finding_id": "F-080",
+  "other_findings_unchanged": 84,
+  "exported_findings": 85,
+  "model": "codex/gpt-6-astra",
+  "known_dev_control_not_blind": true,
+  "limits": [
+    "Actual release and Excel are verified, not engineering acceptance.",
+    "No claim that every semantic subclaim of the whole report is accounted for.",
+    "No autonomous publication-part mapping or whole-project improvement claimed."
+  ],
+  "files": {
+    "03_findings.json": "4104d67460ce97434083e3bb1429b2e8c5e742e723542a3496832311dcd70faa",
+    "entry.json": "9ead41ee809e236ba390d7e51977caf18af45b7b06c4d7e6c1f78516c8a14848",
+    "final_request.json": "883fc53c434e90a2ca3fa955eef2cca917ab65c9018c63c8c7e70fb7a5a4f940",
+    "final_result.json": "7c4ca0cd1bcb56e096f0efbde3986f05ea3b7fcf06c6ac896ee517980cf39696",
+    "preparation.json": "72c7ee3a6bd30c36e12f1af4ebc7984ee328d398a8e2ac5e086a53bc8c20951a",
+    "receipt.json": "d7fd9477bfdde7e70d6708c5b920a8d7d60e150879dc44edb6ebe55ba5b0ee4c",
+    "report.xlsx": "5d41a2f87c89ad74fb65765bd1c87a4c8821a6b5d172882c7cc5a90d8f1eca6b",
+    "source_candidate.json": "45f96c6c9ae242cccb6b08008939eab6beba1c851206e945b8f310248462d0f4"
+  },
+  "stage4_complete": false,
+  "production_acceptance": false
+}
