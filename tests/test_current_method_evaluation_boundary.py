@@ -73,3 +73,44 @@ def test_modified_failure_receipt_is_rejected(tmp_path):
     with pytest.raises(AssertionError):
         build(root, tmp_path/'evaluation')
     assert not (tmp_path/'evaluation').exists()
+
+
+def interrupted_trial_fixture(tmp_path):
+    root = trial_fixture(tmp_path)
+    collection_path = root/'experimental_collection_status.json'
+    collection = json.loads(collection_path.read_text())
+    record = collection['runs'][0]
+    seal = Path(record['work'])/'classic_control/status/AK.json'
+    seal.write_text(json.dumps({'status': 'running'}))
+    request = Path(record['work'])/'classic_control/requests/AK/1/request.json'
+    request.parent.mkdir(parents=True)
+    request.write_text('{}')
+    incident = tmp_path/'incident.json'
+    def bound(p): return {'path': str(p), 'sha256': sha(p)}
+    incident.write_text(json.dumps({
+        'classification': 'interrupted_without_terminal_receipt',
+        'run_process': {'pid': 999999999},
+        'run_state': bound(seal), 'trial': bound(root/'experimental_collection_trial.json'),
+        'last_request': bound(request), 'completed_attempt_receipts': 0,
+        'created_request_records': 1}))
+    record.update(pid=999999999, status='interrupted', exit_code=None,
+                  status_sha256=sha(seal), interruption_receipt=bound(incident))
+    collection_path.write_text(json.dumps(collection))
+    return root, incident, request
+
+
+def test_interruption_is_separate_from_pending_without_reading_findings(tmp_path):
+    root, _, _ = interrupted_trial_fixture(tmp_path)
+    result = build(root, tmp_path/'evaluation')
+    assert result['entries'] == [] and result['pending'] == []
+    interrupted, = result['execution_interruptions']
+    assert interrupted['quality_score'] is None and interrupted['exit_code'] is None
+    assert interrupted['count_as_empty_output'] is False
+    assert not (tmp_path/'evaluation').exists()
+
+
+@pytest.mark.parametrize('changed', ['incident', 'request'])
+def test_modified_interruption_evidence_rejected(tmp_path, changed):
+    root, incident, request = interrupted_trial_fixture(tmp_path)
+    (incident if changed == 'incident' else request).write_text('{"changed": true}')
+    with pytest.raises(AssertionError): build(root, tmp_path/'evaluation')

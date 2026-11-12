@@ -11,6 +11,10 @@ def execution_classification(record, seal, live):
     if live is not False:
         return 'running_or_unverified'
     code = record.get('exit_code')
+    if (record.get('status') == 'interrupted' and code is None
+            and record.get('interruption_receipt')
+            and seal.get('status') == 'running'):
+        return 'interrupted_requires_receipt_verification'
     if (record.get('status') == 'terminal' and type(code) is int and code != 0
             and seal.get('status') == 'failed'):
         return 'terminal_failed'
@@ -29,7 +33,7 @@ def build(root, destination):
     assert sha(evaluator) == trial['evaluator']['sha256']
     collection = read(root/'experimental_collection_status.json')
     records = {r['work']: r for r in collection.get('runs', [])}
-    entries, pending, failures = [], [], []
+    entries, pending, failures, interruptions = [], [], [], []
     for run in trial['runs']:
         identity = {k:run[k] for k in ('discipline', 'variant', 'repeat')}
         record = records.get(run['work'], {})
@@ -38,6 +42,30 @@ def build(root, destination):
         seal = read(seal_path)
         classification = execution_classification(
             record, seal, process(record.get('pid'), 'paired_runner')['live'])
+        if classification == 'interrupted_requires_receipt_verification':
+            receipt = record['interruption_receipt']
+            incident_path = Path(receipt['path'])
+            assert sha(incident_path) == receipt['sha256']
+            incident = read(incident_path)
+            assert incident['classification'] == 'interrupted_without_terminal_receipt'
+            assert incident['run_process']['pid'] == record['pid']
+            for key, path in (('trial', trial_path), ('run_state', seal_path)):
+                binding = incident[key]
+                assert Path(binding['path']).resolve() == path.resolve()
+                assert sha(path) == binding['sha256']
+            assert sha(seal_path) == record['status_sha256']
+            request = incident['last_request']
+            request_path = Path(request['path']).resolve()
+            assert request_path.is_relative_to((base/'requests'/run['discipline']).resolve())
+            assert sha(request_path) == request['sha256']
+            interruptions.append(identity | {
+                'incident_path': str(incident_path), 'incident_sha256': sha(incident_path),
+                'status_path': str(seal_path), 'status_sha256': sha(seal_path),
+                'exit_code': None, 'quality_score': None, 'count_as_empty_output': False,
+                'completed_attempt_receipts': incident['completed_attempt_receipts'],
+                'created_request_records': incident['created_request_records'],
+            })
+            continue
         if classification != 'terminal_completed':
             pending.append(identity | {'reason': classification})
             if classification == 'terminal_failed':
@@ -86,7 +114,7 @@ def build(root, destination):
         })
     return {'status': 'evaluation_preparation_not_quality_acceptance',
         'trial_sha256': sha(trial_path), 'evaluator_sha256': sha(evaluator),
-        'entries': entries, 'pending': pending, 'execution_failures': failures, 'model_calls': 0,
+        'entries': entries, 'pending': pending, 'execution_failures': failures, 'execution_interruptions': interruptions, 'model_calls': 0,
         'production_acceptance': False,
         'limits': ['Only terminal, hash-verified outputs opened; existing reviews preserved.',
                    'Unchecked targets are not misses. Semantic adjudication remains required.',
