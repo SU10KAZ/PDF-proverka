@@ -1,0 +1,15 @@
+{
+  "finding_id": "F-054",
+  "status": "bounded_count_conflict_preserved",
+  "projection_path": "/tmp/auditmanager_publication_editorial_controls_20261112_run/evaluations/publication_purpose_054/publication_projection.json",
+  "projection_sha256": "a5878cba58af45583cc000ecd9580a37119ed9cda1239f42e80e4daa4fb861e9",
+  "baseline_assessment_path": "experiments/auditmanager_stage4_20261110/publication_full_fields_F054_assessment.json",
+  "checks": [
+    "Directly reviewed11 DO dots at2,7,9,12,15,16,17,19,21,23,27 retained versus printed10.",
+    "Correction remains conditional on whether dots or total are wrong.",
+    "Conditional module shortage risk retained with parent, actual installed shortage not asserted.",
+    "No extra question or useful-core loss on this control."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}

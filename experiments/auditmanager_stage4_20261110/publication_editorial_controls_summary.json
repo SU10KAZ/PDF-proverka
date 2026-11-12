@@ -1,0 +1,52 @@
+{
+  "status": "five_bounded_DEV_controls_pass_candidate_not_full_acceptance",
+  "instruction_sha256": "416f1e8abed5e6761e7993ac77c0aa7c5365c43c13f733e0935e6899fbeb195b",
+  "controls": [
+    {
+      "finding_id": "F-062",
+      "path": "experiments/auditmanager_stage4_20261110/editorial_controls_F062_assessment.json",
+      "sha256": "00aca84a9cbd35b0f0343cc2c7a32b8c78f3620546827e911cb491ee974c6a54"
+    },
+    {
+      "finding_id": "F-053",
+      "path": "experiments/auditmanager_stage4_20261110/editorial_controls_F053_assessment.json",
+      "sha256": "98bb3afb7d6cfe716af280d17449b201cb7a7f717ecf185293c6dd9587d0314f"
+    },
+    {
+      "finding_id": "F-061",
+      "path": "experiments/auditmanager_stage4_20261110/editorial_controls_F061_assessment.json",
+      "sha256": "99c640aa3b49c171e740ae87748fd2685eab1c226628655f115754fb799dfe34"
+    },
+    {
+      "finding_id": "F-057",
+      "path": "experiments/auditmanager_stage4_20261110/editorial_controls_F057_assessment.json",
+      "sha256": "4e06c54d7c1ec2636156d26a535342cdd3dff8bc2076b445304c9c74bedc9ac4"
+    },
+    {
+      "finding_id": "F-054",
+      "path": "experiments/auditmanager_stage4_20261110/editorial_controls_F054_assessment.json",
+      "sha256": "70c83aa37b19af9138a51af986b73ec8d92d36f83ff44cb806f82cc9e18fe9f8"
+    }
+  ],
+  "observed_effects": [
+    "F062 auditor typo correction no longer becomes engineer question.",
+    "F053 true source designation conflict remains technical.",
+    "F061 dependent risk stays in parent instead of extra question.",
+    "F057 unresolved signal-purpose question survives with recommendation and risk together.",
+    "F054 count conflict and conditional correction preserved."
+  ],
+  "next_required": [
+    "Preserve exact instruction for broader comparison after full85 output review.",
+    "Complete actual publication-to-admission handling for all claim fields; projections are not final reports.",
+    "Verify final output preservation, unresolved retrieval obligations, six-project regression and model/cost gates under original plan."
+  ],
+  "limits": [
+    "DEV selected after failures; not blind holdout.",
+    "Combined purpose-aware plus editorial prompt; independent contribution of each component not isolated.",
+    "Five passes do not prove full-run false-positive reduction or engineer workload savings.",
+    "No new filter from project-specific numbers or labels."
+  ],
+  "engineer_acceptance_inferred": false,
+  "stage4_complete": false,
+  "production_acceptance": false
+}
