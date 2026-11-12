@@ -1,0 +1,60 @@
+{
+  "status": "real_excel_offline_export_verified_not_ui_acceptance",
+  "source": {
+    "path": "/tmp/auditmanager_current_method_trial_context_20261112/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "sha256": "db7dde04c701fb77b10b919da4dc86a6919c510cbbd918e1c543b7f1c5627cb1"
+  },
+  "exports": [
+    {
+      "path": "/tmp/auditmanager_ak_navigation_excel_20261112/baseline.xlsx",
+      "sha256": "31536ce721b3fce27dbafb1221bde43a8fcda8db052fa735c5ae440f4b364828",
+      "finding_count": 88
+    },
+    {
+      "path": "/tmp/auditmanager_ak_navigation_excel_20261112/proposal.xlsx",
+      "sha256": "f5a16aaf73023b69b9a6862b945d9a23ed3a7b8dc7d8ef2ccf5938c46f2f8307",
+      "finding_count": 88
+    }
+  ],
+  "changed_sheet_cells": [
+    {
+      "finding_id": "F-003",
+      "before": "стр. PDF 4",
+      "after": "Лист 2"
+    },
+    {
+      "finding_id": "F-004",
+      "before": "стр. PDF 4",
+      "after": "Лист 2"
+    },
+    {
+      "finding_id": "F-005",
+      "before": "стр. PDF 4",
+      "after": "Лист 4"
+    },
+    {
+      "finding_id": "F-006",
+      "before": "стр. PDF 4",
+      "after": "Лист 4"
+    },
+    {
+      "finding_id": "F-007",
+      "before": "стр. PDF 4",
+      "after": "Лист 4"
+    },
+    {
+      "finding_id": "F-032",
+      "before": "стр. PDF 105",
+      "after": "стр. PDF 1, 105"
+    }
+  ],
+  "all88_ids_present_in_both": true,
+  "core_text_fields_preserved_in_export_inputs": true,
+  "problem_cells_equal_after_roundtrip": true,
+  "limits": [
+    "Actual workbook values checked after reload, not visual browser/PDF hyperlink behavior.",
+    "Existing valid sheet labels are retained by exporter even when page expands; additional source pages are not uniformly exposed.",
+    "Same-version caller binding only; multi-document integration remains untested.",
+    "No original results, live trial or production modified."
+  ]
+}
