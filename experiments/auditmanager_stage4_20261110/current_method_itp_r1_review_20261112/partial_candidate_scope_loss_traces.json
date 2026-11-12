@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "scope": "Three partial targets with different early-stage omissions",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_id": "B-ITP-F-015:68e759d0e8be658b6916",
+      "assessment": "T029containsposition35designation/capacityandposition30diameter, notposition36designation. Recovery subdivides exactly these parts; it does not discoverposition36. FinalF042retains35. Lost36is an initial object/claim-coverage gap in this chain, not demonstrated deletion during merge. Do not transfer35capacityconflict to36whose4.0valuesagree.",
+      "detection": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/28"
+        },
+        "candidate": {
+          "id": "T-029",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "valves",
+          "report_section": "technical_findings",
+          "source": "Экспликация, лист 2.1; спецификация, лист 3; ПЗ, лист 16",
+          "finding": "У клапана отопления ДОО VFM-2R-20-6,3 в экспликации указан DN25, тогда как ПЗ задает DN20. Для соленоидного клапана позиции 35 экспликация указывает EV220WR, Kv=8,0, а спецификация — EV220В, Kvs=6,3. Требуется согласовать присоединительный размер, исполнение и пропускную способность. Разрешенная замена аналогами предполагает сохранение технических параметров и не устраняет эти противоречия.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_11981549aceb463ba84c7c0de619d2fc",
+            "blk_30789714316b48908c5addc9bfb135d2",
+            "blk_acc3bf59f8f447f988de16849e40e9f1",
+            "blk_a757370e84f448d4a31f1a0c146b0d8b",
+            "blk_e65f4bff781945f19da5a4ec2919b764"
+          ]
+        }
+      },
+      "recovery": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+          "pointer": "/candidate_recovery_reports/28"
+        },
+        "stage": "candidate_recovery_d27e725c2c19a49f",
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Для VFM-2R-20-6,3 отопления ДОО указаны DN25 в экспликации и DN20 в ПЗ.",
+            "decision": "retained"
+          },
+          {
+            "id": "2",
+            "claim": "Для соленоидного клапана позиции 35 расходятся марки EV220WR и EV220В.",
+            "decision": "retained"
+          },
+          {
+            "id": "3",
+            "claim": "Для позиции 35 указаны Kv=8,0 и Kvs=6,3.",
+            "decision": "retained"
+          },
+          {
+            "id": "4",
+            "claim": "Разрешение аналогов требует сохранения технических параметров.",
+            "decision": "retained"
+          }
+        ]
+      },
+      "recommendation": "Maintain source-specific enumeration of relevant positions/documentrequisites before claiming completeness; preserve existing valid siblingfindings and do not duplicate them."
+    },
+    {
+      "target_id": "B-ITP-F-039:20e8e64d70bd0535ad4d",
+      "assessment": "T028coversprojectstage,sheetcountsandfloorlevels, but not.Cversus.COsuffix. Recovery preserves those listed subclaims and finalF039sheetcounts. Suffix discrepancy is absent from this original candidate chain; source mentionsalone do not constitute discoveredclaim. Other-code occurrence is not automaticdifferentprojectidentity.",
+      "detection": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+          "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+          "pointer": "/text_findings/27"
+        },
+        "candidate": {
+          "id": "T-028",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "documentation",
+          "report_section": "questions",
+          "source": "Титульные листы; ведомости листа 1; анкета абонента; титул ТЗ",
+          "finding": "В исходных документах не согласованы реквизиты: титул комплекта относится к этапу 1, приложенное ТЗ — к этапу 2; ведомость указывает 12 листов спецификации и 15 листов ПЗ, фактически представлены 15 и 20. В одной анкете отметка пола ИТП одновременно задана −4,900 и −4,450, а ведомость чертежей содержит −4,000. Требуется подтвердить применимость ТЗ и актуализировать состав комплекта и отметку, используемую для гидростатических расчетов.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_8c5527e3317248dca7d78ca059f0ec46",
+            "blk_90da5d0d361c48008030c2bf87767ced",
+            "blk_9167c15ea57c423ea6ad708738bb420f",
+            "blk_4de04f93b8b745ceb034696663bfcc58",
+            "blk_35ff8683b1cf4be2abdef61740ddda2e"
+          ]
+        }
+      },
+      "recovery": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+          "pointer": "/candidate_recovery_reports/27"
+        },
+        "stage": "candidate_recovery_35c9521c7e27aa73",
+        "subclaims": [
+          {
+            "id": "1",
+            "claim": "Комплект относится к этапу 1, а приложенное ТЗ — к этапу 2.",
+            "decision": "retained"
+          },
+          {
+            "id": "2",
+            "claim": "Ведомость указывает 12 листов спецификации, фактически заявлено 15.",
+            "decision": "retained"
+          },
+          {
+            "id": "3",
+            "claim": "Ведомость указывает 15 листов ПЗ, фактически заявлено 20.",
+            "decision": "retained"
+          },
+          {
+            "id": "4",
+            "claim": "В анкете отметка пола ИТП одновременно равна −4,900 и −4,450.",
+            "decision": "retained"
+          },
+          {
+            "id": "5",
+            "claim": "Ведомость чертежей содержит отметку −4,000.",
+            "decision": "retained"
+          }
+        ]
+      },
+      "recommendation": "Maintain source-specific enumeration of relevant positions/documentrequisites before claiming completeness; preserve existing valid siblingfindings and do not duplicate them."
+    },
+    {
+      "target_id": "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
+      "assessment": "Targeted normative audit emits titlequestionfromreference-listline243andgraphicdescriptionline969. Actual userpacket contains only one occurrence of erroneous title and explicit60000charactertruncation. PZline1891is available in authoritativeMDbut absent fromthispacket. FinalF001inherits narrowerlocation scope. This establishes bounded context omission, not modelreadingerror or deliberate final suppression.",
+      "request": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794490804512314471/request.json",
+        "sha256": "9eff31cf5d0bb1578537fa94b26406776952f3d475b564ed73a096fd76c35d28",
+        "stage": "alia_docnorm_audit",
+        "model": "codex/gpt-6-astra",
+        "user_characters": 108548,
+        "title_occurrences": 1,
+        "context_limit_marker": "[truncated: targeted context limited to 60000 chars]",
+        "attempt_receipt": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/requests/ITP/1794490804512314471/attempts.json",
+          "sha256": "b9821d0cd96b436908d453857ee6bdddd42f1524e945b55bf37132203ad1faa7"
+        }
+      },
+      "targeted_output": {
+        "evidence": {
+          "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_targeted_alia_docnorm_audit.json",
+          "sha256": "33d08c3a54637c178f07e30952d7d4d4c63e8062ff5435d992ef4e631480ea19",
+          "pointer": "/findings/0"
+        },
+        "finding": {
+          "id": "TGT-001",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "normative_refs",
+          "report_section": "questions",
+          "problem": "В предоставленном MD для СП 510.1325800.2022 приведены разные наименования.",
+          "description": "Строка 243 ведомости: «|  | СП 510.1325800.2022 | Проектирование тепловых пунктов |  |». В строке 969, в текстовом описании изображения, приведён другой вариант: «СП 510.1325800.2022 Тепловые пункты и системы внутреннего теплоснабжения». Расхождение требует сверки реквизитов. Исходное изображение и официальный текст СП не приложены; техническое нарушение этим расхождением не установлено.",
+          "page": null,
+          "norm": "СП 510.1325800.2022",
+          "norm_quote": null,
+          "solution": "Сверить официальное наименование СП 510.1325800.2022 и привести ведомость и примечания чертежей к единому корректному написанию после проверки оригиналов.",
+          "risk": "Разные наименования одной нормы затрудняют проверку нормативных ссылок.",
+          "evidence": [
+            {
+              "type": "text",
+              "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+              "page": null,
+              "md_lines": "строка 243"
+            },
+            {
+              "type": "text",
+              "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+              "page": 11,
+              "md_lines": "строка 969"
+            }
+          ]
+        }
+      },
+      "missing_source": {
+        "line": 1891,
+        "quote": "2. СП 510.1325800.2022 «Проектирование тепловых пунктов»;"
+      },
+      "recommendation": "For each normative designation retrieve all relevant same-version project occurrences in bounded batches; keep occurrence coverage and explicit remainder. Do not infer a secondstandard or technicalviolation from a title mismatch; do not publishgraphicdescriptionasindependentproof."
+    }
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "exclusive_root_cause_proven": false
+}
