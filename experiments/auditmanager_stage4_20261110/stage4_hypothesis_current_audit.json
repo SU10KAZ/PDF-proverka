@@ -125,10 +125,85 @@
         "H02 не считается требованием автоматически разрешить каждую неопределённость."
       ],
       "complete": false
+    },
+    {
+      "hypothesis": "H03",
+      "status": "object_operation_accounting_and_bounded_discovery_evidenced_full_semantics_open",
+      "code": [
+        {
+          "path": "backend/app/pipeline/stages/text_analysis/object_registry.py",
+          "sha256": "dd1791da8fa1404dcd06db43e929a9c8ddf04bde401729e71dbb06bdb2b4a148",
+          "symbol": "reconcile_object_registry"
+        },
+        {
+          "path": "backend/app/pipeline/stages/text_analysis/object_identity_candidates.py",
+          "sha256": "0f3b4dab71c8245513330d718b8508faa1944d584393a92c0d1427a61bf44eb4",
+          "symbol": "build_object_identity_candidates"
+        },
+        {
+          "path": "backend/app/pipeline/stages/prepare/object_operation_passes.py",
+          "sha256": "a6b866da065e7db1a63bc460eff0abe83c1fe412d8a3f0edadafec3bb52bac8c",
+          "symbol": "build_object_operation_passes / validate_object_operation_payload"
+        }
+      ],
+      "observed_mechanisms": [
+        "Каждый объект требует identity/scope/kind и существующие источники; для каждой операции формируется отдельная квитанция. Прочитанный блок не закрывает операции.",
+        "checked/not_applicable представлены как reported_checked/reported_not_applicable, semantic_verified=False. Отсутствующая, неоднозначная или несвязанная квитанция не закрывает проверку.",
+        "Совпадение марки создаёт лексическую пару с identity_relation=not_checked, automatic_merges=0. Разные области объекта сохраняются.",
+        "Очередь добора выбирает not_checked/needs_data с ограничением запросов. Превышение бюджета остаётся backlog; расчёт требует привязанной трассы операции."
+      ],
+      "tests_located": [
+        {
+          "path": "tests/test_object_registry.py",
+          "sha256": "591d2aefd25528a538802fdc7f595c3390b4daa5234e26db651889b4ebe8ecf6"
+        },
+        {
+          "path": "tests/test_object_identity_candidates.py",
+          "sha256": "647f7e43e469d1ebaa6f7880e59decad967d2fdcc1285810715a0ede059bfa81"
+        },
+        {
+          "path": "tests/test_object_operation_passes.py",
+          "sha256": "0182f91f4767eddc7efd7e933a7e52c60db3e503b357b0e732b5f5b5d6d7802c"
+        }
+      ],
+      "test_scope": "Test definitions cover missing operations, identity ambiguity, unreadable regions, no lexical auto-merge, budget backlog and unrequested operations; no new execution or whole-inventory correctness claimed.",
+      "live_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AK_five_cabinet_control_status.json",
+          "sha256": "b003f08a2173196332fd9415a5f04aa87ceaa7f5ed8c387393b2f1031f7674f1"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AK_systemic_output_replay.json",
+          "sha256": "bcc2a56fb0ee96edb88811e74c23d2ecdb162eaea742825ab1216d099ca3c175"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AR_unlabelled_inventory_v2_assessment.json",
+          "sha256": "4768d9e0746e53795c2b7bdcf2ef4265a94be7d67ed53a0d6584f765a0372fdf"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AR_region_operation_status.json",
+          "sha256": "c656d3924707fdc0369bcb497c79e5f4e58066ea616b8547b3980bb21ad42e17"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/EOM_instance_identity_validated.json",
+          "sha256": "4f1cfc5937967d446d40e4e16e8a6df1d4a5cf7888d911b84face560dee51e64"
+        }
+      ],
+      "control_interpretation": [
+        "АК: получены извлечение и операции для всех пяти шкафов. Ограниченное явное объединение сохраняет пять описаний и 63 незатронутые классические строки; автономное смысловое объединение не доказано.",
+        "АР: шесть локализованных зон сохранены и для всех шести запрошено назначение. Это выполнение ограниченного требования запроса контекста, не шесть доказанных дефектов.",
+        "ЭОМ: повтор выноски К3.2.406 остаётся вопросом о графической привязке; техническая идентичность экземпляров не установлена."
+      ],
+      "limits": [
+        "Количество записей реестра не равно количеству физических объектов или дефектов.",
+        "Нет доказательства правильности всего реестра и полноты независимого поиска.",
+        "Для общего фильтра клемм инженерная отрицательная пара не подтверждена: широкое подавление не разрешается.",
+        "Финальное сохранение всех адресов/оснований и автономная группировка относятся к дальнейшей проверке выдачи."
+      ],
+      "complete": false
     }
   ],
   "not_yet_audited": [
-    "H03",
     "H04",
     "H05",
     "H06",
