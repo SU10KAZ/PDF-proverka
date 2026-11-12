@@ -1,0 +1,110 @@
+{
+  "control": "H06-P03",
+  "finding": "AR-O27-crossdoc -> F-025",
+  "status": "confirmed_reference_omission_in_approved_user_fields",
+  "scope": "Historical known-source pilot only; no live comparison outputs inspected.",
+  "source_quote": {
+    "type": "text",
+    "block_id": "blk_doc_439fc9c2bc64c81d4a6a53cd_9b6a30d779f3a55a70ba875f",
+    "quote": "4. Конструктивные расчеты и обоснования (отдельные элементы, узлы и детали, при необходимости) см. раздел КМ 8"
+  },
+  "source_review_claim": {
+    "claim_id": "C8",
+    "claim": "Эксплуатационные воздействия и расчетное обоснование передачи усилий от каната через фиксатор и стойку ОГН-4 в несущую конструкцию остаются неустановленными.",
+    "status": "needs_data",
+    "reason": "Представленные узлы показывают устройство, но не задают расчетные усилия и режим использования канатов. Общие климатические нагрузки КМ5.2 и его указания по разработке соединений не заменяют расчет именно этой цепочки. АР указывает конкретный комплект КМ8 для расчетов. Отсутствие расчета в данном наборе не доказывает его отсутствия в проекте или недостаточной прочности конструкции; численного расчета в проверяемом замечании нет.",
+    "evidence": [
+      {
+        "type": "text",
+        "block_id": "blk_doc_439fc9c2bc64c81d4a6a53cd_9b6a30d779f3a55a70ba875f",
+        "quote": "4. Конструктивные расчеты и обоснования (отдельные элементы, узлы и детали, при необходимости) см. раздел КМ 8"
+      },
+      {
+        "type": "text",
+        "block_id": "blk_doc_c007f6bb47214b8ee40de364_b567abe67b69b5a1b118aef8",
+        "quote": "3.1. В настоящем проекте разработаны только принципиальные решения соединений конструкций в узлах. Размеры сварных швов, количество и диаметр болтов определяются (или проверяются) при разработке чертежей марки \"КМД\" по расчетным усилиям."
+      },
+      {
+        "type": "image",
+        "block_id": "blk_doc_439fc9c2bc64c81d4a6a53cd_fbefe31bc050cff3c4caf4d9",
+        "image_sha256": "0da32f0c27ccd69266a321354d1c1f4a7ae5483c731f1b49f1850f362301b0bf",
+        "bbox_norm_xyxy": [
+          0.07,
+          0.12,
+          0.96,
+          0.94
+        ],
+        "observation": "Показаны канат, карабин и фиксаторы, но не заданы усилия, допустимое число пользователей или расчетный режим работы."
+      }
+    ],
+    "missing_data": [
+      "Принятый режим использования системы, число одновременно работающих пользователей, направления и сочетания воздействий; применимость сценария остановки падения должна быть установлена отдельно.",
+      "Расчет из КМ8, КМ9.2 либо адресно указанного документа для применимого исполнения каната, фиксатора, стойки, ее соединений и несущего основания.",
+      "Расчетные характеристики материалов, соединений и основания, соответствующие согласованным деталям ОГН-4."
+    ],
+    "context_queries": [
+      "ПД-00580716-КМ8",
+      "ПД-00580716-КМ9.2",
+      "ОГН-4"
+    ]
+  },
+  "adjudication_claim_review": {
+    "claim_id": "C8",
+    "role": "context",
+    "verdict": "needs_data",
+    "reason": "В представленном узле не приведены эксплуатационные усилия и расчет всей цепочки. Однако ссылка АР на КМ8 и общие положения КМ5.2 не доказывают отсутствия такого обоснования в применимом комплекте. Требуется проверить расчет для установленного исполнения в КМ8, КМ9.2 либо адресно указанном документе. Сохраняется запрос на расчетные основания; вывод о недостаточной прочности не допускается.",
+    "same_scope_verified": true,
+    "evidence_sufficiency_verified": false
+  },
+  "approved_user_fields": {
+    "problem": "Какими комплектом, листом, маркой и согласованной с АР6.2 v001 версией задано рассматриваемое канатное крепление на индивидуальной стойке ОГН-4 кровли +41,280 и где приведено расчетное обоснование передачи усилий в несущую конструкцию?",
+    "description": "В АР6.2 v001 на листе 12 показаны индивидуальная стойка стеклянного ограждения ОГН-4, канат, фиксирующий элемент и локальный узел креплений альпинистов; на листе 14 дан план креплений на +41,280. Обозначение O27 используется здесь как идентификатор рассматриваемого решения, а не подтвержденная проектная марка. Проверенные детали пластин и анкеров КМ5.2 v001/v002 относятся к трубчатым ограждениям Огр-1–Огр-4. В представленном наборе их адресное соответствие канатному креплению на ОГН-4 не установлено. АР содержит общие ссылки на КМ5.2 и КМ4.2 для ограждений парапетов, а ведомости КМ отдельно относят крепления обслуживания фасада секций С2, С3 к КМ9.2. Содержание КМ9.2 и применимое расчетное обоснование не проверены; отсутствие проектного решения или физический дефект этим не установлены.",
+    "solution": "Проверить ПД-00580716-КМ9.2 и указать применимые листы, марки и версии с адресным сопоставлением точкам листа 14 и узлам листа 12 АР6.2 v001. Уточнить, какими документами заданы фиксатор, его соединение со стойкой ОГН-4, крепление стойки к несущему основанию и расчетные основания для принятого режима эксплуатации. Если предполагается применение деталей КМ5.2, подтвердить его адресным документом с объяснением различий исполнения. Не назначать анкеры рассматриваемого узла только по сходству обозначений."
+  },
+  "reference_present_by_stage": {
+    "source_review_C8": true,
+    "adjudication_review_C8": true,
+    "approved_user_fields": false,
+    "adjudicated_user_fields": false,
+    "released_user_fields": false
+  },
+  "localization": "Source review and adjudication reasoning explicitly retain KM8; approved user fields omit it. Export preserves approved fields unchanged.",
+  "not_established": [
+    "Contents or applicability of the actual KM8 calculation.",
+    "Physical defect or missing calculation in the full project.",
+    "General omission rate or improvement from a fix."
+  ],
+  "proposed_behavior": "Keep a source-bound calculation reference in the addressed question when the accepted reasoning identifies it as necessary missing context. Distinguish calculation KM8 from design KM9.2; do not infer their contents or applicability.",
+  "acceptance_checks_for_future_candidate": [
+    "Final question explicitly requests applicable calculation via the existing KM8 reference and address-matches the node.",
+    "Keep the separate KM9.2 design-context request and conditional applicability.",
+    "Do not turn an unavailable calculation into an absent-calculation or insufficient-strength defect.",
+    "Keep all 24 prior findings unchanged and export the question separately.",
+    "Negative control needed: an unrelated catalogue reference must not be copied solely because it occurs in the source; no confirmed matched pair supplied by this trace."
+  ],
+  "stage4_complete": false,
+  "production_acceptance": false,
+  "frozen_matrix_modified": false,
+  "source_files": {
+    "source": {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_bundle_source_evidence/bundle.json",
+      "sha256": "c4bb8148325d165390cf1836eff5b33204426816cb448596ec77e337ae6517ce"
+    },
+    "candidate": {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/adjudication/candidate.json",
+      "sha256": "c4139312b92ca49a092de1f0aa20b86e94b82b38d5fe2b6e08fcc7d666bc66c5"
+    },
+    "adjudicated": {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/adjudication/output.json",
+      "sha256": "cbc1598673164980d95ff08cffa229c88f795a981ed86f0c5750c5cf12ae3e7b"
+    },
+    "released": {
+      "path": "experiments/auditmanager_stage4_20261110/ar_rope_current_release_evidence/release/03_findings.json",
+      "sha256": "53e91fe51b6081a71514cc8671e59fc05d2bbfff68687973922ef7d9192d58bd"
+    },
+    "matrix": {
+      "path": "experiments/auditmanager_stage4_20261110/stage4_original_control_matrix.json",
+      "sha256": "942a58a148f50b95e45da81ca461004749430bb341442920b89ac61b12822413"
+    }
+  }
+}
