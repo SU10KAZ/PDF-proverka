@@ -110,14 +110,22 @@
     {
       "finding_id": "F-011",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_mixed_claim_adjudication.json",
+        "sha256": "7aa740ff96f23e66d067d8f4afee0543d0a73bfba78ac1f75331fde70f36909b",
+        "pointer": "/finding_adjudications/0"
+      }
     },
     {
       "finding_id": "F-012",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_mixed_claim_adjudication.json",
+        "sha256": "7aa740ff96f23e66d067d8f4afee0543d0a73bfba78ac1f75331fde70f36909b",
+        "pointer": "/finding_adjudications/1"
+      }
     },
     {
       "finding_id": "F-013",
@@ -342,20 +350,32 @@
     {
       "finding_id": "F-035",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_mixed_claim_adjudication.json",
+        "sha256": "7aa740ff96f23e66d067d8f4afee0543d0a73bfba78ac1f75331fde70f36909b",
+        "pointer": "/finding_adjudications/2"
+      }
     },
     {
       "finding_id": "F-036",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_mixed_claim_adjudication.json",
+        "sha256": "7aa740ff96f23e66d067d8f4afee0543d0a73bfba78ac1f75331fde70f36909b",
+        "pointer": "/finding_adjudications/3"
+      }
     },
     {
       "finding_id": "F-037",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_mixed_claim_adjudication.json",
+        "sha256": "7aa740ff96f23e66d067d8f4afee0543d0a73bfba78ac1f75331fde70f36909b",
+        "pointer": "/finding_adjudications/4"
+      }
     },
     {
       "finding_id": "F-038",
@@ -590,8 +610,12 @@
     {
       "finding_id": "F-061",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_mixed_claim_adjudication.json",
+        "sha256": "7aa740ff96f23e66d067d8f4afee0543d0a73bfba78ac1f75331fde70f36909b",
+        "pointer": "/finding_adjudications/5"
+      }
     },
     {
       "finding_id": "F-062",
@@ -716,14 +740,18 @@
     {
       "finding_id": "F-074",
       "section": "technical_findings",
-      "status": "source_review_only_not_yet_claim_adjudicated",
-      "evidence": null
+      "status": "bounded_claim_adjudication",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/remaining_mixed_claim_adjudication.json",
+        "sha256": "7aa740ff96f23e66d067d8f4afee0543d0a73bfba78ac1f75331fde70f36909b",
+        "pointer": "/finding_adjudications/6"
+      }
     }
   ],
   "counts": {
     "total": 74,
-    "bounded_claim_adjudication": 67,
-    "source_review_only": 7
+    "bounded_claim_adjudication": 74,
+    "source_review_only": 0
   },
   "limits": [
     "A bounded assessment may find mixed or unresolved claims; it is not a pass count.",
@@ -732,5 +760,6 @@
   ],
   "whole_output_precision_finalized": false,
   "quality_score": null,
-  "runtime_changed": false
+  "runtime_changed": false,
+  "all_output_rows_have_bounded_claim_assessment": true
 }

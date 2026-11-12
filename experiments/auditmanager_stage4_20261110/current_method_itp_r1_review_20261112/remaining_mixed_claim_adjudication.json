@@ -1,0 +1,249 @@
+{
+  "version": 1,
+  "scope": "Final seven output rows: local instructions, requirements, formula basis, mass and graphic pairing",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+      "pointer": ""
+    },
+    "authoritative_md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "pointer": ""
+    },
+    "reference_ledger": {
+      "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/itp_r1_classic_current_coverage_ledger.json",
+      "sha256": "fdcd440844ca80071dede8b8e115b836d6b1f0041bd5e470460153ecd26c72dc",
+      "pointer": ""
+    }
+  },
+  "finding_adjudications": [
+    {
+      "finding_id": "F-011",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/10"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pressure_unit_and_fuse_bounded_review.json",
+        "sha256": "902b0fca5d89e39aa82ad3dd53bb1ed35c902302cd63dfd4289b611d8dfd0272",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "bounded_source_claim_with_explicit_scope_limits",
+      "supported_claim": "The source instruction unconditionally specifies fuse replacement with power on; surrounding general safety text does not specify apparatus-specific conditions for that operation.",
+      "recommended_disposition": "Retain instruction-clarification issue. This review verifies the wording and missing local conditions, not universal prohibition or a specific statutory violation.",
+      "limit": "Electrical equipment design, permissible special replacement modes and actual operations not adjudicated.",
+      "reference_section_assessments": [
+        {
+          "target_id": "ITP_F006_fuse_instruction:3453d72502ca1458b28c",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-011": "technical_findings"
+            },
+            "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-012",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/11"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/document_identity_bounded_review.json",
+        "sha256": "acabcb3118e4be651e25eb6575709848db4f38a2966a41c70fddbe115daa3fba",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "bounded_source_claim_with_explicit_scope_limits",
+      "supported_claim": "PZ categoryII differs from attached TZ categoryI with technological redundancy. Same object identification does not by itself resolve stage1/stage2 applicability.",
+      "recommended_disposition": "Retain published-requirement reconciliation and link the unresolved applicability question; do not claim missing redundancy, switchboard or metering.",
+      "limit": "Actual electrical-section compliance is unverified.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-007:0725100843103b391be5",
+          "assessment": "correct",
+          "details": {
+            "expected": "technical_findings",
+            "actual": {
+              "F-012": "technical_findings"
+            },
+            "limit": "Correct section does not repair missing meaning; question-versus-technical disagreement not equivalent to technical falsehood."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-035",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/34"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/gvs_formula_bounded_review.json",
+        "sha256": "736c5b32b36c22d07c22e3764059d19fffe0edd7b15cbe8ace4dd7fe6833fdc7",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "bounded_source_claim_with_explicit_scope_limits",
+      "supported_claim": "Mean GVS formula uses30C defined after first heating stage; PZ specifies one-stage parallel pairs. Published inlet total uses maximum GVS flow54.05, not these mean flows.",
+      "recommended_disposition": "Retain formula-basis clarification. Do not claim wrong inlet diameter or use parallel apparatus count as evidence of sequential heating stages.",
+      "limit": "Correct replacement formula and effects on other calculations remain unresolved.",
+      "reference_section_assessments": [
+        {
+          "target_id": "ITP_F010_GVS_formula:e2d706356b5cbdcedb39",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-035": "technical_findings"
+            },
+            "limit": "Content coverage and output-section agreement assessed separately."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-036",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/35"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/hydraulics_and_gvs_load_bounded_review.json",
+        "sha256": "7d0cd0aa62edff8553e6dfddf090e1a211f411ec8f5c2e60053efb5c4dd75bf8",
+        "pointer": "/cases/2"
+      },
+      "factual_assessment": "bounded_source_claim_with_explicit_scope_limits",
+      "supported_claim": "Same first-zone inlet has95.59m in PZ and91.59m in questionnaire; required outlet86.59m gives arithmetic margins9m/5m.",
+      "recommended_disposition": "Retain input revision/measurement-location reconciliation; no actual head loss or delivery shortfall established.",
+      "limit": "Neither margin is a measured hydraulic loss.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-037:8139bf7df3bbe04da245",
+          "assessment": "correct",
+          "details": {
+            "expected": "technical_findings",
+            "actual": {
+              "F-036": "technical_findings"
+            },
+            "limit": "Content coverage is distinct from section agreement and grouped presentation."
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-037",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/36"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/masses_bounded_review.json",
+        "sha256": "5ce64bb8d107d8fed175b9b05be6845ca784c94770fdc41030d5fe9b7370b02c",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "bounded_source_claim_with_explicit_scope_limits",
+      "supported_claim": "K1,K14,LVF400 and four linked exchanger selections have different published masses; four other exchanger pairs agree.",
+      "recommended_disposition": "Retain item-specific mass-basis clarification and manufacturer provisional-mass caveat; no actual structure or foundation error.",
+      "limit": "Net, package, piping and coolant bases are not universally equivalent; missing K12 historical mass case remains missing.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-037": "technical_findings",
+              "F-061": "technical_findings"
+            }
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-061",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/60"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/masses_bounded_review.json",
+        "sha256": "5ce64bb8d107d8fed175b9b05be6845ca784c94770fdc41030d5fe9b7370b02c",
+        "pointer": "/cases/1"
+      },
+      "factual_assessment": "bounded_source_claim_with_explicit_scope_limits",
+      "supported_claim": "Body preserves K9:98/90kg, K10:87/67kg and K11:48/57kg with execution/duty links and unresolved assembly scope.",
+      "recommended_disposition": "Keep all three local questions visible in heading and top-level action, not just K9. Preserve converter/assembly caveats.",
+      "limit": "Grouped row is not complete loss of K10/K11; it weakens discoverability. K9 specification94kg is a separate missing part.",
+      "reference_section_assessments": [
+        {
+          "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
+          "assessment": "incorrect",
+          "details": {
+            "expected": "questions",
+            "actual": {
+              "F-037": "technical_findings",
+              "F-061": "technical_findings"
+            }
+          }
+        }
+      ],
+      "engineer_utility": "not_newly_measured"
+    },
+    {
+      "finding_id": "F-074",
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/findings/73"
+      },
+      "source_review": {
+        "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/paired_heating_labels_bounded_review.json",
+        "sha256": "ea9292527c33fb663ce4a658498517dbf9baa8ef42c4f8a93ce7199ad4e1dede",
+        "pointer": "/cases/0"
+      },
+      "factual_assessment": "bounded_source_claim_with_explicit_scope_limits",
+      "supported_claim": "Paired T111/T211 same consumer scope, pipe159x4.5 and flow61.45 have published loads1.229/1.225Gcal/h.",
+      "recommended_disposition": "Retain bounded annotation clarification and source locations. Remove stale F-076 references after renumbering.",
+      "limit": "Correct load, physical operating equivalence and equipment consequences not established;0.004 is not a universal tolerance.",
+      "reference_section_assessments": [],
+      "engineer_utility": "not_newly_measured"
+    }
+  ],
+  "arithmetic": {
+    "inlet_head_difference_m": "4.00",
+    "head_margins_m": [
+      "9.00",
+      "5.00"
+    ],
+    "pump_mass_absolute_differences_kg": [
+      8,
+      20,
+      9
+    ],
+    "paired_load_difference_Gcal_h": "0.004"
+  },
+  "limits": [
+    "Source-backed local wording is distinct from normative compliance, equipment adequacy and engineer utility.",
+    "No new safety rule or universal numerical threshold is established.",
+    "Frozen output and evaluator targets remain unchanged."
+  ],
+  "runtime_changed": false,
+  "model_calls": 0,
+  "whole_output_precision_finalized": false
+}
