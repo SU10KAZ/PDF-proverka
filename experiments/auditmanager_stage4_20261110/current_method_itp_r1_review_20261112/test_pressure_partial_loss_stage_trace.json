@@ -1,0 +1,234 @@
+{
+  "version": 1,
+  "target_id": "ITP_F005_test_pressure_scope:88ef772ecba424138f46",
+  "candidate_id": "T-005",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "detection": {
+    "evidence": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "a13ca680770d1b1810382985b08f2f9368400be2b2ab6fe8102064e9c6b0a82f",
+      "pointer": "/text_findings/4"
+    },
+    "candidate": {
+      "id": "T-005",
+      "severity": "КРИТИЧЕСКОЕ",
+      "category": "piping",
+      "report_section": "technical_findings",
+      "source": "Общие данные, лист 1, указания по монтажу",
+      "finding": "Для трубопроводов без разграничения контуров назначено пробное давление 12,5 «кг/см», тогда как в том же тексте рабочие давления первичного контура указаны 17,5/17,9 атм. Даже при понимании записи как кгс/см² пробное давление ниже рабочего. Требуется назначить испытательные давления отдельно по контурам, указать корректные единицы и порядок отключения оборудования с меньшим допустимым давлением.",
+      "norm": null,
+      "norm_quote": null,
+      "related_block_ids": [
+        "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+      ]
+    }
+  },
+  "merge": {
+    "evidence": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+      "sha256": "82cd2d984eae3c31fd471265b75c46208b843a6b3530bf41da27d8d7eaaf46f7",
+      "pointer": "/candidate_decisions/4"
+    },
+    "decision": {
+      "origin": "text",
+      "input_file": "02_text_analysis.json",
+      "pointer": "/text_findings/4",
+      "candidate_id": "T-005",
+      "original_severity": "КРИТИЧЕСКОЕ",
+      "decision": "needs_data",
+      "reason": "Не предоставлен исходный текст монтажных указаний с областью применения испытательного давления.",
+      "source_refs": [],
+      "subclaims": [
+        {
+          "id": "1",
+          "claim": "Пробное давление 12,5 назначено без разделения контуров и ниже указанных рабочих 17,5/17,9 атм.",
+          "decision": "needs_data",
+          "reason": "Нужен полный пункт с исключениями и границами испытываемых участков.",
+          "source_refs": [],
+          "required_source_refs": [
+            "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+          ],
+          "target_finding_ids": []
+        },
+        {
+          "id": "2",
+          "claim": "Единица испытательного давления записана как «кг/см».",
+          "decision": "needs_data",
+          "reason": "Нужно отличить ошибку оригинала от потери символов при извлечении текста.",
+          "source_refs": [],
+          "required_source_refs": [
+            "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+          ],
+          "target_finding_ids": []
+        }
+      ]
+    }
+  },
+  "recovery": [
+    {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/candidate_recovery_reports/4"
+      },
+      "stage": "candidate_recovery_7eba1f2128aaa810",
+      "context_status": "scheduled",
+      "candidate_decisions": [
+        {
+          "origin": "text",
+          "pointer": "/text_findings/4",
+          "decision": "retained",
+          "reason": "Подтверждена некорректная единица непосредственно в задании испытательного давления; этот самостоятельный технический вопрос сохранён в F-010. F-003 касается нормативных ссылок и не сохраняет данный дефект, хотя цитирует тот же абзац. Утверждение о недостаточном испытательном давлении остаётся needs_data: отсутствие разграничения в представленном пункте установлено, но единица давления и применимость параметров источника к испытываемым участкам требуют уточнения. Критическая значимость исходного кандидата по представленным данным не подтверждена.",
+          "source_refs": [
+            "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+          ],
+          "target_finding_ids": [
+            "F-010"
+          ],
+          "context_queries": [
+            "пробным давлением",
+            "греющий контур",
+            "17,5 атм",
+            "границы испытаний",
+            "отключение оборудования"
+          ],
+          "subclaims": [
+            {
+              "id": "1",
+              "claim": "Пробное давление 12,5 назначено без разделения контуров и ниже указанных рабочих 17,5/17,9 атм.",
+              "decision": "needs_data",
+              "reason": "Полный представленный пункт действительно назначает 12,5 для трубопроводов без разграничения контуров и исключений. Однако 17,5/17,9 атм названы параметрами источника теплоснабжения; их применимость непосредственно к испытываемым участкам здесь не установлена. Кроме того, сравнение давлений требует предположительной замены «кг/см» на кгс/см². При таком предположении 12,5 ниже приведённых параметров источника, но это условное сравнение не подтверждает окончательно недостаточность давления испытания конкретного участка. Требуются границы испытаний, однозначная единица и рабочие давления этих участков.",
+              "source_refs": [
+                "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+              ],
+              "required_source_refs": [
+                "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+                "blk_26b23c5bfabe4917a156a91077b5458d"
+              ],
+              "required_context": "Исходные сведения о рабочих давлениях греющего контура и проектные указания о границах испытываемых участков, применимости значения 12,5 и отключении оборудования.",
+              "target_finding_ids": [],
+              "context_queries": [
+                "пробным давлением",
+                "греющий контур",
+                "17,5 атм",
+                "границы испытаний",
+                "отключение оборудования"
+              ]
+            },
+            {
+              "id": "2",
+              "claim": "Единица испытательного давления записана как «кг/см».",
+              "decision": "retained",
+              "reason": "Запись непосредственно подтверждена авторитетным TEXT. Дополнительная проверка распознавания по изображению не требуется. F-010 сохраняет дефект задания единицы давления; он отнесён к technical_findings, поскольку запись определяет параметр выполнения опрессовки и её исправление требует подтверждения подразумеваемой физической величины, а не только оформления текста.",
+              "source_refs": [
+                "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+              ],
+              "required_source_refs": [],
+              "target_finding_ids": [
+                "F-010"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+        "pointer": "/candidate_recovery_reports/55"
+      },
+      "stage": "candidate_recovery_7eba1f2128aaa810_context",
+      "context_status": "followup_limit",
+      "candidate_decisions": [
+        {
+          "origin": "text",
+          "pointer": "/text_findings/4",
+          "source_id": "T-005",
+          "decision": "needs_data",
+          "reason": "Дефект единицы испытательного давления подтверждён первичным TEXT и уже охвачен F-010. Полученный подбор АУПД подтверждает рабочее давление греющего контура 17,4 бар, однако не раскрывает границы испытаний и применимость значения 12,5 к конкретным участкам. Недостаточность испытательного давления и критическая значимость кандидата пока не установлены. Новое замечание не создаётся; нерешённая часть сохраняется для адресного получения контекста.",
+          "source_refs": [
+            "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+            "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+            "blk_26b23c5bfabe4917a156a91077b5458d",
+            "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+            "blk_55ab0b4be112477eb9dec207df68000e"
+          ],
+          "target_finding_ids": [
+            "F-010"
+          ],
+          "context_queries": [
+            "испытательное давление",
+            "гидравлические испытания",
+            "испытываемые участки",
+            "12,5",
+            "отключение",
+            "заглушки"
+          ],
+          "subclaims": [
+            {
+              "id": "1",
+              "claim": "Пробное давление 12,5 назначено без разделения контуров и ниже указанных рабочих 17,5/17,9 атм.",
+              "decision": "needs_data",
+              "reason": "Монтажный пункт действительно содержит общее указание испытать трубопроводы при 12,5 кг/см без разграничения контуров внутри этого пункта. Общие данные и ПЗ относят 17,5/17,9 атм к источнику теплоснабжения. Полученный подбор для того же объекта прямо задаёт номинальное рабочее давление греющего контура 17,4 бар. Тем самым сведения о рабочем давлении дополнены, но единица «кг/см» не позволяет выполнить безусловное сравнение давлений. Если подразумевались кгс/см², 12,5 соответствует примерно 12,26 бар, что ниже 17,4 бар; это условное сопоставление. Границы испытываемых участков, исключения и порядок отключения оборудования не представлены. Спецификация и технический лист насоса этих сведений не содержат. Нулевые результаты поиска не доказывают отсутствия указаний во всём проекте. Подтверждённые контекстные факты не превращаются в отдельный технический дефект недостаточного давления.",
+              "source_refs": [
+                "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+                "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+                "blk_26b23c5bfabe4917a156a91077b5458d",
+                "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+                "blk_55ab0b4be112477eb9dec207df68000e"
+              ],
+              "required_source_refs": [],
+              "required_context": "Проектные указания с однозначной единицей испытательного давления, границами участков, к которым относится значение 12,5, рабочими давлениями этих участков и порядком отключения оборудования. Идентификаторы недостающих блоков не установлены; ранее запрошенные ПЗ и подбор АУПД получены и проверены.",
+              "target_finding_ids": [],
+              "context_queries": [
+                "испытательное давление",
+                "гидравлические испытания",
+                "испытываемые участки",
+                "12,5",
+                "отключение",
+                "заглушки"
+              ]
+            },
+            {
+              "id": "2",
+              "claim": "Единица испытательного давления записана как «кг/см».",
+              "decision": "duplicate",
+              "reason": "Первичный авторитетный TEXT непосредственно содержит: «По окончании монтажных работ трубопроводы промываются водой и испытываются пробным давлением 12,5 кг/см.» Проверка распознавания по изображению не требуется. F-010 полностью сохраняет этот дефект в том же монтажном указании. Технический профиль обоснован тем, что некорректная размерность препятствует однозначному заданию параметра опрессовки; исправление требует подтверждения единицы и соответствующего числового значения. F-003 касается нормативных ссылок и не является дубликатом данного утверждения.",
+              "source_refs": [
+                "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+              ],
+              "required_source_refs": [],
+              "target_finding_ids": [
+                "F-010"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "assessment": "Test-pressure units retained; circuit/test-boundary obligation remainedneeds_dataaftercontextfollowup. Initial compound claim bound uncertain numerical insufficiency and missing circuit definition together. Later decomposition preserved unit defect but did not release the independently useful bounded scope clarification.",
+  "preserve": "Do not claim certain inadequate test pressure from malformedkg/cm, sourcepressureinstead of localpressure, or unestablished test boundaries. Do not correct authoritativeTEXTfromraster. Recovery correctly resolved the initial merge suggestion to recheck OCR.",
+  "recommendation": "Track unit, bounded local scope, circuit identity, pressure comparison and actual insufficiency as separate subclaims. Complete internal retrieval first; preserve actionable supported scope clarification without forcing a technical insufficiency claim.",
+  "control_pair": {
+    "positive": "RetainF010unitdefect and explicitly bounded circuit/testboundaryclarification once source review establishes useful engineerdecision.",
+    "negative": "Do not assert all pipe tests insufficient by interpretingkg/cmas kgf/cm2or treating thermal-sourcepressureas every localtestpressure.",
+    "boundary": "Source-backed diagnostic pair; new engineer approval and runtime behavior test not claimed."
+  },
+  "runtime_changed": false,
+  "model_calls": 0
+}
