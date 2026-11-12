@@ -1,0 +1,25 @@
+{
+  "finding_id": "F-040",
+  "status": "observed_final_gate_held_no_report_change",
+  "receipt_path": "/tmp/auditmanager_publication_f040_admission_observed_20261112/receipt.json",
+  "receipt_sha256": "512af66ac930097252b0124823edc4029cecba80eb5bdbd41d0150a695a6dcff",
+  "checks": {
+    "source_support": "needs_data",
+    "quantities_and_scope": "pass",
+    "original_clause_preservation": "fail",
+    "uncertainty_and_consequences": "fail",
+    "profile_and_norms": "needs_data",
+    "peer_overlap": "pass",
+    "final_citations": "fail"
+  },
+  "input_equals_output": true,
+  "observations": [
+    "Bound source-only handoff reached final checker: it now distinguishes the connected TS1 line from a separate electric lightning symbol.",
+    "Source support changed from fail to needs_data; residual central-stroke difference remains unresolved, not engineer-confirmed.",
+    "Checker describes defer as complete deletion and asks for full refutation. Actual admission preserves original in pending_source_findings. Packet previously showed action=defer and proposed=null but did not expose archive outcome.",
+    "No applied edit or final export; positive F006 preservation in an earlier projection does not prove this end-to-end gate passes."
+  ],
+  "next_action": "Expose actual archive effect without reviewer verdicts; clarify defer versus suppress, keep supported-core protection; rerun only changed final control.",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

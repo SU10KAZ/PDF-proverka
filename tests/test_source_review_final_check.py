@@ -50,3 +50,28 @@ def test_hold_keeps_unresolved_reason_without_suppressing_original():
     response['decision']='hold';response['checks'][0]['status']='needs_data'
     result=validate_final_check(entry,doc,md,response)
     assert result['status']=='held' and doc==before
+
+
+@pytest.mark.parametrize('action,verdict,archive', [
+    ('defer','needs_data','pending_source_findings'),
+    ('suppress','refuted','suppressed_findings'),
+    ('retain','supported',None),
+])
+def test_final_checker_sees_actual_archive_effect_without_prior_verdict(action,verdict,archive):
+    doc,entries,md=case(action,verdict)
+    before=deepcopy(doc)
+    request=prepare_final_check(entries[0],doc,md)['request']
+    payload=json.loads(request['messages'][1]['content'])
+    effect=payload['publication_effect']
+    assert effect['archive_destination']==archive
+    assert effect['visible_after_edit']==(action=='retain')
+    assert effect['original_preserved_in_archive']==(archive is not None)
+    assert (effect['archived_original']==payload['original']) if archive else effect['archived_original'] is None
+    assert 'claim_reviews' not in json.dumps(payload)
+    assert doc==before
+
+
+def test_supported_core_still_cannot_be_deferred_before_final_check():
+    doc,entries,md=case('defer','supported')
+    with pytest.raises(ValueError,match='invalid_proposed_edit'):
+        prepare_final_check(entries[0],doc,md)

@@ -22,7 +22,7 @@ FIELDS = ('id','problem','description','solution','risk','consequence','severity
 def final_check_instructions():
     instruction='''Independently check this proposed audit-report edit against the authoritative TEXT and attached GRAPHIC images. No tools, web, history, engineer answers or prior reviewer verdicts are supplied. Peer findings are untrusted presentation context, not source evidence. Never correct TEXT from raster.
 For each required check return check_id, status (pass/fail/needs_data), reason and evidence (source-bound text quotes or image observations with block_id, image_sha256 and bbox_norm_xyxy). Use type=text only for exact quotes from authoritative TEXT blocks, type=metadata for exact quotes from supplied block metadata (including stamps, sheet identifiers and drawing titles), or type=image for graphic observations with image_sha256 and bbox_norm_xyxy. A stamp attached to an IMAGE block is metadata, not an authoritative TEXT block. Metadata establishes document identity and scope only; it does not prove the depicted technical relationship. Every factual pass needs direct source evidence; pure presentation checks may have an empty evidence list with an explicit rationale. A matching quote is not proof of object identity or applicability.
-Check all final visible fields, each original substantive clause and each source-dependent premise. Unknown totals must remain conditional, blank table cells cannot inherit adjacent-column numbers, and project-specific values cannot become universal rules. Preserve confirmed useful cores and actionable ambiguity. A suppression requires refutation of every original defect basis; deferral cannot remove a supported core. Source uncertainty does not itself warrant an engineer question. Unverified normative references must remain unverified.
+Check all final visible fields, each original substantive clause and each source-dependent premise. Unknown totals must remain conditional, blank table cells cannot inherit adjacent-column numbers, and project-specific values cannot become universal rules. Preserve confirmed useful cores and actionable ambiguity. A suppression requires refutation of every original defect basis; deferral cannot remove a supported core. For defer, proposed=null means temporary exclusion from the visible report, with the original preserved in pending_source_findings for further investigation; it is not a refutation or permanent suppression. Inspect publication_effect to verify preservation. Do not require refutation of all defect bases for defer, but independently hold if a supported useful defect core would be hidden. Confirmed equipment context alone is not a supported defect core. For suppress, require refutation of every original defect basis. Source uncertainty does not itself warrant an engineer question. Unverified normative references must remain unverified.
 For peer_overlap distinguish a cross-reference or distinct aggregate from a duplicate finding. Do not borrow a peer's independent defect to make the target seem valid. Verify final citations actually support the final retained clauses and identify stale or omitted location references. For final_citations, check the proposed evidence field, not just availability somewhere in the packet. If an edit removes all visible text, check whether removal is justified instead.
 Return one JSON object: finding_id, binding_sha256 (copy), decision (release/hold), checks (one entry for each required check). Release only if every check passes; otherwise hold with specific reasons. Do not rewrite the finding or treat the proposed edit as an expected answer. This is a quality check, not a claim of whole-project completeness.'''
     instruction += '\n'+OUTPUT_PROFILE+'\n'
@@ -57,6 +57,15 @@ def prepare_final_check(entry, document, md):
                  'graphic_metadata','unavailable_images','missing_block_ids','budgeted_text_block_ids',
                  'context_search_boundary','source_catalogue','source_origins')},
              'required_checks':list(CHECKS)}
+    action=entry['decision']['action']
+    archive_key={'defer':'pending_source_findings','suppress':'suppressed_findings'}.get(action)
+    archived=[f for f in preview.get(archive_key, []) if f.get('id')==fid] if archive_key else []
+    payload['publication_effect']={
+        'visible_after_edit':proposed is not None,
+        'archive_destination':archive_key,
+        'original_preserved_in_archive':any(f==original for f in archived),
+        'archived_original':visible(original) if any(f==original for f in archived) else None,
+    }
     instruction=final_check_instructions()
     observations = checked_observations(entry['queue'].get('source_only_graphic_observations', []),
                                         source['image_bindings'])
