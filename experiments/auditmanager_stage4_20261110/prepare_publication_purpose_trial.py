@@ -10,10 +10,15 @@ from .run_primary_text_runtime_probe import sha, write
 from .run_runtime_probe_recovery import verify_packet
 
 
-def prepare(destination):
+def prepare(destination, selected_ids=None):
     base = Path('/tmp/auditmanager_publication_remaining84_20261112/preparation.json')
     followup = Path('/tmp/auditmanager_publication_F008_context1_20261112/preparation.json')
     parents = [(base, ['F-004', 'F-010', 'F-012', 'F-020']), (followup, ['F-008'])]
+    if selected_ids is not None:
+        allowed = {fid for _, ids in parents for fid in ids}
+        if not selected_ids or not set(selected_ids) <= allowed:
+            raise ValueError('Unknown or empty control selection')
+        parents = [(path, [fid for fid in ids if fid in selected_ids]) for path, ids in parents]
     destination.mkdir(parents=True, exist_ok=False)
     result = None
     requests = []
@@ -60,7 +65,8 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('destination', type=Path)
+    parser.add_argument('--finding-id', action='append')
     args = parser.parse_args()
-    result = prepare(args.destination.resolve())
+    result = prepare(args.destination.resolve(), args.finding_id)
     print(json.dumps([{'finding_id': r['finding_id'], 'path': r['path'],
                        'images': len(verify_packet(r)['image_hashes'])} for r in result['requests']], ensure_ascii=False))

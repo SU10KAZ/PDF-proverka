@@ -200,8 +200,43 @@
       "matched_claims_and_sources": true,
       "baseline_request_sha256": "d65bb42932e78876908a22ef41da983354188c828189abcf70c340880bb8426b",
       "candidate_request_sha256": "a87433568df803ccc6ec86113798f3646886b9bcfaf5a5c917508861951cbadf",
-      "semantic_comparison": "not_completed",
-      "status": "response_not_available"
+      "semantic_comparison": "control_failed_supported_quantity_conflicts_demoted_to_questions",
+      "status": "structurally_valid_requires_source_review",
+      "validation": {
+        "finding_id": "F-008",
+        "request_sha256": "a87433568df803ccc6ec86113798f3646886b9bcfaf5a5c917508861951cbadf",
+        "response_sha256": "1a06814cb5e37d9cc60336e9df0cc13e6790ac2f3d9cf1838a0906e0b76eb3d1",
+        "selection": "DEV-selected routing controls; prior purpose from current-run finding only; same source context as each selected baseline. Not blind evaluation.",
+        "semantic_verified": false,
+        "production_acceptance": false,
+        "status": "structurally_valid_requires_source_review",
+        "review_scope": "claim_fields",
+        "unreviewed_claim_fields": [],
+        "part_counts_not_finding_counts": true,
+        "projection_path": "/tmp/auditmanager_publication_purpose_controls_20261112_run/evaluations/publication_purpose_008/publication_projection.json",
+        "projection_sha256": "8105d4a4d22b587cd81d4675706c192572828a648be5e91de2124390a328a118",
+        "counts": {
+          "technical_findings": 0,
+          "questions": 3,
+          "withdrawn": 0,
+          "pending": 0,
+          "history_only": 0
+        }
+      },
+      "baseline_projection_sha256": "823f380e4abffdd03635725425c61b198b2ea43f503608212e3ec05c5ac54489",
+      "baseline_part_counts": {
+        "technical_findings": 3,
+        "questions": 0,
+        "pending": 1,
+        "withdrawn": 0,
+        "history_only": 0
+      },
+      "part_counts_are_not_defect_counts_or_quality_scores": true,
+      "semantic_assessment": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/purpose_trial_F008_source_assessment.json",
+        "sha256": "3359320e955f871fc6e2e39b2a853c1158505ee7e673db44df5465eca1f4ba2a"
+      },
+      "final_release_completed": false
     }
   ],
   "quality_improvement_proven": false,

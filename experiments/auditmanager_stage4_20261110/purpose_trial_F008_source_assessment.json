@@ -1,0 +1,25 @@
+{
+  "finding_id": "F-008",
+  "status": "control_failed_supported_quantity_conflicts_demoted_to_questions",
+  "candidate_projection_path": "/tmp/auditmanager_publication_purpose_controls_20261112_run/evaluations/publication_purpose_008/publication_projection.json",
+  "candidate_projection_sha256": "8105d4a4d22b587cd81d4675706c192572828a648be5e91de2124390a328a118",
+  "baseline_assessment_path": "experiments/auditmanager_stage4_20261110/publication_F008_context1_assessment.json",
+  "baseline_assessment_sha256": "9dfe151db0774177b0cd57b842086e458dc0a1c153b33fa20cb86e73f0a5b512",
+  "checks": [
+    "All three quantity observations retained literally.",
+    "No excess actual supply established, correctly.",
+    "Model uses missing reserve explanation and original question routing to withhold technical document conflicts; these do not negate the confirmed discrepancies."
+  ],
+  "part_count_comparison": {
+    "baseline_technical": 3,
+    "candidate_technical": 0,
+    "baseline_questions": 0,
+    "candidate_questions": 3,
+    "interpretation": "Factual coverage retained but technical routing regressed for three supported comparisons."
+  },
+  "required_fix": "Prior classification is context, never a presumption overriding same-scope quantity conflicts. Actual supply and correct final quantity remain separate unknowns.",
+  "whole_candidate_accepted": false,
+  "engineer_decision": null,
+  "production_acceptance": false,
+  "final_release_completed": false
+}

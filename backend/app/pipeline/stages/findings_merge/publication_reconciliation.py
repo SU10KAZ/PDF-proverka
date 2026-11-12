@@ -131,6 +131,13 @@ its unresolved conclusion explicitly stated; do not hide it solely because a
 normative or design conclusion is unverified. Missing context available in the
 project remains an internal retrieval obligation, not automatically a question
 for the engineer. Do not convert all needs_data parts into questions.
+Prior routing must not be preserved merely because it exists. When linked sources
+for the same object and scope explicitly disagree in quantity, type or connection,
+the disagreement itself is a technical document conflict. Uncertainty about which
+source is correct, possible reserve equipment or actual procurement does not by
+itself demote that conflict to a question. Preserve the conflict, qualify the
+unknown correction and consequences separately. Conversely, different names or
+references without established common applicability may remain a clarification.
 '''
 
 def reconcile_publication(finding, packet, response):
