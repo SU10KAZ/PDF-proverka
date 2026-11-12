@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "scope": "Two bounded precharge findings; arithmetic and source review, not engineering approval of tank sizes",
+  "cases": [
+    {
+      "id": "F-020",
+      "assessment": "Printed minimum2.5bar versus required gas precharge3.0bar retained; conditional calculation numerically reproduced, actual tank inadequacy unproved.",
+      "quote_checks": [
+        {
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "quote": "Объем системы проектный **1458 л**\nМинимальное давление в системе** **25 м вод.ст.** **2,5 бар**\nМаксимальное давление в системе** **38 м вод.ст.** **3,8 бар**",
+          "line": 5722
+        },
+        {
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "quote": "**Kрасш. = 2,2579**",
+          "line": 5737
+        },
+        {
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "quote": "**Vбака = (1,25 x Vрасш.) : Kзап. = 152 л** **1 шт. SPL RM 200 л 10 бар**",
+          "line": 5749
+        },
+        {
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "quote": "**Pпредв.расч. = 3,0 бар** Давление в газовой полости бака необходимо довести до этой величины!",
+          "line": 5759
+        }
+      ],
+      "calculations": {
+        "expansion_l": "32.920182",
+        "conditional_acceptance_fraction": "0.1666666666666666666666666667",
+        "conditional_volume_l": "246.9013650000000000000000000",
+        "conditional_volume_from_rounded_expansion_l": "247.5000000000000000000000000"
+      },
+      "visible_fields": {
+        "problem": "Расчёт приёмной ёмкости бака отопления ДОО не согласован с предписанной предварительной зарядкой газа.",
+        "description": "Первоначальное описание:\nНа странице 106 заданы минимальное давление 2,5 бар, максимальное 3,8 бар и предварительное давление газа перед монтажом 3,0 бар. Потребный объём 152 л соответствует использованию коэффициента (3,8−2,5)/(3,8+1)≈0,2708 с округлением исходных величин. Влияние предписанной зарядки 3,0 бар на приёмную ёмкость не отражено. Если давления относятся к месту подключения бака, при зарядке 3,0 бар максимальная приёмная доля до достижения 3,8 бар составляет (3,8−3,0)/(3,8+1)≈0,1667. При сохранении исходных объёма системы, коэффициента расширения и запаса условно требуется 246,9 л, либо 247,5 л при использовании округлённых 33 л расширения, против выбранных 200 л. Подтверждено несогласование расчёта и монтажной настройки. Окончательный требуемый объём зависит также от согласованных точек задания давлений, холодного заполнения и температурного режима.\n\nДополнительная проверка:\nВ подборе бака ДОО расчёт ёмкости опирается на минимальное давление 2,5 бар, а монтажное указание задаёт зарядку газа 3,0 бар без согласования её влияния на приёмную ёмкость.\nИсходные давления, результат подбора 152 л, выбранный бак 200 л и зарядка 3,0 бар представлены на одной странице. Подтверждён технический конфликт расчётных и монтажных параметров.",
+        "solution": "Согласовать давления в месте подключения бака, предварительную зарядку и холодное заполнение. Повторить расчёт приёмной ёмкости и подтвердить выбранный объём по согласованным давлениям и температурному режиму.",
+        "report_section": "technical_findings"
+      }
+    },
+    {
+      "id": "F-021",
+      "assessment": "Printed minimum2.5bar versus required gas precharge3.0bar retained; conditional calculation numerically reproduced, actual tank inadequacy unproved.",
+      "quote_checks": [
+        {
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "quote": "Объем системы проектный **27000 л**\nМинимальное давление в системе** **25 м вод.ст.** **2,5 бар**\nМаксимальное давление в системе** **40 м вод.ст.** **4 бар**",
+          "line": 5802
+        },
+        {
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "quote": "**Kрасш. = 2,2579**",
+          "line": 5817
+        },
+        {
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "quote": "**Kзап. = (Pмакс.+1 - Pстат.+1) : Pмакс.+1 = 0,3** Максимальное значение Kзап. для **FM=0,5**; для **RM=0,7**",
+          "line": 5825
+        },
+        {
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "quote": "**Vбака = (1,25 x Vрасш.) : Kзап. = 2540 л** **2 шт. SPL RM 1500 л 10 бар**",
+          "line": 5829
+        },
+        {
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "quote": "**Pпредв.расч. = 3,0 бар** Давление в газовой полости бака необходимо довести до этой величины!",
+          "line": 5839
+        }
+      ],
+      "calculations": {
+        "expansion_l": "609.6330",
+        "conditional_acceptance_fraction": "0.2",
+        "conditional_volume_l": "3810.20625",
+        "conditional_volume_from_rounded_expansion_l": "3812.5"
+      },
+      "visible_fields": {
+        "problem": "Расчёт приёмной ёмкости баков теплоснабжения вентиляции не согласован с предписанной предварительной зарядкой газа.",
+        "description": "Первоначальное описание:\nНа странице 107 заданы минимальное давление 2,5 бар, максимальное 4 бар и предварительная зарядка газа 3,0 бар. Принятый коэффициент заполнения 0,3 соответствует (4−2,5)/(4+1). Влияние зарядки 3,0 бар на приёмную ёмкость в расчёте не отражено. Если давления относятся к месту подключения баков, при зарядке 3,0 бар максимальная приёмная доля до достижения 4 бар составляет (4−3)/(4+1)=0,20. При сохранении объёма системы 27000 л, коэффициента расширения 2,2579% и запаса 1,25 условно требуется 3810,2 л, либо 3812,5 л при использовании округлённых 610 л расширения. Выбраны два бака по 1500 л, всего 3000 л. Подтверждено несогласование расчёта и монтажной настройки; окончательная достаточность ёмкости требует согласования давлений, холодного заполнения, объёма системы и температурного режима.\n\nДополнительная проверка:\nВ подборе баков вентиляции коэффициент заполнения 0,3 соответствует минимальному давлению 2,5 бар, а монтажное указание задаёт зарядку газа 3,0 бар без согласования её влияния на приёмную ёмкость.\nИсточник непосредственно содержит давления 2,5 и 4 бар, коэффициент 0,3, два бака по 1500 л и требование зарядки 3,0 бар. Состав выбранных баков установлен; несогласование расчёта с настройкой подтверждено.",
+        "solution": "Согласовать давления в месте подключения баков, предварительную зарядку и холодное заполнение. Повторить подбор двух баков по согласованным исходным данным и подтвердить их суммарную полезную ёмкость.",
+        "report_section": "technical_findings"
+      }
+    }
+  ],
+  "target": {
+    "id": "B-ITP-F-023:4c138c58b906579e3ebd",
+    "coverage": "Printed2.5/3.0bar discrepancy retained by both findings, not two independent benchmark targets.",
+    "section": "Frozen target question; both output technical: disagreement recorded separately from fact retention."
+  },
+  "DOO_reconstruction_boundary": {
+    "source_block": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+    "source_formula_lines": [
+      "**Vрасш. = (Vсист. x Kрасш.) : 100 = 33 л**",
+      "**Kзап. = (Pмакс.+1 - Pстат.+1) : Pмакс.+1 = 0,3** Максимальное значение Kзап. для **FM=0,5**; для **RM=0,7**",
+      "**Vбака = (1,25 x Vрасш.) : Kзап. = 152 л** **1 шт. SPL RM 200 л 10 бар**"
+    ],
+    "printed_coefficient": "0.3",
+    "printed_expansion_l": "33",
+    "printed_volume_l": "152",
+    "literal_rounded_calculation_l": "137.5",
+    "reconstructed_fraction": "0.2708333333333333333333333333",
+    "assessment": "F-020 explains152L via an inferred unrounded fraction about0.2708. Source explicitly prints0.3; literal1.25*33/0.3=137.5. The inferred fraction is not a directly printed value. Output does not explicitly retain this additional rounding/reconstruction distinction. Do not treat either inferred formula or new247L as a mandatory design instruction."
+  },
+  "limits": [
+    "Pressure reference locations, cold filling and actual operating temperature not established here.",
+    "No universal1.25factor, gas acceptance formula or fixed pressure rule adopted.",
+    "Original printed expression lacks clear grouping; arithmetic reconstruction is labelled as inference."
+  ],
+  "entire_output_reviewed": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0
+}

@@ -1,0 +1,558 @@
+{
+  "version": 1,
+  "final_sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453",
+  "finding_count": 74,
+  "findings_with_bounded_review": 35,
+  "findings_without_bounded_review": 39,
+  "entire_output_reviewed": false,
+  "whole_output_precision_finalized": false,
+  "quality_score": null,
+  "limits": "An entry records partial source/claim work, not complete adjudication of every statement. Unreviewed is not false or absent. Coverage ledger of87targets is separate.",
+  "rows": [
+    {
+      "id": "F-001",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-002",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-003",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-004",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-005",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-006",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-007",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-008",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-009",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-010",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pressure_unit_and_fuse_bounded_review.json",
+          "sha256": "902b0fca5d89e39aa82ad3dd53bb1ed35c902302cd63dfd4289b611d8dfd0272"
+        }
+      ]
+    },
+    {
+      "id": "F-011",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/pressure_unit_and_fuse_bounded_review.json",
+          "sha256": "902b0fca5d89e39aa82ad3dd53bb1ed35c902302cd63dfd4289b611d8dfd0272"
+        }
+      ]
+    },
+    {
+      "id": "F-012",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-013",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-014",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-015",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ]
+    },
+    {
+      "id": "F-016",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ]
+    },
+    {
+      "id": "F-017",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_volumes_and_loads_bounded_review.json",
+          "sha256": "ed387f5c3ed2543e80050d36d1926a59c7d7579c9212ac1c3302509be0595d1b"
+        }
+      ]
+    },
+    {
+      "id": "F-018",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+          "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6"
+        }
+      ]
+    },
+    {
+      "id": "F-019",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+          "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6"
+        }
+      ]
+    },
+    {
+      "id": "F-020",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_bounded_review.json",
+          "sha256": "510f447d4ecd4a3191e94784e99257cff196d0a1b1cd6eed396f6a5adf42e67c"
+        }
+      ]
+    },
+    {
+      "id": "F-021",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/precharge_bounded_review.json",
+          "sha256": "510f447d4ecd4a3191e94784e99257cff196d0a1b1cd6eed396f6a5adf42e67c"
+        }
+      ]
+    },
+    {
+      "id": "F-022",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_volumes_and_loads_bounded_review.json",
+          "sha256": "ed387f5c3ed2543e80050d36d1926a59c7d7579c9212ac1c3302509be0595d1b"
+        }
+      ]
+    },
+    {
+      "id": "F-023",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_volumes_and_loads_bounded_review.json",
+          "sha256": "ed387f5c3ed2543e80050d36d1926a59c7d7579c9212ac1c3302509be0595d1b"
+        }
+      ]
+    },
+    {
+      "id": "F-024",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ]
+    },
+    {
+      "id": "F-025",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ]
+    },
+    {
+      "id": "F-026",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ]
+    },
+    {
+      "id": "F-027",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ]
+    },
+    {
+      "id": "F-028",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ]
+    },
+    {
+      "id": "F-029",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ]
+    },
+    {
+      "id": "F-030",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/specification_bounded_review.json",
+          "sha256": "a6fa6d958dddc5264af1025374cd22d59fda0d6ed8dd9ee19369e364f41c5dfd"
+        }
+      ]
+    },
+    {
+      "id": "F-031",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/arithmetic_bounded_review.json",
+          "sha256": "0c3815a1ed98768b8bbc2f16e6ba671b138598541383b80faf944b8ef6089282"
+        }
+      ]
+    },
+    {
+      "id": "F-032",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/arithmetic_bounded_review.json",
+          "sha256": "0c3815a1ed98768b8bbc2f16e6ba671b138598541383b80faf944b8ef6089282"
+        }
+      ]
+    },
+    {
+      "id": "F-033",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-034",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-035",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-036",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-037",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-038",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ]
+    },
+    {
+      "id": "F-039",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-040",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ]
+    },
+    {
+      "id": "F-041",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-042",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-043",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-044",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ]
+    },
+    {
+      "id": "F-045",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/arithmetic_bounded_review.json",
+          "sha256": "0c3815a1ed98768b8bbc2f16e6ba671b138598541383b80faf944b8ef6089282"
+        }
+      ]
+    },
+    {
+      "id": "F-046",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/arithmetic_bounded_review.json",
+          "sha256": "0c3815a1ed98768b8bbc2f16e6ba671b138598541383b80faf944b8ef6089282"
+        }
+      ]
+    },
+    {
+      "id": "F-047",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-048",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-049",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-050",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-051",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-052",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-053",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-054",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-055",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-056",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-057",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-058",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-059",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-060",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-061",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-062",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ]
+    },
+    {
+      "id": "F-063",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ]
+    },
+    {
+      "id": "F-064",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/tank_volumes_and_loads_bounded_review.json",
+          "sha256": "ed387f5c3ed2543e80050d36d1926a59c7d7579c9212ac1c3302509be0595d1b"
+        }
+      ]
+    },
+    {
+      "id": "F-065",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+          "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6"
+        }
+      ]
+    },
+    {
+      "id": "F-066",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ]
+    },
+    {
+      "id": "F-067",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+          "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6"
+        }
+      ]
+    },
+    {
+      "id": "F-068",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ]
+    },
+    {
+      "id": "F-069",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/duplicate_pairs_bounded_review.json",
+          "sha256": "15a97b8ac445be644ba5a5d4353f2c4ee408b81df8ce1ece96df3c874fce5fc3"
+        }
+      ]
+    },
+    {
+      "id": "F-070",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-071",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/temperature_bounded_review.json",
+          "sha256": "a1898cfb3b27677739961f03184022753fc38c529b242a3048e9165c96ddb6d6"
+        }
+      ]
+    },
+    {
+      "id": "F-072",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    },
+    {
+      "id": "F-073",
+      "status": "bounded_review_exists",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/arithmetic_bounded_review.json",
+          "sha256": "0c3815a1ed98768b8bbc2f16e6ba671b138598541383b80faf944b8ef6089282"
+        }
+      ]
+    },
+    {
+      "id": "F-074",
+      "status": "not_yet_reviewed",
+      "evidence": []
+    }
+  ]
+}
