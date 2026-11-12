@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "scope": "Three bibliographic questions with graphic-description error separated",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "id": "F-001",
+      "assessment": "Title discrepancy confirmed: authoritative TEXT list says Projecting heating points, actual drawing note and official Rosstandart card give Heating points and internal heat supply systems. This is a bibliographic correction/question, not a demonstrated technical failure. Original graphic was available in audit package despite final statement that original was not attached.",
+      "target": "not assigned in this bounded review",
+      "source_lines": [
+        {
+          "line": 243,
+          "quote": "|  | СП 510.1325800.2022 | Проектирование тепловых пунктов |  |",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "line": 969,
+          "quote": "**Description:** Верхний горизонтальный ряд осей: Б1₁, Б2₁, Б3₂, Б4₃, Б5₃. Вертикальные оси: Г₃, Г₅, Г₆/₃, Г₇, Г₉, Г₁₀, Г₁₁, Г₁₂, Г₁₃, Г₁₄/₃. Нижний ряд осей: Д₄₃, Д₅₂, Е₂₂, Е₃₂, Е₄₂, Е₅₂, Е₆₂. На плане показаны контуры стен помещения, лестничный марш в верхней части и парковочное место с автомобилем в правом нижнем углу. В помещении размещено тепловое оборудование: насосы (например, «насоса 800х600* 180(н)», «насоса 300х300* 180(н)», «насоса 400х400* 180(н)»), баки (например, «бака 600х600* 150(н)», «бака 900х900* 150(н)», «бака 1000х1000* 150(н)», «бака АУГД 2200х900* 150(н)», «бака ХВП 600х2600* 150(н)»), блоки («Блочная ХВП», «Блок ХВП», «автоматика»). Для каждого элемента указаны параметры: масса, уровень звукового давления (например, «Уровень звукового давления 73дБ(А)», «Уровень звукового давления 53 дБ(А)», «Уровень звукового давления 64 дБ(А)», «Уровень звукового давления 66 дБ(А)», «Уровень звукового давления 69 дБ(А)»), а также марки оборудования (например, «IL 100/160-18.5/2», «SPL BASIC 2-E-4-21», «RM 80 PN25», «HELIХ V 603-1/16/E/KS/400-50 N», «LVL 400», «LVL 600», «IL 40/140-2.2/2», «IL 40/220a-2.5/4», «IL 65/120-4/2», «IL 65/140-7.5/2»). Присутствуют выноски с надписями «фундамент насоса», «фундамент бака», «фундамент АУГД», «фундамент баков АУГД», «фундамент бака ХВП», «фундамент баков ХВП», «фундамент ТО». В левой части красным текстом выделены примечания: «ПОДНЯТЬ кирпичную стену» и «установить дверь согласно СП 510.1325800.2022 п.7.2». В нижней части блока есть общее примечание: «Примечание: СП 510.1325800.2022 Тепловые пункты и системы внутреннего теплоснабжения п.7.2 Запрещается размещение ЦТП/ИТП в помещениях с деформационными швами.»",
+          "route": "graphic_description_not_authoritative_TEXT"
+        }
+      ],
+      "visible_fields": {
+        "problem": "В предоставленном MD для СП 510.1325800.2022 приведены разные наименования.",
+        "description": "Строка 243 ведомости: «|  | СП 510.1325800.2022 | Проектирование тепловых пунктов |  |». В строке 969, в текстовом описании изображения, приведён другой вариант: «СП 510.1325800.2022 Тепловые пункты и системы внутреннего теплоснабжения». Расхождение требует сверки реквизитов. Исходное изображение и официальный текст СП не приложены; техническое нарушение этим расхождением не установлено.",
+        "solution": "Сверить официальное наименование СП 510.1325800.2022 и привести ведомость и примечания чертежей к единому корректному написанию после проверки оригиналов.",
+        "report_section": "questions"
+      }
+    },
+    {
+      "id": "F-002",
+      "assessment": "Mixed question: GOST versus SP premise is disproved by direct graphics, both door callouts say SP510.1325800.2022p7.2. Description at MD483 misread graphic. Separate applicability ofp7.2 to door instruction remains unverified; do not discard or confirm entire compound question based on first part.",
+      "target": "not assigned in this bounded review",
+      "source_lines": [
+        {
+          "line": 243,
+          "quote": "|  | СП 510.1325800.2022 | Проектирование тепловых пунктов |  |",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "line": 483,
+          "quote": "**Description:** Однотипная панель — план ИТП. По периметру видны осями: слева 14, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1; справа 15, 16, 17, 18, 19; сверху 24, 23, 22, 21, 20; снизу 25, 26, 27. В верхней части — «Узел ввода», «ИТП» и «Блок ХВП» с надписью «К24 Блочная ХВП, вместимость для слива регенерации после ХВП». В левой части — «ИТП» с насосами «K1 4», «K2 4», «K21 подпитка обратного контура», «Узел ввода В11 Ду65», «УУТЭ ГВС Т4 1 зона», «УУТЭ ГВС Т3 1 зона». В центре — «Узел ввода В12 Ду50», «Из системы ХВС 2-я зона P=146,62 м.в.ст. Q=6,05 м3/ч», «Узел ввода В13 Ду40», «Из системы ХВС 3-я зона P=179,55 м.в.ст. Q=2,90 м3/ч», «насос ГВС 3 зона», «УУТЭ ГВС Т3 3 зона», «УУТЭ ГВС Т4 3 зона». В правой части — «АУПД 2 зона Т94», «АУПД 3 зона Т94», «ТО ГВС 3 зона», «К17», «LVE 109», «RM.500.PN16», «LVE 109», «RM.500.PN16», «SPL BASIC 2-E-125», «SPL BASIC 2-E-127», «ТО отопления Т13,Т23, 3 зона», «К11 L 40/140-222 насос 57кг.», «УУТЭ отопления Т13,Т23 3 зона», «К12 L 40/220-15/А насос 57кг.», «К12 6ак DOO 100n», «RM.200.PN16», «насос отопления DOO T14,Т24», «УУТЭ отопления DOO T14,Т24», «УУТЭ отопления Т11 1 зона». В нижней части — «автоматика» (повторяется многократно), «УСТАНОВИТЬ ДВЕРЬ ПОГОНОННО ГОСТ 510.1325800.2022 п 7.2», «помещение автоматизации ИТП», «помещение насосной и водомерного узла», «Примечание: СП 510.1325800.2022 Тепловые пункты и системы внутреннего теплоснабжения п.7.2 Запрещается размещение ЦТП/ИТП в помещениях с деформационными швами.». В центре внизу — «К22 бак теплообменника 1000л», «насос отопления 1 зона Т21», «фильтр насоса отопления 1 зона Т21», «УУТЭ отопления Т21 1 зона», «УУТЭ отопления Т12,Т22 2 зона», «К9», «K18», «АУПД 1 зона Т94», «фильтр насоса теплообменника Т25», «УУТЭ теплообменника Т25», «К5», «НЖ-21-180-ТЛ масса 554,17кг.», «ТО теплообменника Т15,Т25», «фильтр насоса теплообменника Т25», «насос теплообменника Т25», «К13», «L 65/120-42 насос 7кг.», «Уровень звукового давления 66 dB(A)».",
+          "route": "graphic_description_not_authoritative_TEXT"
+        },
+        {
+          "line": 969,
+          "quote": "**Description:** Верхний горизонтальный ряд осей: Б1₁, Б2₁, Б3₂, Б4₃, Б5₃. Вертикальные оси: Г₃, Г₅, Г₆/₃, Г₇, Г₉, Г₁₀, Г₁₁, Г₁₂, Г₁₃, Г₁₄/₃. Нижний ряд осей: Д₄₃, Д₅₂, Е₂₂, Е₃₂, Е₄₂, Е₅₂, Е₆₂. На плане показаны контуры стен помещения, лестничный марш в верхней части и парковочное место с автомобилем в правом нижнем углу. В помещении размещено тепловое оборудование: насосы (например, «насоса 800х600* 180(н)», «насоса 300х300* 180(н)», «насоса 400х400* 180(н)»), баки (например, «бака 600х600* 150(н)», «бака 900х900* 150(н)», «бака 1000х1000* 150(н)», «бака АУГД 2200х900* 150(н)», «бака ХВП 600х2600* 150(н)»), блоки («Блочная ХВП», «Блок ХВП», «автоматика»). Для каждого элемента указаны параметры: масса, уровень звукового давления (например, «Уровень звукового давления 73дБ(А)», «Уровень звукового давления 53 дБ(А)», «Уровень звукового давления 64 дБ(А)», «Уровень звукового давления 66 дБ(А)», «Уровень звукового давления 69 дБ(А)»), а также марки оборудования (например, «IL 100/160-18.5/2», «SPL BASIC 2-E-4-21», «RM 80 PN25», «HELIХ V 603-1/16/E/KS/400-50 N», «LVL 400», «LVL 600», «IL 40/140-2.2/2», «IL 40/220a-2.5/4», «IL 65/120-4/2», «IL 65/140-7.5/2»). Присутствуют выноски с надписями «фундамент насоса», «фундамент бака», «фундамент АУГД», «фундамент баков АУГД», «фундамент бака ХВП», «фундамент баков ХВП», «фундамент ТО». В левой части красным текстом выделены примечания: «ПОДНЯТЬ кирпичную стену» и «установить дверь согласно СП 510.1325800.2022 п.7.2». В нижней части блока есть общее примечание: «Примечание: СП 510.1325800.2022 Тепловые пункты и системы внутреннего теплоснабжения п.7.2 Запрещается размещение ЦТП/ИТП в помещениях с деформационными швами.»",
+          "route": "graphic_description_not_authoritative_TEXT"
+        }
+      ],
+      "visible_fields": {
+        "problem": "Требуется проверить обозначение документа и адресность ссылки на пункт 7.2 в указании об установке двери.",
+        "description": "В строке 483 текстового описания изображения приведено: «УСТАНОВИТЬ ДВЕРЬ ПОГОНОННО ГОСТ 510.1325800.2022 п 7.2». В ведомости, строка 243, документ обозначен как «СП 510.1325800.2022». В строке 969 одновременно переданы указание «установить дверь согласно СП 510.1325800.2022 п.7.2» и примечание «Примечание: СП 510.1325800.2022 Тепловые пункты и системы внутреннего теплоснабжения п.7.2 Запрещается размещение ЦТП/ИТП в помещениях с деформационными швами.». Это основание проверить вид документа и соответствие пункта указанию о двери. Описания изображений не подтверждают точность чтения оригинальных надписей; содержание пункта 7.2 непосредственно не предоставлено.",
+        "solution": "Сверить надписи с оригиналами листов и текстом СП. При подтверждении ошибки заменить «ГОСТ» на правильное обозначение и указать пункт, относящийся к требованию об установке двери.",
+        "report_section": "questions"
+      }
+    },
+    {
+      "id": "F-003",
+      "assessment": "Authoritative TEXT contains both SP74.13330.2023 and SNiP3.05.03-85 with quoted title Rules for production and acceptance. Official SP74 card confirms title Thermal networks and replacement of SP74.13330.2011, but this bounded review did not obtain original SNiP or a complete version-applicability basis. Do not infer repeal or conflicting technical requirements merely from co-citation.",
+      "target": "not assigned in this bounded review",
+      "source_lines": [
+        {
+          "line": 264,
+          "quote": "Монтаж и пуск в эксплуатацию провести в соответствии со СП 74.13330.2023 \"Тепловые сети\", СНиП 3.05.03-85 \"Правила производства и приемки работ\", СНиП 12-03-2001 Часть 1. \"Безопасность труда в строительстве. Общие требования,\" СНиП 12-04-2002 Часть 2. \"Безопасность труда в строительстве. Строительное производство\". По окончании монтажных работ трубопроводы промываются водой и испытываются пробным давлением 12,5 кг/см. Длительность испытаний определяется временем, необходимым для осмотра трубопровода, но не менее 10 мин.",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "visible_fields": {
+        "problem": "В монтажных указаниях требуется сверить наименование СНиП 3.05.03-85 и согласовать его применение со СП 74.13330.2023.",
+        "description": "Строка 264: «Монтаж и пуск в эксплуатацию провести в соответствии со СП 74.13330.2023 \"Тепловые сети\", СНиП 3.05.03-85 \"Правила производства и приемки работ\", СНиП 12-03-2001 Часть 1. \"Безопасность труда в строительстве. Общие требования,\" СНиП 12-04-2002 Часть 2. \"Безопасность труда в строительстве. Строительное производство\". По окончании монтажных работ трубопроводы промываются водой и испытываются пробным давлением 12,5 кг/см. Длительность испытаний определяется временем, необходимым для осмотра трубопровода, но не менее 10 мин.». Для СНиП 3.05.03-85 приведено наименование «Правила производства и приемки работ», требующее сверки. Одновременно названы СНиП и актуализирующий его СП без разграничения применяемых требований. LOCAL VERIFIED NORM STATUS не содержит статусных подсказок; отмена документа и конкретный конфликт технических требований не установлены.",
+        "solution": "Сверить наименование СНиП 3.05.03-85 «Тепловые сети». Установить применимую нормативную редакцию с учётом даты и оснований разработки проекта; уточнить назначение каждой из двух ссылок либо устранить избыточную ссылку по результатам проверки.",
+        "report_section": "questions"
+      }
+    }
+  ],
+  "graphics": [
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+        "sha256": "054e48c413554acbe425a0a73a982a4f39c215d2b53aeb5877ccd77d8d686713"
+      },
+      "method": "Codex parent direct raster inspection",
+      "observation": "Lower-left red door note explicitly says SP510.1325800.2022p7.2; bottom note gives official full title and deformation-joint prohibition."
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cc80e7962a094791b984d8fb5391e886.png",
+        "sha256": "df5eab1b75e59001cf78cb3cded3596c55d5726badde250c456889c012e1a3b3"
+      },
+      "method": "Codex parent direct raster inspection",
+      "observation": "Door note also explicitly says SP, not GOST; bottom note same title and deformation-joint text. Inspected lower graphic region crop."
+    }
+  ],
+  "external_sources": [
+    {
+      "url": "https://protect.gost.ru/sp/details/e6b363b3-4682-45dc-9258-c165ca7943a3",
+      "accessed": "2026-11-12",
+      "support": "Official Russian title: Тепловые пункты и системы внутреннего теплоснабжения.",
+      "limit": "Card metadata, not full clause7.2 or project applicability."
+    },
+    {
+      "url": "https://protect.gost.ru/sp/details/f993f3a4-3988-459e-9a8f-e3de5db96e5d",
+      "accessed": "2026-11-12",
+      "support": "SP74 title Thermal networks; replaces SP74.13330.2011.",
+      "limit": "Does not alone establish original SNiP title, repeal or project-applicable requirements."
+    }
+  ],
+  "unresolved": [
+    "Official full clause7.2 and applicable edition not yet obtained; Ministry source fetch timed out.",
+    "F003 original SNiP title/version-applicability not independently settled."
+  ],
+  "failure_stage": {
+    "finding": "F-002",
+    "stage": "graphic reading and question release",
+    "evidence": "Graphic description misread SP as GOST; final question preserved uncertainty but delegated a visually resolvable check to engineer.",
+    "limit": "Final was a conditional question, not a categorical false defect."
+  },
+  "control_pair": {
+    "remove_part": "F-002 alleged GOST label; direct raster says SP.",
+    "preserve_part": "F-001 title mismatch in authoritative TEXT versus drawing and official card.",
+    "status": "source-verified pair, not newly engineer-adjudicated",
+    "rule": "Verify graphic-origin claims on image before release; do not broadly suppress normative-title questions."
+  },
+  "entire_output_reviewed": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0
+}
