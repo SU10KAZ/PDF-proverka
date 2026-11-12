@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "scope": "GVS mean-flow formula premise and bounded consequences",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "id": "F-035",
+      "assessment": "Literal t-prime30C after first stage and one-stage description are confirmed. Three GVS groups show parallel pairs, not two sequential stages. Clarification of formula applicability is supported; no numerical replacement or normative violation established.",
+      "target": "ITP_F010_GVS_formula:e2d706356b5cbdcedb39",
+      "quote_checks": [
+        {
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "quote": "Gгвс ср1. = (Qср.ч. × 1000)/(τ₁ - τ₃) × ((55 - t')/(55 - tc) + 0,2) = (0,202 × 1000)/(90 - 70) × ((55 - 30)/(55 - 5) + 0,2) = 7,07 м³ / ч;",
+          "line": 2043
+        },
+        {
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "quote": "t' - температура воды после первой ступени подогрева",
+          "line": 2063
+        },
+        {
+          "block_id": "blk_a5c04128f54f404e900b3ee4e3a854ba",
+          "quote": "Система ГВС присоединена по независимой одноступенчатой схеме через два пластинчатых теплообменника по 50% мощности каждый.",
+          "line": 2283
+        },
+        {
+          "block_id": "blk_dc124e4fb56849bbba6c4e2db3e948e3",
+          "quote": "ГВС – закрытое по 1 ступенчатой схеме.",
+          "line": 7184
+        },
+        {
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "quote": "Gсум = Gом1/max + Gом2/max + Gом3/max + Gом4/max + Gвент/max + ∑ Gгвс.макс\n\nGсум = 74,15 + 44,00 + 9,55 + 3,35 + 76,40 + 54,05 = 261,50 м³ ч;",
+          "line": 2069
+        },
+        {
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "quote": "Gгвс ср1. = (Qср.ч. × 1000)/(τ₁ - τ₃) × ((55 - t')/(55 - tc) + 0,2) = (0,105 × 1000)/(90 - 70) × ((55 - 30)/(55 - 5) + 0,2) = 3,67 м³ / ч;",
+          "line": 2047
+        },
+        {
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "quote": "Gгвс ср1. = (Qср.ч. × 1000)/(τ₁ - τ₃) × ((55 - t')/(55 - tc) + 0,2) = (0,039 × 1000)/(90 - 70) × ((55 - 30)/(55 - 5) + 0,2) = 1,36 м³ / ч;",
+          "line": 2051
+        },
+        {
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "quote": "тепловой ввод диаметр Ø325 × 7,0 мм, Δh = 3,54 кгс/м² м, v = 1,01 м/сек.",
+          "line": 2073
+        }
+      ],
+      "visible_fields": {
+        "problem": "Расчёт среднего сетевого расхода ГВС использует промежуточный подогрев до 30 °C, не согласованный с принятой одноступенчатой схемой.",
+        "description": "Первоначальное описание:\nНа листе 6 ПЗ в расчётах среднего сетевого расхода всех трёх зон ГВС подставлено t'=30 °C; параметр определён как температура воды после первой ступени подогрева. На листе 10 ПЗ для каждой зоны принята одноступенчатая схема с двумя теплообменниками по 50% мощности. Одноступенчатое присоединение также прямо установлено пунктом 5.8.1.4 ТЗ. На приложенной схеме три группы ГВС слева содержат пары параллельно подключённых теплообменников; отдельная последовательная ступень предварительного подогрева в этих группах не показана. Подтверждено несогласование расчётной предпосылки с принятой схемой. В опубликованной сумме расхода на вводе 261,50 м³/ч использован максимальный расход ГВС 54,05 м³/ч, а не рассчитанные средние расходы 7,07; 3,67 и 1,36 м³/ч. Поэтому данное несогласование само по себе не доказывает ошибочность выбранного ввода Ø325×7,0 мм.\n\nДополнительная проверка:\nВ расчёте среднего расхода ГВС использована температура после первой ступени 30 °C.\nВ пункте 7 листа 6 для всех трёх зон подставлено 30 °C вместо t'; непосредственно ниже t' определено как температура после первой ступени подогрева.\n\nПЗ и ТЗ задают одноступенчатую схему ГВС.\nЛист 10 ПЗ прямо задаёт одноступенчатую схему для каждой зоны, а пункт 5.8.1.4 ТЗ требует закрытое одноступенчатое присоединение ГВС. Просмотренная схема показывает параллельные пары аппаратов в трёх группах ГВС и не показывает отдельной последовательной ступени предварительного подогрева.\n\nВлияние среднего расхода на выбранный максимальный расход ввода не установлено.\nСохранено как ограничение вывода. На листе 5 рассчитан максимальный общий расход ГВС 54,05 м³/ч; на листе 6 именно он включён в сумму 261,50 м³/ч перед выбором ввода Ø325×7,0 мм. Средние расходы из пункта 7 в эту сумму не включены. Ошибка диаметра ввода и отсутствие любого косвенного влияния на другие расчёты этим не устанавливаются.",
+        "solution": "Уточнить назначение расчёта среднего сетевого расхода и основание применения t'=30 °C. Согласовать формулу с принятой одноступенчатой схемой и проверить использование её результатов в последующих расчётах.",
+        "report_section": "technical_findings"
+      }
+    }
+  ],
+  "graphics": [
+    {
+      "source": {
+        "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png",
+        "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2"
+      },
+      "method": "Codex parent direct raster inspection at original detail",
+      "observation": "Left three GVS groups each show two parallel heat exchangers on common connections. No additional sequential preheating exchanger shown within these groups. This drawing does not establish a universal ban on30C."
+    }
+  ],
+  "calculations": {
+    "literal_mean_flows_m3_h": [
+      "7.0700",
+      "3.6750",
+      "1.3650"
+    ],
+    "published_mean_flows_m3_h": [
+      "7.07",
+      "3.67",
+      "1.36"
+    ],
+    "inlet_uses_maximum_GVS_flow_m3_h": "54.05",
+    "inlet_total_m3_h": "261.50"
+  },
+  "section_assessment": {
+    "output": "technical_findings",
+    "frozen_target": "question",
+    "status": "section_disagreement",
+    "eligible_for_run_scoring": false,
+    "limit": "Frozen target explicitly ineligible for run scoring; do not silently add this row to the87-target denominator. Do not count arithmetic hundredths as independent defects."
+  },
+  "negative_control": "The inlet sum explicitly uses maximum54.05, not mean-flow sum. This premise discrepancy alone does not prove incorrect325x7 inlet or heat exchanger selection. Two parallel50-percent units are not two stages.",
+  "entire_output_reviewed": false,
+  "quality_score": null,
+  "runtime_changed": false,
+  "model_calls": 0
+}
