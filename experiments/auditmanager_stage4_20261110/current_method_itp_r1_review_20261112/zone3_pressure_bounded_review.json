@@ -85,7 +85,7 @@
         "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2"
       },
       "method": "Codex parent direct raster inspection during GVS formula review",
-      "observation": "Rightmost heating group shows K11 pump pair and K20 connected within that group; position45 on supply-side branch is labelled opening pressure20bar. No quantitative port pressure distribution calculated."
+      "observation": "Rightmost heating group shows K11 pump pair and K20. Enlarged position45 callout reads opening pressure16.0bar, NOT20bar. Specification separately states20bar. No quantitative port-pressure distribution calculated."
     }
   ],
   "calculations": {
@@ -104,5 +104,18 @@
   "entire_output_reviewed": false,
   "quality_score": null,
   "runtime_changed": false,
-  "model_calls": 0
+  "model_calls": 0,
+  "graphic_correction": {
+    "prior_review_sha256": "d8a4e5c84f9eb7218da60332a55bf71baa6879f4500079febf9b77dab66e75ec",
+    "error": "Prior full-scheme inspection incorrectly recorded graphic position45 as20bar.",
+    "corrected_reading": "16.0bar",
+    "method": "Direct parent inspection of unmodified source crop at original detail",
+    "crop_source_box": [
+      4292,
+      649,
+      4878,
+      974
+    ],
+    "impact": "F009 specification20bar versus pump16bar comparison remains supported, but a distinct scheme16/specification20 inconsistency must be evaluated separately."
+  }
 }
