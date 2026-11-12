@@ -1,0 +1,26 @@
+{
+  "finding_id": "F-049",
+  "status": "both_exhaust_pressure_polarities_preserved_consequence_conditional",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_049/publication_projection.json",
+  "projection_sha256": "f7750cc1f9c8111f450bb85d52cbff97ea4c47cadfffe622571cecbb8b5c70ec",
+  "source_review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_polarity_and_symbol_review_20261112.json",
+  "source_review_sha256": "98bc26641d8a59e57a1d42f9cf392cfc3452ae061559407d9131073831196fb2",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+      "block_id": "blk_1421872a752e4019a31247d056c0e9bc",
+      "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Обе ветви PDS4/Вн5.1 и PDS5/Вн5.1р сохранены: плюс справа на всасывании, минус слева на нагнетании, при указанном ΔP=100 Па.",
+    "Рекомендация согласовать документацию реле и схему остаётся частью того же конфликта.",
+    "Реальное монтажное подключение, контакты и алгоритм обработки не объявлены проверенными.",
+    "Отсутствие подтверждения работы вентиляторов сохранено только как условный риск, не доказанный отказ."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}
