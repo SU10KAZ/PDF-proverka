@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "scope": "Two missing source-bound questions and one false thesis not repeated",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_id": "ITP68_grooved_scope:98fe6084bffb8305b8ed",
+      "route": "question",
+      "coverage": "absent",
+      "reason": "TZ5.3.1.4requires threaded galvanized fittings fordiameter<=50within residential water-supply scope. Specification has33+137+214+435=819groovedcouplings labelled25/32/40/50. Final has no scope/mapping clarification.819is quantity of fourrows, not established violating joints; DN/OD, node applicability and agreed deviations remain unresolved.",
+      "quotes": [
+        {
+          "line": 1403,
+          "quote": "|  | Муфта гибкая для соединений грубллок Ø25 | Dinarm FC | FC033E* | ООО \"Огнеборец\" | шт. | 33 |  |  |"
+        },
+        {
+          "line": 1404,
+          "quote": "|  | Муфта гибкая для соединений грубллок Ø32 | Dinarm FC | FC042E* | ООО \"Огнеборец\" | шт. | 137 |  |  |"
+        },
+        {
+          "line": 1405,
+          "quote": "|  | Муфта гибкая для соединений грубллок Ø40 | Dinarm FC | FC048E* | ООО \"Огнеборец\" | шт. | 214 |  |  |"
+        },
+        {
+          "line": 1406,
+          "quote": "|  | Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E* | ООО \"Огнеборец\" | шт. | 435 |  |  |"
+        },
+        {
+          "line": 7029,
+          "quote": "| **5.3 Система водоснабжения.** |  |"
+        },
+        {
+          "line": 7030,
+          "quote": "| 5.3.1; Общие требования. Жилая часть. | 5.3.1.1 Внутреннюю систему водоснабжения разработать от водомерного узла. 5.3.1.2 Магистральные трубопроводы водоснабжения проложить открыто по подземному паркингу и в вертикальных |"
+        },
+        {
+          "line": 7041,
+          "quote": "|  | коммуникационных нишах межквартирных коридоров в помещениях для обслуживания коммуникаций. 5.3.1.3 Трубопроводы систем водоснабжения выполнить: *Принимается в соответствии с ПД.* *5.3.1.4 Соединение стальных оцинкованных труб предусмотреть на грувлочном соединении (при диаметре ≤ 50 мм на резьбовых оцинкованных фитингах).* 5.3.1.5 Разводку водопровода от водосчетчиков, установленных в коллекторном шкафу, до квартир выполнить трубами из сшитого полиэтилена с применением латунных фитингов в теплоизоляции, в пространстве подвесного потолка. 5.3.1.6 Если предусматривается более одного строения или корпуса, предусмотреть разделный учет систем водоснабжения для каждого строения или корпуса (водосчётчики на ХВС, теплосчётчики на ГВС). Раздельный учет предусмотреть на вводе в специально выделенные в/под каждым корпусом помещениях узлов учета. В помещениях узлов учета должно предусматриваться разделение систем на жилую часть, коммерческие помещения и дополнительные системы (при наличии) с устройством дополнительного учета водопотребления на каждого потребителя. 5.3.1.7 Водоснабжение квартир предусмотреть от этажных коллекторов через водосчетчики. 5.3.1.8 На стадии проектирования «ПД» представить расчеты, подтверждающие достаточность принятых мероприятий по звукоизоляции и виброизоляции. |"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP72_wall_and_velocity:42140cc8a623c96428fe",
+      "route": "question",
+      "coverage": "absent",
+      "reason": "Calculation prints57/76/89with3.0walls in namedDOOandzone3contexts; specification lists welded57/76/89with3.5walls. No final question retains this published-input reconciliation. F034is third-zone makeup velocity using76x3.0only, not wall mapping. Same physical sections are not established, so no mandatory replacement or equipment failure inferred.",
+      "quotes": [
+        {
+          "line": 1310,
+          "quote": "| \\<варианты> | Трубы стальные электросварные, Д=57х3,5 мм | ГОСТ 10704-91 |  |  | м | 85.6 |  |  |"
+        },
+        {
+          "line": 1311,
+          "quote": "|  | Трубы стальные электросварные, Д=76х3,5 мм | ГОСТ 10704-91 |  |  | м | 91.2 |  |  |"
+        },
+        {
+          "line": 1312,
+          "quote": "|  | Трубы стальные электросварные, Д=89х3,5 мм | ГОСТ 10704-91 |  |  | м | 52.4 |  |  |"
+        },
+        {
+          "line": 2185,
+          "quote": "###### Трубопровод отопления 3-зоны:"
+        },
+        {
+          "line": 2187,
+          "quote": "Греющая сторона, трубопровод отопления"
+        },
+        {
+          "line": 2191,
+          "quote": "Выбираем трубопровод: Ø76 × 3,0 мм. Δh=13,1 кгс/м² м, v=0,74 м/сек."
+        },
+        {
+          "line": 2193,
+          "quote": "Нагреваемая сторона, трубопровод отопления"
+        },
+        {
+          "line": 2197,
+          "quote": "Выбираем трубопровод: Ø89 × 3,0 мм, Δh=5,22 кгс/м² м, v=0,52 м/сек."
+        },
+        {
+          "line": 2199,
+          "quote": "###### Трубопровод отопления ДОО:"
+        },
+        {
+          "line": 2201,
+          "quote": "Греющая сторона, трубопровод отопления"
+        },
+        {
+          "line": 2213,
+          "quote": "Выбираем трубопровод: Ø57 × 3,0 мм. Δh=9,32 кгс/м² м, v=0,50 м/сек."
+        },
+        {
+          "line": 2215,
+          "quote": "Нагреваемая сторона, трубопровод отопления"
+        },
+        {
+          "line": 2219,
+          "quote": "Выбираем трубопровод: Ø57 × 3,0 мм, Δh=9,32 кгс/м² м, v=0,50 м/сек."
+        }
+      ]
+    },
+    {
+      "target_id": "B-ITP-F-051:6c86cc6a433d4ce0abd6",
+      "route": "negative",
+      "coverage": "absent",
+      "reason": "Specification position13and selection both call pump ventilation and identify2786102,G63.56,H15.27,N4.0. The false specification-versus-selection purpose contradiction is not repeated in final output. This does not prove a filter executed or establish all installation relations.",
+      "quotes": [
+        {
+          "line": 1074,
+          "quote": "| 13 | Насос циркуляции системы вентиляции G=63,56 м³/ч, H=15,27 м.бд.см, N=4,0 кВт | IL 65/120-4/2 | 2786102 | ООО «ВИЛО РУС» | шт | 2 | 70 | 1 рабочий, 1 резервный |"
+        },
+        {
+          "line": 2507,
+          "quote": "###### насосы вентиляции:"
+        },
+        {
+          "line": 2513,
+          "quote": "Выбраны насосы вентиляции: 2x **IL 65/120-4/2-R** (1раб, 1рез.) с характеристиками:"
+        },
+        {
+          "line": 2514,
+          "quote": "G=63,56 м³/ч, H=15,27 м.вд.см, N=4,0 кВт. Фирмы «ВИЛО» (арт. 2786102)."
+        }
+      ]
+    }
+  ],
+  "output_review": "Bounded review of all74findings; focused visible fields search for wall, threaded/grooved connection, clause5.3.1.4,K13and2786102; rereadF034andF029to distinguish unrelated velocity and placeholder questions.",
+  "filter_effectiveness_proven": false,
+  "cause_attribution": "Final-output observations only; upstream detection and suppression not established.",
+  "runtime_changed": false,
+  "model_calls": 0
+}

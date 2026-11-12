@@ -1046,12 +1046,17 @@
     },
     {
       "target_id": "B-ITP-F-051:6c86cc6a433d4ce0abd6",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/connection_wall_and_pump_scope_observations.json",
+          "sha256": "37f0c59bbe813443aa02904337329b730d9c7b983263dbb740d6544f4df35554"
+        }
+      ],
+      "reason": "Specification position13and selection both call pump ventilation and identify2786102,G63.56,H15.27,N4.0. The false specification-versus-selection purpose contradiction is not repeated in final output. This does not prove a filter executed or establish all installation relations.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "H-ITP-63:7ba4e763f9b6758d0f09",
@@ -1080,12 +1085,17 @@
     },
     {
       "target_id": "H-ITP-64:0a12321728e29d5b1832",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/document_reference_coverage_gaps.json",
+          "sha256": "a1af96db82d2fc99304139a1ce2f23bcae43c23a5b27da1b92912677a0991a1a"
+        }
+      ],
+      "reason": "TZ5.18.3.1requires work-code column; all15reviewedSOheaders have product-code instead, not work-code. Final has no corresponding question. Separate estimates and deliveredExcelare not inspected; no procurement consequence inferred.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
@@ -1234,21 +1244,31 @@
     },
     {
       "target_id": "ITP68_grooved_scope:98fe6084bffb8305b8ed",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/connection_wall_and_pump_scope_observations.json",
+          "sha256": "37f0c59bbe813443aa02904337329b730d9c7b983263dbb740d6544f4df35554"
+        }
+      ],
+      "reason": "TZ5.3.1.4requires threaded galvanized fittings fordiameter<=50within residential water-supply scope. Specification has33+137+214+435=819groovedcouplings labelled25/32/40/50. Final has no scope/mapping clarification.819is quantity of fourrows, not established violating joints; DN/OD, node applicability and agreed deviations remain unresolved.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP72_wall_and_velocity:42140cc8a623c96428fe",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/connection_wall_and_pump_scope_observations.json",
+          "sha256": "37f0c59bbe813443aa02904337329b730d9c7b983263dbb740d6544f4df35554"
+        }
+      ],
+      "reason": "Calculation prints57/76/89with3.0walls in namedDOOandzone3contexts; specification lists welded57/76/89with3.5walls. No final question retains this published-input reconciliation. F034is third-zone makeup velocity using76x3.0only, not wall mapping. Same physical sections are not established, so no mandatory replacement or equipment failure inferred.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP72_wall_and_velocity:5acf5de70b5d5444dfb8",
@@ -1462,12 +1482,17 @@
     },
     {
       "target_id": "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/document_reference_coverage_gaps.json",
+          "sha256": "a1af96db82d2fc99304139a1ce2f23bcae43c23a5b27da1b92912677a0991a1a"
+        }
+      ],
+      "reason": "PZnames operating rules without requisites; reference list identifies order115. No final question reconciles these references. Do not claim requisites are absent throughout project or that technical solutions are wrong.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F034_mixed_norm_references:5c96f17d8af25d1ba443",
@@ -1480,12 +1505,17 @@
     },
     {
       "target_id": "ITP_F034_mixed_norm_references:2bca6641f93ace5ac5a6",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/document_reference_coverage_gaps.json",
+          "sha256": "a1af96db82d2fc99304139a1ce2f23bcae43c23a5b27da1b92912677a0991a1a"
+        }
+      ],
+      "reason": "PZnames heat-metering rules without requisites; no final question preserves this local clarification. SeparateUUTEis not checked; global absence and mandatory repetition in every section are not established.",
+      "section_assessment": "not_applicable"
     },
     {
       "target_id": "ITP_F036_gauge_range_allocation:450cb0a7d585250b421e",
@@ -1503,12 +1533,26 @@
     },
     {
       "target_id": "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-001"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/document_reference_coverage_gaps.json",
+          "sha256": "a1af96db82d2fc99304139a1ce2f23bcae43c23a5b27da1b92912677a0991a1a"
+        }
+      ],
+      "reason": "F001retains reference-list title discrepancy as a question but omits identical title inPZ. Its description relies on a graphic description and says original unavailable; prior source review supplies actual raster/card evidence. Count partial content, not two defects or a technical violation.",
+      "section_assessment": "correct",
+      "section_details": {
+        "expected": "questions",
+        "actual": {
+          "F-001": "questions"
+        },
+        "limit": "Section agreement does not restore missingPZlocation or prove all original claims."
+      }
     },
     {
       "target_id": "ITP_heat_exchanger_labels:d9eb099d20a94bca22e2",

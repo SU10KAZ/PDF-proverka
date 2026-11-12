@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "scope": "Three absent document questions and one partially retained title question",
+  "sources": {
+    "final": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "c62717292968456532fd2222ad98413624c88797e7bbb1f6edc291ccd21af453"
+    },
+    "md": {
+      "path": "/tmp/auditmanager_current_method_trial_context_20261112/itp_r1_classic_current/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    "evaluator": {
+      "path": "experiments/auditmanager_stage4_20261110/evaluator_release_current_methods_20261112.json",
+      "sha256": "33f5821f7fd59a00df7b39da88ed1093c9aaac3ca110deb18299562ee27daa1e"
+    }
+  },
+  "cases": [
+    {
+      "target_id": "H-ITP-64:0a12321728e29d5b1832",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "TZ5.18.3.1requires work-code column; all15reviewedSOheaders have product-code instead, not work-code. Final has no corresponding question. Separate estimates and deliveredExcelare not inspected; no procurement consequence inferred.",
+      "quotes": [
+        {
+          "line": 7344,
+          "quote": "| **5.18.2 Перечень основных материалов и оборудования с нормами расхода 5.18.3 Спецификации в томах РД.** | 5.18.2.1 В спецификациях должен быть указан: - объем работ (без учета запаса на расход материалов); - объем основных материалов с учетом нормативного расхода. 5.18.2.2 Данные по величине запаса к расходу основных материалов и оборудования приведены в Приложении №8. ; 5.18.3.1. В спецификации РД должна быть включена колонка «Код работ» по РСР/локальной смете. 5.18.3.2. В спецификациях должен быть указан - объем работ (без учета запаса на расход материалов); - объем основных материалов с учетом нормативного расхода. Данные по величине запаса к расходу основных материалов и оборудования приведены в Приложении №9. Величина запаса по неосновным материалам указывается примерно. 5.18.3.3. Спецификации, включенные в тома РД, должны быть переданы в составе комплекта РД в т.ч. в формате Excel. |"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "PZnames operating rules without requisites; reference list identifies order115. No final question reconciles these references. Do not claim requisites are absent throughout project or that technical solutions are wrong.",
+      "quotes": [
+        {
+          "line": 244,
+          "quote": "|  | ПРИКАЗ от 24 марта 2003 г. № 115 | Правила технической эксплуатации тепловых энергоустановок |  |"
+        },
+        {
+          "line": 1893,
+          "quote": "3. «Правила эксплуатации теплопотребляющих установок и тепловых сетей»;"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:2bca6641f93ace5ac5a6",
+      "coverage": "absent",
+      "finding_ids": [],
+      "reason": "PZnames heat-metering rules without requisites; no final question preserves this local clarification. SeparateUUTEis not checked; global absence and mandatory repetition in every section are not established.",
+      "quotes": [
+        {
+          "line": 1895,
+          "quote": "4. «Правила учета тепловой энергии и теплоносителя»;"
+        }
+      ]
+    },
+    {
+      "target_id": "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-001"
+      ],
+      "reason": "F001retains reference-list title discrepancy as a question but omits identical title inPZ. Its description relies on a graphic description and says original unavailable; prior source review supplies actual raster/card evidence. Count partial content, not two defects or a technical violation.",
+      "quotes": [
+        {
+          "line": 243,
+          "quote": "|  | СП 510.1325800.2022 | Проектирование тепловых пунктов |  |"
+        },
+        {
+          "line": 1891,
+          "quote": "2. СП 510.1325800.2022 «Проектирование тепловых пунктов»;"
+        }
+      ]
+    }
+  ],
+  "specification_headers": [
+    {
+      "page": 24,
+      "line": 1059,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. изме-ре-ния | Кол-во | Масса 1 ед., кг. | Примечание |"
+    },
+    {
+      "page": 25,
+      "line": 1092,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1ед., кг. | Примечание |"
+    },
+    {
+      "page": 26,
+      "line": 1126,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. изме-ре-ния | Кол-во | Масса 1 ед., кг. | Примечание |"
+    },
+    {
+      "page": 27,
+      "line": 1174,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. изме-ре-ния | Кол-во | Масса 1ед., кг. | Примечание |"
+    },
+    {
+      "page": 28,
+      "line": 1231,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |"
+    },
+    {
+      "page": 29,
+      "line": 1290,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1ед., кг. | Примечание |"
+    },
+    {
+      "page": 30,
+      "line": 1357,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |"
+    },
+    {
+      "page": 31,
+      "line": 1427,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |"
+    },
+    {
+      "page": 32,
+      "line": 1497,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. изме-ре-ния | Кол-во | Масса 1ед., кг. | Примечание |"
+    },
+    {
+      "page": 33,
+      "line": 1562,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |"
+    },
+    {
+      "page": 34,
+      "line": 1618,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. изме-ре-ния | Кол-во | Масса 1 ед., кг. | Примечание |"
+    },
+    {
+      "page": 35,
+      "line": 1676,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |"
+    },
+    {
+      "page": 36,
+      "line": 1711,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |"
+    },
+    {
+      "page": 37,
+      "line": 1765,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |"
+    },
+    {
+      "page": 38,
+      "line": 1797,
+      "quote": "| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |"
+    }
+  ],
+  "related_review": {
+    "path": "experiments/auditmanager_stage4_20261110/current_method_itp_r1_review_20261112/normative_references_bounded_review.json",
+    "sha256": "0e880d0414621a5f2327e4d023419b4bab86e66d2b5dc332654c752f272bb76d"
+  },
+  "output_review": "Bounded review of all74findings plus direct review ofF001-F003and focused searches across problem/description/solution/risk. F003SP74/SNiPquestion is not a match for operating or metering rules.",
+  "cause_attribution": "Final coverage only; upstream execution/suppression cause not established.",
+  "runtime_changed": false,
+  "model_calls": 0
+}
