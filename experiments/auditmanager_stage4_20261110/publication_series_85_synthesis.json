@@ -1,0 +1,330 @@
+{
+  "status": "85_source_reviews_complete_improvement_not_yet_accepted",
+  "snapshot": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_review_snapshot.json",
+    "sha256": "b5ce934a857174e6c75976d36c6086af33756b1bfe93d66f1b0f3478dca64bf3"
+  },
+  "scope": "AK DEV reconciliation of current-run 85 findings, not six-project final comparison",
+  "reviewed_findings": 85,
+  "all_findings_passed": false,
+  "priority_findings": [
+    {
+      "priority": 1,
+      "topic": "Чтение графики и проверка геометрического смысла",
+      "observed": "Общий рисунок оставляет мелкие подписи непроверенными; даже читаемая графика не гарантирует правильного отождествления символов.",
+      "required_behavior": "При нехватке читаемости добирать полный связанный набор деталей. Для спорного символа сначала независимо прочитать изображение без тезиса замечания, затем сверить вывод с первоисточником.",
+      "cases": [
+        {
+          "finding_id": "F-019",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F019_assessment.json",
+          "assessment_sha256": "51d5e872f79bae6fe011f0227d3d46e8d170556a2ee913ad00ca83859a9d4e19",
+          "status": "supported_core_preserved_graphic_identifier_error_repeated"
+        },
+        {
+          "finding_id": "F-040",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F040_assessment.json",
+          "assessment_sha256": "6f109aa527c19828614abbabc5dcb2e1fd0a49db2d03a2d325b324ee84b4fd03",
+          "status": "false_electric_heater_symbol_interpretation_repeated"
+        },
+        {
+          "finding_id": "F-060",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F060_assessment.json",
+          "assessment_sha256": "60d9b6101065c6f8159220dc971c73f7abe45aa5981971c655b23747d4eeafc6",
+          "status": "unsupported_symbol_equivalence_repeated"
+        },
+        {
+          "finding_id": "F-082",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F082_assessment.json",
+          "assessment_sha256": "169e8526d6d79d057c0a163e39911fe5a887d482697974b9d50c1ded5f0bf6e7",
+          "status": "question_preserved_literal_repeat_unresolved_due_to_unsupplied_detail"
+        },
+        {
+          "finding_id": "F-083",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F083_assessment.json",
+          "assessment_sha256": "0ceff7ee1788722df2374b607d85cf971865bbd5c80dd1104f66944ad9d013c9",
+          "status": "scope_question_retained_literal_source_facts_not_recovered_from_whole_graphic"
+        }
+      ],
+      "bounded_results": [
+        "Детали восстановили факты F082/F083; F083 остался ошибочно техническим.",
+        "Отдельное чтение символа и ограниченная редакционная версия F040 прошли финальный контроль и Excel, но не доказывают автономность всей цепочки."
+      ]
+    },
+    {
+      "priority": 1,
+      "topic": "Факт, технический конфликт и вопрос",
+      "observed": "Публикация иногда повышает редакционный вопрос до технического дефекта или понижает доказанное расхождение; исходный раздел также может быть ошибочным.",
+      "required_behavior": "Проверять предмет претензии и общую область действия источников. Ни прежняя категория, ни буквальный повтор сами по себе не доказывают дефект. Сохранять доказанные расхождения независимо от неизвестного правильного решения.",
+      "cases": [
+        {
+          "finding_id": "F-010",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F010_assessment.json",
+          "assessment_sha256": "a509bde39a42c562ca85a8c30c018495a8b44f2c0c88f9437c89098942b88e81",
+          "status": "literal_facts_preserved_technical_promotion_not_accepted"
+        },
+        {
+          "finding_id": "F-023",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F023_assessment.json",
+          "assessment_sha256": "b063eb8913f066c2a5dce873e879ca20b812b833d069a60f792cd2359e47bd88",
+          "status": "question_promoted_without_established_same_circuit_conflict"
+        },
+        {
+          "finding_id": "F-030",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F030_assessment.json",
+          "assessment_sha256": "144b4cf5a3fabdbb2fa430eab3976049c3098469e3e0ee4e11105e8e534d3706",
+          "status": "graphic_identity_correct_editorial_question_promoted_to_technical"
+        },
+        {
+          "finding_id": "F-038",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F038_assessment.json",
+          "assessment_sha256": "f582ef78c0f96a32278e690bc0a82200f2b0b8cfad843525d0bed5b63d37fa54",
+          "status": "document_label_direction_conflict_demoted_without_profile_basis"
+        },
+        {
+          "finding_id": "F-069",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F069_assessment.json",
+          "assessment_sha256": "4d980ffc073cb5399bd11997f29c95368bff39c68dcdf03d6a8366c8f9de8aef",
+          "status": "literal_terminal_repeats_preserved_profile_unresolved_recommendation_split"
+        },
+        {
+          "finding_id": "F-083",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F083_assessment.json",
+          "assessment_sha256": "0ceff7ee1788722df2374b607d85cf971865bbd5c80dd1104f66944ad9d013c9",
+          "status": "scope_question_retained_literal_source_facts_not_recovered_from_whole_graphic"
+        },
+        {
+          "finding_id": "F-084",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F084_assessment.json",
+          "assessment_sha256": "296272b258dd49eccbbeabdaeb152fa304abbe6245e7fb438f9ea0270175676e",
+          "status": "confirmed_designation_discrepancy_kept_as_original_question_stale_references_removed"
+        },
+        {
+          "finding_id": "F-085",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F085_assessment.json",
+          "assessment_sha256": "84a7ebcc3adaaf45ada04ebd26117dee41f16ba870d90d1b9e14bae26d1b62c4",
+          "status": "cross_document_detector_address_conflict_preserved_with_literal_TEXT_and_mounting_limit"
+        }
+      ],
+      "bounded_results": [
+        "F085 подтверждает, что различённые позиции плюс адреса КЖ дают полезный документальный конфликт.",
+        "Три одинаковых по контексту контроля F082/F083/F085 с существующим editorial-кандидатом выполняются отдельно."
+      ]
+    },
+    {
+      "priority": 2,
+      "topic": "Рекомендации и условные последствия",
+      "observed": "Составные части одного замечания становятся несколькими вопросами или уходят в pending без ясного места в финальном тексте.",
+      "required_behavior": "Сохранять рекомендацию и условный риск при исходном вопросе или конфликте. Отдельный вопрос требует самостоятельного проектного решения.",
+      "cases": [
+        {
+          "finding_id": "F-004",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F004_assessment.json",
+          "assessment_sha256": "3337a073ec38cc6b1c901879845128260f80d030290a6d9d961e4aca1ddb54d9",
+          "status": "three_motor_identity_conflicts_preserved_recommendation_question_needs_consolidation"
+        },
+        {
+          "finding_id": "F-005",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F005_assessment.json",
+          "assessment_sha256": "1c4d02482f25dea8f638171a221e4653f51e4d4fc5441eaab8b4dc94304e5261",
+          "status": "source_supported_core_preserved_question_fragmentation_not_accepted"
+        },
+        {
+          "finding_id": "F-012",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F012_assessment.json",
+          "assessment_sha256": "d592dc9dc84499354f2f3910619a890c210bea0288e0a0c7cad03811072be1f4",
+          "status": "document_configuration_conflict_preserved_recommendation_question_needs_consolidation"
+        },
+        {
+          "finding_id": "F-035",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F035_assessment.json",
+          "assessment_sha256": "06a7ec4b8846e9cd2f0451ace3d9b6f4e770303ad5e0299635f3046c1373409d",
+          "status": "shielding_conflict_preserved_recommendation_question_requires_consolidation"
+        },
+        {
+          "finding_id": "F-043",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F043_assessment.json",
+          "assessment_sha256": "130a3bd3c41de6777d97e244cef4b56c1b7ef3a59317753c0a4c40dcdd7d4c6e",
+          "status": "polarity_conflict_preserved_recommendation_split_requires_consolidation"
+        },
+        {
+          "finding_id": "F-055",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F055_assessment.json",
+          "assessment_sha256": "37da2b423786c0553d6b8eeac6c545b34f927c17c2d3dfd578a69a4027e4fa10",
+          "status": "polarity_conflict_preserved_recommendation_split"
+        },
+        {
+          "finding_id": "F-056",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F056_assessment.json",
+          "assessment_sha256": "3d560d624b0c5f4122275652380ddce9e2c1aa35ac4da1daa89c1d9bd7ea0889",
+          "status": "range_conflict_preserved_recommendation_split"
+        },
+        {
+          "finding_id": "F-057",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F057_assessment.json",
+          "assessment_sha256": "363238727d979550290f115232c93c04ec4ddf20c6b03af5ac19e7fcf37d2327",
+          "status": "signal_direction_question_preserved_recommendation_split"
+        },
+        {
+          "finding_id": "F-061",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F061_assessment.json",
+          "assessment_sha256": "d628dcc1a208f40fa70e488438980195170a9cd154e93b8f0ad0fc9db0b40f20",
+          "status": "range_conflict_preserved_conditional_risk_promoted_to_question"
+        },
+        {
+          "finding_id": "F-066",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F066_assessment.json",
+          "assessment_sha256": "625e6d0ef5bda63bab33ff64ae36915bb111eae9b0cee13e27a7bb8029bfd862",
+          "status": "five_line_cable_sum_preserved_dependent_risk_split_as_question"
+        },
+        {
+          "finding_id": "F-067",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F067_assessment.json",
+          "assessment_sha256": "e1c85c96cc7aa2222fd925bda39f255ca3bc51a5eded42db10674cda5bf1c891",
+          "status": "screened_cable_sum_preserved_recommendation_pending"
+        },
+        {
+          "finding_id": "F-076",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F076_assessment.json",
+          "assessment_sha256": "ef0ede3abcbb3c5e6b43c3050a7019b5a0fc48ce52ff0634d3ba928785ccd744",
+          "status": "graphic_omission_preserved_but_recommendation_and_risk_fragmented"
+        },
+        {
+          "finding_id": "F-077",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F077_assessment.json",
+          "assessment_sha256": "ddd666dbc594aaf87256979cda29ecb94534ed905fadb2224de8befc9b8ad572",
+          "status": "scope_question_preserved_with_duplicate_recommendation"
+        }
+      ],
+      "bounded_results": [
+        "Пять DEV-контролей существующего кандидата прошли ограниченную сверку; это не доказательство снижения общей нагрузки инженера."
+      ]
+    },
+    {
+      "priority": 2,
+      "topic": "Контекст, метаданные и происхождение",
+      "observed": "Недостающие заголовки и привязки листов создают неопределённость; ошибку текста аудитора модель иногда адресует инженеру.",
+      "required_behavior": "Добрать исходный заголовок, объектную связь и метаданные версии до выпуска. Исправления внутреннего текста хранить в истории, не превращая в замечания к проекту.",
+      "cases": [
+        {
+          "finding_id": "F-003",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_F003_context1_assessment.json",
+          "assessment_sha256": "46ba78fea33746130378dc1e525d7eb6cf5b1328285f6c0b5694c543bb58e1c1",
+          "status": "three_system_document_conflicts_restored_after_requested_context"
+        },
+        {
+          "finding_id": "F-008",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_F008_context1_assessment.json",
+          "assessment_sha256": "9dfe151db0774177b0cd57b842086e458dc0a1c153b33fa20cb86e73f0a5b512",
+          "status": "three_quantity_conflicts_source_supported_after_table_heading_retrieval"
+        },
+        {
+          "finding_id": "F-017",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F017_assessment.json",
+          "assessment_sha256": "2278a01802f6545f223ebb55171900d0ce962cd2abf0c62a0feaa67e828cd795",
+          "status": "supported_conflict_preserved"
+        },
+        {
+          "finding_id": "F-018",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F018_assessment.json",
+          "assessment_sha256": "1ae10bf44d483cade6d07f7cdd8dfc7c5bfeba214b3678f7e3b227c65cfe1ee4",
+          "status": "supported_specification_omission_cross_finding_context_pending"
+        },
+        {
+          "finding_id": "F-062",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F062_assessment.json",
+          "assessment_sha256": "3a38b8f2f565715d34d401dd96314d242f0d41a7cbfd455c647825133532b4bb",
+          "status": "polarity_core_preserved_audit_typo_exported_as_question"
+        },
+        {
+          "finding_id": "F-079",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F079_assessment.json",
+          "assessment_sha256": "f488fd6ac734065ad8c66bd1adedbaf43dce82ae91d0c467fc3d37ca8ef0bd84",
+          "status": "node_A_conflict_preserved_node_B_not_generalized_metadata_gap_resolved_locally"
+        },
+        {
+          "finding_id": "F-081",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F081_assessment.json",
+          "assessment_sha256": "c795df0acf8e184209cd65640ed4482e9679bea62d150bb00d66c0e025f6f862",
+          "status": "node_A_conflict_preserved_fire_rating_unproven_sheet_binding_checked"
+        },
+        {
+          "finding_id": "F-084",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F084_assessment.json",
+          "assessment_sha256": "296272b258dd49eccbbeabdaeb152fa304abbe6245e7fb438f9ea0270175676e",
+          "status": "confirmed_designation_discrepancy_kept_as_original_question_stale_references_removed"
+        }
+      ],
+      "bounded_results": [
+        "Контекстные уточнения F003/F008 включены в покрытие 85; это не 85 одинаковых одношаговых успешных ответов.",
+        "F062/F053 контролируют различие ошибки аудитора и реального расхождения проектных источников."
+      ]
+    },
+    {
+      "priority": 2,
+      "topic": "Сохранение независимых оснований при объединении",
+      "observed": "Повторы мест нужно объединять, но разные основания одного объекта нельзя терять.",
+      "required_behavior": "При группировке сохранить адреса, самостоятельные тезисы и ограничения; не считать количество частей количеством дефектов.",
+      "cases": [
+        {
+          "finding_id": "F-003",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_F003_context1_assessment.json",
+          "assessment_sha256": "46ba78fea33746130378dc1e525d7eb6cf5b1328285f6c0b5694c543bb58e1c1",
+          "status": "three_system_document_conflicts_restored_after_requested_context"
+        },
+        {
+          "finding_id": "F-009",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F009_assessment.json",
+          "assessment_sha256": "0782b9afe8d1d5abb15c65f9e13e228199c0ada5189c21b67dc86dc31b8ff545",
+          "status": "source_supported_counts_preserved_cross_finding_overlap_pending"
+        },
+        {
+          "finding_id": "F-071",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F071_assessment.json",
+          "assessment_sha256": "4a10bbc350f8577242a054ff5f8a2b85738478c7447467b76a2922830342996d",
+          "status": "two_distinct_motor_positions_preserved_complementary_peer_basis"
+        },
+        {
+          "finding_id": "F-078",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F078_assessment.json",
+          "assessment_sha256": "36c272246fdc10e22dcd9840b658deff6035dad79ae25f0465463248f643cd79",
+          "status": "project_passage_instruction_conflict_preserved_without_fire_rating_claim"
+        },
+        {
+          "finding_id": "F-079",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F079_assessment.json",
+          "assessment_sha256": "f488fd6ac734065ad8c66bd1adedbaf43dce82ae91d0c467fc3d37ca8ef0bd84",
+          "status": "node_A_conflict_preserved_node_B_not_generalized_metadata_gap_resolved_locally"
+        },
+        {
+          "finding_id": "F-081",
+          "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F081_assessment.json",
+          "assessment_sha256": "c795df0acf8e184209cd65640ed4482e9679bea62d150bb00d66c0e025f6f862",
+          "status": "node_A_conflict_preserved_fire_rating_unproven_sheet_binding_checked"
+        }
+      ],
+      "bounded_results": [
+        "F003/F071 имеют взаимодополняющие основания; объединение не должно удалить одно из них.",
+        "Три узла проходки требуют сохранения всех листов без повторного начисления полезности."
+      ]
+    }
+  ],
+  "preserve": [
+    "Количественные и адресные расхождения, подтверждённые сопоставимыми исходными данными.",
+    "Полезные вопросы о комплектности, применимости и идентификации с явными границами знания.",
+    "Условные последствия без подмены документального расхождения доказанным дефектом поставки или монтажа.",
+    "Исходные тезисы и историю решений при исправлении текущей формулировки."
+  ],
+  "next_gates": [
+    "Завершить три запущенных контроля классификации на прежнем кандидате.",
+    "Связать согласованные части с финальными полями, источниками и контролем допуска; проекция модели ещё не итоговый отчёт.",
+    "Свести H01–H07 по исходным требованиям этапа 4, затем выполнить этапы моделей/затрат, сохранения, замороженного сравнения и релиза."
+  ],
+  "limits": [
+    "Это не 85 независимых дефектов и не 85 положительных оценок инженера.",
+    "Координаторская сверка не заменяет инженерное решение.",
+    "Исчезновение строки и успешный ответ модели не означают улучшение.",
+    "Известные проекты остаются DEV/регрессией; переносимость и полное сравнение не доказаны."
+  ],
+  "stage4_complete": false,
+  "production_acceptance": false
+}
