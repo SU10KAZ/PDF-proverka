@@ -62,10 +62,72 @@
         "Эталонные ЭОМ-контроли H01 необходимо включить в общий аудит отдельно; этот ряд не подменяет их проверку."
       ],
       "complete": false
+    },
+    {
+      "hypothesis": "H02",
+      "status": "bounded_context_mechanism_and_controls_evidenced_exhaustive_retrieval_not_claimed",
+      "code": [
+        {
+          "path": "backend/app/pipeline/stages/prepare/recovery_context.py",
+          "sha256": "841c10967cf078349cad8814f329afa47a6b5bb986fed3ddb6ad67325440d440",
+          "symbol": "search_md_context / build_context_followup"
+        },
+        {
+          "path": "backend/app/pipeline/stages/prepare/object_operation_followup.py",
+          "sha256": "cb56cfd86e4c493bb803bcd2261a06dcf720ae2e08646ad8fbfda95173fc21a3",
+          "symbol": "verify_operation_source_binding / build_object_operation_followup"
+        },
+        {
+          "path": "backend/app/pipeline/stages/findings_verify/source_review_context.py",
+          "sha256": "a97af5a65b3fcec5bfeb7ac3b6c3a52c90d06a99c31021ef6d4eaa9f4623102f",
+          "symbol": "expand_source_review_context"
+        }
+      ],
+      "observed_mechanisms": [
+        "Поиск возвращает найденные блоки, backlog, отложенные запросы и literal query counts; absence_proven остаётся False.",
+        "Следующий запрос собирается из явных needs_data/context_queries кандидата и его subclaims; источники связаны хешем MD.",
+        "Верификация контекста ограничивает количество ревизий и общий объём TEXT; предыдущие источники и история поиска сохраняются.",
+        "IMAGE summary используется для навигации, но не переносится в авторитетный TEXT. Переход к графике требует отдельного приложения изображения."
+      ],
+      "tests_inspected": [
+        {
+          "path": "tests/test_recovery_context.py",
+          "sha256": "4d8bcfb3dc839e72839aa4dcdd59978eb1433428b50ff28af823d04733a5cc63"
+        },
+        {
+          "path": "tests/test_source_review_context.py",
+          "sha256": "baf5ef1ff0a3c145495a349db99bdf5bbb3cc007c20d181368cfc9a6a8db1d7d"
+        }
+      ],
+      "test_scope": "Inspected assertions cover limits/backlog, source hash changes, no absence from zero hits, linked graph attachment and retained parent with pending child. No new test run claimed.",
+      "live_evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AR_deferred_summary.json",
+          "sha256": "c522ee90b92f5081544f7cd8fe73bf007f02f372ef93cde9730be17848907011"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AR_question_output_replay.json",
+          "sha256": "50903d365382302a2b23640b71d7bfc52600029045dadc5e580c905ba5e32722"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/KM_node_navigation_summary.json",
+          "sha256": "140c5bc9626725128a06506893db410c6c315d0025d311729bb3bf6c5b42b597"
+        }
+      ],
+      "control_interpretation": [
+        "АР добор обращается к плану верхней кровли; получен вопрос о размещении третьего АК-1 без категорического требования убрать его. Ограниченный Excel replay сохраняет 22 исходных строки.",
+        "КМ после предоставления узлов сохраняет needs_data: применимость стадии П к Р и совпадение границ детали не доказаны. Это корректный предел, не опровержение кандидата."
+      ],
+      "limits": [
+        "Сохранённые модельные сообщения не доказывают фактический просмотр каждого источника.",
+        "Ноль совпадений и достигнутый бюджет не доказывают отсутствия документа.",
+        "Полная инженерная полезность AR вопроса и весь путь до выпуска не подтверждены этим набором.",
+        "H02 не считается требованием автоматически разрешить каждую неопределённость."
+      ],
+      "complete": false
     }
   ],
   "not_yet_audited": [
-    "H02",
     "H03",
     "H04",
     "H05",

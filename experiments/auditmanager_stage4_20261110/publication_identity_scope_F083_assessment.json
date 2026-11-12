@@ -1,0 +1,24 @@
+{
+  "finding_id": "F-083",
+  "status": "scope_candidate_removes_unproved_collision_preserves_literal_repetition_and_question",
+  "projection_path": "/tmp/auditmanager_publication_identity_scope_20261112_run/evaluations/publication_identity_083/publication_projection.json",
+  "projection_sha256": "b23593893d4d1c3e348db71b8cebef4e75ef61feed38253a04e2b0a17b139bd1",
+  "previous_candidate_assessment": {
+    "path": "experiments/auditmanager_stage4_20261110/publication_identity_controls_F083_assessment.json",
+    "sha256": "d09664540c3f9c2bf15bea8c2fe14dea3132964f28706ed05b313cb376f11bf5"
+  },
+  "instruction_sha256": "a65ce5e68f8cd7130b29ccac2e324bdbc7feb0d6601aac69288c3acebd1e917b",
+  "checks": [
+    "Сохранены все три отдельные пары, помещения и собственные БУРР, подтверждённые просмотром tile8/tile9.",
+    "Явно сохранена неизвестная область уникальности; комната рассматривается как возможная часть полного идентификатора. Повтор марки не объявлен техническим конфликтом.",
+    "Вопрос и рекомендация сохранены, переименование и последствия условны; нет полной потери полезного предмета проверки.",
+    "Один вопрос содержит неопределённость прямо в тексте: отсутствие pending-строки не означает снятия этого ограничения.",
+    "Старые служебные ссылки исключены из пользовательского текста."
+  ],
+  "limits": [
+    "Успешный отрицательный DEV-контроль, а не универсальная точность классификации.",
+    "Сохранение F085/F071 и финальная допустимость вопроса требуют отдельных проверок."
+  ],
+  "engineer_decision": null,
+  "production_acceptance": false
+}
