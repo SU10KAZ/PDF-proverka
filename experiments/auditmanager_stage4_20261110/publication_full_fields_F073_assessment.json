@@ -1,0 +1,23 @@
+{
+  "finding_id": "F-073",
+  "status": "heater_motor_symbol_editorial_question_preserved",
+  "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_073/publication_projection.json",
+  "projection_sha256": "0f4e530db76640124c0c242c1f05e9708a9b270c9f39f84abf6cac44624a8822",
+  "graphics": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_a2c817786b3a459fb5fa2667d9492450.png",
+      "sha256": "292eaec8678f1e4bbf28d2348b8661424e121d4b0e7182c425db37d9682e835a",
+      "directly_viewed": true,
+      "detail": "original"
+    }
+  ],
+  "checks": [
+    "Непосредственно прочитаны заголовок электронагревателя Пу5.1, круг М и U/V/W/PE в его колонке. Соседние двигатели имеют круг М.",
+    "Замечание оставлено вопросом оформления; неправильное электрическое подключение или конкретная нормативная замена символа не заявлены.",
+    "Рекомендация и возможная неоднозначность сохранены в одной записи без самостоятельного риска-вопроса.",
+    "Нельзя превращать частное изображение в универсальный запрет U/V/W или обозначения М. Документация оборудования и принятые условные обозначения остаются границей проверки."
+  ],
+  "review_authority": "coordinator_not_engineer_acceptance",
+  "engineer_decision": null,
+  "production_acceptance": false
+}

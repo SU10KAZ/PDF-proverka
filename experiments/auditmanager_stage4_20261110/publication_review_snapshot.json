@@ -1,9 +1,8 @@
 {
   "status": "partial_review_inventory_not_acceptance",
   "planned_findings": 85,
-  "reviewed_distinct_findings": 72,
+  "reviewed_distinct_findings": 73,
   "unreviewed_finding_ids": [
-    "F-073",
     "F-074",
     "F-075",
     "F-076",
@@ -17,7 +16,7 @@
     "F-084",
     "F-085"
   ],
-  "batch_successful_responses": 71,
+  "batch_successful_responses": 72,
   "batch_status_snapshot": "running",
   "process_liveness_not_inferred_from_status_file": true,
   "selected_followups": [
@@ -1244,6 +1243,23 @@
         "technical_findings": 1,
         "questions": 0,
         "pending": 1,
+        "withdrawn": 0,
+        "history_only": 1
+      },
+      "engineer_accepted": false,
+      "production_accepted": false
+    },
+    {
+      "finding_id": "F-073",
+      "assessment_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/publication_full_fields_F073_assessment.json",
+      "assessment_sha256": "64abf6b2ec0ea09ff81f1b4d8ae7c0e75a6ef421098311f5bf6ee3eca555a09e",
+      "status": "heater_motor_symbol_editorial_question_preserved",
+      "projection_path": "/tmp/auditmanager_publication_remaining84_20261112_run/evaluations/publication_reconciliation_073/publication_projection.json",
+      "projection_sha256": "0f4e530db76640124c0c242c1f05e9708a9b270c9f39f84abf6cac44624a8822",
+      "part_counts_not_finding_counts": {
+        "technical_findings": 0,
+        "questions": 1,
+        "pending": 0,
         "withdrawn": 0,
         "history_only": 1
       },
