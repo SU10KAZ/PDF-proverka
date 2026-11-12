@@ -8,7 +8,8 @@
   "summary": {
     "missing_or_partial_positive_atoms": 22,
     "bounded_stage_evidence_available": 22,
-    "cause_not_established": 0
+    "without_bounded_stage_evidence": 0,
+    "exclusive_causes_proven": false
   },
   "rows": [
     {
@@ -368,6 +369,7 @@
     "22 atomic controls are not22 independent defects.",
     "A bounded trace does not prove sole causation or that a proposed change improves results.",
     "Earlier ledger reason snapshots may say cause not established; linked later traces add bounded evidence without changing frozen coverage scores.",
-    "No new stage gates passed; runtime, evaluator, live audit inputs and production unchanged."
+    "No new stage gates passed; runtime, evaluator, live audit inputs and production unchanged.",
+    "Все22 имеют ограниченные наблюдения по этапам. Это не означает22 полностью установленные причины; отсутствие причинного доказательства не заменено счётчиком наличия трасс."
   ]
 }

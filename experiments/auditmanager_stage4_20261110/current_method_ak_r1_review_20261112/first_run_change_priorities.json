@@ -1,0 +1,167 @@
+{
+  "status": "hypotheses_from_first_sealed_run_not_adoption",
+  "run": "ak_r1_classic_current",
+  "scope": "Six themes consolidate22 incomplete atomic controls; not six proven improvements.",
+  "priorities": [
+    {
+      "priority": "P1",
+      "theme": "Addressed context completeness",
+      "proposed_behavior": "Извлекать целую запись целевого объекта и нужный лист; явно сохранять причины непереданного контекста. Совпадение строки поиска с соседней системой не закрывает запрос.",
+      "expected_benefit": "Восстановить адресные сравнения, потерянные при обрезании или выборе другого листа.",
+      "regression_risk": "Рост контекста, времени и ложных связей при широком поиске.",
+      "comparison_check": "Сравнить полные атомы П4.1.1, Пкр4.1 и AK100 между вариантами; сохранить буквальные обозначения и границы объектов.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_served_rooms.json",
+          "sha256": "a27d1a6f2905a74abd8fa0e3fcde95fb2c23bf8c1607ea810bb48d9827ce67a2"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_initial.json",
+          "sha256": "0a774ed6d1315d263f0b11b31134b3a8c854cca777f0e9c122d76056c991d2f6"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_additional.json",
+          "sha256": "885a0cee0d298bc9ea1da758aadef5c8a1ea1d0a1c4cdc8061994ed53c0e55e2"
+        }
+      ],
+      "acceptance": "unproven_pending_comparison",
+      "implementation_decision": "Do not change frozen active series; compare existing variants first."
+    },
+    {
+      "priority": "P1",
+      "theme": "Atomic requirement and subclaim preservation",
+      "proposed_behavior": "Отдельно учитывать каждое требование и части вывода: условие, действие, длительность и последствия. Неподтверждённое последствие не должно поглощать доказанную предпосылку.",
+      "expected_benefit": "Сохранить исходное требование питания и логический состав защиты.",
+      "regression_risk": "Размножение замечаний и повтор одного тезиса под разными формулировками.",
+      "comparison_check": "Проверить восстановление узкого тезиса без утверждений о физическом отказе; считать уникальные темы и объём выдачи.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_conditioner_power.json",
+          "sha256": "ad6a12245fefc13ca50a5b87412e74d0cac8e53edb7fc134a1cc407ecc089f90"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_boolean_condition.json",
+          "sha256": "eca07e6bd288c04f4a5fd17e42f87c66cb8ca8274d02cdbe755502aa89f7917a"
+        }
+      ],
+      "acceptance": "unproven_pending_comparison",
+      "implementation_decision": "Do not change frozen active series; compare existing variants first."
+    },
+    {
+      "priority": "P1",
+      "theme": "Addressed question publication",
+      "proposed_behavior": "После выполненного поиска принимать явное решение о публикации адресного вопроса, отдельно от установления технического дефекта; включать уже проверенные факты и конкретный недостающий документ.",
+      "expected_benefit": "Вернуть полезные вопросы по учёту кабелей, границам поставки, площади и комплектам питания.",
+      "regression_risk": "Автоматическая публикация любого needs_data перегрузит инженера.",
+      "comparison_check": "Сохранить технически правильные снятия; сравнить полезность и число вопросов, не считать их техническими нарушениями.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_curtain_cables.json",
+          "sha256": "83682d66414831c2963190024e56433910030237230466a68083dbcb64b729e3"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_additional.json",
+          "sha256": "885a0cee0d298bc9ea1da758aadef5c8a1ea1d0a1c4cdc8061994ed53c0e55e2"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_partial.json",
+          "sha256": "ba3552c84cdb5a513bee2c2fc83c9f5be9bd6adf16bb5774bbb77c4613395284"
+        }
+      ],
+      "acceptance": "unproven_pending_comparison",
+      "implementation_decision": "Do not change frozen active series; compare existing variants first."
+    },
+    {
+      "priority": "P1",
+      "theme": "Per-object operation coverage",
+      "proposed_behavior": "Фиксировать охват каждого шкафа/участка и каждой операции; общий checked не распространять на необследованные элементы. Балансы линий, локальных ведомостей и общей спецификации проверять раздельно.",
+      "expected_benefit": "Обнаружить пропущенные линии и локальные несогласованности, сохранить известные находки.",
+      "regression_risk": "Рост числа запросов и повторных проверок уже охваченных объектов.",
+      "comparison_check": "Сопоставить все адреса AK14, AK100 и локальный165/155; не объявлять недостачу или замыкание без доказательств.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_drive_operation_scope.json",
+          "sha256": "93a4c8c4f398de07d8d52caed427545057589e8d6ca528d427bc4ced1e71938e"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_local_cable_balance.json",
+          "sha256": "8917b03e18dbd5e36cd3e054959baf72f1cadf3066cdf35e0689eaa99c696546"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_terminal_scope.json",
+          "sha256": "4f72e7ea5edd4ffe5703f2952d81a2c5e62a4bcafb078dc4b4a7cdb1e9642a51"
+        }
+      ],
+      "acceptance": "unproven_pending_comparison",
+      "implementation_decision": "Do not change frozen active series; compare existing variants first."
+    },
+    {
+      "priority": "P2",
+      "theme": "Observation-to-output traceability",
+      "proposed_behavior": "Для обнаруженного расхождения фиксировать решение о выпуске или удержании; необходимые суммы рассчитывать с привязанными строками и отдельно от закупочных последствий.",
+      "expected_benefit": "Не терять замеченные марки и расчётную часть находок.",
+      "regression_risk": "Усиление выводов о закупке и вывод технического дефекта из неэквивалентных наборов.",
+      "comparison_check": "Проверить третью марку и суммы165/210 с сохранением оговорок; сопоставить стоимость завершённых операций и очередь незавершённых.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_third_cable_brand.json",
+          "sha256": "89ec0cb1daad6d6ac812d7854d383eb6e82f5a117900c068449f6608ffe559ae"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_repeated_row_arithmetic.json",
+          "sha256": "3cd056ab1f79f786546944a35be2196721dcf5c0aeedfa9a02e35149be696cae"
+        }
+      ],
+      "acceptance": "unproven_pending_comparison",
+      "implementation_decision": "Do not change frozen active series; compare existing variants first."
+    },
+    {
+      "priority": "P2",
+      "theme": "Editorial scope and output restraint",
+      "proposed_behavior": "Сверять название/легенду с адресным содержимым, малозначимые подтверждённые вопросы отделять; общие технологические проверки без объекта сначала оставлять задачами поиска контекста.",
+      "expected_benefit": "Сохранить полезные уточнения без повышения их до технических нарушений.",
+      "regression_risk": "Рост формальных замечаний, отвлечение от значимых дефектов.",
+      "comparison_check": "Измерять отдельный поток уточнений и нагрузку; отсутствие адресного дефекта не трактовать как техническую ложность.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_sheet_title.json",
+          "sha256": "58d328f553fc72525f1185d5726b738358c7cdbacb973edf8ddd5e8c9c927707"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/failure_stage_trace_pressure_legend.json",
+          "sha256": "d4d66adae23c00be621773d072dd1016bcf83fb58b992895a418fec4fe6de838"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch9.json",
+          "sha256": "14bcf3927f085962fc69eba567f1beea05665430d64542200dbbaa597c46913f"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/current_method_ak_r1_review_20261112/additional_findings_review_batch10.json",
+          "sha256": "44109692dee775492955790ffd286cda401f18d04702324b81d44f0da150d530"
+        }
+      ],
+      "acceptance": "unproven_pending_comparison",
+      "implementation_decision": "Do not change frozen active series; compare existing variants first."
+    }
+  ],
+  "preserve": [
+    "Узкие подтверждённые конфликты, найденные классическим методом.",
+    "Обоснованное снятие недоказанных последствий и различение отсутствия данных/дефекта.",
+    "Буквальный TEXT, адресность объектов и раздельные вопросы."
+  ],
+  "defer_or_do_not_transfer": [
+    "Автоматическая публикация всех needs_data.",
+    "Общий фильтр повторных клемм без доказанной отрицательной пары.",
+    "Автоматическая правка уставок, марки кабеля или закупочного объёма по одному расхождению.",
+    "Признание пустого результата доказательством правильности проекта."
+  ],
+  "acceptance_limits": [
+    "Первый прогон не доказывает улучшение любого варианта.",
+    "Сохранить frozen evaluator и все54 плановых прогона; внешние данные оценщика не передавать исполнителям.",
+    "Новые инженерные оценки полезности и фактическое время проверки отсутствуют.",
+    "Дополнительные пилоты отложены до завершения активной серии.",
+    "Денежную стоимость подписки не выводить из нулевых полей cost_usd."
+  ],
+  "runtime_changed": false,
+  "production_changed": false
+}
