@@ -1,0 +1,13 @@
+{
+  "preparation_path": "/tmp/auditmanager_publication_heater_reading_20261112/preparation.json",
+  "preparation_sha256": "db99b67e1eeca06b03e96230e812d022bfdbba6f1b63ed0f497e47ef365e5c94",
+  "output_dir": "/tmp/auditmanager_publication_heater_reading_20261112_run",
+  "pid": 1098967,
+  "exec_session_id": 1492,
+  "model": "codex/gpt-6-astra",
+  "case": "F-040",
+  "purpose": "Test whether untrusted source-only graphic reading corrects publication without supplying coordinator or engineer verdict.",
+  "original_claims_and_sources_unchanged": true,
+  "additional_untrusted_model_observations": true,
+  "production_acceptance": false
+}
