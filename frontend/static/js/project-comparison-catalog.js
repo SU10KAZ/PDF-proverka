@@ -45,7 +45,14 @@
                         && e.documents?.old?.pdf_path === row.left.pdf_path
                         && e.documents?.new?.pdf_path === row.right.pdf_path)));
             const title = row.left?.document_code || row.left?.filename || row.right?.document_code || row.right?.filename;
-            const rowTitle = title + (row.group && row.members?.length ? ' · сборка из ' + row.members.length : '');
+            const leftCount = row.group ? row.leftMembers?.length || 0 : 0;
+            const rightCount = row.group ? row.members?.length || 0 : 0;
+            // Склеенную левую сторону называет документ справа (или якорь строки при N ↔ M).
+            const rowTitle = leftCount && rightCount
+                ? row.group.anchor?.document_code + ' · сборки ' + leftCount + ' ↔ ' + rightCount
+                : leftCount
+                    ? (row.right?.document_code || row.right?.filename) + ' · сборка слева из ' + leftCount
+                    : title + (rightCount ? ' · сборка из ' + rightCount : '');
             // Multiple completed runs describe one configured pair, not extra
             // rows. Prefer its current run, then the current/primary result.
             const runId = row.comparisonRun?.state?.run_id;

@@ -13,11 +13,13 @@ function harness() {
         source.indexOf('        function scRemoveGroupMember(')), ctx);
     return ctx;
 }
-const row = () => ({group: {group_id: 'g1', status: 'READY'}, members: ['A', 'B', 'C'].map(document_code => ({document_code}))});
+const codes = list => list.map(document_code => ({document_code}));
+const row = () => ({group: {group_id: 'g1', left: {assembled: true, status: 'READY'}, right: {assembled: true, status: 'READY'}},
+    leftMembers: codes(['L1', 'L2']), members: codes(['A', 'B', 'C'])});
 const plain = value => JSON.parse(JSON.stringify(value));
 test('arrows persist the full member order without mutating the displayed row', async () => {
     const h = harness(), r = row();
-    assert.deepEqual(plain(await h.scMoveGroupMember(r, 'C', 0)), {url: '/g1/order', body: {member_codes: ['C', 'A', 'B']}});
+    assert.deepEqual(plain(await h.scMoveGroupMember(r, 'C', 0)), {url: '/g1/order', body: {side: 'right', member_codes: ['C', 'A', 'B']}});
     assert.deepEqual(r.members.map(m => m.document_code), ['A', 'B', 'C']);
     assert.equal(h.scMoveGroupMember(r, 'A', -1), undefined);
 });
@@ -37,6 +39,21 @@ test('viewers, read-only sources and building groups cannot reorder', () => {
     h.pcReadOnlySources.value = true;
     assert.equal(h.scMoveGroupMember(r, 'A', 1), undefined);
     h.pcReadOnlySources.value = false;
-    r.group.status = 'RUNNING';
+    r.group.right.status = 'RUNNING';
     assert.equal(h.scMoveGroupMember(r, 'A', 1), undefined);
+    // Сборка справа идёт — порядок слева менять можно.
+    assert.notEqual(h.scMoveGroupMember(r, 'L2', 0, 'left'), undefined);
+});
+test('left members are reordered on their own side and never mix with the right ones', async () => {
+    const h = harness(), r = row();
+    assert.deepEqual(plain(await h.scMoveGroupMember(r, 'L2', 0, 'left')),
+        {url: '/g1/order', body: {side: 'left', member_codes: ['L2', 'L1']}});
+    const event = {dataTransfer: {setData() {}}, preventDefault() {}};
+    h.scStartGroupMemberDrag(event, r, r.leftMembers[0], 'left');
+    assert.equal(h.scDropGroupMember(r, r.members[2], 'right'), undefined);
+    h.scStartGroupMemberDrag(event, r, r.leftMembers[0], 'left');
+    assert.deepEqual(plain(await h.scDropGroupMember(r, r.leftMembers[1], 'left')).body, {side: 'left', member_codes: ['L2', 'L1']});
+    // Несклеенная сторона не переупорядочивается.
+    r.group.left.assembled = false;
+    assert.equal(h.scMoveGroupMember(r, 'L2', 0, 'left'), undefined);
 });

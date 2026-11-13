@@ -24,7 +24,7 @@ function harness() {
     ctx.scRemoveConfirmedPairsForPaths = paths => { ctx.unconfirmed = paths; };
     ctx.scOpenStageFolderDialog = () => { ctx.scStageFolderDialogOpen.value = true; };
     vm.runInContext(functions('        function scPackDocumentRows(', '        function scCompactDocumentOrder('), ctx);
-    vm.runInContext(functions('        function scStandaloneUploadKey(', '        // Перетащили правый документ на «+» строки'), ctx);
+    vm.runInContext(functions('        function scStandaloneUploadKey(', '        // Перетащили документ на «+» строки'), ctx);
     return ctx;
 }
 const plain = value => JSON.parse(JSON.stringify(value));
@@ -77,14 +77,15 @@ test('the modified board template compiles', () => {
 test('two groups sharing a left source render separately without duplicating saved document order', () => {
     const h = harness();
     h.computed = fn => ({get value() { return fn(); }});
-    h.scDocumentsLeft = {value: [{pdf_path: 'L1', document_code: 'IOS'}, {pdf_path: 'L2', document_code: 'OTHER'}]};
+    h.scBoardDocumentsLeft = {value: [{pdf_path: 'L1', document_code: 'IOS'}, {pdf_path: 'L2', document_code: 'OTHER'}]};
     h.scBoardDocumentsRight.value = [];
     h.scDocumentOrder = {left: ['L1', 'L2'], right: [null, null]};
-    const first = {group_id: 'g1', left_document_code: 'IOS'};
-    const second = {group_id: 'g2', left_document_code: 'IOS', independent: true};
+    const sides = {left: {assembled: false}, right: {assembled: true}};
+    const first = {group_id: 'g1', anchor: {side: 'left', document_code: 'IOS'}, ...sides};
+    const second = {group_id: 'g2', anchor: {side: 'left', document_code: 'IOS'}, independent: true, ...sides};
     h.scDocumentGroups = {value: [first, second]};
-    h.scGroupsByLeftCode = {value: new Map([['IOS', first]])};
-    h.scGroupAssemblyDocument = group => ({pdf_path: group.group_id + '.pdf'});
+    h.scGroupsByAnchor = {value: new Map([['left:IOS', first]])};
+    h.scGroupSideDocument = (group, side) => side === 'left' ? {pdf_path: 'L1', document_code: 'IOS'} : {pdf_path: group.group_id + '.pdf'};
     h.scGroupMembers = () => [];
     h.scPairs = {value: []};
     h.scSession = {value: {comparison_runs: []}};
@@ -93,4 +94,24 @@ test('two groups sharing a left source render separately without duplicating sav
     assert.deepEqual(plain(rows.map(row => [row.left.pdf_path, row.group?.group_id || null, row.index])),
         [['L1', 'g1', 0], ['L1', 'g2', 2], ['L2', null, 1]]);
     assert.deepEqual(plain(h.scDocumentOrder.left), ['L1', 'L2']);
+});
+
+test('a right anchor holds the row of a left group and ignores the stale left slot', () => {
+    const h = harness();
+    h.computed = fn => ({get value() { return fn(); }});
+    h.scBoardDocumentsLeft = {value: [{pdf_path: 'L9', document_code: 'FREE'}]};
+    h.scBoardDocumentsRight.value = [{pdf_path: 'R1', document_code: 'RD'}];
+    h.scDocumentOrder = {left: ['L9'], right: ['R1']};
+    const group = {group_id: 'g1', anchor: {side: 'right', document_code: 'RD'},
+        left: {assembled: true}, right: {assembled: false}};
+    h.scDocumentGroups = {value: [group]};
+    h.scGroupsByAnchor = {value: new Map([['right:RD', group]])};
+    h.scGroupSideDocument = (_group, side) => side === 'left' ? {pdf_path: 'ASM'} : {pdf_path: 'R1', document_code: 'RD'};
+    h.scGroupMembers = (_group, side) => side === 'left' ? [{document_code: 'P1'}, {document_code: 'P2'}] : [];
+    h.scPairs = {value: []};
+    h.scSession = {value: {comparison_runs: []}};
+    vm.runInContext(functions('        const scPairRows = computed(', '        // Веер'), h);
+    const [row] = vm.runInContext('scVisiblePairRows.value', h);
+    assert.deepEqual(plain([row.left.pdf_path, row.right.pdf_path, row.leftMembers.length, row.members.length]),
+        ['ASM', 'R1', 2, 0]);
 });

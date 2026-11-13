@@ -13219,7 +13219,8 @@ const app = createApp({
         const scPairingSaveError = ref('');
         const scPairingSaveMessage = ref('');
         const scPairRowStates = reactive({});
-        // Группы «один документ слева → несколько справа» (правые склеиваются в сборку).
+        // Группы документов строки: несколько документов слева и/или справа
+        // склеиваются в сборку своей стороны (document_groups.py).
         const scDocumentGroups = ref([]);
         const scDocumentGroupsError = ref('');
         const scDocumentGroupsBusy = ref(false);
@@ -14113,85 +14114,113 @@ const app = createApp({
             scSession.value && scSession.value.document_pairing
             && !scPairingDirty.value && !scPairingSaving.value
         ));
-        const scGroupsByLeftCode = computed(() =>
-            new Map(scDocumentGroups.value.filter(group => !group.independent)
-                .map(group => [group.left_document_code, group]))
+        const SC_SIDES = ['left', 'right'];
+        const SC_OTHER_SIDE = {left: 'right', right: 'left'};
+        // Строка группы привязана к раскладке своим якорем: ключ `${side}:${code}`.
+        const scGroupsByAnchor = computed(() =>
+            new Map(scDocumentGroups.value.filter(group => !group.independent && group.anchor?.document_code)
+                .map(group => [group.anchor.side + ':' + group.anchor.document_code, group]))
         );
+        // Сборка нескольких проектов (у исторических сборок состава нет — тоже она).
+        function scIsMultiAssembly(document) {
+            return Boolean(document && document.assembly_ref && (!Array.isArray(document.assembly_members)
+                || document.assembly_members.length > 1));
+        }
         function scIsGroupedComparison(pair) {
-            const right = pair && pair.right;
-            return Boolean(right && right.assembly_ref && (!Array.isArray(right.assembly_members)
-                || right.assembly_members.length > 1));
+            return Boolean(pair && (scIsMultiAssembly(pair.left) || scIsMultiAssembly(pair.right)));
         }
         const scGroupedComparison = computed(() => scIsGroupedComparison(scActivePair.value));
-        // Участники групп и сборки групп в раскладке не стоят: их место в строке
-        // занимает сама группа (то же правило — document_groups.hidden_right_documents).
-        const scHiddenRightPaths = computed(() => {
+        // Участники групп (кроме якорей строк) и сборки групп в раскладке не стоят:
+        // их место в строке занимает сама группа (то же правило — document_groups.hidden_documents).
+        function scHiddenGroupPaths(side, documents) {
+            const anchors = new Set();
             const memberCodes = new Set();
             const assemblyIds = new Set();
             scDocumentGroups.value.forEach(group => {
-                (group.members || []).forEach(member => memberCodes.add(member.document_code));
-                if (group.assembly_id) assemblyIds.add(group.assembly_id);
+                if (group.anchor?.side === side) anchors.add(group.anchor.document_code);
+                const view = group[side] || {};
+                (view.members || []).forEach(member => memberCodes.add(member.document_code));
+                if (view.assembly_id) assemblyIds.add(view.assembly_id);
             });
+            anchors.forEach(code => memberCodes.delete(code));
             const hidden = new Set();
-            scDocumentsRight.value.forEach(item => {
+            documents.forEach(item => {
                 const ref = item.assembly_ref;
                 if (ref ? assemblyIds.has(ref.assembly_id) : memberCodes.has(item.document_code)) {
                     hidden.add(item.pdf_path);
                 }
             });
             return hidden;
-        });
+        }
+        const scHiddenLeftPaths = computed(() => scHiddenGroupPaths('left', scDocumentsLeft.value));
+        const scHiddenRightPaths = computed(() => scHiddenGroupPaths('right', scDocumentsRight.value));
+        const scBoardDocumentsLeft = computed(() =>
+            scDocumentsLeft.value.filter(item => !scHiddenLeftPaths.value.has(item.pdf_path))
+        );
         const scBoardDocumentsRight = computed(() =>
             scDocumentsRight.value.filter(item => !scHiddenRightPaths.value.has(item.pdf_path))
         );
         const SC_GROUP_BUILDING = ['QUEUED', 'PREPARING', 'RUNNING'];
 
-        function scGroupAssemblyDocument(group) {
-            if (!group || group.status !== 'READY' || group.stale
-                    || group.attached_version_id !== group.assembly_version_id) return null;
-            return scDocumentsRight.value.find(item =>
-                item.assembly_ref && item.assembly_ref.assembly_id === group.assembly_id
-                && item.assembly_ref.version_id === group.assembly_version_id
+        function scSideDocuments(side) {
+            return side === 'left' ? scDocumentsLeft.value : scDocumentsRight.value;
+        }
+
+        function scGroupAssemblyDocument(group, side = 'right') {
+            const view = group && group[side];
+            if (!view || !view.assembled || view.status !== 'READY' || view.stale
+                    || view.attached_version_id !== view.assembly_version_id) return null;
+            return scSideDocuments(side).find(item =>
+                item.assembly_ref && item.assembly_ref.assembly_id === view.assembly_id
+                && item.assembly_ref.version_id === view.assembly_version_id
             ) || null;
         }
 
-        function scGroupMembers(group) {
-            return (group.members || []).map(member => ({
+        function scGroupMembers(group, side = 'right') {
+            return ((group && group[side] && group[side].members) || []).map(member => ({
                 ...member,
-                document: scDocumentsRight.value.find(item =>
+                document: scSideDocuments(side).find(item =>
                     !item.assembly_ref && item.document_code === member.document_code) || null,
             }));
         }
 
+        // Документ стороны строки группы: сборка, если сторона склеена, иначе её единственный проект.
+        function scGroupSideDocument(group, side) {
+            if (group[side]?.assembled) return scGroupAssemblyDocument(group, side);
+            return scGroupMembers(group, side)[0]?.document || null;
+        }
+
         const scPairRows = computed(() => {
             const documents = {
-                left: new Map(scDocumentsLeft.value.map(item => [item.pdf_path, item])),
+                left: new Map(scBoardDocumentsLeft.value.map(item => [item.pdf_path, item])),
                 right: new Map(scBoardDocumentsRight.value.map(item => [item.pdf_path, item])),
+            };
+            const pairFor = (left, right) => left && right
+                ? scPairs.value.find(item =>
+                    (item.left || {}).pdf_path === left.pdf_path
+                    && (item.right || {}).pdf_path === right.pdf_path
+                ) || null
+                : null;
+            // Строка группы показывает стороны группы, а не то, что лежит в слотах раскладки.
+            const groupRow = (index, group, extra = {}) => {
+                const left = scGroupSideDocument(group, 'left');
+                const right = scGroupSideDocument(group, 'right');
+                return {index, left, right, pair: pairFor(left, right), group,
+                    leftMembers: group.left?.assembled ? scGroupMembers(group, 'left') : [],
+                    members: group.right?.assembled ? scGroupMembers(group, 'right') : [], ...extra};
             };
             const length = Math.max(scDocumentOrder.left.length, scDocumentOrder.right.length);
             const rows = Array.from({length}, (_, index) => {
                 const left = documents.left.get(scDocumentOrder.left[index]) || null;
-                const group = left ? scGroupsByLeftCode.value.get(left.document_code) || null : null;
-                const right = group
-                    ? scGroupAssemblyDocument(group)
-                    : documents.right.get(scDocumentOrder.right[index]) || null;
-                const members = group ? scGroupMembers(group) : [];
-                const pair = left && right
-                    ? scPairs.value.find(item =>
-                        (item.left || {}).pdf_path === left.pdf_path
-                        && (item.right || {}).pdf_path === right.pdf_path
-                    ) || null
-                    : null;
-                return {index, left, right, pair, group, members};
+                const right = documents.right.get(scDocumentOrder.right[index]) || null;
+                const group = (left && scGroupsByAnchor.value.get('left:' + left.document_code))
+                    || (right && scGroupsByAnchor.value.get('right:' + right.document_code)) || null;
+                if (group) return groupRow(index, group);
+                return {index, left, right, pair: pairFor(left, right), group: null, leftMembers: [], members: []};
             });
             for (const group of scDocumentGroups.value.filter(item => item.independent)) {
-                const left = scDocumentsLeft.value.find(item => item.document_code === group.left_document_code);
-                if (!left) continue;
-                const right = scGroupAssemblyDocument(group);
-                const pair = left && right ? scPairs.value.find(item =>
-                    item.left?.pdf_path === left.pdf_path && item.right?.pdf_path === right.pdf_path) || null : null;
-                rows.push({index: rows.length, left, right, pair, group,
-                    members: scGroupMembers(group), secondary: true});
+                const row = groupRow(rows.length, group, {secondary: true});
+                if (row.left) rows.push(row);
             }
             const runs = scSession.value?.comparison_runs || [];
             return rows.map(row => ({...row, comparisonRun: runs.find(run =>
@@ -14201,35 +14230,101 @@ const app = createApp({
             .flatMap(row => [row, ...scPairRows.value.filter(item => item.secondary
                 && item.left.pdf_path === row.left?.pdf_path)]));
 
-        // Веер соединяет только документы; кнопка добавления стоит в управлении парой.
+        // Веер соединяет только документы; кнопки добавления стоят в управлении парой.
+        // Элементы стороны: участники склеенной стороны или один документ.
+        function scFanCounts(row) {
+            if (!row) return {left: 0, right: 0};
+            return {
+                left: (row.leftMembers && row.leftMembers.length) || (row.left ? 1 : 0),
+                right: (row.members && row.members.length) || (row.right ? 1 : 0),
+            };
+        }
+
+        // Высота веера в элементах самой длинной стороны; 0 — соединять нечего.
         function scFanItems(row) {
-            if (!row || !row.left) return 0;
-            return row.group ? row.members.length : (row.right ? 1 : 0);
+            const counts = scFanCounts(row);
+            return counts.left && counts.right ? Math.max(counts.left, counts.right) : 0;
         }
 
-        function scFanShowsPlus(row) {
-            if (!row || !row.left || pcReadOnlySources.value) return false;
-            // Без сборок несколько правых документов на один левый не соединить.
-            return projectAssembliesEnabled ? Boolean(row.left.document_code) : !row.right;
+        // Пунктиры от середин элементов слева к серединам элементов справа (единицы
+        // viewBox, ширина 40, 20 на элемент). Если на одной стороне один элемент —
+        // обычный веер; если склеены обе стороны — линии сходятся к середине.
+        function scFanPaths(row) {
+            const counts = scFanCounts(row);
+            const height = scFanItems(row) * 20;
+            if (!height) return [];
+            const y = (side, index) => (index + 0.5) * height / counts[side];
+            const curve = (x0, y0, x1, y1) => {
+                const dx = (x1 - x0) * 0.55;
+                return `M${x0} ${y0} C ${x0 + dx} ${y0}, ${x1 - dx} ${y1}, ${x1} ${y1}`;
+            };
+            if (counts.left === 1 || counts.right === 1) {
+                return Array.from({length: Math.max(counts.left, counts.right)}, (_, index) => curve(
+                    0, y('left', counts.left === 1 ? 0 : index), 40, y('right', counts.right === 1 ? 0 : index)));
+            }
+            const middle = height / 2;
+            return [
+                ...Array.from({length: counts.left}, (_, index) => curve(0, y('left', index), 20, middle)),
+                ...Array.from({length: counts.right}, (_, index) => curve(20, middle, 40, y('right', index))),
+            ];
         }
 
-        // Пунктир от середины левого документа к середине i-го элемента веера.
-        // Координаты в единицах viewBox; элементы веера равной высоты.
-        function scFanPath(count, index) {
-            const from = count * 10;
-            const to = index * 20 + 10;
-            return `M0 ${from} C 22 ${from}, 18 ${to}, 40 ${to}`;
+        // Коды проектов стороны строки (для группы — все участники стороны).
+        function scRowSideCodes(row, side) {
+            if (!row) return [];
+            if (row.group) return ((row.group[side] && row.group[side].members) || []).map(member => member.document_code);
+            const document = row[side];
+            return document && document.document_code && !document.assembly_ref ? [document.document_code] : [];
         }
 
+        function scFanShowsPlus(row, side = 'right') {
+            if (!row || pcReadOnlySources.value) return false;
+            // Отдельное сравнение («Копировать сравнение») дополняется только справа.
+            if (side === 'left' && row.secondary) return false;
+            const other = SC_OTHER_SIDE[side];
+            // Без сборок несколько документов на одной стороне строки не соединить.
+            return projectAssembliesEnabled ? scRowSideCodes(row, other).length > 0 : Boolean(row[other] && !row[side]);
+        }
+
+        function scGroupSideStatus(view) {
+            if (!view || !view.assembled) return null;
+            if (SC_GROUP_BUILDING.includes(view.status)) return {tone: 'running', label: 'Собирается сборка', rank: 2};
+            if (view.status === 'READY' && view.stale) return {tone: 'error', label: 'Нужна пересборка', rank: 1};
+            if (view.status === 'READY' && view.attached_version_id !== view.assembly_version_id) {
+                return {tone: 'running', label: 'Прикрепляем сборку', rank: 3};
+            }
+            if (view.status === 'READY') return null;
+            return {tone: 'error', label: 'Сборка не удалась', rank: 0};
+        }
+
+        // Самое важное состояние сборок строки; сторона названа, если склеена левая.
         function scGroupStatus(group) {
             if (!group) return null;
-            if (SC_GROUP_BUILDING.includes(group.status)) return {tone: 'running', label: 'Собирается сборка…'};
-            if (group.status === 'READY' && group.stale) return {tone: 'error', label: 'Нужна пересборка'};
-            if (group.status === 'READY' && group.attached_version_id !== group.assembly_version_id) {
-                return {tone: 'running', label: 'Прикрепляем сборку…'};
-            }
-            if (group.status === 'READY') return null;
-            return {tone: 'error', label: 'Сборка не удалась'};
+            const both = Boolean(group.left?.assembled && group.right?.assembled);
+            const found = SC_SIDES.map(side => {
+                const status = scGroupSideStatus(group[side]);
+                if (!status) return null;
+                const where = side === 'left' ? ' слева' : (both ? ' справа' : '');
+                return {...status, label: status.label + where + (status.tone === 'running' ? '…' : '')};
+            }).filter(Boolean).sort((a, b) => a.rank - b.rank);
+            return found.length ? {tone: found[0].tone, label: found[0].label} : null;
+        }
+
+        function scGroupNeedsRebuild(group) {
+            return Boolean(group) && SC_SIDES.some(side => {
+                const view = group[side];
+                return view?.assembled && (view.stale || !['READY', ...SC_GROUP_BUILDING].includes(view.status));
+            });
+        }
+
+        function scGroupNote(group) {
+            if (!group || group.status !== 'READY' || group.stale) return '';
+            const both = Boolean(group.left?.assembled && group.right?.assembled);
+            return SC_SIDES.filter(side => group[side]?.assembled).map(side => {
+                const view = group[side];
+                const title = side === 'left' ? 'Слева сборка' : (both ? 'Справа сборка' : 'Сборка');
+                return `${title} из ${view.members.length} проектов` + (view.page_count ? ` · ${view.page_count} листов` : '');
+            }).join(' · ');
         }
         const scSuggestions = computed(() =>
             (scMatchState.value && scMatchState.value.suggestions
@@ -14735,7 +14830,7 @@ const app = createApp({
                 try { saved = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (_) { saved = {}; }
             }
             const packed = scPackDocumentRows(
-                scReconcileDocumentOrder(saved.left, scDocumentsLeft.value),
+                scReconcileDocumentOrder(saved.left, scBoardDocumentsLeft.value),
                 scReconcileDocumentOrder(saved.right, scBoardDocumentsRight.value),
             );
             scDocumentOrder.left = packed.left;
@@ -14798,23 +14893,31 @@ const app = createApp({
             };
         }
 
-        // Строка группы держит справа саму группу, поэтому свободному документу
-        // в ней не место: уводим его в отдельную строку внизу.
+        // Строка группы держит напротив якоря саму группу, поэтому свободному
+        // документу в ней не место: уводим его в отдельную строку внизу.
         function scReleaseGroupRowSlots() {
             let changed = false;
-            const right = [...scDocumentOrder.right];
-            const left = [...scDocumentOrder.left];
-            const leftDocs = new Map(scDocumentsLeft.value.map(item => [item.pdf_path, item]));
-            left.forEach((path, index) => {
-                const document = path && leftDocs.get(path);
-                if (!document || !scGroupsByLeftCode.value.has(document.document_code) || !right[index]) return;
-                left.push(null);
-                right.push(right[index]);
-                right[index] = null;
-                changed = true;
-            });
+            const order = {left: [...scDocumentOrder.left], right: [...scDocumentOrder.right]};
+            const documents = {
+                left: new Map(scDocumentsLeft.value.map(item => [item.pdf_path, item])),
+                right: new Map(scDocumentsRight.value.map(item => [item.pdf_path, item])),
+            };
+            const length = Math.max(order.left.length, order.right.length);
+            for (let index = 0; index < length; index += 1) {
+                for (const side of SC_SIDES) {
+                    const other = SC_OTHER_SIDE[side];
+                    const document = order[side][index] && documents[side].get(order[side][index]);
+                    if (!document || !scGroupsByAnchor.value.has(side + ':' + document.document_code)
+                            || !order[other][index]) continue;
+                    while (order[side].length < order[other].length) order[side].push(null);
+                    order[side].push(null);
+                    order[other].push(order[other][index]);
+                    order[other][index] = null;
+                    changed = true;
+                }
+            }
             if (!changed) return false;
-            const packed = scPackDocumentRows(left, right);
+            const packed = scPackDocumentRows(order.left, order.right);
             scDocumentOrder.left = packed.left;
             scDocumentOrder.right = packed.right;
             return true;
@@ -14824,7 +14927,7 @@ const app = createApp({
         function scSyncBoardOrder() {
             const before = JSON.stringify([scDocumentOrder.left, scDocumentOrder.right]);
             const packed = scPackDocumentRows(
-                [...scDocumentOrder.left],
+                scReconcileDocumentOrder(scDocumentOrder.left, scBoardDocumentsLeft.value),
                 scReconcileDocumentOrder(scDocumentOrder.right, scBoardDocumentsRight.value),
             );
             scDocumentOrder.left = packed.left;
@@ -14836,42 +14939,52 @@ const app = createApp({
             }
         }
 
-        // Поставить правый документ напротив левого (обмен с тем, кто там стоял).
-        function scPlaceRightDocument(leftPdf, rightPdf) {
-            const target = scDocumentOrder.left.indexOf(leftPdf);
-            if (target < 0 || !rightPdf) return false;
-            const right = [...scDocumentOrder.right];
-            while (right.length < scDocumentOrder.left.length) right.push(null);
-            const source = right.indexOf(rightPdf);
+        // Поставить документ стороны side напротив документа другой стороны
+        // (обмен с тем, кто там стоял).
+        function scPlaceDocument(side, otherPdf, pdf) {
+            const other = SC_OTHER_SIDE[side];
+            const target = scDocumentOrder[other].indexOf(otherPdf);
+            if (target < 0 || !pdf) return false;
+            const values = [...scDocumentOrder[side]];
+            const others = [...scDocumentOrder[other]];
+            while (values.length < others.length) values.push(null);
+            const source = values.indexOf(pdf);
             if (source === target) return false;
             if (source >= 0) {
-                [right[source], right[target]] = [right[target], right[source]];
+                [values[source], values[target]] = [values[target], values[source]];
             } else {
-                if (right[target]) { scDocumentOrder.left.push(null); right.push(right[target]); }
-                right[target] = rightPdf;
+                if (values[target]) { others.push(null); values.push(values[target]); }
+                values[target] = pdf;
             }
-            scRemoveConfirmedPairsForPaths([leftPdf, rightPdf]);
-            const packed = scPackDocumentRows([...scDocumentOrder.left], right);
+            scRemoveConfirmedPairsForPaths([otherPdf, pdf]);
+            const packed = side === 'left' ? scPackDocumentRows(values, others) : scPackDocumentRows(others, values);
             scDocumentOrder.left = packed.left;
             scDocumentOrder.right = packed.right;
             scPersistDocumentOrder();
             return true;
         }
 
+        function scPlaceRightDocument(leftPdf, rightPdf) {
+            return scPlaceDocument('right', leftPdf, rightPdf);
+        }
+
         function scLeftDocumentByCode(code) {
             return scDocumentsLeft.value.find(item => item.document_code === code) || null;
         }
 
-        function scRightDocumentByCode(code) {
-            return scBoardDocumentsRight.value.find(item => !item.assembly_ref && item.document_code === code) || null;
+        function scBoardDocumentByCode(side, code) {
+            const documents = side === 'left' ? scBoardDocumentsLeft.value : scBoardDocumentsRight.value;
+            return documents.find(item => !item.assembly_ref && item.document_code === code) || null;
         }
 
-        // Группа распалась до одного документа — он встаёт обычной парой к своему левому.
+        // Группа распалась до пары — второй документ встаёт напротив якоря строки.
         function scApplyReleasedPairs(released) {
             (released || []).forEach(item => {
-                const left = scLeftDocumentByCode(item.left_document_code);
-                const right = scRightDocumentByCode(item.document_code);
-                if (left && right) scPlaceRightDocument(left.pdf_path, right.pdf_path);
+                const left = scBoardDocumentByCode('left', item.left_document_code);
+                const right = scBoardDocumentByCode('right', item.right_document_code);
+                if (!left || !right) return;
+                if (item.anchor_side === 'right') scPlaceDocument('left', right.pdf_path, left.pdf_path);
+                else scPlaceDocument('right', left.pdf_path, right.pdf_path);
             });
         }
 
@@ -14889,6 +15002,19 @@ const app = createApp({
             return data;
         }
 
+        // Прикреплённые версии сборок обеих сторон: смена — новый состав сессии.
+        function scGroupAttachKey(group) {
+            return SC_SIDES.map(side => (group && group[side] && group[side].attached_version_id) || '').join('|');
+        }
+
+        function scGroupPending(group) {
+            return SC_SIDES.some(side => {
+                const view = group[side];
+                return view?.assembled && (SC_GROUP_BUILDING.includes(view.status)
+                    || (view.status === 'READY' && view.attached_version_id !== view.assembly_version_id));
+            });
+        }
+
         async function scLoadDocumentGroups() {
             clearTimeout(scDocumentGroupsTimer);
             if (!projectAssembliesEnabled || !currentObjectId.value) {
@@ -14897,7 +15023,7 @@ const app = createApp({
             }
             const token = ++scDocumentGroupsToken;
             const attachedBefore = new Map(scDocumentGroups.value.map(group =>
-                [group.group_id, group.attached_version_id]));
+                [group.group_id, scGroupAttachKey(group)]));
             let reattached = false;
             try {
                 const data = await scDocumentGroupsRequest('');
@@ -14906,19 +15032,16 @@ const app = createApp({
                 scDocumentGroupsError.value = '';
                 reattached = scDocumentGroups.value.some(group =>
                     attachedBefore.has(group.group_id)
-                    && attachedBefore.get(group.group_id) !== group.attached_version_id);
+                    && attachedBefore.get(group.group_id) !== scGroupAttachKey(group));
             } catch (error) {
                 if (token === scDocumentGroupsToken) scDocumentGroupsError.value = String(error.message || error);
                 return false;
             }
-            const pending = scDocumentGroups.value.some(group =>
-                SC_GROUP_BUILDING.includes(group.status)
-                || (group.status === 'READY' && group.attached_version_id !== group.assembly_version_id));
-            if (pending) scDocumentGroupsTimer = setTimeout(scPollDocumentGroups, 4000);
+            if (scDocumentGroups.value.some(scGroupPending)) scDocumentGroupsTimer = setTimeout(scPollDocumentGroups, 4000);
             return reattached;
         }
 
-        // Готовая сборка прикрепляется к правой стороне — это новый состав сессии.
+        // Готовая сборка прикрепляется к своей стороне — это новый состав сессии.
         async function scPollDocumentGroups() {
             const token = scDocumentGroupsToken;
             const reattached = await scLoadDocumentGroups();
@@ -14929,21 +15052,25 @@ const app = createApp({
 
         // Возвращает текст ошибки ('' — успех): фоновому пакету загрузки он нужен,
         // потому что общая плашка ошибки стирается следующим обновлением доски.
-        async function scChangeDocumentGroups(suffix, options) {
+        // after(result) выполняется после того, как доска приняла новое состояние групп.
+        async function scChangeDocumentGroups(suffix, options, after = null) {
             if (scDocumentGroupsBusy.value) return 'Группы документов сейчас обновляются, повторите позже';
             scDocumentGroupsBusy.value = true;
             scDocumentGroupsError.value = '';
             try {
                 const result = await scDocumentGroupsRequest(suffix, options);
-                if (!result.group || (result.released || []).length) {
-                    // Группа распалась — её сборку отцепили от правой стороны,
-                    // и в текущей сессии она осталась бы свободным документом.
+                const before = result.group && scDocumentGroups.value.find(group => group.group_id === result.group.group_id);
+                if (!result.group || (result.released || []).length
+                        || (before && scGroupAttachKey(before) !== scGroupAttachKey(result.group))) {
+                    // Группа распалась или сторона перестала быть сборкой — сборку
+                    // отцепили, и в текущей сессии она осталась бы свободным документом.
                     await scRefreshSession();
                 } else {
                     await scLoadDocumentGroups();
                     scSyncBoardOrder();
                 }
                 scApplyReleasedPairs(result.released);
+                if (after) after(result);
                 return '';
             } catch (error) {
                 scDocumentGroupsError.value = String(error.message || error);
@@ -14953,69 +15080,90 @@ const app = createApp({
             }
         }
 
-        function scRowRightCodes(row) {
-            if (!row) return [];
-            if (row.group) return row.members.map(member => member.document_code);
-            return row.right && row.right.document_code && !row.right.assembly_ref ? [row.right.document_code] : [];
-        }
-
-        // Правые документы строки + новые: один — обычная пара, больше — группа.
-        async function scAssignRightDocuments(leftCode, codes, groupId = null) {
+        // Документы стороны side строки + новые: один — обычная пара, больше — сборка стороны.
+        // rowCode — документ противоположной стороны той же строки.
+        async function scAssignDocuments(side, rowCode, codes, groupId = null) {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
-            const left = scLeftDocumentByCode(leftCode);
-            if (!left) return '';
-            const row = scPairRows.value.find(item => item.left && item.left.pdf_path === left.pdf_path
-                && (groupId ? item.group?.group_id === groupId : !item.secondary));
-            const all = [...new Set([...scRowRightCodes(row), ...codes.filter(Boolean)])];
+            const other = SC_OTHER_SIDE[side];
+            const row = scPairRows.value.find(item => (groupId ? item.group?.group_id === groupId : !item.secondary)
+                && scRowSideCodes(item, other).includes(rowCode));
+            if (!row) return 'Строка для этих проектов больше не найдена';
+            const all = [...new Set([...scRowSideCodes(row, side), ...codes.filter(Boolean)])];
             if (projectAssembliesEnabled && (all.length > 1 || groupId)) {
                 return scChangeDocumentGroups('', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({left_document_code: leftCode, member_codes: all, group_id: groupId}),
+                    body: JSON.stringify({side, [other + '_document_code']: rowCode, member_codes: all, group_id: groupId}),
                 });
             }
-            const right = scRightDocumentByCode(all[0]);
-            if (right) scPlaceRightDocument(left.pdf_path, right.pdf_path);
+            const document = scBoardDocumentByCode(side, all[0]);
+            if (document && row[other]) scPlaceDocument(side, row[other].pdf_path, document.pdf_path);
             return '';
         }
 
         const scGroupMemberDrag = ref(null);
-        function scCanReorderGroup(row) {
-            return Boolean(row?.group && !pcReadOnlySources.value && !scDocumentGroupsBusy.value
-                && !scPairRowBusy(row) && !SC_GROUP_BUILDING.includes(row.group.status));
+        function scSideMembers(row, side) {
+            return (side === 'left' ? row.leftMembers : row.members) || [];
         }
-        function scStartGroupMemberDrag(event, row, member) {
-            if (!scCanReorderGroup(row)) { event.preventDefault(); return; }
-            scGroupMemberDrag.value = {groupId: row.group.group_id, code: member.document_code};
+        function scCanReorderGroup(row, side = 'right') {
+            const view = row?.group?.[side];
+            return Boolean(view?.assembled && !pcReadOnlySources.value && !scDocumentGroupsBusy.value
+                && !scPairRowBusy(row) && !SC_GROUP_BUILDING.includes(view.status));
+        }
+        function scStartGroupMemberDrag(event, row, member, side = 'right') {
+            if (!scCanReorderGroup(row, side)) { event.preventDefault(); return; }
+            scGroupMemberDrag.value = {groupId: row.group.group_id, side, code: member.document_code};
             event.dataTransfer.effectAllowed = 'move';
             event.dataTransfer.setData('text/plain', member.document_code);
         }
         function scFinishGroupMemberDrag() { scGroupMemberDrag.value = null; }
-        function scDropGroupMember(row, member) {
+        function scDropGroupMember(row, member, side = 'right') {
             const drag = scGroupMemberDrag.value;
             scFinishGroupMemberDrag();
-            if (drag?.groupId !== row.group.group_id) return;
-            return scMoveGroupMember(row, drag.code, row.members.findIndex(item => item.document_code === member.document_code));
+            if (drag?.groupId !== row.group.group_id || drag.side !== side) return;
+            return scMoveGroupMember(row, drag.code,
+                scSideMembers(row, side).findIndex(item => item.document_code === member.document_code), side);
         }
-        function scMoveGroupMember(row, code, targetIndex) {
+        function scMoveGroupMember(row, code, targetIndex, side = 'right') {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
-            if (!scCanReorderGroup(row)) return;
-            const codes = row.members.map(member => member.document_code);
+            if (!scCanReorderGroup(row, side)) return;
+            const codes = scSideMembers(row, side).map(member => member.document_code);
             const from = codes.indexOf(code);
             if (from < 0 || targetIndex < 0 || targetIndex >= codes.length || from === targetIndex) return;
             codes.splice(targetIndex, 0, codes.splice(from, 1)[0]);
             return scChangeDocumentGroups(`/${encodeURIComponent(row.group.group_id)}/order`, {
                 method: 'PUT', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({member_codes: codes}),
+                body: JSON.stringify({side, member_codes: codes}),
             });
         }
 
-        function scRemoveGroupMember(row, member) {
+        // Поменять местами два документа стороны в раскладке (если оба в ней стоят).
+        function scSwapOrderPaths(side, first, second) {
+            const values = [...scDocumentOrder[side]];
+            const a = values.indexOf(first);
+            const b = values.indexOf(second);
+            if (a < 0 || b < 0 || a === b) return;
+            [values[a], values[b]] = [values[b], values[a]];
+            scDocumentOrder[side] = values;
+            scPersistDocumentOrder();
+        }
+
+        function scRemoveGroupMember(row, member, side = 'right') {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!row || !row.group || !member || pcReadOnlySources.value) return;
+            const anchor = row.group.anchor || {};
+            const removedAnchor = anchor.side === side && anchor.document_code === member.document_code;
+            const removedPdf = member.document?.pdf_path;
             return scChangeDocumentGroups(
-                `/${encodeURIComponent(row.group.group_id)}/members/${encodeURIComponent(member.document_code)}`,
+                `/${encodeURIComponent(row.group.group_id)}/members/${encodeURIComponent(member.document_code)}?side=${side}`,
                 {method: 'DELETE'},
+                result => {
+                    // Убрали якорь — строку держит следующий участник на его прежнем месте.
+                    const next = result.group?.anchor;
+                    if (!removedAnchor || !removedPdf || !next || next.side !== side) return;
+                    const document = scBoardDocumentByCode(side, next.document_code);
+                    if (document) scSwapOrderPaths(side, removedPdf, document.pdf_path);
+                },
             );
         }
 
@@ -15025,17 +15173,20 @@ const app = createApp({
             return scChangeDocumentGroups(`/${encodeURIComponent(row.group.group_id)}/rebuild`, {method: 'POST'});
         }
 
-        // «+» у строки: загрузить справа один или несколько проектов для этого левого.
-        function scOpenRowUpload(row) {
+        // «+ Слева» / «+ Справа» у строки: загрузить на эту сторону один или
+        // несколько проектов напротив документа другой стороны строки.
+        function scOpenRowUpload(row, side = 'right') {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
-            if (!row || !row.left || pcReadOnlySources.value) return;
+            if (!scFanShowsPlus(row, side)) return;
+            const other = SC_OTHER_SIDE[side];
+            const rowCode = scRowSideCodes(row, other)[0];
             scOpenStageFolderDialog();
             if (!scStageFolderDialogOpen.value) return;
-            scStageFolderDialogStage.value = 'stage_2';
+            scStageFolderDialogStage.value = side === 'left' ? 'stage_1' : 'stage_2';
             scStageUploadTarget.value = {
-                leftCode: row.left.document_code,
-                leftPdf: row.left.pdf_path,
-                leftName: row.left.filename,
+                side,
+                rowCode,
+                rowName: (row[other] && !row[other].assembly_ref && row[other].filename) || rowCode,
                 groupId: row.group?.group_id || null,
             };
         }
@@ -15081,19 +15232,23 @@ const app = createApp({
             return error;
         }
 
-        // Перетащили правый документ на «+» строки — добавить его к правым документам строки.
-        function scDropOnRowPlus(row) {
+        // Перетащили документ на «+» строки — добавить его к документам этой стороны строки.
+        function scDropOnRowPlus(row, side = 'right') {
             const dragging = scDraggingDocument.value;
-            if (!dragging || dragging.side !== 'right' || !row || !row.left) return;
-            const path = scDocumentOrder.right[dragging.index];
-            const document = scBoardDocumentsRight.value.find(item => item.pdf_path === path);
+            if (!dragging || dragging.side !== side || !scFanShowsPlus(row, side)) return;
+            const other = SC_OTHER_SIDE[side];
+            const path = scDocumentOrder[side][dragging.index];
+            const board = side === 'left' ? scBoardDocumentsLeft.value : scBoardDocumentsRight.value;
+            const document = board.find(item => item.pdf_path === path);
             scFinishDocumentDrag();
             if (!document) return;
-            if (!row.right && !row.group) {
-                scPlaceRightDocument(row.left.pdf_path, document.pdf_path);
+            if (!row[side] && !row.group && row[other]) {
+                scPlaceDocument(side, row[other].pdf_path, document.pdf_path);
                 return;
             }
-            if (document.document_code) scAssignRightDocuments(row.left.document_code, [document.document_code], row.group?.group_id);
+            if (document.document_code) {
+                scAssignDocuments(side, scRowSideCodes(row, other)[0], [document.document_code], row.group?.group_id);
+            }
         }
 
         async function scSaveDocumentPairing() {
@@ -15197,6 +15352,7 @@ const app = createApp({
             [values[dragging.index], values[index]] = [values[index], values[dragging.index]];
             scDocumentOrder[side] = values;
             scCompactDocumentOrder();   // обмен мог оставить строку пустой с обеих сторон
+            scReleaseGroupRowSlots();   // якорь группы переехал в строку со свободным документом
             scPersistDocumentOrder();
             scFinishDocumentDrag();
         }
@@ -15746,7 +15902,7 @@ const app = createApp({
         function scUploadBatchLabel(batch) {
             const side = batch.stageName === 'stage_1' ? 'Слева' : 'Справа';
             const target = batch.target?.afterLeftName ? ` · под ${batch.target.afterLeftName}`
-                : (batch.target?.leftName ? ` → ${batch.target.leftName}` : '');
+                : (batch.target?.rowName ? (batch.target.side === 'left' ? ` ← ${batch.target.rowName}` : ` → ${batch.target.rowName}`) : '');
             return `${side}: ${batch.folderName || 'проекты'}${target}`;
         }
 
@@ -15827,6 +15983,12 @@ const app = createApp({
             scStageFolderDialogOpen.value = true;
         }
 
+        // Цель загрузки привязана к стадии: «+ Слева» — stage_1, остальные — stage_2.
+        function scUploadTargetStage(target) {
+            if (!target) return '';
+            return target.side === 'left' ? 'stage_1' : 'stage_2';
+        }
+
         function scSubmitSelectedStageProjects() {
             if (!portalCanUploadProjects('stage_comparison') || pcDemo.value || pcBridgeActive.value) return;
             const selected = scStageFolderCandidates.value.filter(candidate =>
@@ -15847,7 +16009,7 @@ const app = createApp({
                 id: 'upload-' + (++scUploadBatchSeq),
                 objectId,
                 stageName,
-                target: stageName === 'stage_2' ? scStageUploadTarget.value : null,
+                target: scUploadTargetStage(scStageUploadTarget.value) === stageName ? scStageUploadTarget.value : null,
                 folderName: scStageFolderDialogName.value,
                 candidates: scStageFolderCandidates.value,
                 selected,
@@ -15913,8 +16075,9 @@ const app = createApp({
                     scActivePair.value = null;
                     scPairData.value = null;
                     await scLoadObjects();
-                    if (batch.target && batch.target.leftCode && uploadedCodes.length) {
-                        batch.groupError = await scAssignRightDocuments(batch.target.leftCode, uploadedCodes, batch.target.groupId);
+                    if (batch.target && batch.target.rowCode && uploadedCodes.length) {
+                        batch.groupError = await scAssignDocuments(
+                            batch.target.side, batch.target.rowCode, uploadedCodes, batch.target.groupId);
                     } else if (batch.target?.afterLeftCode && uploadedCodes.length) {
                         batch.groupError = await scPlaceStandaloneRightDocuments(batch.target.afterLeftCode, uploadedCodes);
                     }
@@ -21652,7 +21815,8 @@ const app = createApp({
             scSessionLoading, scSession, scSessionError,
             scDocumentsLeft, scDocumentsRight, scDocumentOrder, scPairRows, scVisiblePairRows,
             scDocumentGroupsError, scDocumentGroupsBusy, scStageUploadTarget,
-            scFanItems, scFanShowsPlus, scFanPath, scOpenRowUpload, scDropOnRowPlus,
+            scFanItems, scFanShowsPlus, scFanPaths, scOpenRowUpload, scDropOnRowPlus,
+            scGroupNote, scGroupNeedsRebuild,
             scHasStandaloneUploadRow, scSetStandaloneUploadRow, scOpenStandaloneRowUpload,
             scRemoveGroupMember, scRebuildDocumentGroup,
             scCanReorderGroup, scStartGroupMemberDrag, scFinishGroupMemberDrag, scDropGroupMember, scMoveGroupMember,

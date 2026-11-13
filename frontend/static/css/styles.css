@@ -6808,7 +6808,7 @@ tr.row-rejected td.sc-cell-goto {
 .is-human-presentation .sc-production-questions__list article > .btn-primary { grid-column: 1 / -1; justify-self: start; }
 .is-human-presentation .sc-production-question__sheets em { font-size: 12px; margin-right: 8px; }
 
-/* ── Веер «один слева → несколько справа» на доске пар ─────────────────── */
+/* ── Веер групп документов на доске пар (1 → N, N → 1, N ↔ M) ──────────── */
 /* SVG вне потока: иначе его высота по умолчанию (150px) раздувает строку. */
 .sc-pair-fan-links { position: relative; display: block; align-self: stretch; min-height: 34px; }
 /* Extend across the slots' 1px borders so connections touch the cards. */
@@ -6829,6 +6829,8 @@ tr.row-rejected td.sc-cell-goto {
     border-radius: 0 var(--radius) var(--radius) 0;
     background: rgba(15, 159, 143, .04);
 }
+/* Сборка слева: веер в колонке исходной редакции, линии сходятся к правой стороне. */
+.sc-pair-fan.is-group.is-left { border-radius: var(--radius) 0 0 var(--radius); }
 /* Специфичнее .pc-v1 .sc-pair-document: имя, версия и кнопка удаления. */
 .sc-pair-fan .sc-pair-fan__item .sc-pair-document--member { grid-template-columns: minmax(0, 1fr) auto auto; cursor: default; }
 .sc-pair-document--member.is-missing { border-style: dashed; opacity: .7; }
