@@ -25,10 +25,15 @@
             ? row.left.pdf_path + '\n' + row.right.pdf_path : '';
     }
 
+    // Сторона строки: склеенная группа — «сборка из N», иначе имя файла.
+    function sideLabel(row, document, members) {
+        const count = Array.isArray(members) ? members.length : 0;
+        return row.group && count ? 'сборка из ' + count : document.filename;
+    }
+
     function label(row) {
         if (!key(row)) return '';
-        const members = Array.isArray(row.members) ? row.members.length : 0;
-        return row.left.filename + ' → ' + (row.group && members ? 'сборка из ' + members : row.right.filename);
+        return sideLabel(row, row.left, row.leftMembers) + ' → ' + sideLabel(row, row.right, row.members);
     }
 
     function payload(rows) {

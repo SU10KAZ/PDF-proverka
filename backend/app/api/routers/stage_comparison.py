@@ -40,13 +40,29 @@ class CreatePairRequest(BaseModel):
 
 
 class DocumentGroupMembersRequest(BaseModel):
-    left_document_code: str = Field(min_length=1)
+    """Документы на сторону ``side`` строки; напротив — документ другой стороны."""
+
+    side: Literal["left", "right"] = "right"
+    left_document_code: str | None = None
+    right_document_code: str | None = None
     member_codes: list[str] = Field(min_length=1, max_length=32)
     new_group: bool = False
     group_id: str | None = None
 
+    @model_validator(mode="after")
+    def _row_document_required(self):
+        if not (self.row_document_code or "").strip():
+            other = "right_document_code" if self.side == "left" else "left_document_code"
+            raise ValueError(f"{other} is required for side={self.side}")
+        return self
+
+    @property
+    def row_document_code(self) -> str | None:
+        return self.right_document_code if self.side == "left" else self.left_document_code
+
 
 class DocumentGroupOrderRequest(BaseModel):
+    side: Literal["left", "right"] = "right"
     member_codes: list[str] = Field(min_length=1, max_length=32)
 
 
@@ -314,6 +330,8 @@ def _document_group_error(exc: document_groups.DocumentGroupError) -> HTTPExcept
         "ASSEMBLIES_DISABLED": 409,
         "GROUP_NOT_FOUND": 404,
         "GROUP_BUSY": 409,
+        "MEMBER_IS_GROUP_ANCHOR": 409,
+        "MEMBER_LAST": 409,
         "GROUPS_CORRUPT": 500,
     }.get(exc.code, 400)
     return HTTPException(status, {"code": exc.code, "message": str(exc)})
@@ -341,24 +359,32 @@ async def list_document_groups(object_id: str):
 @router.post("/objects/{object_id}/document-groups")
 async def add_document_group_members(object_id: str, request: DocumentGroupMembersRequest):
     return await _run_document_groups(
-        document_groups.add_members, object_id, request.left_document_code, request.member_codes,
-        new_group=request.new_group, group_id=request.group_id,
+        document_groups.add_members, object_id, request.row_document_code, request.member_codes,
+        side=request.side, new_group=request.new_group, group_id=request.group_id,
     )
 
 
+# Сторона обязательна по смыслу: один код может быть и в П, и в РД.
 @router.delete("/objects/{object_id}/document-groups/{group_id}/members/{document_code}")
-async def remove_document_group_member(object_id: str, group_id: str, document_code: str):
-    return await _run_document_groups(document_groups.remove_member, object_id, group_id, document_code)
+async def remove_document_group_member(
+    object_id: str, group_id: str, document_code: str,
+    side: Literal["left", "right"] = Query("right"),
+):
+    return await _run_document_groups(document_groups.remove_member, object_id, group_id, document_code, side)
 
 
 @router.put("/objects/{object_id}/document-groups/{group_id}/order")
 async def reorder_document_group(object_id: str, group_id: str, request: DocumentGroupOrderRequest):
-    return await _run_document_groups(document_groups.reorder_members, object_id, group_id, request.member_codes)
+    return await _run_document_groups(
+        document_groups.reorder_members, object_id, group_id, request.member_codes, request.side,
+    )
 
 
 @router.post("/objects/{object_id}/document-groups/{group_id}/rebuild")
-async def rebuild_document_group(object_id: str, group_id: str):
-    return await _run_document_groups(document_groups.rebuild, object_id, group_id)
+async def rebuild_document_group(
+    object_id: str, group_id: str, side: Literal["left", "right"] | None = Query(None),
+):
+    return await _run_document_groups(document_groups.rebuild, object_id, group_id, side)
 
 
 @router.post("/objects/{object_id}/stages/{stage_name}/upload")

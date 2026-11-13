@@ -497,10 +497,14 @@ def create_pair(session_id: str, left_pdf: str, right_pdf: str, composition_comp
         if left is None or right is None:
             raise ValueError("pdf_must_belong_to_session_sources")
         if composition_completeness == "UNKNOWN":
-            assembly_ref = right.get("assembly_ref") if isinstance(right.get("assembly_ref"), dict) else {}
-            declared = assembly_ref.get("composition_completeness")
-            if declared in {"COMPLETE", "INCOMPLETE", "UNKNOWN"}:
-                composition_completeness = declared
+            # Полноту заявляет сборка: справа, а если справа одиночный документ — слева.
+            for document in (right, left):
+                assembly_ref = document.get("assembly_ref")
+                if isinstance(assembly_ref, dict):
+                    declared = assembly_ref.get("composition_completeness")
+                    if declared in {"COMPLETE", "INCOMPLETE", "UNKNOWN"}:
+                        composition_completeness = declared
+                    break
 
         for pair_id in _pair_ids(session_id):
             pair = _load_pair(session_id, pair_id)
@@ -583,14 +587,18 @@ def save_document_pairing(
             if set(selected) != available:
                 raise ValueError(f"{side}_order_must_contain_all_session_documents")
 
-        # Участники групп «один слева → несколько справа» и сборки этих групп
-        # в раскладке не стоят: их место в строке занимает сама группа.
+        # Участники групп документов (кроме якорей строк) и сборки групп в
+        # раскладке не стоят: их место в строке занимает сама группа.
         from . import document_groups
-        hidden_right = document_groups.hidden_right_documents(
-            meta.get("stage_b_path"), list(documents.get("stage_2") or []),
+        hidden_left = document_groups.hidden_documents(
+            meta.get("stage_a_path"), "left", list(documents.get("stage_1") or []),
         )
+        hidden_right = document_groups.hidden_documents(
+            meta.get("stage_b_path"), "right", list(documents.get("stage_2") or []),
+        )
+        normalized_left = [path if path not in hidden_left else None for path in normalized_left]
         normalized_right = [path if path not in hidden_right else None for path in normalized_right]
-        validate_order(normalized_left, available_left, "left")
+        validate_order(normalized_left, available_left - hidden_left, "left")
         validate_order(normalized_right, available_right - hidden_right, "right")
         left_positions = {path: index for index, path in enumerate(normalized_left) if path}
         right_positions = {path: index for index, path in enumerate(normalized_right) if path}
@@ -604,7 +612,7 @@ def save_document_pairing(
             right_pdf = str(raw.get("right_pdf") or "")
             if left_pdf not in available_left or right_pdf not in available_right:
                 raise ValueError("confirmed_pair_document_not_in_session")
-            if right_pdf in hidden_right:
+            if left_pdf in hidden_left or right_pdf in hidden_right:
                 continue   # документ ушёл в группу — ручное подтверждение пары снято
             if left_positions[left_pdf] != right_positions[right_pdf]:
                 raise ValueError("confirmed_pair_documents_must_share_row")
@@ -634,13 +642,18 @@ def suggest_document_pairing(session_id: str) -> dict:
             raise KeyError("session_not_found")
         documents = meta.get("documents") or {}
         from . import document_groups
-        right = list(documents.get("stage_2") or [])
-        hidden_right = document_groups.hidden_right_documents(meta.get("stage_b_path"), right)
-        grouped_left = document_groups.grouped_left_codes(meta.get("stage_a_path"))
-        # Сгруппированный левый документ уже сопоставлен своей группе.
+
+        def free(side: str, stage: str, path_key: str) -> list[dict]:
+            # Документ группы (и якорь строки, и сборка) уже сопоставлен своей группе.
+            items = list(documents.get(stage) or [])
+            hidden = document_groups.hidden_documents(meta.get(path_key), side, items)
+            grouped = document_groups.grouped_codes(meta.get(path_key), side)
+            return [item for item in items
+                    if str(item.get("pdf_path")) not in hidden and item.get("document_code") not in grouped]
+
         return document_matching.suggest_document_pairing(
-            [item for item in documents.get("stage_1") or [] if item.get("document_code") not in grouped_left],
-            [item for item in right if str(item.get("pdf_path")) not in hidden_right],
+            free("left", "stage_1", "stage_a_path"),
+            free("right", "stage_2", "stage_b_path"),
         )
 
 

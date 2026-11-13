@@ -6128,7 +6128,36 @@
                                 <small>{{ visibleIndex + 1 }}</small><i>⠿</i>
                             </span>
 
-                            <div class="sc-pair-slot"
+                            <div v-if="row.leftMembers.length" class="sc-pair-fan is-group is-left">
+                                <div v-for="(member, memberIndex) in row.leftMembers" :key="'left-member-' + member.document_code"
+                                     class="sc-pair-fan__item"
+                                     @dragover.prevent.stop @drop.prevent.stop="scDropGroupMember(row, member, 'left')">
+                                    <div class="sc-pair-document sc-pair-document--member"
+                                         :class="{'is-missing': !member.document}"
+                                         :draggable="canOperate && scCanReorderGroup(row, 'left')"
+                                         @dragstart.stop="scStartGroupMemberDrag($event, row, member, 'left')"
+                                         @dragend.stop="scFinishGroupMemberDrag()"
+                                         :title="member.document ? member.document.filename : member.document_code + ' — нет среди загруженных слева'">
+                                        <span v-if="canOperate && !pcReadOnlySources" class="sc-member-order">
+                                            <span class="sc-pair-document__grip" title="Перетащите для изменения порядка склейки">⠿</span>
+                                            <button type="button" :disabled="!scCanReorderGroup(row, 'left') || memberIndex === 0"
+                                                :aria-label="'Переместить выше: ' + member.document_code"
+                                                @click.stop="scMoveGroupMember(row, member.document_code, memberIndex - 1, 'left')">↑</button>
+                                            <button type="button" :disabled="!scCanReorderGroup(row, 'left') || memberIndex === row.leftMembers.length - 1"
+                                                :aria-label="'Переместить ниже: ' + member.document_code"
+                                                @click.stop="scMoveGroupMember(row, member.document_code, memberIndex + 1, 'left')">↓</button>
+                                        </span>
+                                        <span class="sc-pair-document__name">{{ member.document ? member.document.filename : member.document_code }}</span>
+                                        <small>{{ member.version_id || 'нет' }}</small>
+                                        <button v-if="!pcReadOnlySources" type="button" class="sc-pair-document__remove"
+                                                :disabled="scDocumentGroupsBusy"
+                                                :aria-label="'Убрать ' + member.document_code + ' из группы'"
+                                                title="Убрать из группы"
+                                                @click.stop="scRemoveGroupMember(row, member, 'left')">×</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else class="sc-pair-slot"
                                  :class="{'is-drag-over': scDocumentDragOver.left === row.index}"
                                  @dragover.prevent="scDragDocumentOver($event, 'left', row.index)"
                                  @drop.prevent="scDropDocument('left', row.index)">
@@ -6154,13 +6183,13 @@
                             <template v-if="scFanItems(row)">
                                 <span class="sc-pair-fan-links" aria-hidden="true">
                                     <svg v-bind="{viewBox: '0 0 40 ' + scFanItems(row) * 20}" preserveAspectRatio="none">
-                                        <path v-for="i in scFanItems(row)" :key="'fan-' + row.index + '-' + i"
-                                              :d="scFanPath(scFanItems(row), i - 1)"
+                                        <path v-for="(path, i) in scFanPaths(row)" :key="'fan-' + row.index + '-' + i"
+                                              :d="path"
                                               vector-effect="non-scaling-stroke"></path>
                                     </svg>
                                 </span>
-                                <div class="sc-pair-fan" :class="{'is-group': row.group}">
-                                    <template v-if="row.group">
+                                <div class="sc-pair-fan" :class="{'is-group': row.members.length}">
+                                    <template v-if="row.members.length">
                                         <div v-for="(member, memberIndex) in row.members" :key="'member-' + member.document_code"
                                              class="sc-pair-fan__item"
                                              @dragover.prevent.stop @drop.prevent.stop="scDropGroupMember(row, member)">
@@ -6254,23 +6283,36 @@
                                             @click="pcOpenCatalogEntry(scRowCatalogEntry(row))">{{ scRowCatalogLabel(row) }}</button>
                                 </span>
                                 <div class="sc-pair-row-actions__buttons">
-                                    <div v-if="canOperate && (scFanShowsPlus(row) || (row.left && !row.secondary && !pcReadOnlySources))"
+                                    <div v-if="canOperate && (scFanShowsPlus(row, 'left') || scFanShowsPlus(row) || (row.left && !row.secondary && !row.leftMembers.length && !pcReadOnlySources))"
                                          class="sc-pair-row-actions__secondary">
-                                        <button v-if="canOperate && row.left && !row.secondary && !pcReadOnlySources" type="button"
+                                        <button v-if="canOperate && row.left && !row.secondary && !row.leftMembers.length && !pcReadOnlySources" type="button"
                                             class="btn btn-sm btn-secondary" :disabled="scHasStandaloneUploadRow(row)"
                                             title="Добавить ещё одно сравнение с этим исходным проектом"
                                             @click="scSetStandaloneUploadRow(row, true)">Копировать сравнение</button>
-                                        <span v-if="canOperate && (scFanShowsPlus(row))" class="sc-pair-plus sc-pair-plus--inline"
-                                              :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
-                                              @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
-                                              @drop.prevent.stop="scDropOnRowPlus(row)">
-                                            <button type="button" :disabled="scDocumentGroupsBusy"
-                                                    :aria-label="'Добавить проект справа для ' + row.left.filename"
-                                                    :title="'Добавить проект справа для ' + row.left.filename"
-                                                    @click="scOpenRowUpload(row)">
-                                                <b aria-hidden="true">+</b><span>Добавить проект</span>
-                                            </button>
-                                        </span>
+                                        <div v-if="canOperate && (scFanShowsPlus(row, 'left') || scFanShowsPlus(row))" class="sc-pair-plus-pair">
+                                            <span v-if="scFanShowsPlus(row, 'left')" class="sc-pair-plus sc-pair-plus--inline"
+                                                  :class="{'is-drag-over': scDocumentDragOver.left === row.index}"
+                                                  @dragover.prevent="scDragDocumentOver($event, 'left', row.index)"
+                                                  @drop.prevent.stop="scDropOnRowPlus(row, 'left')">
+                                                <button type="button" :disabled="scDocumentGroupsBusy"
+                                                        :aria-label="'Добавить проект слева для ' + (row.right?.filename || 'строки')"
+                                                        :title="'Добавить проект слева (исходная редакция) напротив ' + (row.right?.filename || 'документа строки')"
+                                                        @click="scOpenRowUpload(row, 'left')">
+                                                    <b aria-hidden="true">+</b><span>Слева</span>
+                                                </button>
+                                            </span>
+                                            <span v-if="scFanShowsPlus(row)" class="sc-pair-plus sc-pair-plus--inline"
+                                                  :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
+                                                  @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
+                                                  @drop.prevent.stop="scDropOnRowPlus(row)">
+                                                <button type="button" :disabled="scDocumentGroupsBusy"
+                                                        :aria-label="'Добавить проект справа для ' + (row.left?.filename || 'строки')"
+                                                        :title="'Добавить проект справа (новая редакция) напротив ' + (row.left?.filename || 'документа строки')"
+                                                        @click="scOpenRowUpload(row)">
+                                                    <b aria-hidden="true">+</b><span>Справа</span>
+                                                </button>
+                                            </span>
+                                        </div>
                                     </div>
                                     <button class="btn btn-sm btn-secondary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row) || pcCatalogOpening"
@@ -6283,15 +6325,13 @@
                                             :disabled="!row.left || !row.right || scPairRowBusy(row) || scComparisonLaunchBusy || scComparisonLaunchAwaitingSheetMap"
                                             @click="scOpenComparisonLaunchDialog(row)">Запустить сравнение</button>
                                 </div>
-                                <button v-if="row.group && !pcReadOnlySources && (row.group.stale || scPairRowStatus(row).label === 'Сборка не удалась')"
+                                <button v-if="row.group && !pcReadOnlySources && scGroupNeedsRebuild(row.group)"
                                         type="button" class="pc-link sc-pair-group-rebuild"
                                         :disabled="scDocumentGroupsBusy"
-                                        :title="row.group.error || 'Собрать правые проекты группы заново'"
+                                        :title="row.group.error || 'Собрать проекты группы заново'"
                                         @click="scRebuildDocumentGroup(row)">Пересобрать</button>
                                 <small v-if="row.group && row.group.stale" class="sc-pair-group-note">Порядок или состав изменён. Нажмите «Пересобрать» перед анализом.</small>
-                                <small v-if="row.group && row.group.status === 'READY' && !row.group.stale" class="sc-pair-group-note">
-                                    Сборка из {{ row.members.length }} проектов<template v-if="row.group.page_count"> · {{ row.group.page_count }} листов</template>
-                                </small>
+                                <small v-if="scGroupNote(row.group)" class="sc-pair-group-note">{{ scGroupNote(row.group) }}</small>
                                 <small v-if="scPairRowError(row)" class="sc-pair-row-error" :title="scPairRowError(row)">
                                     {{ scPairRowError(row) }}
                                 </small>
@@ -8293,10 +8333,15 @@
                         Проекты образуют отдельную группу для сравнения с <strong>{{ scStageUploadTarget.afterLeftName }}</strong>.
                         Существующая группа сохранится отдельно.
                     </template>
+                    <template v-else-if="scStageUploadTarget.side === 'left'">
+                        Проекты встанут слева напротив <strong>{{ scStageUploadTarget.rowName }}</strong>.
+                        Если слева окажется больше одного проекта, они будут склеены в одну сборку
+                        и сравнены с правой стороной строки одной парой.
+                    </template>
                     <template v-else>
-                        Проекты встанут справа напротив <strong>{{ scStageUploadTarget.leftName }}</strong>.
-                        Если справа у него окажется больше одного проекта, они будут склеены в одну сборку
-                        и сравнены с ним одной парой.
+                        Проекты встанут справа напротив <strong>{{ scStageUploadTarget.rowName }}</strong>.
+                        Если справа окажется больше одного проекта, они будут склеены в одну сборку
+                        и сравнены с левой стороной строки одной парой.
                     </template>
                 </div>
 
