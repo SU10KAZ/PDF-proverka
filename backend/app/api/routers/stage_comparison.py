@@ -79,6 +79,14 @@ class SaveDocumentPairingRequest(BaseModel):
     left_order: list[str | None]
     right_order: list[str | None]
     confirmed_pairs: list[ConfirmedDocumentPairRequest] = Field(default_factory=list)
+    expected_revision: int | None = Field(default=None, ge=0)
+
+
+class RemoveBoardDocumentsRequest(BaseModel):
+    left_pdf: str | None = None
+    right_pdf: str | None = None
+    group_id: str | None = None
+    expected_revision: int = Field(ge=0)
 
 
 class SheetLinkRequest(BaseModel):
@@ -544,6 +552,8 @@ async def save_composition_completeness(session_id: str, pair_id: str, request: 
 
 @router.put("/sessions/{session_id}/document-pairing")
 async def save_document_pairing(session_id: str, request: SaveDocumentPairingRequest):
+    if request.expected_revision is None:
+        raise HTTPException(409, "Обновите страницу: для сохранения сопоставления нужна актуальная версия списка.")
     try:
         return await run_in_threadpool(
             store.save_document_pairing,
@@ -551,9 +561,25 @@ async def save_document_pairing(session_id: str, request: SaveDocumentPairingReq
             request.left_order,
             request.right_order,
             [pair.model_dump() for pair in request.confirmed_pairs],
+            request.expected_revision,
         )
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
+    except store.board_state.BoardConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.delete("/sessions/{session_id}/board-documents")
+async def remove_board_documents(session_id: str, request: RemoveBoardDocumentsRequest):
+    try:
+        return await run_in_threadpool(store.remove_board_documents, session_id, request.left_pdf,
+                                       request.right_pdf, request.group_id, request.expected_revision)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except store.board_state.BoardConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
 

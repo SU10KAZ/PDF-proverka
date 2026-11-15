@@ -184,6 +184,7 @@ def test_pdf_list_pair_and_raster_page(tmp_path, monkeypatch):
     pairing_response = client.put(
         f"/api/stage-comparison/sessions/{session['id']}/document-pairing",
         json={
+            "expected_revision": 0,
             "left_order": [str(left_pdf)],
             "right_order": [str(right_pdf)],
             "confirmed_pairs": [{"left_pdf": str(left_pdf), "right_pdf": str(right_pdf)}],
@@ -274,6 +275,7 @@ def test_document_pairing_rejects_documents_outside_session(tmp_path, monkeypatc
     response = client.put(
         f"/api/stage-comparison/sessions/{session['id']}/document-pairing",
         json={
+            "expected_revision": 0,
             "left_order": [str(tmp_path / "foreign.pdf")],
             "right_order": [str(right_pdf)],
             "confirmed_pairs": [],
@@ -516,6 +518,7 @@ def test_document_pairing_drops_rows_empty_on_both_sides(tmp_path, monkeypatch):
     saved = client.put(
         f"/api/stage-comparison/sessions/{session['id']}/document-pairing",
         json={
+            "expected_revision": 0,
             # строка 1 — только П, строка 2 — только РД, строка 3 — пустая с обеих
             "left_order": [str(left_pdf), None, None],
             "right_order": [None, str(right_pdf), None],

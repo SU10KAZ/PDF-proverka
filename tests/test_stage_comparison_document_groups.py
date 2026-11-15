@@ -196,6 +196,7 @@ def test_session_opens_with_only_left_side_uploaded(session_env):
         "stage_a_path": str(stage_1), "stage_b_path": str(stage_2),
     }).json()
     saved = client.put(f"/api/stage-comparison/sessions/{session['id']}/document-pairing", json={
+        "expected_revision": 0,
         "left_order": [str(left)], "right_order": [None], "confirmed_pairs": [],
     })
 
@@ -213,6 +214,7 @@ def test_new_session_inherits_previous_document_pairing(session_env):
         "stage_a_path": str(stage_1), "stage_b_path": str(stage_2),
     }).json()
     client.put(f"/api/stage-comparison/sessions/{first['id']}/document-pairing", json={
+        "expected_revision": 0,
         "left_order": [str(left_b), str(left_a)], "right_order": [None, None], "confirmed_pairs": [],
     })
 
@@ -222,7 +224,8 @@ def test_new_session_inherits_previous_document_pairing(session_env):
     }).json()
 
     assert second["id"] != first["id"]
-    assert second["document_pairing"]["left_order"] == [str(left_b), str(left_a)]
+    assert second["document_pairing"]["left_order"] == [str(left_b), str(left_a), None]
+    assert second["document_pairing"]["right_order"] == [None, None, str(right)]
     assert second["document_pairing"]["inherited_from"] == first["id"]
     assert [d["pdf_path"] for d in second["documents"]["stage_2"]] == [str(right)]
 
@@ -241,6 +244,7 @@ def test_pairing_accepts_order_without_grouped_right_documents(session_env, monk
     }).json()
 
     saved = client.put(f"/api/stage-comparison/sessions/{session['id']}/document-pairing", json={
+        "expected_revision": 0,
         "left_order": [str(left), None],
         # участник группы, присланный старым клиентом, просто выпадает из строки
         "right_order": [str(member_a), str(free)],
@@ -251,6 +255,7 @@ def test_pairing_accepts_order_without_grouped_right_documents(session_env, monk
     assert saved.json()["right_order"] == [None, str(free)]
     assert saved.json()["confirmed_pairs"] == []
     missing_free = client.put(f"/api/stage-comparison/sessions/{session['id']}/document-pairing", json={
+        "expected_revision": saved.json()["revision"],
         "left_order": [str(left)], "right_order": [None], "confirmed_pairs": [],
     })
     assert missing_free.status_code == 400
@@ -670,6 +675,7 @@ def test_pairing_accepts_order_without_grouped_left_documents(session_env, monke
     }).json()
 
     saved = client.put(f"/api/stage-comparison/sessions/{session['id']}/document-pairing", json={
+        "expected_revision": 0,
         "left_order": [str(member_a)], "right_order": [str(right)],
         "confirmed_pairs": [{"left_pdf": str(member_a), "right_pdf": str(right)}],
     })

@@ -14117,9 +14117,13 @@ const app = createApp({
         ));
         const SC_SIDES = ['left', 'right'];
         const SC_OTHER_SIDE = {left: 'right', right: 'left'};
+        const scBoardGroups = computed(() => {
+            const removed = new Set(scSession.value?.document_pairing?.removed_groups || []);
+            return scDocumentGroups.value.filter(group => !removed.has(group.group_id));
+        });
         // Строка группы привязана к раскладке своим якорем: ключ `${side}:${code}`.
         const scGroupsByAnchor = computed(() =>
-            new Map(scDocumentGroups.value.filter(group => !group.independent && group.anchor?.document_code)
+            new Map(scBoardGroups.value.filter(group => !group.independent && group.anchor?.document_code)
                 .map(group => [group.anchor.side + ':' + group.anchor.document_code, group]))
         );
         // Сборка нескольких проектов (у исторических сборок состава нет — тоже она).
@@ -14137,14 +14141,14 @@ const app = createApp({
             const anchors = new Set();
             const memberCodes = new Set();
             const assemblyIds = new Set();
-            scDocumentGroups.value.forEach(group => {
+            scBoardGroups.value.forEach(group => {
                 if (group.anchor?.side === side) anchors.add(group.anchor.document_code);
                 const view = group[side] || {};
                 (view.members || []).forEach(member => memberCodes.add(member.document_code));
                 if (view.assembly_id) assemblyIds.add(view.assembly_id);
             });
             anchors.forEach(code => memberCodes.delete(code));
-            const hidden = new Set();
+            const hidden = new Set(scSession.value?.document_pairing?.hidden_documents?.[side] || []);
             documents.forEach(item => {
                 const ref = item.assembly_ref;
                 if (ref ? assemblyIds.has(ref.assembly_id) : memberCodes.has(item.document_code)) {
@@ -14219,7 +14223,7 @@ const app = createApp({
                 if (group) return groupRow(index, group);
                 return {index, left, right, pair: pairFor(left, right), group: null, leftMembers: [], members: []};
             });
-            for (const group of scDocumentGroups.value.filter(item => item.independent)) {
+            for (const group of scBoardGroups.value.filter(item => item.independent)) {
                 const row = groupRow(rows.length, group, {secondary: true});
                 if (row.left) rows.push(row);
             }
@@ -14279,7 +14283,7 @@ const app = createApp({
         }
 
         function scFanShowsPlus(row, side = 'right') {
-            if (!row || pcReadOnlySources.value) return false;
+            if (!row || pcReadOnlySources.value || scPairRowBusy(row)) return false;
             // Отдельное сравнение («Копировать сравнение») дополняется только справа.
             if (side === 'left' && row.secondary) return false;
             const other = SC_OTHER_SIDE[side];
@@ -14755,7 +14759,8 @@ const app = createApp({
             savedPairs.forEach(pair => {
                 const leftPdf = pair && (pair.leftPdf || pair.left_pdf);
                 const rightPdf = pair && (pair.rightPdf || pair.right_pdf);
-                if (!leftPdf || !rightPdf || leftIndexes.get(leftPdf) !== rightIndexes.get(rightPdf)) return;
+                if (!leftPdf || !rightPdf || !leftIndexes.has(leftPdf) || !rightIndexes.has(rightPdf)
+                        || leftIndexes.get(leftPdf) !== rightIndexes.get(rightPdf)) return;
                 scConfirmedDocumentPairs[scPairPathsKey(leftPdf, rightPdf)] = {leftPdf, rightPdf};
             });
         }
@@ -14776,12 +14781,21 @@ const app = createApp({
             }
             for (const document of documents) {
                 if (used.has(document.pdf_path)) continue;
-                const emptyIndex = order.indexOf(null);
-                if (emptyIndex >= 0) order[emptyIndex] = document.pdf_path;
-                else order.push(document.pdf_path);
+                order.push(document.pdf_path);
                 used.add(document.pdf_path);
             }
             return order;
+        }
+
+        function scReconcileDocumentRows(savedLeft, savedRight, leftDocuments, rightDocuments) {
+            const length = Math.max(savedLeft?.length || 0, savedRight?.length || 0);
+            const pad = values => Array.from({length}, (_, i) => values?.[i] || null);
+            const left = scReconcileDocumentOrder(pad(savedLeft), leftDocuments);
+            const right = scReconcileDocumentOrder(pad(savedRight), rightDocuments);
+            return scPackDocumentRows(
+                [...left.slice(0, length), ...left.slice(length), ...right.slice(length).map(() => null)],
+                [...right.slice(0, length), ...left.slice(length).map(() => null), ...right.slice(length)],
+            );
         }
 
         // Строка, пустая с ОБЕИХ сторон, не выражает ничего: перенос документа
@@ -14830,10 +14844,8 @@ const app = createApp({
             if (useSaved && !loadedFromServer && storageKey) {
                 try { saved = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (_) { saved = {}; }
             }
-            const packed = scPackDocumentRows(
-                scReconcileDocumentOrder(saved.left, scBoardDocumentsLeft.value),
-                scReconcileDocumentOrder(saved.right, scBoardDocumentsRight.value),
-            );
+            const packed = scReconcileDocumentRows(saved.left, saved.right,
+                scBoardDocumentsLeft.value, scBoardDocumentsRight.value);
             scDocumentOrder.left = packed.left;
             scDocumentOrder.right = packed.right;
             scReleaseGroupRowSlots();
@@ -14891,6 +14903,7 @@ const app = createApp({
                     left_pdf: pair.leftPdf,
                     right_pdf: pair.rightPdf,
                 })),
+                expected_revision: scSession.value?.document_pairing?.revision ?? 0,
             };
         }
 
@@ -14927,10 +14940,8 @@ const app = createApp({
         // После смены групп: скрыть ушедшие в группу документы, вернуть вышедшие.
         function scSyncBoardOrder() {
             const before = JSON.stringify([scDocumentOrder.left, scDocumentOrder.right]);
-            const packed = scPackDocumentRows(
-                scReconcileDocumentOrder(scDocumentOrder.left, scBoardDocumentsLeft.value),
-                scReconcileDocumentOrder(scDocumentOrder.right, scBoardDocumentsRight.value),
-            );
+            const packed = scReconcileDocumentRows(scDocumentOrder.left, scDocumentOrder.right,
+                scBoardDocumentsLeft.value, scBoardDocumentsRight.value);
             scDocumentOrder.left = packed.left;
             scDocumentOrder.right = packed.right;
             scReleaseGroupRowSlots();
@@ -15089,6 +15100,7 @@ const app = createApp({
             const row = scPairRows.value.find(item => (groupId ? item.group?.group_id === groupId : !item.secondary)
                 && scRowSideCodes(item, other).includes(rowCode));
             if (!row) return 'Строка для этих проектов больше не найдена';
+            if (scPairRowBusy(row)) return 'Дождитесь завершения операции со списком';
             const all = [...new Set([...scRowSideCodes(row, side), ...codes.filter(Boolean)])];
             if (projectAssembliesEnabled && (all.length > 1 || groupId)) {
                 return scChangeDocumentGroups('', {
@@ -15253,43 +15265,92 @@ const app = createApp({
             }
         }
 
+        let scPairingSavePending = null;
         async function scSaveDocumentPairing() {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
-            if (!scSession.value || scPairingSaving.value || scPairingMatching.value) return;
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return false;
+            if (scPairingSavePending) return scPairingSavePending;
+            if (!scSession.value || scPairingMatching.value) return false;
             const sessionId = scSession.value.id;
             const payload = scDocumentPairingPayload();
             const snapshot = JSON.stringify(payload);
             scPairingSaving.value = true;
             scPairingSaveError.value = '';
             scPairingSaveMessage.value = '';
+            scPairingSavePending = (async () => {
+                try {
+                    const response = await fetch(
+                        `/api/stage-comparison/sessions/${encodeURIComponent(sessionId)}/document-pairing`,
+                        {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: snapshot},
+                    );
+                    const data = await response.json().catch(() => ({}));
+                    if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                    if (scSession.value?.id !== sessionId) return false;
+                    scSession.value = {...scSession.value, document_pairing: data};
+                    scPairingDirty.value = JSON.stringify({...scDocumentPairingPayload(),
+                        expected_revision: payload.expected_revision}) !== snapshot;
+                    scPairingSaveMessage.value = scPairingDirty.value
+                        ? 'Сохранено; после отправки появились новые изменения'
+                        : 'Сопоставление проектов сохранено';
+                    scPersistDocumentOrder(false);
+                    return true;
+                } catch (error) {
+                    if (scSession.value?.id === sessionId) scPairingSaveError.value = String(error.message || error);
+                    return false;
+                } finally {
+                    scPairingSaving.value = false;
+                }
+            })();
+            try { return await scPairingSavePending; }
+            finally { scPairingSavePending = null; }
+        }
+
+        async function scFlushDocumentPairing() {
+            if (scPairingSaveTimer) { clearTimeout(scPairingSaveTimer); scPairingSaveTimer = 0; }
+            if (scPairingSavePending && !await scPairingSavePending) return false;
+            for (let attempt = 0; scPairingDirty.value && attempt < 3; attempt++) {
+                if (!await scSaveDocumentPairing()) return false;
+            }
+            return !scPairingDirty.value;
+        }
+
+        const scBoardRemoving = ref(false);
+        async function scDeleteBoardRow(row, side = 'both') {
+            if (!window.portalCan?.operate() || pcReadOnlySources.value || scBoardRemoving.value
+                    || !row || scPairRowBusy(row) || (row.group && (side !== 'both' || scGroupPending(row.group)))) return;
+            const sessionId = scSession.value?.id;
+            if (!sessionId) return;
+            const pair = side === 'both' && (row.group || (row.left && row.right));
+            const label = pair ? 'пару' : 'проект';
+            if (!window.confirm(`Удалить ${label} из списка?\n\nФайлы и завершённые проверки останутся в истории.`)) return;
+            scBoardRemoving.value = true;
+            scDocumentGroupsError.value = '';
             try {
-                const response = await fetch(
-                    `/api/stage-comparison/sessions/${encodeURIComponent(sessionId)}/document-pairing`,
-                    {
-                        method: 'PUT',
-                        headers: {'Content-Type': 'application/json'},
-                        body: snapshot,
-                    },
-                );
+                if (!await scFlushDocumentPairing()) throw new Error(scPairingSaveError.value || 'Не удалось сохранить сопоставление');
+                if (scSession.value?.id !== sessionId) return;
+                const payload = {expected_revision: scSession.value.document_pairing?.revision ?? 0};
+                if (row.group) payload.group_id = row.group.group_id;
+                else {
+                    if (side !== 'right' && row.left) payload.left_pdf = row.left.pdf_path;
+                    if (side !== 'left' && row.right) payload.right_pdf = row.right.pdf_path;
+                }
+                const response = await fetch(`/api/stage-comparison/sessions/${encodeURIComponent(sessionId)}/board-documents`, {
+                    method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload),
+                });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 if (scSession.value?.id !== sessionId) return;
-                scSession.value = {...scSession.value, document_pairing: data};
-                scPairingDirty.value = JSON.stringify(scDocumentPairingPayload()) !== snapshot;
-                scPairingSaveMessage.value = scPairingDirty.value
-                    ? 'Сохранено; после отправки появились новые изменения'
-                    : 'Сопоставление проектов сохранено';
+                scSession.value = data;
+                scInitializeDocumentOrder(true);
                 scPersistDocumentOrder(false);
+                scPairingSaveMessage.value = 'Удалено из списка. Файлы и проверки сохранены в истории.';
             } catch (error) {
-                if (scSession.value?.id === sessionId) scPairingSaveError.value = String(error.message || error);
-            } finally {
-                scPairingSaving.value = false;
-            }
+                scDocumentGroupsError.value = String(error.message || error);
+            } finally { scBoardRemoving.value = false; }
         }
 
         async function scAutoMatchDocumentProjects() {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
-            if (!scSession.value || scPairingMatching.value || scPairingSaving.value) return;
+            if (!scSession.value || scPairingMatching.value || scPairingSaving.value || scBoardRemoving.value) return;
             scPairingMatching.value = true;
             scPairingSaveError.value = '';
             scPairingSaveMessage.value = '';
@@ -15582,7 +15643,7 @@ const app = createApp({
 
         function scPairRowBusy(row) {
             const state = scPairRowStates[scPairRowKey(row)];
-            return scPairLoading.value
+            return scBoardRemoving.value || scPairLoading.value
                 || Boolean(state && ['opening', 'processing'].includes(state.status));
         }
 
@@ -15674,6 +15735,10 @@ const app = createApp({
         }
 
         async function scRefreshSession() {
+            if (scSession.value?.id && !await scFlushDocumentPairing()) {
+                scSessionError.value = scPairingSaveError.value || 'Не удалось сохранить сопоставление перед обновлением списка';
+                return;
+            }
             const requestToken = ++scSessionRequestToken;
             const object = scSelectedObject.value;
             const left = object && (object.stages || []).find(stage => stage.name === 'stage_1');
@@ -21999,7 +22064,7 @@ const app = createApp({
             scFinishPairRowDrag, scIsDraggingPairRow,
             scSelectPairDocument, scIsPairDocumentPending, scIsPairRowConfirmed,
             scPairRowStatus, scPairRowBusy, scPairRowError,
-            scAutoMatchDocumentProjects, scSaveDocumentPairing,
+            scAutoMatchDocumentProjects, scSaveDocumentPairing, scDeleteBoardRow, scBoardRemoving,
             scSheetIndexEntryFor, scSheetIndexTitle, scReasonLabel,
             // Панель миниатюр листов (только отображение и переход)
             scThumbsOpen, scToggleThumbs, scThumbRows, scThumbUrl,

@@ -56,3 +56,22 @@ def test_latest_terminal_run_and_incomplete_mapping_are_honest(monkeypatch):
     states["previous"]["last_activity_at"] = "2026-11-03"
     states["previous"]["provenance"]["mapper_plan"]["complete"] = False
     assert store._comparison_runs(meta)[0]["state"]["saved_mapping_portions"] == 0
+
+
+def test_source_aliases_resolve_to_same_version_and_return_current_display_paths(tmp_path, monkeypatch):
+    meta, entries, pairs, _ = _setup(monkeypatch)
+    real = tmp_path / 'real'
+    real.mkdir()
+    alias = tmp_path / 'alias'
+    alias.symlink_to(real, target_is_directory=True)
+    for entry in [meta, *entries]:
+        root = real if entry is meta else alias
+        entry['stage_a_path'] = str(root / 'stage_1')
+        entry['stage_b_path'] = str(root / 'stage_2')
+    for side, stage in (('left', 'stage_1'), ('right', 'stage_2')):
+        meta['documents'][stage][0]['pdf_path'] = str(real / stage / 'v001/document.pdf')
+        for pair in pairs.values(): pair[side]['pdf_path'] = str(alias / stage / 'v001/document.pdf')
+    run = store._comparison_runs(meta)[0]
+    assert run['left']['pdf_path'] == str(real / 'stage_1/v001/document.pdf')
+    assert run['session_id'] == 'previous'
+    assert pairs['previous']['left']['pdf_path'] == str(alias / 'stage_1/v001/document.pdf')

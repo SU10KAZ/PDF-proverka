@@ -104,8 +104,8 @@ describe('группы документов на доске пар (1 → N, N �
   it('скрывает участников и сборки групп из свободной раскладки обеих сторон', () => {
     expect(app).toContain('const scBoardDocumentsRight = computed(');
     expect(app).toContain('const scBoardDocumentsLeft = computed(');
-    expect(app).toContain('scReconcileDocumentOrder(saved.right, scBoardDocumentsRight.value)');
-    expect(app).toContain('scReconcileDocumentOrder(saved.left, scBoardDocumentsLeft.value)');
+    expect(app).toContain('scReconcileDocumentRows(saved.left, saved.right,');
+    expect(app).toContain('scBoardDocumentsLeft.value, scBoardDocumentsRight.value)');
     expect(app).toContain('function scReleaseGroupRowSlots()');
   });
 

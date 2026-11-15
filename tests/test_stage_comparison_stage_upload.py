@@ -66,16 +66,36 @@ def test_stage_1_and_stage_2_upload_preserve_sources(comparison_dir):
         assert entries[0].md_path == version_dir / "02_work" / "document.md"
 
 
-def test_repeat_upload_creates_a_new_version(comparison_dir):
+def test_changed_pdf_creates_a_new_version(comparison_dir):
     stage_upload.replace_stage_from_folder(
         "object-1", "stage_1", _folder_payload("design"), "first"
     )
-    stage_upload.replace_stage_from_folder(
-        "object-1", "stage_1", _folder_payload("design"), "second"
-    )
+    changed = _folder_payload("design")
+    changed[0] = (io.BytesIO(_pdf_bytes("design changed")), changed[0][1])
+    stage_upload.replace_stage_from_folder("object-1", "stage_1", changed, "second")
 
     document_dir = comparison_dir / "stage_1" / "documents" / "design"
     assert (document_dir / "versions" / "v001" / "01_input" / "design.pdf").is_file()
     assert (document_dir / "versions" / "v002" / "01_input" / "design.pdf").is_file()
     assert (document_dir / "current_version.txt").read_text(encoding="utf-8") == "v002"
     assert list((comparison_dir / "_stage_upload_backups").glob("stage_1_*"))
+
+
+def test_identical_reupload_reuses_version_but_changed_markdown_creates_new_one(comparison_dir):
+    # Keep the exact PDF bytes; regenerating a PDF may change its internal ID.
+    contents = [(stream.read(), name) for stream, name in _folder_payload('design')]
+    def upload(items, label):
+        return stage_upload.replace_stage_from_folder('object-1', 'stage_1',
+            [(io.BytesIO(data), name) for data, name in items], label)
+    upload(contents, 'first')
+    document_dir = comparison_dir / 'stage_1' / 'documents' / 'design'
+    original = {p.relative_to(document_dir): p.read_bytes() for p in (document_dir / 'versions').rglob('*') if p.is_file()}
+    upload(contents, 'same')
+    assert (document_dir / 'current_version.txt').read_text() == 'v001'
+    assert not (document_dir / 'versions' / 'v002').exists()
+    assert all((document_dir / p).read_bytes() == data for p, data in original.items())
+    changed = [(b'# changed authoritative markdown' if name.endswith('.md') else data, name) for data, name in contents]
+    upload(changed, 'changed-text')
+    assert (document_dir / 'current_version.txt').read_text() == 'v002'
+    assert (document_dir / 'versions/v002/02_work/document.md').read_text() == '# changed authoritative markdown'
+    assert all((document_dir / p).read_bytes() == data for p, data in original.items())

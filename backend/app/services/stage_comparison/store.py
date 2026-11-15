@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from . import paths as paths_mod
+from . import board_state
 from . import scanner as scanner_mod
 from . import document_matching
 from . import sheet_matching
@@ -107,7 +108,7 @@ def _pair_with_persisted_status(session_id: str, pair: dict) -> dict:
 def _document_run_key(document: dict) -> tuple:
     """Versioned input identity; labels alone must never join independent groups."""
     ref = document.get("assembly_ref") or {}
-    return tuple(document.get(key) for key in ("pdf_path", "md_path", "html_path", "version_id")) + (
+    return tuple(board_state.path_key(document.get(key)) for key in ("pdf_path", "md_path", "html_path")) + (document.get("version_id"),
         ref.get("assembly_id"), ref.get("version_id"), ref.get("manifest_sha256"),
     )
 
@@ -120,14 +121,14 @@ def _comparison_runs(meta: dict) -> list[dict]:
     """
     documents = meta.get("documents") or {}
     allowed = {
-        side: {_document_run_key(doc) for doc in documents.get(stage, [])}
+        side: {_document_run_key(doc): doc for doc in documents.get(stage, [])}
         for side, stage in (("left", "stage_1"), ("right", "stage_2"))
     }
     found = {}
     entries = [{"id": meta["id"], **{key: meta.get(key) for key in ("stage_a_path", "stage_b_path")}}]
     entries += [entry for entry in _read_index()["sessions"] if entry.get("id") != meta["id"]]
     for entry in entries:
-        if any(entry.get(key) != meta.get(key) for key in ("stage_a_path", "stage_b_path")):
+        if board_state.roots(entry) != board_state.roots(meta):
             continue
         sid = str(entry.get("id") or "")
         for pid in _pair_ids(sid):
@@ -150,8 +151,11 @@ def _comparison_runs(meta: dict) -> list[dict]:
             plan = (state.get("provenance") or {}).get("mapper_plan") or {}
             accepted = plan.get("accepted_portions", 0)
             summary["saved_mapping_portions"] = (len(accepted) if isinstance(accepted, list) else accepted) if plan.get("complete") else 0
+            # Display the current alias of the same immutable input. The run
+            # still opens in its original session; its evidence is never rewritten.
             found[key] = (rank, {"session_id": sid, "pair_id": pid,
-                                 "left": pair["left"], "right": pair["right"], "state": summary})
+                                 **{side: allowed[side][_document_run_key(pair[side])]
+                                    for side in ("left", "right")}, "state": summary})
     return [value[1] for value in found.values()]
 
 
@@ -170,7 +174,7 @@ def _session_payload(meta: dict) -> dict:
         "stage_a_path": meta.get("stage_a_path"),
         "stage_b_path": meta.get("stage_b_path"),
         "documents": meta.get("documents") or {"stage_1": [], "stage_2": []},
-        "document_pairing": meta.get("document_pairing"),
+        "document_pairing": board_state.project(meta),
         "warnings": meta.get("warnings") or [],
         "pairs": pairs,
         "comparison_runs": _comparison_runs(meta),
@@ -265,8 +269,7 @@ def find_session(stage_a_path: str, stage_b_path: str) -> dict:
             continue
         if exact is None and entry.get("source_signature") == signature:
             exact = str(entry.get("id") or "")
-        if latest is None and entry.get("stage_a_path") == resolved_a \
-                and entry.get("stage_b_path") == resolved_b:
+        if latest is None and board_state.roots(entry) == (resolved_a, resolved_b):
             latest = str(entry.get("id") or "")
     for session_id, stale in ((exact, False), (latest, True)):
         if session_id:
@@ -358,19 +361,8 @@ def create_session(stage_a_path: str, stage_b_path: str) -> tuple[dict, list[str
                     return existing, list(existing.get("warnings") or [])
 
         # Новая загрузка или прикреплённая сборка меняет подпись источников и
-        # рождает новую сессию. Раскладку пар переносим из последней сессии тех
-        # же папок: пропавшие документы клиент уберёт, новые допишет в конец.
-        inherited_pairing = None
-        resolved_a = str(Path(stage_a_path).expanduser().resolve())
-        resolved_b = str(Path(stage_b_path).expanduser().resolve())
-        for entry in _read_index()["sessions"]:
-            if entry.get("kind") != SHELL_KIND or entry.get("stage_a_path") != resolved_a \
-                    or entry.get("stage_b_path") != resolved_b:
-                continue
-            previous = _load_session_meta(str(entry.get("id") or ""))
-            if previous and isinstance(previous.get("document_pairing"), dict):
-                inherited_pairing = {**previous["document_pairing"], "inherited_from": previous["id"]}
-                break
+        # рождает новую сессию. Общая доска сохраняет строки и добавляет новые
+        # документы в конец, не заполняя оставленные пользователем пустые места.
 
         session_id = _new_id()
         meta = {
@@ -385,8 +377,7 @@ def create_session(stage_a_path: str, stage_b_path: str) -> tuple[dict, list[str
             "warnings": warnings,
             "pair_order": [],
         }
-        if inherited_pairing:
-            meta["document_pairing"] = inherited_pairing
+        meta["document_pairing"] = board_state.project(meta)
         _atomic_write_json(paths_mod.session_json_path(session_id), meta)
         _save_index_entry(meta)
         return _session_payload(meta), warnings
@@ -548,12 +539,15 @@ def save_document_pairing(
     left_order: list[str | None],
     right_order: list[str | None],
     confirmed_pairs: list[dict],
+    expected_revision: int | None = None,
 ) -> dict:
     """Persist the user-arranged document rows independently of browser state."""
     with _lock:
         meta = _load_session_meta(session_id)
         if meta is None:
             raise KeyError("session_not_found")
+        board = board_state.load(meta)
+        board_state.check_revision(board, expected_revision)
         documents = meta.get("documents") or {}
         available_left = {
             str(item.get("pdf_path")) for item in documents.get("stage_1") or []
@@ -596,6 +590,8 @@ def save_document_pairing(
         hidden_right = document_groups.hidden_documents(
             meta.get("stage_b_path"), "right", list(documents.get("stage_2") or []),
         )
+        hidden_left |= {path for path in available_left if board_state.path_key(path) in board.get("removed_documents", {}).get("left", [])}
+        hidden_right |= {path for path in available_right if board_state.path_key(path) in board.get("removed_documents", {}).get("right", [])}
         normalized_left = [path if path not in hidden_left else None for path in normalized_left]
         normalized_right = [path if path not in hidden_right else None for path in normalized_right]
         validate_order(normalized_left, available_left - hidden_left, "left")
@@ -629,9 +625,21 @@ def save_document_pairing(
             "confirmed_pairs": normalized_pairs,
             "updated_at": _utc_now(),
         }
+        pairing = board_state.save(meta, pairing, expected_revision=expected_revision, state=board)
         meta["document_pairing"] = pairing
         _atomic_write_json(paths_mod.session_json_path(session_id), meta)
         return pairing
+
+
+def remove_board_documents(session_id: str, left_pdf=None, right_pdf=None, group_id=None, expected_revision=None) -> dict:
+    with _lock:
+        meta = _load_session_meta(session_id)
+        if meta is None:
+            raise KeyError("session_not_found")
+        pairing = board_state.remove(meta, left_pdf, right_pdf, group_id, expected_revision)
+        meta["document_pairing"] = pairing
+        _atomic_write_json(paths_mod.session_json_path(session_id), meta)
+        return _session_payload(meta)
 
 
 def suggest_document_pairing(session_id: str) -> dict:
@@ -641,12 +649,14 @@ def suggest_document_pairing(session_id: str) -> dict:
         if meta is None:
             raise KeyError("session_not_found")
         documents = meta.get("documents") or {}
+        board = board_state.load(meta)
         from . import document_groups
 
         def free(side: str, stage: str, path_key: str) -> list[dict]:
             # Документ группы (и якорь строки, и сборка) уже сопоставлен своей группе.
             items = list(documents.get(stage) or [])
             hidden = document_groups.hidden_documents(meta.get(path_key), side, items)
+            hidden |= {d["pdf_path"] for d in items if board_state.path_key(d.get("pdf_path")) in board.get("removed_documents", {}).get(side, [])}
             grouped = document_groups.grouped_codes(meta.get(path_key), side)
             return [item for item in items
                     if str(item.get("pdf_path")) not in hidden and item.get("document_code") not in grouped]

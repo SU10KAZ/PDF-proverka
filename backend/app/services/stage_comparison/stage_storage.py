@@ -247,6 +247,22 @@ def import_extracted_tree(
         discipline = _safe_component(detected.get("code") or "EOM", "EOM").upper()
         code = _safe_component(pdf.stem)
         doc_dir = _document_dir(stage_dir, discipline, code)
+        document = _load_json(doc_dir / "document.json")
+        current_id = document.get("current_version")
+        if current_id:
+            current = doc_dir / "versions" / current_id
+            manifest = _load_json(current / "01_input" / "input_manifest.json")
+            incoming = {p.name: (p.stat().st_size, _sha256(p)) for p in sources}
+            existing = {f["name"]: (f.get("size"), f.get("sha256")) for f in manifest.get("files", [])}
+            # All prepared inputs must match, not only the PDF. Keep the exact
+            # current version so its completed comparisons remain addressable.
+            if incoming and incoming == existing and all(
+                    (current / "01_input" / name).is_file()
+                    and _sha256(current / "01_input" / name) == digest
+                    for name, (_size, digest) in existing.items() if name != "project_info.json"):
+                imported.append({"discipline": discipline, "document_code": code, "version_id": current_id,
+                                 "source_pdf": str(pdf.relative_to(extracted_root)), "reused": True})
+                continue
         version_id, version_no = _next_version(doc_dir)
         version_dir = doc_dir / "versions" / version_id
         for subdir in (
@@ -348,7 +364,8 @@ def import_extracted_tree(
     })
     return {
         "documents_imported": len(imported),
-        "versions_created": len(imported),
+        "versions_created": sum(not item.get("reused", False) for item in imported),
+        "documents_reused": sum(bool(item.get("reused")) for item in imported),
         "documents": imported,
         "unassigned_files_count": len(unassigned),
     }

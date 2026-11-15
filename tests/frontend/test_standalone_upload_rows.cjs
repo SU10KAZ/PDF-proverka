@@ -83,7 +83,7 @@ test('two groups sharing a left source render separately without duplicating sav
     const sides = {left: {assembled: false}, right: {assembled: true}};
     const first = {group_id: 'g1', anchor: {side: 'left', document_code: 'IOS'}, ...sides};
     const second = {group_id: 'g2', anchor: {side: 'left', document_code: 'IOS'}, independent: true, ...sides};
-    h.scDocumentGroups = {value: [first, second]};
+    h.scBoardGroups = {value: [first, second]};
     h.scGroupsByAnchor = {value: new Map([['left:IOS', first]])};
     h.scGroupSideDocument = (group, side) => side === 'left' ? {pdf_path: 'L1', document_code: 'IOS'} : {pdf_path: group.group_id + '.pdf'};
     h.scGroupMembers = () => [];
@@ -104,7 +104,7 @@ test('a right anchor holds the row of a left group and ignores the stale left sl
     h.scDocumentOrder = {left: ['L9'], right: ['R1']};
     const group = {group_id: 'g1', anchor: {side: 'right', document_code: 'RD'},
         left: {assembled: true}, right: {assembled: false}};
-    h.scDocumentGroups = {value: [group]};
+    h.scBoardGroups = {value: [group]};
     h.scGroupsByAnchor = {value: new Map([['right:RD', group]])};
     h.scGroupSideDocument = (_group, side) => side === 'left' ? {pdf_path: 'ASM'} : {pdf_path: 'R1', document_code: 'RD'};
     h.scGroupMembers = (_group, side) => side === 'left' ? [{document_code: 'P1'}, {document_code: 'P2'}] : [];
