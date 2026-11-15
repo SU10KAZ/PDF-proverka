@@ -6072,6 +6072,7 @@
                     <div v-if="!pcReadOnlySources" class="pc-upload-save" role="status">{{ scPairingSaveError || (scPairingSaving || scPairingDirty ? 'Сохраняем сопоставление…' : 'Сопоставление сохраняется автоматически') }}
                         <button v-if="scPairingSaveError" class="pc-link" @click="scSaveDocumentPairing()">Повторить сохранение</button>
                         <span> · Анализ пары доступен в меню ⋯.</span>
+                        <span v-if="canOperate && projectAssembliesEnabled"> · Перетащите проект на другой проект на той же стороне, чтобы объединить их в группу.</span>
                     </div>
                     </template>
                     <div v-else class="sc-pair-savebar">
@@ -6131,10 +6132,14 @@
                                 <small>{{ visibleIndex + 1 }}</small><i>⠿</i>
                             </span>
 
-                            <div v-if="row.leftMembers.length" class="sc-pair-fan is-group is-left">
+                            <div v-if="row.leftMembers.length" class="sc-pair-fan is-group is-left"
+                                 :class="{'is-merge-over': scDocumentMergeOver.left === row.index}"
+                                 @dragover="scDragDocumentOnto($event, row, 'left')"
+                                 @dragleave.stop="scLeaveDocumentMerge($event, 'left')"
+                                 @drop="scDropDocumentOnto(row, 'left', $event)">
                                 <div v-for="(member, memberIndex) in row.leftMembers" :key="'left-member-' + member.document_code"
                                      class="sc-pair-fan__item"
-                                     @dragover.prevent.stop @drop.prevent.stop="scDropGroupMember(row, member, 'left')">
+                                     @dragover.prevent.stop="scDraggingDocument && scDragDocumentOnto($event, row, 'left')" @drop.prevent.stop="scDropGroupMember(row, member, 'left')">
                                     <div class="sc-pair-document sc-pair-document--member"
                                          :class="{'is-missing': !member.document}"
                                          :draggable="canOperate && scCanReorderGroup(row, 'left')"
@@ -6170,7 +6175,11 @@
                                          'is-dragging': scIsDraggingDocument('left', row.index),
                                          'is-pending': scIsPairDocumentPending('left', row),
                                          'is-confirmed': scIsPairRowConfirmed(row),
+                                         'is-merge-over': scDocumentMergeOver.left === row.index,
                                      }"
+                                     @dragover="scDragDocumentOnto($event, row, 'left')"
+                                     @dragleave.stop="scLeaveDocumentMerge($event, 'left')"
+                                     @drop="scDropDocumentOnto(row, 'left', $event)"
                                      @click="scSelectPairDocument('left', row)"
                                      @keydown.enter.prevent="scSelectPairDocument('left', row)"
                                      @keydown.space.prevent="scSelectPairDocument('left', row)"
@@ -6191,11 +6200,14 @@
                                               vector-effect="non-scaling-stroke"></path>
                                     </svg>
                                 </span>
-                                <div class="sc-pair-fan" :class="{'is-group': row.members.length}">
+                                <div class="sc-pair-fan" :class="{'is-group': row.members.length, 'is-merge-over': row.members.length && scDocumentMergeOver.right === row.index}"
+                                     @dragover="scDraggingDocument && scDragDocumentOnto($event, row, 'right')"
+                                     @dragleave.stop="scLeaveDocumentMerge($event, 'right')"
+                                     @drop="scDropDocumentOnto(row, 'right', $event)">
                                     <template v-if="row.members.length">
                                         <div v-for="(member, memberIndex) in row.members" :key="'member-' + member.document_code"
                                              class="sc-pair-fan__item"
-                                             @dragover.prevent.stop @drop.prevent.stop="scDropGroupMember(row, member)">
+                                             @dragover.prevent.stop="scDraggingDocument && scDragDocumentOnto($event, row, 'right')" @drop.prevent.stop="scDropGroupMember(row, member)">
                                             <div class="sc-pair-document sc-pair-document--member"
                                                  :class="{'is-missing': !member.document}"
                                                  :draggable="canOperate && scCanReorderGroup(row)"
@@ -6232,7 +6244,11 @@
                                                      'is-dragging': scIsDraggingDocument('right', row.index),
                                                      'is-pending': scIsPairDocumentPending('right', row),
                                                      'is-confirmed': scIsPairRowConfirmed(row),
+                                                     'is-merge-over': scDocumentMergeOver.right === row.index,
                                                  }"
+                                                 @dragover="scDragDocumentOnto($event, row, 'right')"
+                                                 @dragleave.stop="scLeaveDocumentMerge($event, 'right')"
+                                                 @drop="scDropDocumentOnto(row, 'right', $event)"
                                                  @click="scSelectPairDocument('right', row)"
                                                  @keydown.enter.prevent="scSelectPairDocument('right', row)"
                                                  @keydown.space.prevent="scSelectPairDocument('right', row)"
@@ -6260,7 +6276,11 @@
                                              'is-dragging': scIsDraggingDocument('right', row.index),
                                              'is-pending': scIsPairDocumentPending('right', row),
                                              'is-confirmed': scIsPairRowConfirmed(row),
+                                             'is-merge-over': scDocumentMergeOver.right === row.index,
                                          }"
+                                         @dragover="scDragDocumentOnto($event, row, 'right')"
+                                         @dragleave.stop="scLeaveDocumentMerge($event, 'right')"
+                                         @drop="scDropDocumentOnto(row, 'right', $event)"
                                          @click="scSelectPairDocument('right', row)"
                                          @keydown.enter.prevent="scSelectPairDocument('right', row)"
                                          @keydown.space.prevent="scSelectPairDocument('right', row)"
@@ -6335,6 +6355,7 @@
                                         @click="scRebuildDocumentGroup(row)">Пересобрать</button>
                                 <small v-if="row.group && row.group.stale" class="sc-pair-group-note">Порядок или состав изменён. Нажмите «Пересобрать» перед анализом.</small>
                                 <small v-if="scGroupNote(row.group)" class="sc-pair-group-note">{{ scGroupNote(row.group) }}</small>
+                                <small v-if="row.group && !row.comparisonRun" class="sc-pair-group-note">Для этого состава группы нужен новый анализ. Прежние результаты сохранены.</small>
                                 <small v-if="scPairRowError(row)" class="sc-pair-row-error" :title="scPairRowError(row)">
                                     {{ scPairRowError(row) }}
                                 </small>

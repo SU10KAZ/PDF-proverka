@@ -363,7 +363,7 @@ describe('documentation comparison shell', () => {
   it('manages every PDF pair in its own draggable row', () => {
     expect(html).not.toContain('id="sc-left-pdf"');
     expect(html).not.toContain('id="sc-right-pdf"');
-    expect(html).toContain('v-for="row in scPairRows"');
+    expect(html).toContain('v-for="(row, visibleIndex) in scVisiblePairRows"');
     expect(html).toContain("scStartDocumentDrag($event, 'left', row.index)");
     expect(html).toContain("scStartDocumentDrag($event, 'right', row.index)");
     expect(html).toContain("scDropDocument('left', row.index)");

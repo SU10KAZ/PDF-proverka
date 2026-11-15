@@ -6,6 +6,7 @@ const source = fs.readFileSync('frontend/static/js/app.js', 'utf8');
 function harness() {
     const ctx = vm.createContext({ref: value => ({value}), window: {portalCan: {operate: () => true}},
         pcReadOnlySources: {value: false}, scDocumentGroupsBusy: {value: false},
+        scDraggingDocument: {value: null},
         scPairRowBusy: () => false, SC_GROUP_BUILDING: ['QUEUED', 'PREPARING', 'RUNNING'],
         scChangeDocumentGroups: async (url, options) => ({url, body: JSON.parse(options.body)}),
     });

@@ -6831,6 +6831,27 @@ tr.row-rejected td.sc-cell-goto {
 }
 /* Сборка слева: веер в колонке исходной редакции, линии сходятся к правой стороне. */
 .sc-pair-fan.is-group.is-left { border-radius: var(--radius) 0 0 var(--radius); }
+.sc-pair-board .sc-pair-document.is-merge-over,
+.sc-pair-board .sc-pair-fan.is-merge-over {
+    position: relative;
+    outline: 2px solid var(--accent, #0f9f8f);
+    outline-offset: 2px;
+    background: var(--blue-light, #e6f5f2);
+}
+.sc-pair-board .is-merge-over::after {
+    content: 'Объединить в группу';
+    position: absolute;
+    right: 4px;
+    bottom: 100%;
+    z-index: 2;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--accent, #0f9f8f);
+    color: #fff;
+    font-size: 11px;
+    white-space: nowrap;
+    pointer-events: none;
+}
 /* Специфичнее .pc-v1 .sc-pair-document: имя, версия и кнопка удаления. */
 .sc-pair-fan .sc-pair-fan__item .sc-pair-document--member { grid-template-columns: minmax(0, 1fr) auto auto; cursor: default; }
 .sc-pair-document--member.is-missing { border-style: dashed; opacity: .7; }

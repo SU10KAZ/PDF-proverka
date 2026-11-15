@@ -13209,6 +13209,7 @@ const app = createApp({
         const scDocumentOrder = reactive({left: [], right: []});
         const scDraggingDocument = ref(null);
         const scDocumentDragOver = reactive({left: null, right: null});
+        const scDocumentMergeOver = reactive({left: null, right: null});
         const scDraggingPairRow = ref(null);
         const scPairRowDragOver = ref(null);
         const scPendingPairSelection = ref(null);
@@ -15118,6 +15119,7 @@ const app = createApp({
         }
         function scFinishGroupMemberDrag() { scGroupMemberDrag.value = null; }
         function scDropGroupMember(row, member, side = 'right') {
+            if (scDraggingDocument.value) return scDropDocumentOnto(row, side);
             const drag = scGroupMemberDrag.value;
             scFinishGroupMemberDrag();
             if (drag?.groupId !== row.group.group_id || drag.side !== side) return;
@@ -15330,6 +15332,50 @@ const app = createApp({
             }
         }
 
+        // Карточка — цель объединения; свободный слот по-прежнему переносит документ.
+        // Якорь чужой группы переносится только вместе со строкой: иначе можно
+        // незаметно разобрать уже собранное сравнение.
+        function scDocumentMergeSource(row, side) {
+            const dragging = scDraggingDocument.value;
+            if (!projectAssembliesEnabled || pcReadOnlySources.value || scDocumentGroupsBusy.value
+                    || (window.portalCan && !window.portalCan.operate())
+                    || !dragging || dragging.side !== side || dragging.index === row?.index
+                    || !scFanShowsPlus(row, side) || !scRowSideCodes(row, side).length
+                    || scPairRowBusy(row) || (row.group && scGroupPending(row.group))) return null;
+            const source = scPairRows.value[dragging.index];
+            if (!source || source.group || scPairRowDragLocked(source)) return null;
+            const document = source[side];
+            if (!document?.document_code || document.assembly_ref
+                    || document.pdf_path !== scDocumentOrder[side][dragging.index]
+                    || scRowSideCodes(row, side).includes(document.document_code)) return null;
+            return document;
+        }
+
+        function scDragDocumentOnto(event, row, side) {
+            if (!scDraggingDocument.value || !projectAssembliesEnabled) return;
+            event.preventDefault();
+            event.stopPropagation();
+            const document = scDocumentMergeSource(row, side);
+            scDocumentDragOver[side] = null;
+            scDocumentMergeOver[side] = document ? row.index : null;
+            if (event.dataTransfer) event.dataTransfer.dropEffect = document ? 'move' : 'none';
+        }
+
+        function scLeaveDocumentMerge(event, side) {
+            if (!event.currentTarget.contains(event.relatedTarget)) scDocumentMergeOver[side] = null;
+        }
+
+        function scDropDocumentOnto(row, side, event) {
+            if (!scDraggingDocument.value || !projectAssembliesEnabled) return;
+            event?.preventDefault();
+            event?.stopPropagation();
+            const document = scDocumentMergeSource(row, side);
+            scFinishDocumentDrag();
+            if (!document) return;
+            return scAssignDocuments(side, scRowSideCodes(row, SC_OTHER_SIDE[side])[0],
+                [document.document_code], row.group?.group_id);
+        }
+
         function scDragDocumentOver(event, side, index) {
             const dragging = scDraggingDocument.value;
             if (!dragging || dragging.side !== side) return;
@@ -15361,6 +15407,8 @@ const app = createApp({
             scDraggingDocument.value = null;
             scDocumentDragOver.left = null;
             scDocumentDragOver.right = null;
+            scDocumentMergeOver.left = null;
+            scDocumentMergeOver.right = null;
         }
 
         function scIsDraggingDocument(side, index) {
@@ -21820,7 +21868,8 @@ const app = createApp({
             scHasStandaloneUploadRow, scSetStandaloneUploadRow, scOpenStandaloneRowUpload,
             scRemoveGroupMember, scRebuildDocumentGroup,
             scCanReorderGroup, scStartGroupMemberDrag, scFinishGroupMemberDrag, scDropGroupMember, scMoveGroupMember,
-            scDraggingDocument, scDocumentDragOver,
+            scDraggingDocument, scDocumentDragOver, scDocumentMergeOver,
+            scDragDocumentOnto, scLeaveDocumentMerge, scDropDocumentOnto,
             scDraggingPairRow, scPairRowDragOver,
             scPendingPairSelection, scConfirmedDocumentPairs,
             scPairingSaving, scPairingMatching, scPairingDirty, scPairingSaved,
