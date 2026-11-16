@@ -8281,6 +8281,14 @@
                         <span>{{ option.label }}</span>
                     </label>
                 </fieldset>
+                <fieldset class="sc-v3-model-choice">
+                    <legend>Параллельные запросы</legend>
+                    <label v-for="count in [5, 10]" :key="count" :class="{'is-selected': scV3Parallelism === count}">
+                        <input type="radio" name="sc-resume-parallelism" :value="count" v-model.number="scV3Parallelism"
+                               :disabled="scProductionRunLoading || scProductionRunActive">
+                        <span>{{ count }}</span>
+                    </label>
+                </fieldset>
                 <p v-if="!['tail', 'gaps'].includes(scResumeDialog.mode)" class="pause-modal__desc">
                     В сохранённом плане: {{ scResumeDialog.planned_new_calls ?? 'не указано' }} участков.
                     Будут обработаны все оставшиеся участки. Принятые ответы сохраняются.
