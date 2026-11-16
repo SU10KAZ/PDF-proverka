@@ -81,6 +81,7 @@ from .contracts import (
     VERIFY_PROMPT_SHA256,
 )
 from .dedupe import apply_dedupe, compact_change, dedupe_lossless_enabled, repair_decisions
+from .evidence_metadata import VERSION as EVIDENCE_METADATA_VERSION, resolve_md_table_types
 from .source_checks import enabled_checks, run_source_checks
 from .coverage import build_page_coverage, validate_page_coverage
 from .hm_builder import build_human_mapping_ui_data, materialize_hm_assets
@@ -1450,7 +1451,8 @@ def _run_admitted(
 
         def keep_attempt(row: dict[str, Any], response: Any, receipt: dict[str, Any],
                          checks: dict[str, str], violations: list[dict[str, Any]],
-                         v31: dict[str, Any] | None = None) -> None:
+                         v31: dict[str, Any] | None = None,
+                         metadata_changes: list[dict[str, Any]] | None = None) -> None:
             """The paid answer goes to disk first; if it cannot, the run stops with no further call.
 
             V3.1: ``response`` is the raw compact answer (the paid output);
@@ -1493,6 +1495,16 @@ def _run_admitted(
                 "usage": receipt.get("usage"),
                 "recorded_at": _now(),
             }
+            if metadata_changes:
+                record["evidence_metadata_resolution"] = {
+                    "version": EVIDENCE_METADATA_VERSION, "changes": metadata_changes,
+                    "canonical_response": mined,
+                    "canonical_response_sha256": _canonical_sha256(mined),
+                }
+                row["evidence_metadata_resolution"] = {
+                    "version": EVIDENCE_METADATA_VERSION, "changes": metadata_changes,
+                    "canonical_response_sha256": _canonical_sha256(mined),
+                }
             if compact:
                 expanded = (v31 or {}).get("expanded")
                 record.update({
@@ -1571,6 +1583,7 @@ def _run_admitted(
             # or failure handling acts on that verdict.
             rejection: Exception | None = None
             raw_answer, v31 = mined, None
+            metadata_changes: list[dict[str, Any]] = []
             if compact:
                 # Compact schema (again, provider-independent) -> fail-closed source_ref
                 # expansion -> the V3 shape; the V3 validator below then runs unchanged.
@@ -1593,6 +1606,8 @@ def _run_admitted(
                                                          "schema_error": f"{type(exc).__name__}: {exc}"}}
             if rejection is None:
                 try:
+                    if not compact:
+                        mined, metadata_changes = resolve_md_table_types(mined, region, pages_by_key)
                     validate_miner(pair_id, region, mined, pages_by_key)
                 except Exception as exc:  # noqa: BLE001 — classified below, after the answer is on disk
                     rejection = exc
@@ -1624,7 +1639,7 @@ def _run_admitted(
                 row.update(validation="REJECTED", rejection_kind="not_retryable", rejection_reason=str(rejection))
                 checks, violations = {"schema": "PASS", "provenance": "UNKNOWN", "structural": "UNKNOWN",
                                       "other": "FAILED", **v31_checks}, []
-            keep_attempt(row, raw_answer, receipt, checks, violations, v31)
+            keep_attempt(row, raw_answer, receipt, checks, violations, v31, metadata_changes)
             if rejection is None:
                 break
             try:

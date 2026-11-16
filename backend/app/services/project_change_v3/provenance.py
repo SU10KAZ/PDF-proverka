@@ -22,6 +22,7 @@ from .contracts import (
 from .contracts import active_profile
 from .transport import provider_transport_version
 from .source_compaction import VERSION as SOURCE_COMPACTION_VERSION
+from .evidence_metadata import VERSION as EVIDENCE_METADATA_VERSION
 
 
 def build_provenance(*, source_prep_version: str | None = None, **extra: Any) -> dict[str, Any]:
@@ -44,6 +45,7 @@ def build_provenance(*, source_prep_version: str | None = None, **extra: Any) ->
         "source_payload_version": SOURCE_PAYLOAD_VERSION,
         "source_compaction_version": SOURCE_COMPACTION_VERSION,
         "source_prep_version": source_prep_version or SOURCE_PACKAGING_VERSION,
+        "evidence_metadata_resolution_version": EVIDENCE_METADATA_VERSION,
         # The profile of THIS run (3.9.0): the startup default unless the run chose one.
         "engine_variant": profile.engine_variant,
         "provider": profile.provider,

@@ -83,7 +83,8 @@ ENGINE_NAME = "projectchange_v3"
 # 3.28.1: stricter catalog evidence, one bounded correction and checked v1 recovery.
 # 3.28.2: persist exact subject substage progress, including reused answers.
 # 3.29.0: explicit subject-search model handoff; add the Sol 6.1 profile.
-ENGINE_VERSION = "3.29.0"
+# 3.29.1: audited MD TEXT / TABLE evidence metadata resolution on exact sources.
+ENGINE_VERSION = "3.29.1"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /3: MD is the complete text source; TEXT is authoritative, no raw PDF transcript.
 # New prompts/source identity intentionally prevent mixing old-policy checkpoints.
