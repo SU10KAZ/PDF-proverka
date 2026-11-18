@@ -5821,7 +5821,8 @@
                 :row-checked="scBatchRowChecked" :all-checked="scBatchAllChecked"
                 :selection-disabled="scBatchRunning || pcReadOnlySources || scSessionLoading || scObjectsLoading"
                 @select-pair="scToggleBatchRow" @select-all="scToggleBatchAll"
-                :opening="pcCatalogOpening" :error="pcCatalogError" @open="pcOpenCatalogEntry" @open-pair="scOpenPairRowResult" @start="scStartCatalogPair"></project-comparison-catalog>
+                :opening="pcCatalogOpening" :error="pcCatalogError" @open="pcOpenCatalogEntry" @open-pair="scOpenPairRowResult" @start="scStartCatalogPair"
+                :worked-mark="pcWorkedMark" :marking-worked="pcWorkedMarking" @mark-worked="pcMarkPairWorked"></project-comparison-catalog>
 
             <details v-if="canOperate && (pcUiEnabled && scActivePair && scTab === 'links')" class="pc-advanced"><summary>Дополнительно</summary>
                 <label>Вид сравнения <select v-model="scProductionInputMode" :disabled="scProductionMutating || scProductionRunActive">

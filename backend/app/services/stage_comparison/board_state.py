@@ -117,11 +117,46 @@ def project(meta, state=None):
               "hidden_documents": {side: [d["pdf_path"] for d in (meta.get("documents") or {}).get(stage, [])
                                            if path_key(d.get("pdf_path")) in state.get("removed_documents", {}).get(side, [])]
                                    for side, stage in SIDES.items()},
-              "removed_groups": state.get("removed_groups", [])}
+              "removed_groups": state.get("removed_groups", []),
+              # Не часть раскладки: читаются заново, присланное клиентом не сохраняется.
+              "worked_pairs": worked_pairs(meta)}
     result.pop("inherited_from", None)
     if state.get("source_session_id") and state["source_session_id"] != meta["id"]:
         result["inherited_from"] = state["source_session_id"]
     return result
+
+
+def worked_path(meta):
+    """Отметки «Отработано» лежат рядом с раскладкой: своя доска у каждой версии сравнения."""
+    return state_path(meta).with_name("worked_pairs.json")
+
+
+def worked_pairs(meta):
+    """Пары, которые инженер отметил «Отработано»: [{left_pdf, right_pdf, by, by_id, at}]."""
+    from . import store
+    data = store._read_json(worked_path(meta))
+    marks = data.get("pairs") if isinstance(data, dict) else None
+    return [dict(mark) for mark in marks or [] if isinstance(mark, dict)
+            and mark.get("left_pdf") and mark.get("right_pdf")]
+
+
+def mark_worked(meta, left_pdf, right_pdf, *, by, by_id=None):
+    """Отметить пару «Отработано». Отметка привязана к PDF обеих сторон: новая
+    версия документа или пересборка группы — это уже другая пара без отметки.
+    Первая отметка не перезаписывается."""
+    from . import store
+    documents = meta.get("documents") or {}
+    for side, stage in SIDES.items():
+        path = left_pdf if side == "left" else right_pdf
+        if not path or path_key(path) not in {path_key(d.get("pdf_path")) for d in documents.get(stage) or []}:
+            raise ValueError("Пара больше не найдена в списке. Обновите страницу.")
+    marks = worked_pairs(meta)
+    key = (path_key(left_pdf), path_key(right_pdf))
+    if not any((path_key(m["left_pdf"]), path_key(m["right_pdf"])) == key for m in marks):
+        marks.append({"left_pdf": str(left_pdf), "right_pdf": str(right_pdf),
+                      "by": str(by or ""), "by_id": str(by_id or "") or None, "at": store._utc_now()})
+        store._atomic_write_json(worked_path(meta), {"schema": "stage_comparison_worked_pairs/1", "pairs": marks})
+    return marks
 
 
 def check_revision(state, expected):

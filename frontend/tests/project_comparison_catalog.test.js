@@ -84,7 +84,10 @@ describe('All project comparisons — catalog component', () => {
     it('registers a pair overview with saved-result and launch actions', () => {
         const {definition} = load(async () => ({}));
         expect(definition.name).toBe('project-comparison-catalog');
-        expect(definition.emits).toEqual(['open', 'open-pair', 'start', 'select-pair', 'select-all']);
+        expect(definition.emits).toEqual(['open', 'open-pair', 'start', 'select-pair', 'select-all', 'mark-worked']);
+        // «Отработано»: у пары без отметки — кнопка, у отмеченной — подпись с инженером вместо кнопки.
+        expect(definition.template).toContain('Отработано · {{ workedMark(entry.selection_pair).by }}');
+        expect(definition.template).toContain("@click=\"$emit('mark-worked', entry.selection_pair)\">Отработано</button>");
         for (const column of ['Проект / раздел', 'Метод и модель', 'Дата', 'Изменения',
             'Требуют проверки', 'Статус', 'Запустить сравнение'])
             expect(definition.template).toContain(column);

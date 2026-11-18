@@ -645,6 +645,15 @@ def remove_board_documents(session_id: str, left_pdf=None, right_pdf=None, group
         return _session_payload(meta)
 
 
+def mark_pair_worked(session_id: str, left_pdf: str, right_pdf: str, *, by: str, by_id: str | None = None) -> dict:
+    """Отметить пару сессии «Отработано» (кем и когда); вернуть все отметки доски."""
+    with _lock:
+        meta = _load_session_meta(session_id)
+        if meta is None:
+            raise KeyError("session_not_found")
+        return {"worked_pairs": board_state.mark_worked(meta, left_pdf, right_pdf, by=by, by_id=by_id)}
+
+
 def suggest_document_pairing(session_id: str) -> dict:
     """Build a disposable approximate filename pairing without saving it."""
     with _lock:

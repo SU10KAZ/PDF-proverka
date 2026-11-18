@@ -13438,6 +13438,40 @@ const app = createApp({
         const pcCatalogFocus = ref(null);
         const pcCatalogOpening = ref(false);
         const pcCatalogError = ref('');
+        // «Отработано» у пары таблицы результатов: отметка доски версии сравнения
+        // (кто и когда), привязана к PDF обеих сторон; первая отметка не перезаписывается.
+        const pcWorkedMarking = ref(false);
+        function pcWorkedMark(row) {
+            const left = row?.left?.pdf_path;
+            const right = row?.right?.pdf_path;
+            if (!left || !right) return null;
+            return (scSession.value?.document_pairing?.worked_pairs || [])
+                .find(mark => mark.left_pdf === left && mark.right_pdf === right) || null;
+        }
+        async function pcMarkPairWorked(row) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
+            const sessionId = scSession.value?.id;
+            if (!sessionId || !row?.left?.pdf_path || !row?.right?.pdf_path || pcWorkedMarking.value || pcWorkedMark(row)) return;
+            if (!window.confirm('Отметить пару как отработанную? Отметку с вашим именем увидят все инженеры.')) return;
+            pcWorkedMarking.value = true;
+            pcCatalogError.value = '';
+            try {
+                const response = await fetch(`/api/stage-comparison/sessions/${encodeURIComponent(sessionId)}/worked-pairs`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({left_pdf: row.left.pdf_path, right_pdf: row.right.pdf_path}),
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                if (scSession.value?.id === sessionId) {
+                    scSession.value = {...scSession.value, document_pairing: {
+                        ...(scSession.value.document_pairing || {}), worked_pairs: data.worked_pairs || []}};
+                }
+            } catch (error) {
+                pcCatalogError.value = 'Не удалось отметить пару: ' + String(error.message || error);
+            } finally {
+                pcWorkedMarking.value = false;
+            }
+        }
         // Замороженные результаты каталога: строка пары показывает, что анализ уже был,
         // даже если результат лежит в прежней сессии объекта (новая загрузка рождает новую).
         const pcCatalogEntries = ref([]);
@@ -22328,6 +22362,7 @@ const app = createApp({
             scLinkEditorOpen, scLinkEditorMode, scLinkEditorRightPage,
             scLinkEditorLeftPages, scLinkEditorRightPages,
             pcCatalogFocus, pcCatalogOpening, pcCatalogError, pcOpenCatalogEntry,
+            pcWorkedMark, pcWorkedMarking, pcMarkPairWorked,
             scRowCatalogEntry, scRowCatalogLabel, scRowCatalogTitle,
             scLoadObjects, scOpenSelectedPair, scOpenPair, scOpenPairRow, scOpenPairRowResult,
             scComparisonVersions, scComparisonVersion, scComparisonVersionsError, scSelectedComparisonVersion,

@@ -723,6 +723,27 @@ async def remove_board_documents(session_id: str, request: RemoveBoardDocumentsR
         raise HTTPException(400, str(exc)) from exc
 
 
+class WorkedPairRequest(BaseModel):
+    left_pdf: str = Field(min_length=1, max_length=4096)
+    right_pdf: str = Field(min_length=1, max_length=4096)
+
+
+@router.post("/sessions/{session_id}/worked-pairs")
+async def mark_pair_worked(session_id: str, payload: WorkedPairRequest, request: Request):
+    """Отметить пару «Отработано»: подпись — сотрудник вошедшего аккаунта (ФИО), иначе логин."""
+    from backend.app.core.attribution import actor_label
+
+    by = actor_label(request, prefer="name") or "local-engineer"
+    by_id = actor_label(request, prefer="id") or None
+    try:
+        return await run_in_threadpool(store.mark_pair_worked, session_id, payload.left_pdf, payload.right_pdf,
+                                       by=by, by_id=by_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 @router.post("/sessions/{session_id}/document-pairing/suggest")
 async def suggest_document_pairing(session_id: str):
     try:

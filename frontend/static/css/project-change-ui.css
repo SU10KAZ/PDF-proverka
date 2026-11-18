@@ -208,12 +208,16 @@
 .pc-catalog__col-count { width: 100px; }
 .pc-catalog__col-review { width: 150px; }
 .pc-catalog__col-status { width: auto; }
-.pc-catalog__col-actions { width: 210px; }
+.pc-catalog__col-actions { width: 300px; }
 .pc-catalog__project b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pc-catalog__model { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pc-catalog__status { color: var(--teal); font-weight: 600; }
-.pc-catalog__table td.pc-catalog__actions { position: relative; padding-left: 29px; white-space: nowrap; }
+/* Кнопки не рвутся (у .btn свой nowrap), но «Отработано · ФИО» при нехватке места уходит строкой ниже. */
+.pc-catalog__table td.pc-catalog__actions { position: relative; padding-left: 29px; white-space: normal; }
 .pc-catalog__actions .btn + .btn { margin-left: 4px; }
+/* «Отработано · ФИО» на месте кнопки «Отработано»; длинное ФИО переносится. */
+.pc-catalog__worked { display: inline-block; max-width: 100%; margin: 2px 0 2px 6px; vertical-align: middle;
+    white-space: normal; line-height: 1.25; font-size: 12px; font-weight: 600; color: var(--teal); }
 .pc-catalog__state-line { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pc-catalog__table td.pc-catalog__state small { display: inline; margin-left: 6px; }
 .pc-catalog__running { position: absolute; left: 7px; top: 50%; transform: translateY(-50%); display: flex; color: var(--teal); }

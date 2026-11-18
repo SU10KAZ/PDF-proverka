@@ -103,8 +103,10 @@
                     pairsLoading: Boolean, canStart: {type: Function, default: () => false},
                     pairStatus: {type: Function, default: () => 'Не запускалось'},
                     rowChecked: {type: Function, default: () => false},
-                    selectionDisabled: Boolean, allChecked: Boolean},
-                emits: ['open', 'open-pair', 'start', 'select-pair', 'select-all'],
+                    selectionDisabled: Boolean, allChecked: Boolean,
+                    // «Отработано»: отметка пары (кто и когда) или null; markingWorked — идёт отметка.
+                    workedMark: {type: Function, default: () => null}, markingWorked: Boolean},
+                emits: ['open', 'open-pair', 'start', 'select-pair', 'select-all', 'mark-worked'],
                 setup(props, {emit}) {
                     const {ref, computed, onMounted, onUnmounted, watch} = root.Vue;
                     const catalog = ref(null);
@@ -183,7 +185,14 @@
                     watch([() => props.objectId, () => props.comparisonVersion], () => { progress.value = []; progressError.value = false; pollProgress(); });
                     // viewer (portal_auth.js): только просмотр — без запуска и выбора пар для анализа.
                     const canOperate = !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate());
-                    return {rowProgress, catalog, entries, loading, overviewLoading, loadError, load, date, model, effort, isRunning, start, startDisabled, selectPair, selectAll, canOperate,
+                    function workedTitle(row) {
+                        const mark = props.workedMark(row);
+                        if (!mark) return '';
+                        const at = mark.at ? new Date(mark.at) : null;
+                        return 'Отработано: ' + (mark.by || 'инженер')
+                            + (at && !Number.isNaN(at.getTime()) ? ', ' + at.toLocaleString('ru-RU') : '');
+                    }
+                    return {rowProgress, catalog, entries, loading, overviewLoading, loadError, load, date, model, effort, isRunning, start, startDisabled, selectPair, selectAll, canOperate, workedTitle,
                         sourceLabel: s => SOURCE_LABEL[s] || s,
                         open: (entry, options) => (options ? emit('open', entry, options) : emit('open', entry))};
                 },
@@ -227,6 +236,10 @@
                                     :disabled="opening || pairsLoading" @click="$emit('open-pair', entry.pending_pair)">Открыть</button>
                                 <button v-else-if="canOperate" type="button" class="btn btn-sm btn-primary" :disabled="startDisabled(entry)"
                                     @click="start(entry)">Запустить сравнение</button>
+                                <span v-if="workedMark(entry.selection_pair)" class="pc-catalog__worked"
+                                    :title="workedTitle(entry.selection_pair)">Отработано · {{ workedMark(entry.selection_pair).by }}</span>
+                                <button v-else-if="canOperate" type="button" class="btn btn-sm btn-secondary pc-catalog__worked-button"
+                                    :disabled="markingWorked" @click="$emit('mark-worked', entry.selection_pair)">Отработано</button>
                             </td>
                             <td v-else class="pc-catalog__actions">
                                 <span v-if="isRunning(entry)" class="pc-catalog__running" role="status"
@@ -236,6 +249,10 @@
                                 <button type="button" class="btn btn-sm btn-primary" :disabled="opening || !entry.open.available"
                                     :title="entry.open.available ? 'Открыть в сравнении проекта' : 'В ленте пары сейчас показан другой прогон'"
                                     @click="open(entry)">Открыть</button>
+                                <span v-if="workedMark(entry.selection_pair)" class="pc-catalog__worked"
+                                    :title="workedTitle(entry.selection_pair)">Отработано · {{ workedMark(entry.selection_pair).by }}</span>
+                                <button v-else-if="canOperate" type="button" class="btn btn-sm btn-secondary pc-catalog__worked-button"
+                                    :disabled="markingWorked" @click="$emit('mark-worked', entry.selection_pair)">Отработано</button>
                             </td>
                         </tr>
                         </tbody>
