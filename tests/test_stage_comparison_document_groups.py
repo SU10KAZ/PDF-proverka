@@ -704,3 +704,133 @@ def test_pair_inherits_completeness_from_left_assembly(session_env, tmp_path, mo
     pair = store.create_pair(session["id"], str(assembly_pdf), str(right))["pair"]
 
     assert pair["composition_completeness"] == "INCOMPLETE"
+
+
+# ── Группа одной стороны: напротив пока пусто (18.11.2026) ─────────────────
+
+def test_left_documents_group_before_right_side_is_uploaded(groups_env):
+    result = document_groups.add_members("obj-test", None, ["P-2"], side="left", anchor_document_code="P-1")
+    group = result["group"]
+
+    assert result["released"] == []
+    assert group["anchor"] == {"side": "left", "document_code": "P-1"}
+    assert _codes(group["left"]) == ["P-1", "P-2"] and _codes(group["right"]) == []
+    assert group["left"]["assembled"] and group["left"]["status"] == "READY"
+    assert group["right_document_code"] is None
+    manifest = assemblies.get_assembly("obj-test", group["left"]["assembly_id"], group["left"]["assembly_version_id"])
+    assert manifest["name"] == "P-1 · сборка из 2"
+    assert len(document_groups.list_groups("obj-test")["groups"]) == 1
+    assert [row["assembly_id"] for row in _attached_left()] == [group["left"]["assembly_id"]]
+    # Якорь стоит в раскладке, второй проект живёт внутри группы.
+    stage_1 = groups_env / "comparison" / "stage_1"
+    assert document_groups.hidden_documents(stage_1, "left", [
+        {"pdf_path": "/p1.pdf", "document_code": "P-1"},
+        {"pdf_path": "/p2.pdf", "document_code": "P-2"},
+    ]) == {"/p2.pdf"}
+
+
+def test_one_sided_group_grows_and_later_takes_document_opposite(groups_env):
+    _stage_document(groups_env, "stage_1", "P-3")
+    group = document_groups.add_members("obj-test", None, ["P-2"], side="left", anchor_document_code="P-1")["group"]
+    grown = document_groups.add_members("obj-test", None, ["P-1", "P-2", "P-3"], side="left",
+                                        group_id=group["group_id"])["group"]
+    assert grown["group_id"] == group["group_id"] and _codes(grown["left"]) == ["P-1", "P-2", "P-3"]
+    stage_1 = groups_env / "comparison" / "stage_1"
+    assert document_groups.open_anchor_codes(stage_1, "left") == {"P-1"}
+
+    both = document_groups.add_members("obj-test", "P-1", ["RD-K1"], side="right",
+                                       group_id=group["group_id"])["group"]
+
+    assert both["group_id"] == group["group_id"]
+    assert _codes(both["right"]) == ["RD-K1"] and both["right"]["status"] == "SINGLE"
+    assert both["anchor"] == {"side": "left", "document_code": "P-1"}
+    assert document_groups.open_anchor_codes(stage_1, "left") == set()
+
+
+def test_drop_onto_member_of_one_sided_group_extends_it(groups_env):
+    _stage_document(groups_env, "stage_1", "P-3")
+    group = document_groups.add_members("obj-test", None, ["P-2"], side="left", anchor_document_code="P-1")["group"]
+
+    # Без group_id цель находится по участнику: P-2 уже в группе.
+    grown = document_groups.add_members("obj-test", None, ["P-3"], side="left", anchor_document_code="P-2")["group"]
+
+    assert grown["group_id"] == group["group_id"]
+    assert _codes(grown["left"]) == ["P-1", "P-2", "P-3"]
+    assert grown["anchor"] == {"side": "left", "document_code": "P-1"}
+
+
+def test_one_sided_group_shrinking_to_one_dissolves_without_pair(groups_env):
+    group = document_groups.add_members("obj-test", None, ["P-2"], side="left", anchor_document_code="P-1")["group"]
+    document_groups.list_groups("obj-test")
+
+    result = document_groups.remove_member("obj-test", group["group_id"], "P-2", side="left")
+
+    assert result == {"group": None, "released": []}
+    assert document_groups.list_groups("obj-test")["groups"] == []
+    assert _attached_left() == []
+
+
+def test_one_document_alone_is_not_a_group(groups_env):
+    with pytest.raises(document_groups.DocumentGroupError) as error:
+        document_groups.add_members("obj-test", None, ["P-1"], side="left", anchor_document_code="P-1")
+    assert error.value.code == "MEMBERS_REQUIRED"
+    with pytest.raises(document_groups.DocumentGroupError) as error:
+        document_groups.add_members("obj-test", None, ["P-2"], side="left")
+    assert error.value.code == "RIGHT_REQUIRED"
+    with pytest.raises(document_groups.DocumentGroupError) as error:
+        document_groups.add_members("obj-test", None, ["P-2"], side="left", anchor_document_code="P-404")
+    assert error.value.code == "LEFT_NOT_FOUND"
+
+
+def test_group_keeps_its_side_when_document_opposite_moves_to_another_row(groups_env):
+    _stage_document(groups_env, "stage_1", "P-3")
+    group = document_groups.add_members("obj-test", None, ["P-2"], side="left", anchor_document_code="P-1")["group"]
+    document_groups.add_members("obj-test", "P-1", ["RD-K1"], side="right", group_id=group["group_id"])
+
+    document_groups.add_members("obj-test", "P-3", ["RD-K1", "RD-K2"])
+
+    groups = {g["group_id"]: g for g in document_groups.list_groups("obj-test")["groups"]}
+    assert _codes(groups[group["group_id"]]["left"]) == ["P-1", "P-2"]
+    assert _codes(groups[group["group_id"]]["right"]) == []
+
+
+def test_document_groups_api_groups_one_side_without_document_opposite(groups_env):
+    client = TestClient(_app())
+    url = "/api/stage-comparison/objects/obj-test/document-groups"
+
+    missing = client.post(url, json={"side": "left", "member_codes": ["P-1", "P-2"]})
+    assert missing.status_code == 422
+    independent = client.post(url, json={"side": "right", "anchor_document_code": "RD-K1",
+                                         "member_codes": ["RD-K2"], "new_group": True})
+    assert independent.status_code == 422
+    created = client.post(url, json={"side": "left", "anchor_document_code": "P-1", "member_codes": ["P-1", "P-2"]})
+    assert created.status_code == 200, created.text
+    assert _codes(created.json()["group"]["left"]) == ["P-1", "P-2"]
+
+
+def test_suggestion_offers_document_opposite_to_one_sided_group_anchor(monkeypatch):
+    # Якорь склеен в сборку своей стороны — флаг сборки обнуляет вес пары, его снимаем.
+    meta = {"id": "s1", "stage_a_path": "/a/stage_1", "stage_b_path": "/a/stage_2", "documents": {
+        "stage_1": [{"pdf_path": "/p1.pdf", "document_code": "P-1", "included_in_assemblies": True},
+                    {"pdf_path": "/p2.pdf", "document_code": "P-2", "included_in_assemblies": True},
+                    {"pdf_path": "/p3.pdf", "document_code": "P-3"}],
+        "stage_2": [{"pdf_path": "/k1.pdf", "document_code": "RD-K1"}],
+    }}
+    monkeypatch.setattr(store, "_load_session_meta", lambda _sid: meta)
+    monkeypatch.setattr(store.board_state, "load", lambda _meta: {"removed_documents": {}})
+    monkeypatch.setattr(document_groups, "hidden_documents", lambda _path, _side, _docs: set())
+    # P-1 и P-2 — группа слева без документа напротив, P-3 — группа с парой.
+    monkeypatch.setattr(document_groups, "grouped_codes",
+                        lambda _path, side: {"P-1", "P-2", "P-3"} if side == "left" else set())
+    monkeypatch.setattr(document_groups, "open_anchor_codes",
+                        lambda _path, side: {"P-1"} if side == "left" else set())
+    seen = {}
+    monkeypatch.setattr(store.document_matching, "suggest_document_pairing",
+                        lambda left, right: seen.update(left=[(d["document_code"], bool(d.get("included_in_assemblies")))
+                                                              for d in left],
+                                                        right=[d["document_code"] for d in right]) or {})
+
+    store.suggest_document_pairing("s1")
+
+    assert seen == {"left": [("P-1", False)], "right": ["RD-K1"]}
+    assert meta["documents"]["stage_1"][0]["included_in_assemblies"] is True   # сессия не изменена

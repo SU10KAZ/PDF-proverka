@@ -420,7 +420,8 @@ def _launch_build(object_id: str, group: dict[str, Any], side: str,
             object_id=object_id,
             # Сборку называет документ противоположной стороны строки: правая
             # сборка «ИОС2.1 · сборка из 9» — как до появления левых групп.
-            name=f"{_side_label(group, OTHER_SIDE[side])} · сборка из {len(refs)}",
+            # Напротив пока пусто — ведущий документ своей стороны.
+            name=f"{_side_label(group, OTHER_SIDE[side]) or _side_label(group, side)} · сборка из {len(refs)}",
             section=_section(group, sources),
             source_refs=refs,
             author="document-group",
@@ -447,8 +448,10 @@ def _ensure_side(object_id: str, group: dict[str, Any], side: str,
 def _settle(object_id: str, groups: list[dict[str, Any]]) -> list[dict[str, str]]:
     """Распустить выродившиеся группы; вернуть освободившиеся пары.
 
-    Обычная группа живёт, пока хотя бы на одной стороне два документа и обе
-    стороны не пусты. Распавшаяся группа «один к одному» возвращает пару
+    Обычная группа живёт, пока хотя бы на одной стороне два документа.
+    Противоположная сторона может быть пустой: проекты одной стадии можно
+    объединить до загрузки другой (18.11.2026), документ напротив встанет в
+    группу позже. Распавшаяся группа «один к одному» возвращает пару
     ``{left_document_code, right_document_code, anchor_side}``, чтобы она встала
     обычной строкой на месте якоря.
     """
@@ -458,7 +461,7 @@ def _settle(object_id: str, groups: list[dict[str, Any]]) -> list[dict[str, str]
         if group.get("independent"):
             alive = bool(left) and bool(right)
         else:
-            alive = bool(left) and bool(right) and (len(left) >= MIN_MEMBERS or len(right) >= MIN_MEMBERS)
+            alive = len(left) >= MIN_MEMBERS or len(right) >= MIN_MEMBERS
         if alive:
             for side in SIDES:
                 if not _needs_assembly(group, side):
@@ -482,20 +485,26 @@ def _find_group(groups: list[dict[str, Any]], group_id: str) -> dict[str, Any]:
 
 
 def add_members(
-    object_id: str, row_document_code: str, member_codes: list[str],
+    object_id: str, row_document_code: str | None, member_codes: list[str],
     *, side: str = "right", new_group: bool = False, group_id: str | None = None,
+    anchor_document_code: str | None = None,
 ) -> dict[str, Any]:
     """Добавить документы на сторону ``side`` строки.
 
     ``row_document_code`` — документ противоположной стороны той же строки
     (для правой стороны — левый документ, для левой — правый). Два документа и
     больше на стороне склеиваются в сборку.
+
+    Напротив может быть пусто (другая стадия ещё не загружена): тогда строку
+    задаёт ``group_id`` её группы или ``anchor_document_code`` — документ той
+    же стороны, на который перетащили остальные; он ведёт строку новой группы.
     """
     _require_enabled()
     side = _check_side(side)
     other = OTHER_SIDE[side]
     row_code = str(row_document_code or "").strip()
-    if not row_code:
+    anchor_code = str(anchor_document_code or "").strip()
+    if not row_code and (new_group or not (group_id or anchor_code)):
         raise DocumentGroupError(f"{other.upper()}_REQUIRED", f"Не указан документ {SIDE_LABEL[other]}")
     codes = _unique(member_codes)
     if not codes:
@@ -506,20 +515,31 @@ def add_members(
         raise DocumentGroupError("BAD_GROUP_TARGET", "Отдельное сравнение создаётся только справа")
     with _lock:
         sources = _current_sources(object_id)
-        if row_code not in sources[other]:
+        if row_code and row_code not in sources[other]:
             raise DocumentGroupError(
                 f"{other.upper()}_NOT_FOUND", f"{SIDE_LABEL[other].capitalize()} нет документа {row_code}",
+            )
+        if not row_code and not group_id and anchor_code not in sources[side]:
+            raise DocumentGroupError(
+                f"{side.upper()}_NOT_FOUND", f"{SIDE_LABEL[side].capitalize()} нет документа {anchor_code}",
             )
         data = _read(object_id)
         groups = data["groups"]
         if group_id:
             group = next((g for g in groups if g["group_id"] == group_id
-                          and row_code in g[other]["members"]), None)
+                          and (not row_code or row_code in g[other]["members"])), None)
             if group is None:
                 raise DocumentGroupError("GROUP_NOT_FOUND", "Группа документов не найдена")
-        else:
+        elif row_code:
             group = None if new_group else next((g for g in groups
                 if row_code in g[other]["members"] and not g.get("independent")), None)
+        else:
+            # Напротив пусто: документ-цель уже может вести свою группу.
+            group = next((g for g in groups
+                          if anchor_code in g[side]["members"] and not g.get("independent")), None)
+            codes = _unique([anchor_code, *codes])
+            if group is None and len(codes) < MIN_MEMBERS:
+                raise DocumentGroupError("MEMBERS_REQUIRED", "Для группы нужны хотя бы два проекта")
         if group is not None and group.get("independent") and side != "right":
             raise DocumentGroupError("BAD_GROUP_TARGET", "В отдельное сравнение документы добавляются только справа")
         if new_group and any(set(codes) & set(g[side]["members"]) for g in groups):
@@ -535,6 +555,16 @@ def add_members(
         for other_group in groups:
             if other_group is not group:
                 other_group[side]["members"] = [c for c in other_group[side]["members"] if c not in codes]
+        if group is None and not row_code:
+            # Группа одной стороны: строку ведёт документ, на который перетащили.
+            group = {
+                "group_id": "grp_" + uuid.uuid4().hex[:16],
+                "anchor": {"side": side, "document_code": anchor_code},
+                side: _empty_side([anchor_code]),
+                other: _empty_side(),
+                "created_at": _now(),
+            }
+            groups.append(group)
         if group is None:
             group = {
                 "group_id": "grp_" + uuid.uuid4().hex[:16],
@@ -682,12 +712,26 @@ def grouped_codes(stage_path: str | Path | None, side: str) -> set[str]:
     return {code for g in _groups_for_stage_path(stage_path) for code in g[side]["members"]}
 
 
+def open_anchor_codes(stage_path: str | Path | None, side: str) -> set[str]:
+    """Якоря групп стороны ``side``, напротив которых пока пусто.
+
+    Автосопоставление подбирает им документ другой стороны как обычным
+    документам; портал добавляет найденный документ в группу.
+    """
+    side = _check_side(side)
+    return {
+        g["anchor"]["document_code"] for g in _groups_for_stage_path(stage_path)
+        if g["anchor"]["side"] == side and not g.get("independent") and not g[OTHER_SIDE[side]]["members"]
+    }
+
+
 __all__ = [
     "DocumentGroupError",
     "add_members",
     "grouped_codes",
     "hidden_documents",
     "list_groups",
+    "open_anchor_codes",
     "rebuild",
     "remove_member",
     "reorder_members",

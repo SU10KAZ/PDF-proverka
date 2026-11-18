@@ -14384,15 +14384,6 @@ const app = createApp({
             });
         }
 
-        function scGroupNote(group) {
-            if (!group || group.status !== 'READY' || group.stale) return '';
-            const both = Boolean(group.left?.assembled && group.right?.assembled);
-            return SC_SIDES.filter(side => group[side]?.assembled).map(side => {
-                const view = group[side];
-                const title = side === 'left' ? 'Слева сборка' : (both ? 'Справа сборка' : 'Сборка');
-                return `${title} из ${view.members.length} проектов` + (view.page_count ? ` · ${view.page_count} листов` : '');
-            }).join(' · ');
-        }
         const scSuggestions = computed(() =>
             (scMatchState.value && scMatchState.value.suggestions
                 && scMatchState.value.suggestions.suggestions) || []
@@ -15410,6 +15401,28 @@ const app = createApp({
             } finally { scBoardRemoving.value = false; }
         }
 
+        // Автосопоставление поставило документ напротив якоря группы, у которой эта
+        // сторона пуста (проекты объединили до загрузки другой стадии): он уходит в группу.
+        function scOneSidedGroupJoins(leftOrder, rightOrder) {
+            const byPath = side => new Map(scSideDocuments(side).map(item => [item.pdf_path, item]));
+            const documents = {left: byPath('left'), right: byPath('right')};
+            const joins = [];
+            leftOrder.forEach((leftPath, index) => {
+                const pair = {left: documents.left.get(leftPath), right: documents.right.get(rightOrder[index])};
+                if (!pair.left || !pair.right) return;
+                for (const side of SC_SIDES) {
+                    const other = SC_OTHER_SIDE[side];
+                    const group = scGroupsByAnchor.value.get(side + ':' + pair[side].document_code);
+                    if (group && !(group[other]?.members || []).length
+                            && pair[other].document_code && !pair[other].assembly_ref) {
+                        joins.push({side: other, anchor: pair[side].document_code,
+                            code: pair[other].document_code, groupId: group.group_id});
+                    }
+                }
+            });
+            return joins;
+        }
+
         async function scAutoMatchDocumentProjects() {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
             if (!scSession.value || scPairingMatching.value || scPairingSaving.value || scBoardRemoving.value) return;
@@ -15423,6 +15436,8 @@ const app = createApp({
                 );
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                // Считаем до перестановки: потом строка группы уберёт документ из своего слота.
+                const joins = scOneSidedGroupJoins(data.left_order || [], data.right_order || []);
                 scDocumentOrder.left = [...(data.left_order || [])];
                 scDocumentOrder.right = [...(data.right_order || [])];
                 scCompactDocumentOrder();
@@ -15431,6 +15446,10 @@ const app = createApp({
                 scFinishDocumentDrag();
                 scFinishPairRowDrag();
                 scPersistDocumentOrder();
+                for (const join of joins) {
+                    const error = await scAssignDocuments(join.side, join.anchor, [join.code], join.groupId);
+                    if (error) throw new Error(error);
+                }
                 scPairingSaveMessage.value = `Сопоставлено автоматически: ${Number(data.matched_count) || 0}. `
                     + `Остались внизу: П — ${Number(data.unmatched_left_count) || 0}, `
                     + `РД — ${Number(data.unmatched_right_count) || 0}`;
@@ -15457,13 +15476,14 @@ const app = createApp({
 
         // Карточка — цель объединения; свободный слот по-прежнему переносит документ.
         // Якорь чужой группы переносится только вместе со строкой: иначе можно
-        // незаметно разобрать уже собранное сравнение.
+        // незаметно разобрать уже собранное сравнение. Напротив может быть пусто:
+        // проекты одной стадии объединяются до загрузки другой (18.11.2026).
         function scDocumentMergeSource(row, side) {
             const dragging = scDraggingDocument.value;
             if (!projectAssembliesEnabled || pcReadOnlySources.value || scDocumentGroupsBusy.value
                     || (window.portalCan && !window.portalCan.operate())
                     || !dragging || dragging.side !== side || dragging.index === row?.index
-                    || !scFanShowsPlus(row, side) || !scRowSideCodes(row, side).length
+                    || (side === 'left' && row?.secondary) || !scRowSideCodes(row, side).length
                     || scPairRowBusy(row) || (row.group && scGroupPending(row.group))) return null;
             const source = scPairRows.value[dragging.index];
             if (!source || source.group || scPairRowDragLocked(source)) return null;
@@ -15495,8 +15515,22 @@ const app = createApp({
             const document = scDocumentMergeSource(row, side);
             scFinishDocumentDrag();
             if (!document) return;
-            return scAssignDocuments(side, scRowSideCodes(row, SC_OTHER_SIDE[side])[0],
-                [document.document_code], row.group?.group_id);
+            const opposite = scRowSideCodes(row, SC_OTHER_SIDE[side])[0];
+            if (!opposite) return scMergeOneSide(row, side, [document.document_code]);
+            return scAssignDocuments(side, opposite, [document.document_code], row.group?.group_id);
+        }
+
+        // Напротив строки пусто: группу ведёт документ, на который перетащили, или
+        // уже существующая группа строки. Документ другой стадии встанет в неё позже.
+        function scMergeOneSide(row, side, codes) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
+            const own = scRowSideCodes(row, side);
+            return scChangeDocumentGroups('', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({side, member_codes: [...new Set([...own, ...codes])],
+                    group_id: row.group?.group_id || null, anchor_document_code: row.group ? null : own[0]}),
+            });
         }
 
         function scDragDocumentOver(event, side, index) {
@@ -15514,6 +15548,9 @@ const app = createApp({
             if (!dragging || dragging.side !== side) return;
             const sourceRow = scPairRows.value[dragging.index];
             const targetRow = scPairRows.value[index];
+            // Пустая сторона строки группы: документ встаёт в группу. Строка группы
+            // показывает стороны группы, а не слоты раскладки, — обмен слотами потерял бы его.
+            if (targetRow?.group && !scRowSideCodes(targetRow, side).length) return scDropOnRowPlus(targetRow, side);
             if ((sourceRow && scPairRowDragLocked(sourceRow)) || (targetRow && scPairRowDragLocked(targetRow))) return;
             const values = [...scDocumentOrder[side]];
             while (values.length <= index) values.push(null);
@@ -22165,7 +22202,7 @@ const app = createApp({
             scDocumentsLeft, scDocumentsRight, scDocumentOrder, scPairRows, scVisiblePairRows,
             scDocumentGroupsError, scDocumentGroupsBusy, scStageUploadTarget,
             scFanItems, scFanShowsPlus, scFanPaths, scOpenRowUpload, scDropOnRowPlus,
-            scGroupNote, scGroupNeedsRebuild,
+            scGroupNeedsRebuild,
             scHasStandaloneUploadRow, scSetStandaloneUploadRow, scOpenStandaloneRowUpload,
             scRemoveGroupMember, scRebuildDocumentGroup,
             scCanReorderGroup, scStartGroupMemberDrag, scFinishGroupMemberDrag, scDropGroupMember, scMoveGroupMember,

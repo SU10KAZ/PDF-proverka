@@ -660,9 +660,18 @@ def suggest_document_pairing(session_id: str) -> dict:
             items = list(documents.get(stage) or [])
             hidden = document_groups.hidden_documents(meta.get(path_key), side, items)
             hidden |= {d["pdf_path"] for d in items if board_state.path_key(d.get("pdf_path")) in board.get("removed_documents", {}).get(side, [])}
-            grouped = document_groups.grouped_codes(meta.get(path_key), side)
-            return [item for item in items
-                    if str(item.get("pdf_path")) not in hidden and item.get("document_code") not in grouped]
+            # Кроме якорей групп, напротив которых пусто: им подбираем пару по их
+            # имени, хотя они склеены в сборку своей стороны (иначе вес пары — ноль).
+            open_anchors = document_groups.open_anchor_codes(meta.get(path_key), side)
+            grouped = document_groups.grouped_codes(meta.get(path_key), side) - open_anchors
+            result = []
+            for item in items:
+                if str(item.get("pdf_path")) in hidden or item.get("document_code") in grouped:
+                    continue
+                if item.get("document_code") in open_anchors and not item.get("assembly_ref"):
+                    item = {**item, "included_in_assemblies": False}
+                result.append(item)
+            return result
 
         return document_matching.suggest_document_pairing(
             free("left", "stage_1", "stage_a_path"),

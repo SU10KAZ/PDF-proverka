@@ -41,18 +41,25 @@ class CreatePairRequest(BaseModel):
 
 
 class DocumentGroupMembersRequest(BaseModel):
-    """Документы на сторону ``side`` строки; напротив — документ другой стороны."""
+    """Документы на сторону ``side`` строки; напротив — документ другой стороны.
+
+    Если напротив пусто (другая стадия ещё не загружена), строку задаёт
+    ``group_id`` её группы или ``anchor_document_code`` — документ той же
+    стороны, который поведёт новую группу.
+    """
 
     side: Literal["left", "right"] = "right"
     left_document_code: str | None = None
     right_document_code: str | None = None
+    anchor_document_code: str | None = None
     member_codes: list[str] = Field(min_length=1, max_length=32)
     new_group: bool = False
     group_id: str | None = None
 
     @model_validator(mode="after")
     def _row_document_required(self):
-        if not (self.row_document_code or "").strip():
+        one_sided = not self.new_group and (self.group_id or (self.anchor_document_code or "").strip())
+        if not (self.row_document_code or "").strip() and not one_sided:
             other = "right_document_code" if self.side == "left" else "left_document_code"
             raise ValueError(f"{other} is required for side={self.side}")
         return self
@@ -434,6 +441,7 @@ async def add_document_group_members(
     return await _run_document_groups(
         document_groups.add_members, scope, request.row_document_code, request.member_codes,
         side=request.side, new_group=request.new_group, group_id=request.group_id,
+        anchor_document_code=request.anchor_document_code,
     )
 
 

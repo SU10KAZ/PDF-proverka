@@ -6368,6 +6368,8 @@
                                             </span>
                                         </div>
                                     </div>
+                                    <!-- «Открыть» и «⋯» — в конце, после «+ Справа», и при переносе не разрываются. -->
+                                    <span class="sc-pair-row-actions__main">
                                     <button class="btn btn-sm btn-secondary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row) || pcCatalogOpening"
                                             @click="scOpenPairRowResult(row)">Открыть</button>
@@ -6391,6 +6393,7 @@
                                     <button v-else-if="canOperate" class="btn btn-sm btn-primary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row) || scComparisonLaunchBusy || scComparisonLaunchAwaitingSheetMap"
                                             @click="scOpenComparisonLaunchDialog(row)">Запустить сравнение</button>
+                                    </span>
                                 </div>
                                 <button v-if="row.group && !pcReadOnlySources && scGroupNeedsRebuild(row.group)"
                                         type="button" class="pc-link sc-pair-group-rebuild"
@@ -6398,8 +6401,7 @@
                                         :title="row.group.error || 'Собрать проекты группы заново'"
                                         @click="scRebuildDocumentGroup(row)">Пересобрать</button>
                                 <small v-if="row.group && row.group.stale" class="sc-pair-group-note">Порядок или состав изменён. Нажмите «Пересобрать» перед анализом.</small>
-                                <small v-if="scGroupNote(row.group)" class="sc-pair-group-note">{{ scGroupNote(row.group) }}</small>
-                                <small v-if="row.group && !row.comparisonRun" class="sc-pair-group-note">Для этого состава группы нужен новый анализ. Прежние результаты сохранены.</small>
+                                <small v-if="row.group && row.left && row.right && !row.comparisonRun" class="sc-pair-group-note">Для этого состава группы нужен новый анализ. Прежние результаты сохранены.</small>
                                 <small v-if="scPairRowError(row)" class="sc-pair-row-error" :title="scPairRowError(row)">
                                     {{ scPairRowError(row) }}
                                 </small>

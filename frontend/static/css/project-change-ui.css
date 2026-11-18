@@ -24,12 +24,12 @@
 .pc-v1 .sc-shell { gap: 10px; }
 .pc-v1 .sc-pair-workbench { padding: 10px; }
 .pc-v1 .sc-pair-board__row { min-height: 40px; padding-top: 3px; padding-bottom: 3px; }
-/* Колонка действий строки — переносимый ряд: статус, «Открыть», «⋯», затем группа
-   «Копировать сравнение · + Слева · + Справа». Не помещается в строку — группа уходит
-   вниз целиком, а не наезжает на статус. */
+/* Колонка действий строки — переносимый ряд: статус, группа «Копировать сравнение ·
+   + Слева · + Справа», затем «Открыть» и «⋯». Не помещается в строку — группа или
+   пара «Открыть ⋯» уходит вниз целиком, а не наезжает на статус. */
 .pc-v1 .sc-pair-row-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px; padding: 2px 6px; }
 .pc-v1 .sc-pair-row-actions__buttons { display: contents; }
-.pc-v1 .sc-pair-row-actions__secondary { order: 1; }
+.pc-v1 .sc-pair-row-actions__main { display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; }
 .pc-v1 .sc-pair-group-rebuild { order: 2; }
 .pc-v1 .sc-pair-group-note { order: 3; flex: 1 0 100%; }
 .pc-v1 .sc-pair-document { min-height: 24px; padding: 1px 5px; gap: 3px; grid-template-columns: 14px minmax(0, 1fr) auto; }

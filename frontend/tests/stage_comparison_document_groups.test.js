@@ -109,7 +109,7 @@ describe('группы документов на доске пар (1 → N, N �
     expect(app).toContain('function scReleaseGroupRowSlots()');
   });
 
-  it('показывает состояние сборок по сторонам и подпись готовых сборок', () => {
+  it('показывает состояние сборок по сторонам без подписи состава', () => {
     const status = extractFunction('scGroupSideStatus', 'scGroupStatus');
     const side = (extra = {}) => ({assembled: true, status: 'READY', stale: false,
       attached_version_id: 'v1', assembly_version_id: 'v1', ...extra});
@@ -117,12 +117,9 @@ describe('группы документов на доске пар (1 → N, N �
     expect(status({left: side({stale: true}), right: {assembled: false}})).toEqual({tone: 'error', label: 'Нужна пересборка слева'});
     expect(status({left: side({status: 'RUNNING'}), right: side({status: 'FAILED'})})).toEqual({tone: 'error', label: 'Сборка не удалась справа'});
     expect(status({left: side(), right: side()})).toBe(null);
-    const note = extractFunction('scGroupNote');
-    expect(note({status: 'READY', stale: false, left: {assembled: false}, right: {assembled: true, members: [1, 2], page_count: 7}}))
-      .toBe('Сборка из 2 проектов · 7 листов');
-    expect(note({status: 'READY', stale: false, left: {assembled: true, members: [1, 2, 3], page_count: 9}, right: {assembled: false}}))
-      .toBe('Слева сборка из 3 проектов · 9 листов');
-    expect(html).toContain('<small v-if="scGroupNote(row.group)" class="sc-pair-group-note">{{ scGroupNote(row.group) }}</small>');
+    // Подпись «Слева сборка из N проектов · M листов» убрана по просьбе инженера (18.11.2026).
+    expect(html).not.toContain('scGroupNote');
+    expect(app).not.toContain('function scGroupNote');
   });
 
   it('обновляет сессию, когда готовая сборка прикреплена справа', () => {
