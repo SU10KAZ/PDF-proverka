@@ -6396,11 +6396,14 @@
                                             @click="scOpenComparisonLaunchDialog(row)">Запустить сравнение</button>
                                     </span>
                                 </div>
+                                <!-- Переносы только набирают состав группы; сборка — по этой кнопке. -->
                                 <button v-if="row.group && !pcReadOnlySources && scGroupNeedsRebuild(row.group)"
-                                        type="button" class="pc-link sc-pair-group-rebuild"
+                                        type="button" class="sc-pair-group-rebuild"
+                                        :class="scGroupBuildLabel(row.group) === 'Собрать' ? 'btn btn-sm btn-primary' : 'pc-link'"
                                         :disabled="scDocumentGroupsBusy"
-                                        :title="row.group.error || 'Собрать проекты группы заново'"
-                                        @click="scRebuildDocumentGroup(row)">Пересобрать</button>
+                                        :title="row.group.error || (scGroupBuildLabel(row.group) === 'Собрать'
+                                            ? 'Состав набран — собрать проекты группы' : 'Собрать проекты группы заново')"
+                                        @click="scRebuildDocumentGroup(row)">{{ scGroupBuildLabel(row.group) }}</button>
                                 <small v-if="row.group && row.group.stale" class="sc-pair-group-note">Порядок или состав изменён. Нажмите «Пересобрать» перед анализом.</small>
                                 <small v-if="row.group && row.left && row.right && !row.comparisonRun" class="sc-pair-group-note">Для этого состава группы нужен новый анализ. Прежние результаты сохранены.</small>
                                 <small v-if="scPairRowError(row)" class="sc-pair-row-error" :title="scPairRowError(row)">

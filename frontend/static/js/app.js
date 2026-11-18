@@ -14395,6 +14395,8 @@ const app = createApp({
                 return {tone: 'running', label: 'Прикрепляем сборку', rank: 3};
             }
             if (view.status === 'READY') return null;
+            // Состав набран переносами, сборку ещё не запускали — ждёт «Собрать».
+            if (view.status === 'NOT_BUILT') return {tone: 'incomplete', label: 'Нужна сборка', rank: 1};
             return {tone: 'error', label: 'Сборка не удалась', rank: 0};
         }
 
@@ -14416,6 +14418,12 @@ const app = createApp({
                 const view = group[side];
                 return view?.assembled && (view.stale || !['READY', ...SC_GROUP_BUILDING].includes(view.status));
             });
+        }
+
+        // «Собрать» — группа ещё не собиралась (состав набран переносами), иначе «Пересобрать».
+        function scGroupBuildLabel(group) {
+            return SC_SIDES.some(side => group?.[side]?.assembled && group[side].status === 'NOT_BUILT')
+                ? 'Собрать' : 'Пересобрать';
         }
 
         const scSuggestions = computed(() =>
@@ -15193,7 +15201,9 @@ const app = createApp({
                 return scChangeDocumentGroups('', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({side, [other + '_document_code']: rowCode, member_codes: all, group_id: groupId}),
+                    // Состав только сохраняется; сборку инженер запускает кнопкой «Собрать».
+                    body: JSON.stringify({side, [other + '_document_code']: rowCode, member_codes: all, group_id: groupId,
+                        build: false}),
                 });
             }
             const document = scBoardDocumentByCode(side, all[0]);
@@ -15256,7 +15266,7 @@ const app = createApp({
             const removedAnchor = anchor.side === side && anchor.document_code === member.document_code;
             const removedPdf = member.document?.pdf_path;
             return scChangeDocumentGroups(
-                `/${encodeURIComponent(row.group.group_id)}/members/${encodeURIComponent(member.document_code)}?side=${side}`,
+                `/${encodeURIComponent(row.group.group_id)}/members/${encodeURIComponent(member.document_code)}?side=${side}&build=false`,
                 {method: 'DELETE'},
                 result => {
                     // Убрали якорь — строку держит следующий участник на его прежнем месте.
@@ -15563,7 +15573,8 @@ const app = createApp({
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({side, member_codes: [...new Set([...own, ...codes])],
-                    group_id: row.group?.group_id || null, anchor_document_code: row.group ? null : own[0]}),
+                    group_id: row.group?.group_id || null, anchor_document_code: row.group ? null : own[0],
+                    build: false}),
             });
         }
 
@@ -22236,7 +22247,7 @@ const app = createApp({
             scDocumentsLeft, scDocumentsRight, scDocumentOrder, scPairRows, scVisiblePairRows,
             scDocumentGroupsError, scDocumentGroupsBusy, scStageUploadTarget,
             scFanItems, scFanShowsPlus, scFanPaths, scOpenRowUpload, scDropOnRowPlus,
-            scGroupNeedsRebuild,
+            scGroupNeedsRebuild, scGroupBuildLabel,
             scHasStandaloneUploadRow, scSetStandaloneUploadRow, scOpenStandaloneRowUpload,
             scRemoveGroupMember, scRebuildDocumentGroup,
             scCanReorderGroup, scStartGroupMemberDrag, scFinishGroupMemberDrag, scDropGroupMember, scMoveGroupMember,

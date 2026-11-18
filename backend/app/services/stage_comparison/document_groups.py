@@ -487,7 +487,7 @@ def _find_group(groups: list[dict[str, Any]], group_id: str) -> dict[str, Any]:
 def add_members(
     object_id: str, row_document_code: str | None, member_codes: list[str],
     *, side: str = "right", new_group: bool = False, group_id: str | None = None,
-    anchor_document_code: str | None = None,
+    anchor_document_code: str | None = None, build: bool = True,
 ) -> dict[str, Any]:
     """Добавить документы на сторону ``side`` строки.
 
@@ -498,6 +498,10 @@ def add_members(
     Напротив может быть пусто (другая стадия ещё не загружена): тогда строку
     задаёт ``group_id`` её группы или ``anchor_document_code`` — документ той
     же стороны, на который перетащили остальные; он ведёт строку новой группы.
+
+    ``build=False`` только сохраняет состав: инженер набирает всю группу, а
+    сборку запускает кнопкой «Собрать» (``rebuild``). Новое отдельное сравнение
+    (``new_group``) собирается сразу.
     """
     _require_enabled()
     side = _check_side(side)
@@ -583,8 +587,9 @@ def add_members(
             else _ordered([*target["members"], *codes])
         )
         group["updated_at"] = _now()
+        # _settle уже отцепил сборку у стороны, где остался один документ.
         released = _settle(object_id, groups)
-        if group in groups:
+        if group in groups and (build or new_group):
             _ensure_side(object_id, group, side, sources, force=target["members"] != before)
         _write(object_id, data)
         return {
@@ -593,8 +598,12 @@ def add_members(
         }
 
 
-def remove_member(object_id: str, group_id: str, document_code: str, side: str = "right") -> dict[str, Any]:
-    """Вернуть документ стороны из группы в общий список."""
+def remove_member(object_id: str, group_id: str, document_code: str, side: str = "right",
+                  *, build: bool = True) -> dict[str, Any]:
+    """Вернуть документ стороны из группы в общий список.
+
+    ``build=False`` — без пересборки: сторона помечается «Нужна пересборка».
+    """
     _require_enabled()
     side = _check_side(side)
     with _lock:
@@ -611,7 +620,7 @@ def remove_member(object_id: str, group_id: str, document_code: str, side: str =
         group["updated_at"] = _now()
         released = _settle(object_id, data["groups"])
         sources = _current_sources(object_id)
-        if group in data["groups"]:
+        if group in data["groups"] and build:
             _ensure_side(object_id, group, side, sources, force=True)
         _write(object_id, data)
         return {

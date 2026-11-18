@@ -95,9 +95,9 @@ describe('группы документов на доске пар (1 → N, N �
 
   it('склеивает проекты стороны группы в сборку через API групп', () => {
     expect(app).toContain('/document-groups${suffix}');
-    expect(app).toContain("body: JSON.stringify({side, [other + '_document_code']: rowCode, member_codes: all, group_id: groupId})");
+    expect(app).toContain("body: JSON.stringify({side, [other + '_document_code']: rowCode, member_codes: all, group_id: groupId,\n                        build: false}),");
     expect(app).toContain("{method: 'DELETE'}");
-    expect(app).toContain('?side=${side}`');
+    expect(app).toContain('?side=${side}&build=false`');
     expect(app).toContain('/rebuild`, {method: \'POST\'}');
   });
 
@@ -117,6 +117,14 @@ describe('группы документов на доске пар (1 → N, N �
     expect(status({left: side({stale: true}), right: {assembled: false}})).toEqual({tone: 'error', label: 'Нужна пересборка слева'});
     expect(status({left: side({status: 'RUNNING'}), right: side({status: 'FAILED'})})).toEqual({tone: 'error', label: 'Сборка не удалась справа'});
     expect(status({left: side(), right: side()})).toBe(null);
+    // Состав набран переносами без сборки: «Нужна сборка» и кнопка «Собрать», а не ошибка.
+    expect(status({left: side({status: 'NOT_BUILT'}), right: {assembled: false}}))
+      .toEqual({tone: 'incomplete', label: 'Нужна сборка слева'});
+    const label = extractFunction('scGroupBuildLabel');
+    expect(label({left: side({status: 'NOT_BUILT'}), right: {assembled: false}})).toBe('Собрать');
+    expect(label({left: side({stale: true}), right: {assembled: false}})).toBe('Пересобрать');
+    expect(html).toContain("@click=\"scRebuildDocumentGroup(row)\">{{ scGroupBuildLabel(row.group) }}</button>");
+    expect(app).toContain('?side=${side}&build=false');
     // Подпись «Слева сборка из N проектов · M листов» убрана по просьбе инженера (18.11.2026).
     expect(html).not.toContain('scGroupNote');
     expect(app).not.toContain('function scGroupNote');

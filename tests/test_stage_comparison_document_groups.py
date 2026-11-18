@@ -834,3 +834,54 @@ def test_suggestion_offers_document_opposite_to_one_sided_group_anchor(monkeypat
 
     assert seen == {"left": [("P-1", False)], "right": ["RD-K1"]}
     assert meta["documents"]["stage_1"][0]["included_in_assemblies"] is True   # сессия не изменена
+
+
+# ── Сборка по подтверждению: состав набирается без сборки (18.11.2026) ─────
+
+def test_members_are_collected_without_build_until_confirmed(groups_env):
+    _stage_document(groups_env, "stage_1", "P-3")
+    first = document_groups.add_members("obj-test", None, ["P-2"], side="left",
+                                        anchor_document_code="P-1", build=False)["group"]
+    assert first["left"]["status"] == "NOT_BUILT" and first["left"]["assembly_version_id"] is None
+    grown = document_groups.add_members("obj-test", None, ["P-1", "P-2", "P-3"], side="left",
+                                        group_id=first["group_id"], build=False)["group"]
+    assert _codes(grown["left"]) == ["P-1", "P-2", "P-3"] and grown["left"]["status"] == "NOT_BUILT"
+    assert _attached_left() == []
+
+    built = document_groups.rebuild("obj-test", first["group_id"])["group"]
+
+    assert built["left"]["status"] == "READY" and built["left"]["stale"] is False
+    document_groups.list_groups("obj-test")
+    assert [row["version_id"] for row in _attached_left()] == [built["left"]["assembly_version_id"]]
+
+
+def test_deferred_change_of_built_group_keeps_old_assembly_until_rebuild(groups_env):
+    group = document_groups.add_members("obj-test", "P-1", ["RD-K1", "RD-K2"])["group"]
+    document_groups.list_groups("obj-test")
+
+    grown = document_groups.add_members("obj-test", "P-1", ["RD-K3"], build=False)["group"]
+
+    assert grown["right"]["stale"] is True and grown["assembly_version_id"] == group["assembly_version_id"]
+    assert [row["version_id"] for row in _attached()] == [group["assembly_version_id"]]
+    # Вернули прежний состав — пересборка не нужна.
+    back = document_groups.remove_member("obj-test", group["group_id"], "RD-K3", build=False)["group"]
+    assert back["right"]["stale"] is False and back["assembly_version_id"] == group["assembly_version_id"]
+
+
+def test_document_groups_api_saves_composition_without_build(groups_env):
+    _stage_document(groups_env, "stage_1", "P-3")
+    client = TestClient(_app())
+    url = "/api/stage-comparison/objects/obj-test/document-groups"
+
+    created = client.post(url, json={"side": "left", "anchor_document_code": "P-1",
+                                     "member_codes": ["P-1", "P-2", "P-3"], "build": False})
+    assert created.status_code == 200, created.text
+    group = created.json()["group"]
+    assert group["left"]["status"] == "NOT_BUILT"
+    built = client.post(f"{url}/{group['group_id']}/rebuild")
+    assert built.status_code == 200 and built.json()["group"]["left"]["status"] == "READY"
+    removed = client.delete(f"{url}/{group['group_id']}/members/P-3?side=left&build=false")
+    assert removed.status_code == 200
+    left = removed.json()["group"]["left"]
+    assert _codes(left) == ["P-1", "P-2"] and left["stale"] is True
+    assert left["assembly_version_id"] == built.json()["group"]["left"]["assembly_version_id"]

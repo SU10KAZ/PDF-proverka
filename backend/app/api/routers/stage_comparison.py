@@ -55,6 +55,8 @@ class DocumentGroupMembersRequest(BaseModel):
     member_codes: list[str] = Field(min_length=1, max_length=32)
     new_group: bool = False
     group_id: str | None = None
+    # False — только сохранить состав; сборку запускает «Собрать» (rebuild).
+    build: bool = True
 
     @model_validator(mode="after")
     def _row_document_required(self):
@@ -441,7 +443,7 @@ async def add_document_group_members(
     return await _run_document_groups(
         document_groups.add_members, scope, request.row_document_code, request.member_codes,
         side=request.side, new_group=request.new_group, group_id=request.group_id,
-        anchor_document_code=request.anchor_document_code,
+        anchor_document_code=request.anchor_document_code, build=request.build,
     )
 
 
@@ -451,9 +453,11 @@ async def remove_document_group_member(
     object_id: str, group_id: str, document_code: str,
     side: Literal["left", "right"] = Query("right"),
     comparison_version: ComparisonVersionParam = None,
+    build: bool = Query(True),
 ):
     scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
-    return await _run_document_groups(document_groups.remove_member, scope, group_id, document_code, side)
+    return await _run_document_groups(document_groups.remove_member, scope, group_id, document_code, side,
+                                      build=build)
 
 
 @router.put("/objects/{object_id}/document-groups/{group_id}/order")
