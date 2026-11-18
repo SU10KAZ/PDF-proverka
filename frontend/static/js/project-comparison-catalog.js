@@ -185,6 +185,9 @@
                     watch([() => props.objectId, () => props.comparisonVersion], () => { progress.value = []; progressError.value = false; pollProgress(); });
                     // viewer (portal_auth.js): только просмотр — без запуска и выбора пар для анализа.
                     const canOperate = !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate());
+                    // «Отработано» ставят и инженеры-viewer с просмотром раздела.
+                    const canMarkWorked = !(typeof window !== 'undefined' && window.portalCan
+                        && !(window.portalCan.markWorked ? window.portalCan.markWorked() : window.portalCan.operate()));
                     function workedTitle(row) {
                         const mark = props.workedMark(row);
                         if (!mark) return '';
@@ -192,7 +195,7 @@
                         return 'Отработано: ' + (mark.by || 'инженер')
                             + (at && !Number.isNaN(at.getTime()) ? ', ' + at.toLocaleString('ru-RU') : '');
                     }
-                    return {rowProgress, catalog, entries, loading, overviewLoading, loadError, load, date, model, effort, isRunning, start, startDisabled, selectPair, selectAll, canOperate, workedTitle,
+                    return {rowProgress, catalog, entries, loading, overviewLoading, loadError, load, date, model, effort, isRunning, start, startDisabled, selectPair, selectAll, canOperate, canMarkWorked, workedTitle,
                         sourceLabel: s => SOURCE_LABEL[s] || s,
                         open: (entry, options) => (options ? emit('open', entry, options) : emit('open', entry))};
                 },
@@ -238,7 +241,7 @@
                                     @click="start(entry)">Запустить сравнение</button>
                                 <span v-if="workedMark(entry.selection_pair)" class="pc-catalog__worked"
                                     :title="workedTitle(entry.selection_pair)">Отработано · {{ workedMark(entry.selection_pair).by }}</span>
-                                <button v-else-if="canOperate" type="button" class="btn btn-sm btn-secondary pc-catalog__worked-button"
+                                <button v-else-if="canMarkWorked" type="button" class="btn btn-sm btn-secondary pc-catalog__worked-button"
                                     :disabled="markingWorked" @click="$emit('mark-worked', entry.selection_pair)">Отработано</button>
                             </td>
                             <td v-else class="pc-catalog__actions">
@@ -251,7 +254,7 @@
                                     @click="open(entry)">Открыть</button>
                                 <span v-if="workedMark(entry.selection_pair)" class="pc-catalog__worked"
                                     :title="workedTitle(entry.selection_pair)">Отработано · {{ workedMark(entry.selection_pair).by }}</span>
-                                <button v-else-if="canOperate" type="button" class="btn btn-sm btn-secondary pc-catalog__worked-button"
+                                <button v-else-if="canMarkWorked" type="button" class="btn btn-sm btn-secondary pc-catalog__worked-button"
                                     :disabled="markingWorked" @click="$emit('mark-worked', entry.selection_pair)">Отработано</button>
                             </td>
                         </tr>

@@ -33,6 +33,10 @@
             return caps.can_operate !== false || !!(caps.uploads && caps.uploads[section])
                 || (section === 'audit_results' && caps.can_upload_projects === true);
         },
+        // «Отработано» у пары сравнения стадий: любой с просмотром раздела.
+        markWorked: function () {
+            return caps.can_operate !== false || !!(sections.stage_comparison && sections.stage_comparison.view);
+        },
         editSchedule: function () { return caps.can_edit_schedule === true; },
         // Служебные панели: расход, пользователи, учётная запись модели.
         admin: function () { return caps.is_admin !== false; },

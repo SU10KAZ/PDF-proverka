@@ -9,6 +9,9 @@
 ``IMPORT_DECISIONS`` разрешает единственный POST импорта Excel активному
 аккаунту с просмотром результатов аудита.
 
+``MARK_WORKED`` — отметка пары «Отработано» в сравнении стадий: её ставят
+инженеры (viewer) с просмотром раздела, запусков и правок она не даёт.
+
 Маршрут вне обоих перечней тоже трактуется как admin (fail closed), а тест
 ``tests/test_access_policy_coverage.py`` падает, если у маршрута нет явного
 правила — так новый роутер не может появиться «молча открытым».
@@ -41,6 +44,7 @@ DOWNLOAD = "DOWNLOAD"
 IMPORT_DECISIONS = "IMPORT_DECISIONS"
 UPLOAD_PROJECTS = "UPLOAD_PROJECTS"
 EDIT_SCHEDULE = "EDIT_SCHEDULE"
+MARK_WORKED = "MARK_WORKED"
 
 
 @dataclass(frozen=True)
@@ -71,6 +75,7 @@ PCP = "/api/project-change-preview/objects/{object_id}"
 _ALLOW_SPEC: dict[str, list[str]] = {
     EDIT_SCHEDULE: ["PUT /api/schedule/plan", "POST /api/schedule/reserve/operations"],
     IMPORT_DECISIONS: ["POST /api/knowledge-base/upload-excel"],
+    f"{MARK_WORKED}:{_SC}": [f"POST {SCS}/worked-pairs"],
     UPLOAD_PROJECTS: ["POST /api/projects/upload-folder", "POST /api/projects/upload-folder/precheck"],
     f"{UPLOAD_PROJECTS}:{_VC}": [
         f"POST {VC}/uploads", f"POST {VC}/uploads/{{upload_id}}/files",
@@ -300,6 +305,10 @@ def _check_role(ctx, policy: Policy) -> None:
             return
         raise _deny("forbidden_decision_import",
                     "Для загрузки решений нужен доступ к результатам аудита.")
+    if policy.kind == MARK_WORKED:
+        if ctx.can_view(policy.section):
+            return
+        raise _deny("forbidden_section", "Нет доступа к разделу.", section=policy.section)
     if policy.kind == UPLOAD_PROJECTS:
         if ctx.can_upload(policy.section or "audit_results"):
             return

@@ -13449,7 +13449,9 @@ const app = createApp({
                 .find(mark => mark.left_pdf === left && mark.right_pdf === right) || null;
         }
         async function pcMarkPairWorked(row) {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
+            // Отметку ставят и инженеры-viewer с просмотром раздела «Сравнение стадий».
+            if (!(typeof window === 'undefined' || !window.portalCan
+                || (window.portalCan.markWorked ? window.portalCan.markWorked() : window.portalCan.operate()))) return;
             const sessionId = scSession.value?.id;
             if (!sessionId || !row?.left?.pdf_path || !row?.right?.pdf_path || pcWorkedMarking.value || pcWorkedMark(row)) return;
             if (!window.confirm('Отметить пару как отработанную? Отметку с вашим именем увидят все инженеры.')) return;

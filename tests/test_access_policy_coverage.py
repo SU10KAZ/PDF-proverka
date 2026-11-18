@@ -21,7 +21,7 @@ from fastapi import HTTPException
 
 from backend.app.core import access
 from backend.app.core.access_policy import (
-    ADMIN, COMMON, DOWNLOAD, EDIT_SCHEDULE, IMPORT_DECISIONS, UPLOAD_PROJECTS, MACHINE, PUBLIC, SELF, VIEW,
+    ADMIN, COMMON, DOWNLOAD, EDIT_SCHEDULE, IMPORT_DECISIONS, MARK_WORKED, UPLOAD_PROJECTS, MACHINE, PUBLIC, SELF, VIEW,
     enforce_route_policy, has_explicit_rule, policy_for,
 )
 
@@ -87,7 +87,7 @@ def _viewer_allowlist(routes) -> list[str]:
     lines = []
     for m, p, _ in routes:
         pol = policy_for(m, p)
-        if pol.kind in (VIEW, DOWNLOAD, IMPORT_DECISIONS, UPLOAD_PROJECTS, COMMON, SELF, PUBLIC):
+        if pol.kind in (VIEW, DOWNLOAD, IMPORT_DECISIONS, MARK_WORKED, UPLOAD_PROJECTS, COMMON, SELF, PUBLIC):
             lines.append(f"{pol}\t{m}\t{p}")
     return sorted(set(lines))
 
@@ -114,6 +114,9 @@ def test_no_mutating_route_open_to_viewer(routes):
                     assert m == "POST" and p.endswith(("/upload", "/upload-folder"))
                 else:
                     assert pol.section == "version_comparison" and ("/uploads" in p or "/batches" in p)
+            elif pol.kind == MARK_WORKED:
+                assert (m, p, pol.section) == ("POST", "/api/stage-comparison/sessions/{session_id}/worked-pairs",
+                                               "stage_comparison")
             elif pol.kind == EDIT_SCHEDULE:
                 assert (m, p) in (("PUT", "/api/schedule/plan"), ("POST", "/api/schedule/reserve/operations"))
             else:
@@ -178,7 +181,7 @@ def test_access_matrix(routes, kind, monkeypatch):
             expected = False
         elif pol.kind == VIEW:
             expected = kind != "viewer_none"
-        elif pol.kind == IMPORT_DECISIONS:
+        elif pol.kind in (IMPORT_DECISIONS, MARK_WORKED):
             expected = kind != "viewer_none"
         elif pol.kind == UPLOAD_PROJECTS:
             expected = kind == {None: "viewer_upload", "version_comparison": "viewer_upload_versions",
