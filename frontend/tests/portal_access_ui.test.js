@@ -318,12 +318,14 @@ describe('WebSocket: коды закрытия', () => {
 describe('сравнение стадий у viewer', () => {
     const code = between(app, '        // Read-only двойники для viewer (план доступа 5.3).', '        async function scLoadObjects()');
 
-    function harness(reply, portalCan = viewerCan({stage_comparison: {view: true}})) {
+    function harness(reply, portalCan = viewerCan({stage_comparison: {view: true}}), version = '') {
         const requests = [];
         const ref = value => ({value});
         const ctx = helpersContext({
             window: {portalCan}, JSON, encodeURIComponent, Object, String, Promise,
             fetch: async (url, init) => { requests.push({url, method: (init && init.method) || 'GET'}); return reply(url); },
+            // Версия сравнения не выбрана — адрес прежний (Версия 1 на сервере).
+            scVersionUrl: url => (version ? url + '?comparison_version=' + version : url),
             scSessionRequestToken: 0,
             scSelectedObject: ref({id: 'obj 1', stages: [{name: 'stage_1', pdf_count: 2}, {name: 'stage_2', pdf_count: 3}]}),
             scSession: ref(null), scSessionLoading: ref(false), scSessionError: ref(''),
@@ -349,6 +351,12 @@ describe('сравнение стадий у viewer', () => {
         expect(h.ctx.scSession.value.id).toBe('s1');
         expect(h.ctx.scSessionStale.value).toBe(false);
         expect(h.ctx.scViewerNotPrepared.value).toBe('');
+    });
+
+    it('читает сессию выбранной версии сравнения', async () => {
+        const h = harness(() => json(200, {id: 's2', stale: false, documents: {}}), undefined, 'cv002');
+        await h.ctx.scRefreshSession();
+        expect(h.requests).toEqual([{url: '/api/stage-comparison/objects/obj%201/session?comparison_version=cv002', method: 'GET'}]);
     });
 
     it('not_prepared → сообщение «не подготовлено», сессии нет', async () => {

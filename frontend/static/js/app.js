@@ -13384,13 +13384,49 @@ const app = createApp({
         const pcHistory = ref({});
         let pcLoadToken = 0;
         let pcContextEpoch = 0;
-        watch(currentObjectId, () => {
+        // Версии сравнения (stage-comparison-versions.js): у объекта несколько
+        // независимых сравнений, у каждой версии свои папки стадий, доска и результаты.
+        const SC_VERSIONS = window.StageComparisonVersions;
+        const SC_VERSION_STORAGE = 'stage-comparison:comparison-version:';
+        const scComparisonVersions = ref([]);
+        const scComparisonVersion = ref('');
+        const scComparisonVersionsError = ref('');
+        const scSelectedComparisonVersion = computed(() =>
+            scComparisonVersions.value.find(item => item.comparison_version === scComparisonVersion.value) || null);
+        const scComparisonVersionSetOptions = computed(() => SC_VERSIONS.setOptions(scComparisonVersions.value));
+        const scNextComparisonVersionLabel = computed(() => SC_VERSIONS.nextLabel(scComparisonVersions.value));
+        const scVersionRenameEditing = ref(false);
+        const scVersionRenameValue = ref('');
+        const scVersionRenameError = ref('');
+        const scVersionRenameBusy = ref(false);
+        const scVersionRenameInput = ref(null);
+        const scVersionDialogOpen = ref(false);
+        const scVersionDialogError = ref('');
+        const scVersionDialogBusy = ref(false);
+        const scVersionForm = reactive({label: '', left: {mode: 'new', set: ''}, right: {mode: 'new', set: ''}});
+        const scVersionSides = [
+            {key: 'left', title: 'Слева — исходная редакция', where: 'слева'},
+            {key: 'right', title: 'Справа — новая редакция', where: 'справа'},
+        ];
+        // Объектный маршрут раздела с выбранной версией (без версии сервер берёт Версию 1).
+        function scVersionUrl(url, version = scComparisonVersion.value) {
+            return SC_VERSIONS.withVersion(url, version);
+        }
+        // Смена объекта или версии: прежний контекст не должен дописать ничего в
+        // новый (запросы в полёте сверяют pcContextEpoch и свои токены).
+        function scResetComparisonContext() {
             pcCatalogFocus.value = null;
             pcContextEpoch++; pcLoadToken++; pcLoading.value = false; pcBridgeEnvelope.value = null; pcHistory.value = {}; pcBridgeUnavailable.value = false;
             scSessionRequestToken++; scInvalidatePairOpen(); scResetProductionReview();
             scSession.value = null; scActivePair.value = null; scPairData.value = null; scMatchState.value = null;
             scDocumentGroupsToken++; clearTimeout(scDocumentGroupsTimer); scDocumentGroups.value = []; scDocumentGroupsError.value = '';
             scTab.value = 'upload';
+        }
+        watch(currentObjectId, () => {
+            scResetComparisonContext();
+            // Версии у каждого объекта свои: выбор восстановится из памяти браузера.
+            scComparisonVersions.value = []; scComparisonVersion.value = ''; scComparisonVersionsError.value = '';
+            scVersionRenameEditing.value = false; scVersionDialogOpen.value = false;
         }, {flush: 'sync'});
         const pcError = ref('');
         // «Итоговые» of the Consolidator show their own list; the ordinary list stays the default.
@@ -13411,9 +13447,10 @@ const app = createApp({
             const token = ++pcCatalogEntriesToken;
             try {
                 const objectId = currentObjectId.value;
-                const response = await fetch('/api/project-comparison/catalog?object_id=' + encodeURIComponent(objectId));
+                const version = scComparisonVersion.value;
+                const response = await fetch(scVersionUrl('/api/project-comparison/catalog?object_id=' + encodeURIComponent(objectId), version));
                 const data = await response.json().catch(() => ({}));
-                if (token !== pcCatalogEntriesToken || objectId !== currentObjectId.value) return;
+                if (token !== pcCatalogEntriesToken || objectId !== currentObjectId.value || version !== scComparisonVersion.value) return;
                 pcCatalogEntries.value = response.ok && Array.isArray(data.entries) ? data.entries : [];
             } catch (_) {
                 // Без каталога строка просто не покажет отметку; сам каталог выводит свою ошибку.
@@ -13464,43 +13501,58 @@ const app = createApp({
             return true;
         }
         async function pcEnsureResultSession(sessionId, objectId) {
-            const epoch = pcContextEpoch;
+            let epoch = pcContextEpoch;
             const current = () => epoch === pcContextEpoch && currentObjectId.value === objectId;
+            const settle = async message => {
+                if (!await pcWaitFor(() => !current() || (!scSessionLoading.value && !scObjectsLoading.value)))
+                    throw new Error(message);
+                if (!current()) throw new Error('Объект изменился во время открытия результата.');
+            };
             // Let the ordinary object loader finish before installing a historical session.
-            if (!await pcWaitFor(() => !current() || (!scSessionLoading.value && !scObjectsLoading.value)))
-                throw new Error('Не удалось дождаться загрузки сессии объекта.');
-            if (!current()) throw new Error('Объект изменился во время открытия результата.');
+            await settle('Не удалось дождаться загрузки сессии объекта.');
             if (scSession.value?.id === sessionId) return;
-            const stages = scSelectedObject.value?.stages || [];
-            const leftPath = stages.find(s => s.name === 'stage_1')?.path;
-            const rightPath = stages.find(s => s.name === 'stage_2')?.path;
             // viewer путей стадий не получает (сервер их убирает из списка
             // объектов): принадлежность сессии объекту проверяет сервер по
             // X-Object-Id (404 session_not_in_object).
             const viewerMode = !(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate());
-            if (!viewerMode && (!leftPath || !rightPath)) throw new Error('Папки стадий объекта недоступны.');
             const requestToken = ++scSessionRequestToken;
             scSessionLoading.value = true;
+            let data;
             try {
                 const response = await fetch('/api/stage-comparison/sessions/' + encodeURIComponent(sessionId));
-                const data = await response.json().catch(() => ({}));
+                data = await response.json().catch(() => ({}));
                 if (!current() || requestToken !== scSessionRequestToken)
                     throw new Error('Контекст сравнения изменился во время открытия результата.');
                 if (!response.ok) throw new Error(data.detail || 'Сохранённая сессия результата недоступна.');
-                if (data.id !== sessionId
-                        || (!viewerMode && (data.stage_a_path !== leftPath || data.stage_b_path !== rightPath)))
-                    throw new Error('Сессия сравнения этого результата не принадлежит выбранному объекту.');
-                pcCatalogFocus.value = null;
-                pcLoadToken++; pcBridgeEnvelope.value = null; pcBridgeUnavailable.value = false; pcHistory.value = {};
-                scInvalidatePairOpen(); scResetProductionReview();
-                scActivePair.value = null; scPairData.value = null; scMatchState.value = null;
-                scSession.value = data;
-                scSessionError.value = '';
-                Object.keys(scPairRowStates).forEach(key => { delete scPairRowStates[key]; });
-                scInitializeDocumentOrder(true); scApplyDocumentDefaults();
             } finally {
                 if (requestToken === scSessionRequestToken) scSessionLoading.value = false;
             }
+            // Результат другой версии сравнения: сначала переключить версию — у
+            // каждой версии свои папки стадий и своя доска.
+            const owner = data.comparison_version;
+            if (owner && owner !== scComparisonVersion.value
+                    && scComparisonVersions.value.some(item => item.comparison_version === owner)) {
+                if (!await scSelectComparisonVersion(owner))
+                    throw new Error('Не удалось переключиться на версию сравнения этого результата.');
+                epoch = pcContextEpoch;
+                await settle('Не удалось дождаться загрузки версии сравнения.');
+                if (scSession.value?.id === sessionId) return;
+            }
+            const stages = scSelectedObject.value?.stages || [];
+            const leftPath = stages.find(s => s.name === 'stage_1')?.path;
+            const rightPath = stages.find(s => s.name === 'stage_2')?.path;
+            if (!viewerMode && (!leftPath || !rightPath)) throw new Error('Папки стадий объекта недоступны.');
+            if (data.id !== sessionId
+                    || (!viewerMode && (data.stage_a_path !== leftPath || data.stage_b_path !== rightPath)))
+                throw new Error('Сессия сравнения этого результата не принадлежит выбранному объекту.');
+            pcCatalogFocus.value = null;
+            pcLoadToken++; pcBridgeEnvelope.value = null; pcBridgeUnavailable.value = false; pcHistory.value = {};
+            scInvalidatePairOpen(); scResetProductionReview();
+            scActivePair.value = null; scPairData.value = null; scMatchState.value = null;
+            scSession.value = data;
+            scSessionError.value = '';
+            Object.keys(scPairRowStates).forEach(key => { delete scPairRowStates[key]; });
+            scInitializeDocumentOrder(true); scApplyDocumentDefaults();
         }
         async function pcOpenCatalogEntry(entry, options) {
             const target = entry && entry.open;
@@ -13682,10 +13734,20 @@ const app = createApp({
             pcLoading.value = true;
             try {
                 const selectedUrl = typeof explicitUrl === 'string' ? explicitUrl : pcCatalogFocus.value?.presentation_api;
-                let url = selectedUrl || '/api/stage-comparison/objects/' + encodeURIComponent(objectId) + '/project-changes';
-                const runId = scProductionState.value?.run_id;
-                if (!selectedUrl && !hadViewer && scSession.value?.id && scActivePair.value?.id && runId) {
-                    url += '?' + new URLSearchParams({session_id: scSession.value.id, pair_id: scActivePair.value.id, run_id: runId});
+                let url = selectedUrl;
+                if (!url) {
+                    // Общий вид объекта — по выбранной версии сравнения; адрес прогона
+                    // (сессия + пара + прогон) версию задаёт сам.
+                    const params = new URLSearchParams();
+                    if (SC_VERSIONS.isVersion(scComparisonVersion.value)) params.set('comparison_version', scComparisonVersion.value);
+                    const runId = scProductionState.value?.run_id;
+                    if (!hadViewer && scSession.value?.id && scActivePair.value?.id && runId) {
+                        params.set('session_id', scSession.value.id);
+                        params.set('pair_id', scActivePair.value.id);
+                        params.set('run_id', runId);
+                    }
+                    const query = params.toString();
+                    url = '/api/stage-comparison/objects/' + encodeURIComponent(objectId) + '/project-changes' + (query ? '?' + query : '');
                 }
                 const response = await fetch(url);
                 // A previous object must never continue into the new object's session.
@@ -15001,7 +15063,7 @@ const app = createApp({
         }
 
         function scDocumentGroupsUrl(suffix = '') {
-            return `/api/stage-comparison/objects/${encodeURIComponent(currentObjectId.value)}/document-groups${suffix}`;
+            return scVersionUrl(`/api/stage-comparison/objects/${encodeURIComponent(currentObjectId.value)}/document-groups${suffix}`);
         }
 
         async function scDocumentGroupsRequest(suffix, options) {
@@ -15713,7 +15775,7 @@ const app = createApp({
 
         // Read-only двойники для viewer (план доступа 5.3).
         function scViewerSessionUrl(objectId) {
-            return `/api/stage-comparison/objects/${encodeURIComponent(objectId)}/session`;
+            return scVersionUrl(`/api/stage-comparison/objects/${encodeURIComponent(objectId)}/session`);
         }
 
         function scViewerPairUrl(objectId, sessionId, leftPdf, rightPdf) {
@@ -15837,12 +15899,169 @@ const app = createApp({
             }
         }
 
+        function scStoredComparisonVersion(objectId) {
+            try { return localStorage.getItem(SC_VERSION_STORAGE + objectId) || ''; } catch (_) { return ''; }
+        }
+
+        function scStoreComparisonVersion(objectId, version) {
+            try { if (objectId && version) localStorage.setItem(SC_VERSION_STORAGE + objectId, version); } catch (_) { /* приватный режим */ }
+        }
+
+        // Список версий объекта и выбранная версия: запомненная в браузере, иначе самая новая.
+        async function scLoadComparisonVersions(objectId) {
+            if (!objectId) {
+                scComparisonVersions.value = [];
+                return '';
+            }
+            try {
+                const response = await fetch(`/api/stage-comparison/objects/${encodeURIComponent(objectId)}/comparison-versions`);
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(scResponseErrorText(data, response));
+                if (objectId !== currentObjectId.value) return scComparisonVersion.value;
+                scComparisonVersions.value = Array.isArray(data.versions) ? data.versions : [];
+                scComparisonVersionsError.value = '';
+            } catch (error) {
+                if (objectId !== currentObjectId.value) return scComparisonVersion.value;
+                // Без списка версий раздел работает с Версией 1, как до их появления.
+                scComparisonVersions.value = [];
+                scComparisonVersionsError.value = 'Список версий сравнения недоступен: ' + String(error.message || error);
+            }
+            const chosen = SC_VERSIONS.pickVersion(scComparisonVersions.value,
+                scComparisonVersion.value || scStoredComparisonVersion(objectId));
+            scComparisonVersion.value = chosen;
+            scStoreComparisonVersion(objectId, chosen);
+            return chosen;
+        }
+
+        // Переключить версию: несохранённая раскладка пар сначала сохраняется.
+        async function scSelectComparisonVersion(version) {
+            if (!SC_VERSIONS.isVersion(version)) return false;
+            if (version === scComparisonVersion.value) return true;
+            if (scSession.value?.id && !await scFlushDocumentPairing()) {
+                scSessionError.value = scPairingSaveError.value || 'Не удалось сохранить сопоставление перед сменой версии';
+                return false;
+            }
+            scComparisonVersion.value = version;
+            scStoreComparisonVersion(currentObjectId.value, version);
+            scVersionRenameEditing.value = false;
+            scResetComparisonContext();
+            await scLoadObjects();
+            return true;
+        }
+
+        async function scOnComparisonVersionChange(event) {
+            const select = event && event.target;
+            const ok = await scSelectComparisonVersion(select ? select.value : '');
+            if (!ok && select) select.value = scComparisonVersion.value;
+        }
+
+        function scStartVersionRename() {
+            const version = scSelectedComparisonVersion.value;
+            if (!version || !portalCanAdmin()) return;
+            scVersionRenameValue.value = version.label;
+            scVersionRenameError.value = '';
+            scVersionRenameEditing.value = true;
+            nextTick(() => scVersionRenameInput.value?.focus?.());
+        }
+
+        function scCancelVersionRename() {
+            scVersionRenameEditing.value = false;
+            scVersionRenameError.value = '';
+        }
+
+        async function scSubmitVersionRename() {
+            const version = scSelectedComparisonVersion.value;
+            const label = String(scVersionRenameValue.value || '').trim();
+            if (!version) return scCancelVersionRename();
+            if (!label) {
+                scVersionRenameError.value = 'Укажите название версии';
+                return;
+            }
+            if (label === version.label) return scCancelVersionRename();
+            const objectId = currentObjectId.value;
+            scVersionRenameBusy.value = true;
+            scVersionRenameError.value = '';
+            try {
+                const response = await fetch(`/api/stage-comparison/objects/${encodeURIComponent(objectId)}`
+                    + `/comparison-versions/${encodeURIComponent(version.comparison_version)}`, {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({label}),
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(scResponseErrorText(data, response));
+                if (objectId !== currentObjectId.value) return;
+                scComparisonVersions.value = scComparisonVersions.value.map(item =>
+                    item.comparison_version === data.comparison_version ? data : item);
+                scCancelVersionRename();
+            } catch (error) {
+                scVersionRenameError.value = String(error.message || error);
+            } finally {
+                scVersionRenameBusy.value = false;
+            }
+        }
+
+        function scOpenVersionDialog() {
+            if (!portalCanAdmin() || !currentObjectId.value || pcDemo.value || pcBridgeActive.value) return;
+            const form = SC_VERSIONS.initialForm(scComparisonVersions.value, scComparisonVersion.value);
+            scVersionForm.label = form.label;
+            Object.assign(scVersionForm.left, form.left);
+            Object.assign(scVersionForm.right, form.right);
+            scVersionDialogError.value = '';
+            scVersionDialogOpen.value = true;
+        }
+
+        function scCloseVersionDialog() {
+            if (!scVersionDialogBusy.value) scVersionDialogOpen.value = false;
+        }
+
+        // Новая версия: стороны — уже загруженный комплект или пустая сторона, в
+        // которую сразу открывается загрузка.
+        async function scCreateComparisonVersion() {
+            if (scVersionDialogBusy.value) return;
+            const {body, errors} = SC_VERSIONS.createPayload(scVersionForm, scComparisonVersionSetOptions.value);
+            if (errors.length) {
+                scVersionDialogError.value = errors.join('. ');
+                return;
+            }
+            const objectId = currentObjectId.value;
+            scVersionDialogBusy.value = true;
+            scVersionDialogError.value = '';
+            try {
+                const response = await fetch(`/api/stage-comparison/objects/${encodeURIComponent(objectId)}/comparison-versions`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body),
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(scResponseErrorText(data, response));
+                if (objectId !== currentObjectId.value) return;
+                scComparisonVersions.value = [
+                    ...scComparisonVersions.value.filter(item => item.comparison_version !== data.comparison_version), data,
+                ];
+                scVersionDialogOpen.value = false;
+                const switched = await scSelectComparisonVersion(data.comparison_version);
+                const firstNewSide = SC_VERSIONS.newSides(body)[0];
+                if (switched && firstNewSide && portalCanUploadProjects('stage_comparison')) {
+                    scOpenStageFolderDialog();
+                    scStageFolderDialogStage.value = firstNewSide;
+                }
+            } catch (error) {
+                scVersionDialogError.value = String(error.message || error);
+            } finally {
+                scVersionDialogBusy.value = false;
+            }
+        }
+
         async function scLoadObjects() {
             const epoch = pcContextEpoch;
             scObjectsLoading.value = true;
             scObjectsError.value = '';
             try {
-                const response = await fetch('/api/stage-comparison/objects?object_id=' + encodeURIComponent(currentObjectId.value));
+                const objectId = currentObjectId.value;
+                const version = await scLoadComparisonVersions(objectId);
+                if (epoch !== pcContextEpoch || objectId !== currentObjectId.value) return;
+                const response = await fetch(scVersionUrl('/api/stage-comparison/objects?object_id=' + encodeURIComponent(objectId), version));
                 const data = await response.json().catch(() => ({}));
                 if (epoch !== pcContextEpoch) return;
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
@@ -16016,8 +16235,19 @@ const app = createApp({
             const side = batch.stageName === 'stage_1' ? 'Слева' : 'Справа';
             const target = batch.target?.afterLeftName ? ` · под ${batch.target.afterLeftName}`
                 : (batch.target?.rowName ? (batch.target.side === 'left' ? ` ← ${batch.target.rowName}` : ` → ${batch.target.rowName}`) : '');
-            return `${side}: ${batch.folderName || 'проекты'}${target}`;
+            // У объекта с несколькими версиями видно, в какую из них идёт загрузка.
+            const version = scComparisonVersions.value.length > 1 && batch.comparisonVersionLabel
+                ? ` · ${batch.comparisonVersionLabel}` : '';
+            return `${side}: ${batch.folderName || 'проекты'}${target}${version}`;
         }
+
+        // Версия, в которую идёт загрузка окна «Загрузить проекты» (у пачки — своя).
+        // При единственной версии строку не показываем.
+        const scStageUploadVersionLabel = computed(() => {
+            if (scComparisonVersions.value.length < 2) return '';
+            const batch = scUploadBatches.value.find(item => item.id === scStageFolderViewBatchId.value);
+            return (batch && batch.comparisonVersionLabel) || scSelectedComparisonVersion.value?.label || '';
+        });
 
         function scUploadBatchStatus(batch) {
             if (batch.status === 'queued') return 'в очереди';
@@ -16033,13 +16263,16 @@ const app = createApp({
             return `готово: ${batch.total}`;
         }
 
-        function scUploadStageCandidate(objectId, stageName, candidate, retainBackup) {
+        function scUploadStageCandidate(objectId, comparisonVersion, stageName, candidate, retainBackup) {
             const form = new FormData();
             candidate.files.forEach(item => form.append('files', item.file, item.file.name));
             form.append('relative_paths', JSON.stringify(candidate.files.map(item => item.full)));
             form.append('folder_name', candidate.name);
             form.append('retain_backup', retainBackup ? 'true' : 'false');
-            const url = `/api/stage-comparison/objects/${encodeURIComponent(objectId)}/stages/${stageName}/upload-folder`;
+            // Пачка грузит в версию, выбранную на её старте, даже если инженер переключился.
+            const url = scVersionUrl(
+                `/api/stage-comparison/objects/${encodeURIComponent(objectId)}/stages/${stageName}/upload-folder`,
+                comparisonVersion);
 
             candidate.status = 'uploading';
             candidate.progress = 0;
@@ -16121,6 +16354,8 @@ const app = createApp({
             const batch = reactive({
                 id: 'upload-' + (++scUploadBatchSeq),
                 objectId,
+                comparisonVersion: scComparisonVersion.value,
+                comparisonVersionLabel: scSelectedComparisonVersion.value?.label || '',
                 stageName,
                 target: scUploadTargetStage(scStageUploadTarget.value) === stageName ? scStageUploadTarget.value : null,
                 folderName: scStageFolderDialogName.value,
@@ -16165,7 +16400,7 @@ const app = createApp({
                     batch.current = index + 1;
                     try {
                         const result = await scUploadStageCandidate(
-                            batch.objectId, batch.stageName, candidate, retainBackup,
+                            batch.objectId, batch.comparisonVersion, batch.stageName, candidate, retainBackup,
                         );
                         candidate.status = 'done';
                         candidate.progress = 100;
@@ -16182,9 +16417,10 @@ const app = createApp({
                     }
                 }
                 batch.failed = batch.selected.length - successful;
-                // Пока пакет грузился, инженер мог уйти в другой объект: тогда
-                // его доску не трогаем, данные подтянутся при возврате.
-                if (successful && batch.objectId === currentObjectId.value) {
+                // Пока пакет грузился, инженер мог уйти в другой объект или другую
+                // версию сравнения: тогда её доску не трогаем, данные подтянутся при возврате.
+                if (successful && batch.objectId === currentObjectId.value
+                        && batch.comparisonVersion === scComparisonVersion.value) {
                     scActivePair.value = null;
                     scPairData.value = null;
                     await scLoadObjects();
@@ -22057,6 +22293,13 @@ const app = createApp({
             pcCatalogFocus, pcCatalogOpening, pcCatalogError, pcOpenCatalogEntry,
             scRowCatalogEntry, scRowCatalogLabel, scRowCatalogTitle,
             scLoadObjects, scOpenSelectedPair, scOpenPair, scOpenPairRow, scOpenPairRowResult,
+            scComparisonVersions, scComparisonVersion, scComparisonVersionsError, scSelectedComparisonVersion,
+            scComparisonVersionSetOptions, scNextComparisonVersionLabel, scComparisonVersionOptionLabel: SC_VERSIONS.optionLabel,
+            scOnComparisonVersionChange, scSelectComparisonVersion,
+            scVersionRenameEditing, scVersionRenameValue, scVersionRenameError, scVersionRenameBusy, scVersionRenameInput,
+            scStartVersionRename, scCancelVersionRename, scSubmitVersionRename,
+            scVersionDialogOpen, scVersionDialogError, scVersionDialogBusy, scVersionForm, scVersionSides,
+            scOpenVersionDialog, scCloseVersionDialog, scCreateComparisonVersion, scStageUploadVersionLabel,
             scProcessCurrentSelection, scProcessPairRow,
             scStartDocumentDrag, scDragDocumentOver,
             scDropDocument, scFinishDocumentDrag, scIsDraggingDocument,

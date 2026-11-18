@@ -3,6 +3,8 @@ import {createRequire} from 'node:module';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 const require=createRequire(import.meta.url);
+// Версии сравнения: песочницы получают настоящий модуль (без выбранной версии адреса прежние).
+const SCV=require('../static/js/stage-comparison-versions.js');
 const V=require('../static/js/project-change-view.js');
 const item={id:'pc-current',status:'CONFIRMED',research_status:'PROVEN',decision_key:'stable',binding_signature:'binding',candidate_version:'candidate',
     decision_state:'ACTIVE',effective_decision:{decision:'CONFIRM',decision_key:'stable',binding_signature:'binding',candidate_version:'candidate',actor:'engineer'}};
@@ -102,7 +104,7 @@ const loadStart=app.indexOf('async function pcLoadBridge(');
 const loadCode=app.slice(loadStart,app.indexOf('const pcSheetFilter',loadStart));
 function loadHarness(){
     let reply;
-    const context={pcLoading:{value:false},scProductionState:{value:null},scActivePair:{value:null},URLSearchParams,PC:V,pcUiEnabled:{value:true},pcCatalogFocus:{value:null},pcLoadToken:0,pcContextEpoch:0,pcApi:{value:'/preview'},currentObjectId:{value:V.OBJECT},
+    const context={SC_VERSIONS:SCV,scComparisonVersion:{value:''},pcLoading:{value:false},scProductionState:{value:null},scActivePair:{value:null},URLSearchParams,PC:V,pcUiEnabled:{value:true},pcCatalogFocus:{value:null},pcLoadToken:0,pcContextEpoch:0,pcApi:{value:'/preview'},currentObjectId:{value:V.OBJECT},
         pcBridgeActive:{value:true},pcBridgeEnvelope:{value:{revision:'source',decision_revision:5}},
         pcBridgeUnavailable:{value:false},pcHistory:{value:{}},pcError:{value:''},scSession:{value:{id:'viewer'}},
         fetch:()=>new Promise(r=>{reply=r;})};
@@ -124,6 +126,17 @@ describe('preview refresh failure and stale responses',()=>{
         h.reply(200,{schema_version:'project-change-view/1',object_id:V.OBJECT,items:[]});
         await pending;
         expect(h.context.pcLoading.value).toBe(false);
+    });
+    it('asks the object-wide view of the selected comparison version only',async()=>{
+        const h=loadHarness(), urls=[];
+        h.context.pcBridgeActive.value=false;
+        h.context.scComparisonVersion.value='cv002';
+        const fetch=h.context.fetch;
+        h.context.fetch=url=>{urls.push(url);return fetch(url);};
+        const pending=h.load();
+        expect(urls[0]).toBe('/api/stage-comparison/objects/'+encodeURIComponent(V.OBJECT)+'/project-changes?comparison_version=cv002');
+        h.reply(404);
+        expect(await pending).toBe(false);
     });
     it('continues ordinary document workflow when no dataset endpoint is available',async()=>{
         const h=loadHarness();h.context.pcBridgeActive.value=false;const p=h.load();h.reply(404);
@@ -175,6 +188,7 @@ describe('ordinary document loading across object switches',()=>{
     it.each([false,true])('loads cards at startup only for the sealed snapshot viewer: %s',async snapshot=>{
         const calls=[];
         const context={currentObjectId:{value:'obj'},pcContextEpoch:0,pcLoadBridge:async()=>{calls.push('cards');return true;},
+            scLoadComparisonVersions:async()=>'',scVersionUrl:url=>url,
             scObjectsLoading:{value:false},scObjectsError:{value:''},scObjects:{value:[]},
             scSelectedObject:{value:{requires_snapshot_viewer:snapshot}},
             fetch:async()=>({ok:true,json:async()=>({items:[]})}),
@@ -188,6 +202,7 @@ describe('ordinary document loading across object switches',()=>{
     it.each([true,false])('ignores a stale ordinary object listing (HTTP success: %s)',async ok=>{
         let reply,refreshes=0;
         const context={currentObjectId:{value:'obj'},pcContextEpoch:0,pcLoadBridge:async()=>false,
+            scLoadComparisonVersions:async()=>'',scVersionUrl:url=>url,
             scObjectsLoading:{value:false},scObjectsError:{value:''},scObjects:{value:['current']},
             fetch:()=>new Promise(resolve=>{reply=resolve;}),scRefreshSession:async()=>{refreshes++;}};
         vm.createContext(context);vm.runInContext(objectsCode,context);

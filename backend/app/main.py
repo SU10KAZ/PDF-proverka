@@ -613,6 +613,7 @@ async def serve_spa(request: Request):
     pc_js = [(_static_mount_dir / 'js' / name) for name in
              ('reserve-calendar.js', '../css/reserve-calendar.css',
               'project-change-view.js', 'project-change-ui.js', 'project-comparison-catalog.js', 'project-assemblies.js',
+              'stage-comparison-versions.js',
               'human-mapping-core.js', 'prelink-core.js', 'prelink-drafts-client.js', 'stage-block-mapping.js',
               '../css/stage-block-mapping.css')] if _static_mount_dir else []
     js_mtimes = [

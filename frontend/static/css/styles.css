@@ -4075,13 +4075,51 @@ tr.row-rejected td.sc-cell-goto {
 /* ─── Documentation comparison: clean shell + vector PDF viewer ─── */
 .sc-steps-bar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 8px 12px;
     margin-bottom: 16px;
 }
 .sc-steps-bar .project-tabs { min-width: 0; overflow-x: auto; }
 .sc-steps-bar__upload { flex: 0 0 auto; }
+/* Версии сравнения: переключатель в строке вкладок (между вкладками и «Загрузить проекты»). */
+.sc-version-switch { display: flex; align-items: center; gap: 6px; flex: 0 1 auto; min-width: 0; margin-left: auto; }
+.sc-version-switch__label { color: var(--text3); font-size: 10px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+.sc-version-switch__select {
+    min-width: 0;
+    max-width: 300px;
+    padding: 4px 6px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--text);
+    background: var(--surface, var(--card-bg, #fff));
+    font-size: 12px;
+}
+.sc-version-switch__pencil {
+    padding: 3px 8px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--text2);
+    background: transparent;
+    font-size: 13px;
+    line-height: 1.2;
+    cursor: pointer;
+}
+.sc-version-switch__pencil:hover { color: var(--text); background: var(--card2-bg); }
+.sc-version-switch__new { flex: 0 0 auto; white-space: nowrap; }
+.sc-version-switch__rename { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.sc-version-switch__rename-input {
+    width: 260px;
+    max-width: 40vw;
+    padding: 4px 8px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--text);
+    background: var(--surface, var(--card-bg, #fff));
+    font-size: 12px;
+}
+.sc-version-switch__error { color: var(--red); font-size: 12px; }
 .sc-shell { display: grid; gap: 16px; }
 /* На «Связи блоков» между вкладками, картой листов и просмотрщиком стояло по
    16 px воздуха. Здесь он не нужен: карта в свёрнутом виде это одна полоска,
@@ -5881,6 +5919,41 @@ tr.row-rejected td.sc-cell-goto {
 .sc-stage-upload-context label:not(.btn) { color: var(--text3); font-size: 10px; font-weight: 700; text-transform: uppercase; }
 .sc-stage-upload-context strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sc-stage-upload-context .sc-upload-button { justify-self: start; }
+.sc-stage-upload-context--versioned { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr) minmax(0, .9fr) minmax(0, 1.2fr); }
+/* Окно «Новая версия сравнения». */
+.sc-version-dialog {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: min(720px, 96vw);
+    max-height: 92vh;
+    padding: 0 0 16px;
+    overflow: auto;
+    color: var(--text);
+    background: var(--surface, var(--card-bg, #fff));
+}
+.sc-version-dialog > :not(header):not(.modal-close) { margin: 0 20px; }
+.sc-version-dialog__field { display: grid; gap: 4px; }
+.sc-version-dialog__field > span { color: var(--text3); font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.sc-version-dialog__side { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--border2); border-radius: var(--radius); }
+.sc-version-dialog__side legend { padding: 0 4px; font-weight: 600; }
+.sc-version-dialog__choice { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+.sc-version-dialog .form-control {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 5px 8px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--text);
+    background: var(--surface, var(--card-bg, #fff));
+    font-size: 13px;
+}
+.sc-version-dialog .sc-version-dialog__set { margin-left: 22px; width: calc(100% - 22px); }
+.sc-version-dialog__note { margin: 0; color: var(--text3); font-size: 12px; }
+.sc-version-dialog__error { margin: 0; color: var(--red); font-size: 13px; }
+.sc-version-dialog__footer { display: flex; justify-content: flex-end; gap: 8px; }
 /* Нативный select шириной в самый длинный вариант вылезал из узкой колонки. */
 .sc-stage-upload-context select {
     width: 100%;

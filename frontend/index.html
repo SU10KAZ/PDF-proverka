@@ -5719,6 +5719,36 @@
                         4. Отчёт
                     </button>
                 </div>
+                <!-- Версии сравнения: у проекта несколько независимых сравнений, у каждого свои комплекты и результат. -->
+                <div v-if="scComparisonVersions.length" class="sc-version-switch" role="group" aria-label="Версия сравнения">
+                    <template v-if="!scVersionRenameEditing">
+                        <label class="sc-version-switch__label" for="sc-comparison-version">Версия сравнения</label>
+                        <select id="sc-comparison-version" class="form-control sc-version-switch__select"
+                                :value="scComparisonVersion"
+                                :title="scComparisonVersionOptionLabel(scSelectedComparisonVersion)"
+                                :disabled="scObjectsLoading || scSessionLoading || scVersionDialogBusy || pcCatalogOpening"
+                                @change="scOnComparisonVersionChange($event)">
+                            <option v-for="version in scComparisonVersions" :key="version.comparison_version"
+                                    :value="version.comparison_version">{{ scComparisonVersionOptionLabel(version) }}</option>
+                        </select>
+                        <button v-if="canAdminPanels && scSelectedComparisonVersion" type="button" class="sc-version-switch__pencil"
+                                title="Переименовать версию" aria-label="Переименовать версию"
+                                @click="scStartVersionRename()">✎</button>
+                        <button v-if="canAdminPanels" type="button" class="btn btn-outline btn-sm sc-version-switch__new"
+                                :disabled="pcDemo || pcBridgeActive || !currentObjectId || scObjectsLoading"
+                                @click="scOpenVersionDialog()">+ Новая версия</button>
+                    </template>
+                    <form v-else class="sc-version-switch__rename" @submit.prevent="scSubmitVersionRename()">
+                        <input ref="scVersionRenameInput" v-model="scVersionRenameValue" class="form-control sc-version-switch__rename-input"
+                               maxlength="100" aria-label="Название версии сравнения"
+                               @keydown.esc.prevent="scCancelVersionRename()">
+                        <button type="submit" class="btn btn-primary btn-sm" :disabled="scVersionRenameBusy">Сохранить</button>
+                        <button type="button" class="btn btn-outline btn-sm" :disabled="scVersionRenameBusy"
+                                @click="scCancelVersionRename()">Отмена</button>
+                        <span v-if="scVersionRenameError" class="sc-version-switch__error" role="alert">{{ scVersionRenameError }}</span>
+                    </form>
+                </div>
+                <span v-else-if="scComparisonVersionsError" class="sc-version-switch__error" role="status">{{ scComparisonVersionsError }}</span>
                 <button v-if="scTab === 'upload'" v-show="canUploadStageProjects"
                         class="btn btn-primary sc-steps-bar__upload"
                         :disabled="pcDemo || pcBridgeActive || !currentObjectId"
@@ -5785,6 +5815,7 @@
             <div v-else-if="!canOperate && scSessionStale" class="pc-notice" role="status">Есть новые документы — администратор ещё не обновил сравнение</div>
 
             <project-comparison-catalog v-if="scTab === 'upload'" :active-entry-id="pcCatalogFocus?.entry_id || ''" :object-id="currentObjectId || ''"
+                :comparison-version="scComparisonVersion || ''"
                 :object-name="objectName" :session-id="scSession?.id || ''" :pair-rows="scVisiblePairRows"
                 :pairs-loading="scSessionLoading || scObjectsLoading" :can-start="scCatalogCanStart" :pair-status="scCatalogPairStatus"
                 :row-checked="scBatchRowChecked" :all-checked="scBatchAllChecked"
@@ -8385,8 +8416,9 @@
                     </template>
                 </div>
 
-                <div class="sc-stage-upload-context">
+                <div class="sc-stage-upload-context" :class="{'sc-stage-upload-context--versioned': scStageUploadVersionLabel}">
                     <div><span>Объект</span><strong>{{ objectName || '—' }}</strong></div>
+                    <div v-if="scStageUploadVersionLabel"><span>Версия сравнения</span><strong>{{ scStageUploadVersionLabel }}</strong></div>
                     <div>
                         <label for="sc-stage-upload-stage">Стадия</label>
                         <select id="sc-stage-upload-stage" v-model="scStageFolderDialogStage"
@@ -8501,6 +8533,57 @@
         </div>
 
         <!-- Фоновые загрузки: видны в любом разделе, пока идут или ждут просмотра ошибок. -->
+        <!-- Новая версия сравнения: для каждой стороны — уже загруженный комплект или новая загрузка. -->
+        <div v-if="currentView === 'stage-comparison' && scVersionDialogOpen"
+             class="modal-backdrop sc-stage-upload-backdrop"
+             role="dialog" aria-modal="true" aria-labelledby="sc-version-dialog-title"
+             @click.self="scCloseVersionDialog()">
+            <form class="modal-card sc-version-dialog" @submit.prevent="scCreateComparisonVersion()">
+                <button type="button" class="modal-close" aria-label="Закрыть" title="Закрыть"
+                        :disabled="scVersionDialogBusy" @click="scCloseVersionDialog()">&times;</button>
+                <header class="sc-stage-upload-dialog__head">
+                    <h3 id="sc-version-dialog-title">Новая версия сравнения</h3>
+                    <p>Выбранные комплекты сравниваются заново. Документы и результаты прежних версий сохраняются,
+                        к ним можно вернуться из списка версий.</p>
+                </header>
+                <label class="sc-version-dialog__field">
+                    <span>Название</span>
+                    <input v-model="scVersionForm.label" class="form-control" maxlength="100"
+                           :placeholder="scNextComparisonVersionLabel" aria-label="Название новой версии">
+                </label>
+                <fieldset v-for="side in scVersionSides" :key="side.key" class="sc-version-dialog__side">
+                    <legend>{{ side.title }}</legend>
+                    <label class="sc-version-dialog__choice">
+                        <input type="radio" value="existing" v-model="scVersionForm[side.key].mode"
+                               :name="'sc-version-source-' + side.key"
+                               :disabled="!scComparisonVersionSetOptions.length">
+                        Уже загруженный комплект
+                    </label>
+                    <select v-model="scVersionForm[side.key].set" class="form-control sc-version-dialog__set"
+                            :aria-label="'Уже загруженный комплект ' + side.where"
+                            :disabled="scVersionForm[side.key].mode !== 'existing'">
+                        <option value="" disabled>Выберите комплект</option>
+                        <option v-for="option in scComparisonVersionSetOptions" :key="option.value"
+                                :value="option.value">{{ option.label }}</option>
+                    </select>
+                    <label class="sc-version-dialog__choice">
+                        <input type="radio" value="new" v-model="scVersionForm[side.key].mode"
+                               :name="'sc-version-source-' + side.key">
+                        Загрузить новый комплект
+                    </label>
+                </fieldset>
+                <p class="sc-version-dialog__note">Раскладка пар и группы в новую версию не переносятся:
+                    после загрузки нажмите «Сопоставить автоматически».</p>
+                <p v-if="scVersionDialogError" class="sc-version-dialog__error" role="alert">{{ scVersionDialogError }}</p>
+                <footer class="sc-version-dialog__footer">
+                    <button type="button" class="btn btn-outline" :disabled="scVersionDialogBusy"
+                            @click="scCloseVersionDialog()">Отмена</button>
+                    <button type="submit" class="btn btn-primary" :disabled="scVersionDialogBusy">
+                        {{ scVersionDialogBusy ? 'Создаём версию…' : 'Создать версию' }}</button>
+                </footer>
+            </form>
+        </div>
+
         <aside v-if="scUploadTrayBatches.length" class="sc-upload-tray" aria-live="polite" aria-label="Загрузки проектов">
             <div v-for="batch in scUploadTrayBatches" :key="batch.id" class="sc-upload-tray__item"
                  :class="'is-' + batch.status + (batch.error ? ' has-errors' : '')">
@@ -8524,6 +8607,7 @@
     <script src="/static/js/stage-comparison-differences.js?v={{js_version}}"></script>
     <script src="/static/js/stage-comparison-review.js?v={{js_version}}"></script>
     <script src="/static/js/stage-comparison-batch.js?v={{js_version}}"></script>
+    <script src="/static/js/stage-comparison-versions.js?v={{js_version}}"></script>
     <script src="/static/js/project-change-view.js?v={{js_version}}"></script>
     <script src="/static/js/project-change-ui.js?v={{js_version}}"></script>
     <script src="/static/js/project-change-consolidation.js?v={{js_version}}"></script>

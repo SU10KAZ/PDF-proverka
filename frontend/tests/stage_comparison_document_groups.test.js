@@ -152,7 +152,8 @@ describe('фоновые загрузки проектов', () => {
   it('ставит новую загрузку в очередь, а не блокирует кнопки', () => {
     expect(html).toContain(':disabled="pcDemo || pcBridgeActive || !currentObjectId"\n                        @click="scOpenStageFolderDialog()"');
     expect(app).toContain("while ((batch = scUploadBatches.value.find(item => item.status === 'queued')))");
-    expect(app).toContain('batch.objectId, batch.stageName, candidate, retainBackup');
+    // Пачка грузит в объект и версию сравнения, выбранные на её старте.
+    expect(app).toContain('batch.objectId, batch.comparisonVersion, batch.stageName, candidate, retainBackup');
   });
 
   it('сохраняет ошибку сборки группы в пакете и предупреждает при закрытии вкладки', () => {

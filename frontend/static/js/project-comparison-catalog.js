@@ -97,6 +97,8 @@
                 props: {activeEntryId: {type: String, default: ''}, opening: Boolean, error: {type: String, default: ''},
                     // The source table owns the row list; results only enrich those rows.
                     objectId: {type: String, default: ''}, objectName: {type: String, default: ''},
+                    // Версия сравнения объекта (cvNNN): каталог и ход выполнения — только её.
+                    comparisonVersion: {type: String, default: ''},
                     sessionId: {type: String, default: ''}, pairRows: {type: Array, default: () => []},
                     pairsLoading: Boolean, canStart: {type: Function, default: () => false},
                     pairStatus: {type: Function, default: () => 'Не запускалось'},
@@ -114,12 +116,16 @@
                     const progress = ref([]);
                     const progressError = ref(false);
                     let progressTimer = null, progressToken = 0, disposed = false;
+                    function versioned(url) {
+                        return /^cv\d{3}$/.test(props.comparisonVersion || '')
+                            ? url + '&comparison_version=' + encodeURIComponent(props.comparisonVersion) : url;
+                    }
                     async function pollProgress() {
                         clearTimeout(progressTimer);
                         const token = ++progressToken;
                         if (!props.objectId || disposed) return;
                         try {
-                            const response = await fetch(API + '/progress?object_id=' + encodeURIComponent(props.objectId));
+                            const response = await fetch(versioned(API + '/progress?object_id=' + encodeURIComponent(props.objectId)));
                             if (!response.ok) throw new Error('progress unavailable');
                             const data = await response.json();
                             if (data.schema !== 'project-comparison-progress/1' || !Array.isArray(data.items)) throw new Error('invalid progress');
@@ -143,7 +149,7 @@
                         const requestId = ++loadId;
                         loading.value = true; loadError.value = '';
                         try {
-                            const url = props.objectId ? API + '?object_id=' + encodeURIComponent(props.objectId) : API;
+                            const url = props.objectId ? versioned(API + '?object_id=' + encodeURIComponent(props.objectId)) : API;
                             const response = await fetch(url);
                             const data = await response.json().catch(() => ({}));
                             if (requestId !== loadId) return;
@@ -173,8 +179,8 @@
                     onMounted(load);
                     onMounted(pollProgress);
                     onUnmounted?.(() => { disposed = true; progressToken++; loadId++; clearTimeout(progressTimer); });
-                    watch(() => props.objectId, () => { catalog.value = null; load(); });
-                    watch(() => props.objectId, () => { progress.value = []; progressError.value = false; pollProgress(); });
+                    watch([() => props.objectId, () => props.comparisonVersion], () => { catalog.value = null; load(); });
+                    watch([() => props.objectId, () => props.comparisonVersion], () => { progress.value = []; progressError.value = false; pollProgress(); });
                     // viewer (portal_auth.js): только просмотр — без запуска и выбора пар для анализа.
                     const canOperate = !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate());
                     return {rowProgress, catalog, entries, loading, overviewLoading, loadError, load, date, model, effort, isRunning, start, startDisabled, selectPair, selectAll, canOperate,
