@@ -3,13 +3,14 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import Response
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from backend.app.services.stage_comparison import comparison_versions
 from backend.app.services.stage_comparison import document_groups
 from backend.app.services.stage_comparison import objects as objects_mod
 from backend.app.services.stage_comparison import stage_upload as stage_upload_mod
@@ -64,6 +65,41 @@ class DocumentGroupMembersRequest(BaseModel):
 class DocumentGroupOrderRequest(BaseModel):
     side: Literal["left", "right"] = "right"
     member_codes: list[str] = Field(min_length=1, max_length=32)
+
+
+class ComparisonVersionSource(BaseModel):
+    """Комплект стороны новой версии: уже загруженный (любой версии и стороны) или новая загрузка."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    source: Literal["existing", "new"]
+    comparison_version: str | None = Field(default=None, pattern=r"^cv\d{3}$")
+    stage: Literal["stage_1", "stage_2"] | None = None
+
+    @model_validator(mode="after")
+    def _existing_requires_origin(self):
+        if self.source == "existing" and (not self.comparison_version or not self.stage):
+            raise ValueError("для уже загруженного комплекта нужны comparison_version и stage")
+        return self
+
+
+class CreateComparisonVersionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    label: str | None = Field(default=None, max_length=200)
+    stage_1: ComparisonVersionSource
+    stage_2: ComparisonVersionSource
+
+
+class RenameComparisonVersionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    label: str = Field(min_length=1, max_length=200)
+
+
+# Номер версии сравнения в query объектных маршрутов; без него — Версия 1
+# (вкладки, открытые до появления версий, работают как раньше).
+ComparisonVersionParam = Annotated[str | None, Query(pattern=r"^cv\d{3}$")]
 
 
 class CompositionCompletenessRequest(BaseModel):
@@ -313,10 +349,34 @@ def _authorized_human_contour_author(request: Request) -> str:
     return str(employee.get("id") or employee.get("login") or username)
 
 
+def _version_http_error(exc: comparison_versions.ComparisonVersionError) -> HTTPException:
+    code = "unknown_comparison_version" if exc.code == "UNKNOWN_COMPARISON_VERSION" else exc.code
+    return HTTPException(exc.status, {"code": code, "message": str(exc)})
+
+
+def _comparison_scope(object_id: str, comparison_version: str | None) -> str:
+    """Область версии для групп, сборок и загрузки: ``object_id`` или ``<object_id>@cvNNN``.
+
+    Неизвестная версия — 404 до любой записи.
+    """
+    try:
+        version = comparison_versions.require_version(object_id, comparison_version)
+        return comparison_versions.scope_id(object_id, version)
+    except comparison_versions.ComparisonVersionError as exc:
+        raise _version_http_error(exc) from exc
+
+
 @router.get("/objects")
-async def list_comparison_objects(object_id: str | None = Query(default=None, min_length=1, max_length=128)):
+async def list_comparison_objects(
+    object_id: str | None = Query(default=None, min_length=1, max_length=128),
+    comparison_version: ComparisonVersionParam = None,
+):
     # Подсчёт PDF обходом папок всех объектов — вне event loop (этап 8).
-    data = await run_in_threadpool(objects_mod.list_objects, object_id) if object_id else await run_in_threadpool(objects_mod.list_objects)
+    try:
+        data = await run_in_threadpool(objects_mod.list_objects, object_id, comparison_version) if object_id \
+            else await run_in_threadpool(objects_mod.list_objects)
+    except comparison_versions.ComparisonVersionError as exc:
+        raise _version_http_error(exc) from exc
     from backend.app.core.access import read_only_request
 
     if read_only_request():
@@ -355,19 +415,24 @@ async def _run_document_groups(func, *args, **kwargs):
 
 
 @router.get("/objects/{object_id}/document-groups")
-async def list_document_groups(object_id: str):
+async def list_document_groups(object_id: str, comparison_version: ComparisonVersionParam = None):
     from backend.app.core.access import read_only_request
 
+    scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
     # viewer: только чтение — готовые сборки не прикрепляются (это запись).
     return await _run_document_groups(
-        document_groups.list_groups, object_id, attach=not read_only_request(),
+        document_groups.list_groups, scope, attach=not read_only_request(),
     )
 
 
 @router.post("/objects/{object_id}/document-groups")
-async def add_document_group_members(object_id: str, request: DocumentGroupMembersRequest):
+async def add_document_group_members(
+    object_id: str, request: DocumentGroupMembersRequest,
+    comparison_version: ComparisonVersionParam = None,
+):
+    scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
     return await _run_document_groups(
-        document_groups.add_members, object_id, request.row_document_code, request.member_codes,
+        document_groups.add_members, scope, request.row_document_code, request.member_codes,
         side=request.side, new_group=request.new_group, group_id=request.group_id,
     )
 
@@ -377,31 +442,91 @@ async def add_document_group_members(object_id: str, request: DocumentGroupMembe
 async def remove_document_group_member(
     object_id: str, group_id: str, document_code: str,
     side: Literal["left", "right"] = Query("right"),
+    comparison_version: ComparisonVersionParam = None,
 ):
-    return await _run_document_groups(document_groups.remove_member, object_id, group_id, document_code, side)
+    scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
+    return await _run_document_groups(document_groups.remove_member, scope, group_id, document_code, side)
 
 
 @router.put("/objects/{object_id}/document-groups/{group_id}/order")
-async def reorder_document_group(object_id: str, group_id: str, request: DocumentGroupOrderRequest):
+async def reorder_document_group(
+    object_id: str, group_id: str, request: DocumentGroupOrderRequest,
+    comparison_version: ComparisonVersionParam = None,
+):
+    scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
     return await _run_document_groups(
-        document_groups.reorder_members, object_id, group_id, request.member_codes, request.side,
+        document_groups.reorder_members, scope, group_id, request.member_codes, request.side,
     )
 
 
 @router.post("/objects/{object_id}/document-groups/{group_id}/rebuild")
 async def rebuild_document_group(
     object_id: str, group_id: str, side: Literal["left", "right"] | None = Query(None),
+    comparison_version: ComparisonVersionParam = None,
 ):
-    return await _run_document_groups(document_groups.rebuild, object_id, group_id, side)
+    scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
+    return await _run_document_groups(document_groups.rebuild, scope, group_id, side)
+
+
+# ─── Версии сравнения ──────────────────────────────────────────────────────
+
+def _public_versions(payload: dict) -> dict:
+    """viewer'у пути сервера не нужны (как в списке объектов)."""
+    from backend.app.core.access import read_only_request
+
+    if read_only_request():
+        for version in payload.get("versions") or [payload]:
+            for stage in (version.get("stages") or {}).values():
+                stage.pop("path", None)
+    return payload
+
+
+async def _run_versions(func, *args, **kwargs):
+    try:
+        return await run_in_threadpool(func, *args, **kwargs)
+    except comparison_versions.ComparisonVersionError as exc:
+        raise _version_http_error(exc) from exc
+
+
+@router.get("/objects/{object_id}/comparison-versions")
+async def list_comparison_versions(object_id: str):
+    """Версии сравнения объекта; без реестра — одна «Версия 1» (ничего не пишет)."""
+    return _public_versions(await _run_versions(comparison_versions.list_versions, object_id))
+
+
+@router.post("/objects/{object_id}/comparison-versions")
+async def create_comparison_version(object_id: str, body: CreateComparisonVersionRequest, request: Request):
+    """Новая версия: для каждой стороны — уже загруженный комплект или пустая сторона для загрузки."""
+    created = await _run_versions(
+        comparison_versions.create_version, object_id,
+        stage_1=body.stage_1.model_dump(), stage_2=body.stage_2.model_dump(),
+        label=body.label, author=_engineer_author(request),
+    )
+    return _public_versions(created)
+
+
+@router.patch("/objects/{object_id}/comparison-versions/{comparison_version}")
+async def rename_comparison_version(
+    object_id: str, comparison_version: str, body: RenameComparisonVersionRequest, request: Request,
+):
+    renamed = await _run_versions(
+        comparison_versions.rename_version, object_id, comparison_version, body.label,
+        author=_engineer_author(request),
+    )
+    return _public_versions(renamed)
 
 
 @router.post("/objects/{object_id}/stages/{stage_name}/upload")
-async def upload_stage_archive(object_id: str, stage_name: str, file: UploadFile = File(...)):
+async def upload_stage_archive(
+    object_id: str, stage_name: str, file: UploadFile = File(...),
+    comparison_version: ComparisonVersionParam = None,
+):
     if stage_name not in stage_upload_mod.VALID_STAGES:
         raise HTTPException(400, "Разрешены только stage_1 и stage_2")
+    scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
     try:
         return await run_in_threadpool(
-            stage_upload_mod.replace_stage_from_zip, object_id, stage_name, file.file, file.filename,
+            stage_upload_mod.replace_stage_from_zip, scope, stage_name, file.file, file.filename,
         )
     except stage_upload_mod.StageUploadError as exc:
         raise HTTPException(400, str(exc)) from exc
@@ -418,9 +543,11 @@ async def upload_stage_folder(
     relative_paths: str = Form("[]"),
     folder_name: str = Form(""),
     retain_backup: bool = Form(True),
+    comparison_version: ComparisonVersionParam = None,
 ):
     if stage_name not in stage_upload_mod.VALID_STAGES:
         raise HTTPException(400, "Разрешены только stage_1 и stage_2")
+    scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
     try:
         paths = json.loads(relative_paths or "[]")
     except json.JSONDecodeError as exc:
@@ -431,7 +558,7 @@ async def upload_stage_folder(
     try:
         return await run_in_threadpool(
             stage_upload_mod.replace_stage_from_folder,
-            object_id,
+            scope,
             stage_name,
             uploads,
             folder_name,
@@ -477,23 +604,27 @@ async def _off_loop(coro_fn, *args, **kwargs):
     return await _asyncio.to_thread(_asyncio.run, coro_fn(*args, **kwargs))
 
 
-def _object_stage_paths(object_id: str) -> tuple[str, str]:
+def _object_stage_paths(object_id: str, comparison_version: str | None = None) -> tuple[str, str]:
     try:
-        _, comparison_dir = stage_upload_mod.resolve_object_dir(object_id, create=False)
+        _, legacy_dir = stage_upload_mod.resolve_object_dir(object_id, create=False)
     except stage_upload_mod.StageUploadError as exc:
         raise HTTPException(404, {"code": "unknown_object", "message": str(exc)}) from exc
+    try:
+        comparison_dir = comparison_versions.workspace_from_legacy(legacy_dir, comparison_version)
+    except comparison_versions.ComparisonVersionError as exc:
+        raise _version_http_error(exc) from exc
     return str(comparison_dir / "stage_1"), str(comparison_dir / "stage_2")
 
 
 @router.get("/objects/{object_id}/session")
-async def find_object_session(object_id: str):
+async def find_object_session(object_id: str, comparison_version: ComparisonVersionParam = None):
     """Сессия объекта для просмотра — ТОЛЬКО чтение (viewer).
 
     Пути стадий сервер берёт из объекта сам. Сессия не создаётся, работа в
     пары не переносится: при новых документах отдаётся последняя сессия тех
     же папок с ``stale: true``; если сессии нет — 404 ``not_prepared``.
     """
-    stage_a, stage_b = _object_stage_paths(object_id)
+    stage_a, stage_b = await run_in_threadpool(_object_stage_paths, object_id, comparison_version)
     found = await run_in_threadpool(store.find_session, stage_a, stage_b)
     session = found.get("session")
     if session is None:
@@ -904,18 +1035,27 @@ def _consolidated_or_404(session_id: str, pair_id: str, source_run_id: str, cons
 
 def _report_labels(session_id: str, pair_id: str) -> tuple[str, str]:
     """(шифр документа, название объекта) для шапки отчёта."""
-    from pathlib import Path
-
     pair = store._load_pair(session_id, pair_id) or {}
     code = str((pair.get('left') or {}).get('document_code') or (pair.get('right') or {}).get('document_code') or '')
     meta = store._load_session_meta(session_id) or {}
     label = ''
-    stage_path = meta.get('stage_a_path') or ''
-    if stage_path:  # .../objects/<папка объекта>/comparison/stage_1
+    # .../objects/<папка объекта>/comparison[/versions/cvNNN]/stage_1
+    info = comparison_versions.parse_stage_path(meta.get('stage_a_path') or '')
+    if info is not None:
         try:
-            label = json.loads((Path(stage_path).parents[1] / 'object.json').read_text(encoding='utf-8')).get('display_name') or ''
-        except (OSError, ValueError, IndexError):
+            label = json.loads((info.object_dir / 'object.json').read_text(encoding='utf-8')).get('display_name') or ''
+        except (OSError, ValueError):
             label = ''
+        if info.comparison_version != comparison_versions.LEGACY:
+            # Отчёты разных версий сравнения различаются по шапке.
+            try:
+                entries = comparison_versions.entries_for_legacy_dir(info.legacy_dir)
+            except comparison_versions.ComparisonVersionError:
+                entries = []
+            version_label = next((e['label'] for e in entries
+                                  if e['comparison_version'] == info.comparison_version),
+                                 comparison_versions.default_label(info.comparison_version))
+            label = f'{label} · {version_label}' if label else version_label
     return code or pair_id, label or session_id
 
 

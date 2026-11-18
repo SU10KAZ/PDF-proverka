@@ -60,7 +60,10 @@
 
 ## Как устроено
 
-- Реестр: `projects_v2/objects/<object>/comparison/document_groups.json`,
+- Реестр: `projects_v2/objects/<object>/comparison/document_groups.json`
+  (у других версий сравнения — в их рабочей папке
+  `comparison/versions/cvNNN/`, вместе со сборками; см.
+  `docs/stage_comparison_versions.md`),
   схема `stage_document_groups/2`, сервис
   `backend/app/services/stage_comparison/document_groups.py`. Ключи — коды
   документов, а не пути PDF: сессия пересоздаётся при каждой загрузке, а код

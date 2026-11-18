@@ -166,7 +166,7 @@ def _real_sessions(service,monkeypatch,*,sha_override=None):
     shas={f'/real/v002/{k.replace(":","-")}.pdf':d['source_sha256'] for k,d in service.data['documents'].items()}
     shas.update({f'/real/v009/{k.replace(":","-")}.pdf':'0'*64 for k in service.data['documents']})
     shas.update(sha_override or {})
-    monkeypatch.setattr(scope,'sessions_for_object',lambda object_id:list(sessions))
+    monkeypatch.setattr(scope,'sessions_for_object',lambda object_id,comparison_version=None:list(sessions))
     monkeypatch.setattr(store,'get_session',lambda sid:{'id':sid,'pairs':sessions[sid]})
     monkeypatch.setattr(v3,'_pdf_sha256',lambda path:shas.get(path))
     monkeypatch.setattr(v3,'_documents',lambda sid,pid:{side:{**next(p for p in sessions[sid] if p['id']==pid)[key],
@@ -254,7 +254,7 @@ def test_live_v3_result_takes_its_real_pair(service,client,monkeypatch):
     live={'id':'p_ar','session_id':'sess_main','left':{'pdf_path':'/real/v002/%s-old.pdf'%ar,'version_id':'v002'},
           'right':{'pdf_path':'/real/v002/%s-new.pdf'%ar,'version_id':'v002'}}
     item={'id':'v3:p_ar:x','status':'REVIEW','evidence':[{'pair_id':'p_ar','side':'OLD','document':live['left']|{'version':'v002'}}]}
-    monkeypatch.setattr(v3,'object_v3_parts',lambda object_id:{'items':[item],'unresolved_hints':[],
+    monkeypatch.setattr(v3,'object_v3_parts',lambda object_id,comparison_version=None:{'items':[item],'unresolved_hints':[],
         'runs':[{'session_id':'sess_main','pair_id':'p_ar','run_id':'r1'}],'pairs':[live]})
     data=client.get('/api/stage-comparison/objects/'+OBJECT+'/project-changes').json()
     assert data['snapshot_binding']['skipped_live_v3']==[{'snapshot_pair':ar,'session_id':'sess_main','pair_id':'p_ar'}]

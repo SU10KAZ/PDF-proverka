@@ -36,7 +36,8 @@ def _v3_scope(object_id):
     return presentation
 
 @availability_router.get('')
-def available_presentation(request:Request,object_id:str,session_id:str|None=None,pair_id:str|None=None,run_id:str|None=None,result_id:str|None=None):
+def available_presentation(request:Request,object_id:str,session_id:str|None=None,pair_id:str|None=None,run_id:str|None=None,result_id:str|None=None,
+                           comparison_version:str|None=Query(default=None,pattern=r'^cv\d{3}$')):
     # Only an admitted dataset may supply ProjectChangeView: the sealed snapshot
     # of its object, or persisted V3 ProjectChanges of the object's own
     # comparisons.  Legacy differences are not a semantic contract.
@@ -69,7 +70,10 @@ def available_presentation(request:Request,object_id:str,session_id:str|None=Non
             return envelope
         except (ValueError, OSError, KeyError) as exc:
             raise HTTPException(404, 'Run unavailable') from exc
-    if object_id==OBJECT:
+    # Общий вид объекта — только сессии выбранной версии сравнения; без
+    # параметра Версия 1 (вкладки, открытые до появления версий).
+    version=comparison_version or v3.LEGACY_COMPARISON_VERSION
+    if object_id==OBJECT and version==v3.LEGACY_COMPARISON_VERSION:
         s=service(request,object_id)
         envelope=invoke(s.envelope)
         # Sealed cards are shown on the object's REAL pairs with identical source PDFs.
@@ -77,7 +81,7 @@ def available_presentation(request:Request,object_id:str,session_id:str|None=Non
             from backend.app.services.project_change_v3.expert_review import attach_snapshot_reviews
             return attach_snapshot_reviews(v3.snapshot_envelope(envelope,s.data,object_id), object_id)
         return envelope
-    envelope=v3.object_envelope(object_id) if v3.v3_presentation_enabled() else None
+    envelope=v3.object_envelope(object_id,version) if v3.v3_presentation_enabled() else None
     if envelope is not None:
         return envelope
     return {'schema_version':'project-change-view/1','object_id':object_id,

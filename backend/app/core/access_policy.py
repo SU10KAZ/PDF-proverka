@@ -156,6 +156,7 @@ _ALLOW_SPEC: dict[str, list[str]] = {
     ],
     f"{VIEW}:{_SC}": [
         "GET /api/stage-comparison/objects", "GET /api/stage-comparison/objects/{object_id}/document-groups",
+        "GET /api/stage-comparison/objects/{object_id}/comparison-versions",
         "GET /api/stage-comparison/objects/{object_id}/session",
         "GET /api/stage-comparison/objects/{object_id}/sessions/{session_id}/pair",
         f"GET {SCS}", f"GET {PP}",

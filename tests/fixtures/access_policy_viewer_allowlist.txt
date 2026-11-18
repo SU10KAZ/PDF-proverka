@@ -105,6 +105,7 @@ VIEW:stage_comparison	GET	/api/project-change-preview/objects/{object_id}/viewer
 VIEW:stage_comparison	GET	/api/project-comparison/catalog
 VIEW:stage_comparison	GET	/api/project-comparison/catalog/entries/{entry_id}
 VIEW:stage_comparison	GET	/api/stage-comparison/objects
+VIEW:stage_comparison	GET	/api/stage-comparison/objects/{object_id}/comparison-versions
 VIEW:stage_comparison	GET	/api/stage-comparison/objects/{object_id}/document-groups
 VIEW:stage_comparison	GET	/api/stage-comparison/objects/{object_id}/project-changes
 VIEW:stage_comparison	GET	/api/stage-comparison/objects/{object_id}/project-changes/evidence/{evidence_id}/crop

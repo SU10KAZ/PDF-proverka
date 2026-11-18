@@ -21,6 +21,7 @@ from typing import BinaryIO
 from backend.app.services.common import object_service
 from backend.app.services.storage.storage_write_facade import get_write_facade
 
+from . import comparison_versions
 from . import stage_storage
 
 
@@ -107,7 +108,17 @@ def _ensure_v2_object_metadata(obj: dict, object_dir: Path) -> None:
 
 
 def resolve_object_dir(object_id: str, *, create: bool = False) -> tuple[dict, Path]:
-    """Вернуть ``projects_v2/objects/<object>/comparison`` для объекта UI."""
+    """Вернуть ``projects_v2/objects/<object>/comparison`` для объекта UI.
+
+    ``object_id`` может быть областью версии сравнения ``<object_id>@cvNNN``
+    (``comparison_versions.scope_id``): тогда возвращается рабочая папка этой
+    версии ``comparison/versions/cvNNN``. ``create`` создаёт только каркас
+    объекта и папку Версии 1 — версию создаёт ``comparison_versions``.
+    """
+    try:
+        object_id, comparison_version = comparison_versions.split_scope(object_id)
+    except comparison_versions.ComparisonVersionError as exc:
+        raise StageUploadError(str(exc)) from exc
     obj = object_service.get_object_by_id(object_id)
     if obj is None:
         raise StageUploadError("Выбранный объект не найден")
@@ -135,6 +146,11 @@ def resolve_object_dir(object_id: str, *, create: bool = False) -> tuple[dict, P
         raise StageUploadError("Символическая ссылка вместо comparison запрещена")
     if create:
         comparison_dir.mkdir(parents=True, exist_ok=True)
+    if comparison_version != comparison_versions.LEGACY:
+        try:
+            return obj, comparison_versions.workspace_from_legacy(comparison_dir, comparison_version)
+        except comparison_versions.ComparisonVersionError as exc:
+            raise StageUploadError(str(exc)) from exc
     return obj, comparison_dir
 
 
@@ -402,26 +418,29 @@ def _commit_extracted_stage(
     )
 
     has_previous = target.is_dir() and previous_pdf_count > 0
-    if has_previous:
-        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
-        backup_root = object_dir / "_stage_upload_backups"
-        if backup_root.is_symlink():
-            raise StageUploadError("Символическая ссылка вместо backup-папки запрещена")
-        backup_path = backup_root / f"{stage_name}_{stamp}"
-        backup_root.mkdir(parents=True, exist_ok=True)
-        os.replace(target, backup_path)
-    elif target.exists():
-        previous_scaffold = work_root / "previous_scaffold"
-        os.replace(target, previous_scaffold)
+    # Подмена папки стадии не совпадает с копией этого комплекта в новую
+    # версию сравнения (comparison_versions.create_version).
+    with comparison_versions.stage_lock(object_dir, stage_name, exclusive=True):
+        if has_previous:
+            stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+            backup_root = object_dir / "_stage_upload_backups"
+            if backup_root.is_symlink():
+                raise StageUploadError("Символическая ссылка вместо backup-папки запрещена")
+            backup_path = backup_root / f"{stage_name}_{stamp}"
+            backup_root.mkdir(parents=True, exist_ok=True)
+            os.replace(target, backup_path)
+        elif target.exists():
+            previous_scaffold = work_root / "previous_scaffold"
+            os.replace(target, previous_scaffold)
 
-    try:
-        os.replace(structured, target)
-    except Exception:
-        if backup_path is not None and backup_path.exists() and not target.exists():
-            os.replace(backup_path, target)
-        elif previous_scaffold is not None and previous_scaffold.exists() and not target.exists():
-            os.replace(previous_scaffold, target)
-        raise
+        try:
+            os.replace(structured, target)
+        except Exception:
+            if backup_path is not None and backup_path.exists() and not target.exists():
+                os.replace(backup_path, target)
+            elif previous_scaffold is not None and previous_scaffold.exists() and not target.exists():
+                os.replace(previous_scaffold, target)
+            raise
 
     # При поэлементной загрузке папки достаточно одной резервной копии до
     # начала пачки. Промежуточные копии после каждого проекта только занимают

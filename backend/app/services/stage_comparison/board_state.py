@@ -169,7 +169,8 @@ def remove(meta, left_pdf=None, right_pdf=None, group_id=None, expected_revision
         group = next((g for g in groups if g["group_id"] == group_id), None)
         if not group or group_id in state.get("removed_groups", []):
             raise ValueError("Группа больше не найдена в списке")
-        object_id = document_groups.assemblies.object_id_for_stage_path(meta["stage_a_path"])
+        # Область версии сравнения: сборки группы лежат в её рабочей папке.
+        object_id = document_groups.assemblies.scope_for_stage_path(meta["stage_a_path"])
         if any(document_groups._assembly_state(object_id, group[side]).get("status")
                in document_groups.BUILDING_STATUSES for side in SIDES):
             raise BoardConflict("Дождитесь завершения сборки перед удалением из списка")

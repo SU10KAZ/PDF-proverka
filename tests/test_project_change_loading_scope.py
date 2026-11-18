@@ -4,7 +4,7 @@ from backend.app.services.stage_comparison import objects, store
 
 
 def test_run_report_does_not_discover_other_pairs(monkeypatch):
-    monkeypatch.setattr(scope, 'sessions_for_object', lambda oid: ['s1', 's2'])
+    monkeypatch.setattr(scope, 'sessions_for_object', lambda oid, comparison_version=None: ['s1', 's2'])
     monkeypatch.setattr(presentation, '_pair_ids', lambda sid: (_ for _ in ()).throw(AssertionError('pair scan')))
     calls = []
     def view(sid, pid, **kwargs):
@@ -18,7 +18,7 @@ def test_run_report_does_not_discover_other_pairs(monkeypatch):
 
 
 def test_scoped_report_still_checks_object_ownership(monkeypatch):
-    monkeypatch.setattr(scope, 'sessions_for_object', lambda oid: ['allowed'])
+    monkeypatch.setattr(scope, 'sessions_for_object', lambda oid, comparison_version=None: ['allowed'])
     monkeypatch.setattr(presentation, 'pair_presentation', lambda *a, **kw: (_ for _ in ()).throw(AssertionError('foreign read')))
     with run_storage.selected('foreign', 'p1', 'r1'):
         assert presentation.object_v3_parts('object')['items'] == []

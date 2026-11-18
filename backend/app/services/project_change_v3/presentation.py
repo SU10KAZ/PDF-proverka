@@ -440,12 +440,22 @@ def _pair_ids(session_id: str) -> list[str]:
     ]
 
 
-def object_v3_parts(object_id: str) -> dict[str, Any]:
+# Версия 1 сравнения стадий (stage_comparison.comparison_versions.LEGACY):
+# запечатанный снимок объекта привязывается только к её парам.
+LEGACY_COMPARISON_VERSION = "cv001"
+
+
+def object_v3_parts(object_id: str, comparison_version: str | None = None) -> dict[str, Any]:
+    """Опубликованные прогоны V3 объекта.
+
+    ``comparison_version`` — только сессии этой версии сравнения (общий вид
+    объекта); ``None`` — все версии (адрес прогона: проверка принадлежности).
+    """
     from .scope import sessions_for_object
 
     parts: dict[str, Any] = {"items": [], "unresolved_hints": [], "runs": [], "pairs": []}
     scope = run_storage.ACTIVE.get()
-    sessions = sessions_for_object(object_id)
+    sessions = sessions_for_object(object_id, None if scope else comparison_version)
     if scope:
         # Keep ownership validation, but never discover unrelated pairs for a run URL.
         sessions = [scope[0]] if scope[0] in sessions else []
@@ -466,9 +476,9 @@ def _revision(runs: list[dict[str, Any]]) -> str:
     return "v3:" + hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
 
 
-def object_envelope(object_id: str) -> dict[str, Any] | None:
+def object_envelope(object_id: str, comparison_version: str | None = None) -> dict[str, Any] | None:
     """``project-change-view/1`` for an object's published V3 runs, else None."""
-    parts = object_v3_parts(object_id)
+    parts = object_v3_parts(object_id, comparison_version)
     if not parts["runs"]:
         return None
     return {
@@ -534,7 +544,9 @@ def bind_snapshot_to_real_pairs(
 
     sealed = {pid: entry["pair"] for pid, entry in (snapshot.get("pairs") or {}).items()}
     matches: dict[str, list[dict[str, Any]]] = {pid: [] for pid in sealed}
-    sessions = sessions_for_object(object_id)
+    # Повторно взятый в другую версию комплект даёт те же PDF: без ограничения
+    # снимок привязался бы к парам нескольких версий сразу.
+    sessions = sessions_for_object(object_id, LEGACY_COMPARISON_VERSION)
     for session_id in sessions:
         for pair in (store.get_session(session_id) or {}).get("pairs") or []:
             for pid, want in sealed.items():
@@ -598,7 +610,7 @@ def bind_snapshot_to_real_pairs(
 
 def snapshot_envelope(envelope: dict[str, Any], snapshot: dict[str, Any], object_id: str) -> dict[str, Any]:
     """Sealed snapshot bound to real pairs, plus the object's published live V3 runs."""
-    parts = object_v3_parts(object_id)
+    parts = object_v3_parts(object_id, LEGACY_COMPARISON_VERSION)
     live = {(r["session_id"], r["pair_id"]) for r in parts["runs"]}
     return merge_into_snapshot(bind_snapshot_to_real_pairs(envelope, snapshot, object_id, skip=live), object_id, parts)
 
@@ -606,7 +618,7 @@ def snapshot_envelope(envelope: dict[str, Any], snapshot: dict[str, Any], object
 def merge_into_snapshot(envelope: dict[str, Any], object_id: str,
                         parts: dict[str, Any] | None = None) -> dict[str, Any]:
     """Append published V3 runs of the snapshot object; unchanged when none."""
-    parts = parts if parts is not None else object_v3_parts(object_id)
+    parts = parts if parts is not None else object_v3_parts(object_id, LEGACY_COMPARISON_VERSION)
     if not parts["runs"]:
         return envelope
     merged = dict(envelope)

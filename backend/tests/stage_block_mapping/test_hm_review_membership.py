@@ -17,7 +17,7 @@ from backend.tests.stage_block_mapping.conftest import OID, PID, RUN, SID
 def client(world, monkeypatch):
     from backend.app.api.routers import human_mapping
     from backend.app.services.project_change_v3 import scope
-    monkeypatch.setattr(scope, "sessions_for_object", lambda object_id: [SID] if object_id == OID else [])
+    monkeypatch.setattr(scope, "sessions_for_object", lambda object_id, comparison_version=None: [SID] if object_id == OID else [])
     app = FastAPI()
     app.include_router(human_mapping.api_router)
     return TestClient(app)

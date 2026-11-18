@@ -31,7 +31,7 @@ from backend.app.services.common.results_md import (
     is_results_md_text,
     parse_results_md,
 )
-from backend.app.services.stage_comparison import sheet_matching, stage_upload
+from backend.app.services.stage_comparison import comparison_versions, sheet_matching, stage_upload
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
 
 SCHEMA = "project_assembly/1"
@@ -90,6 +90,9 @@ def _decode_ref(value: str) -> dict[str, str]:
 
 
 def _comparison_dir(object_id: str, *, create: bool = False) -> Path:
+    """Рабочая папка сравнения. ``object_id`` может быть областью версии
+    ``<object_id>@cvNNN`` (``comparison_versions.scope_id``) — она доходит и до
+    отдельного процесса сборки (``worker``) аргументом командной строки."""
     _obj, comparison = stage_upload.resolve_object_dir(object_id, create=create)
     return comparison
 
@@ -103,7 +106,7 @@ def _root(object_id: str, *, create: bool = False) -> Path:
 
 def _object_meta(object_id: str) -> tuple[Path, dict[str, Any]]:
     comparison = _comparison_dir(object_id, create=False)
-    object_dir = comparison.parent
+    object_dir = comparison_versions.object_dir_for_workspace(comparison)
     try:
         meta = json.loads((object_dir / "object.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -150,10 +153,11 @@ def _doc_rows(root: Path, *, kind: str, object_id: str, stage: str = "", discipl
 
 def list_sources(object_id: str) -> dict[str, Any]:
     object_dir, _meta = _object_meta(object_id)
+    workspace = _comparison_dir(object_id, create=False)
     rows: list[dict[str, Any]] = []
     for stage in ("stage_1", "stage_2"):
         rows.extend(_doc_rows(
-            object_dir / "comparison" / stage / "documents",
+            workspace / stage / "documents",
             kind="comparison", object_id=object_id, stage=stage,
         ))
     disciplines = object_dir / "disciplines"
@@ -176,7 +180,7 @@ def _resolve_source(source_ref: str, expected_object_id: str) -> dict[str, Any]:
         stage = ref.get("stage")
         if stage not in {"stage_1", "stage_2"}:
             raise AssemblyError("BAD_SOURCE_REF", "Некорректная стадия источника")
-        doc_dir = object_dir / "comparison" / stage / "documents" / ref["document_code"]
+        doc_dir = _comparison_dir(expected_object_id, create=False) / stage / "documents" / ref["document_code"]
     elif ref.get("kind") == "project":
         doc_dir = object_dir / "disciplines" / ref["discipline"] / "documents" / ref["document_code"]
     else:
@@ -518,7 +522,10 @@ def _free_space_guard(root: Path, estimated: int) -> None:
 def _build_lock(root: Path):
     import fcntl
 
-    lock_path = root.parent.parent.parent / "_system" / "project_assemblies.lock"
+    # Блокировка общая для всех версий сравнения: путь считается от папки
+    # сборок Версии 1, а не рабочей папки версии.
+    legacy_root = comparison_versions.legacy_dir_for_workspace(root.parent) / "assemblies"
+    lock_path = legacy_root.parent.parent.parent / "_system" / "project_assemblies.lock"
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     with lock_path.open("a+") as handle:
         try:
@@ -936,23 +943,35 @@ def attached_documents(object_id: str, side: str) -> list[dict[str, Any]]:
     return result
 
 
-def object_id_for_stage_path(stage_path: str | Path) -> str | None:
-    candidate = Path(stage_path).expanduser().resolve()
-    if candidate.name not in {"stage_1", "stage_2"} or candidate.parent.name != "comparison":
+def scope_for_stage_path(stage_path: str | Path) -> str | None:
+    """Область версии сравнения по пути стадии: ``object_id`` или ``<object_id>@cvNNN``."""
+    info = comparison_versions.parse_stage_path(stage_path)
+    if info is None:
         return None
     try:
-        meta = json.loads((candidate.parent.parent / "object.json").read_text(encoding="utf-8"))
+        meta = json.loads((info.object_dir / "object.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
-    return str(meta.get("object_id") or "") or None
+    object_id = str(meta.get("object_id") or "")
+    if not object_id:
+        return None
+    try:
+        return comparison_versions.scope_id(object_id, info.comparison_version)
+    except comparison_versions.ComparisonVersionError:
+        return None
+
+
+def object_id_for_stage_path(stage_path: str | Path) -> str | None:
+    scope = scope_for_stage_path(stage_path)
+    return comparison_versions.split_scope(scope)[0] if scope else None
 
 
 def attached_documents_for_stage_path(stage_path: str | Path) -> list[dict[str, Any]]:
     if not enabled():
         return []
     path = Path(stage_path).expanduser().resolve()
-    object_id = object_id_for_stage_path(path)
-    return attached_documents(object_id, path.name) if object_id else []
+    scope = scope_for_stage_path(path)
+    return attached_documents(scope, path.name) if scope else []
 
 
 def attached_count(object_id: str, side: str) -> int:

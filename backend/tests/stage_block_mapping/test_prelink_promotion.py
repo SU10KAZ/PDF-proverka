@@ -26,7 +26,7 @@ SCOPE = f"?session_id={SID}&run_id={RUN}"
 def client(world, monkeypatch):
     from backend.app.api.routers import human_mapping
     from backend.app.services.project_change_v3 import scope
-    monkeypatch.setattr(scope, "sessions_for_object", lambda object_id: [SID] if object_id == OID else [])
+    monkeypatch.setattr(scope, "sessions_for_object", lambda object_id, comparison_version=None: [SID] if object_id == OID else [])
     monkeypatch.setenv("STAGE_PRELINK_DRAFTS", "1")
     app = FastAPI()
     app.include_router(human_mapping.api_router)

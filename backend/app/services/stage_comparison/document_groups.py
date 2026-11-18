@@ -9,9 +9,14 @@
 сравнивается с другой стороной как обычная пара один к одному. Допустимы все
 сочетания: 1 → N, N → 1 и N ↔ M (сборка против сборки).
 
-Реестр групп хранится рядом с данными сравнения объекта::
+Реестр групп хранится рядом с данными сравнения объекта — в рабочей папке
+своей версии сравнения (``comparison_versions``)::
 
-    projects_v2/objects/<object>/comparison/document_groups.json
+    projects_v2/objects/<object>/comparison/document_groups.json            ← Версия 1
+    projects_v2/objects/<object>/comparison/versions/cvNNN/document_groups.json
+
+Функции принимают ``object_id`` или область версии ``<object_id>@cvNNN``; она
+передаётся в сборки как есть.
 
 Ключи — коды документов (``document_code``), а не пути PDF: сессия
 сравнения пересоздаётся при каждой загрузке, а код документа переживает
@@ -38,6 +43,7 @@ from typing import Any, Iterable
 from backend.app.services.common.atomic_json import atomic_write_json
 from backend.app.services.project_assemblies import service as assemblies
 
+from . import comparison_versions
 from . import stage_upload
 
 SCHEMA = "stage_document_groups/2"
@@ -73,6 +79,11 @@ def _comparison_dir(object_id: str) -> Path:
 
 def _registry_path(object_id: str) -> Path:
     return _comparison_dir(object_id) / "document_groups.json"
+
+
+def _plain_object_id(object_id: str) -> str:
+    """Объект реестра без версии сравнения — для полей JSON и ответов."""
+    return comparison_versions.split_scope(object_id)[0]
 
 
 def _check_side(side: str) -> str:
@@ -145,7 +156,7 @@ def _read(object_id: str) -> dict[str, Any]:
     except (OSError, ValueError) as exc:
         raise DocumentGroupError("GROUPS_CORRUPT", "Повреждён реестр групп документов") from exc
     if not isinstance(data, dict) or not isinstance(data.get("groups"), list):
-        data = {"schema": SCHEMA, "object_id": object_id, "groups": []}
+        data = {"schema": SCHEMA, "object_id": _plain_object_id(object_id), "groups": []}
     data["groups"] = [_normalize(record) for record in data["groups"] if isinstance(record, dict)]
     return data
 
@@ -153,7 +164,7 @@ def _read(object_id: str) -> dict[str, Any]:
 def _write(object_id: str, data: dict[str, Any]) -> None:
     payload = dict(data)
     payload["schema"] = SCHEMA
-    payload["object_id"] = object_id
+    payload["object_id"] = _plain_object_id(object_id)
     payload["updated_at"] = _now()
     payload["groups"] = [_serialize(group) for group in data["groups"]]
     atomic_write_json(_registry_path(object_id), payload)
@@ -377,7 +388,7 @@ def list_groups(object_id: str, *, attach: bool = True) -> dict[str, Any]:
         sources = _current_sources(object_id)
         return {
             "schema": SCHEMA,
-            "object_id": object_id,
+            "object_id": _plain_object_id(object_id),
             "groups": [_view(object_id, group, sources) for group in data["groups"]],
         }
 
@@ -628,13 +639,14 @@ def rebuild(object_id: str, group_id: str, side: str | None = None) -> dict[str,
 
 
 def _groups_for_stage_path(stage_path: str | Path | None) -> list[dict[str, Any]]:
+    """Группы версии сравнения, которой принадлежит папка стадии."""
     if not stage_path or not assemblies.enabled():
         return []
-    object_id = assemblies.object_id_for_stage_path(stage_path)
-    if not object_id:
+    scope = assemblies.scope_for_stage_path(stage_path)
+    if not scope:
         return []
     try:
-        return _read(object_id)["groups"]
+        return _read(scope)["groups"]
     except (DocumentGroupError, stage_upload.StageUploadError):
         return []
 

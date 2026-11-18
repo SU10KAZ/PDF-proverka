@@ -37,6 +37,8 @@ SOURCES_REGISTRY = APP_DATA / "project_comparison_catalog_sources.json"
 SOURCES_SCHEMA = "project-comparison-catalog-sources/1"
 SNAPSHOT_SCHEMA = "project-change-production-snapshot/1"
 RESULT_SCHEMA_PREFIX = "projectchange_v3_final/"
+# Версия 1 сравнения стадий (stage_comparison.comparison_versions.LEGACY).
+_LEGACY_VERSION = "cv001"
 LIVE_RUN = "LIVE_RUN"
 SEALED_SNAPSHOT = "SEALED_SNAPSHOT"
 COMPLETED_FROZEN = "COMPLETED_FROZEN"
@@ -129,8 +131,22 @@ def _sha(value: Any) -> str | None:
     return text if _SHA256.fullmatch(text) else None
 
 
-def _pair_group_key(object_id: str, old_sha: str, new_sha: str) -> str:
-    return "pcpair1_" + _digest({"object": object_id, "old": old_sha, "new": new_sha})[:24]
+def _pair_group_key(object_id: str, old_sha: str, new_sha: str, comparison_version: str | None = None) -> str:
+    """Группа OLD/NEW пары. Разные версии сравнения — разные группы, даже при
+    тех же PDF (повторно взятый комплект): основной результат у каждой свой.
+    Ключи Версии 1 не меняются."""
+    key: dict[str, Any] = {"object": object_id, "old": old_sha, "new": new_sha}
+    if comparison_version and comparison_version != _LEGACY_VERSION:
+        key["comparison_version"] = comparison_version
+    return "pcpair1_" + _digest(key)[:24]
+
+
+def _session_comparison_version(session_id: str) -> str:
+    """Версия сравнения сессии — по пути её стадии (реестр не читается)."""
+    from backend.app.services.stage_comparison import comparison_versions, store
+
+    paths = store.session_stage_paths(session_id) or ("", "")
+    return comparison_versions.version_from_stage_path(paths[0]) or _LEGACY_VERSION
 
 
 def _entry_id(kind: str, object_id: str, session_id: str, pair_id: str, variant: str) -> str:
@@ -205,12 +221,14 @@ def _diagnostic_label(state: dict[str, Any]) -> str:
     return "PARTIAL"
 
 
-def _live_candidates(object_id: str | None = None) -> list[tuple[str, str]]:
+def _live_candidates(object_id: str | None = None,
+                     comparison_version: str | None = None) -> list[tuple[str, str]]:
+    """Пары с прогоном V3; ``comparison_version`` — только сессии этой версии объекта."""
     from backend.app.services.stage_comparison import paths, store
     from backend.app.services.project_change_v3.scope import sessions_for_object
 
     out = []
-    sessions = ([{"id": sid} for sid in sessions_for_object(object_id)]
+    sessions = ([{"id": sid} for sid in sessions_for_object(object_id, comparison_version)]
                 if object_id else store.list_sessions())
     for session in sessions:
         session_id = str(session.get("id") or "")
@@ -277,6 +295,7 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str], *,
     pair = store.get_pair_for_production(session_id, pair_id)
     old, new = _document(pair.get("left") or {}, old_sha), _document(pair.get("right") or {}, new_sha)
     run_id = str(result["run_id"])
+    comparison_version = _session_comparison_version(session_id)
     from backend.app.services.project_change_v3 import run_storage
     result_path = run_storage.artifact_path(session_id, pair_id, 'project_change_v3_result')
     semantic = presentation._load(session_id, pair_id, "project_change_v3_semantic_map")
@@ -303,8 +322,9 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str], *,
         "session_id": session_id,
         "pair_id": pair_id,
         "run_id": run_id,
+        "comparison_version": comparison_version,
         "comparison_metrics": metrics(result, state),
-        "pair_group_key": _pair_group_key(object_id, old_sha, new_sha),
+        "pair_group_key": _pair_group_key(object_id, old_sha, new_sha, comparison_version),
         "title": _title(old, new),
         "documents": {"old": old, "new": new},
         "engine": {
@@ -567,14 +587,19 @@ def _public(entry: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_catalog(*, include_diagnostics: bool = False, registry: Path | None = None,
-                  data_root: Path | None = None, object_id: str | None = None) -> dict[str, Any]:
-    """Deterministic catalog of completed/frozen results (no timestamps of its own)."""
+                  data_root: Path | None = None, object_id: str | None = None,
+                  comparison_version: str | None = None) -> dict[str, Any]:
+    """Deterministic catalog of completed/frozen results (no timestamps of its own).
+
+    ``comparison_version`` (with ``object_id``) keeps only that comparison
+    version's live results; sealed snapshots belong to Version 1.
+    """
     objects = _objects()
     diagnostics: list[dict[str, Any]] = []
     entries: list[dict[str, Any]] = []
     from backend.app.services.project_change_v3 import run_storage
     import contextlib
-    candidates = [(sid, pid, rid) for sid, pid in _live_candidates(object_id)
+    candidates = [(sid, pid, rid) for sid, pid in _live_candidates(object_id, comparison_version)
                   for rid in (run_storage.run_ids(sid, pid) or [None])]
     for session_id, pair_id, rid in candidates:
         try:
@@ -593,7 +618,7 @@ def build_catalog(*, include_diagnostics: bool = False, registry: Path | None = 
     for spec in _registry(registry):
         if object_id:
             from backend.app.services.project_change_preview.service import OBJECT as SNAPSHOT_OBJECT
-            if object_id != SNAPSHOT_OBJECT:
+            if object_id != SNAPSHOT_OBJECT or comparison_version not in (None, _LEGACY_VERSION):
                 continue
         try:
             for entry in _snapshot_entries(spec, objects, diagnostics, data_root or APP_DATA):
@@ -634,14 +659,16 @@ def build_catalog(*, include_diagnostics: bool = False, registry: Path | None = 
     return catalog
 
 
-def cached_catalog(*, include_diagnostics: bool = False, object_id: str | None = None) -> dict[str, Any]:
+def cached_catalog(*, include_diagnostics: bool = False, object_id: str | None = None,
+                   comparison_version: str | None = None) -> dict[str, Any]:
     now = time.monotonic()
-    key = (include_diagnostics, object_id)
+    key = (include_diagnostics, object_id, comparison_version)
     with _cache_lock:
         hit = _cache.get(key)
         if hit and now - hit[0] < _CACHE_TTL_SECONDS:
             return hit[1]
-    value = build_catalog(include_diagnostics=include_diagnostics, object_id=object_id)
+    value = build_catalog(include_diagnostics=include_diagnostics, object_id=object_id,
+                          comparison_version=comparison_version)
     with _cache_lock:
         # A slow cold build must still get a full cache lifetime.
         _cache[key] = (time.monotonic(), value)
@@ -654,7 +681,7 @@ def clear_cache() -> None:
     _snapshot_services.clear()
 
 
-def progress_for_object(object_id: str) -> dict[str, Any]:
+def progress_for_object(object_id: str, comparison_version: str | None = None) -> dict[str, Any]:
     """Small uncached status snapshots; never load results, PDFs or call models."""
     from backend.app.services.stage_comparison import paths
     from backend.app.services.project_change_consolidator.stage import public_status
@@ -663,7 +690,7 @@ def progress_for_object(object_id: str) -> dict[str, Any]:
     fields = ('engine', 'run_id', 'status', 'current_stage', 'pipeline_current',
               'pipeline_stages', 'message', 'reason_code', 'processed', 'total', 'unit',
               'human_mapping_published', 'consolidation_expected')
-    for sid, pid in _live_candidates(object_id):
+    for sid, pid in _live_candidates(object_id, comparison_version):
         try:
             state = json.loads(paths.production_state_path(sid, pid).read_text())
         except (OSError, ValueError):

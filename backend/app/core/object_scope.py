@@ -63,10 +63,14 @@ def resolve_request_object(conn: HTTPConnection, *, check_known: bool) -> Option
 
 
 def _session_belongs(session_id: str, object_id: str) -> Optional[bool]:
-    """Сессия сравнения стадий принадлежит объекту? None — сессии нет (решит маршрут)."""
+    """Сессия сравнения стадий принадлежит объекту? None — сессии нет (решит маршрут).
+
+    Принадлежит, если её папки стадий — папки любой версии сравнения объекта
+    (``comparison/stage_N`` или ``comparison/versions/cvNNN/stage_N``).
+    """
     from pathlib import Path
 
-    from backend.app.services.stage_comparison import stage_upload, store
+    from backend.app.services.stage_comparison import comparison_versions, stage_upload, store
 
     paths = store.session_stage_paths(session_id)
     if paths is None:
@@ -75,10 +79,12 @@ def _session_belongs(session_id: str, object_id: str) -> Optional[bool]:
         _, comparison_dir = stage_upload.resolve_object_dir(object_id, create=False)
     except stage_upload.StageUploadError:
         return False
-    root = comparison_dir.resolve()
-    expected = (str(root / "stage_1"), str(root / "stage_2"))
+    expected = {
+        (str(stage_a.resolve()), str(stage_b.resolve()))
+        for stage_a, stage_b in comparison_versions.stage_paths_for_legacy_dir(comparison_dir).values()
+    }
     actual = tuple(str(Path(p).expanduser().resolve()) for p in paths)
-    return actual == expected
+    return actual in expected
 
 
 def enforce_object_scope(conn: HTTPConnection) -> Optional[str]:

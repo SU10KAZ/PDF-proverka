@@ -520,7 +520,7 @@ def test_progress_reads_only_small_states_for_selected_object(tmp_path, monkeypa
     saved.write_text(json.dumps({'engine': 'projectchange_v3', 'run_id': 'r',
                                 'status': 'REVIEW', 'provenance': {'large': 'excluded'}}))
     requested = []
-    monkeypatch.setattr(catalog, '_live_candidates', lambda obj: requested.append(obj) or [('s', 'p')])
+    monkeypatch.setattr(catalog, '_live_candidates', lambda obj, comparison_version=None: requested.append(obj) or [('s', 'p')])
     monkeypatch.setattr(paths, 'production_state_path', lambda *args: saved)
     monkeypatch.setattr(stage, 'public_status', lambda *args: {'status': 'RUNNING', 'calls_done': 4, 'calls_total': 48})
     data = catalog.progress_for_object('272')

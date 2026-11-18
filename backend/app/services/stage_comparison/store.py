@@ -16,6 +16,7 @@ from typing import Any
 
 from . import paths as paths_mod
 from . import board_state
+from . import comparison_versions
 from . import scanner as scanner_mod
 from . import document_matching
 from . import sheet_matching
@@ -173,6 +174,8 @@ def _session_payload(meta: dict) -> dict:
         "created_at": meta.get("created_at"),
         "stage_a_path": meta.get("stage_a_path"),
         "stage_b_path": meta.get("stage_b_path"),
+        # Версия сравнения следует из пути стадии (реестр не читается).
+        "comparison_version": comparison_versions.version_from_stage_path(meta.get("stage_a_path")),
         "documents": meta.get("documents") or {"stage_1": [], "stage_2": []},
         "document_pairing": board_state.project(meta),
         "warnings": meta.get("warnings") or [],
@@ -2699,11 +2702,20 @@ def assert_path_in_allowlist(path: str) -> None:
     try:
         from backend.app.core.config import DATA_DIR
         v2_root = Path(os.environ.get("AUDIT_PROJECTS_V2_DIR") or (Path(DATA_DIR) / "projects_v2")).resolve()
-        relative = candidate.relative_to((v2_root / "objects").resolve())
+        objects_root = (v2_root / "objects").resolve()
+        relative = candidate.relative_to(objects_root)
         if len(relative.parts) >= 3 and relative.parts[1:3] in {
             ("comparison", "stage_1"), ("comparison", "stage_2"),
         }:
             return
+        # Стадии других версий сравнения: comparison/versions/cvNNN/stage_N
+        # зарегистрированной версии этого объекта.
+        if len(relative.parts) >= 5 and relative.parts[1:3] == ("comparison", comparison_versions.VERSIONS_DIR) \
+                and relative.parts[4] in comparison_versions.STAGES \
+                and comparison_versions.is_version_id(relative.parts[3]):
+            legacy_dir = objects_root / relative.parts[0] / "comparison"
+            if relative.parts[3] in comparison_versions.stage_paths_for_legacy_dir(legacy_dir):
+                return
     except ValueError:
         pass
     allowlist = _parse_allowlist()
