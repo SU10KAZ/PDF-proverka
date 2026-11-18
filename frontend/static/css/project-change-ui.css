@@ -24,7 +24,14 @@
 .pc-v1 .sc-shell { gap: 10px; }
 .pc-v1 .sc-pair-workbench { padding: 10px; }
 .pc-v1 .sc-pair-board__row { min-height: 40px; padding-top: 3px; padding-bottom: 3px; }
-.pc-v1 .sc-pair-row-actions { gap: 3px; grid-template-columns: auto auto; justify-content: end; padding: 2px 6px; }
+/* Колонка действий строки — переносимый ряд: статус, «Открыть», «⋯», затем группа
+   «Копировать сравнение · + Слева · + Справа». Не помещается в строку — группа уходит
+   вниз целиком, а не наезжает на статус. */
+.pc-v1 .sc-pair-row-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px; padding: 2px 6px; }
+.pc-v1 .sc-pair-row-actions__buttons { display: contents; }
+.pc-v1 .sc-pair-row-actions__secondary { order: 1; }
+.pc-v1 .sc-pair-group-rebuild { order: 2; }
+.pc-v1 .sc-pair-group-note { order: 3; flex: 1 0 100%; }
 .pc-v1 .sc-pair-document { min-height: 24px; padding: 1px 5px; gap: 3px; grid-template-columns: 14px minmax(0, 1fr) auto; }
 .pc-v1 .sc-pair-slot { min-height: 26px; margin: 0; padding: 0; align-self: center; }
 .pc-v1 .sc-pair-fan__item { padding: 1px 0; }
@@ -33,16 +40,18 @@
 .sc-pair-plus--inline button { width: auto; min-height: 26px; justify-content: center; padding: 2px 6px; }
 .sc-pair-plus--inline button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-radius: var(--radius); }
 .sc-pair-row-actions__buttons { align-items: center; }
-.sc-pair-row-actions__secondary { display: grid; gap: 4px; width: 176px; flex: 0 0 auto; }
-.sc-pair-row-actions__secondary .sc-pair-plus { width: 100%; border: 0; }
-.sc-pair-plus-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+/* «Копировать сравнение», «+ Слева», «+ Справа» — одной строкой, чтобы строка доски была ниже. */
+.sc-pair-row-actions__secondary { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; flex: 0 1 auto; min-width: 0; }
+.sc-pair-row-actions__secondary .sc-pair-plus { border: 0; }
+.sc-pair-plus-pair { display: flex; flex-wrap: nowrap; gap: 4px; }
 .sc-pair-row-actions__secondary .btn,
-.sc-pair-row-actions__secondary .sc-pair-plus button { width: 100%; height: 28px; min-height: 28px; box-sizing: border-box; }
+.sc-pair-row-actions__secondary .sc-pair-plus button { height: 28px; min-height: 28px; box-sizing: border-box; white-space: nowrap; }
 .sc-pair-row-actions__secondary .sc-pair-plus button { border: 1px dashed var(--border2); border-radius: var(--radius); }
 .sc-pair-row-actions__secondary .sc-pair-plus.is-drag-over button { border-color: var(--accent, #0f9f8f); }
 .pc-v1 .sc-pair-board__arrow { color: var(--teal); font-size: 14px; }
 .pc-v1 .sc-pair-document.is-confirmed { background: var(--blue-light); border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
-.pc-v1 .sc-pair-board__header, .pc-v1 .sc-pair-board__row { min-width: 856px; grid-template-columns: 64px minmax(250px, 420px) 44px minmax(250px, 420px) minmax(220px, 1fr); }
+/* Колонка действий не уже 330 px: статус, «Открыть», «⋯» — одна строка, группа из трёх кнопок — вторая. */
+.pc-v1 .sc-pair-board__header, .pc-v1 .sc-pair-board__row { min-width: 966px; grid-template-columns: 64px minmax(250px, 420px) 44px minmax(250px, 420px) minmax(330px, 1fr); }
 .pc-v1 .sc-vector-pane-head { flex-wrap: wrap; gap: 5px; }
 .pc-v1 .sc-vector-pane-head__document { flex: 1 0 100%; }
 .pc-v1 .sc-vector-pane-head__actions { width: 100%; justify-content: space-between; gap: 5px; }
