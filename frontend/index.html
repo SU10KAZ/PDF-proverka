@@ -6371,17 +6371,22 @@
                                     <button class="btn btn-sm btn-secondary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row) || pcCatalogOpening"
                                             @click="scOpenPairRowResult(row)">Открыть</button>
-                                    <details v-show="canOperate" v-if="pcUiEnabled" class="pc-pair-menu"><summary aria-label="Действия пары">⋯</summary>
-                                        <button class="btn btn-sm btn-secondary" :disabled="pcReadOnlySources || !row.left || !row.right || scPairRowBusy(row) || scComparisonLaunchBusy || scComparisonLaunchAwaitingSheetMap"
-                                            @click="scOpenComparisonLaunchDialog(row)">Перезапустить анализ пары</button>
-                                        <button class="btn btn-sm btn-secondary" :disabled="pcReadOnlySources || scBoardRemoving || scPairRowBusy(row)"
-                                            @click="scDeleteBoardRow(row)">{{ row.group || (row.left && row.right) ? 'Удалить пару из списка' : 'Удалить проект из списка' }}</button>
-                                        <button v-if="!row.group && row.left && row.right" class="btn btn-sm btn-secondary"
-                                            :disabled="pcReadOnlySources || scBoardRemoving || scPairRowBusy(row)"
-                                            @click="scDeleteBoardRow(row, 'left')">Удалить проект слева</button>
-                                        <button v-if="!row.group && row.left && row.right" class="btn btn-sm btn-secondary"
-                                            :disabled="pcReadOnlySources || scBoardRemoving || scPairRowBusy(row)"
-                                            @click="scDeleteBoardRow(row, 'right')">Удалить проект справа</button>
+                                    <details v-show="canOperate" v-if="pcUiEnabled" class="pc-pair-menu"
+                                             @toggle="$event.target.open && $event.target.lastElementChild && $event.target.lastElementChild.scrollIntoView({block: 'nearest'})"><summary aria-label="Действия пары">⋯</summary>
+                                        <!-- Пункты — столбиком в одном выпадающем списке; у нижней строки доска
+                                             прокручивается, чтобы список был виден целиком; после выбора меню закрывается. -->
+                                        <div class="pc-pair-menu__list" @click="$event.currentTarget.closest('details').open = false">
+                                            <button class="btn btn-sm btn-secondary" :disabled="pcReadOnlySources || !row.left || !row.right || scPairRowBusy(row) || scComparisonLaunchBusy || scComparisonLaunchAwaitingSheetMap"
+                                                @click="scOpenComparisonLaunchDialog(row)">Перезапустить анализ пары</button>
+                                            <button class="btn btn-sm btn-secondary" :disabled="pcReadOnlySources || scBoardRemoving || scPairRowBusy(row)"
+                                                @click="scDeleteBoardRow(row)">{{ row.group || (row.left && row.right) ? 'Удалить пару из списка' : 'Удалить проект из списка' }}</button>
+                                            <button v-if="!row.group && row.left && row.right" class="btn btn-sm btn-secondary"
+                                                :disabled="pcReadOnlySources || scBoardRemoving || scPairRowBusy(row)"
+                                                @click="scDeleteBoardRow(row, 'left')">Удалить проект слева</button>
+                                            <button v-if="!row.group && row.left && row.right" class="btn btn-sm btn-secondary"
+                                                :disabled="pcReadOnlySources || scBoardRemoving || scPairRowBusy(row)"
+                                                @click="scDeleteBoardRow(row, 'right')">Удалить проект справа</button>
+                                        </div>
                                     </details>
                                     <button v-else-if="canOperate" class="btn btn-sm btn-primary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row) || scComparisonLaunchBusy || scComparisonLaunchAwaitingSheetMap"
