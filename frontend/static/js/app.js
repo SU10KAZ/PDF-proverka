@@ -13464,7 +13464,12 @@ const app = createApp({
                     body: JSON.stringify({left_pdf: row.left.pdf_path, right_pdf: row.right.pdf_path}),
                 });
                 const data = await response.json().catch(() => ({}));
-                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                if (!response.ok) {
+                    // detail бывает объектом {code, message} (отказ прав) — показываем текст, а не [object Object].
+                    const detail = data.detail;
+                    throw new Error((detail && typeof detail === 'object' ? (detail.message || detail.code) : detail)
+                        || ('HTTP ' + response.status));
+                }
                 if (scSession.value?.id === sessionId) {
                     scSession.value = {...scSession.value, document_pairing: {
                         ...(scSession.value.document_pairing || {}), worked_pairs: data.worked_pairs || []}};

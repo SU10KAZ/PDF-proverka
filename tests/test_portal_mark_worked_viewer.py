@@ -82,3 +82,11 @@ def test_mark_worked_does_not_open_other_writes(portal):
     response = client("engineer").post("/api/stage-comparison/sessions/sess-1/document-pairing/suggest")
     assert response.status_code == 403
     assert response.json()["detail"]["code"] == "admin_only"
+
+
+def test_catalog_progress_is_open_to_viewers_of_stage_comparison():
+    """Опрос «Ход выполнения» каталога — чтение статусов; без него у инженеров
+    каждые 6 с всплывало «Действие доступно только администратору»."""
+    from backend.app.core import access_policy as ap
+    policy = ap.policy_for("GET", "/api/project-comparison/catalog/progress")
+    assert (policy.kind, policy.section) == (ap.VIEW, "stage_comparison")

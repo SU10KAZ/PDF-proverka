@@ -193,6 +193,8 @@ _ALLOW_SPEC: dict[str, list[str]] = {
         f"GET {PCP}/viewer/pairs/{{pair_id}}/page-info", f"GET {PCP}/viewer/pairs/{{pair_id}}/page-thumb",
         f"GET {PCP}/viewer/pairs/{{pair_id}}/page-preview", f"GET {PCP}/viewer/pairs/{{pair_id}}/page-tile",
         "GET /api/project-comparison/catalog", "GET /api/project-comparison/catalog/entries/{entry_id}",
+        # Ход выполнения строк каталога (только статусы прогонов, без результатов).
+        "GET /api/project-comparison/catalog/progress",
         f"GET {HM}/comparisons/{{pair}}/ui-data", f"GET {HM}/pairs/{{pair}}/ui-data",
         f"GET {HM}/comparisons/{{pair}}/assets/{{asset_path:path}}", f"GET {HM}/pairs/{{pair}}/assets/{{asset_path:path}}",
         f"GET {HM}/assets/{{asset_path:path}}",
