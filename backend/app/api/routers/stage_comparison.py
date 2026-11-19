@@ -171,7 +171,7 @@ class ProductionRunRequest(BaseModel):
     #: действительно разрешено, решает сервер. Без значения действует
     #: настройка установки, чтобы поведение не менялось молча.
     ai_mode: Literal["FAST", "STANDARD", "DEEP"] | None = None
-    #: Модель ProjectChange V3 этого прогона (``astra`` / ``opus55``). Разрешённый
+    #: Модель ProjectChange V3 этого прогона (``astra62`` / ``sonnet55`` …). Разрешённый
     #: список задаёт установка (PROJECT_COMPARISON_V3_MODEL_CHOICES); без значения —
     #: модель установки по умолчанию.
     model_profile: str | None = Field(default=None, max_length=32)
@@ -830,7 +830,7 @@ class ProductionBatchRequest(BaseModel):
 
 @router.post("/sessions/{session_id}/production/batch")
 async def start_production_batch(session_id: str, request: ProductionBatchRequest, http_request: Request):
-    """Поставить выбранные пары в очередь: сервер анализирует их по одной."""
+    """Поставить выбранные пары в очередь дорожки модели (Codex или Claude): по одной внутри дорожки."""
     from backend.app.services.stage_comparison import production_batch
     if request.model_profile:
         from backend.app.services.project_change_v3.contracts import resolve_profile
@@ -857,19 +857,28 @@ async def start_production_batch(session_id: str, request: ProductionBatchReques
 async def get_production_batch(session_id: str):
     from backend.app.services.stage_comparison import production_batch
     try:
-        return {"batch": await run_in_threadpool(production_batch.status, session_id)}
+        return await run_in_threadpool(_production_batch_view, session_id)
     except ValueError as exc:
         raise HTTPException(404, "Сессия не найдена") from exc
 
 
+def _production_batch_view(session_id: str) -> dict[str, Any]:
+    """``batches`` — очереди обеих дорожек (Codex, Claude); ``batch`` — сводная для прежних клиентов."""
+    from backend.app.services.stage_comparison import production_batch
+    batches = production_batch.statuses(session_id)
+    return {"batch": production_batch.status(session_id, repair=False), "batches": batches}
+
+
 @router.post("/sessions/{session_id}/production/batch/stop")
-async def stop_production_batch(session_id: str, http_request: Request, cancel_current: bool = False):
-    """Не начинать следующие пары очереди; ``cancel_current`` — остановить и текущую."""
+async def stop_production_batch(session_id: str, http_request: Request, cancel_current: bool = False,
+                                lane: Literal["codex", "claude"] | None = None):
+    """Не начинать следующие пары очереди ``lane`` (без него — всех); ``cancel_current`` — остановить и текущую."""
     from backend.app.services.stage_comparison import production_batch
     try:
-        return {"batch": await run_in_threadpool(
-            production_batch.stop, session_id, cancel_current=cancel_current,
-            requested_by=_engineer_author(http_request))}
+        await run_in_threadpool(
+            production_batch.stop, session_id, lane, cancel_current=cancel_current,
+            requested_by=_engineer_author(http_request))
+        return await run_in_threadpool(_production_batch_view, session_id)
     except ValueError as exc:
         raise HTTPException(404, "Сессия не найдена") from exc
 
@@ -905,7 +914,7 @@ def _v3_model_choices() -> dict[str, Any]:
         choices = [v3_contracts.MODEL_PROFILES[v3_contracts.DEFAULT_PROFILE_KEY]]
     return {
         "default": v3_contracts.DEFAULT_PROFILE_KEY,
-        "items": [{"code": p.key, "label": p.label, "model": p.model} for p in choices],
+        "items": [{"code": p.key, "label": p.label, "model": p.model, "lane": p.selection} for p in choices],
     }
 
 

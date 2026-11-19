@@ -270,6 +270,7 @@ describe('all pair rows alongside saved results', () => {
         const extra = row(2, {left: primary.left, secondary: true});
         const context = {scPairRows: {value: [primary, next, extra]},
             computed: fn => ({get value() { return fn(); }}), pcReadOnlySources: {value: false},
+            scBatchBusyKeys: {value: new Set()},
             SC_BATCH: {key: r => r.left && r.right}};
         vm.createContext(context);
         for (const [start, end] of [

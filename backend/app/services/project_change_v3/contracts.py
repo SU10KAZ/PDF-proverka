@@ -96,8 +96,8 @@ PROVIDER_SELECTION = os.environ.get("PROJECT_COMPARISON_V3_PROVIDER", "claude").
 if PROVIDER_SELECTION not in {"claude", "codex"}:
     raise ValueError("PROJECT_COMPARISON_V3_PROVIDER must be claude or codex")
 PROVIDER = "codex_cli_subscription" if PROVIDER_SELECTION == "codex" else "claude_code_cli_subscription"
-MODEL = "gpt-6-astra" if PROVIDER_SELECTION == "codex" else "claude-opus-5"
-ENGINE_VARIANT = "ProjectChange V3 / Astra" if PROVIDER_SELECTION == "codex" else "ProjectChange V3 / Opus"
+MODEL = "gpt-6.2-astra" if PROVIDER_SELECTION == "codex" else "claude-opus-5"
+ENGINE_VARIANT = "ProjectChange V3 / Astra 6.2" if PROVIDER_SELECTION == "codex" else "ProjectChange V3 / Opus"
 REASONING = "xhigh"
 THINKING = {"type": "reasoning" if PROVIDER_SELECTION == "codex" else "adaptive", "effort": REASONING}
 
@@ -121,6 +121,17 @@ class ModelProfile:
 
 
 MODEL_PROFILES: dict[str, ModelProfile] = {
+    # Current choices (19.11.2026): Astra 6.2, Sol 6.2, Opus 5.5, Sonnet 5.5.
+    # gpt-6.2-* are listed only by codex-cli >= 0.169; claude-sonnet-5-5 is
+    # recognised by Claude Code >= 2.1.3xx (see claude_binary_for).
+    "astra62": ModelProfile("astra62", "Astra 6.2 (gpt-6.2-astra)", "codex", "codex_cli_subscription",
+                            "gpt-6.2-astra", "ProjectChange V3 / Astra 6.2"),
+    "sol62": ModelProfile("sol62", "Sol 6.2 (gpt-6.2-sol)", "codex", "codex_cli_subscription",
+                          "gpt-6.2-sol", "ProjectChange V3 / Sol 6.2"),
+    "sonnet55": ModelProfile("sonnet55", "Sonnet 5.5 (claude-sonnet-5-5)", "claude", "claude_code_cli_subscription",
+                             "claude-sonnet-5-5", "ProjectChange V3 / Sonnet 5.5"),
+    # Earlier profiles stay registered: finished runs, resume and downstream
+    # stages (consolidation, IT report) restore the model of their source run.
     "astra": ModelProfile("astra", "Astra 6 (gpt-6-astra)", "codex", "codex_cli_subscription",
                           "gpt-6-astra", "ProjectChange V3 / Astra"),
     "sol61": ModelProfile("sol61", "Sol 6.1 (gpt-6.1-sol)", "codex", "codex_cli_subscription",
@@ -131,7 +142,7 @@ MODEL_PROFILES: dict[str, ModelProfile] = {
     "opus5": ModelProfile("opus5", "Opus 5 (claude-opus-5)", "claude", "claude_code_cli_subscription",
                           "claude-opus-5", "ProjectChange V3 / Opus"),
 }
-DEFAULT_PROFILE_KEY = "astra" if PROVIDER_SELECTION == "codex" else "opus5"
+DEFAULT_PROFILE_KEY = "astra62" if PROVIDER_SELECTION == "codex" else "opus5"
 
 
 def profile_choices() -> list[ModelProfile]:

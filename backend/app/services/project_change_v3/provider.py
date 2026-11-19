@@ -435,10 +435,14 @@ def claude_binary_for(profile) -> str | None:
 
     claude-opus-5-5 answers 400 «requires 2.1.280» on the shared pinned 2.1.270,
     so V3 may pin its own CLI without moving every other Claude consumer.
+    A profile may pin its own CLI with ``PROJECT_COMPARISON_V3_CLAUDE_BIN_<KEY>``
+    (e.g. ``..._SONNET55``): claude-sonnet-5-5 is unknown to 2.1.283
+    (``unrecognized_model``), while Opus 5.5 stays on the CLI it was checked on.
     """
     if profile.selection != "claude":
         return None
-    return os.environ.get("PROJECT_COMPARISON_V3_CLAUDE_BIN", "").strip() or None
+    own = os.environ.get(f"PROJECT_COMPARISON_V3_CLAUDE_BIN_{profile.key.upper()}", "").strip()
+    return own or os.environ.get("PROJECT_COMPARISON_V3_CLAUDE_BIN", "").strip() or None
 
 
 def reset_test_provider() -> None:

@@ -123,3 +123,35 @@ def test_sol61_profile_uses_codex_without_changing_the_default(choices, monkeypa
     assert isinstance(chosen, provider.CodexProvider)
     assert chosen.model == 'gpt-6.1-sol'
     assert contracts.resolve_profile(None).key == 'astra'
+
+
+def test_current_menu_is_astra62_sol62_opus55_sonnet55_in_this_order(monkeypatch):
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MODEL_CHOICES", "astra62,sol62,opus55,sonnet55")
+    monkeypatch.setattr(contracts, "DEFAULT_PROFILE_KEY", "astra62")
+    menu = contracts.profile_choices()
+    assert [(p.key, p.model, p.selection) for p in menu] == [
+        ("astra62", "gpt-6.2-astra", "codex"),
+        ("sol62", "gpt-6.2-sol", "codex"),
+        ("opus55", "claude-opus-5-5", "claude"),
+        ("sonnet55", "claude-sonnet-5-5", "claude"),
+    ]
+    # Прежние профили остаются для досборки и последующих этапов старых прогонов.
+    assert {"astra", "sol61", "opus5"} <= set(contracts.MODEL_PROFILES)
+    with pytest.raises(ValueError):
+        contracts.resolve_profile("astra")
+
+
+def test_sonnet55_runs_like_opus55_with_its_own_pinned_cli(monkeypatch):
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MODEL_CHOICES", "astra62,opus55,sonnet55")
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_CLAUDE_BIN", "/pinned/2.1.283/claude")
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_CLAUDE_BIN_SONNET55", "/pinned/2.1.327/claude")
+    provider.reset_test_provider()
+    with contracts.use_profile(contracts.resolve_profile("sonnet55")):
+        prov = provenance.build_provenance()
+        chosen = provider.get_provider()
+    assert (prov["model"], prov["reasoning"], prov["thinking"]) == (
+        "claude-sonnet-5-5", "xhigh", {"type": "adaptive", "effort": "xhigh"})
+    assert isinstance(chosen, provider.ClaudeOpusProvider)
+    assert (chosen.model, chosen.reasoning, chosen.binary) == ("claude-sonnet-5-5", "xhigh", "/pinned/2.1.327/claude")
+    with contracts.use_profile(contracts.resolve_profile("opus55")):
+        assert provider.get_provider().binary == "/pinned/2.1.283/claude"

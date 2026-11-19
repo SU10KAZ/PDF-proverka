@@ -53,3 +53,24 @@ it('отличает сохранённую паузу от завершённо
     expect(summary.done).toBe(1);
     expect(summary.failed).toBe(0);
 });
+
+it('две очереди: Codex и Claude идут параллельно, пара в очереди недоступна для новой', () => {
+    const batches = [
+        {lane: 'codex', status: 'RUNNING', created_at: '2026-11-19T08:00:00Z', items: [
+            {left_pdf: '/o/A.pdf', right_pdf: '/n/B.pdf', status: 'RUNNING', label: 'A → B'},
+            {left_pdf: '/o/C.pdf', right_pdf: '/n/D.pdf', status: 'QUEUED'}]},
+        {lane: 'claude', status: 'DONE', created_at: '2026-11-19T07:00:00Z', items: [
+            {left_pdf: '/o/E.pdf', right_pdf: '/n/F.pdf', status: 'COMPLETED'}]},
+    ];
+    expect(B.running(batches)).toBe(true);
+    expect([...B.busyLanes(batches)]).toEqual(['codex']);
+    expect([...B.busyKeys(batches)]).toEqual(['/o/A.pdf\n/n/B.pdf', '/o/C.pdf\n/n/D.pdf']);
+    expect(B.badge(B.itemFor(batches, row('C.pdf', 'D.pdf'))).label).toBe('В очереди Codex · №2');
+    expect(B.badge(B.itemFor(batches, row('A.pdf', 'B.pdf'))).label).toBe('Идёт анализ · Codex');
+    expect(B.summaries(batches).map(s => s.text)).toEqual([
+        'Очередь анализа Codex: 0 из 2 готово · сейчас: A → B',
+        'Очередь анализа Claude выполнена: 1 из 1',
+    ]);
+    expect(B.running([])).toBe(false);
+    expect(B.summaries(null)).toEqual([]);
+});

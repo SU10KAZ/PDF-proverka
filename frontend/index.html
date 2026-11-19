@@ -5819,7 +5819,7 @@
                 :object-name="objectName" :session-id="scSession?.id || ''" :pair-rows="scVisiblePairRows"
                 :pairs-loading="scSessionLoading || scObjectsLoading" :can-start="scCatalogCanStart" :pair-status="scCatalogPairStatus"
                 :row-checked="scBatchRowChecked" :all-checked="scBatchAllChecked"
-                :selection-disabled="scBatchRunning || pcReadOnlySources || scSessionLoading || scObjectsLoading"
+                :selection-disabled="!scBatchCanQueue || pcReadOnlySources || scSessionLoading || scObjectsLoading"
                 @select-pair="scToggleBatchRow" @select-all="scToggleBatchAll"
                 :opening="pcCatalogOpening" :error="pcCatalogError" @open="pcOpenCatalogEntry" @open-pair="scOpenPairRowResult" @start="scStartCatalogPair"
                 :worked-mark="pcWorkedMark" :marking-worked="pcWorkedMarking" @mark-worked="pcMarkPairWorked"></project-comparison-catalog>
@@ -6087,18 +6087,22 @@
                             <span>Только OLD: <b>{{ pcPairCounts.old }}</b></span><span>Только NEW: <b>{{ pcPairCounts.new }}</b></span></div>
                         <div v-if="canOperate" class="pc-actions"><button class="btn btn-sm btn-secondary" :disabled="pcReadOnlySources || scPairingMatching || scPairingSaving || !scPairRows.length"
                             @click="scAutoMatchDocumentProjects()">Сопоставить автоматически</button>
-                            <button v-if="scBatchRunning" class="btn btn-sm btn-secondary" :disabled="scBatchBusy"
-                                @click="scStopBatch()">Остановить очередь</button>
-                            <button v-else class="btn btn-sm btn-primary"
+                            <button v-for="lane in scBatchRunningLanes" :key="'stop-' + lane" class="btn btn-sm btn-secondary" :disabled="scBatchBusy"
+                                @click="scStopBatch(lane)">Остановить очередь {{ lane === 'claude' ? 'Claude' : 'Codex' }}</button>
+                            <button v-if="scBatchCanQueue" class="btn btn-sm btn-primary"
                                 :disabled="pcReadOnlySources || scBatchBusy || scComparisonLaunchBusy || !scBatchSelectedRows.length"
                                 :title="pcReadOnlySources ? 'Для опубликованного набора доступен только просмотр.'
-                                    : (scBatchSelectedRows.length ? 'Выбрать режим и модель; пары будут проанализированы по очереди.' : 'Отметьте галочками пары слева.')"
-                                @click="scOpenBatchLaunchDialog()">Запустить анализ выбранных<template v-if="scBatchSelectedRows.length"> ({{ scBatchSelectedRows.length }})</template></button></div>
+                                    : (scBatchSelectedRows.length ? (scBatchRunning
+                                        ? 'Вторая очередь на модели другого семейства (Codex / Claude) пойдёт параллельно с первой.'
+                                        : 'Выбрать режим и модель; пары будут проанализированы по очереди.') : 'Отметьте галочками пары слева.')"
+                                @click="scOpenBatchLaunchDialog()">{{ scBatchRunning ? 'Запустить вторую очередь' : 'Запустить анализ выбранных' }}<template v-if="scBatchSelectedRows.length"> ({{ scBatchSelectedRows.length }})</template></button></div>
                     </div>
-                    <div v-if="scBatchSummary || scBatchError" class="sc-batch-status" :class="{'is-running': scBatchSummary && scBatchSummary.running, 'is-error': scBatchError}" role="status">
-                        <span v-if="scBatchSummary && scBatchSummary.running" class="sc-batch-status__spinner" aria-hidden="true"></span>
-                        {{ scBatchError || scBatchSummary.text }}
-                        <small v-if="scBatchSummary && scBatchSummary.running"> · анализ идёт на сервере, вкладку можно закрыть</small>
+                    <div v-if="scBatchError" class="sc-batch-status is-error" role="status">{{ scBatchError }}</div>
+                    <div v-for="summary in scBatchSummaries" :key="'batch-' + summary.lane" class="sc-batch-status"
+                         :class="{'is-running': summary.running}" role="status">
+                        <span v-if="summary.running" class="sc-batch-status__spinner" aria-hidden="true"></span>
+                        {{ summary.text }}
+                        <small v-if="summary.running"> · анализ идёт на сервере, вкладку можно закрыть</small>
                     </div>
                     <div v-if="scDocumentGroupsError" class="sc-shell-error sc-document-groups-error">{{ scDocumentGroupsError }}</div>
                     <div v-if="!pcReadOnlySources" class="pc-upload-save" role="status">{{ scPairingSaveError || (scPairingSaving || scPairingDirty ? 'Сохраняем сопоставление…' : 'Сопоставление сохраняется автоматически') }}
@@ -6132,7 +6136,7 @@
                     <div class="sc-pair-board">
                         <div class="sc-pair-board__header">
                             <span class="sc-batch-head"><input v-if="pcUiEnabled && scBatchSelectableRows.length" type="checkbox" class="sc-batch-check"
-                                :checked="scBatchAllChecked" :disabled="scBatchRunning"
+                                :checked="scBatchAllChecked" :disabled="!scBatchCanQueue"
                                 :title="scBatchAllChecked ? 'Снять все галочки' : 'Отметить все пары для анализа'"
                                 aria-label="Отметить все пары для анализа"
                                 @change="scToggleBatchAll($event.target.checked)">№</span>
@@ -6158,7 +6162,7 @@
                                   @dragstart="scStartPairRowDrag($event, row)"
                                   @dragend="scFinishPairRowDrag()">
                                 <input v-if="pcUiEnabled && !pcReadOnlySources && row.left && row.right" type="checkbox" class="sc-batch-check"
-                                    :checked="scBatchRowChecked(row)" :disabled="scBatchRunning" draggable="false"
+                                    :checked="scBatchRowChecked(row)" :disabled="!scBatchCanQueue || scBatchRowBusy(row)" draggable="false"
                                     :aria-label="'Отметить пару ' + (visibleIndex + 1) + ' для анализа'" title="Отметить для анализа"
                                     @mousedown.stop @click.stop @change="scToggleBatchRow(row, $event.target.checked)">
                                 <small>{{ visibleIndex + 1 }}</small><i>⠿</i>
@@ -8352,6 +8356,7 @@
                 <p v-if="scComparisonLaunchBatch" class="pause-modal__desc">
                     Выбрано пар: <b>{{ scComparisonLaunchBatch.length }}</b>. Они будут проанализированы по очереди, одна за другой,
                     в выбранном режиме и выбранной моделью. Анализ идёт на сервере — вкладку можно закрыть.
+                    Очереди на Codex (Astra, Sol) и на Claude (Opus, Sonnet) идут параллельно, по одной очереди на каждое семейство.
                 </p>
                 <p v-else class="pause-modal__desc">Выберите глубину анализа для этого запуска.</p>
                 <ol v-if="scComparisonLaunchBatch" class="sc-batch-list">
@@ -8364,11 +8369,12 @@
                 <fieldset v-if="scV3ModelOptions.length > 1" class="sc-v3-model-choice">
                     <legend>Модель анализа</legend>
                     <label v-for="option in scV3ModelOptions" :key="option.code"
-                           :class="{'is-selected': scV3Model === option.code}">
+                           :class="{'is-selected': scV3Model === option.code}"
+                           :title="scV3ModelLaneBusy(option) ? 'Очередь ' + (option.lane === 'claude' ? 'Claude' : 'Codex') + ' уже идёт' : ''">
                         <input type="radio" name="sc-v3-model" :value="option.code"
-                               :checked="scV3Model === option.code" :disabled="scComparisonLaunchBusy"
+                               :checked="scV3Model === option.code" :disabled="scComparisonLaunchBusy || scV3ModelLaneBusy(option)"
                                @change="scSelectV3Model(option.code)">
-                        <span>{{ option.label }}</span>
+                        <span>{{ option.label }}<small v-if="scV3ModelLaneBusy(option)"> — очередь {{ option.lane === 'claude' ? 'Claude' : 'Codex' }} занята</small></span>
                     </label>
                 </fieldset>
                 <fieldset class="sc-v3-model-choice">

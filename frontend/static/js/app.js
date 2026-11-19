@@ -13308,10 +13308,11 @@ const app = createApp({
         const scComparisonLaunchBusy = ref(false);
         const scComparisonLaunchPending = ref(null);
         let scComparisonLaunchTarget = null;
-        // Очередь анализа выбранных пар: галочки строк и состояние очереди сервера.
+        // Очереди анализа выбранных пар: галочки строк и состояние очередей сервера
+        // (две дорожки — Codex и Claude — идут параллельно; scBatch — их список).
         const SC_BATCH = window.StageComparisonBatch;
         const scBatchChecked = reactive({});
-        const scBatch = ref(null);
+        const scBatch = ref([]);
         const scBatchBusy = ref(false);
         const scBatchError = ref('');
         const scComparisonLaunchBatch = ref(null);
@@ -18979,21 +18980,38 @@ const app = createApp({
 
         // ---- Очередь анализа выбранных пар -------------------------------------
         const scBatchRunning = computed(() => SC_BATCH.running(scBatch.value));
-        const scBatchSummary = computed(() => SC_BATCH.summary(scBatch.value));
+        const scBatchSummaries = computed(() => SC_BATCH.summaries(scBatch.value));
+        const scBatchBusyLanes = computed(() => SC_BATCH.busyLanes(scBatch.value));
+        const scBatchBusyKeys = computed(() => SC_BATCH.busyKeys(scBatch.value));
+        // Новую очередь можно поставить, пока свободна хотя бы одна дорожка из предложенных моделей.
+        const scBatchFreeLanes = computed(() => {
+            const lanes = new Set((scV3ModelOptions.value.length ? scV3ModelOptions.value : [{lane: 'codex'}, {lane: 'claude'}])
+                .map(item => item.lane || 'codex'));
+            return [...lanes].filter(lane => !scBatchBusyLanes.value.has(lane));
+        });
+        const scBatchCanQueue = computed(() => scBatchFreeLanes.value.length > 0);
+        const scBatchRunningLanes = computed(() => SC_BATCH.list(scBatch.value)
+            .filter(batch => batch.status === 'RUNNING').map(batch => batch.lane || ''));
         const scBatchSelectableRows = computed(() => (pcReadOnlySources.value ? []
-            : scVisiblePairRows.value.filter(row => SC_BATCH.key(row))));
+            : scVisiblePairRows.value.filter(row => SC_BATCH.key(row) && !scBatchBusyKeys.value.has(SC_BATCH.key(row)))));
         const scBatchSelectedRows = computed(() => scBatchSelectableRows.value
             .filter(row => scBatchChecked[SC_BATCH.key(row)]));
         const scBatchAllChecked = computed(() => scBatchSelectableRows.value.length > 0
             && scBatchSelectedRows.value.length === scBatchSelectableRows.value.length);
 
         function scBatchRowChecked(row) {
-            return Boolean(scBatchChecked[SC_BATCH.key(row)]);
+            const key = SC_BATCH.key(row);
+            return Boolean(scBatchChecked[key]) && !scBatchBusyKeys.value.has(key);
+        }
+
+        // Пара уже стоит или идёт в одной из очередей — галочка для неё недоступна.
+        function scBatchRowBusy(row) {
+            return scBatchBusyKeys.value.has(SC_BATCH.key(row));
         }
 
         function scToggleBatchRow(row, checked) {
             const key = SC_BATCH.key(row);
-            if (!key) return;
+            if (!key || scBatchBusyKeys.value.has(key)) return;
             if (checked) scBatchChecked[key] = true;
             else delete scBatchChecked[key];
         }
@@ -19042,23 +19060,42 @@ const app = createApp({
             // viewer: очередь анализа пар — служебная (только admin).
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
             const url = scBatchUrl();
-            if (!url || pcBridgeActive.value) { scBatch.value = null; scScheduleBatchPoll(); return; }
+            if (!url || pcBridgeActive.value) { scBatch.value = []; scScheduleBatchPoll(); return; }
             try {
                 const response = await fetch(url);
                 const data = await response.json().catch(() => ({}));
-                if (response.ok && url === scBatchUrl()) scBatch.value = data.batch || null;
+                if (response.ok && url === scBatchUrl()) scBatch.value = scBatchList(data);
             } catch (_) { /* следующий опрос повторит */ }
             scScheduleBatchPoll();
         }
 
-        function scOpenBatchLaunchDialog() {
+        // Ответ API: ``batches`` — очереди дорожек; прежний сервер отдаёт одну ``batch``.
+        function scBatchList(data) {
+            if (data && Array.isArray(data.batches)) return data.batches;
+            return data && data.batch ? [data.batch] : [];
+        }
+
+        // Модель занята, если её дорожка (Codex / Claude) уже ведёт очередь.
+        function scV3ModelLaneBusy(option) {
+            return Boolean(scComparisonLaunchBatch.value && option && scBatchBusyLanes.value.has(option.lane || 'codex'));
+        }
+
+        function scPickFreeV3Model() {
+            const current = scV3ModelOptions.value.find(item => item.code === scV3Model.value);
+            if (!current || !scV3ModelLaneBusy(current)) return;
+            const free = scV3ModelOptions.value.find(item => !scV3ModelLaneBusy(item));
+            if (free) scV3Model.value = free.code;  // без записи в localStorage: выбор вынужденный
+        }
+
+        async function scOpenBatchLaunchDialog() {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
-            if (!scBatchSelectedRows.value.length || scBatchRunning.value || scBatchBusy.value
+            if (!scBatchSelectedRows.value.length || !scBatchCanQueue.value || scBatchBusy.value
                     || scComparisonLaunchBusy.value) return;
             scComparisonLaunchBatch.value = SC_BATCH.payload(scBatchSelectedRows.value);
             scComparisonLaunchTarget = null;
             scComparisonLaunchDialogOpen.value = true;
-            void scLoadProductionAiModes();
+            await scLoadProductionAiModes();
+            scPickFreeV3Model();
         }
 
         async function scStartBatchLaunch(mode) {
@@ -19079,9 +19116,9 @@ const app = createApp({
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
-                scBatch.value = data;
+                scBatch.value = [...SC_BATCH.list(scBatch.value).filter(batch => batch.lane !== data.lane), data];
                 scClearReactiveRecord(scBatchChecked);
-                scScheduleBatchPoll();
+                void scLoadBatch();
             } catch (error) {
                 scBatchError.value = 'Очередь не запущена: ' + String(error.message || error);
             } finally {
@@ -19089,17 +19126,22 @@ const app = createApp({
             }
         }
 
-        async function scStopBatch() {
+        async function scStopBatch(lane = '') {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scBatchRunning.value || scBatchBusy.value) return;
-            const cancelCurrent = window.confirm('Остановить очередь анализа?\n\n'
-                + 'ОК — прервать и пару, которая анализируется сейчас.\n'
+            const name = lane ? 'очередь ' + SC_BATCH.laneLabel(lane) : 'очередь анализа';
+            const cancelCurrent = window.confirm('Остановить ' + name + '?\n\n'
+                + 'ОК — прервать и пару, которая анализируется в ней сейчас.\n'
                 + 'Отмена — дать текущей паре доанализироваться, следующие не запускать.');
             scBatchBusy.value = true;
             try {
-                const response = await fetch(scBatchUrl('/stop') + (cancelCurrent ? '?cancel_current=true' : ''), {method: 'POST'});
+                const query = new URLSearchParams();
+                if (cancelCurrent) query.set('cancel_current', 'true');
+                if (lane) query.set('lane', lane);
+                const suffix = query.toString() ? '?' + query.toString() : '';
+                const response = await fetch(scBatchUrl('/stop') + suffix, {method: 'POST'});
                 const data = await response.json().catch(() => ({}));
-                if (response.ok) scBatch.value = data.batch || scBatch.value;
+                if (response.ok) scBatch.value = scBatchList(data);
             } finally {
                 scBatchBusy.value = false;
                 scScheduleBatchPoll();
@@ -21795,7 +21837,7 @@ const app = createApp({
         });
         watch(() => scSession.value?.id || '', sessionId => {
             scClearReactiveRecord(scBatchChecked);
-            scBatch.value = null;
+            scBatch.value = [];
             void scLoadBatch();
             if (sessionId) void pcLoadCatalogEntries();
         }, {immediate: true});
@@ -22277,7 +22319,8 @@ const app = createApp({
             scComparisonLaunchBusy, scComparisonLaunchAwaitingSheetMap,
             scCancelProductionRun, scResumeProductionRun, scLoadProductionAiModes,
             scComparisonLaunchModeAllowed, scOpenComparisonLaunchDialog,
-            scBatch, scBatchBusy, scBatchError, scBatchRunning, scBatchSummary, scBatchSelectableRows,
+            scBatch, scBatchBusy, scBatchError, scBatchRunning, scBatchSummaries, scBatchSelectableRows,
+            scBatchCanQueue, scBatchRunningLanes, scBatchRowBusy, scV3ModelLaneBusy,
             scBatchSelectedRows, scBatchAllChecked, scBatchRowChecked, scToggleBatchRow, scToggleBatchAll,
             scBatchBadge, scOpenBatchLaunchDialog, scStopBatch, scComparisonLaunchBatch,
             scCatalogCanStart, scCatalogPairStatus, scStartCatalogPair,

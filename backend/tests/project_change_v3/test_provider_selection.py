@@ -28,7 +28,7 @@ def test_configuration_and_factory_agree_and_stay_frozen(selection):
         prov = provenance.build_provenance()
         codex = os.environ.get('PROJECT_COMPARISON_V3_PROVIDER') == 'codex'
         assert isinstance(p, provider.CodexProvider if codex else provider.ClaudeOpusProvider)
-        assert prov['model'] == p.model == ('gpt-6-astra' if codex else 'claude-opus-5')
+        assert prov['model'] == p.model == ('gpt-6.2-astra' if codex else 'claude-opus-5')
         assert prov['provider'] == p.provider
         assert prov['reasoning'] == p.reasoning == 'xhigh'
         assert prov['provider_transport_version'] == (transport.CODEX_TRANSPORT_VERSION if codex
@@ -79,7 +79,7 @@ def test_astra_pipeline_gate_receipts_and_persistence(tmp_path):
         handlers = gf.fake_handlers()
         def codex(payload, **kw):
             calls.append(kw)
-            assert kw['model'] == 'gpt-6-astra' and kw['reasoning_level'] == 'xhigh'
+            assert kw['model'] == 'gpt-6.2-astra' and kw['reasoning_level'] == 'xhigh'
             assert kw['json_events'] is True and kw['retries'] == 0
             assert kw['cancel'] is not None
             data = json.loads(payload.split('\\nSOURCE DATA:\\n', 1)[1])
@@ -100,13 +100,13 @@ def test_astra_pipeline_gate_receipts_and_persistence(tmp_path):
         assert [c['stage'] for c in receipts] == ['MAPPING','MINING','MINING','DEDUPE']
         assert len(calls) == state['model_calls'] == 4
         assert {(c['provider'],c['model'],c['reasoning']) for c in receipts} == {
-            ('codex_cli_subscription','gpt-6-astra','xhigh')}
-        assert prov['model'] == 'gpt-6-astra' and prov['engine_variant'] == 'ProjectChange V3 / Astra'
+            ('codex_cli_subscription','gpt-6.2-astra','xhigh')}
+        assert prov['model'] == 'gpt-6.2-astra' and prov['engine_variant'] == 'ProjectChange V3 / Astra 6.2'
         assert prov['usage_total'] == {'input_tokens':400,'cached_input_tokens':120,'output_tokens':80,
             'reasoning_output_tokens':20,'calls':4,'calls_with_usage':4,'calls_without_usage':0}
         stored = production_store.load_artifact(built['session_id'], gf.PAIR_ID,
                        'project_change_v3_result', include_domain_keys=True)
-        assert stored['provenance']['model'] == 'gpt-6-astra'
+        assert stored['provenance']['model'] == 'gpt-6.2-astra'
         # Schema rejection still retains the completed answer for the attempt store.
         p = provider.get_provider()
         gateway.call_codex = lambda *a, **kw: SimpleNamespace(ok=True, parsed={'wrong':True}, usage={})
