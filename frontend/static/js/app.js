@@ -100,7 +100,10 @@ function portalProjectUploadSection(method, path) {
     return null;
 }
 
-function portalViewerBlocksRequest(method, url, allowDecisionImport = false, allowProjectUpload = false, allowScheduleEdit = false, allowSectionUploads = {}) {
+// Отметка «Отработано» пары сравнения стадий (MARK_WORKED в access_policy.py).
+const PORTAL_MARK_WORKED_PATH = /^\/api\/stage-comparison\/sessions\/[^/]+\/worked-pairs$/;
+
+function portalViewerBlocksRequest(method, url, allowDecisionImport = false, allowProjectUpload = false, allowScheduleEdit = false, allowSectionUploads = {}, allowMarkWorked = false) {
     const m = String(method || 'GET').toUpperCase();
     if (m === 'GET' || m === 'HEAD' || m === 'OPTIONS') return false;
     const {path} = _portalSplitUrl(url);
@@ -109,6 +112,7 @@ function portalViewerBlocksRequest(method, url, allowDecisionImport = false, all
     if (uploadSection && (allowSectionUploads[uploadSection] || (uploadSection === 'audit_results' && allowProjectUpload))) return false;
     if (allowScheduleEdit && ((m === 'PUT' && path === '/api/schedule/plan')
         || (m === 'POST' && path === '/api/schedule/reserve/operations'))) return false;
+    if (allowMarkWorked && m === 'POST' && PORTAL_MARK_WORKED_PATH.test(path)) return false;
     return path.startsWith('/api/') && !path.startsWith('/api/auth/');
 }
 
@@ -135,6 +139,12 @@ function portalCanUploadProjects(section = 'audit_results') {
     if (typeof window === 'undefined' || !window.portalCan) return true;
     return typeof window.portalCan.uploadProjects === 'function'
         ? window.portalCan.uploadProjects(section) : window.portalCan.operate();
+}
+
+function portalCanMarkWorked() {
+    if (typeof window === 'undefined' || !window.portalCan) return true;
+    return typeof window.portalCan.markWorked === 'function'
+        ? window.portalCan.markWorked() : window.portalCan.operate();
 }
 
 function portalCanEditSchedule() {
@@ -4933,7 +4943,7 @@ const app = createApp({
                     // защиты за скрытыми кнопками; сервер ответил бы 403).
                     const method = (init && init.method) || (typeof input !== 'string' && input && input.method) || 'GET';
                     const uploadPermissions = Object.fromEntries(['audit_results', 'version_comparison', 'stage_comparison'].map(s => [s, portalCanUploadProjects(s)]));
-                    if (!portalCanOperate() && portalViewerBlocksRequest(method, url0, portalCanImportDecisions(), portalCanUploadProjects(), portalCanEditSchedule(), uploadPermissions)) {
+                    if (!portalCanOperate() && portalViewerBlocksRequest(method, url0, portalCanImportDecisions(), portalCanUploadProjects(), portalCanEditSchedule(), uploadPermissions, portalCanMarkWorked())) {
                         const detail = {code: 'forbidden_viewer', message: 'действие доступно только администратору'};
                         showPortalForbidden(detail);
                         return Promise.resolve(new Response(JSON.stringify({detail}), {

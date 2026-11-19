@@ -70,6 +70,15 @@ describe('чистые помощники доступа', () => {
         expect(H.portalViewerBlocksRequest('PUT', '/api/schedule/plan')).toBe(true);
     });
 
+    it('пропускает отметку «Отработано» инженеру с правом на неё, остальное в разделе — нет', () => {
+        const mark = (method, path, allow) => H.portalViewerBlocksRequest(method, path, false, false, false, {}, allow);
+        expect(mark('POST', '/api/stage-comparison/sessions/1aba3757/worked-pairs', true)).toBe(false);
+        expect(mark('POST', '/api/stage-comparison/sessions/1aba3757/worked-pairs', false)).toBe(true);
+        expect(mark('DELETE', '/api/stage-comparison/sessions/1aba3757/worked-pairs', true)).toBe(true);
+        expect(mark('POST', '/api/stage-comparison/sessions/1aba3757/production/batch', true)).toBe(true);
+        expect(mark('POST', '/api/stage-comparison/sessions/a/b/worked-pairs', true)).toBe(true);
+    });
+
     it('разрешает загрузку только в отмеченном разделе', () => {
         const check = (method, path, section) => H.portalViewerBlocksRequest(method, path, false, false, false, {[section]: true});
         expect(check('POST', '/api/stage-comparison/objects/o/stages/stage_1/upload-folder', 'stage_comparison')).toBe(false);
