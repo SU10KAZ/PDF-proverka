@@ -1,11 +1,11 @@
-"""Isolated process entry point for one project assembly build."""
+"""Isolated process entry point for one project assembly build (with duplicate scan)."""
 from __future__ import annotations
 
 import os
 import signal
 import sys
 
-from .service import build_version
+from .service import run_version
 
 
 def main(argv: list[str]) -> int:
@@ -16,11 +16,12 @@ def main(argv: list[str]) -> int:
     except OSError:
         pass
     def timed_out(_signum, _frame):
-        raise TimeoutError("Сборка превысила общий лимит 30 минут")
+        raise TimeoutError("Сборка превысила общий лимит 45 минут")
 
     signal.signal(signal.SIGALRM, timed_out)
-    signal.alarm(30 * 60)
-    build_version(argv[0], argv[1], argv[2])
+    # Поиск дублей (~0,1 с на страницу) идёт в том же задании перед склейкой.
+    signal.alarm(45 * 60)
+    run_version(argv[0], argv[1], argv[2])
     signal.alarm(0)
     return 0
 

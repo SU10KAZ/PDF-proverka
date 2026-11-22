@@ -32,6 +32,7 @@ from backend.app.services.common.results_md import (
     parse_results_md,
 )
 from backend.app.services.stage_comparison import comparison_versions, sheet_matching, stage_upload
+from . import duplicates
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
 
 SCHEMA = "project_assembly/1"
@@ -53,6 +54,13 @@ class AssemblyError(ValueError):
 
 def enabled() -> bool:
     return os.environ.get("PROJECT_ASSEMBLIES_ENABLED", "0").strip().lower() in {
+        "1", "true", "yes", "on",
+    }
+
+
+def dedup_enabled() -> bool:
+    """Поиск одинаковых листов перед сборкой групп (согласует инженер)."""
+    return os.environ.get("PROJECT_ASSEMBLY_DEDUP_ENABLED", "0").strip().lower() in {
         "1", "true", "yes", "on",
     }
 
@@ -363,7 +371,13 @@ def _block_id(source: dict[str, Any], blocks_sha: str, original_id: str) -> str:
     return "blk_" + hashlib.sha256(_canonical(identity)).hexdigest()[:32]
 
 
-def _project_md(text: str, *, page_offset: int, id_map: dict[str, str], ordinal_offset: int, page_count: int) -> tuple[list[str], int]:
+def _project_md(text: str, *, page_numbers: dict[int, int], id_map: dict[str, str], ordinal_offset: int,
+                page_count: int) -> tuple[list[str], int]:
+    """Markdown проекта в нумерации сборки.
+
+    ``page_numbers`` — страница проекта → страница сборки; страницы вне карты
+    (удалённые дубли) пропускаются вместе со своими блоками.
+    """
     parsed = parse_results_md(text)
     lines = text.splitlines()
     boundaries = [
@@ -380,8 +394,10 @@ def _project_md(text: str, *, page_offset: int, id_map: dict[str, str], ordinal_
     next_ordinal = ordinal_offset
     original_ordinals = {block.block_id: block.ordinal for block in parsed.blocks}
     for page_no in range(1, page_count + 1):
+        if page_no not in page_numbers:
+            continue
         # Лист и название из штампа остаются при странице и после сдвига номера.
-        result.extend([f"## Page {page_offset + page_no}{suffixes.get(page_no, '')}", ""])
+        result.extend([f"## Page {page_numbers[page_no]}{suffixes.get(page_no, '')}", ""])
         for line in by_page.get(page_no, []):
             match = BLOCK_HEADER_RE.match(line)
             if match:
@@ -400,13 +416,32 @@ def _project_md(text: str, *, page_offset: int, id_map: dict[str, str], ordinal_
     return result, next_ordinal
 
 
+def _kept_ranges(pages: list[int]) -> list[tuple[int, int]]:
+    """Подряд идущие страницы (1-based) одним диапазоном: insert_pdf копирует их разом."""
+    ranges: list[tuple[int, int]] = []
+    for page in pages:
+        if ranges and ranges[-1][1] == page - 1:
+            ranges[-1] = (ranges[-1][0], page)
+        else:
+            ranges.append((page, page))
+    return ranges
+
+
 def _build_files(
     version_dir: Path,
     manifest: dict[str, Any],
     heartbeat: Callable[[int, int], None] | None = None,
+    removed: dict[tuple[int, int], dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
+    """Склеить проекты в документ сборки.
+
+    ``removed`` — согласованные инженером копии листов: ``(source_index,
+    source_page)`` → запись пары. Такие страницы в сборку не входят, а карта
+    происхождения помнит, копией какой страницы они были.
+    """
     import fitz
 
+    removed = removed or {}
     work = version_dir / "02_work"
     work.mkdir(parents=True, exist_ok=False)
     output_pdf = fitz.open()
@@ -414,6 +449,8 @@ def _build_files(
     output_pages: list[dict[str, Any]] = []
     origin_pages: list[dict[str, Any]] = []
     origin_blocks: dict[str, dict[str, Any]] = {}
+    origin_sources: list[dict[str, Any]] = []
+    assembly_page_of: dict[tuple[int, int], int] = {}
     md_lines = [f"# Document: {manifest['name']}.pdf", "Path: Сборки / " + manifest["name"], ""]
     html_links: list[str] = []
     html_sections: list[str] = []
@@ -425,16 +462,21 @@ def _build_files(
         blocks_sha = source["files"]["blocks"]["sha256"]
         id_map = {str(row["block_id"]): _block_id(source, blocks_sha, str(row["block_id"])) for row in blocks_data["blocks"]}
         with fitz.open(blobs["pdf"]) as src:
-            output_pdf.insert_pdf(src, links=False, annots=True, widgets=True)
             page_count = src.page_count
+            kept = [page for page in range(1, page_count + 1) if (source_index, page) not in removed]
+            for start, end in _kept_ranges(kept):
+                output_pdf.insert_pdf(src, from_page=start - 1, to_page=end - 1, links=False, annots=True, widgets=True)
+        # Страница проекта → страница сборки; удалённые копии в карту не входят.
+        page_numbers = {local: page_offset + position for position, local in enumerate(kept, start=1)}
         md_part, ordinal_offset = _project_md(
             blobs["markdown"].read_text(encoding="utf-8"),
-            page_offset=page_offset, id_map=id_map, ordinal_offset=ordinal_offset, page_count=page_count,
+            page_numbers=page_numbers, id_map=id_map, ordinal_offset=ordinal_offset, page_count=page_count,
         )
         md_lines.extend(md_part)
         sheets = {int(row["pdf_page"]): row for row in sheet_matching.extract_sheet_index_from_results_html(blobs["html"].read_text(encoding="utf-8"))}
-        for local_page in range(1, page_count + 1):
-            global_page = page_offset + local_page
+        for local_page in kept:
+            global_page = page_numbers[local_page]
+            assembly_page_of[(source_index, local_page)] = global_page
             sheet = sheets.get(local_page) or {}
             label = sheet.get("display") or f"Page {global_page}"
             html_links.append(f'<li><a href="#page-{global_page - 1}">{html.escape(str(label))}</a></li>')
@@ -447,19 +489,26 @@ def _build_files(
                 "sheet_title": sheet.get("title"),
             })
         for page in blocks_data["pages"]:
+            local_page = int(page["page_index"]) + 1
+            if local_page not in page_numbers:
+                continue
             projected = dict(page)
-            projected["page_index"] = int(page["page_index"]) + page_offset
+            projected["page_index"] = page_numbers[local_page] - 1
             projected["page_label"] = projected["page_index"] + 1
             output_pages.append(projected)
+        parsed_part = parse_results_md("\n".join(md_part)).blocks
         for block in blocks_data["blocks"]:
+            local_page = int(block["page_index"]) + 1
+            if local_page not in page_numbers:
+                continue
             projected = dict(block)
             old_id = str(block["block_id"])
             new_id = id_map[old_id]
             projected["block_id"] = new_id
-            projected["page_index"] = int(block["page_index"]) + page_offset
+            projected["page_index"] = page_numbers[local_page] - 1
             if projected.get("ordinal") is not None:
                 projected["ordinal"] = next(
-                    (b.ordinal for b in parse_results_md("\n".join(md_part)).blocks if b.block_id == new_id),
+                    (b.ordinal for b in parsed_part if b.block_id == new_id),
                     projected.get("ordinal"),
                 )
             projected.pop("crop_url", None)
@@ -467,27 +516,55 @@ def _build_files(
             origin_blocks[new_id] = {
                 "source_index": source_index,
                 "source_block_id": old_id,
-                "source_page": int(block["page_index"]) + 1,
-                "assembly_page": int(block["page_index"]) + 1 + page_offset,
+                "source_page": local_page,
+                "assembly_page": page_numbers[local_page],
                 "coords_norm": block.get("coords_norm"),
                 "block_type": block.get("block_type"),
             }
+        # Диапазон проекта в сборке — по оставшимся страницам; проект, все листы
+        # которого оказались копиями, диапазона не имеет.
+        origin_source = {
+            **{key: value for key, value in source.items() if key != "files"},
+            "page_start": page_numbers[kept[0]] if kept else None,
+            "page_end": page_numbers[kept[-1]] if kept else None,
+        }
+        if len(kept) != page_count:
+            origin_source["removed_pages"] = page_count - len(kept)
+        origin_sources.append(origin_source)
         if heartbeat is not None:
             heartbeat(source_index + 1, len(manifest["sources"]))
-        page_offset += page_count
+        page_offset += len(kept)
     output_pdf.set_metadata({"title": manifest["name"], "author": "Audit Manager", "creator": "Project Assemblies"})
     pdf_path = work / "document.pdf"
     output_pdf.save(pdf_path, garbage=0, deflate=False, no_new_id=True)
     output_pdf.close()
     (work / "document.md").write_text("\n".join(md_lines).rstrip() + "\n", encoding="utf-8")
-    content_identity = hashlib.sha256(_canonical({
+    removed_pages = [
+        {
+            "source_index": source_index,
+            "source_page": source_page,
+            "pair_id": row.get("pair_id"),
+            "duplicate_of": {
+                "source_index": row["original"]["source_index"],
+                "source_page": row["original"]["source_page"],
+                "assembly_page": assembly_page_of.get(
+                    (row["original"]["source_index"], row["original"]["source_page"])),
+            },
+        }
+        for (source_index, source_page), row in sorted(removed.items())
+    ]
+    identity: dict[str, Any] = {
         "name": manifest["name"],
         "section": manifest["section"],
         "sources": [
             {"source_ref": source["source_ref"], "files": {role: item["sha256"] for role, item in source["files"].items()}}
             for source in manifest["sources"]
         ],
-    })).hexdigest()
+    }
+    if removed_pages:
+        # Другой состав страниц — другой документ, даже из тех же файлов.
+        identity["removed_pages"] = [[row["source_index"], row["source_page"]] for row in removed_pages]
+    content_identity = hashlib.sha256(_canonical(identity)).hexdigest()
     blocks_payload = {
         "schema_version": 1,
         "document_id": "assembly_" + content_identity[:32],
@@ -500,10 +577,12 @@ def _build_files(
     origin = {
         "schema": ORIGIN_SCHEMA,
         "manifest_sha256": manifest["manifest_sha256"],
-        "sources": [{key: value for key, value in source.items() if key != "files"} for source in manifest["sources"]],
+        "sources": origin_sources,
         "pages": origin_pages,
         "blocks": origin_blocks,
     }
+    if removed_pages:
+        origin["removed_pages"] = removed_pages
     (work / "assembly_origin.json").write_text(json.dumps(origin, ensure_ascii=False, indent=2), encoding="utf-8")
     return {
         name: {"size": (work / name).stat().st_size, "sha256": _sha(work / name)}
@@ -552,6 +631,262 @@ def _registry_lock(root: Path):
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
+REVIEW_SCHEMA = "project_assembly_duplicate_review/1"
+DECISIONS_SCHEMA = "project_assembly_duplicate_decisions/1"
+DECISIONS = ("remove", "keep")
+
+
+def _duplicate_paths(assembly_dir: Path, version_id: str) -> tuple[Path, Path]:
+    """Найденные пары версии и согласованное решение по ним (до сборки)."""
+    pending = assembly_dir / "pending"
+    return pending / f"{version_id}.duplicates.json", pending / f"{version_id}.review.json"
+
+
+def _decisions_path(object_id: str) -> Path:
+    return _root(object_id, create=True) / "duplicate_decisions.json"
+
+
+def remembered_decisions(object_id: str) -> dict[str, dict[str, Any]]:
+    """Решения инженера по парам листов: ключ — пара страниц, не версия сборки.
+
+    Пересборка группы (новый проект, другой порядок) находит те же пары снова
+    и не спрашивает о них повторно.
+    """
+    path = _decisions_path(object_id)
+    if not path.is_file():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise AssemblyError("DECISIONS_CORRUPT", "Повреждён реестр решений по дублям") from exc
+    pairs = data.get("pairs") if isinstance(data, dict) else None
+    return pairs if isinstance(pairs, dict) else {}
+
+
+def record_duplicate_decisions(object_id: str, pairs: list[dict[str, Any]], author: str) -> None:
+    """Запомнить решения по парам (``decision`` у каждой пары)."""
+    stamp = _now()
+
+    def mutate(data):
+        data = data if isinstance(data, dict) else {}
+        data["schema"] = DECISIONS_SCHEMA
+        known = data.setdefault("pairs", {})
+        for pair in pairs:
+            if pair.get("decision") not in DECISIONS:
+                continue
+            known[pair["pair_key"]] = {
+                "decision": pair["decision"],
+                "decided_by": author,
+                "decided_at": stamp,
+                "original": {key: pair["original"].get(key) for key in ("document_code", "source_page", "sheet")},
+                "copy": {key: pair["copy"].get(key) for key in ("document_code", "source_page", "sheet")},
+            }
+        return data
+
+    load_modify_save(_decisions_path(object_id), mutate, default={})
+
+
+def _with_remembered(found: dict[str, Any], remembered: dict[str, dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:
+    pairs, undecided = [], 0
+    for pair in found.get("pairs") or []:
+        known = remembered.get(pair["pair_key"])
+        if known and known.get("decision") in DECISIONS:
+            pairs.append({**pair, "decision": known["decision"], "decision_source": "remembered",
+                          "decided_by": known.get("decided_by"), "decided_at": known.get("decided_at")})
+        else:
+            undecided += 1
+            pairs.append({**pair, "decision": None})
+    return pairs, undecided
+
+
+def _duplicates_summary(review: dict[str, Any]) -> dict[str, int]:
+    pairs = review.get("pairs") or []
+    return {
+        "pairs": len(pairs),
+        "removed_pages": sum(1 for pair in pairs if pair.get("decision") == "remove"),
+        "kept_pairs": sum(1 for pair in pairs if pair.get("decision") == "keep"),
+    }
+
+
+def _reviewed_duplicates(assembly_dir: Path, version_id: str) -> dict[str, Any]:
+    _found, review_path = _duplicate_paths(assembly_dir, version_id)
+    if not review_path.is_file():
+        raise AssemblyError("DUPLICATES_NOT_REVIEWED", "Найденные дубли ещё не согласованы")
+    return json.loads(review_path.read_text(encoding="utf-8"))
+
+
+def scan_version(object_id: str, assembly_id: str, version_id: str) -> str:
+    """Найти копии листов перед сборкой.
+
+    Возвращает ``"BUILD"``, если согласовывать нечего (дублей нет или решения
+    по всем парам уже приняты раньше), иначе ``"REVIEW"`` — версия ждёт
+    инженера (``submit_duplicate_review``).
+    """
+    if not SAFE_ID.fullmatch(assembly_id) or not SAFE_ID.fullmatch(version_id):
+        raise AssemblyError("BAD_ID", "Некорректный идентификатор сборки")
+    assembly_dir = _root(object_id) / assembly_id
+    pending = assembly_dir / "pending" / f"{version_id}.json"
+    if not pending.is_file():
+        raise AssemblyError("VERSION_NOT_FOUND", "Задание сборки не найдено")
+    found_path, review_path = _duplicate_paths(assembly_dir, version_id)
+    if review_path.is_file():
+        return "BUILD"
+    manifest = json.loads(pending.read_text(encoding="utf-8"))
+    state_path = assembly_dir / "jobs" / f"{version_id}.json"
+
+    def heartbeat(phase: str, done: int, total: int) -> None:
+        atomic_write_json(state_path, {
+            "status": "SCANNING", "updated_at": _now(), "heartbeat": _now(), "version_id": version_id,
+            "pid": os.getpid(), "phase": phase, "done_pages": done, "total_pages": total,
+        })
+
+    heartbeat("start", 0, int(manifest["totals"]["page_count"]))
+    try:
+        if found_path.is_file():
+            found = json.loads(found_path.read_text(encoding="utf-8"))
+        else:
+            found = duplicates.scan([
+                {
+                    "pdf_path": source["files"]["pdf"]["blob_path"],
+                    "blocks_path": source["files"]["blocks"]["blob_path"],
+                    "html_path": source["files"]["html"]["blob_path"],
+                    "document_code": source["document_code"],
+                    "pdf_sha256": source["files"]["pdf"]["sha256"],
+                }
+                for source in manifest["sources"]
+            ], heartbeat=heartbeat)
+            found["found_at"] = _now()
+            atomic_write_json(found_path, found)
+        pairs, undecided = _with_remembered(found, remembered_decisions(object_id))
+    except Exception as exc:
+        atomic_write_json(state_path, {"status": "FAILED", "updated_at": _now(), "version_id": version_id,
+                                       "error": f"Поиск дублей: {type(exc).__name__}: {exc}"})
+        raise
+    if not undecided:
+        atomic_write_json(review_path, {
+            **found, "schema": REVIEW_SCHEMA, "pairs": pairs,
+            "reviewed_at": _now(), "reviewed_by": "", "auto": True,
+        })
+        return "BUILD"
+    atomic_write_json(state_path, {
+        "status": "REVIEW", "updated_at": _now(), "version_id": version_id,
+        "duplicates": {"pairs": len(pairs), "undecided": undecided},
+    })
+    return "REVIEW"
+
+
+def run_version(object_id: str, assembly_id: str, version_id: str) -> dict[str, Any] | None:
+    """Задание воркера: поиск дублей (если включён для версии), затем сборка.
+
+    ``None`` — версия остановилась на согласовании дублей.
+    """
+    pending = _root(object_id) / assembly_id / "pending" / f"{version_id}.json"
+    if pending.is_file() and json.loads(pending.read_text(encoding="utf-8")).get("dedup"):
+        if scan_version(object_id, assembly_id, version_id) == "REVIEW":
+            return None
+    return build_version(object_id, assembly_id, version_id)
+
+
+def duplicate_review(object_id: str, assembly_id: str, version_id: str) -> dict[str, Any]:
+    """Пары листов версии для окна согласования.
+
+    До решения нерешённые пары предлагаются к удалению (``decision`` пусто,
+    ``proposed`` = ``remove``); после сборки — принятые решения версии.
+    """
+    if not SAFE_ID.fullmatch(assembly_id) or not SAFE_ID.fullmatch(version_id):
+        raise AssemblyError("BAD_ID", "Некорректный идентификатор сборки")
+    assembly_dir = _root(object_id) / assembly_id
+    built = assembly_dir / "versions" / version_id / "duplicates.json"
+    found_path, review_path = _duplicate_paths(assembly_dir, version_id)
+    state = get_assembly(object_id, assembly_id, version_id)
+    status = str(state.get("status") or "")
+    if built.is_file():
+        payload = json.loads(built.read_text(encoding="utf-8"))
+    elif review_path.is_file():
+        payload = json.loads(review_path.read_text(encoding="utf-8"))
+    elif found_path.is_file():
+        found = json.loads(found_path.read_text(encoding="utf-8"))
+        pairs, _undecided = _with_remembered(found, remembered_decisions(object_id))
+        payload = {**found, "pairs": pairs}
+    else:
+        raise AssemblyError("DUPLICATES_NOT_READY", "Поиск дублей ещё не завершён")
+    pairs = [{**pair, "proposed": pair.get("decision") or "remove"} for pair in payload.get("pairs") or []]
+    return {
+        "schema": REVIEW_SCHEMA,
+        "assembly_id": assembly_id,
+        "version_id": version_id,
+        "status": status,
+        "page_count": payload.get("page_count"),
+        "sources": payload.get("sources") or [],
+        "pairs": pairs,
+        "reviewed_at": payload.get("reviewed_at"),
+        "reviewed_by": payload.get("reviewed_by"),
+    }
+
+
+def _decided_pairs(pairs: list[dict[str, Any]], keep_pair_ids: Iterable[str]) -> list[dict[str, Any]]:
+    keep = {str(item) for item in keep_pair_ids}
+    unknown = keep - {pair["pair_id"] for pair in pairs}
+    if unknown:
+        raise AssemblyError("UNKNOWN_DUPLICATE_PAIR", "Неизвестные пары дублей: " + ", ".join(sorted(unknown)))
+    return [
+        {**pair, "decision": "keep" if pair["pair_id"] in keep else "remove", "decision_source": "engineer"}
+        for pair in pairs
+    ]
+
+
+def submit_duplicate_review(object_id: str, assembly_id: str, version_id: str,
+                            keep_pair_ids: Iterable[str], author: str = "") -> dict[str, Any]:
+    """Согласовать дубли версии и запустить сборку без удалённых копий.
+
+    ``keep_pair_ids`` — пары, которые инженер вернул: их копия остаётся в
+    сборке. Остальные копии удаляются.
+    """
+    if not SAFE_ID.fullmatch(assembly_id) or not SAFE_ID.fullmatch(version_id):
+        raise AssemblyError("BAD_ID", "Некорректный идентификатор сборки")
+    assembly_dir = _root(object_id) / assembly_id
+    found_path, review_path = _duplicate_paths(assembly_dir, version_id)
+    # Короткая блокировка реестра: два одновременных «Удалить и собрать» не
+    # запишут два решения. Блокировку сборки не берём — она держится всю сборку.
+    with _registry_lock(_root(object_id)):
+        state = get_assembly(object_id, assembly_id, version_id)
+        if state.get("status") != "REVIEW" or review_path.is_file():
+            raise AssemblyError("NOT_AWAITING_REVIEW", "Эта версия сборки не ждёт согласования дублей")
+        found = json.loads(found_path.read_text(encoding="utf-8"))
+        pairs = _decided_pairs(found.get("pairs") or [], keep_pair_ids)
+        record_duplicate_decisions(object_id, pairs, author)
+        atomic_write_json(review_path, {
+            **found, "schema": REVIEW_SCHEMA, "pairs": pairs,
+            "reviewed_at": _now(), "reviewed_by": author, "auto": False,
+        })
+    return launch_version(object_id, assembly_id, version_id)
+
+
+def render_source_page(object_id: str, assembly_id: str, version_id: str,
+                       source_index: int, page: int, width: int = 1400) -> dict[str, Any]:
+    """Страница проекта сборки картинкой — для окна согласования дублей."""
+    import fitz
+
+    if not SAFE_ID.fullmatch(assembly_id) or not SAFE_ID.fullmatch(version_id):
+        raise AssemblyError("BAD_ID", "Некорректный идентификатор сборки")
+    pending = _root(object_id) / assembly_id / "pending" / f"{version_id}.json"
+    if not pending.is_file():
+        raise AssemblyError("VERSION_NOT_FOUND", "Задание сборки не найдено")
+    sources = json.loads(pending.read_text(encoding="utf-8"))["sources"]
+    if not 0 <= source_index < len(sources):
+        raise AssemblyError("SOURCE_NOT_FOUND", "Проект сборки не найден")
+    pdf = sources[source_index]["files"]["pdf"]
+    width = max(320, min(int(width), 2400))
+    with fitz.open(pdf["blob_path"]) as doc:
+        if not 1 <= page <= doc.page_count:
+            raise AssemblyError("PAGE_NOT_FOUND", "Страница проекта не найдена")
+        target = doc[page - 1]
+        zoom = width / max(1.0, target.rect.width)
+        pix = target.get_pixmap(matrix=fitz.Matrix(zoom, zoom), alpha=False)
+        body = pix.tobytes("jpeg", jpg_quality=85)
+    return {"body": body, "media_type": "image/jpeg", "etag": f'"{pdf["sha256"][:16]}-{page}-{width}"'}
+
+
 def build_version(object_id: str, assembly_id: str, version_id: str) -> dict[str, Any]:
     if not SAFE_ID.fullmatch(assembly_id) or not SAFE_ID.fullmatch(version_id):
         raise AssemblyError("BAD_ID", "Некорректный идентификатор сборки")
@@ -564,6 +899,12 @@ def build_version(object_id: str, assembly_id: str, version_id: str) -> dict[str
     final = assembly_dir / "versions" / version_id
     if final.is_dir():
         return json.loads((final / "manifest.json").read_text(encoding="utf-8"))
+    review = _reviewed_duplicates(assembly_dir, version_id) if manifest.get("dedup") else None
+    removed = {
+        (int(pair["copy"]["source_index"]), int(pair["copy"]["source_page"])): pair
+        for pair in (review or {}).get("pairs") or []
+        if pair.get("decision") == "remove"
+    }
     with _build_lock(root):
         for stale in (assembly_dir / "versions").glob(f".{version_id}.*.building"):
             shutil.rmtree(stale, ignore_errors=True)
@@ -586,8 +927,20 @@ def build_version(object_id: str, assembly_id: str, version_id: str) -> dict[str
                     "total_sources": total_sources,
                 })
 
-            artifacts = _build_files(temporary, manifest, heartbeat=heartbeat)
+            artifacts = _build_files(temporary, manifest, heartbeat=heartbeat, removed=removed)
             completed = {**manifest, "status": "READY", "completed_at": _now(), "artifacts": artifacts}
+            if review is not None:
+                # Решения по дублям — часть версии: окно согласования открывается и после сборки.
+                (temporary / "duplicates.json").write_text(json.dumps(review, ensure_ascii=False, indent=2), encoding="utf-8")
+                completed["dedup"] = {
+                    **manifest["dedup"],
+                    **_duplicates_summary(review),
+                }
+                completed["totals"] = {
+                    **manifest["totals"],
+                    "source_page_count": manifest["totals"]["page_count"],
+                    "page_count": manifest["totals"]["page_count"] - len(removed),
+                }
             (temporary / "manifest.json").write_text(json.dumps(completed, ensure_ascii=False, indent=2), encoding="utf-8")
             os.replace(temporary, final)
             for path in final.rglob("*"):
@@ -648,7 +1001,7 @@ def retry_version(object_id: str, assembly_id: str, version_id: str) -> dict[str
         current = json.loads(state_path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         current = {}
-    if current.get("status") in {"READY", "RUNNING", "PREPARING"}:
+    if current.get("status") in {"READY", "RUNNING", "PREPARING", "SCANNING"}:
         raise AssemblyError("ASSEMBLY_BUSY", "Эта версия уже готова или выполняется")
     state = launch_version(object_id, assembly_id, version_id)
     state["attempt"] = int(current.get("attempt") or 1) + 1
@@ -689,7 +1042,7 @@ def _next_version(assembly_dir: Path) -> str:
 def _prepare_assembly(
     *, object_id: str, name: str, section: str, source_refs: list[str],
     author: str = "", idempotency_key: str = "", assembly_id: str | None = None,
-    composition_completeness: str = "UNKNOWN",
+    composition_completeness: str = "UNKNOWN", dedup: bool = False,
 ) -> tuple[dict[str, Any], bool]:
     clean_name = " ".join(name.split()).strip()
     if not clean_name:
@@ -732,6 +1085,9 @@ def _prepare_assembly(
         "composition_completeness": composition_completeness,
         "preview_token": check["preview_token"],
     }
+    if dedup:
+        # Перед склейкой ищутся одинаковые листы; копии удаляются после согласования.
+        base["dedup"] = {"mode": "review", "detector_version": duplicates.DETECTOR_VERSION}
     base["manifest_sha256"] = hashlib.sha256(_canonical({
         "schema": SCHEMA,
         "object_id": object_id,
@@ -747,6 +1103,7 @@ def _prepare_assembly(
             }
             for source in sources
         ],
+        **({"dedup": base["dedup"]} if dedup else {}),
     })).hexdigest()
     (assembly_dir / "pending").mkdir(exist_ok=True)
     pending_path = assembly_dir / "pending" / f"{version_id}.json"
@@ -773,8 +1130,14 @@ def _prepare_assembly(
 def create_assembly(
     *, object_id: str, name: str, section: str, source_refs: list[str],
     author: str = "", idempotency_key: str = "", assembly_id: str | None = None,
-    build: bool = True, composition_completeness: str = "UNKNOWN",
+    build: bool = True, composition_completeness: str = "UNKNOWN", dedup: bool = False,
 ) -> dict[str, Any]:
+    """Подготовить версию сборки и собрать её (``build``) или отдать воркеру.
+
+    ``dedup`` — перед склейкой искать одинаковые листы; найденные копии
+    удаляются только после согласования инженером, поэтому такая версия
+    собирается только воркером.
+    """
     root = _root(object_id, create=True)
     with _registry_lock(root):
         prepared, existing = _prepare_assembly(
@@ -786,10 +1149,11 @@ def create_assembly(
             idempotency_key=idempotency_key,
             assembly_id=assembly_id,
             composition_completeness=composition_completeness,
+            dedup=dedup,
         )
     if existing:
         return prepared
-    if build:
+    if build and not dedup:
         return build_version(object_id, prepared["assembly_id"], prepared["version_id"])
     return {**prepared, **launch_version(object_id, prepared["assembly_id"], prepared["version_id"])}
 
@@ -807,7 +1171,7 @@ def get_assembly(object_id: str, assembly_id: str, version_id: str | None = None
     state = assembly_dir / "jobs" / f"{version_id}.json"
     if state.is_file():
         status = json.loads(state.read_text(encoding="utf-8"))
-        if status.get("status") in {"PREPARING", "RUNNING"}:
+        if status.get("status") in {"PREPARING", "RUNNING", "SCANNING"}:
             pid = status.get("pid")
             if not isinstance(pid, int) or not Path(f"/proc/{pid}").exists():
                 status = {

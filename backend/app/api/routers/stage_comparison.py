@@ -76,6 +76,15 @@ class DocumentGroupOrderRequest(BaseModel):
     member_codes: list[str] = Field(min_length=1, max_length=32)
 
 
+class DocumentGroupDuplicatesRequest(BaseModel):
+    """Согласование дублей стороны: ``keep_pair_ids`` — возвращённые пары, остальные копии удаляются."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    side: Literal["left", "right"] = "right"
+    keep_pair_ids: list[str] = Field(default_factory=list, max_length=5000)
+
+
 class ComparisonVersionSource(BaseModel):
     """Комплект стороны новой версии: уже загруженный (любой версии и стороны) или новая загрузка."""
 
@@ -410,6 +419,14 @@ def _document_group_error(exc: document_groups.DocumentGroupError) -> HTTPExcept
         "MEMBER_IS_GROUP_ANCHOR": 409,
         "MEMBER_LAST": 409,
         "GROUPS_CORRUPT": 500,
+        "ASSEMBLY_BUSY": 409,
+        "NOT_AWAITING_REVIEW": 409,
+        "DUPLICATES_NOT_READY": 409,
+        "DUPLICATES_NOT_REVIEWED": 409,
+        "DECISIONS_CORRUPT": 500,
+        "SOURCE_NOT_FOUND": 404,
+        "PAGE_NOT_FOUND": 404,
+        "VERSION_NOT_FOUND": 404,
     }.get(exc.code, 400)
     return HTTPException(status, {"code": exc.code, "message": str(exc)})
 
@@ -478,6 +495,60 @@ async def rebuild_document_group(
 ):
     scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
     return await _run_document_groups(document_groups.rebuild, scope, group_id, side)
+
+
+def _duplicate_review_author(request: Request) -> str:
+    """Кто согласовал дубли: сотрудник аккаунта, иначе логин — согласование не блокируется."""
+    from backend.app.core.access import request_account
+    from backend.app.core.attribution import resolve_author
+
+    try:
+        author = resolve_author(request)
+        return str(author.name or author.staff_id or "")
+    except HTTPException:
+        ctx = request_account(request)
+        return str(getattr(ctx, "login", "") or "")
+
+
+@router.get("/objects/{object_id}/document-groups/{group_id}/duplicates")
+async def get_document_group_duplicates(
+    object_id: str, group_id: str, side: Literal["left", "right"] = Query("right"),
+    comparison_version: ComparisonVersionParam = None,
+):
+    scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
+    return await _run_document_groups(document_groups.duplicate_review, scope, group_id, side)
+
+
+@router.post("/objects/{object_id}/document-groups/{group_id}/duplicates")
+async def submit_document_group_duplicates(
+    request: Request, object_id: str, group_id: str, body: DocumentGroupDuplicatesRequest,
+    comparison_version: ComparisonVersionParam = None,
+):
+    scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
+    author = _duplicate_review_author(request)
+    return await _run_document_groups(
+        document_groups.submit_duplicate_review, scope, group_id, body.keep_pair_ids, body.side, author=author,
+    )
+
+
+@router.get("/objects/{object_id}/document-groups/{group_id}/duplicates/page")
+async def get_document_group_duplicate_page(
+    request: Request, object_id: str, group_id: str,
+    side: Literal["left", "right"] = Query("right"),
+    source_index: int = Query(..., ge=0, le=1000),
+    page: int = Query(..., ge=1),
+    width: int = Query(1400, ge=320, le=2400),
+    comparison_version: ComparisonVersionParam = None,
+):
+    scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
+    payload = await _run_document_groups(
+        document_groups.duplicate_page, scope, group_id, side, source_index, page, width,
+    )
+    # Картинка зависит только от PDF проекта (sha в ETag) — кэшируем надолго.
+    headers = {"Cache-Control": "private, max-age=86400", "ETag": payload["etag"]}
+    if request.headers.get("if-none-match") == payload["etag"]:
+        return Response(status_code=304, headers=headers)
+    return Response(payload["body"], media_type=payload["media_type"], headers=headers)
 
 
 # ─── Версии сравнения ──────────────────────────────────────────────────────

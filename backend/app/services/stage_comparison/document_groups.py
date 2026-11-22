@@ -52,10 +52,12 @@ SIDE_STAGE = {"left": "stage_1", "right": "stage_2"}
 OTHER_SIDE = {"left": "right", "right": "left"}
 SIDE_LABEL = {"left": "слева", "right": "справа"}
 MIN_MEMBERS = 2
-BUILDING_STATUSES = {"QUEUED", "PREPARING", "RUNNING"}
+# SCANNING — поиск одинаковых листов перед склейкой; REVIEW — найденные
+# дубли ждут согласования инженером (сборка продолжится после него).
+BUILDING_STATUSES = {"QUEUED", "PREPARING", "SCANNING", "RUNNING"}
 _SIDE_FIELDS = ("assembly_id", "assembly_version_id", "attached_version_id")
 # Худший статус стороны определяет статус группы.
-_STATUS_RANK = ("FAILED", "RUNNING", "PREPARING", "QUEUED", "NOT_BUILT", "READY", "SINGLE")
+_STATUS_RANK = ("FAILED", "REVIEW", "RUNNING", "SCANNING", "PREPARING", "QUEUED", "NOT_BUILT", "READY", "SINGLE")
 
 # Сборка запускается в отдельном процессе, но подготовка версии (хеши и копии
 # исходных файлов) и правка реестра должны идти по одной на процесс бэкенда.
@@ -299,9 +301,23 @@ def _side_view(object_id: str, group: dict[str, Any], side: str,
         "attached_version_id": data.get("attached_version_id") if assembled else None,
         "status": status,
         "stale": bool(state) and built_versions != expected,
-        "error": state.get("error") if status not in {"READY", "SINGLE", *BUILDING_STATUSES} else None,
+        "error": state.get("error") if status not in {"READY", "SINGLE", "REVIEW", *BUILDING_STATUSES} else None,
         "page_count": (state.get("totals") or {}).get("page_count"),
+        "duplicates": _duplicates_view(state, status),
     }
+
+
+def _duplicates_view(state: dict[str, Any], status: str) -> dict[str, Any] | None:
+    """Сводка по дублям стороны: сколько ждёт согласования или сколько удалено."""
+    if status == "REVIEW":
+        found = state.get("duplicates") or {}
+        return {"pairs": int(found.get("pairs") or 0), "undecided": int(found.get("undecided") or 0)}
+    if status == "SCANNING":
+        return {"done_pages": state.get("done_pages"), "total_pages": state.get("total_pages")}
+    dedup = state.get("dedup")
+    if status == "READY" and isinstance(dedup, dict):
+        return {key: int(dedup.get(key) or 0) for key in ("pairs", "removed_pages", "kept_pairs")}
+    return None
 
 
 def _status_rank(status: str) -> int:
@@ -427,6 +443,7 @@ def _launch_build(object_id: str, group: dict[str, Any], side: str,
             author="document-group",
             assembly_id=data.get("assembly_id") or None,
             build=False,
+            dedup=assemblies.dedup_enabled(),
         )
     except assemblies.AssemblyError as exc:
         raise DocumentGroupError(exc.code, str(exc)) from exc
@@ -677,6 +694,75 @@ def rebuild(object_id: str, group_id: str, side: str | None = None) -> dict[str,
         return {"group": _view(object_id, group, sources), "released": []}
 
 
+def _assembled_side(object_id: str, group_id: str, side: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Группа и сторона со сборкой — для окна дублей."""
+    side = _check_side(side)
+    data = _read(object_id)
+    group = _find_group(data["groups"], group_id)
+    if not _needs_assembly(group, side) or not group[side].get("assembly_id") \
+            or not group[side].get("assembly_version_id"):
+        raise DocumentGroupError("NOTHING_TO_BUILD", f"{SIDE_LABEL[side].capitalize()} нет сборки")
+    return data, group
+
+
+def _assembly_call(func, *args, **kwargs):
+    try:
+        return func(*args, **kwargs)
+    except assemblies.AssemblyError as exc:
+        raise DocumentGroupError(exc.code, str(exc)) from exc
+
+
+def duplicate_review(object_id: str, group_id: str, side: str = "right") -> dict[str, Any]:
+    """Пары одинаковых листов текущей версии сборки стороны."""
+    _require_enabled()
+    with _lock:
+        _data, group = _assembled_side(object_id, group_id, side)
+        data = group[side]
+    review = _assembly_call(assemblies.duplicate_review, object_id, data["assembly_id"], data["assembly_version_id"])
+    return {**review, "group_id": group_id, "side": side}
+
+
+def submit_duplicate_review(object_id: str, group_id: str, keep_pair_ids: list[str], side: str = "right",
+                            *, author: str = "") -> dict[str, Any]:
+    """Согласовать дубли стороны: вернуть ``keep_pair_ids``, остальные копии удалить.
+
+    Версия ждёт согласования — она собирается без удалённых копий. Версия уже
+    собрана (окно открыто повторно) — решения запоминаются и сторона
+    пересобирается: поиск найдёт те же пары с готовыми решениями.
+    """
+    _require_enabled()
+    with _lock:
+        data, group = _assembled_side(object_id, group_id, side)
+        sources = _current_sources(object_id)
+        target = group[side]
+        status = _side_view(object_id, group, side, sources[side])["status"]
+        if status == "REVIEW":
+            _assembly_call(assemblies.submit_duplicate_review, object_id, target["assembly_id"],
+                           target["assembly_version_id"], keep_pair_ids, author)
+        elif status == "READY":
+            review = _assembly_call(assemblies.duplicate_review, object_id, target["assembly_id"],
+                                    target["assembly_version_id"])
+            pairs = _assembly_call(assemblies._decided_pairs, review["pairs"], keep_pair_ids)
+            _assembly_call(assemblies.record_duplicate_decisions, object_id, pairs, author)
+            _launch_build(object_id, group, side, sources)
+        else:
+            raise DocumentGroupError("NOT_AWAITING_REVIEW", "Сборка стороны сейчас не ждёт согласования дублей")
+        group["updated_at"] = _now()
+        _write(object_id, data)
+        return {"group": _view(object_id, group, sources), "released": []}
+
+
+def duplicate_page(object_id: str, group_id: str, side: str, source_index: int, page: int,
+                   width: int = 1400) -> dict[str, Any]:
+    """Страница проекта сборки картинкой для окна дублей."""
+    _require_enabled()
+    with _lock:
+        _data, group = _assembled_side(object_id, group_id, side)
+        data = group[side]
+    return _assembly_call(assemblies.render_source_page, object_id, data["assembly_id"],
+                          data["assembly_version_id"], source_index, page, width)
+
+
 def _groups_for_stage_path(stage_path: str | Path | None) -> list[dict[str, Any]]:
     """Группы версии сравнения, которой принадлежит папка стадии."""
     if not stage_path or not assemblies.enabled():
@@ -737,6 +823,9 @@ def open_anchor_codes(stage_path: str | Path | None, side: str) -> set[str]:
 __all__ = [
     "DocumentGroupError",
     "add_members",
+    "duplicate_page",
+    "duplicate_review",
+    "submit_duplicate_review",
     "grouped_codes",
     "hidden_documents",
     "list_groups",
