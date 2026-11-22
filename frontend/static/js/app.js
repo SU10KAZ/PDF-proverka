@@ -13235,6 +13235,13 @@ const app = createApp({
         const scDocumentGroups = ref([]);
         const scDocumentGroupsError = ref('');
         const scDocumentGroupsBusy = ref(false);
+        // Окно одинаковых листов сборки группы (stage-comparison-duplicates.js):
+        // пары «остаётся ↔ копия», инженер отмечает «Вернуть», остальные копии удаляются.
+        const SC_DUPLICATES = window.StageComparisonDuplicates;
+        const scDuplicates = reactive({
+            open: false, groupId: '', side: 'right', loading: false, saving: false,
+            error: '', data: null, index: 0, keep: [], editable: false,
+        });
         const scStageUploadTarget = ref(null);
         const scStandaloneUploadRows = ref((() => {
             try {
@@ -14279,7 +14286,8 @@ const app = createApp({
         const scBoardDocumentsRight = computed(() =>
             scDocumentsRight.value.filter(item => !scHiddenRightPaths.value.has(item.pdf_path))
         );
-        const SC_GROUP_BUILDING = ['QUEUED', 'PREPARING', 'RUNNING'];
+        // SCANNING — сервер ищет одинаковые листы перед склейкой (REVIEW — ждёт инженера).
+        const SC_GROUP_BUILDING = ['QUEUED', 'PREPARING', 'SCANNING', 'RUNNING'];
 
         function scSideDocuments(side) {
             return side === 'left' ? scDocumentsLeft.value : scDocumentsRight.value;
@@ -14407,6 +14415,9 @@ const app = createApp({
 
         function scGroupSideStatus(view) {
             if (!view || !view.assembled) return null;
+            if (view.status === 'SCANNING') return {tone: 'running', label: 'Ищем одинаковые листы', rank: 2};
+            // Найденные копии листов ждут согласования — сборка продолжится после него.
+            if (view.status === 'REVIEW') return {tone: 'incomplete', label: 'Проверьте одинаковые листы', rank: 1};
             if (SC_GROUP_BUILDING.includes(view.status)) return {tone: 'running', label: 'Собирается сборка', rank: 2};
             if (view.status === 'READY' && view.stale) return {tone: 'error', label: 'Нужна пересборка', rank: 1};
             if (view.status === 'READY' && view.attached_version_id !== view.assembly_version_id) {
@@ -14434,7 +14445,7 @@ const app = createApp({
         function scGroupNeedsRebuild(group) {
             return Boolean(group) && SC_SIDES.some(side => {
                 const view = group[side];
-                return view?.assembled && (view.stale || !['READY', ...SC_GROUP_BUILDING].includes(view.status));
+                return view?.assembled && (view.stale || !['READY', 'REVIEW', ...SC_GROUP_BUILDING].includes(view.status));
             });
         }
 
@@ -15300,6 +15311,124 @@ const app = createApp({
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!row || !row.group || pcReadOnlySources.value) return;
             return scChangeDocumentGroups(`/${encodeURIComponent(row.group.group_id)}/rebuild`, {method: 'POST'});
+        }
+
+        // ─── Одинаковые листы в сборке группы ───────────────────────────────
+        function scDuplicatesPath() {
+            return `/api/stage-comparison/objects/${encodeURIComponent(currentObjectId.value)}`
+                + `/document-groups/${encodeURIComponent(scDuplicates.groupId)}/duplicates`;
+        }
+
+        // Плашка дублей строки: поиск идёт, ждут проверки или сколько удалено.
+        function scDuplicatesBadge(group) {
+            for (const side of SC_SIDES) {
+                const badge = SC_DUPLICATES.sideBadge(group?.[side]);
+                if (badge) return {...badge, side};
+            }
+            return null;
+        }
+
+        function scGroupAwaitingReview(group) {
+            return SC_SIDES.some(side => group?.[side]?.assembled && group[side].status === 'REVIEW');
+        }
+
+        async function scOpenDuplicates(row, side = null) {
+            const group = row?.group;
+            side = side || scDuplicatesBadge(group)?.side;
+            if (!group || !side) return;
+            Object.assign(scDuplicates, {
+                open: true, groupId: group.group_id, side, loading: true, saving: false,
+                error: '', data: null, index: 0, keep: [], editable: false,
+            });
+            try {
+                const response = await fetch(scVersionUrl(scDuplicatesPath() + '?side=' + encodeURIComponent(side)));
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    const detail = data.detail;
+                    throw new Error((detail && (detail.message || detail)) || ('HTTP ' + response.status));
+                }
+                if (!scDuplicates.open || scDuplicates.groupId !== group.group_id) return;
+                scDuplicates.data = data;
+                scDuplicates.keep = SC_DUPLICATES.initialKeep(data.pairs);
+                scDuplicates.editable = canOperate.value && !pcReadOnlySources.value
+                    && ['REVIEW', 'READY'].includes(data.status);
+            } catch (error) {
+                scDuplicates.error = String(error.message || error);
+            } finally {
+                scDuplicates.loading = false;
+            }
+        }
+
+        function scCloseDuplicates() {
+            if (!scDuplicates.saving) scDuplicates.open = false;
+        }
+
+        const scDuplicatesPair = computed(() => scDuplicates.data?.pairs?.[scDuplicates.index] || null);
+        const scDuplicatesCounts = computed(() => SC_DUPLICATES.counts(scDuplicates.data?.pairs, scDuplicates.keep));
+
+        function scDuplicatesImage(sheet, width = 1400) {
+            return sheet ? scVersionUrl(SC_DUPLICATES.pageUrl(scDuplicatesPath(), scDuplicates.side, sheet, width)) : '';
+        }
+
+        function scDuplicatesLabel(sheet) {
+            return SC_DUPLICATES.sideLabel(sheet);
+        }
+
+        function scDuplicatesZoneStyle(zone) {
+            return SC_DUPLICATES.zoneStyle(zone);
+        }
+
+        function scDuplicatesGo(index) {
+            scDuplicates.index = SC_DUPLICATES.clampIndex(index, scDuplicates.data?.pairs?.length || 0);
+            // Следующие листы подгружаются заранее — пары листаются без ожидания.
+            for (const pair of (scDuplicates.data?.pairs || []).slice(scDuplicates.index + 1, scDuplicates.index + 3)) {
+                for (const sheet of [pair.original, pair.copy]) new Image().src = scDuplicatesImage(sheet);
+            }
+        }
+
+        function scDuplicatesKept(pair) {
+            return Boolean(pair) && scDuplicates.keep.includes(pair.pair_id);
+        }
+
+        function scDuplicatesToggle(pair = scDuplicatesPair.value) {
+            if (!pair || !scDuplicates.editable || scDuplicates.saving) return;
+            scDuplicates.keep = scDuplicatesKept(pair)
+                ? scDuplicates.keep.filter(id => id !== pair.pair_id)
+                : [...scDuplicates.keep, pair.pair_id];
+        }
+
+        function scDuplicatesKey(event) {
+            if (!scDuplicates.open || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target?.tagName)) return;
+            const action = SC_DUPLICATES.keyAction(event.key);
+            if (!action) return;
+            event.preventDefault();
+            if (action === 'next') scDuplicatesGo(scDuplicates.index + 1);
+            else if (action === 'prev') scDuplicatesGo(scDuplicates.index - 1);
+            else if (action === 'toggle') scDuplicatesToggle();
+            else scCloseDuplicates();
+        }
+
+        watch(() => scDuplicates.open, open => {
+            if (typeof window === 'undefined') return;
+            if (open) window.addEventListener('keydown', scDuplicatesKey);
+            else window.removeEventListener('keydown', scDuplicatesKey);
+        });
+        watch(() => scDuplicates.data, data => { if (data) scDuplicatesGo(0); });
+
+        // «Удалить дубли и собрать»: возвращённые пары остаются, остальные копии
+        // удаляются. Для собранной версии — решения обновляются, сторона пересобирается.
+        async function scSubmitDuplicates() {
+            if (!scDuplicates.editable || scDuplicates.saving) return;
+            scDuplicates.saving = true;
+            scDuplicates.error = '';
+            const error = await scChangeDocumentGroups(`/${encodeURIComponent(scDuplicates.groupId)}/duplicates`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({side: scDuplicates.side, keep_pair_ids: scDuplicates.keep}),
+            });
+            scDuplicates.saving = false;
+            if (error) scDuplicates.error = error;
+            else scDuplicates.open = false;
         }
 
         // «+ Слева» / «+ Справа» у строки: загрузить на эту сторону один или
@@ -22309,6 +22438,9 @@ const app = createApp({
             scGroupNeedsRebuild, scGroupBuildLabel,
             scHasStandaloneUploadRow, scSetStandaloneUploadRow, scOpenStandaloneRowUpload,
             scRemoveGroupMember, scRebuildDocumentGroup,
+            scDuplicates, scDuplicatesBadge, scGroupAwaitingReview, scOpenDuplicates, scCloseDuplicates,
+            scDuplicatesPair, scDuplicatesCounts, scDuplicatesImage, scDuplicatesLabel, scDuplicatesZoneStyle,
+            scDuplicatesGo, scDuplicatesKept, scDuplicatesToggle, scSubmitDuplicates,
             scCanReorderGroup, scStartGroupMemberDrag, scFinishGroupMemberDrag, scDropGroupMember, scMoveGroupMember,
             scDraggingDocument, scDocumentDragOver, scDocumentMergeOver,
             scDragDocumentOnto, scLeaveDocumentMerge, scDropDocumentOnto,

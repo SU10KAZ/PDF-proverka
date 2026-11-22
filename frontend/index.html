@@ -6335,6 +6335,12 @@
                                     <span class="sc-pair-row-status" :class="'sc-pair-row-status--' + scPairRowStatus(row).tone">
                                         {{ scPairRowStatus(row).label }}
                                     </span>
+                                    <!-- Одинаковые листы сборки: идёт поиск, ждут проверки или сколько удалено. -->
+                                    <button v-if="row.group && scDuplicatesBadge(row.group)" type="button"
+                                            class="sc-dup-badge" :class="'sc-dup-badge--' + scDuplicatesBadge(row.group).tone"
+                                            :disabled="!scDuplicatesBadge(row.group).review"
+                                            :title="scDuplicatesBadge(row.group).review ? 'Открыть пары одинаковых листов' : ''"
+                                            @click="scOpenDuplicates(row, scDuplicatesBadge(row.group).side)">{{ scDuplicatesBadge(row.group).label }}</button>
                                     <span v-if="scBatchBadge(row)" class="sc-batch-badge" :class="'sc-batch-badge--' + scBatchBadge(row).tone"
                                           :title="scBatchBadge(row).title">{{ scBatchBadge(row).label }}</span>
                                     <button v-else-if="scRowCatalogEntry(row)" type="button" class="sc-batch-badge sc-batch-badge--ok sc-pair-row-result"
@@ -6400,6 +6406,11 @@
                                             @click="scOpenComparisonLaunchDialog(row)">Запустить сравнение</button>
                                     </span>
                                 </div>
+                                <!-- Найдены одинаковые листы: сборка ждёт согласования в окне дублей. -->
+                                <button v-if="row.group && canOperate && !pcReadOnlySources && scGroupAwaitingReview(row.group)"
+                                        type="button" class="sc-pair-group-rebuild btn btn-sm btn-primary"
+                                        title="Пролистать пары одинаковых листов, вернуть лишнее и собрать"
+                                        @click="scOpenDuplicates(row)">Проверить дубли</button>
                                 <!-- Переносы только набирают состав группы; сборка — по этой кнопке. -->
                                 <button v-if="row.group && !pcReadOnlySources && scGroupNeedsRebuild(row.group)"
                                         type="button" class="sc-pair-group-rebuild"
@@ -8399,6 +8410,76 @@
             </div>
         </div>
 
+        <!-- Одинаковые листы в сборке группы: «остаётся» слева, копия справа. -->
+        <div v-if="currentView === 'stage-comparison' && scDuplicates.open"
+             class="modal-overlay sc-dup-overlay" role="dialog" aria-modal="true" aria-labelledby="sc-dup-title"
+             @click.self="scCloseDuplicates()">
+            <div class="sc-dup-window">
+                <header class="sc-dup-head">
+                    <div>
+                        <h3 id="sc-dup-title">Одинаковые листы в сборке</h3>
+                        <p v-if="scDuplicates.data && scDuplicates.data.pairs.length" class="sc-dup-sub">
+                            Пара {{ scDuplicates.index + 1 }} из {{ scDuplicatesCounts.total }}
+                            · удалить {{ scDuplicatesCounts.remove }} · вернуть {{ scDuplicatesCounts.keep }}
+                            <span v-if="scDuplicates.data.status === 'READY'"> · сборка уже собрана по этим решениям</span>
+                        </p>
+                    </div>
+                    <button type="button" class="modal-close" aria-label="Закрыть" @click="scCloseDuplicates()">×</button>
+                </header>
+                <div v-if="scDuplicates.loading" class="sc-dup-empty">Загружаем пары…</div>
+                <div v-else-if="!scDuplicates.data" class="sc-dup-empty sc-dup-error">{{ scDuplicates.error || 'Пары не найдены' }}</div>
+                <div v-else-if="!scDuplicatesPair" class="sc-dup-empty">Одинаковых листов нет.</div>
+                <template v-else>
+                    <div class="sc-dup-body">
+                        <ol class="sc-dup-list">
+                            <li v-for="(pair, index) in scDuplicates.data.pairs" :key="pair.pair_id">
+                                <button type="button" :class="{'is-active': index === scDuplicates.index, 'is-kept': scDuplicatesKept(pair)}"
+                                        @click="scDuplicatesGo(index)">
+                                    <span class="sc-dup-list__n">{{ index + 1 }}</span>
+                                    <span class="sc-dup-list__text">{{ scDuplicatesLabel(pair.copy) }}</span>
+                                    <span class="sc-dup-list__state">{{ scDuplicatesKept(pair) ? 'вернуть' : 'удалить' }}</span>
+                                </button>
+                            </li>
+                        </ol>
+                        <div class="sc-dup-pair">
+                            <figure v-for="role in ['original', 'copy']" :key="role" class="sc-dup-sheet"
+                                    :class="{'is-copy': role === 'copy', 'is-kept': role === 'copy' && scDuplicatesKept(scDuplicatesPair)}">
+                                <figcaption>
+                                    <b>{{ role === 'original' ? 'Остаётся в сборке'
+                                        : (scDuplicatesKept(scDuplicatesPair) ? 'Копия — вернётся в сборку' : 'Копия — будет удалена') }}</b>
+                                    <span>{{ scDuplicatesLabel(scDuplicatesPair[role]) }}</span>
+                                </figcaption>
+                                <a class="sc-dup-sheet__image" :href="scDuplicatesImage(scDuplicatesPair[role], 2400)" target="_blank"
+                                   rel="noopener" title="Открыть лист крупно в новой вкладке">
+                                    <img :src="scDuplicatesImage(scDuplicatesPair[role])" :alt="scDuplicatesLabel(scDuplicatesPair[role])">
+                                    <span v-for="(zone, zi) in (scDuplicatesPair.ignored_zones || {})[role] || []" :key="zi"
+                                          class="sc-dup-zone" :style="scDuplicatesZoneStyle(zone)"></span>
+                                </a>
+                            </figure>
+                        </div>
+                    </div>
+                    <footer class="sc-dup-foot">
+                        <button type="button" class="btn btn-sm btn-secondary" :disabled="scDuplicates.index === 0"
+                                @click="scDuplicatesGo(scDuplicates.index - 1)">← Назад</button>
+                        <button type="button" class="btn btn-sm" :disabled="!scDuplicates.editable || scDuplicates.saving"
+                                :class="scDuplicatesKept(scDuplicatesPair) ? 'btn-primary' : 'btn-secondary'"
+                                @click="scDuplicatesToggle()">{{ scDuplicatesKept(scDuplicatesPair) ? 'Возвращена ✓' : 'Вернуть в сборку' }}</button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                                :disabled="scDuplicates.index >= scDuplicatesCounts.total - 1"
+                                @click="scDuplicatesGo(scDuplicates.index + 1)">Далее →</button>
+                        <small class="sc-dup-hint">← → листать · пробел — вернуть · пунктир — не сравнивалось: штамп, плашка «В производство работ», QR</small>
+                        <small v-if="scDuplicates.error" class="sc-dup-error">{{ scDuplicates.error }}</small>
+                        <button v-if="scDuplicates.editable" type="button" class="btn btn-primary sc-dup-submit"
+                                :disabled="scDuplicates.saving" @click="scSubmitDuplicates()">
+                            {{ scDuplicates.saving ? 'Сохраняем…'
+                                : (scDuplicates.data.status === 'READY' ? 'Сохранить и пересобрать'
+                                    : 'Удалить ' + scDuplicatesCounts.remove + ' и собрать') }}
+                        </button>
+                    </footer>
+                </template>
+            </div>
+        </div>
+
         <div v-if="currentView === 'stage-comparison' && scStageFolderDialogOpen"
              class="modal-backdrop sc-stage-upload-backdrop"
              role="dialog" aria-modal="true" aria-labelledby="sc-stage-upload-title"
@@ -8625,6 +8706,7 @@
     <script src="/static/js/stage-comparison-review.js?v={{js_version}}"></script>
     <script src="/static/js/stage-comparison-batch.js?v={{js_version}}"></script>
     <script src="/static/js/stage-comparison-versions.js?v={{js_version}}"></script>
+    <script src="/static/js/stage-comparison-duplicates.js?v={{js_version}}"></script>
     <script src="/static/js/project-change-view.js?v={{js_version}}"></script>
     <script src="/static/js/project-change-ui.js?v={{js_version}}"></script>
     <script src="/static/js/project-change-consolidation.js?v={{js_version}}"></script>
