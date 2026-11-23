@@ -182,3 +182,53 @@ def test_invalid_mapper_concurrency_stops_before_calls(env, monkeypatch, value):
     state = _run(env["session_id"])
     assert state["reason_code"] == "mapper_concurrency_invalid"
     assert fake.calls == []
+
+
+def test_validate_map_flags_empty_answer_separately():
+    from backend.app.services.project_change_v3.validate import MapperEmptyAnswerError, validate_map
+
+    structure = [{"side": "OLD", "physical_page": 1}, {"side": "NEW", "physical_page": 1}]
+    empty = {"pair": "p", "regions": [], "unmatched_old": [], "unmatched_new": [], "coverage_notes": []}
+    with pytest.raises(MapperEmptyAnswerError):
+        validate_map("p", empty, structure)
+    partial = {**empty, "unmatched_old": [1]}  # some page placed: ordinary, final coverage failure
+    with pytest.raises(RuntimeError, match="NEW coverage failure") as info:
+        validate_map("p", partial, structure)
+    assert not isinstance(info.value, MapperEmptyAnswerError)
+
+
+@pytest.mark.parametrize("empty_answers,expected_status", [(1, "ok"), (2, "FAILED")])
+def test_empty_portion_map_gets_one_identical_retry(env, monkeypatch, empty_answers, expected_status):  # noqa: F811
+    prepare(env, monkeypatch, 3)
+    monkeypatch.setenv(parallel_calls.MAPPER_CONCURRENCY_ENV, "1")
+    base = handlers()
+    mapping = base["MAPPING"]
+    seen = {"p2": 0}
+
+    def flaky(**kwargs):
+        if kwargs["data"]["portion"]["index"] == 2:
+            seen["p2"] += 1
+            if seen["p2"] <= empty_answers:
+                return {"pair": gf.PAIR_ID, "regions": [], "unmatched_old": [], "unmatched_new": [],
+                        "coverage_notes": []}
+        return mapping(**kwargs)
+
+    base["MAPPING"] = flaky
+    fake = FakeProvider(handlers=base)
+    set_test_provider(fake)
+    state = _run(env["session_id"])
+    rows = attempts(state)
+    p2 = [r for r in rows if r["portion"]["index"] == 2]
+    assert [r["call_id"].endswith("_RETRY_1") for r in p2] == [False, True]
+    assert p2[0]["accepted"] is False and p2[0]["rejection_kind"] == "mapper_empty_answer" and p2[0]["retried"]
+    assert seen["p2"] == 2
+    if expected_status == "ok":
+        assert state["status"] in {"REVIEW", "COMPLETED"}, state.get("message")
+        assert p2[1]["accepted"] is True
+        assert _stored(env["session_id"], "project_change_v3_semantic_map") is not None
+    else:
+        assert state["status"] == "FAILED"
+        assert state["reason_code"] == "mapper_validation_failed"
+        assert "пустую карту" in state["message"]
+        assert p2[1]["accepted"] is False and p2[1]["retried"] is False
+        assert all(c["stage"] == "MAPPING" for c in fake.calls)

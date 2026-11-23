@@ -104,7 +104,8 @@ from .source_prep import (
 )
 from .supplemental import build_supplemental_batches, validate_supplemental_answer
 from .transport import TransportIntegrityError, plan_claude, plan_codex_mapper, plan_codex_miner, sha256_text
-from .validate import EvidenceTraceabilityError, MinerStructuralError, validate_map, validate_miner
+from .validate import (EvidenceTraceabilityError, MapperEmptyAnswerError, MinerStructuralError, validate_map,
+                       validate_miner)
 from .verification import apply_verification_results, build_verification_batches, validate_verification_answer
 
 logger = logging.getLogger(__name__)
@@ -128,6 +129,10 @@ MINER_RETRY_POLICY = {
     "corrective_prompt": False,
 }
 MINER_ATTEMPT_SCHEMA = "projectchange_v3_miner_attempt/1"
+# A Mapper portion whose answer places no page at all (no regions, no unmatched
+# pages — validate.MapperEmptyAnswerError) is asked ONCE more with the identical
+# input; every other Mapper rejection stays final.
+MAPPER_MAX_ATTEMPTS = 2
 # V3.1-B COMPACT MINER OUTPUT (research, OFF by default).  ON: the Miner gets
 # the V3.1 prompt/compact schema, its answer is expanded to the V3 shape by
 # source_ref.py BEFORE validate_miner, and a region gets ONE generating call —
@@ -1143,51 +1148,68 @@ def _run_admitted(
             data = mapper_portions_mod.portion_data(pair_id, structure, portion)
             if planner.packet(data, fresh=True)["request_key"] != planned_packets[portion.index - 1]["request_key"]:
                 raise fail("mapper_sources_changed", "V3: источники изменились после планирования Mapper")
-            call_id = f"{pair_id}_SEMANTIC_MAPPING_P{portion.index:02d}"
-            outcome = yield dict(
-                stage="MAPPING", call_id=call_id, pair_id=pair_id, prompt=MAPPER_PROMPT,
-                data=data, schema=MAP_SCHEMA, images=mapping_images(data["pages"]),
-            )
-            receipt = outcome.receipt
-            if receipt:
-                transport_calls.append({"stage": "MAPPING", "call_id": call_id, **receipt})
-            if not using_test_provider and (outcome.error is None or receipt):
-                calls += 1
-            error = outcome.error
-            if error is None:
+            base_call_id = f"{pair_id}_SEMANTIC_MAPPING_P{portion.index:02d}"
+            for attempt in range(1, MAPPER_MAX_ATTEMPTS + 1):
+                call_id = base_call_id if attempt == 1 else f"{base_call_id}_RETRY_{attempt - 1}"
+                outcome = yield dict(
+                    stage="MAPPING", call_id=call_id, pair_id=pair_id, prompt=MAPPER_PROMPT,
+                    data=data, schema=MAP_SCHEMA, images=mapping_images(data["pages"]),
+                )
+                receipt = outcome.receipt
+                if receipt:
+                    transport_calls.append({"stage": "MAPPING", "call_id": call_id, **receipt})
+                if not using_test_provider and (outcome.error is None or receipt):
+                    calls += 1
+                error = outcome.error
+                if error is None:
+                    try:
+                        validate_map(pair_id, outcome.response, data["pages"])
+                    except Exception as exc:  # preserve a rejected paid answer too
+                        error = exc
+                retryable = isinstance(error, MapperEmptyAnswerError) and attempt < MAPPER_MAX_ATTEMPTS
+                record = {
+                    "schema": "projectchange_v3_mapper_attempt/1", "internal_run_artifact": True,
+                    "published": False, "run_id": run_id, "session_id": session_id, "pair_id": pair_id,
+                    "call_id": call_id, "attempt": attempt, "portion": portion.summary(), "recorded_at": _now(),
+                    "prompt_sha256": MAPPER_PROMPT_SHA256, "source_data_sha256": _canonical_sha256(data),
+                    "request_key": planned_packets[portion.index - 1]["request_key"],
+                    "planner_version": mapper_planning.pp.VERSION,
+                    "payload_version": mapper_planning.PAYLOAD_VERSION,
+                    "response": outcome.response if outcome.error is None else outcome.last_response,
+                    "transport_receipt": receipt, "accepted": error is None,
+                    "error": str(error) if error is not None else None,
+                    "rejection_kind": MapperEmptyAnswerError.kind if isinstance(error, MapperEmptyAnswerError) else None,
+                    "retried": retryable,
+                }
+                name = f"{portion.index:03d}.json" if attempt == 1 else f"{portion.index:03d}_retry{attempt - 1}.json"
+                path = work_dir / "mapper_attempts" / run_id / name
                 try:
-                    validate_map(pair_id, outcome.response, data["pages"])
-                except Exception as exc:  # preserve a rejected paid answer too
-                    error = exc
-            record = {
-                "schema": "projectchange_v3_mapper_attempt/1", "internal_run_artifact": True,
-                "published": False, "run_id": run_id, "session_id": session_id, "pair_id": pair_id,
-                "call_id": call_id, "portion": portion.summary(), "recorded_at": _now(),
-                "prompt_sha256": MAPPER_PROMPT_SHA256, "source_data_sha256": _canonical_sha256(data),
-                "request_key": planned_packets[portion.index - 1]["request_key"],
-                "planner_version": mapper_planning.pp.VERSION,
-                "payload_version": mapper_planning.PAYLOAD_VERSION,
-                "response": outcome.response if outcome.error is None else outcome.last_response,
-                "transport_receipt": receipt, "accepted": error is None,
-                "error": str(error) if error is not None else None,
-            }
-            path = work_dir / "mapper_attempts" / run_id / f"{portion.index:03d}.json"
-            try:
-                from .run_storage import atomic
-                atomic(path, record)
-            except Exception as exc:
-                raise fail("mapper_attempt_persistence_failed",
-                           f"V3: ответ порции Mapper {portion.index} не сохранён; прогон остановлен", exc) from exc
-            mapper_attempts.append({"call_id": call_id, "portion_index": portion.index,
-                                    "accepted": error is None, "path": str(path),
-                                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
-            mapper_attempts.sort(key=lambda row: row["portion_index"])
-            if isinstance(error, ProviderError):
-                raise provider_failure(f"Mapper (порция {portion.index} из {portion.total})", error) from error
-            if error is not None:
-                raise fail("mapper_validation_failed",
-                           f"V3 Mapper validation failed (порция {portion.index} из {portion.total}): {error}",
-                           error) from error
+                    from .run_storage import atomic
+                    atomic(path, record)
+                except Exception as exc:
+                    raise fail("mapper_attempt_persistence_failed",
+                               f"V3: ответ порции Mapper {portion.index} не сохранён; прогон остановлен", exc) from exc
+                mapper_attempts.append({"call_id": call_id, "portion_index": portion.index, "attempt": attempt,
+                                        "accepted": error is None, "path": str(path),
+                                        "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+                mapper_attempts.sort(key=lambda row: (row["portion_index"], row.get("attempt", 1)))
+                if isinstance(error, ProviderError):
+                    raise provider_failure(f"Mapper (порция {portion.index} из {portion.total})", error) from error
+                if retryable:
+                    logger.warning("V3 Mapper portion %s/%s returned an empty map, one identical retry: "
+                                   "session=%s pair=%s run=%s call=%s", portion.index, portion.total,
+                                   session_id, pair_id, run_id, call_id)
+                    continue
+                if isinstance(error, MapperEmptyAnswerError):
+                    raise fail("mapper_validation_failed",
+                               f"V3 Mapper: порция {portion.index} из {portion.total} — модель вернула пустую карту "
+                               f"(ни одной страницы) в {MAPPER_MAX_ATTEMPTS} попытках из {MAPPER_MAX_ATTEMPTS}",
+                               error) from error
+                if error is not None:
+                    raise fail("mapper_validation_failed",
+                               f"V3 Mapper validation failed (порция {portion.index} из {portion.total}): {error}",
+                               error) from error
+                break
             portion_maps_by_index[portion.index] = outcome.response
             provenance["mapper_plan"]["accepted_portions"] = sorted(portion_maps_by_index)
             try:

@@ -24,6 +24,20 @@ class EvidenceTraceabilityError(RuntimeError):
         self.projectchange_id = projectchange_id
 
 
+class MapperEmptyAnswerError(RuntimeError):
+    """The Mapper answer places no page at all: no regions and no unmatched pages.
+
+    The answer is schema-valid but degenerate (23.11.2026, Stories, pair
+    p66ce3d19c7, portion 7 of 12: ``regions=[]``, ``unmatched_old=[]``,
+    ``unmatched_new=[]`` for a portion with OLD and NEW pages — the first such
+    answer among 2 734 stored Mapper attempts).  It is the only Mapper
+    rejection the portioned engine answers with one retry of the identical
+    call; every other coverage failure stays final.
+    """
+
+    kind = "mapper_empty_answer"
+
+
 MINER_PAGE_OUTSIDE_REGION = "MINER_PAGE_OUTSIDE_REGION"
 MINER_ONE_SIDED_PROJECTCHANGE = "MINER_ONE_SIDED_PROJECTCHANGE"
 
@@ -90,6 +104,16 @@ def validate_map(
     if any(not _REGION_ID_RE.fullmatch(str(i)) for i in ids):
         raise RuntimeError("Invalid region IDs")
     stats: dict[str, Any] = {"semantic_regions": len(ids)}
+    if (
+        not ids
+        and not value.get("unmatched_old")
+        and not value.get("unmatched_new")
+        and (available["OLD"] or available["NEW"])
+    ):
+        raise MapperEmptyAnswerError(
+            "Empty mapping: no regions and no unmatched pages "
+            f"(OLD pages {len(available['OLD'])}, NEW pages {len(available['NEW'])})"
+        )
     for side in ("OLD", "NEW"):
         field = side.lower() + "_pages"
         mapped = {p for r in value["regions"] for p in r[field]}
