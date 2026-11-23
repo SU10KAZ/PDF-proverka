@@ -210,6 +210,23 @@ def test_zones_covering_most_of_the_sheet_never_make_a_duplicate(tmp_path, monke
     assert duplicates.scan(_whole_page_stamp_rows(tmp_path))["pairs"] == []
 
 
+def test_oversized_sheet_renders_at_fractional_dpi(tmp_path):
+    # Лист больше 4000 px при 100 dpi сравнивается при дробном dpi — раньше падало
+    # TypeError в get_pixmap (сборка АПС, 23.11.2026).
+    pdf_path = tmp_path / "big.pdf"
+    pdf = fitz.open()
+    for _ in range(2):
+        page = pdf.new_page(width=4200, height=1190)
+        page.draw_rect(fitz.Rect(200, 200, 1800, 900), color=(0, 0, 0), width=2)
+        page.insert_text((300, 400), "План расположения оборудования", fontsize=40)
+    pdf.save(pdf_path)
+    pdf.close()
+
+    found = duplicates.scan([{"pdf_path": str(pdf_path), "document_code": "BIG", "pdf_sha256": "big"}])
+
+    assert _pairs(found) == [("BIG", 1, "BIG", 2)]
+
+
 def test_repeated_sheet_inside_one_project_and_three_copies(tmp_path):
     found = _scan(tmp_path, {
         "K1": [{"drawing": "X"}, {"drawing": "X", "sheet": 5}],

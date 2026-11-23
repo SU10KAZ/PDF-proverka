@@ -278,7 +278,10 @@ def _render(page, dpi: float, zones: list[Any]):
     import fitz
     import numpy as np
 
-    pix = page.get_pixmap(dpi=dpi, colorspace=fitz.csGRAY, alpha=False, annots=True)
+    # Масштаб матрицей: у листов длиннее 4000 px при 100 dpi dpi дробный, а
+    # get_pixmap(dpi=…) принимает только целое (23.11.2026, АПС: TypeError fz_pixmap_xres_set).
+    zoom = dpi / 72
+    pix = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom), colorspace=fitz.csGRAY, alpha=False, annots=True)
     gray = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.stride)[:, :pix.width].copy()
     sx, sy = pix.width / page.rect.width, pix.height / page.rect.height
     for zone in zones:
