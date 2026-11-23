@@ -8444,7 +8444,7 @@
                         <h3 id="sc-dup-title">Одинаковые листы в сборке</h3>
                         <p v-if="scDuplicates.data && scDuplicates.data.pairs.length" class="sc-dup-sub">
                             Пара {{ scDuplicates.index + 1 }} из {{ scDuplicatesCounts.total }}
-                            · удалить {{ scDuplicatesCounts.remove }} · вернуть {{ scDuplicatesCounts.keep }}
+                            · удалить {{ scDuplicatesCounts.remove }} · не дубли {{ scDuplicatesCounts.keep }}
                             <span v-if="scDuplicates.data.status === 'READY'"> · сборка уже собрана по этим решениям</span>
                         </p>
                     </div>
@@ -8456,12 +8456,19 @@
                 <template v-else>
                     <div class="sc-dup-body">
                         <ol class="sc-dup-list">
-                            <li v-for="(pair, index) in scDuplicates.data.pairs" :key="pair.pair_id">
+                            <!-- Галочка = «не дубль»: лист остаётся в сборке; без галочки копия удаляется. -->
+                            <li class="sc-dup-list__legend">☑ — не дубль, лист останется в сборке</li>
+                            <li v-for="(pair, index) in scDuplicates.data.pairs" :key="pair.pair_id" class="sc-dup-list__row">
+                                <label class="sc-dup-list__keep" :title="scDuplicatesKept(pair) ? 'Не дубль — лист останется в сборке' : 'Отметить: не дубль, оставить лист в сборке'">
+                                    <input type="checkbox" :checked="scDuplicatesKept(pair)"
+                                           :disabled="!scDuplicates.editable || scDuplicates.saving"
+                                           @change="scDuplicatesToggle(pair)">
+                                </label>
                                 <button type="button" :class="{'is-active': index === scDuplicates.index, 'is-kept': scDuplicatesKept(pair)}"
                                         @click="scDuplicatesGo(index)">
                                     <span class="sc-dup-list__n">{{ index + 1 }}</span>
                                     <span class="sc-dup-list__text">{{ scDuplicatesLabel(pair.copy) }}</span>
-                                    <span class="sc-dup-list__state">{{ scDuplicatesKept(pair) ? 'вернуть' : 'удалить' }}</span>
+                                    <span class="sc-dup-list__state">{{ scDuplicatesKept(pair) ? 'остаётся' : 'удалить' }}</span>
                                 </button>
                             </li>
                         </ol>
@@ -8487,11 +8494,11 @@
                                 @click="scDuplicatesGo(scDuplicates.index - 1)">← Назад</button>
                         <button type="button" class="btn btn-sm" :disabled="!scDuplicates.editable || scDuplicates.saving"
                                 :class="scDuplicatesKept(scDuplicatesPair) ? 'btn-primary' : 'btn-secondary'"
-                                @click="scDuplicatesToggle()">{{ scDuplicatesKept(scDuplicatesPair) ? 'Возвращена ✓' : 'Вернуть в сборку' }}</button>
+                                @click="scDuplicatesToggle()">{{ scDuplicatesKept(scDuplicatesPair) ? 'Не дубль ✓' : 'Не дубль — оставить' }}</button>
                         <button type="button" class="btn btn-sm btn-secondary"
                                 :disabled="scDuplicates.index >= scDuplicatesCounts.total - 1"
                                 @click="scDuplicatesGo(scDuplicates.index + 1)">Далее →</button>
-                        <small class="sc-dup-hint">← → листать · пробел — вернуть · пунктир — не сравнивалось: штамп, плашка «В производство работ», QR</small>
+                        <small class="sc-dup-hint">← → листать · пробел или галочка — не дубль · пунктир — не сравнивалось: штамп, плашка «В производство работ», QR</small>
                         <small v-if="scDuplicates.error" class="sc-dup-error">{{ scDuplicates.error }}</small>
                         <button v-if="scDuplicates.editable" type="button" class="btn btn-primary sc-dup-submit"
                                 :disabled="scDuplicates.saving" @click="scSubmitDuplicates()">

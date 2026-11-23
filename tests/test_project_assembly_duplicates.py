@@ -184,6 +184,32 @@ def test_different_text_on_sheet_field_keeps_the_sheet(tmp_path):
     assert duplicates.scan(rows)["pairs"] == []
 
 
+def _whole_page_stamp_rows(tmp_path: Path) -> list[dict]:
+    """Два разных листа, у которых распознавание отметило штампом весь лист."""
+    rows = []
+    for code, drawing in (("EN2", "X"), ("GP37", "Y")):
+        paths = _document(tmp_path / code, code, [{"drawing": drawing, "approval": "18.09.2025"}])
+        blocks = json.loads(Path(paths["blocks_path"]).read_text(encoding="utf-8"))
+        for block in blocks["blocks"]:
+            if block["block_type"] == "stamp":
+                block["coords_norm"] = [0.0, 0.0, 1.0, 1.0]
+        Path(paths["blocks_path"]).write_text(json.dumps(blocks), encoding="utf-8")
+        rows.append({**paths, "document_code": code, "pdf_sha256": code})
+    return rows
+
+
+def test_whole_page_stamp_is_not_trusted(tmp_path):
+    # 23.11.2026: ЭН2 стр. 82 (ПромЛед) «совпала» с прожектором Platek из ГП3.7 —
+    # штамп на весь лист исключал из сравнения всё.
+    assert duplicates.scan(_whole_page_stamp_rows(tmp_path))["pairs"] == []
+
+
+def test_zones_covering_most_of_the_sheet_never_make_a_duplicate(tmp_path, monkeypatch):
+    monkeypatch.setattr(duplicates, "_STAMP_MAX_AREA", 1.01)  # без первой защиты держит вторая
+
+    assert duplicates.scan(_whole_page_stamp_rows(tmp_path))["pairs"] == []
+
+
 def test_repeated_sheet_inside_one_project_and_three_copies(tmp_path):
     found = _scan(tmp_path, {
         "K1": [{"drawing": "X"}, {"drawing": "X", "sheet": 5}],

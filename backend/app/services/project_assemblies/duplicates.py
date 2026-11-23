@@ -37,7 +37,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 
 SCHEMA = "project_assembly_duplicates/1"
-DETECTOR_VERSION = 1
+DETECTOR_VERSION = 2  # 2 — 23.11.2026: не верим «штампу» на пол-листа и больше
 
 # Отметка выпуска: текст плашки и цвет её рамки у системы выпуска РД.
 APPROVAL_ANCHORS = ("В ПРОИЗВОДСТВО РАБОТ",)
@@ -52,6 +52,14 @@ _ZONE_MARGIN_PT = 2.0
 _FRAME_MAX_THICKNESS_PT = 4.0
 # Блок штампа из распознавания чуть уже настоящей рамки основной надписи.
 _STAMP_MARGIN_PT = 6.0
+# Распознавание иногда отмечает штампом весь лист (паспорта изделий, вкладыши):
+# тогда сравнивать нечего и «совпадает» любой лист того же формата (23.11.2026,
+# ЭН2 стр. 82 «совпала» с прожектором Platek). Настоящие штампы Stories — до 25 %
+# площади листа (2897 из 2913), ошибки — от 35 % до 100 %.
+_STAMP_MAX_AREA = 0.30
+# Служебные зоны вместе не должны закрывать больше этой доли листа — иначе пара
+# не дубль (сравнили слишком мало).
+_ZONES_MAX_AREA = 0.40
 
 # Кандидаты — по уменьшенному рендеру; проверка — в полном разрешении.
 _COARSE_DPI = 30
@@ -113,9 +121,26 @@ def _stamp_zones(page, coords: Iterable[list[float]]) -> list[Any]:
     bounds = page.rect
     zones = []
     for x0, y0, x1, y1 in coords:
+        if (x1 - x0) * (y1 - y0) > _STAMP_MAX_AREA:
+            continue  # не штамп, а ошибка распознавания — лист сравнивается целиком
         rect = fitz.Rect(x0 * bounds.width, y0 * bounds.height, x1 * bounds.width, y1 * bounds.height)
         zones.append(_expanded(rect, _STAMP_MARGIN_PT, bounds))
     return zones
+
+
+def _covered_share(page, zones: list[Any]) -> float:
+    """Доля листа под служебными зонами (по растру 1 pt — пересечения не считаются дважды)."""
+    import numpy as np
+
+    bounds = page.rect
+    width, height = max(1, int(round(bounds.width))), max(1, int(round(bounds.height)))
+    mask = np.zeros((height, width), dtype=bool)
+    for zone in zones:
+        x0, y0 = max(0, int(zone.x0 - bounds.x0)), max(0, int(zone.y0 - bounds.y0))
+        x1, y1 = min(width, int(round(zone.x1 - bounds.x0))), min(height, int(round(zone.y1 - bounds.y0)))
+        if x1 > x0 and y1 > y0:
+            mask[y0:y1, x0:x1] = True
+    return float(mask.mean())
 
 
 def _approval_anchors(page) -> list[Any]:
@@ -348,6 +373,8 @@ class _Scanner:
             return None
         zones_a, zones_b = self.zones(first), self.zones(second)
         zones = [*zones_a, *zones_b]
+        if _covered_share(page_a, zones) > _ZONES_MAX_AREA:
+            return None
         if _text_outside(page_a, zones) != _text_outside(page_b, zones):
             return None
         dpi = min(_VERIFY_DPI, _VERIFY_MAX_SIDE_PX * 72 / max(page_a.rect.width, page_a.rect.height))
