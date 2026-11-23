@@ -71,6 +71,24 @@
         return null;
     }
 
+    // Плашка строки группы из плашек обеих сторон. Важнее та сторона, что ждёт
+    // инженера: при «Дублей не найдено» слева и 67 парах справа плашка и «Проверить
+    // дубли» открывали пустую левую сторону (23.11.2026). При двух плашках
+    // сторона названа.
+    function groupBadge(group) {
+        const rank = badge => (badge.tone === 'review' ? 0 : badge.tone === 'running' ? 1 : badge.review ? 2 : 3);
+        const found = ['left', 'right']
+            .map(side => {
+                const badge = sideBadge(group && group[side]);
+                return badge && {...badge, side};
+            })
+            .filter(Boolean)
+            .sort((a, b) => rank(a) - rank(b));
+        if (!found.length) return null;
+        const best = found[0];
+        return found.length > 1 ? {...best, label: best.label + (best.side === 'left' ? ' слева' : ' справа')} : best;
+    }
+
     // Пары, которые инженер уже вернул раньше (решение запомнено) — отмечены сразу.
     function initialKeep(pairs) {
         return (pairs || []).filter(pair => pair.decision === 'keep').map(pair => pair.pair_id);
@@ -115,5 +133,5 @@
         return null;
     }
 
-    return {pairsText, pagesText, sideLabel, sideBadge, initialKeep, counts, clampIndex, zoneStyle, pageUrl, keyAction};
+    return {pairsText, pagesText, sideLabel, sideBadge, groupBadge, initialKeep, counts, clampIndex, zoneStyle, pageUrl, keyAction};
 }));

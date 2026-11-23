@@ -15372,11 +15372,7 @@ const app = createApp({
 
         // Плашка дублей строки: поиск идёт, ждут проверки или сколько удалено.
         function scDuplicatesBadge(group) {
-            for (const side of SC_SIDES) {
-                const badge = SC_DUPLICATES.sideBadge(group?.[side]);
-                if (badge) return {...badge, side};
-            }
-            return null;
+            return SC_DUPLICATES.groupBadge(group);
         }
 
         function scGroupAwaitingReview(group) {

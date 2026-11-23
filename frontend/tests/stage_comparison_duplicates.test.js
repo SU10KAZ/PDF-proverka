@@ -50,6 +50,17 @@ describe('модуль окна дублей', () => {
         expect(D.sideBadge({status: 'READY'})).toBeNull();
     });
 
+    it('плашка группы: сторона, ждущая проверки, важнее «Дублей не найдено»', () => {
+        const group = {
+            left: {status: 'READY', page_count: 115, duplicates: {pairs: 0, removed_pages: 0, kept_pairs: 0}},
+            right: {status: 'REVIEW', duplicates: {pairs: 67, undecided: 67}},
+        };
+        expect(D.groupBadge(group)).toMatchObject({side: 'right', review: true, label: '67 пар справа'});
+        expect(D.groupBadge({left: group.left, right: {status: 'SINGLE'}}))
+            .toEqual({tone: 'done', label: 'Дублей не найдено · проверено 115 стр.', side: 'left'});
+        expect(D.groupBadge({left: {status: 'SINGLE'}, right: {status: 'SINGLE'}})).toBeNull();
+    });
+
     it('считает удаляемые и возвращённые копии, помнит прежние возвраты', () => {
         const pairs = [pair('a', {decision: 'keep'}), pair('b', {decision: null}), pair('c', {decision: 'remove'})];
         const keep = D.initialKeep(pairs);
