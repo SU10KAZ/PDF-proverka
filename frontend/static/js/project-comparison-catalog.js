@@ -122,10 +122,27 @@
                         return /^cv\d{3}$/.test(props.comparisonVersion || '')
                             ? url + '&comparison_version=' + encodeURIComponent(props.comparisonVersion) : url;
                     }
+                    // Ход выполнения: часто — только пока что-то идёт, на скрытой вкладке
+                    // не опрашиваем вовсе (десяток вкладок занимал всё ядро backend, 23.11.2026).
+                    const PROGRESS_ACTIVE_MS = 5000, PROGRESS_IDLE_MS = 60000;
+                    const ACTIVE = new Set(['RUNNING', 'QUEUED', 'PENDING', 'STARTING']);
+                    function progressActive() {
+                        return progress.value.some(p => ACTIVE.has(p.state?.status)
+                                || ACTIVE.has(p.state?.consolidation?.status))
+                            || entries.value.some(isRunning);
+                    }
+                    function pageHidden() {
+                        return typeof document !== 'undefined' && document.visibilityState === 'hidden';
+                    }
+                    let progressInFlight = false;
                     async function pollProgress() {
-                        clearTimeout(progressTimer);
+                        clearTimeout(progressTimer); progressTimer = null;
                         const token = ++progressToken;
+                        progressInFlight = false;
                         if (!props.objectId || disposed) return;
+                        // Скрытая вкладка: следующий опрос — по возврату на неё (visibilitychange).
+                        if (pageHidden()) return;
+                        progressInFlight = true;
                         try {
                             const response = await fetch(versioned(API + '/progress?object_id=' + encodeURIComponent(props.objectId)));
                             if (!response.ok) throw new Error('progress unavailable');
@@ -136,9 +153,16 @@
                         } catch (_) {
                             if (token === progressToken) progressError.value = true;
                         } finally {
-                            if (token === progressToken && !disposed) progressTimer = setTimeout(pollProgress, 5000);
+                            if (token === progressToken) progressInFlight = false;
+                            if (token === progressToken && !disposed && !pageHidden())
+                                progressTimer = setTimeout(pollProgress, progressActive() ? PROGRESS_ACTIVE_MS : PROGRESS_IDLE_MS);
                         }
                     }
+                    function onVisibility() {
+                        if (!pageHidden() && !disposed && !progressInFlight) pollProgress();
+                    }
+                    if (typeof document !== 'undefined' && document.addEventListener)
+                        document.addEventListener('visibilitychange', onVisibility);
                     function rowProgress(entry) {
                         if (progressError.value) return 'Обновление недоступно';
                         const sid = entry.open?.session_id || props.sessionId;
@@ -180,9 +204,14 @@
                     }
                     onMounted(load);
                     onMounted(pollProgress);
-                    onUnmounted?.(() => { disposed = true; progressToken++; loadId++; clearTimeout(progressTimer); });
+                    onUnmounted?.(() => { disposed = true; progressToken++; loadId++; clearTimeout(progressTimer);
+                        if (typeof document !== 'undefined' && document.removeEventListener)
+                            document.removeEventListener('visibilitychange', onVisibility);
+                    });
                     watch([() => props.objectId, () => props.comparisonVersion], () => { catalog.value = null; load(); });
                     watch([() => props.objectId, () => props.comparisonVersion], () => { progress.value = []; progressError.value = false; pollProgress(); });
+                    // Запуск пары из таблицы: не ждать редкого опроса, сразу перейти на частый.
+                    watch(() => entries.value.some(isRunning), running => { if (running && !progressInFlight) pollProgress(); });
                     // viewer (portal_auth.js): только просмотр — без запуска и выбора пар для анализа.
                     const canOperate = !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate());
                     // «Отработано» ставят и инженеры-viewer с просмотром раздела.

@@ -679,25 +679,79 @@ def clear_cache() -> None:
     with _cache_lock:
         _cache.clear()
     _snapshot_services.clear()
+    with _progress_lock:
+        _progress_cache.clear()
+        _progress_states.clear()
 
 
-def progress_for_object(object_id: str, comparison_version: str | None = None) -> dict[str, Any]:
-    """Small uncached status snapshots; never load results, PDFs or call models."""
+# Ход выполнения опрашивает каждая открытая вкладка раз в 5 с. Без кэша десяток
+# вкладок одного объекта (Stories: 48 пар, ~0,5 с CPU на опрос) занимал всё ядро
+# backend, и остальные запросы ждали GIL по 5–12 с (23.11.2026).
+_PROGRESS_TTL_SECONDS = 3.0
+_PROGRESS_STATE_FIELDS = ('engine', 'run_id', 'status', 'current_stage', 'pipeline_current',
+                          'pipeline_stages', 'message', 'reason_code', 'processed', 'total', 'unit',
+                          'human_mapping_published', 'consolidation_expected')
+_progress_lock = threading.Lock()
+_progress_cache: dict[tuple[str, str | None], tuple[float, dict[str, Any]]] = {}
+_progress_key_locks: dict[tuple[str, str | None], threading.Lock] = {}
+# Разобранный state.json по пути: перечитывается, только если сменились mtime/размер.
+_progress_states: dict[str, tuple[tuple[int, int], dict[str, Any] | None]] = {}
+
+
+def _compact_state(path: Path) -> dict[str, Any] | None:
+    try:
+        st = path.stat()
+    except OSError:
+        return None
+    key, signature = str(path), (st.st_mtime_ns, st.st_size)
+    with _progress_lock:
+        hit = _progress_states.get(key)
+    if hit and hit[0] == signature:
+        return hit[1]
+    try:
+        state = json.loads(path.read_text())
+    except (OSError, ValueError):
+        return None
+    compact = ({k: state[k] for k in _PROGRESS_STATE_FIELDS if k in state}
+               if isinstance(state, dict) else None)
+    with _progress_lock:
+        _progress_states[key] = (signature, compact)
+    return compact
+
+
+def _build_progress(object_id: str, comparison_version: str | None) -> dict[str, Any]:
     from backend.app.services.stage_comparison import paths
     from backend.app.services.project_change_consolidator.stage import public_status
 
     items = []
-    fields = ('engine', 'run_id', 'status', 'current_stage', 'pipeline_current',
-              'pipeline_stages', 'message', 'reason_code', 'processed', 'total', 'unit',
-              'human_mapping_published', 'consolidation_expected')
     for sid, pid in _live_candidates(object_id, comparison_version):
-        try:
-            state = json.loads(paths.production_state_path(sid, pid).read_text())
-        except (OSError, ValueError):
+        compact = _compact_state(paths.production_state_path(sid, pid))
+        if compact is None:
             continue
-        if not isinstance(state, dict):
-            continue
-        compact = {key: state[key] for key in fields if key in state}
-        compact['consolidation'] = public_status(sid, pid, state.get('run_id'))
+        compact = dict(compact)
+        compact['consolidation'] = public_status(sid, pid, compact.get('run_id'))
         items.append({'session_id': sid, 'pair_id': pid, 'state': compact})
     return {'schema': 'project-comparison-progress/1', 'items': items}
+
+
+def progress_for_object(object_id: str, comparison_version: str | None = None) -> dict[str, Any]:
+    """Small status snapshots; never load results, PDFs or call models.
+
+    Ответ кэшируется на несколько секунд, а одновременные опросы одного объекта
+    ждут один расчёт вместо того, чтобы считать каждый свой.
+    """
+    key = (object_id, comparison_version)
+    with _progress_lock:
+        hit = _progress_cache.get(key)
+        if hit and time.monotonic() - hit[0] < _PROGRESS_TTL_SECONDS:
+            return hit[1]
+        key_lock = _progress_key_locks.setdefault(key, threading.Lock())
+    with key_lock:
+        with _progress_lock:
+            hit = _progress_cache.get(key)
+            if hit and time.monotonic() - hit[0] < _PROGRESS_TTL_SECONDS:
+                return hit[1]
+        value = _build_progress(object_id, comparison_version)
+        with _progress_lock:
+            _progress_cache[key] = (time.monotonic(), value)
+        return value

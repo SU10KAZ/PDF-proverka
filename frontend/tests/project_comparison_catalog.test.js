@@ -571,3 +571,61 @@ it('polls progress separately, rejects late object responses and stops on unmoun
     unmounted[0](); await timers[0]();
     expect(requests).toHaveLength(2);
 });
+
+describe('progress polling load (23.11.2026: tabs saturated the backend core)', () => {
+    function setup() {
+        const requests = [];
+        const ctx = load(url => new Promise(resolve => requests.push({url, resolve})));
+        const delays = [];
+        ctx.sandbox.setTimeout = (fn, ms) => { delays.push(ms); ctx.timers.push(fn); return ctx.timers.length; };
+        const listeners = {};
+        ctx.sandbox.document = {visibilityState: 'visible',
+            addEventListener: (name, fn) => { listeners[name] = fn; },
+            removeEventListener: (name, fn) => { if (listeners[name] === fn) delete listeners[name]; }};
+        ctx.sandbox.ProjectChangeView = {comparisonPipeline: state => ({title: state.message, stages: []})};
+        const ui = ctx.definition.setup({objectId: '272', sessionId: 's'}, {emit: () => {}});
+        return {...ctx, requests, delays, listeners, ui};
+    }
+    const reply = (req, items) => req.resolve({ok: true,
+        json: async () => ({schema: 'project-comparison-progress/1', items})});
+    const tick = () => new Promise(resolve => setTimeout(resolve, 0));
+
+    it('polls rarely when nothing runs and often while a run or consolidation is active', async () => {
+        const {mounted, requests, delays, timers} = setup();
+        const first = mounted[1]();
+        reply(requests[0], [{session_id: 's', pair_id: 'p', state: {status: 'REVIEW'}}]);
+        await first; await tick();
+        expect(delays).toEqual([60000]);
+        const second = timers[0]();
+        reply(requests[1], [{session_id: 's', pair_id: 'p', state: {status: 'REVIEW', consolidation: {status: 'RUNNING'}}}]);
+        await second; await tick();
+        expect(delays).toEqual([60000, 5000]);
+    });
+
+    it('does not poll a hidden tab and resumes at once when it becomes visible', async () => {
+        const {mounted, requests, delays, listeners, sandbox, unmounted} = setup();
+        sandbox.document.visibilityState = 'hidden';
+        await mounted[1]();
+        expect(requests).toHaveLength(0);
+        expect(delays).toHaveLength(0);
+        sandbox.document.visibilityState = 'visible';
+        listeners.visibilitychange();
+        expect(requests).toHaveLength(1);
+        listeners.visibilitychange();
+        expect(requests).toHaveLength(1);
+        unmounted[0]();
+        expect(listeners.visibilitychange).toBeUndefined();
+    });
+
+    it('switches to frequent polling right after a pair starts running', async () => {
+        const {mounted, requests, watched} = setup();
+        const first = mounted[1]();
+        reply(requests[0], []);
+        await first; await tick();
+        const running = watched[watched.length - 1];
+        running.fn(true);
+        expect(requests).toHaveLength(2);
+        running.fn(false);
+        expect(requests).toHaveLength(2);
+    });
+});

@@ -523,8 +523,79 @@ def test_progress_reads_only_small_states_for_selected_object(tmp_path, monkeypa
     monkeypatch.setattr(catalog, '_live_candidates', lambda obj, comparison_version=None: requested.append(obj) or [('s', 'p')])
     monkeypatch.setattr(paths, 'production_state_path', lambda *args: saved)
     monkeypatch.setattr(stage, 'public_status', lambda *args: {'status': 'RUNNING', 'calls_done': 4, 'calls_total': 48})
+    catalog.clear_cache()
     data = catalog.progress_for_object('272')
     assert requested == ['272']
     assert data['items'][0]['state']['consolidation']['calls_done'] == 4
     assert 'provenance' not in data['items'][0]['state']
     assert data['items'][0]['session_id'] == 's'
+
+
+def _progress_env(tmp_path, monkeypatch):
+    from backend.app.services.project_change_catalog import catalog
+    from backend.app.services.stage_comparison import paths
+    from backend.app.services.project_change_consolidator import stage
+    saved = tmp_path / 'state.json'
+    saved.write_text(json.dumps({'engine': 'projectchange_v3', 'run_id': 'r', 'status': 'RUNNING'}))
+    scans = []
+    monkeypatch.setattr(catalog, '_live_candidates',
+                        lambda obj, comparison_version=None: scans.append(obj) or [('s', 'p')])
+    monkeypatch.setattr(paths, 'production_state_path', lambda *args: saved)
+    monkeypatch.setattr(stage, 'public_status', lambda *args: None)
+    catalog.clear_cache()
+    return catalog, saved, scans
+
+
+def test_progress_is_cached_briefly_per_object_and_version(tmp_path, monkeypatch):
+    # 23.11.2026: десяток вкладок опрашивал объект раз в 5 с и занимал всё ядро backend.
+    catalog, _saved, scans = _progress_env(tmp_path, monkeypatch)
+    clock = [100.0]
+    monkeypatch.setattr(catalog.time, 'monotonic', lambda: clock[0])
+    first = catalog.progress_for_object('272', 'cv001')
+    assert catalog.progress_for_object('272', 'cv001') == first
+    assert scans == ['272']
+    catalog.progress_for_object('272', 'cv002')
+    assert scans == ['272', '272']
+    clock[0] += catalog._PROGRESS_TTL_SECONDS + 0.1
+    catalog.progress_for_object('272', 'cv001')
+    assert scans == ['272', '272', '272']
+
+
+def test_concurrent_progress_polls_share_one_build(tmp_path, monkeypatch):
+    import threading
+    import time as _time
+    catalog, _saved, _scans = _progress_env(tmp_path, monkeypatch)
+    builds = []
+    real = catalog._build_progress
+
+    def slow(*args):
+        builds.append(args)
+        _time.sleep(0.2)
+        return real(*args)
+
+    monkeypatch.setattr(catalog, '_build_progress', slow)
+    results = []
+    threads = [threading.Thread(target=lambda: results.append(catalog.progress_for_object('272', 'cv001')))
+               for _ in range(6)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert len(builds) == 1
+    assert len(results) == 6 and all(r is results[0] for r in results)
+
+
+def test_progress_rereads_state_only_after_it_changes(tmp_path, monkeypatch):
+    import os
+    catalog, saved, _scans = _progress_env(tmp_path, monkeypatch)
+    reads = []
+    real_loads = catalog.json.loads
+    monkeypatch.setattr(catalog.json, 'loads', lambda text, *a, **k: reads.append(1) or real_loads(text, *a, **k))
+    assert catalog._compact_state(saved)['status'] == 'RUNNING'
+    assert catalog._compact_state(saved)['status'] == 'RUNNING'
+    assert len(reads) == 1
+    saved.write_text(json.dumps({'engine': 'projectchange_v3', 'run_id': 'r', 'status': 'REVIEW', 'pad': 1}))
+    st = saved.stat()
+    os.utime(saved, ns=(st.st_atime_ns, st.st_mtime_ns + 1_000_000))
+    assert catalog._compact_state(saved)['status'] == 'REVIEW'
+    assert len(reads) == 2
