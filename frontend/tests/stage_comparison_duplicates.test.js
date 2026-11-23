@@ -42,7 +42,11 @@ describe('модуль окна дублей', () => {
             .toMatchObject({tone: 'review', label: '342 пары', review: true});
         expect(D.sideBadge({status: 'READY', duplicates: {pairs: 5, removed_pages: 4, kept_pairs: 1}}).label)
             .toBe('Удалено дублей: 4, возвращено: 1');
-        expect(D.sideBadge({status: 'READY', duplicates: {pairs: 0, removed_pages: 0, kept_pairs: 0}})).toBeNull();
+        // Искали и не нашли — это видно (раньше плашки не было и «не искали» не отличалось).
+        expect(D.sideBadge({status: 'READY', page_count: 131, duplicates: {pairs: 0, removed_pages: 0, kept_pairs: 0}}))
+            .toEqual({tone: 'done', label: 'Дублей не найдено · проверено 131 стр.'});
+        expect(D.sideBadge({status: 'READY', duplicates: {pairs: 0, removed_pages: 0, kept_pairs: 0}}).label)
+            .toBe('Дублей не найдено');
         expect(D.sideBadge({status: 'READY'})).toBeNull();
     });
 

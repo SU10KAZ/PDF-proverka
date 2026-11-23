@@ -885,3 +885,132 @@ def test_document_groups_api_saves_composition_without_build(groups_env):
     left = removed.json()["group"]["left"]
     assert _codes(left) == ["P-1", "P-2"] and left["stale"] is True
     assert left["assembly_version_id"] == built.json()["group"]["left"]["assembly_version_id"]
+
+
+# ─── «Собрать все»: сборки групп по очереди ─────────────────────────────────
+
+@pytest.fixture
+def queue_env(groups_env, monkeypatch):
+    """Две группы с набранным составом; запуск сборки только записывается (RUNNING)."""
+    import os
+
+    _stage_document(groups_env, "stage_2", "RD-K4")
+    launched: list[tuple[str, str]] = []
+
+    def fake_launch(object_id, assembly_id, version_id):
+        jobs = assemblies._root(object_id) / assembly_id / "jobs"
+        jobs.mkdir(parents=True, exist_ok=True)
+        state = {"status": "RUNNING", "version_id": version_id, "pid": os.getpid()}
+        (jobs / f"{version_id}.json").write_text(json.dumps(state), encoding="utf-8")
+        launched.append((assembly_id, version_id))
+        return state
+
+    monkeypatch.setattr(assemblies, "launch_version", fake_launch)
+    monkeypatch.setattr(document_groups, "_ensure_queue_worker", lambda object_id: None)
+    first = document_groups.add_members("obj-test", "P-1", ["RD-K1", "RD-K2"], build=False)["group"]
+    second = document_groups.add_members("obj-test", "P-2", ["RD-K3", "RD-K4"], build=False)["group"]
+    return {"first": first["group_id"], "second": second["group_id"], "launched": launched}
+
+
+def _listed(group_id: str) -> dict:
+    return next(g for g in document_groups.list_groups("obj-test")["groups"] if g["group_id"] == group_id)
+
+
+def _finish(group_id: str) -> None:
+    view = _listed(group_id)["right"]
+    assemblies.build_version("obj-test", view["assembly_id"], view["assembly_version_id"])
+
+
+def test_rebuild_all_builds_groups_one_by_one_in_board_order(queue_env):
+    first, second = queue_env["first"], queue_env["second"]
+
+    result = document_groups.rebuild_all("obj-test", [second, first])
+
+    assert result["queued"] == 2 and len(queue_env["launched"]) == 1
+    views = {g["group_id"]: g for g in result["groups"]}
+    assert views[second]["right"]["status"] == "RUNNING" and views[second]["queue_position"] is None
+    assert views[first]["right"]["status"] == "NOT_BUILT" and views[first]["queue_position"] == 1
+    assert result["build_queue"]["pending"] == 1
+    # Пока первая сборка идёт, вторая не стартует.
+    assert _listed(first)["queue_position"] == 1 and len(queue_env["launched"]) == 1
+
+    _finish(second)
+    assert _listed(first)["right"]["status"] == "RUNNING"
+    assert len(queue_env["launched"]) == 2
+    _finish(first)
+    listed = document_groups.list_groups("obj-test")
+    assert listed["build_queue"]["pending"] == 0
+    assert {g["right"]["status"] for g in listed["groups"]} == {"READY"}
+    assert "build_queue" not in json.loads(document_groups._registry_path("obj-test").read_text(encoding="utf-8"))
+
+
+def test_rebuild_all_queue_does_not_wait_for_duplicate_review(queue_env):
+    first, second = queue_env["first"], queue_env["second"]
+    document_groups.rebuild_all("obj-test", [first, second])
+    view = _listed(first)["right"]
+    jobs = assemblies._root("obj-test") / view["assembly_id"] / "jobs"
+    (jobs / f"{view['assembly_version_id']}.json").write_text(json.dumps({"status": "REVIEW"}), encoding="utf-8")
+
+    assert _listed(second)["right"]["status"] == "RUNNING"
+
+
+def test_rebuild_all_skips_groups_built_meanwhile_and_reports_nothing_to_build(queue_env):
+    first, second = queue_env["first"], queue_env["second"]
+    document_groups.rebuild_all("obj-test", [first, second])
+    # Вторую собрали вручную, пока шла первая: в очереди она выбывает молча.
+    document_groups.rebuild("obj-test", second)
+    _finish(second)
+    _finish(first)
+    listed = document_groups.list_groups("obj-test")
+    assert listed["build_queue"]["pending"] == 0 and len(queue_env["launched"]) == 2
+
+    with pytest.raises(document_groups.DocumentGroupError) as error:
+        document_groups.rebuild_all("obj-test", [first, second])
+    assert error.value.code == "NOTHING_TO_BUILD"
+
+
+def test_rebuild_all_records_launch_error_and_continues(queue_env, monkeypatch):
+    first, second = queue_env["first"], queue_env["second"]
+    real = document_groups._launch_build
+
+    def failing(object_id, group, side, sources):
+        if group["group_id"] == first:
+            raise document_groups.DocumentGroupError("MEMBER_NOT_FOUND", "Справа нет документов: RD-K1")
+        return real(object_id, group, side, sources)
+
+    monkeypatch.setattr(document_groups, "_launch_build", failing)
+    result = document_groups.rebuild_all("obj-test", [first, second])
+
+    assert result["build_queue"]["error"]["group_id"] == first
+    assert "RD-K1" in result["build_queue"]["error"]["message"]
+    assert _listed(second)["right"]["status"] == "RUNNING"
+
+
+def test_rebuild_all_api(queue_env):
+    client = TestClient(_app())
+    url = "/api/stage-comparison/objects/obj-test/document-groups/rebuild-all"
+
+    response = client.post(url, json={"group_ids": [queue_env["first"]]})
+
+    assert response.status_code == 200, response.text
+    assert response.json()["queued"] == 2
+    _finish(queue_env["first"])
+    _finish(queue_env["second"])
+    again = client.post(url, json={"group_ids": []})
+    assert again.status_code == 400 and again.json()["detail"]["code"] == "NOTHING_TO_BUILD"
+
+
+def test_queue_worker_starts_next_build_without_board_open(queue_env, monkeypatch):
+    first, second = queue_env["first"], queue_env["second"]
+    document_groups.rebuild_all("obj-test", [second, first])
+    view = _listed(second)["right"]
+    assemblies.build_version("obj-test", view["assembly_id"], view["assembly_version_id"])
+    monkeypatch.setattr(document_groups, "QUEUE_TICK_SECONDS", 0)
+
+    # Поток: первый шаг запускает следующую группу, второй видит пустую очередь и выходит.
+    document_groups._queue_worker("obj-test")
+
+    assert len(queue_env["launched"]) == 2
+    registry = json.loads(document_groups._registry_path("obj-test").read_text(encoding="utf-8"))
+    assert registry.get("build_queue") == []
+    assert "obj-test" not in document_groups._queue_threads

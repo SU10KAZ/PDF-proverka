@@ -14432,6 +14432,8 @@ const app = createApp({
         // Самое важное состояние сборок строки; сторона названа, если склеена левая.
         function scGroupStatus(group) {
             if (!group) return null;
+            // «Собрать все»: группа ждёт своей очереди (сборки идут по одной).
+            if (group.queue_position) return {tone: 'running', label: `В очереди на сборку · №${group.queue_position}`};
             const both = Boolean(group.left?.assembled && group.right?.assembled);
             const found = SC_SIDES.map(side => {
                 const status = scGroupSideStatus(group[side]);
@@ -14443,7 +14445,7 @@ const app = createApp({
         }
 
         function scGroupNeedsRebuild(group) {
-            return Boolean(group) && SC_SIDES.some(side => {
+            return Boolean(group) && !group.queue_position && SC_SIDES.some(side => {
                 const view = group[side];
                 return view?.assembled && (view.stale || !['READY', 'REVIEW', ...SC_GROUP_BUILDING].includes(view.status));
             });
@@ -15144,7 +15146,7 @@ const app = createApp({
         }
 
         function scGroupPending(group) {
-            return SC_SIDES.some(side => {
+            return Boolean(group.queue_position) || SC_SIDES.some(side => {
                 const view = group[side];
                 return view?.assembled && (SC_GROUP_BUILDING.includes(view.status)
                     || (view.status === 'READY' && view.attached_version_id !== view.assembly_version_id));
@@ -15165,7 +15167,10 @@ const app = createApp({
                 const data = await scDocumentGroupsRequest('');
                 if (token !== scDocumentGroupsToken) return false;
                 scDocumentGroups.value = data.groups || [];
-                scDocumentGroupsError.value = '';
+                const queueError = data.build_queue && data.build_queue.error;
+                // Очередь «Собрать все» пропустила группу, которую не удалось запустить.
+                scDocumentGroupsError.value = queueError
+                    ? `Очередь сборок: «${queueError.label || queueError.group_id}» не запущена — ${queueError.message}` : '';
                 reattached = scDocumentGroups.value.some(group =>
                     attachedBefore.has(group.group_id)
                     && attachedBefore.get(group.group_id) !== scGroupAttachKey(group));
@@ -15307,10 +15312,56 @@ const app = createApp({
             );
         }
 
+        // «Собрать»: если сборка нужна и другим группам доски — спросить, собрать ли все по очереди.
+        const scBuildAllDialog = reactive({open: false, row: null, groupIds: []});
+
         function scRebuildDocumentGroup(row) {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!row || !row.group || pcReadOnlySources.value) return;
+            // Порядок очереди — порядок строк доски, первой — та, где нажали.
+            const others = scPairRows.value
+                .map(item => item.group)
+                .filter(group => group && group.group_id !== row.group.group_id && scGroupNeedsRebuild(group))
+                .map(group => group.group_id);
+            const groupIds = [...new Set(others)];
+            if (groupIds.length) {
+                Object.assign(scBuildAllDialog, {open: true, row, groupIds: [row.group.group_id, ...groupIds]});
+                return;
+            }
+            return scRebuildOneGroup(row);
+        }
+
+        function scRebuildOneGroup(row) {
             return scChangeDocumentGroups(`/${encodeURIComponent(row.group.group_id)}/rebuild`, {method: 'POST'});
+        }
+
+        function scCloseBuildAllDialog() {
+            Object.assign(scBuildAllDialog, {open: false, row: null, groupIds: []});
+        }
+
+        async function scConfirmBuildAll(all) {
+            const {row, groupIds} = scBuildAllDialog;
+            scCloseBuildAllDialog();
+            if (!row) return;
+            if (!all) return scRebuildOneGroup(row);
+            if (scDocumentGroupsBusy.value) {
+                scDocumentGroupsError.value = 'Группы документов сейчас обновляются, повторите позже';
+                return;
+            }
+            scDocumentGroupsBusy.value = true;
+            scDocumentGroupsError.value = '';
+            try {
+                await scDocumentGroupsRequest('/rebuild-all', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({group_ids: groupIds}),
+                });
+                await scLoadDocumentGroups();
+                scSyncBoardOrder();
+            } catch (error) {
+                scDocumentGroupsError.value = String(error.message || error);
+            } finally {
+                scDocumentGroupsBusy.value = false;
+            }
         }
 
         // ─── Одинаковые листы в сборке группы ───────────────────────────────
@@ -22438,6 +22489,7 @@ const app = createApp({
             scGroupNeedsRebuild, scGroupBuildLabel,
             scHasStandaloneUploadRow, scSetStandaloneUploadRow, scOpenStandaloneRowUpload,
             scRemoveGroupMember, scRebuildDocumentGroup,
+            scBuildAllDialog, scCloseBuildAllDialog, scConfirmBuildAll,
             scDuplicates, scDuplicatesBadge, scGroupAwaitingReview, scOpenDuplicates, scCloseDuplicates,
             scDuplicatesPair, scDuplicatesCounts, scDuplicatesImage, scDuplicatesLabel, scDuplicatesZoneStyle,
             scDuplicatesGo, scDuplicatesKept, scDuplicatesToggle, scSubmitDuplicates,

@@ -497,6 +497,22 @@ async def rebuild_document_group(
     return await _run_document_groups(document_groups.rebuild, scope, group_id, side)
 
 
+class DocumentGroupRebuildAllRequest(BaseModel):
+    """«Собрать все»: порядок групп с доски, первой — та, где нажали «Собрать»."""
+
+    group_ids: list[str] = Field(default_factory=list, max_length=1000)
+
+
+# Сборки идут по очереди: одна группа за раз, следующая — после окончания предыдущей.
+@router.post("/objects/{object_id}/document-groups/rebuild-all")
+async def rebuild_all_document_groups(
+    object_id: str, request: DocumentGroupRebuildAllRequest,
+    comparison_version: ComparisonVersionParam = None,
+):
+    scope = await run_in_threadpool(_comparison_scope, object_id, comparison_version)
+    return await _run_document_groups(document_groups.rebuild_all, scope, request.group_ids)
+
+
 def _duplicate_review_author(request: Request) -> str:
     """Кто согласовал дубли: сотрудник аккаунта, иначе логин — согласование не блокируется."""
     from backend.app.core.access import request_account

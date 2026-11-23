@@ -33,8 +33,10 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 import threading
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -62,6 +64,17 @@ _STATUS_RANK = ("FAILED", "REVIEW", "RUNNING", "SCANNING", "PREPARING", "QUEUED"
 # Сборка запускается в отдельном процессе, но подготовка версии (хеши и копии
 # исходных файлов) и правка реестра должны идти по одной на процесс бэкенда.
 _lock = threading.Lock()
+logger = logging.getLogger(__name__)
+
+# Очередь «Собрать все» (23.11.2026): группы собираются по одной — следующая
+# запускается, когда у объекта не идёт ни одна сборка (REVIEW очередь не держит).
+# Очередь лежит в реестре групп и переживает перезапуск backend; двигает её поток
+# объекта и каждое чтение списка групп с правом записи.
+QUEUE_KEY = "build_queue"
+QUEUE_ERROR_KEY = "build_queue_error"
+QUEUE_TICK_SECONDS = 10.0
+_queue_threads: dict[str, threading.Thread] = {}
+_queue_threads_lock = threading.Lock()
 
 
 class DocumentGroupError(ValueError):
@@ -399,14 +412,31 @@ def list_groups(object_id: str, *, attach: bool = True) -> dict[str, Any]:
         for group in data["groups"] if attach else ():
             for side in SIDES:
                 changed = _attach_ready(object_id, group, side) or changed
+        sources = _current_sources(object_id)
+        if attach:
+            changed = _advance_queue(object_id, data, sources) or changed
         if changed:
             _write(object_id, data)
-        sources = _current_sources(object_id)
-        return {
-            "schema": SCHEMA,
-            "object_id": _plain_object_id(object_id),
-            "groups": [_view(object_id, group, sources) for group in data["groups"]],
-        }
+        if attach and _queue(data):
+            _ensure_queue_worker(object_id)
+        return _list_payload(object_id, data, sources)
+
+
+def _list_payload(object_id: str, data: dict[str, Any],
+                  sources: dict[str, dict[str, dict[str, Any]]]) -> dict[str, Any]:
+    queue = _queue(data)
+    views = []
+    for group in data["groups"]:
+        view = _view(object_id, group, sources)
+        # Место в очереди «Собрать все» (1 — следующая); None — группа не ждёт.
+        view["queue_position"] = queue.index(group["group_id"]) + 1 if group["group_id"] in queue else None
+        views.append(view)
+    return {
+        "schema": SCHEMA,
+        "object_id": _plain_object_id(object_id),
+        "groups": views,
+        "build_queue": {"pending": len(queue), "error": data.get(QUEUE_ERROR_KEY)},
+    }
 
 
 def _section(group: dict[str, Any], sources: dict[str, dict[str, dict[str, Any]]]) -> str:
@@ -692,6 +722,136 @@ def rebuild(object_id: str, group_id: str, side: str | None = None) -> dict[str,
         group["updated_at"] = _now()
         _write(object_id, data)
         return {"group": _view(object_id, group, sources), "released": []}
+
+
+def _queue(data: dict[str, Any]) -> list[str]:
+    return [str(item) for item in data.get(QUEUE_KEY) or [] if isinstance(item, str) and item]
+
+
+def _build_targets(object_id: str, group: dict[str, Any],
+                   sources: dict[str, dict[str, dict[str, Any]]]) -> list[str]:
+    """Стороны, которым нужна сборка: не собиралась, упала или устарела (как кнопка в портале)."""
+    targets = []
+    for side in SIDES:
+        if not _needs_assembly(group, side):
+            continue
+        view = _side_view(object_id, group, side, sources[side])
+        if view["stale"] or view["status"] not in {"READY", "REVIEW", *BUILDING_STATUSES}:
+            targets.append(side)
+    return targets
+
+
+def _group_building(object_id: str, group: dict[str, Any],
+                    sources: dict[str, dict[str, dict[str, Any]]]) -> bool:
+    return any(
+        _side_view(object_id, group, side, sources[side])["status"] in BUILDING_STATUSES
+        for side in SIDES if _needs_assembly(group, side)
+    )
+
+
+def _advance_queue(object_id: str, data: dict[str, Any],
+                   sources: dict[str, dict[str, dict[str, Any]]]) -> bool:
+    """Запустить следующую группу очереди, если у объекта не идёт ни одна сборка.
+
+    Группа, которой сборка уже не нужна (собрали вручную, удалили), выбывает
+    молча; ошибка запуска запоминается и очередь идёт дальше. Вызывать под ``_lock``.
+    """
+    queue = _queue(data)
+    if not queue:
+        if QUEUE_KEY in data:
+            data.pop(QUEUE_KEY)
+            return True
+        return False
+    if any(_group_building(object_id, group, sources) for group in data["groups"]):
+        return False
+    groups = {group["group_id"]: group for group in data["groups"]}
+    while queue:
+        group = groups.get(queue.pop(0))
+        if group is None:
+            continue
+        targets = _build_targets(object_id, group, sources)
+        if not targets:
+            continue
+        try:
+            for target in targets:
+                _launch_build(object_id, group, target, sources)
+        except DocumentGroupError as exc:
+            data[QUEUE_ERROR_KEY] = {
+                "group_id": group["group_id"],
+                "label": _side_label(group, "left") or _side_label(group, "right"),
+                "code": exc.code, "message": str(exc), "at": _now(),
+            }
+            logger.warning("Очередь сборок %s: %s не запущена: %s", object_id, group["group_id"], exc)
+            continue
+        group["updated_at"] = _now()
+        break
+    data[QUEUE_KEY] = queue
+    return True
+
+
+def _queue_worker(object_id: str) -> None:
+    """Поток объекта: раз в QUEUE_TICK_SECONDS двигает очередь, пока она не опустеет."""
+    while True:
+        time.sleep(QUEUE_TICK_SECONDS)
+        try:
+            with _lock:
+                data = _read(object_id)
+                if not _queue(data):
+                    with _queue_threads_lock:
+                        _queue_threads.pop(object_id, None)
+                    return
+                if _advance_queue(object_id, data, _current_sources(object_id)):
+                    _write(object_id, data)
+        except Exception:  # noqa: BLE001 — поток не должен падать молча; очередь подхватит чтение списка
+            logger.exception("Очередь сборок %s остановлена ошибкой", object_id)
+            with _queue_threads_lock:
+                _queue_threads.pop(object_id, None)
+            return
+
+
+def _ensure_queue_worker(object_id: str) -> None:
+    """Запустить поток очереди объекта, если его нет. Вызывать под ``_lock``."""
+    with _queue_threads_lock:
+        thread = _queue_threads.get(object_id)
+        if thread is not None and thread.is_alive():
+            return
+        thread = threading.Thread(target=_queue_worker, args=(object_id,), daemon=True,
+                                  name=f"document-group-queue:{object_id}")
+        _queue_threads[object_id] = thread
+        thread.start()
+
+
+def rebuild_all(object_id: str, group_ids: list[str] | None = None) -> dict[str, Any]:
+    """«Собрать все»: поставить в очередь группы, которым нужна сборка, и запустить первую.
+
+    ``group_ids`` — порядок с доски (первой — группа, на которой нажали «Собрать»);
+    группы не из списка, которым тоже нужна сборка, встают в конец в порядке реестра.
+    """
+    _require_enabled()
+    with _lock:
+        data = _read(object_id)
+        sources = _current_sources(object_id)
+        groups = {group["group_id"]: group for group in data["groups"]}
+        order = [gid for gid in dict.fromkeys(group_ids or []) if gid in groups]
+        order += [gid for gid in groups if gid not in order]
+        queue = _queue(data)
+        added = []
+        for gid in order:
+            group = groups[gid]
+            if gid in queue or _group_building(object_id, group, sources) \
+                    or not _build_targets(object_id, group, sources):
+                continue
+            queue.append(gid)
+            added.append(gid)
+        if not queue:
+            raise DocumentGroupError("NOTHING_TO_BUILD", "Нет групп, которым нужна сборка")
+        data[QUEUE_KEY] = queue
+        data.pop(QUEUE_ERROR_KEY, None)
+        _advance_queue(object_id, data, sources)
+        _write(object_id, data)
+        if _queue(data):
+            _ensure_queue_worker(object_id)
+        return {**_list_payload(object_id, data, sources), "queued": len(added)}
 
 
 def _assembled_side(object_id: str, group_id: str, side: str) -> tuple[dict[str, Any], dict[str, Any]]:
